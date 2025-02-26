@@ -34,6 +34,14 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install @expo/vector-icons
    ```
 
+5. Check project
+
+   ```bash
+   npx expo-doctor@latest
+   ```
+
+   fix any issues
+
 ## Building project
 
 1. Login into EAS (free tier)

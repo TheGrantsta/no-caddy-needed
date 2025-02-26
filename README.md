@@ -74,3 +74,27 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
    iOS requires Apple developer account
 
+## Integrating with AI
+
+Repomix can create a prompt-friendly version of your repo that can be uploaded along with a prompt into an AI-assistant
+
+1. Install repomix
+
+   ```bash
+   npm install -g repomix
+   ```
+
+2. Create output
+
+   ```bash
+   repomix
+   ```
+
+   This will generate a repomix-output.txt file in the current directory
+
+3. Prompt suggestion
+
+   ```AI
+   This file contains all the files in the repository combined into one. I want to refactor the code, so please review it first. Suggest improvements as todo list
+   ```
+

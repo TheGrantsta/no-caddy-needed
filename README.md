@@ -1,4 +1,4 @@
-# Welcome to your Expo app 👋
+# No caddy needed
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
@@ -7,44 +7,62 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 1. Install dependencies
 
    ```bash
-   npm install
+   npm install -g cli
+
+   npm install -g eas-cli
    ```
 
-2. Start the app
+2. Create the app
 
    ```bash
-    npx expo start
+   npx create-expo-app no-caddy-needed
    ```
 
-In the output, you'll find options to open the app in a
+3. Check the project was created successfully
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```bash
+   cd no-caddy-needed
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+   npx expo start
+   ```
 
-## Get a fresh project
+4. Install dependencies and vector icons
 
-When you're ready, run:
+   ```bash
+   npm install @react-navigation/native react-native-screens react-native-safe-area-context
 
-```bash
-npm run reset-project
-```
+   npm install @expo/vector-icons
+   ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Building project
 
-## Learn more
+1. Login into EAS (free tier)
 
-To learn more about developing your project with Expo, look at the following resources:
+   ```bash
+   eas login
+   ```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+   prompted for username and password
 
-## Join the community
+   ```bash
+   eas whoami
+   ```
 
-Join our community of developers creating universal apps.
+   this will verify login because if successful it will display your username
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+2. Configure EAS
+
+   ```bash
+   eas configure
+   ```
+
+3. Build for Android and iOS
+
+   ```bash
+   eas build --platform android
+
+   eas build --platform ios
+   ```
+
+   iOS requires Apple developer account
+

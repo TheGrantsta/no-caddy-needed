@@ -11,11 +11,11 @@ describe('renders chevrons', () => {
     });
 
     it('shows items', () => {
-        const points = ['Control low point', 'Improve centre strike', 'Enhance clubface control'];
+        const points = ['Point 1', 'Point 2', 'Point 3'];
         const { getByText } = render(<Chrevons heading='fake heading' points={points} />);
 
-        expect(getByText('Control low point')).toBeTruthy();
-        expect(getByText('Improve centre strike')).toBeTruthy();
-        expect(getByText('Enhance clubface control')).toBeTruthy();
+        expect(getByText('Point 1')).toBeTruthy();
+        expect(getByText('Point 2')).toBeTruthy();
+        expect(getByText('Point 3')).toBeTruthy();
     });
 });

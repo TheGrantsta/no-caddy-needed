@@ -42,7 +42,7 @@ export default function HomeScreen() {
               Golfers seeking smarter practice & setting better on course expectations
             </Text>
 
-            <Chrevons heading='Get the ball in the hole in the fewest shots' points={points} />
+            <Chrevons heading='Golf - get the ball in the hole in the fewest shots with:' points={points} />
           </View>
         </ScrollView>
       </GestureHandlerRootView>

@@ -16,6 +16,12 @@ describe('renders homepage', () => {
     it('shows title', () => {
         const { getByText } = render(<Homepage />);
 
+        expect(getByText('No caddy needed!')).toBeTruthy();
+    });
+
+    it('shows sub title', () => {
+        const { getByText } = render(<Homepage />);
+
         expect(getByText('Golfers seeking smarter practice & setting better on course expectations')).toBeTruthy();
     });
 

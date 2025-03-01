@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ScreenWrapper from '../screen-wrapper';
 import Chrevons from '@/components/Chevrons';
 import styles from '@/assets/stlyes';
@@ -19,20 +20,29 @@ export default function HomeScreen() {
 
   return (
     <ScreenWrapper>
-      <ScrollView style={styles.scrollContainer} refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={colours.yellow} />
-      }>
-        <View style={styles.viewContainer}>
-          <Text style={[styles.subHeaderText, { marginBottom: 10 }]}>
-            Golfers seeking smarter practice & setting better on course expectations
-          </Text>
+      <GestureHandlerRootView style={styles.flexOne}>
+        {refreshing && (
+          <View style={styles.updateOverlay}>
+            <Text style={styles.updateText}>
+              Release to update
+            </Text>
+          </View>
+        )}
+        <ScrollView style={styles.scrollContainer} refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colours.yellow} />
+        }>
+          <View style={styles.viewContainer}>
+            <Text style={[styles.subHeaderText, styles.marginBottom]}>
+              Golfers seeking smarter practice & setting better on course expectations
+            </Text>
 
-          <Chrevons heading='Get the ball in the hole in the fewest shots' points={points} />
-        </View>
-      </ScrollView>
+            <Chrevons heading='Get the ball in the hole in the fewest shots' points={points} />
+          </View>
+        </ScrollView>
+      </GestureHandlerRootView>
     </ScreenWrapper>
   );
 }

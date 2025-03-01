@@ -2,6 +2,16 @@ import * as React from 'react';
 import { render } from '@testing-library/react-native';
 import Homepage from '../../app/(tabs)/index';
 
+jest.mock('react-native-gesture-handler', () => {
+    const GestureHandler = jest.requireActual('react-native-gesture-handler');
+    return {
+        ...GestureHandler,
+        GestureHandlerRootView: jest
+            .fn()
+            .mockImplementation(({ children }) => children),
+    };
+});
+
 describe('renders homepage', () => {
     it('shows title', () => {
         const { getByText } = render(<Homepage />);

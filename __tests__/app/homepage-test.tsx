@@ -25,6 +25,13 @@ describe('renders homepage', () => {
         expect(getByText('Golfers seeking smarter practice & setting better on course expectations')).toBeTruthy();
     });
 
+    it('shows links on homepage', () => {
+        const { getByText } = render(<Homepage />);
+
+        expect(getByText('Practice')).toBeTruthy();
+        expect(getByText('On course')).toBeTruthy();
+    });
+
     it('shows heading and points', () => {
         const points = ['Control low point', 'Improve centre strike', 'Enhance clubface control'];
         const { getByText } = render(<Homepage />);

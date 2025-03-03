@@ -1,12 +1,10 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { MaterialIcons } from '@expo/vector-icons';
 import colours from '@/assets/colours';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
 
   return (
     <Tabs
@@ -27,14 +25,27 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name='home' color={color} size={30} />
+          )
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="practice"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Practice',
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name='golf-course' color={color} size={30} />
+          )
+        }}
+      />
+      <Tabs.Screen
+        name="on-course"
+        options={{
+          title: 'On course',
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name='sports-golf' color={color} size={30} />
+          )
         }}
       />
     </Tabs>

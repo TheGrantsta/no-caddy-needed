@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ScreenWrapper from '../screen-wrapper';
-import Chrevons from '@/components/Chevrons';
+import Chevrons from '@/components/Chevrons';
 import styles from '@/assets/stlyes';
 import colours from '@/assets/colours';
 
@@ -42,7 +42,7 @@ export default function HomeScreen() {
               Golfers seeking smarter practice & setting better on course expectations
             </Text>
 
-            <Chrevons heading='Golf - get the ball in the hole in the fewest shots by:' points={points} />
+            <Chevrons heading='Golf - get the ball in the hole in the fewest shots by:' points={points} />
           </View>
         </ScrollView>
       </GestureHandlerRootView>

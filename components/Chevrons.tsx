@@ -9,7 +9,7 @@ type Props = {
     points: string[];
 }
 
-function Chrevons({ heading, points }: Props): React.JSX.Element {
+function Chevrons({ heading, points }: Props): React.JSX.Element {
     return (
         <View>
             <View style={styles.viewContainer}>
@@ -33,4 +33,4 @@ function Chrevons({ heading, points }: Props): React.JSX.Element {
     );
 }
 
-export default Chrevons;
+export default Chevrons;

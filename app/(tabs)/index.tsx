@@ -7,7 +7,7 @@ import styles from '@/assets/stlyes';
 import colours from '@/assets/colours';
 
 export default function HomeScreen() {
-  const points = ['Control low point', 'Improve centre strike', 'Enhance clubface control'];
+  const points = ['Controlling low point', 'Improving centre strike', 'Enhancing clubface control'];
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = () => {
@@ -42,7 +42,7 @@ export default function HomeScreen() {
               Golfers seeking smarter practice & setting better on course expectations
             </Text>
 
-            <Chrevons heading='Golf - get the ball in the hole in the fewest shots with:' points={points} />
+            <Chrevons heading='Golf - get the ball in the hole in the fewest shots by:' points={points} />
           </View>
         </ScrollView>
       </GestureHandlerRootView>

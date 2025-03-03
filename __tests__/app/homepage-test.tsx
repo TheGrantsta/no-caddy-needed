@@ -29,10 +29,10 @@ describe('renders homepage', () => {
         const points = ['Control low point', 'Improve centre strike', 'Enhance clubface control'];
         const { getByText } = render(<Homepage />);
 
-        expect(getByText('Golf - get the ball in the hole in the fewest shots with:')).toBeTruthy();
-        expect(getByText('Control low point')).toBeTruthy();
-        expect(getByText('Improve centre strike')).toBeTruthy();
-        expect(getByText('Enhance clubface control')).toBeTruthy();
+        expect(getByText('Golf - get the ball in the hole in the fewest shots by:')).toBeTruthy();
+        expect(getByText('Controlling low point')).toBeTruthy();
+        expect(getByText('Improving centre strike')).toBeTruthy();
+        expect(getByText('Enhancing clubface control')).toBeTruthy();
     });
 });
 

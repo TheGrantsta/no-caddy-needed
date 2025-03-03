@@ -41,5 +41,11 @@ describe('renders homepage', () => {
         expect(getByText('Improving centre strike')).toBeTruthy();
         expect(getByText('Enhancing clubface control')).toBeTruthy();
     });
+
+    it('shows footer text on homepage', () => {
+        const { getByText } = render(<Homepage />);
+
+        expect(getByText('Golf is not a game of perfect, or having a perfect swing')).toBeTruthy();
+    });
 });
 

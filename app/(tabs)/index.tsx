@@ -58,6 +58,11 @@ export default function HomeScreen() {
             </View>
 
             <Chevrons heading='Golf - get the ball in the hole in the fewest shots by:' points={points} />
+
+            <Text style={[styles.normalText, styles.marginTop]}>
+              Golf is not a game of perfect, or having a perfect swing
+            </Text>
+
           </View>
         </ScrollView>
       </GestureHandlerRootView>

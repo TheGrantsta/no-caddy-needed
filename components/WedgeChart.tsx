@@ -15,9 +15,7 @@ export default function WedgeChart({ isShowButtons }: Props) {
     const [isAddChart, setIsAddChart] = useState(false);
     const [isAddNewChart, setIsAddNewChart] = useState(false);
     const [isEditChart, setIsEditChart] = useState(false);
-    const [messageVisible, setMessageVisible] = useState(false);
     const [wedgeChart, setWedgeChart] = useState<any[][]>([]);
-
     const [tempWedgeChart, setTempWedgeChart] = useState<any[][]>([]);
 
     const handleInputChange = (value: any, id: any) => {
@@ -46,10 +44,7 @@ export default function WedgeChart({ isShowButtons }: Props) {
         if (!isError) {
             insertWedgeChartService(tempWedgeChart);
 
-            setMessageVisible(true);
-
             setTimeout(() => {
-                setMessageVisible(false);
                 setIsAddChart(false);
                 setIsAddNewChart(false);
                 setIsEditChart(true);
@@ -124,11 +119,9 @@ export default function WedgeChart({ isShowButtons }: Props) {
                     <View>
                         <View style={styles.container}>
                             <Text style={styles.normalText}>
-                                Wedge chart not set (see Settings page)
+                                Wedge chart not set
                             </Text>
                         </View>
-
-                        <Chrevons heading='How to create a wedge chart' points={points} />
 
                         {isShowButtons && (
                             <View style={styles.buttonContainer}>
@@ -185,8 +178,6 @@ export default function WedgeChart({ isShowButtons }: Props) {
                                 </View>
 
                                 <Chrevons heading='How to create a wedge chart' points={points} />
-
-                                {/* <UserMessage isVisible={messageVisible} message='Your wedge chart saved!' /> */}
                             </View>
                         )}
                     </View>

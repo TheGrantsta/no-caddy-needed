@@ -3,19 +3,22 @@ import WedgeChart from '../../components/WedgeChart';
 import { getWedgeChartService } from '../../service/DbService';
 
 jest.mock('../../service/DbService', () => ({
-    getWedgeChartService: jest.fn()
+    getWedgeChartService: jest.fn(() => [[]])
 }));
 
 describe('Wedge chart component', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        (getWedgeChartService as jest.Mock).mockReturnValue([]);
+    });
+
     it('renders heading', () => {
-        getWedgeChartService.mockReturnValue([]);
         const { getByText } = render(<WedgeChart isShowButtons={false} />)
 
         expect(getByText('Wedge chart')).toBeTruthy();
     });
 
     it('renders add button', () => {
-        getWedgeChartService.mockReturnValue([]);
         const { getByTestId } = render(<WedgeChart isShowButtons={true} />);
 
         expect(getByTestId('add-button')).toBeTruthy();
@@ -28,10 +31,9 @@ describe('Wedge chart component', () => {
     });
 
     it('renders default text if wedge chart has not been set', () => {
-        getWedgeChartService.mockReturnValue([]);
         const { getByText } = render(<WedgeChart isShowButtons={true} />);
 
-        expect(getByText('Wedge chart not set (see Settings page)')).toBeTruthy();
+        expect(getByText('Wedge chart not set')).toBeTruthy();
     });
 
     it('renders edit button if wedge chart is set', () => {
@@ -39,7 +41,7 @@ describe('Wedge chart component', () => {
             ['PW', '100', '110', '120']
         ];
 
-        getWedgeChartService.mockReturnValue(data);
+        (getWedgeChartService as jest.Mock).mockReturnValue(data);
         const { getByText } = render(<WedgeChart isShowButtons={true} />)
 
         expect(getByText('Edit')).toBeTruthy();
@@ -51,7 +53,7 @@ describe('Wedge chart component', () => {
             ['PW', '100', '110', '120']
         ];
 
-        getWedgeChartService.mockReturnValue(data);
+        (getWedgeChartService as jest.Mock).mockReturnValue(data);
         const { getByText } = render(<WedgeChart isShowButtons={true} />)
 
         expect(getByText('Swing/Wedge')).toBeTruthy();
@@ -70,7 +72,7 @@ describe('Wedge chart component', () => {
             ['PW', '100', '110', '120']
         ];
 
-        getWedgeChartService.mockReturnValue(data);
+        (getWedgeChartService as jest.Mock).mockReturnValue(data);
         const { getByText, getByTestId } = render(<WedgeChart isShowButtons={true} />)
 
         expect(getByText('Edit')).toBeTruthy();

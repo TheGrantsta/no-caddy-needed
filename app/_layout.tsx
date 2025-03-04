@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { Image, TouchableOpacity } from "react-native";
+import { Image } from "react-native";
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { Ionicons } from "@expo/vector-icons";
+import { Link, Stack } from 'expo-router';
+import { MaterialIcons } from "@expo/vector-icons";
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -18,6 +18,13 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
+  const LogoTitle = () => (
+    <Image
+      source={require("../assets/images/logo.png")}
+      style={{ width: 120, height: 40, resizeMode: "contain" }}
+    />
+  );
+
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
@@ -28,13 +35,6 @@ export default function RootLayout() {
     return null;
   }
 
-  const LogoTitle = () => (
-    <Image
-      source={require("../assets/images/logo.png")} // Place your logo in assets folder
-      style={{ width: 120, height: 40, resizeMode: "contain" }}
-    />
-  );
-
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
@@ -44,9 +44,9 @@ export default function RootLayout() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerRight: () => (
-              <TouchableOpacity>
-                <Ionicons name="settings-outline" size={24} color={colours.background} style={{ marginRight: 15 }} />
-              </TouchableOpacity>
+              <Link href='../settings'>
+                <MaterialIcons name="settings" size={24} color={colours.background} style={{ marginRight: 15 }} />
+              </Link>
             ),
             headerStyle: {
               backgroundColor: colours.yellow,

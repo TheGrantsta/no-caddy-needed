@@ -8,6 +8,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import colours from "@/assets/colours";
+import { initialize } from '@/database/db';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -26,6 +27,17 @@ export default function RootLayout() {
   );
 
   useEffect(() => {
+    const setupDatabase = () => {
+      try {
+        initialize();
+      }
+      catch (error) {
+        console.error('Setup database error', error);
+      }
+    };
+
+    setupDatabase();
+
     if (loaded) {
       SplashScreen.hideAsync();
     }

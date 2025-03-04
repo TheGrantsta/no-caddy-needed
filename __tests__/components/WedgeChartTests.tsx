@@ -84,4 +84,37 @@ describe('Wedge chart component', () => {
         expect(getByText('Cancel')).toBeTruthy();
         expect(getByText('Save')).toBeTruthy();
     });
+
+    it('renders points when empty wedge chart and add button clicked', () => {
+        const { getByText, getByTestId } = render(<WedgeChart isShowButtons={true} />)
+
+        const button = getByTestId('add-button');
+
+        fireEvent.press(button);
+
+        expect(getByText('How to create a wedge chart')).toBeTruthy();
+        expect(getByText('Record your carry distances')).toBeTruthy();
+        expect(getByText('Replicate your conditions')).toBeTruthy();
+        expect(getByText('Visualize your data')).toBeTruthy();
+        expect(getByText('Use a launch monitor')).toBeTruthy();
+    });
+
+    it('renders points when wedge chart is set and edit button clicked', () => {
+        const data = [
+            ['PW', '100', '110', '120']
+        ];
+
+        (getWedgeChartService as jest.Mock).mockReturnValue(data);
+        const { getByText, getByTestId } = render(<WedgeChart isShowButtons={true} />)
+
+        const button = getByTestId('add-button');
+
+        fireEvent.press(button);
+
+        expect(getByText('How to create a wedge chart')).toBeTruthy();
+        expect(getByText('Record your carry distances')).toBeTruthy();
+        expect(getByText('Replicate your conditions')).toBeTruthy();
+        expect(getByText('Visualize your data')).toBeTruthy();
+        expect(getByText('Use a launch monitor')).toBeTruthy();
+    });
 });

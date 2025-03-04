@@ -103,7 +103,7 @@ export default function WedgeChart({ isShowButtons }: Props) {
         setTempWedgeChart(tempWedgeChart);
     };
 
-    const points = ['Record your carry distances', 'Replicate your conditions', 'Visualize your data'];
+    const points = ['Record your carry distances', 'Replicate your conditions', 'Visualize your data', 'Use a launch monitor'];
 
     return (
         <View style={styles.container}>

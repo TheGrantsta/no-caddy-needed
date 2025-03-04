@@ -1,109 +1,91 @@
-import { StyleSheet, Image, Platform } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
+import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
+import Chevrons from '../../components/Chevrons';
+import SubMenu from '../../components/SubMenu';
+import WedgeChart from '../../components/WedgeChart';
+import styles from '../../assets/stlyes';
+import colours from '../../assets/colours';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+export default function Course() {
+  const points = ['Target: centre of the green', 'Aim: play for your shot shape', 'Yardage: closer to the back edge'];
+  const benefits = ['Improve distance control', 'Better course management', 'Eliminate guesswork'];
+  const [refreshing, setRefreshing] = useState(false);
+  const [section, setSection] = useState('approach');
 
-export default function TabTwoScreen() {
+  const onRefresh = () => {
+    setRefreshing(true);
+
+    setTimeout(() => {
+      setSection('approach');
+      setRefreshing(false);
+    }, 750);
+  };
+
+  const handleSubMenu = (sectionName: string) => {
+    setSection(sectionName);
+  };
+
+  const displaySection = (sectionName: string) => {
+    return section === sectionName;
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
-  );
-}
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SubMenu showSubMenu='on-course' selectedItem={section} handleSubMenu={handleSubMenu} />
 
-const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-});
+      {refreshing && (
+        <View style={styles.updateOverlay}>
+          <Text style={styles.updateText}>
+            Release to update
+          </Text>
+        </View>
+      )}
+
+      <ScrollView style={styles.scrollContainer} refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={colours.yellow} />
+      }>
+
+        {/* Approach */}
+        {displaySection('approach') && (
+          <View style={styles.container}>
+            <View style={styles.headerContainer}>
+              <Text style={[styles.headerText, styles.marginTop]}>
+                On course
+              </Text>
+              <Text style={[styles.normalText, styles.marginBottom, { padding: 10 }]}>
+                Make better on course decisions & choose better targets
+              </Text>
+            </View>
+
+            <Chevrons heading='Approach shots' points={points} />
+
+          </View>
+        )}
+
+        {/* Wedge chart */}
+        {displaySection('wedge-chart') && (
+          <View style={styles.container}>
+            <View style={styles.headerContainer}>
+              <Text style={[styles.headerText, { marginTop: 10 }]}>
+                On course
+              </Text>
+              <Text style={[styles.normalText, { marginBottom: 10 }]}>
+                Use your wedge chart to hit more greens
+              </Text>
+            </View>
+
+            <WedgeChart isShowButtons={false} />
+
+            <Chevrons heading='Benefits' points={benefits} />
+
+          </View>
+        )}
+
+      </ScrollView>
+    </GestureHandlerRootView>
+  )
+}

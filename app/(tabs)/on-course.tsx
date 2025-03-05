@@ -102,6 +102,14 @@ export default function Course() {
                 Manage your expectations, better!
               </Text>
             </View>
+            <View>
+              <Text style={[styles.subHeaderText, { marginTop: 10 }]}>
+                Approach shots
+              </Text>
+              <Text style={styles.normalText}>
+                Average proximity to the hole
+              </Text>
+            </View>
           </View>
         )}
 

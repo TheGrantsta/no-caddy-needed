@@ -77,4 +77,15 @@ describe('Course page ', () => {
 
         expect(getByText('Manage your expectations, better!')).toBeTruthy();
     });
+
+    it('renders correctly with stats approach shot proximity', () => {
+        const { getByTestId, getByText } = render(<View />);
+
+        const subMenuItem = getByTestId('on-course-sub-menu-stats');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Approach shots')).toBeTruthy();
+        expect(getByText('Average proximity to the hole')).toBeTruthy();
+    });
 });

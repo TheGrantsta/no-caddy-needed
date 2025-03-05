@@ -8,10 +8,20 @@ import styles from '../../assets/stlyes';
 import colours from '../../assets/colours';
 
 export default function Course() {
-  const points = ['Target: centre of the green', 'Aim: play for your shot shape *', 'Yardage: closer to the back edge'];
-  const benefits = ['Improve distance control', 'Better course management', 'Eliminate guesswork'];
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('approach');
+  const points = ['Target: centre of the green', 'Aim: play for your shot shape *', 'Yardage: closer to the back edge'];
+  const benefits = ['Improve distance control', 'Better course management', 'Eliminate guesswork'];
+
+  const getApproachShotStats = () => {
+    const approachStats: any[][] = [];
+    approachStats.push(['Distance', 'Fairway', 'Rough']);
+    approachStats.push(['125-150', '23"6\'', '37"9\'']);
+    approachStats.push(['100-125', '20"3\'', '32"9\'']);
+    approachStats.push(['75-100', '17"9\'', '27"8\'']);
+    approachStats.push(['50-75', '15"11\'', '24"6\'']);
+    return approachStats;
+  };
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -102,6 +112,8 @@ export default function Course() {
                 Manage your expectations, better!
               </Text>
             </View>
+
+            {/* Approach shot stats */}
             <View>
               <Text style={[styles.subHeaderText, { marginTop: 10 }]}>
                 Approach shots
@@ -109,6 +121,21 @@ export default function Course() {
               <Text style={styles.normalText}>
                 Average proximity to the hole
               </Text>
+              <View style={styles.table}>
+                {
+                  getApproachShotStats().map((row, rowIndex) => (
+                    <View key={rowIndex} style={styles.row}>
+                      {row.map((cell, colIndex) => (
+                        <Text key={colIndex}
+                          style={[styles.cell,
+                          rowIndex === 0 ? styles.header : colIndex === 0 ? styles.bold : '']}>
+                          {cell}
+                        </Text>
+                      ))}
+                    </View>
+                  ))
+                }
+              </View>
             </View>
           </View>
         )}

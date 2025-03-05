@@ -87,5 +87,8 @@ describe('Course page ', () => {
 
         expect(getByText('Approach shots')).toBeTruthy();
         expect(getByText('Average proximity to the hole')).toBeTruthy();
+        expect(getByText('Distance')).toBeTruthy();
+        expect(getByText('Fairway')).toBeTruthy();
+        expect(getByText('Rough')).toBeTruthy();
     });
 });

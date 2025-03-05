@@ -78,6 +78,22 @@ describe('Course page ', () => {
         expect(getByText('Manage your expectations, better!')).toBeTruthy();
     });
 
+    it('renders correctly with stats buttons for approach shots and putting', () => {
+        const { getByTestId, getByText } = render(<View />);
+
+        const subMenuItem = getByTestId('on-course-sub-menu-stats');
+
+        fireEvent.press(subMenuItem);
+
+        const button = getByTestId('stats-approach-shots-button');
+
+        fireEvent.press(button);
+
+        expect(getByText('Approach shots')).toBeTruthy();
+        expect(getByText('Putting')).toBeTruthy();
+    });
+
+
     it('renders correctly with stats approach shot proximity', () => {
         const { getByTestId, getByText } = render(<View />);
 

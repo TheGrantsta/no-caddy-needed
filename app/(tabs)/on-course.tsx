@@ -6,10 +6,12 @@ import SubMenu from '../../components/SubMenu';
 import WedgeChart from '../../components/WedgeChart';
 import styles from '../../assets/stlyes';
 import colours from '../../assets/colours';
+import SmallButton from '@/components/SmallButton';
 
 export default function Course() {
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('approach');
+  const [statsApproach, setStatsApproach] = useState(true);
   const points = ['Target: centre of the green', 'Aim: play for your shot shape *', 'Yardage: closer to the back edge'];
   const benefits = ['Improve distance control', 'Better course management', 'Eliminate guesswork'];
 
@@ -38,6 +40,10 @@ export default function Course() {
 
   const displaySection = (sectionName: string) => {
     return section === sectionName;
+  };
+
+  const handleStatsButton = () => {
+
   };
 
   return (
@@ -113,30 +119,39 @@ export default function Course() {
               </Text>
             </View>
 
+            {/* Buttons to toggle between approach shots and putting */}
+            <SmallButton testId='stats-approach-shots-button' label='Approach' onPress={() => handleStatsButton()} />
+            <SmallButton testId='stats-putting-button' label='Putting' onPress={() => handleStatsButton()} />
+
             {/* Approach shot stats */}
-            <View>
-              <Text style={[styles.subHeaderText, { marginTop: 10 }]}>
-                Approach shots
-              </Text>
-              <Text style={styles.normalText}>
-                Average proximity to the hole
-              </Text>
-              <View style={styles.table}>
-                {
-                  getApproachShotStats().map((row, rowIndex) => (
-                    <View key={rowIndex} style={styles.row}>
-                      {row.map((cell, colIndex) => (
-                        <Text key={colIndex}
-                          style={[styles.cell,
-                          rowIndex === 0 ? styles.header : colIndex === 0 ? styles.bold : '']}>
-                          {cell}
-                        </Text>
-                      ))}
-                    </View>
-                  ))
-                }
+            {statsApproach && (
+              <View>
+                <Text style={[styles.subHeaderText, { marginTop: 10 }]}>
+                  Approach shots
+                </Text>
+                <Text style={styles.normalText}>
+                  Average proximity to the hole
+                </Text>
+                <View style={styles.table}>
+                  {
+                    getApproachShotStats().map((row, rowIndex) => (
+                      <View key={rowIndex} style={styles.row}>
+                        {row.map((cell, colIndex) => (
+                          <Text key={colIndex}
+                            style={[styles.cell,
+                            rowIndex === 0 ? styles.header : colIndex === 0 ? styles.bold : '']}>
+                            {cell}
+                          </Text>
+                        ))}
+                      </View>
+                    ))
+                  }
+                </View>
               </View>
-            </View>
+            )}
+
+            {/* Putting stats */}
+
           </View>
         )}
 

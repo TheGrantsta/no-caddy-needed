@@ -91,6 +91,20 @@ export default function Course() {
           </View>
         )}
 
+        {/* Wedge chart */}
+        {displaySection('stats') && (
+          <View style={styles.container}>
+            <View style={styles.headerContainer}>
+              <Text style={[styles.headerText, { marginTop: 10 }]}>
+                On course
+              </Text>
+              <Text style={[styles.normalText, { marginBottom: 10 }]}>
+                Manage your expectations, better!
+              </Text>
+            </View>
+          </View>
+        )}
+
       </ScrollView>
     </GestureHandlerRootView>
   )

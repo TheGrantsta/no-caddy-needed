@@ -56,4 +56,25 @@ describe('Course page ', () => {
         expect(getByText('Use your wedge chart to hit more greens')).toBeTruthy();
         expect(getByText('Benefits')).toBeTruthy();
     });
+
+    it('renders correctly with wedge chart heading', () => {
+        const { getByTestId, getByText } = render(<View />);
+
+        const subMenuItem = getByTestId('on-course-sub-menu-wedge-chart');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Use your wedge chart to hit more greens')).toBeTruthy();
+        expect(getByText('Benefits')).toBeTruthy();
+    });
+
+    it('renders correctly with stats heading', () => {
+        const { getByTestId, getByText } = render(<View />);
+
+        const subMenuItem = getByTestId('on-course-sub-menu-stats');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Manage your expectations, better!')).toBeTruthy();
+    });
 });

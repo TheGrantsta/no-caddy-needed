@@ -25,6 +25,32 @@ export default function Course() {
     return approachStats;
   };
 
+  const getPuttingStats = () => {
+    const puttingStats: any[][] = [];
+    puttingStats.push(['Distance (feet)', 'Make rate']);
+    puttingStats.push(['1', '100%']);
+    puttingStats.push(['2', '99%']);
+    puttingStats.push(['3', '95%']);
+    puttingStats.push(['4', '86%']);
+    puttingStats.push(['5', '75%']);
+    puttingStats.push(['6', '65%']);
+    puttingStats.push(['7', '56%']);
+    puttingStats.push(['8', '49%']);
+    puttingStats.push(['9', '43%']);
+    puttingStats.push(['10', '38%']);
+    puttingStats.push(['15', '22%']);
+    puttingStats.push(['20', '14%']);
+    puttingStats.push(['25', '10%']);
+    puttingStats.push(['30', '7%']);
+    puttingStats.push(['35', '5%']);
+    puttingStats.push(['Inflection point: more likely to 3 putt'])
+    puttingStats.push(['40', '3%']);
+    puttingStats.push(['45', '2%']);
+    puttingStats.push(['50', '1%']);
+
+    return puttingStats;
+  };
+
   const onRefresh = () => {
     setRefreshing(true);
 
@@ -153,7 +179,34 @@ export default function Course() {
             )}
 
             {/* Putting stats */}
-
+            {!statsApproach && (
+              <View>
+                <Text testID='stats-putting-heading' style={[styles.subHeaderText, { marginTop: 10 }]}>
+                  Putts
+                </Text>
+                <Text style={styles.normalText}>
+                  Professional male golfer make percentages
+                </Text>
+                <View style={styles.table}>
+                  {
+                    getPuttingStats().map((row, rowIndex) => (
+                      <View key={rowIndex} style={styles.row}>
+                        {row.map((cell, colIndex) => (
+                          <Text key={colIndex} style={[styles.cell, rowIndex === 0 ? styles.header : rowIndex % 2 === 0 ? '' : styles.alternateRow]}>
+                            {cell}
+                          </Text>
+                        ))}
+                      </View>
+                    ))
+                  }
+                </View>
+                <View>
+                  <Text style={[styles.smallestText, { paddingBottom: 100 }]}>
+                    Source: <Text style={{ fontStyle: 'italic' }}>The Lost Art of Putting: Introducing the Six Putting Performance Principles</Text> by Gary Nicol & Karl Morris
+                  </Text>
+                </View>
+              </View>
+            )}
           </View>
         )}
 

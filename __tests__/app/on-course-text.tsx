@@ -102,4 +102,19 @@ describe('Course page ', () => {
         expect(getByText('Fairway')).toBeTruthy();
         expect(getByText('Rough')).toBeTruthy();
     });
+
+    it('renders correctly with stats putting make rates', () => {
+        const { getByTestId, getByText } = render(<View />);
+
+        const subMenuItem = getByTestId('on-course-sub-menu-stats');
+
+        fireEvent.press(subMenuItem);
+
+        const button = getByTestId('stats-putting-button');
+
+        fireEvent.press(button);
+
+        expect(getByText('Distance (feet)')).toBeTruthy();
+        expect(getByText('Make rate')).toBeTruthy();
+    });
 });

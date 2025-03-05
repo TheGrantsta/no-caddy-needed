@@ -35,8 +35,15 @@ describe('Course page ', () => {
 
         expect(getByText('Approach shots')).toBeTruthy();
         expect(getByText('Target: centre of the green')).toBeTruthy();
-        expect(getByText('Aim: play for your shot shape')).toBeTruthy();
+        expect(getByText('Aim: play for your shot shape *')).toBeTruthy();
         expect(getByText('Yardage: closer to the back edge')).toBeTruthy();
+    });
+
+    it('renders approach tendencies', () => {
+        const { getByText } = render(<View />);
+
+        expect(getByText('* Your shot shape might be different with different clubs; for example, do you draw your wedges and fade your mid-irons?')).toBeTruthy();
+        expect(getByText('Know your tendencies including when hitting full & partial shots')).toBeTruthy();
     });
 
     it('renders correctly with wedge chart heading', () => {

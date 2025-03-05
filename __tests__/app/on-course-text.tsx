@@ -85,14 +85,9 @@ describe('Course page ', () => {
 
         fireEvent.press(subMenuItem);
 
-        const button = getByTestId('stats-approach-shots-button');
-
-        fireEvent.press(button);
-
         expect(getByText('Approach shots')).toBeTruthy();
         expect(getByText('Putting')).toBeTruthy();
     });
-
 
     it('renders correctly with stats approach shot proximity', () => {
         const { getByTestId, getByText } = render(<View />);

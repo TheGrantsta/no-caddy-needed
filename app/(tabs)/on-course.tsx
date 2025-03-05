@@ -43,7 +43,7 @@ export default function Course() {
   };
 
   const handleStatsButton = () => {
-
+    setStatsApproach(!statsApproach);
   };
 
   return (
@@ -120,8 +120,10 @@ export default function Course() {
             </View>
 
             {/* Buttons to toggle between approach shots and putting */}
-            <SmallButton testId='stats-approach-shots-button' label='Approach' onPress={() => handleStatsButton()} />
-            <SmallButton testId='stats-putting-button' label='Putting' onPress={() => handleStatsButton()} />
+            <View style={{ flexWrap: 'wrap', flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
+              <SmallButton testId='stats-approach-shots-button' label='Approach' onPress={() => handleStatsButton()} />
+              <SmallButton testId='stats-putting-button' label='Putting' onPress={() => handleStatsButton()} />
+            </View>
 
             {/* Approach shot stats */}
             {statsApproach && (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import View from '../../app/(tabs)/on-course';
 import { getWedgeChartService } from '../../service/DbService';
 
@@ -47,8 +47,13 @@ describe('Course page ', () => {
     });
 
     it('renders correctly with wedge chart heading', () => {
-        const { getByText } = render(<View />);
+        const { getByTestId, getByText } = render(<View />);
 
-        expect(getByText('Wedge chart')).toBeTruthy();
+        const subMenuItem = getByTestId('on-course-sub-menu-wedge-chart');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Use your wedge chart to hit more greens')).toBeTruthy();
+        expect(getByText('Benefits')).toBeTruthy();
     });
 });

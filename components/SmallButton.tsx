@@ -5,17 +5,18 @@ import fontSizes from '../assets/font-sizes';
 type Props = {
     testId: string;
     label: string;
+    selected: boolean;
     onPress?: () => void;
 };
 
-export default function SmallButton({ testId, label, onPress }: Props) {
+export default function SmallButton({ testId, label, selected, onPress }: Props) {
     return (
         <View style={styles.buttonContainer}>
             <Pressable
                 testID={testId}
-                style={styles.button}
+                style={[styles.button, selected ? styles.selected : '']}
                 onPress={onPress}>
-                <Text style={styles.buttonLabel}>
+                <Text style={[styles.buttonLabel, selected ? styles.selected : '']}>
                     {label}
                 </Text>
             </Pressable>
@@ -33,7 +34,9 @@ const styles = StyleSheet.create({
     },
     button: {
         borderRadius: 10,
-        backgroundColor: colours.yellow,
+        borderColor: colours.yellow,
+        borderWidth: 1,
+        backgroundColor: colours.mutedYellow,
         width: '100%',
         height: '100%',
         alignItems: 'center',
@@ -44,8 +47,12 @@ const styles = StyleSheet.create({
         paddingRight: 8,
     },
     buttonLabel: {
-        color: colours.background,
+        color: colours.text,
         fontSize: fontSizes.tableHeader,
         fontWeight: 'bold',
+    },
+    selected: {
+        color: colours.background,
+        backgroundColor: colours.yellow,
     },
 });

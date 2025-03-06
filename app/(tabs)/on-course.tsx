@@ -68,8 +68,8 @@ export default function Course() {
     return section === sectionName;
   };
 
-  const handleStatsButton = () => {
-    setStatsApproach(!statsApproach);
+  const handleStatsButton = (selected: boolean) => {
+    setStatsApproach(selected);
   };
 
   return (
@@ -147,8 +147,8 @@ export default function Course() {
 
             {/* Buttons to toggle between approach shots and putting */}
             <View style={{ flexWrap: 'wrap', flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
-              <SmallButton testId='stats-approach-shots-button' label='Approach' onPress={() => handleStatsButton()} />
-              <SmallButton testId='stats-putting-button' label='Putting' onPress={() => handleStatsButton()} />
+              <SmallButton testId='stats-approach-shots-button' label='Approach' selected={statsApproach} onPress={() => handleStatsButton(true)} />
+              <SmallButton testId='stats-putting-button' label='Putting' selected={!statsApproach} onPress={() => handleStatsButton(false)} />
             </View>
 
             {/* Approach shot stats */}

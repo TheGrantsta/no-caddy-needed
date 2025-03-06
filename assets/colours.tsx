@@ -3,6 +3,7 @@ export default {
     white: '#fff',
     black: '#000',
     yellow: '#ffd33d',
+    mutedYellow: '#e6be36',
     errorText: '#fd0303',
     background: '#25292e',
     backgroundLight: '#fff',

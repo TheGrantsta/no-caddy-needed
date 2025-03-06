@@ -13,7 +13,7 @@ function Chevrons({ heading, points }: Props): React.JSX.Element {
     return (
         <View>
             <View style={styles.viewContainer}>
-                <Text style={styles.subHeaderText}>
+                <Text style={[styles.subHeaderText, { width: '100%' }]}>
                     {heading}
                 </Text>
             </View>

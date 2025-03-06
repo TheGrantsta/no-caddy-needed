@@ -133,8 +133,8 @@ export default function Course() {
           </View>
         )}
 
-        {/* Wedge chart */}
-        {displaySection('stats') && (
+        {/* Pros stats */}
+        {displaySection('pros') && (
           <View style={styles.container}>
             <View style={styles.headerContainer}>
               <Text style={[styles.headerText, { marginTop: 10 }]}>

@@ -71,7 +71,7 @@ describe('Course page ', () => {
     it('renders correctly with stats heading', () => {
         const { getByTestId, getByText } = render(<View />);
 
-        const subMenuItem = getByTestId('on-course-sub-menu-stats');
+        const subMenuItem = getByTestId('on-course-sub-menu-pro-stats');
 
         fireEvent.press(subMenuItem);
 
@@ -81,7 +81,7 @@ describe('Course page ', () => {
     it('renders correctly with stats buttons for approach shots and putting', () => {
         const { getByTestId, getByText } = render(<View />);
 
-        const subMenuItem = getByTestId('on-course-sub-menu-stats');
+        const subMenuItem = getByTestId('on-course-sub-menu-pro-stats');
 
         fireEvent.press(subMenuItem);
 
@@ -92,7 +92,7 @@ describe('Course page ', () => {
     it('renders correctly with stats approach shot proximity', () => {
         const { getByTestId, getByText } = render(<View />);
 
-        const subMenuItem = getByTestId('on-course-sub-menu-stats');
+        const subMenuItem = getByTestId('on-course-sub-menu-pro-stats');
 
         fireEvent.press(subMenuItem);
 
@@ -106,7 +106,7 @@ describe('Course page ', () => {
     it('renders correctly with stats putting make rates', () => {
         const { getByTestId, getByText } = render(<View />);
 
-        const subMenuItem = getByTestId('on-course-sub-menu-stats');
+        const subMenuItem = getByTestId('on-course-sub-menu-pro-stats');
 
         fireEvent.press(subMenuItem);
 

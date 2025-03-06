@@ -14,7 +14,8 @@ const allSubMenuItems = [
     { testId: 'practice-sub-menu-general', name: 'general', title: 'General' },
     { testId: 'on-course-sub-menu-approach', name: 'approach', title: 'Approach' },
     { testId: 'on-course-sub-menu-wedge-chart', name: 'wedge-chart', title: 'Wedge chart' },
-    { testId: 'on-course-sub-menu-stats', name: 'stats', title: 'Stats' },
+    { testId: 'on-course-sub-menu-pro-stats', name: 'pros', title: 'Pros' },
+    { testId: 'on-course-sub-menu-your-stats', name: 'stats', title: 'Stats' },
 ]
 
 const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {
@@ -52,6 +53,10 @@ const localStyles = StyleSheet.create({
         fontSize: fontSizes.normal,
     },
     subMenuItemSelected: {
-        fontWeight: 'bold'
+        textDecorationLine: 'underline',
+        textDecorationColor: colours.yellow,
+        textDecorationStyle: 'solid',
+        color: colours.yellow,
+        fontSize: fontSizes.normal,
     }
 });

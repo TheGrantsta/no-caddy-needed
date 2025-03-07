@@ -36,11 +36,14 @@ export default function HomeScreen() {
           tintColor={colours.yellow} />
       }>
         <View style={styles.viewContainer}>
-          <Text style={[styles.subHeaderText, styles.marginTop]}>
+          <Text style={[styles.headerText, styles.marginTop]}>
             No caddy needed!
           </Text>
           <Text style={[styles.normalText, styles.marginBottom]}>
             Golfers seeking smarter practice & setting better on course expectations
+          </Text>
+          <Text style={styles.subHeaderText}>
+            Be your own best caddy
           </Text>
 
           <View style={[styles.iconsContainer, styles.marginTop]}>

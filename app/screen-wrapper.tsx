@@ -9,9 +9,8 @@ const ScreenWrapper = ({ children }: any) => {
 const localStyles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 10,
-        paddingLeft: 20,
-        paddingRight: 20,
+        paddingLeft: 10,
+        paddingRight: 10,
         backgroundColor: colours.background,
     },
 });

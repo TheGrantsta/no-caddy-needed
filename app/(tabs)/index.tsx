@@ -21,51 +21,49 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScreenWrapper>
-      <GestureHandlerRootView style={styles.flexOne}>
-        {refreshing && (
-          <View style={styles.updateOverlay}>
-            <Text style={styles.updateText}>
-              Release to update
-            </Text>
+    <GestureHandlerRootView style={styles.flexOne}>
+      {refreshing && (
+        <View style={styles.updateOverlay}>
+          <Text style={styles.updateText}>
+            Release to update
+          </Text>
+        </View>
+      )}
+      <ScrollView style={styles.scrollContainer} refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={colours.yellow} />
+      }>
+        <View style={styles.viewContainer}>
+          <Text style={[styles.subHeaderText, styles.marginTop]}>
+            No caddy needed!
+          </Text>
+          <Text style={[styles.normalText, styles.marginBottom]}>
+            Golfers seeking smarter practice & setting better on course expectations
+          </Text>
+
+          <View style={[styles.iconsContainer, styles.marginTop]}>
+            <Link href='/practice'>
+              <View style={styles.iconContainer}>
+                <IconButton iconName='golf-course' label='Practice' size='medium' />
+              </View>
+            </Link>
+            <Link href='/on-course'>
+              <View style={styles.iconContainer}>
+                <IconButton iconName='sports-golf' label='On course' size='medium' />
+              </View>
+            </Link>
           </View>
-        )}
-        <ScrollView style={styles.scrollContainer} refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={colours.yellow} />
-        }>
-          <View style={styles.viewContainer}>
-            <Text style={[styles.subHeaderText, styles.marginTop]}>
-              No caddy needed!
-            </Text>
-            <Text style={[styles.normalText, styles.marginBottom]}>
-              Golfers seeking smarter practice & setting better on course expectations
-            </Text>
 
-            <View style={[styles.iconsContainer, styles.marginTop]}>
-              <Link href='/practice'>
-                <View style={styles.iconContainer}>
-                  <IconButton iconName='golf-course' label='Practice' size='medium' />
-                </View>
-              </Link>
-              <Link href='/on-course'>
-                <View style={styles.iconContainer}>
-                  <IconButton iconName='sports-golf' label='On course' size='medium' />
-                </View>
-              </Link>
-            </View>
+          <Chevrons heading='Golf - get the ball in the hole in the fewest shots by:' points={points} />
 
-            <Chevrons heading='Golf - get the ball in the hole in the fewest shots by:' points={points} />
+          <Text style={[styles.normalText, styles.marginTop]}>
+            Golf is not a game of perfect, or having a perfect swing
+          </Text>
 
-            <Text style={[styles.normalText, styles.marginTop]}>
-              Golf is not a game of perfect, or having a perfect swing
-            </Text>
-
-          </View>
-        </ScrollView>
-      </GestureHandlerRootView>
-    </ScreenWrapper>
+        </View>
+      </ScrollView>
+    </GestureHandlerRootView>
   );
 }

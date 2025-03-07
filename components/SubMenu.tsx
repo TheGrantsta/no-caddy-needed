@@ -44,9 +44,9 @@ const localStyles = StyleSheet.create({
         paddingBottom: 5,
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        borderBottomColor: colours.backgroundLight,
+        borderBottomColor: colours.yellow,
         borderBottomWidth: 0.5,
-        backgroundColor: colours.background
+        backgroundColor: colours.background,
     },
     subMenuItem: {
         color: colours.yellow,

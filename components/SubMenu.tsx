@@ -15,7 +15,7 @@ const allSubMenuItems = [
     { testId: 'on-course-sub-menu-approach', name: 'approach', title: 'Approach' },
     { testId: 'on-course-sub-menu-wedge-chart', name: 'wedge-chart', title: 'Wedge chart' },
     { testId: 'on-course-sub-menu-pro-stats', name: 'pros', title: 'Pros' },
-    { testId: 'on-course-sub-menu-your-stats', name: 'stats', title: 'Stats' },
+    // { testId: 'on-course-sub-menu-your-stats', name: 'stats', title: 'Stats' },
 ]
 
 const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {

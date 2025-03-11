@@ -55,6 +55,12 @@ export default function Practice() {
                 Make your practice time more effective
               </Text>
             </View>
+
+            <View style={styles.viewContainer}>
+              <Text style={[styles.subHeaderText, styles.marginTop]}>
+                Short game practice
+              </Text>
+            </View>
           </View>
         )}
 

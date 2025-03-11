@@ -18,5 +18,6 @@ describe('Practice page ', () => {
 
         expect(getByText('Practice')).toBeTruthy();
         expect(getByText('Make your practice time more effective')).toBeTruthy();
+        expect(getByText('Short game practice')).toBeTruthy();
     });
 });

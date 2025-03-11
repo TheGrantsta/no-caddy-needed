@@ -98,7 +98,7 @@ export default function Course() {
               <Text style={[styles.headerText, styles.marginTop]}>
                 On course
               </Text>
-              <Text style={[styles.normalText, styles.marginBottom, { padding: 10 }]}>
+              <Text style={[styles.normalText, styles.marginBottom]}>
                 Make better on course decisions & choose better targets
               </Text>
 
@@ -207,6 +207,20 @@ export default function Course() {
                 </View>
               </View>
             )}
+          </View>
+        )}
+
+        {/* Putting stats */}
+        {displaySection('stats') && (
+          <View style={styles.container}>
+            <View style={styles.headerContainer}>
+              <Text style={[styles.headerText, { marginTop: 10 }]}>
+                On course
+              </Text>
+              <Text style={[styles.normalText, { marginBottom: 10 }]}>
+                Stats you should be tracking!
+              </Text>
+            </View>
           </View>
         )}
 

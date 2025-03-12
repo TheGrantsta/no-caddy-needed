@@ -21,7 +21,7 @@ export default function RootLayout() {
 
   const LogoTitle = () => (
     <Image
-      source={require("../assets/images/logo.png")}
+      source={require("../assets/images/FullLogo_Transparent_NoBuffer.png")}
       style={{ width: 120, height: 40, resizeMode: "contain" }}
     />
   );

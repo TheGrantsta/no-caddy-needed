@@ -3,7 +3,7 @@ import colours from '../assets/colours';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
-    showSubMenu: 'practice' | 'on-course';
+    showSubMenu: 'practice' | 'on-course' | 'putting';
     selectedItem: string;
     handleSubMenu: (arg: string) => void;
 }
@@ -16,6 +16,8 @@ const allSubMenuItems = [
     { testId: 'on-course-sub-menu-wedge-chart', name: 'wedge-chart', title: 'Wedge chart' },
     { testId: 'on-course-sub-menu-pro-stats', name: 'pros', title: 'Pros' },
     // { testId: 'on-course-sub-menu-your-stats', name: 'stats', title: 'Stats' },
+    { testId: 'putting-sub-menu-putting-drills', name: 'putting-drills', title: 'Drills' },
+    { testId: 'putting-sub-menu-putting-games', name: 'putting-games', title: 'Games' },
 ]
 
 const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {

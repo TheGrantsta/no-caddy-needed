@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
 import View from '../../app/(tabs)/practice';
 
 jest.mock('react-native-gesture-handler', () => {

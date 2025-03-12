@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import styles from "@/assets/stlyes";
 import colours from "@/assets/colours";
 
-export default function Putting() {
+export default function Bunker() {
     const [refreshing, setRefreshing] = useState(false);
 
     const onRefresh = () => {
@@ -32,12 +32,12 @@ export default function Putting() {
                     onRefresh={onRefresh}
                     tintColor={colours.yellow} />
             }>
-                {/* Drills */}
+                {/* Drill */}
                 {/* {displaySection('short-game') && ( */}
                 <View style={styles.container}>
                     <View style={styles.headerContainer}>
                         <Text style={[styles.headerText, styles.marginTop]}>
-                            Putting drills
+                            Bunker drills
                         </Text>
 
                     </View>

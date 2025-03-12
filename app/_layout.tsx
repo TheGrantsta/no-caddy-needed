@@ -76,6 +76,39 @@ export default function RootLayout() {
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen
+          name="short-game/chipping"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="short-game/pitching"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="short-game/bunker"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
           name="+not-found"
           options={{
             headerTitle: () => <LogoTitle />,

@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import styles from "@/assets/stlyes";
 import colours from "@/assets/colours";
 
-export default function Putting() {
+export default function Pitching() {
     const [refreshing, setRefreshing] = useState(false);
 
     const onRefresh = () => {
@@ -37,7 +37,7 @@ export default function Putting() {
                 <View style={styles.container}>
                     <View style={styles.headerContainer}>
                         <Text style={[styles.headerText, styles.marginTop]}>
-                            Putting drills
+                            Pitching drills
                         </Text>
 
                     </View>

@@ -65,6 +65,17 @@ export default function RootLayout() {
             },
           }} />
         <Stack.Screen
+          name="short-game/putting"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
           name="+not-found"
           options={{
             headerTitle: () => <LogoTitle />,

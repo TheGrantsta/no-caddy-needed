@@ -28,4 +28,15 @@ describe('Putting page ', () => {
 
         expect(getByText('Putting games')).toBeTruthy();
     });
+
+    it('renders correctly with the games', () => {
+        const { getByText, getByTestId } = render(<View />);
+
+        const subMenuItem = getByTestId('putting-sub-menu-putting-games');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Around the world!')).toBeTruthy();
+        expect(getByText('Ladder challenge!')).toBeTruthy();
+    });
 });

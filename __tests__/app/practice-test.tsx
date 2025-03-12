@@ -20,4 +20,13 @@ describe('Practice page ', () => {
         expect(getByText('Make your practice time more effective')).toBeTruthy();
         expect(getByText('Short game practice')).toBeTruthy();
     });
+
+    it('renders correctly short game options', () => {
+        const { getByText } = render(<View />);
+
+        expect(getByText('Putting')).toBeTruthy();
+        expect(getByText('Chipping')).toBeTruthy();
+        expect(getByText('Pitching')).toBeTruthy();
+        expect(getByText('Bunker play')).toBeTruthy();
+    });
 });

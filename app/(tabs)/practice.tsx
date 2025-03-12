@@ -4,6 +4,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import styles from "@/assets/stlyes";
 import colours from "@/assets/colours";
 import SubMenu from "@/components/SubMenu";
+import { Link } from "expo-router";
+import IconButton from "@/components/IconButton";
 
 export default function Practice() {
   const [refreshing, setRefreshing] = useState(false);
@@ -60,6 +62,32 @@ export default function Practice() {
               <Text style={[styles.subHeaderText, styles.marginTop]}>
                 Short game practice
               </Text>
+
+              <View style={styles.iconsContainer}>
+                <Link href='../short-game/putting'>
+                  <View style={styles.iconContainer}>
+                    <IconButton iconName='adjust' label='Putting' size='medium' />
+                  </View>
+                </Link>
+
+                <Link href='../short-game/chipping'>
+                  <View style={styles.iconContainer}>
+                    <IconButton iconName='filter-tilt-shift' label='Chipping' size='medium' />
+                  </View>
+                </Link>
+
+                <Link href='../short-game/pitching'>
+                  <View style={styles.iconContainer}>
+                    <IconButton iconName='golf-course' label='Pitching' size='medium' />
+                  </View>
+                </Link>
+
+                <Link href='../short-game/bunker'>
+                  <View style={styles.iconContainer}>
+                    <IconButton iconName='beach-access' label='Bunker play' size='medium' />
+                  </View>
+                </Link>
+              </View>
             </View>
           </View>
         )}

@@ -64,7 +64,15 @@ export default function RootLayout() {
               backgroundColor: colours.yellow,
             },
           }} />
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen
+          name="+not-found"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+          }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

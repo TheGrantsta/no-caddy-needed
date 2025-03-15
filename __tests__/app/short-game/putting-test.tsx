@@ -19,6 +19,13 @@ describe('Putting page ', () => {
         expect(getByText('Putting drills')).toBeTruthy();
     });
 
+    it('renders correctly the putting drills', () => {
+        const { getByText } = render(<View />);
+
+        expect(getByText('Clock')).toBeTruthy();
+        // expect(getByText('Ladder')).toBeTruthy();
+    });
+
     it('renders correctly with the games heading', () => {
         const { getByText, getByTestId } = render(<View />);
 

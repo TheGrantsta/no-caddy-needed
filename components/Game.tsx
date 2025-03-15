@@ -1,7 +1,8 @@
-import colours from '@/assets/colours';
-import styles from '@/assets/stlyes';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Instructions from './Instructions';
+import colours from '@/assets/colours';
+import styles from '@/assets/stlyes';
 
 type Props = {
     subHeading: string;
@@ -21,15 +22,8 @@ export default function Game({ subHeading, games }: Props) {
                     <Text style={styles.subHeaderText}>
                         {game.header}
                     </Text>
-                    <Text style={[styles.normalText, localStyles.contentText]}>
-                        <Text style={styles.yellowText}>Objective:</Text> {game.objective}
-                    </Text>
-                    <Text style={[styles.normalText, localStyles.contentText]}>
-                        <Text style={styles.yellowText}>Setup:</Text> {game.setup}
-                    </Text>
-                    <Text style={[styles.normalText, localStyles.contentText]}>
-                        <Text style={styles.yellowText}>How to play:</Text> {game.howToPlay}
-                    </Text>
+
+                    <Instructions objective={game.objective} setUp={game.setup} howToPlay={game.howToPlay} />
                 </View>
             ))}
         </View>
@@ -42,9 +36,5 @@ const localStyles = StyleSheet.create({
         borderRadius: 10,
         borderColor: colours.border,
         borderWidth: 1,
-    },
-    contentText: {
-        padding: 5,
-        margin: 5,
     },
 });

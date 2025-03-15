@@ -47,6 +47,12 @@ const styles = StyleSheet.create({
     iconContainer: {
         padding: 15,
     },
+    wrapper: {
+        borderColor: colours.border,
+        borderWidth: 2,
+        borderRadius: 10,
+        marginTop: 10
+    },
     headerText: {
         color: colours.yellow,
         fontSize: fontSizes.header,

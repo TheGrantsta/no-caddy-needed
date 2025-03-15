@@ -12,6 +12,26 @@ export const initialize = async () => {
     `);
 };
 
+export const insertDrillResult = async (name: string, result: boolean) => {
+    let success = true;
+    const db = await SQLite.openDatabaseAsync(dbName);
+
+    const statement = await db.prepareAsync(
+        'INSERT INTO Drills (Name, Result, Created_At) VALUES ($Name, $Result, $Created_At);'
+    );
+
+    try {
+        await statement.executeAsync({ $Name: name, $Result: result, $Created_At: new Date().toISOString() });
+    } catch (e) {
+        console.log(e);
+        success = false;
+    } finally {
+        await statement.finalizeAsync();
+    }
+
+    return success;
+};
+
 export const getWedgeChart = () => {
     const sqlStatement = 'SELECT * FROM WedgeChart ORDER BY FullSwing DESC;';
 

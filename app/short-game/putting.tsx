@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 import SubMenu from "@/components/SubMenu";
+import Toast from 'react-native-toast-message';
 import Game from "@/components/Game";
 import Drill from "@/components/Drill";
 import styles from "@/assets/stlyes";
 import colours from "@/assets/colours";
-import fontSizes from "@/assets/font-sizes";
 
 export default function Putting() {
     const [refreshing, setRefreshing] = useState(false);
@@ -22,12 +22,19 @@ export default function Putting() {
     };
 
     const saveDrillResultHandle = (label: string, result: boolean) => {
-        // setMessageVisible(true);
+        //insert result - show success or failure
+        // insertDrillResultService(label, result);
 
-        setTimeout(() => {
-            // insertDrillResultService(label, result);
-            // setMessageVisible(false);
-        }, 750);
+        Toast.show({
+            type: 'success',
+            text1: 'Drill result saved',
+            text2: `${label} ${result ? 'met' : 'not met'}`,
+            position: 'bottom',
+            visibilityTime: 2500,
+            autoHide: true,
+            topOffset: 30,
+            bottomOffset: 40,
+        })
     };
 
     const onRefresh = () => {
@@ -99,27 +106,30 @@ export default function Putting() {
                     onRefresh={onRefresh}
                     tintColor={colours.yellow} />
             }>
+
                 {/* Drills */}
-                {displaySection('putting-drills') && (
-                    <View style={styles.container}>
-                        <View style={styles.headerContainer}>
-                            <Text style={[styles.headerText, styles.marginTop]}>
-                                Putting drills
-                            </Text>
-                            <Text style={[styles.normalText, { margin: 5 }]}>
-                                Improve your mechanics and accuracy through focused, repetitive actions.
-                            </Text>
+                {
+                    displaySection('putting-drills') && (
+                        <View style={styles.container}>
+                            <View style={styles.headerContainer}>
+                                <Text style={[styles.headerText, styles.marginTop]}>
+                                    Putting drills
+                                </Text>
+                                <Text style={[styles.normalText, { margin: 5 }]}>
+                                    Improve your mechanics and accuracy through focused, repetitive actions.
+                                </Text>
+                            </View>
+                            <View>
+                                {/* Drills */}
+                                {drills.map((drill: any, index: number) => (
+                                    <View key={index}>
+                                        <Drill label={drill.label} iconName={drill.iconName} target={drill.target} objective={drill.objective} setUp={drill.setup} howToPlay={drill.howToPlay} saveDrillResult={saveDrillResultHandle} />
+                                    </View>
+                                ))}
+                            </View>
                         </View>
-                        <View>
-                            {/* Drills */}
-                            {drills.map((drill: any, index: number) => (
-                                <View key={index}>
-                                    <Drill label={drill.label} iconName={drill.iconName} target={drill.target} objective={drill.objective} setUp={drill.setup} howToPlay={drill.howToPlay} saveDrillResult={saveDrillResultHandle} />
-                                </View>
-                            ))}
-                        </View>
-                    </View>
-                )}
+                    )
+                }
 
                 {/* Games */}
                 {
@@ -136,42 +146,9 @@ export default function Putting() {
                         </View>
                     )
                 }
-            </ScrollView >
 
+                <Toast />
+            </ScrollView >
         </GestureHandlerRootView >
     )
 };
-
-const localStyles = StyleSheet.create({
-    contentText: {
-        marginTop: 5,
-        marginRight: 10,
-        fontSize: fontSizes.normal,
-        color: colours.white,
-    },
-    toggleWrapper: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: 150,
-    },
-    toggleContainer: {
-        width: 45,
-        height: 15,
-        borderRadius: 10,
-        backgroundColor: colours.backgroundLight,
-        justifyContent: 'center',
-    },
-    toggleOn: {
-        backgroundColor: colours.yellow,
-    },
-    toggleCircle: {
-        width: 20,
-        height: 20,
-        borderRadius: 10,
-        backgroundColor: colours.backgroundLight,
-        alignSelf: 'flex-start',
-    },
-    circleOn: {
-        alignSelf: 'flex-end',
-    },
-});

@@ -1,5 +1,6 @@
 import {
     getWedgeChart,
+    insertDrillResult,
     insertWedgeChart,
 } from '../database/db';
 
@@ -17,3 +18,7 @@ export const getWedgeChartService = () => {
 export const insertWedgeChartService = (wedgeChart: any) => {
     insertWedgeChart(wedgeChart);
 };
+
+export const insertDrillResultService = async (name: any, result: boolean) => {
+    return insertDrillResult(name, result);
+}

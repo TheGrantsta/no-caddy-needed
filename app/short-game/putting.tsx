@@ -2,12 +2,15 @@ import { useState } from "react";
 import { RefreshControl, ScrollView, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
+
 import SubMenu from "@/components/SubMenu";
 import Toast from 'react-native-toast-message';
 import Game from "@/components/Game";
 import Drill from "@/components/Drill";
 import styles from "@/assets/stlyes";
 import colours from "@/assets/colours";
+import { insertDrillResultService } from "@/service/DbService";
+
 
 export default function Putting() {
     const [refreshing, setRefreshing] = useState(false);
@@ -22,19 +25,18 @@ export default function Putting() {
     };
 
     const saveDrillResultHandle = (label: string, result: boolean) => {
-        //insert result - show success or failure
-        // insertDrillResultService(label, result);
-
-        Toast.show({
-            type: 'success',
-            text1: 'Drill result saved',
-            text2: `${label} ${result ? 'met' : 'not met'}`,
-            position: 'bottom',
-            visibilityTime: 2500,
-            autoHide: true,
-            topOffset: 30,
-            bottomOffset: 40,
-        })
+        insertDrillResultService(label, result).then((success) => {
+            Toast.show({
+                type: success ? 'success' : 'error',
+                text1: 'Drill result saved',
+                text2: `${label} ${result ? 'met' : 'not met'}`,
+                position: 'bottom',
+                visibilityTime: 2500,
+                autoHide: true,
+                topOffset: 30,
+                bottomOffset: 40,
+            })
+        });
     };
 
     const onRefresh = () => {

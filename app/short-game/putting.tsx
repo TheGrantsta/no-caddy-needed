@@ -1,21 +1,20 @@
-import { useEffect, useState } from "react";
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
-
+import { useToast } from 'react-native-toast-notifications';
+import { insertDrillResultService } from "@/service/DbService";
 import SubMenu from "@/components/SubMenu";
-import Toast, { BaseToast } from 'react-native-toast-message';
 import Game from "@/components/Game";
 import Drill from "@/components/Drill";
 import styles from "@/assets/stlyes";
 import colours from "@/assets/colours";
-import { insertDrillResultService } from "@/service/DbService";
 import fontSizes from "@/assets/font-sizes";
-
 
 export default function Putting() {
     const [refreshing, setRefreshing] = useState(false);
     const [section, setSection] = useState('putting-drills');
+    const toast = useToast();
 
     const handleSubMenu = (sectionName: string) => {
         setSection(sectionName);
@@ -27,27 +26,18 @@ export default function Putting() {
 
     const saveDrillResultHandle = (label: string, result: boolean) => {
         insertDrillResultService(label, result).then((success) => {
-            Toast.show({
-                type: success ? 'success' : 'error',
-                text1: 'Drill result saved',
-                text2: `${label} ${result ? 'met' : 'not met'}`,
-                position: 'bottom',
-                visibilityTime: 2500,
-                autoHide: true,
-                topOffset: 30,
-                bottomOffset: 40,
-            })
-        });
-    };
+            const msg = success ? "Drill result saved" : "Drill result not saved";
 
-    const showToast = () => {
-        Toast.show({
-            type: 'success',
-            text1: 'Drill result saved',
-            text2: 'Message two',
-            position: 'bottom',
-            autoHide: false,
-        })
+            toast.show(msg, {
+                type: success ? "success" : "danger",
+                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
+                style: {
+                    borderLeftColor: success ? colours.green : colours.errorText,
+                    borderLeftWidth: 10,
+                    backgroundColor: colours.yellow
+                }
+            });
+        });
     };
 
     const onRefresh = () => {
@@ -57,10 +47,6 @@ export default function Putting() {
             setRefreshing(false);
         }, 750);
     };
-
-    useEffect(() => {
-        showToast();
-    }, []);
 
     type drill = {
         label: string;
@@ -163,48 +149,8 @@ export default function Putting() {
                         </View>
                     )
                 }
-                <View style={localStyles.container}>
-                    <Toast
-                        config={{
-                            customToast: ({ text1, text2, ...rest }) => (
-                                <View style={localStyles.toastContainer}>
-                                    <Text style={localStyles.toastTitle}>{text1}</Text>
-                                    <Text style={localStyles.toastMessage}>{text2}</Text>
-                                </View>
-                            ),
-                        }}
-                    />
-                </View>
 
             </ScrollView >
         </GestureHandlerRootView >
     )
 };
-
-const localStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    toastContainer: {
-        backgroundColor: colours.yellow,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    toastTitle: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    toastMessage: {
-        color: '#e0e0e0',
-        fontSize: 14,
-    },
-});

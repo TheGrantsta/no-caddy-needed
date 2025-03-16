@@ -1,15 +1,16 @@
-import { useState } from "react";
-import { RefreshControl, ScrollView, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import SubMenu from "@/components/SubMenu";
-import Toast from 'react-native-toast-message';
+import Toast, { BaseToast } from 'react-native-toast-message';
 import Game from "@/components/Game";
 import Drill from "@/components/Drill";
 import styles from "@/assets/stlyes";
 import colours from "@/assets/colours";
 import { insertDrillResultService } from "@/service/DbService";
+import fontSizes from "@/assets/font-sizes";
 
 
 export default function Putting() {
@@ -39,6 +40,16 @@ export default function Putting() {
         });
     };
 
+    const showToast = () => {
+        Toast.show({
+            type: 'success',
+            text1: 'Drill result saved',
+            text2: 'Message two',
+            position: 'bottom',
+            autoHide: false,
+        })
+    };
+
     const onRefresh = () => {
         setRefreshing(true);
 
@@ -46,6 +57,10 @@ export default function Putting() {
             setRefreshing(false);
         }, 750);
     };
+
+    useEffect(() => {
+        showToast();
+    }, []);
 
     type drill = {
         label: string;
@@ -148,9 +163,48 @@ export default function Putting() {
                         </View>
                     )
                 }
+                <View style={localStyles.container}>
+                    <Toast
+                        config={{
+                            customToast: ({ text1, text2, ...rest }) => (
+                                <View style={localStyles.toastContainer}>
+                                    <Text style={localStyles.toastTitle}>{text1}</Text>
+                                    <Text style={localStyles.toastMessage}>{text2}</Text>
+                                </View>
+                            ),
+                        }}
+                    />
+                </View>
 
-                <Toast />
             </ScrollView >
         </GestureHandlerRootView >
     )
 };
+
+const localStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    toastContainer: {
+        backgroundColor: colours.yellow,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    toastTitle: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    toastMessage: {
+        color: '#e0e0e0',
+        fontSize: 14,
+    },
+});

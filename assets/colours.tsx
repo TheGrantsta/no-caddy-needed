@@ -12,4 +12,5 @@ export default {
     border: '#fff',
     borderEdit: '#ccc',
     borderError: '#fd0303',
+    green: '#00C851',
 };

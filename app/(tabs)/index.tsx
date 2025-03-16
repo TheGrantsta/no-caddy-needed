@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Link } from 'expo-router';
 import ScreenWrapper from '../screen-wrapper';
@@ -7,6 +7,9 @@ import Chevrons from '@/components/Chevrons';
 import styles from '@/assets/stlyes';
 import colours from '@/assets/colours';
 import IconButton from '@/components/IconButton';
+import Toast, { BaseToast } from 'react-native-toast-message';
+import fontSizes from '@/assets/font-sizes';
+import { useToast } from 'react-native-toast-notifications';
 
 export default function HomeScreen() {
   const points = ['Controlling low point', 'Improving centre strike', 'Enhancing clubface control'];
@@ -19,6 +22,42 @@ export default function HomeScreen() {
       setRefreshing(false);
     }, 750);
   };
+
+  // const showToast = () => {
+  //   Toast.show({
+  //     // type: 'success',
+  //     text1: 'Drill result saved',
+  //     text2: 'Message two',
+  //     // position: 'bottom',
+  //     autoHide: false,
+  //   })
+  // };
+
+  const success = true;
+  const toast = useToast();
+
+  useEffect(() => {
+    toast.show("Hello world!", {
+      type: success ? "success" : "danger",
+      textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
+      style: {
+        borderLeftColor: success ? colours.green : colours.errorText,
+        borderLeftWidth: 10,
+        backgroundColor: colours.yellow
+      }
+    });
+    // toast.show("Hello world!",
+    //   {
+    //     type: "success",
+    //     // placement: "bottom",
+    //     // duration: 4000,
+    //     // animationType: "slide-in",
+    //     // successColor: colours.yellow,
+    //     // textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
+    //     // swipeEnabled: true
+    //   }
+    // )
+  }, [refreshing]);
 
   return (
     <GestureHandlerRootView style={styles.flexOne}>
@@ -66,7 +105,51 @@ export default function HomeScreen() {
           </Text>
 
         </View>
+
+        {/* <View style={localStyles.container}>
+          <Toast
+            config={{
+              custom_toast: (props) => (
+                <BaseToast
+                  {...props}
+                  style={[localStyles.toastContainer, { borderLeftColor: 'pink' }]}
+                  contentContainerStyle={[localStyles.toastContainer]}
+                  text1Style={{ fontSize: 50 }}
+                  text2Style={[localStyles.toastMessage, props.text2Style]}
+                />
+              ),
+            }}
+          />
+        </View> */}
       </ScrollView>
     </GestureHandlerRootView>
   );
-}
+};
+
+const localStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  toastContainer: {
+    flex: 1,
+    backgroundColor: colours.yellow,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    borderRadius: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    width: '100%'
+  },
+  toastTitle: {
+    color: colours.yellow,
+    fontSize: fontSizes.subHeader,
+    fontWeight: 'bold',
+  },
+  toastMessage: {
+    color: '#e0e0e0',
+    fontSize: 14,
+  },
+});

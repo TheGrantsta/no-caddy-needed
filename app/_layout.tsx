@@ -9,6 +9,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import colours from "@/assets/colours";
 import { initialize } from '@/database/db';
+import { ToastProvider } from 'react-native-toast-notifications';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -48,77 +49,87 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen
-          name="(tabs)"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerRight: () => (
-              <Link href='../settings'>
-                <MaterialIcons name="settings" size={24} color={colours.background} style={{ marginRight: 15 }} />
-              </Link>
-            ),
-            headerStyle: {
-              backgroundColor: colours.yellow,
-            },
-          }} />
-        <Stack.Screen
-          name="short-game/putting"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: colours.yellow,
-            },
-            headerTintColor: colours.background,
-            headerBackButtonDisplayMode: 'minimal',
-          }} />
-        <Stack.Screen
-          name="short-game/chipping"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: colours.yellow,
-            },
-            headerTintColor: colours.background,
-            headerBackButtonDisplayMode: 'minimal',
-          }} />
-        <Stack.Screen
-          name="short-game/pitching"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: colours.yellow,
-            },
-            headerTintColor: colours.background,
-            headerBackButtonDisplayMode: 'minimal',
-          }} />
-        <Stack.Screen
-          name="short-game/bunker"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: colours.yellow,
-            },
-            headerTintColor: colours.background,
-            headerBackButtonDisplayMode: 'minimal',
-          }} />
-        <Stack.Screen
-          name="+not-found"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: colours.yellow,
-            },
-          }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <ToastProvider
+      placement="bottom"
+      dangerIcon={<MaterialIcons name="close" color={colours.errorText} size={24} />}
+      successIcon={<MaterialIcons name="check" color={colours.background} size={24} />}
+      offset={80}
+      style={{
+        maxWidth: "100%",
+      }}
+    >
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          <Stack.Screen
+            name="(tabs)"
+            options={{
+              headerTitle: () => <LogoTitle />,
+              headerTitleAlign: "center",
+              headerRight: () => (
+                <Link href='../settings'>
+                  <MaterialIcons name="settings" size={24} color={colours.background} style={{ marginRight: 15 }} />
+                </Link>
+              ),
+              headerStyle: {
+                backgroundColor: colours.yellow,
+              },
+            }} />
+          <Stack.Screen
+            name="short-game/putting"
+            options={{
+              headerTitle: () => <LogoTitle />,
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: colours.yellow,
+              },
+              headerTintColor: colours.background,
+              headerBackButtonDisplayMode: 'minimal',
+            }} />
+          <Stack.Screen
+            name="short-game/chipping"
+            options={{
+              headerTitle: () => <LogoTitle />,
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: colours.yellow,
+              },
+              headerTintColor: colours.background,
+              headerBackButtonDisplayMode: 'minimal',
+            }} />
+          <Stack.Screen
+            name="short-game/pitching"
+            options={{
+              headerTitle: () => <LogoTitle />,
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: colours.yellow,
+              },
+              headerTintColor: colours.background,
+              headerBackButtonDisplayMode: 'minimal',
+            }} />
+          <Stack.Screen
+            name="short-game/bunker"
+            options={{
+              headerTitle: () => <LogoTitle />,
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: colours.yellow,
+              },
+              headerTintColor: colours.background,
+              headerBackButtonDisplayMode: 'minimal',
+            }} />
+          <Stack.Screen
+            name="+not-found"
+            options={{
+              headerTitle: () => <LogoTitle />,
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: colours.yellow,
+              },
+            }} />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </ToastProvider>
   );
-}
+};

@@ -69,7 +69,6 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
 const localStyles = StyleSheet.create({
     contentText: {
         marginTop: 5,
-        marginRight: 10,
         fontSize: fontSizes.normal,
         color: colours.white,
     },

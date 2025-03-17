@@ -198,7 +198,7 @@ export default function Putting() {
                                     ))}
                                 </View>
                                 <View>
-                                    <Text style={[styles.normalText, styles.marginTop]}>
+                                    <Text style={[styles.normalText, styles.marginTop, { margin: 5 }]}>
                                         Practicing different techniques & improving your feel will increase your confidence & reduce missed opportunities
                                     </Text>
                                 </View>
@@ -218,7 +218,7 @@ export default function Putting() {
                                     </Text>
                                 </View>
                                 <View>
-                                    <Text style={[styles.normalText, styles.marginTop]}>
+                                    <Text style={[styles.normalText, { margin: 5 }]}>
                                         Improve your accuracy, touch, consistency, and mental focus while keeping practice engaging
                                     </Text>
                                 </View>
@@ -249,7 +249,7 @@ export default function Putting() {
                                 ))}
                             </View>
                             <View>
-                                <Text style={[styles.normalText, styles.marginTop]}>
+                                <Text style={[styles.normalText, styles.marginTop, { margin: 5 }]}>
                                     The games are designed to replicate the pressure of game situations, so only use ONE ball
                                 </Text>
                             </View>

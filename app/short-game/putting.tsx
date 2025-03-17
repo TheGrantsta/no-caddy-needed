@@ -1,20 +1,24 @@
-import { useState } from "react";
-import { RefreshControl, ScrollView, Text, View } from "react-native";
+import { useRef, useState } from "react";
+import { Dimensions, FlatList, RefreshControl, ScrollView, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useToast } from 'react-native-toast-notifications';
 import { insertDrillResultService } from "@/service/DbService";
 import SubMenu from "@/components/SubMenu";
-import Game from "@/components/Game";
 import Drill from "@/components/Drill";
 import styles from "@/assets/stlyes";
 import colours from "@/assets/colours";
 import fontSizes from "@/assets/font-sizes";
+import Instructions from "@/components/Instructions";
 
 export default function Putting() {
     const [refreshing, setRefreshing] = useState(false);
     const [section, setSection] = useState('putting-drills');
+    const [activeIndex, setActiveIndex] = useState(0);
+    const flatListRef = useRef(null);
     const toast = useToast();
+
+    const { width } = Dimensions.get('window');
 
     const handleSubMenu = (sectionName: string) => {
         setSection(sectionName);
@@ -39,6 +43,23 @@ export default function Putting() {
             });
         });
     };
+
+    const handleGameScroll = (event: any) => {
+        const scrollPosition = event.nativeEvent.contentOffset.x;
+        const index = Math.round(scrollPosition / width);
+        setActiveIndex(index);
+    };
+
+    const renderGameItem = ({ item }: any) => (
+        <View style={styles.scrollItemContainer}>
+            <View style={[styles.container, styles.scrollWrapper]}>
+                <Text style={styles.subHeaderText}>
+                    {item.header}
+                </Text>
+                <Instructions objective={item.objective} setUp={item.setup} howToPlay={item.howToPlay} />
+            </View>
+        </View>
+    );
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -81,13 +102,19 @@ export default function Putting() {
             header: 'Around the world!',
             objective: 'make putts from various distances from the hole',
             setup: 'place tees in a circle around the hole, at distances of 3, 5, 7 & 9 feet',
-            howToPlay: 'start at one tee and move to the next when the putt is made. Track your personal best and aim to beat it'
+            howToPlay: 'start at one tee and move to the next when the putt is made; if you miss, restart at 3 feet. Play until you complete the challenge'
         },
         {
             header: 'Ladder challenge!',
             objective: 'make 9 consecutive putts from a fixed distances',
             setup: 'place tees at 3, 5 & 7 feet and 3 balls',
             howToPlay: 'make 3 putts from each tee; if you miss, restart at 3 feet. Play until you complete the challenge'
+        },
+        {
+            header: 'Par 18!',
+            objective: 'treat each hole as a par-2 and aim to finish below par',
+            setup: 'create 9 different putting “holes” on the practice green, with different slopes and breaks',
+            howToPlay: 'complete the "course" by holing out on each hole. Play until you break "par"'
         },
     ];
 
@@ -137,19 +164,52 @@ export default function Putting() {
                 {/* Games */}
                 {
                     displaySection('putting-games') && (
-                        <View style={styles.container}>
-                            <View style={styles.headerContainer}>
-                                <Text style={[styles.headerText, styles.marginTop]}>
-                                    Putting games
-                                </Text>
+                        <View>
+                            <View style={styles.container}>
+                                <View style={styles.headerContainer}>
+                                    <Text style={[styles.headerText, styles.marginTop]}>
+                                        Putting games
+                                    </Text>
+                                </View>
+                                <View>
+                                    <Text style={[styles.normalText, styles.marginTop]}>
+                                        Improve your accuracy, touch, consistency, and mental focus while keeping practice engaging
+                                    </Text>
+                                </View>
+
+                                <View style={styles.horizontalScrollContainer}>
+                                    <FlatList
+                                        ref={flatListRef}
+                                        data={games}
+                                        horizontal
+                                        pagingEnabled
+                                        showsHorizontalScrollIndicator={false}
+                                        onScroll={handleGameScroll}
+                                        renderItem={renderGameItem}
+                                        keyExtractor={(_, index) => index.toString()}
+                                    />
+                                </View>
+                            </View>
+
+                            <View style={styles.scrollIndicatorContainer}>
+                                {games.map((_, index) => (
+                                    <View
+                                        key={index}
+                                        style={[
+                                            styles.scrollIndicatorDot,
+                                            activeIndex === index && styles.scrollActiveDot,
+                                        ]}
+                                    />
+                                ))}
                             </View>
                             <View>
-                                <Game subHeading='Improve your accuracy, touch, consistency, and mental focus while keeping practice engaging. The pressure is designed to replicate game situations.' games={games} />
+                                <Text style={[styles.normalText, styles.marginTop]}>
+                                    The games are designed to replicate the pressure of game situations, so only use ONE ball
+                                </Text>
                             </View>
                         </View>
                     )
                 }
-
             </ScrollView >
         </GestureHandlerRootView >
     )

@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import colours from './colours';
 import fontSizes from './font-sizes';
 
@@ -231,6 +231,47 @@ const styles = StyleSheet.create({
         marginTop: 5,
         fontSize: fontSizes.normal,
         textAlign: 'center',
+    },
+    scrollWrapper: {
+        margin: 5,
+        borderRadius: 5,
+        borderColor: colours.yellow,
+        borderWidth: 2,
+        borderLeftColor: colours.yellow,
+        borderLeftWidth: 10,
+    },
+    horizontalScrollContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        marginTop: 10,
+    },
+    scrollItemContainer: {
+        width: Dimensions.get('window').width,
+        height: 300,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    scrollItemText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+    scrollIndicatorContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 20,
+    },
+    scrollIndicatorDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        backgroundColor: colours.backgroundAlternate,
+        marginHorizontal: 5,
+        borderColor: colours.backgroundAlternate,
+        borderWidth: 1,
+    },
+    scrollActiveDot: {
+        backgroundColor: colours.yellow,
+        borderColor: colours.yellow,
     },
 });
 

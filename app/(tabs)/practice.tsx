@@ -89,6 +89,10 @@ export default function Practice() {
                 </Link>
               </View>
             </View>
+
+            <Text style={[styles.normalText, styles.marginTop]}>
+              Only you will know what you need to practice - be honest with yourself, identify shots you avoid or can't play, and give yourself time
+            </Text>
           </View>
         )}
 

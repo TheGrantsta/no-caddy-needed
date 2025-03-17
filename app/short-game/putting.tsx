@@ -14,7 +14,8 @@ import Instructions from "@/components/Instructions";
 export default function Putting() {
     const [refreshing, setRefreshing] = useState(false);
     const [section, setSection] = useState('putting-drills');
-    const [activeIndex, setActiveIndex] = useState(0);
+    const [gameActiveIndex, setGameActiveIndex] = useState(0);
+    const [drillActiveIndex, setDrillActiveIndex] = useState(0);
     const flatListRef = useRef(null);
     const toast = useToast();
 
@@ -47,7 +48,13 @@ export default function Putting() {
     const handleGameScroll = (event: any) => {
         const scrollPosition = event.nativeEvent.contentOffset.x;
         const index = Math.round(scrollPosition / width);
-        setActiveIndex(index);
+        setGameActiveIndex(index);
+    };
+
+    const handleDrillScroll = (event: any) => {
+        const scrollPosition = event.nativeEvent.contentOffset.x;
+        const index = Math.round(scrollPosition / width);
+        setDrillActiveIndex(index);
     };
 
     const renderGameItem = ({ item }: any) => (
@@ -57,6 +64,15 @@ export default function Putting() {
                     {item.header}
                 </Text>
                 <Instructions objective={item.objective} setUp={item.setup} howToPlay={item.howToPlay} />
+            </View>
+        </View>
+    );
+
+
+    const renderDrillItem = ({ item }: any) => (
+        <View style={styles.scrollItemContainer}>
+            <View style={[styles.container, styles.scrollWrapper]}>
+                <Drill label={item.label} iconName={item.iconName} target={item.target} objective={item.objective} setUp={item.setup} howToPlay={item.howToPlay} saveDrillResult={saveDrillResultHandle} />
             </View>
         </View>
     );
@@ -79,7 +95,14 @@ export default function Putting() {
     };
 
     const drills: drill[] = [];
-
+    drills.push({
+        label: 'Gate',
+        iconName: 'data-array',
+        target: '8 / 10',
+        objective: 'improve accuracy and stroke path',
+        setup: 'place two tees just wider than your putter head & practice putting from 3\' through the "gate" without hitting the tees',
+        howToPlay: 'ten putts in total. Repeat until you hit the target'
+    });
     drills.push({
         label: 'Clock',
         iconName: 'schedule',
@@ -150,12 +173,35 @@ export default function Putting() {
                                 </Text>
                             </View>
                             <View>
-                                {/* Drills */}
-                                {drills.map((drill: any, index: number) => (
-                                    <View key={index}>
-                                        <Drill label={drill.label} iconName={drill.iconName} target={drill.target} objective={drill.objective} setUp={drill.setup} howToPlay={drill.howToPlay} saveDrillResult={saveDrillResultHandle} />
-                                    </View>
-                                ))}
+                                <View style={styles.horizontalScrollContainer}>
+                                    <FlatList
+                                        ref={flatListRef}
+                                        data={drills}
+                                        horizontal
+                                        pagingEnabled
+                                        showsHorizontalScrollIndicator={false}
+                                        onScroll={handleDrillScroll}
+                                        renderItem={renderDrillItem}
+                                        keyExtractor={(_, index) => index.toString()}
+                                    />
+                                </View>
+
+                                <View style={styles.scrollIndicatorContainer}>
+                                    {drills.map((_, index) => (
+                                        <View
+                                            key={index}
+                                            style={[
+                                                styles.scrollIndicatorDot,
+                                                drillActiveIndex === index && styles.scrollActiveDot,
+                                            ]}
+                                        />
+                                    ))}
+                                </View>
+                                <View>
+                                    <Text style={[styles.normalText, styles.marginTop]}>
+                                        Practicing different techniques & improving your feel will increase your confidence & reduce missed opportunities
+                                    </Text>
+                                </View>
                             </View>
                         </View>
                     )
@@ -197,7 +243,7 @@ export default function Putting() {
                                         key={index}
                                         style={[
                                             styles.scrollIndicatorDot,
-                                            activeIndex === index && styles.scrollActiveDot,
+                                            gameActiveIndex === index && styles.scrollActiveDot,
                                         ]}
                                     />
                                 ))}

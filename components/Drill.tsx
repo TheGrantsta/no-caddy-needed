@@ -24,7 +24,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
     };
 
     return (
-        <View style={[styles.wrapper, { width: '100%' }]}>
+        <View>
             <View style={{ flexDirection: 'row' }}>
                 <View style={{ flex: 1 / 3, padding: 10 }}>
                     <MaterialIcons name={iconName} size={48} color={colours.white} />

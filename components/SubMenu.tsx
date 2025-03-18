@@ -20,6 +20,8 @@ const allSubMenuItems = [
     { testId: 'putting-sub-menu-putting-games', name: 'putting-games', title: 'Games' },
     { testId: 'chipping-sub-menu-chipping-drills', name: 'chipping-drills', title: 'Drills' },
     { testId: 'chipping-sub-menu-chipping-games', name: 'chipping-games', title: 'Games' },
+    { testId: 'pitching-sub-menu-pitching-drills', name: 'pitching-drills', title: 'Drills' },
+    { testId: 'pitching-sub-menu-pitching-games', name: 'pitching-games', title: 'Games' },
 ]
 
 const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {

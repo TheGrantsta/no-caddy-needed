@@ -250,7 +250,7 @@ export default function Pitching() {
                             </View>
                             <View>
                                 <Text style={[styles.normalText, styles.marginTop, { margin: 5 }]}>
-                                    The games are designed to replicate the pressure of game situations, so only use ONE ball
+                                    The games are designed to replicate the pressure of game situations
                                 </Text>
                             </View>
                         </View>

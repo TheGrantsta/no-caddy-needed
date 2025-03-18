@@ -16,7 +16,7 @@ export const getWedgeChartService = () => {
 };
 
 export const insertWedgeChartService = (wedgeChart: any) => {
-    insertWedgeChart(wedgeChart);
+    return insertWedgeChart(wedgeChart);
 };
 
 export const insertDrillResultService = (name: any, result: boolean) => {

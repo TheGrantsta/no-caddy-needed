@@ -38,22 +38,28 @@ export const getWedgeChart = () => {
     return get(sqlStatement);
 }
 
-export const insertWedgeChart = (wedgeChart: any[]) => {
+export const insertWedgeChart = async (wedgeChart: any[]) => {
+    let success = true;
     const db = SQLite.openDatabaseSync(dbName);
 
     db.execSync('DELETE FROM WedgeChart');
 
-    wedgeChart.forEach((item) => {
+    wedgeChart.forEach(async (item) => {
         const statement = db.prepareSync(
             'INSERT INTO WedgeChart (Club, HalfSwing, ThreeQuarterSwing, FullSwing) VALUES ($Club, $HalfSwing, $ThreeQuarterSwing, $FullSwing)'
         );
 
         try {
-            statement.executeSync({ $Club: item[0], $HalfSwing: item[1], $ThreeQuarterSwing: item[2], $FullSwing: item[3] });
+            await statement.executeAsync({ $Club: item[0], $HalfSwing: item[1], $ThreeQuarterSwing: item[2], $FullSwing: item[3] });
+        } catch (e) {
+            console.log(e);
+            success = false;
         } finally {
-            statement.finalizeSync();
+            await statement.finalizeAsync();
         }
     });
+
+    return success;
 };
 
 function get(sql: string) {

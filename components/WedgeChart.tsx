@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import { getWedgeChartService, insertWedgeChartService } from '../service/DbService';
+import { useToast } from 'react-native-toast-notifications';
 import Chrevons from './Chevrons';
 import colours from '@/assets/colours';
 import fontSizes from '@/assets/font-sizes';
@@ -17,6 +18,7 @@ export default function WedgeChart({ isShowButtons }: Props) {
     const [isEditChart, setIsEditChart] = useState(false);
     const [wedgeChart, setWedgeChart] = useState<any[][]>([]);
     const [tempWedgeChart, setTempWedgeChart] = useState<any[][]>([]);
+    const toast = useToast();
 
     const handleInputChange = (value: any, id: any) => {
         const ids = id.split('_');
@@ -42,14 +44,24 @@ export default function WedgeChart({ isShowButtons }: Props) {
         setIsError(isError);
 
         if (!isError) {
-            insertWedgeChartService(tempWedgeChart);
+            insertWedgeChartService(tempWedgeChart).then((success) => {
+                const msg = success ? "Wedge chart saved" : "Wedge chart not saved";
 
-            setTimeout(() => {
+                toast.show(msg, {
+                    type: success ? "success" : "danger",
+                    textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
+                    style: {
+                        borderLeftColor: success ? colours.green : colours.errorText,
+                        borderLeftWidth: 10,
+                        backgroundColor: colours.yellow
+                    }
+                });
+            }).then(() => {
                 setIsAddChart(false);
                 setIsAddNewChart(false);
                 setIsEditChart(true);
                 setWedgeChart(tempWedgeChart);
-            }, 750);
+            });
         }
     };
 

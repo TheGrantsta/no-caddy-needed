@@ -96,48 +96,48 @@ export default function Bunker() {
 
     const drills: drill[] = [];
     drills.push({
-        label: 'Three ball',
-        iconName: 'track-changes',
-        target: '3 / 3',
-        objective: 'improve accuracy and distance control',
-        setup: 'select a target between 50 - 100 yards away',
-        howToPlay: 'hit 3 shots at the same target. Success is +/- 5 yards'
+        label: 'Line',
+        iconName: 'linear-scale',
+        target: '8 / 10',
+        objective: 'improve low-point control',
+        setup: 'draw straight line in sand',
+        howToPlay: 'make 10 swings and hit the sand from the line forward'
     });
     drills.push({
-        label: 'Wedge',
-        iconName: 'av-timer',
-        target: '3 / 3',
-        objective: 'improve ability to control landing spot',
-        setup: 'hit 3 balls swinging to 9 o\'clock, 10 o\'clock & full',
-        howToPlay: 'monitor landing spot. Success is +/- 5 yards'
+        label: 'Dollar bill',
+        iconName: 'money',
+        target: '8 / 10',
+        objective: 'proper sand entry and clubface control',
+        setup: 'imagine ball sitting on a dollar bill',
+        howToPlay: 'goal is to splash the entire "bill" out of the bunker, not just the ball'
     });
     drills.push({
-        label: 'Ladder',
-        iconName: 'sort',
+        label: 'No ball',
+        iconName: 'sports-golf',
         target: '10 / 12',
-        objective: 'improve touch and feel',
-        setup: 'place markers at 20, 30, 40, and 50 yards',
-        howToPlay: 'hit 3 balls to each target, focusing on consistent carry distance. Repeat until you hit the target'
+        objective: 'improve your understanding of bunker play',
+        setup: 'hit the sand without a ball, focusing on splashing the sand onto the green',
+        howToPlay: 'splash sand onto the green. Repeat until you hit the target'
     });
 
     const games = [
         {
-            header: 'Three club!',
-            objective: 'develop feel and understand how each club performs',
-            setup: 'choose three different wedges (e.g., lob wedge, sand wedge, and gap wedge)',
-            howToPlay: 'hit to the same target with each club and compare results'
+            header: 'Up and down challenge!',
+            objective: 'get up and down in 2 shots or fewer',
+            setup: 'drop ball in bunker and choose target hole',
+            howToPlay: 'try to get up and down 50% time of the time'
         },
         {
-            header: 'Target challenge!',
-            objective: 'control distance',
-            setup: 'create a circle with tees at 3\' feet from the pin',
-            howToPlay: 'hit 10 pitches to finish inside the target area. 2 points for inside, 1 point outside but on the green'
+            header: 'Worst lie challenge!',
+            objective: 'deal with adversity away from the course',
+            setup: 'drop balls in difficult spots: buried, plugged, on a slope, or with an awkward stance',
+            howToPlay: 'get the ball on the green. Close is better, but on is the minimum'
         },
         {
-            header: '5-ball game!',
-            objective: 'goal is to land all 5 on the green in a row, adding pressure',
-            setup: 'hit 5 balls to a target from 30 - 50 yards',
-            howToPlay: 'if you miss the green with one, restart the game'
+            header: '10-Point game!',
+            objective: 'improve distance control and have fun',
+            setup: 'place markers at 10\' (1 point), 6\' (3 points) & 3\' (5 points)',
+            howToPlay: 'hit 10 bunker shots & count your score. Try to beat your best score'
         },
     ];
 

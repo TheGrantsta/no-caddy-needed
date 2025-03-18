@@ -35,9 +35,9 @@ describe('Bunker page ', () => {
     it('renders correctly the bunker drills', () => {
         const { getByText } = render(<View />);
 
-        expect(getByText('Three ball')).toBeTruthy();
-        expect(getByText('Wedge')).toBeTruthy();
-        expect(getByText('Ladder')).toBeTruthy();
+        expect(getByText('Line')).toBeTruthy();
+        expect(getByText('Dollar bill')).toBeTruthy();
+        expect(getByText('No ball')).toBeTruthy();
     });
 
     it('renders correctly with the games heading', () => {
@@ -57,9 +57,9 @@ describe('Bunker page ', () => {
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Three club!')).toBeTruthy();
-        expect(getByText('Target challenge!')).toBeTruthy();
-        expect(getByText('5-ball game!')).toBeTruthy();
+        expect(getByText('Up and down challenge!')).toBeTruthy();
+        expect(getByText('Worst lie challenge!')).toBeTruthy();
+        expect(getByText('10-Point game!')).toBeTruthy();
     });
 
     it('calls insert button when saving drill result', () => {

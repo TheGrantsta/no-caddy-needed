@@ -122,22 +122,22 @@ export default function Pitching() {
 
     const games = [
         {
-            header: 'Up & down challenge!',
-            objective: 'simulate real on-course pressure situations',
-            setup: 'select a variety of chipping spots around the green (easy, moderate, difficult)',
-            howToPlay: 'try to hole out in 2 shots or fewer. Track your personal best and aim to beat it'
+            header: 'Three club!',
+            objective: 'develop feel and understand how each club performs',
+            setup: 'choose three different wedges (e.g., lob wedge, sand wedge, and gap wedge)',
+            howToPlay: 'hit to the same target with each club and compare results'
         },
         {
-            header: 'Ladder challenge!',
-            objective: 'make 9 consecutive chips from a fixed distances',
-            setup: 'place tees at 6, 9 & 12 feet',
-            howToPlay: 'make 3 chips to each tee; if you miss, restart at 6 feet. Play until you complete the challenge'
+            header: 'Target challenge!',
+            objective: 'control distance',
+            setup: 'create a circle with tees at 3\' feet from the pin',
+            howToPlay: 'hit 10 pitches to finish inside the target area. 2 points for inside, 1 point outside but on the green'
         },
         {
-            header: 'Par 18!',
-            objective: 'treat each hole as a par-2 and aim to finish below par',
-            setup: 'create 9 different putting “holes” on the practice green, with different slopes and breaks',
-            howToPlay: 'complete the "course" by holing out on each hole. Play until you break "par"'
+            header: '5-ball game!',
+            objective: 'goal is to land all 5 on the green in a row, adding pressure',
+            setup: 'hit 5 balls to a target from 30 - 50 yards',
+            howToPlay: 'if you miss the green with one, restart the game'
         },
     ];
 

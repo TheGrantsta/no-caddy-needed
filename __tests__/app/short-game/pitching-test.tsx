@@ -40,7 +40,7 @@ describe('Pitching page ', () => {
         expect(getByText('Ladder')).toBeTruthy();
     });
 
-    it.skip('renders correctly with the games heading', () => {
+    it('renders correctly with the games heading', () => {
         const { getByText, getByTestId } = render(<View />);
 
         const subMenuItem = getByTestId('pitching-sub-menu-pitching-games');
@@ -50,19 +50,19 @@ describe('Pitching page ', () => {
         expect(getByText('Pitching games')).toBeTruthy();
     });
 
-    it.skip('renders correctly with the games', () => {
+    it('renders correctly with the games', () => {
         const { getByText, getByTestId } = render(<View />);
 
         const subMenuItem = getByTestId('pitching-sub-menu-pitching-games');
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Around the world!')).toBeTruthy();
-        expect(getByText('Ladder challenge!')).toBeTruthy();
-        expect(getByText('Par 18!')).toBeTruthy();
+        expect(getByText('Three club!')).toBeTruthy();
+        expect(getByText('Target challenge!')).toBeTruthy();
+        expect(getByText('5-ball game!')).toBeTruthy();
     });
 
-    it.skip('calls insert button when saving drill result', () => {
+    it('calls insert button when saving drill result', () => {
         const { getAllByTestId } = render(<View />);
 
         const saveButtons = getAllByTestId('save-drill-result-button');

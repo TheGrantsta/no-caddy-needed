@@ -61,6 +61,7 @@ export default function WedgeChart({ isShowButtons }: Props) {
                 setIsAddNewChart(false);
                 setIsEditChart(true);
                 setWedgeChart(tempWedgeChart);
+                setTempWedgeChart([]);
             });
         }
     };

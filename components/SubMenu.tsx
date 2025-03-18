@@ -3,7 +3,7 @@ import colours from '../assets/colours';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
-    showSubMenu: 'practice' | 'on-course' | 'putting' | 'chipping';
+    showSubMenu: 'practice' | 'on-course' | 'putting' | 'chipping' | 'bunker';
     selectedItem: string;
     handleSubMenu: (arg: string) => void;
 }
@@ -11,17 +11,17 @@ type Props = {
 const allSubMenuItems = [
     { testId: 'practice-sub-menu-short-game', name: 'short-game', title: 'Short game' },
     { testId: 'practice-sub-menu-tools', name: 'tools', title: 'Tools' },
-    // { testId: 'practice-sub-menu-general', name: 'general', title: 'General' },
     { testId: 'on-course-sub-menu-approach', name: 'approach', title: 'Approach' },
     { testId: 'on-course-sub-menu-wedge-chart', name: 'wedge-chart', title: 'Wedge chart' },
     { testId: 'on-course-sub-menu-pro-stats', name: 'pros', title: 'Pros' },
-    // { testId: 'on-course-sub-menu-your-stats', name: 'stats', title: 'Stats' },
     { testId: 'putting-sub-menu-putting-drills', name: 'putting-drills', title: 'Drills' },
     { testId: 'putting-sub-menu-putting-games', name: 'putting-games', title: 'Games' },
     { testId: 'chipping-sub-menu-chipping-drills', name: 'chipping-drills', title: 'Drills' },
     { testId: 'chipping-sub-menu-chipping-games', name: 'chipping-games', title: 'Games' },
     { testId: 'pitching-sub-menu-pitching-drills', name: 'pitching-drills', title: 'Drills' },
     { testId: 'pitching-sub-menu-pitching-games', name: 'pitching-games', title: 'Games' },
+    { testId: 'bunker-sub-menu-bunker-drills', name: 'bunker-drills', title: 'Drills' },
+    { testId: 'bunker-sub-menu-bunker-games', name: 'bunker-games', title: 'Games' },
 ]
 
 const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {

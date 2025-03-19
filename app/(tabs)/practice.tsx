@@ -46,18 +46,20 @@ export default function Practice() {
           tintColor={colours.yellow} />
       }>
 
+        <View style={styles.container}>
+          <View style={styles.headerContainer}>
+            <Text style={[styles.headerText, styles.marginTop]}>
+              Practice
+            </Text>
+            <Text style={[styles.normalText, styles.marginBottom]}>
+              Make your practice time more effective
+            </Text>
+          </View>
+        </View>
+
         {/* Short game */}
         {displaySection('short-game') && (
-          <View style={styles.container}>
-            <View style={styles.headerContainer}>
-              <Text style={[styles.headerText, styles.marginTop]}>
-                Practice
-              </Text>
-              <Text style={[styles.normalText, styles.marginBottom]}>
-                Make your practice time more effective
-              </Text>
-            </View>
-
+          <View>
             <View style={styles.viewContainer}>
               <Text style={[styles.subHeaderText, styles.marginTop]}>
                 Short game practice
@@ -90,9 +92,36 @@ export default function Practice() {
               </View>
             </View>
 
-            <Text style={[styles.normalText, styles.marginTop]}>
-              Only you will know what you need to practice - be honest with yourself, identify shots you avoid or can't play, and give yourself time
-            </Text>
+            <View>
+              <Text style={[styles.normalText, styles.marginTop]}>
+                Only you will know what you need to practice - be honest with yourself, identify shots you avoid or can't play, and give yourself time
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* Tools */}
+        {displaySection('tools') && (
+          <View>
+            <View style={styles.viewContainer}>
+              <Text style={[styles.subHeaderText, styles.marginTop]}>
+                Practice tools
+              </Text>
+
+              <View style={styles.iconsContainer}>
+                <Link href='../tools/tempo'>
+                  <View style={styles.iconContainer}>
+                    <IconButton iconName='music-note' label='Tempo' size='medium' />
+                  </View>
+                </Link>
+
+                <Link href='../tools/random'>
+                  <View style={styles.iconContainer}>
+                    <IconButton iconName='shuffle-on' label='Random' size='medium' />
+                  </View>
+                </Link>
+              </View>
+            </View>
           </View>
         )}
 

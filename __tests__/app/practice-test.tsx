@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import View from '../../app/(tabs)/practice';
 
 jest.mock('react-native-gesture-handler', () => {
@@ -28,5 +28,17 @@ describe('Practice page ', () => {
         expect(getByText('Chipping')).toBeTruthy();
         expect(getByText('Pitching')).toBeTruthy();
         expect(getByText('Bunker play')).toBeTruthy();
+    });
+
+    it('renders correctly tool options', () => {
+        const { getByText, getByTestId } = render(<View />);
+
+        const subMenuItem = getByTestId('practice-sub-menu-tools');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Practice tools')).toBeTruthy();
+        expect(getByText('Tempo')).toBeTruthy();
+        expect(getByText('Random')).toBeTruthy();
     });
 });

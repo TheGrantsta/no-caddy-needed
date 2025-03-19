@@ -121,6 +121,7 @@ describe('Course page ', () => {
 
             expect(getByText('Distance (feet)')).toBeTruthy();
             expect(getByText('Make rate')).toBeTruthy();
+            expect(getByText('Source:')).toBeTruthy();
         });
     });
 });

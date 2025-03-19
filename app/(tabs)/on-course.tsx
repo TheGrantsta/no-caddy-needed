@@ -20,6 +20,7 @@ export default function Course() {
 
   const getApproachShotStats = () => {
     const approachStats: any[] = [];
+
     approachStats.push(['Distance', 'Fairway', 'Rough']);
     approachStats.push(['225-250', '', '']);
     approachStats.push(['200-225', '', '']);
@@ -29,11 +30,13 @@ export default function Course() {
     approachStats.push(['100-125', '20\'3"', '32\'9"']);
     approachStats.push(['75-100', '17\'9"', '27\'8"']);
     approachStats.push(['50-75', '15\'11"', '24\'6"']);
+
     return approachStats;
   };
 
   const getPuttingStats = () => {
     const puttingStats: any[] = [];
+
     puttingStats.push(['Distance (feet)', 'Make rate']);
     puttingStats.push(['1', '100%']);
     puttingStats.push(['2', '99%']);

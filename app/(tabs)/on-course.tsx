@@ -22,10 +22,10 @@ export default function Course() {
     const approachStats: any[] = [];
 
     approachStats.push(['Distance', 'Fairway', 'Rough']);
-    approachStats.push(['225-250', '', '']);
-    approachStats.push(['200-225', '', '']);
-    approachStats.push(['175-200', '', '']);
-    approachStats.push(['150-175', '', '']);
+    approachStats.push(['225-250', '44\'10"', '56\'2"']);
+    approachStats.push(['200-225', '42\'5"', '54\'6"']);
+    approachStats.push(['175-200', '34\'1"', '44\'8"']);
+    approachStats.push(['150-175', '27\'8"', '33\'4"']);
     approachStats.push(['125-150', '23\'6"', '37\'9"']);
     approachStats.push(['100-125', '20\'3"', '32\'9"']);
     approachStats.push(['75-100', '17\'9"', '27\'8"']);

@@ -130,6 +130,17 @@ export default function RootLayout() {
               headerBackButtonDisplayMode: 'minimal',
             }} />
           <Stack.Screen
+            name="tools/tempo"
+            options={{
+              headerTitle: () => <LogoTitle />,
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: colours.yellow,
+              },
+              headerTintColor: colours.background,
+              headerBackButtonDisplayMode: 'minimal',
+            }} />
+          <Stack.Screen
             name="+not-found"
             options={{
               headerTitle: () => <LogoTitle />,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import View from '../../app/(tabs)/on-course';
 import { getWedgeChartService } from '../../service/DbService';
 
@@ -78,7 +78,7 @@ describe('Course page ', () => {
         expect(getByText('Manage your expectations, better!')).toBeTruthy();
     });
 
-    it('renders correctly with stats buttons for approach shots and putting', () => {
+    it('renders correctly with stats approach shots headings', () => {
         const { getByTestId, getByText } = render(<View />);
 
         const subMenuItem = getByTestId('on-course-sub-menu-pro-stats');
@@ -86,7 +86,7 @@ describe('Course page ', () => {
         fireEvent.press(subMenuItem);
 
         expect(getByText('Approach shots')).toBeTruthy();
-        expect(getByText('Putting')).toBeTruthy();
+        expect(getByText('Average proximity to the hole')).toBeTruthy();
     });
 
     it('renders correctly with stats approach shot proximity', () => {
@@ -96,8 +96,6 @@ describe('Course page ', () => {
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Approach shots')).toBeTruthy();
-        expect(getByText('Average proximity to the hole')).toBeTruthy();
         expect(getByText('Distance')).toBeTruthy();
         expect(getByText('Fairway')).toBeTruthy();
         expect(getByText('Rough')).toBeTruthy();
@@ -110,11 +108,19 @@ describe('Course page ', () => {
 
         fireEvent.press(subMenuItem);
 
-        const button = getByTestId('stats-putting-button');
+        const flatList = getByTestId('on-course-flat-list');
 
-        fireEvent.press(button);
+        waitFor(() => {
+            fireEvent.scroll(flatList, {
+                NativeEvent: {
+                    contentOffset: { x: 300, y: 0 },
+                    contentSize: { width: 500, height: 100 },
+                    layoutMeasurement: { width: 300, height: 100 }
+                },
+            });
 
-        expect(getByText('Distance (feet)')).toBeTruthy();
-        expect(getByText('Make rate')).toBeTruthy();
+            expect(getByText('Distance (feet)')).toBeTruthy();
+            expect(getByText('Make rate')).toBeTruthy();
+        });
     });
 });

@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import View from '../../app/(tabs)/settings';
-import { getWedgeChartService } from '../../service/DbService';
 
 jest.mock('../../service/DbService', () => ({
     getWedgeChartService: jest.fn(() => [[]])

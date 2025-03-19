@@ -1,32 +1,39 @@
-import { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { Dimensions, FlatList, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import Chevrons from '../../components/Chevrons';
 import SubMenu from '../../components/SubMenu';
 import WedgeChart from '../../components/WedgeChart';
 import styles from '../../assets/stlyes';
 import colours from '../../assets/colours';
-import SmallButton from '@/components/SmallButton';
 
 export default function Course() {
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('approach');
-  const [statsApproach, setStatsApproach] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const flatListRef = useRef(null);
+
   const points = ['Target: centre of the green', 'Aim: play for your shot shape *', 'Yardage: closer to the back edge'];
   const benefits = ['Improve distance control', 'Better course management', 'Eliminate guesswork'];
 
+  const { width } = Dimensions.get('window');
+
   const getApproachShotStats = () => {
-    const approachStats: any[][] = [];
+    const approachStats: any[] = [];
     approachStats.push(['Distance', 'Fairway', 'Rough']);
-    approachStats.push(['125-150', '23"6\'', '37"9\'']);
-    approachStats.push(['100-125', '20"3\'', '32"9\'']);
-    approachStats.push(['75-100', '17"9\'', '27"8\'']);
-    approachStats.push(['50-75', '15"11\'', '24"6\'']);
+    approachStats.push(['225-250', '', '']);
+    approachStats.push(['200-225', '', '']);
+    approachStats.push(['175-200', '', '']);
+    approachStats.push(['150-175', '', '']);
+    approachStats.push(['125-150', '23\'6"', '37\'9"']);
+    approachStats.push(['100-125', '20\'3"', '32\'9"']);
+    approachStats.push(['75-100', '17\'9"', '27\'8"']);
+    approachStats.push(['50-75', '15\'11"', '24\'6"']);
     return approachStats;
   };
 
   const getPuttingStats = () => {
-    const puttingStats: any[][] = [];
+    const puttingStats: any[] = [];
     puttingStats.push(['Distance (feet)', 'Make rate']);
     puttingStats.push(['1', '100%']);
     puttingStats.push(['2', '99%']);
@@ -51,6 +58,10 @@ export default function Course() {
     return puttingStats;
   };
 
+  const proStats: any[] = [];
+  proStats.push(getApproachShotStats());
+  proStats.push(getPuttingStats());
+
   const onRefresh = () => {
     setRefreshing(true);
 
@@ -68,9 +79,30 @@ export default function Course() {
     return section === sectionName;
   };
 
-  const handleStatsButton = (selected: boolean) => {
-    setStatsApproach(selected);
+  const handleScroll = (event: any) => {
+    const scrollPosition = event.nativeEvent.contentOffset.x;
+    const index = Math.round(scrollPosition / width);
+    setActiveIndex(index);
   };
+
+  const renderItem = ({ item }: any) => (
+    <ScrollView style={[styles.container, styles.scrollWrapper, { maxHeight: 350, overflow: 'hidden' }]}>
+      {
+        item.map((row: any, rowIndex: number) => (
+          <View key={rowIndex} style={[styles.row, { width: width * 0.9 }]}>
+            {row.map((cell: any, colIndex: number) => (
+              <View key={colIndex} style={{
+                flex: 1, padding: 3, alignItems: "center", justifyContent: "center",
+              }}>
+                <Text style={[rowIndex === 0 ? styles.header : styles.normalText, { padding: 5 }]}>
+                  {cell}
+                </Text>
+              </View>
+            ))}
+          </View>
+        ))}
+    </ScrollView>
+  );
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -135,96 +167,79 @@ export default function Course() {
 
         {/* Pros stats */}
         {displaySection('pros') && (
-          <View style={styles.container}>
-            <View style={styles.headerContainer}>
-              <Text style={[styles.headerText, { marginTop: 10 }]}>
-                On course
-              </Text>
-              <Text style={[styles.normalText, { marginBottom: 10 }]}>
-                Manage your expectations, better!
-              </Text>
-            </View>
-
-            {/* Buttons to toggle between approach shots and putting */}
-            <View style={{ flexWrap: 'wrap', flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
-              <SmallButton testId='stats-approach-shots-button' label='Approach' selected={statsApproach} onPress={() => handleStatsButton(true)} />
-              <SmallButton testId='stats-putting-button' label='Putting' selected={!statsApproach} onPress={() => handleStatsButton(false)} />
-            </View>
-
-            {/* Approach shot stats */}
-            {statsApproach && (
-              <View>
-                <Text style={[styles.subHeaderText, { marginTop: 10 }]}>
-                  Approach shots
+          <View>
+            <View style={styles.container}>
+              <View style={styles.headerContainer}>
+                <Text style={[styles.headerText, { marginTop: 10 }]}>
+                  On course
                 </Text>
-                <Text style={styles.normalText}>
-                  Average proximity to the hole
+                <Text style={[styles.normalText, { marginBottom: 10 }]}>
+                  Manage your expectations, better!
                 </Text>
-                <View style={styles.table}>
-                  {
-                    getApproachShotStats().map((row, rowIndex) => (
-                      <View key={rowIndex} style={styles.row}>
-                        {row.map((cell, colIndex) => (
-                          <Text key={colIndex}
-                            style={[styles.cell,
-                            rowIndex === 0 ? styles.header : colIndex === 0 ? styles.bold : '']}>
-                            {cell}
-                          </Text>
-                        ))}
-                      </View>
-                    ))
-                  }
-                </View>
               </View>
-            )}
 
-            {/* Putting stats */}
-            {!statsApproach && (
-              <View>
-                <Text testID='stats-putting-heading' style={[styles.subHeaderText, { marginTop: 10 }]}>
-                  Putts
-                </Text>
-                <Text style={styles.normalText}>
-                  Professional male golfer make percentages
-                </Text>
-                <View style={styles.table}>
-                  {
-                    getPuttingStats().map((row, rowIndex) => (
-                      <View key={rowIndex} style={styles.row}>
-                        {row.map((cell, colIndex) => (
-                          <Text key={colIndex} style={[styles.cell, rowIndex === 0 ? styles.header : rowIndex % 2 === 0 ? '' : styles.alternateRow]}>
-                            {cell}
-                          </Text>
-                        ))}
-                      </View>
-                    ))
-                  }
-                </View>
+              {activeIndex === 0 && (
                 <View>
-                  <Text style={[styles.smallestText, { paddingBottom: 100 }]}>
-                    Source: <Text style={{ fontStyle: 'italic' }}>The Lost Art of Putting: Introducing the Six Putting Performance Principles</Text> by Gary Nicol & Karl Morris
+                  <Text style={[styles.headerText, styles.marginTop]}>
+                    Approach shots
+                  </Text>
+                  <Text style={[styles.normalText, styles.marginBottom]}>
+                    Average proximity to the hole
                   </Text>
                 </View>
+              )}
+
+              {activeIndex === 1 && (
+                <View>
+                  <Text style={[styles.headerText, styles.marginTop]}>
+                    Putts
+                  </Text>
+                  <Text style={[styles.normalText, styles.marginBottom]}>
+                    Professional male golfer make percentages
+                  </Text>
+                </View>
+              )}
+
+              <View style={styles.horizontalScrollContainer}>
+                <FlatList
+                  testID='on-course-flat-list'
+                  ref={flatListRef}
+                  data={proStats}
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  onScroll={handleScroll}
+                  keyExtractor={(_, index) => index.toString()}
+                  renderItem={renderItem}
+                />
+              </View>
+            </View>
+
+            <View style={styles.scrollIndicatorContainer}>
+              {proStats.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.scrollIndicatorDot,
+                    activeIndex === index && styles.scrollActiveDot,
+                  ]}
+                />
+              ))}
+            </View>
+
+            {activeIndex === 1 && (
+              <View>
+                <Text style={[styles.smallestText, styles.marginBottom]}>
+                  Source:
+                  <Text style={{ fontStyle: 'italic' }}>
+                    The Lost Art of Putting: Introducing the Six Putting Performance Principles
+                  </Text> by Gary Nicol & Karl Morris
+                </Text>
               </View>
             )}
           </View>
         )}
-
-        {/* Putting stats */}
-        {displaySection('stats') && (
-          <View style={styles.container}>
-            <View style={styles.headerContainer}>
-              <Text style={[styles.headerText, { marginTop: 10 }]}>
-                On course
-              </Text>
-              <Text style={[styles.normalText, { marginBottom: 10 }]}>
-                Stats you should be tracking!
-              </Text>
-            </View>
-          </View>
-        )}
-
       </ScrollView>
     </GestureHandlerRootView>
   )
-}
+};

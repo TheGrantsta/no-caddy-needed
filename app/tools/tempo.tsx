@@ -2,20 +2,18 @@ import { useState, useEffect, useRef } from 'react';
 import { StyleSheet, ScrollView, View, Text, TouchableOpacity, RefreshControl } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Audio } from 'expo-av';
+import { MaterialIcons } from '@expo/vector-icons';
+import Chevrons from '@/components/Chevrons';
+import Slider from '@react-native-community/slider';
 import colours from '@/assets/colours';
 import fontSizes from '@/assets/font-sizes';
 import styles from '@/assets/stlyes';
-import Chevrons from '@/components/Chevrons';
-import Slider from '@react-native-community/slider';
 
 export default function Tempo() {
     const [refreshing, setRefreshing] = useState(false);
-    const [isLongGame, setIsLongGame] = useState(true);
-    const [longGameSelectedValue, setLongGameSelectedValue] = useState(60);
-    const [shortGameSelectedValue, setShortGameSelectedValue] = useState(60);
+    const [isPlaying, setIsPlaying] = useState(false);
     const [tempo, setTempo] = useState(60);
     const [sound, setSound] = useState<Audio.Sound>();
-    const [isPlaying, setIsPlaying] = useState(false);
     const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
     useEffect(() => {
@@ -93,39 +91,15 @@ export default function Tempo() {
         }
     };
 
-    const handlePress = async (value: any) => {
-        if (isLongGame) {
-            setLongGameSelectedValue(value);
-        } else {
-            setShortGameSelectedValue(value);
-        }
-
-        setTempo(value);
-        setIsPlaying(false);
-        await stopLoop();
-    };
-
-    const handleHeaderPress = async (value: boolean) => {
-        setIsLongGame(value);
-        setIsPlaying(false);
-        await stopLoop();
-    };
-
-    const resetTempo = async () => {
+    const onRefresh = () => {
         setRefreshing(true);
 
         setTimeout(() => {
-            setIsLongGame(true);
-            setLongGameSelectedValue(60);
-            setShortGameSelectedValue(60);
+            setTempo(60);
             setIsPlaying(false);
             stopLoop();
             setRefreshing(false);
         }, 750);
-    };
-
-    const onRefresh = () => {
-        resetTempo();
     };
 
     const points = ['Focus on tempo, and not mechanics', 'Common fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Common misconception: amateurs believe they swing "too fast" even though they swing slower than professionals']
@@ -147,58 +121,58 @@ export default function Tempo() {
                     colors={[colours.yellow]}
                     tintColor={colours.yellow} />
             }>
-                <View>
-                    <Text style={styles.subHeaderText}>
-                        Tempo training
-                    </Text>
-                    <Text style={styles.normalText}>
-                        Swing with tempo to self organise
-                    </Text>
-                </View>
-
-                <View style={localStyles.container}>
-                    <Text style={[localStyles.title]}>Long game:</Text>
-
-                    <Slider
-                        style={[localStyles.slider]}
-                        minimumValue={60}
-                        maximumValue={90}
-                        step={6}
-                        value={longGameSelectedValue}
-                        onValueChange={setLongGameSelectedValue}
-                        minimumTrackTintColor={colours.yellow}
-                        maximumTrackTintColor={colours.yellow}
-                        thumbTintColor={colours.yellow}
-                    />
-
-                    {/* Labels */}
-                    <View style={localStyles.labelsContainer}>
-                        {[1, 2, 3, 4, 5, 6].map((num) => (
-                            <Text key={num} style={[localStyles.label]}>
-                                {num === 1 ? 'slow' : num === 6 ? 'fast' : '|'}
-                            </Text>
-                        ))}
+                <View style={styles.container}>
+                    <View>
+                        <Text style={styles.subHeaderText}>
+                            Tempo training
+                        </Text>
+                        <Text style={styles.normalText}>
+                            Swing with tempo to self organise
+                        </Text>
                     </View>
 
-                    <Text style={[localStyles.valueText, styles.normalText, { color: colours.yellow }]}>
-                        Beats per minute: {longGameSelectedValue}
-                    </Text>
-                </View>
+                    <View style={localStyles.container}>
+                        <Text style={[localStyles.title]}>Tempo:</Text>
 
-                <View style={[styles.marginBottom]}>
-                    <TouchableOpacity testID='save-button' style={styles.button} onPress={toggleStartStop}>
-                        <Text style={styles.buttonText}>
-                            {isPlaying ? 'Stop' : 'Play'}
+                        <Slider
+                            style={[localStyles.slider]}
+                            minimumValue={60}
+                            maximumValue={120}
+                            step={12}
+                            value={tempo}
+                            onValueChange={setTempo}
+                            minimumTrackTintColor={colours.yellow}
+                            maximumTrackTintColor={colours.yellow}
+                            thumbTintColor={colours.yellow}
+                        />
+
+                        {/* Labels */}
+                        <View style={localStyles.labelsContainer}>
+                            {[1, 2, 3, 4, 5, 6].map((num) => (
+                                <Text key={num} style={[localStyles.label]}>
+                                    {num === 1 ? 'slow' : num === 6 ? 'fast' : '|'}
+                                </Text>
+                            ))}
+                        </View>
+
+                        <View style={{ flexDirection: 'row', flexWrap: 'nowrap', flex: 1, alignContent: 'space-evenly' }}>
+                            <Text style={[localStyles.valueText, styles.normalText, { color: colours.yellow, padding: 5 }]}>
+                                Beats per minute: {tempo}
+                            </Text>
+
+                            <TouchableOpacity style={{ padding: 5 }} onPress={toggleStartStop}>
+                                <MaterialIcons name={isPlaying ? "stop-circle" : "play-circle-fill"} color={colours.yellow} size={36} />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View>
+                        <Text style={styles.smallestText}>
+                            Based on John Garrity's work, long game tempo (start, take away, top & impact) is 3:1 & short game tempo is 2:1
                         </Text>
-                    </TouchableOpacity>
-                </View>
+                    </View>
 
-                <View>
-                    <Text style={styles.smallestText}>
-                        Based on John Garrity's work, long game tempo (start, take away, top & impact) is 3:1 & short game tempo is 2:1
-                    </Text>
+                    <Chevrons heading='Why tempo training is important' points={points} />
                 </View>
-                <Chevrons heading='Why tempo training is important' points={points} />
             </ScrollView>
         </GestureHandlerRootView>
     );

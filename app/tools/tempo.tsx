@@ -6,6 +6,7 @@ import colours from '@/assets/colours';
 import fontSizes from '@/assets/font-sizes';
 import styles from '@/assets/stlyes';
 import Chevrons from '@/components/Chevrons';
+import Slider from '@react-native-community/slider';
 
 export default function Tempo() {
     const [refreshing, setRefreshing] = useState(false);
@@ -129,6 +130,8 @@ export default function Tempo() {
 
     const points = ['Focus on tempo, and not mechanics', 'Common fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Common misconception: amateurs believe they swing "too fast" even though they swing slower than professionals']
 
+    const [value, setValue] = useState(1);
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             {refreshing && (
@@ -146,6 +149,34 @@ export default function Tempo() {
                     colors={[colours.yellow]}
                     tintColor={colours.yellow} />
             }>
+
+                <View style={localStyles.container}>
+                    <Text style={[localStyles.title, styles.normalText]}>Select a Value:</Text>
+
+                    {/* Slider */}
+                    <Slider
+                        style={[localStyles.slider]}
+                        minimumValue={1}
+                        maximumValue={6}
+                        step={1}
+                        value={value}
+                        onValueChange={setValue}
+                        minimumTrackTintColor={colours.yellow}
+                        maximumTrackTintColor={colours.yellow}
+                        thumbTintColor={colours.yellow}
+                    />
+
+                    {/* Labels */}
+                    <View style={localStyles.labelsContainer}>
+                        {[1, 2, 3, 4, 5, 6].map((num) => (
+                            <Text key={num} style={[localStyles.label, styles.normalText]}>
+                                {num}
+                            </Text>
+                        ))}
+                    </View>
+
+                    <Text style={[localStyles.valueText, styles.normalText]}>Selected: {value}</Text>
+                </View>
 
                 <View>
                     <Text style={styles.subHeaderText}>
@@ -370,4 +401,10 @@ const localStyles = StyleSheet.create({
         fontSize: fontSizes.smallText,
         fontWeight: '500',
     },
+    container: { padding: 20, alignItems: "center" },
+    title: { fontSize: 18, marginBottom: 10 },
+    slider: { width: "90%", height: 40 },
+    labelsContainer: { flexDirection: "row", justifyContent: "space-between", width: "90%", marginTop: 5 },
+    label: { fontSize: 16 },
+    valueText: { marginTop: 10, fontSize: 18, fontWeight: "bold" },
 });

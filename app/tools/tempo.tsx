@@ -130,7 +130,7 @@ export default function Tempo() {
 
     const points = ['Focus on tempo, and not mechanics', 'Common fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Common misconception: amateurs believe they swing "too fast" even though they swing slower than professionals']
 
-    const [value, setValue] = useState(1);
+    const [value, setValue] = useState(60);
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -149,16 +149,24 @@ export default function Tempo() {
                     colors={[colours.yellow]}
                     tintColor={colours.yellow} />
             }>
+                <View>
+                    <Text style={styles.subHeaderText}>
+                        Tempo training
+                    </Text>
+                    <Text style={styles.normalText}>
+                        Swing with tempo to self organise
+                    </Text>
+                </View>
 
                 <View style={localStyles.container}>
-                    <Text style={[localStyles.title, styles.normalText]}>Select a Value:</Text>
+                    <Text style={[localStyles.title]}>Long game:</Text>
 
                     {/* Slider */}
                     <Slider
                         style={[localStyles.slider]}
-                        minimumValue={1}
-                        maximumValue={6}
-                        step={1}
+                        minimumValue={60}
+                        maximumValue={90}
+                        step={6}
                         value={value}
                         onValueChange={setValue}
                         minimumTrackTintColor={colours.yellow}
@@ -169,13 +177,15 @@ export default function Tempo() {
                     {/* Labels */}
                     <View style={localStyles.labelsContainer}>
                         {[1, 2, 3, 4, 5, 6].map((num) => (
-                            <Text key={num} style={[localStyles.label, styles.normalText]}>
-                                {num}
+                            <Text key={num} style={[localStyles.label]}>
+                                {num === 1 ? 'slow' : num === 6 ? 'fast' : '|'}
                             </Text>
                         ))}
                     </View>
 
-                    <Text style={[localStyles.valueText, styles.normalText]}>Selected: {value}</Text>
+                    <Text style={[localStyles.valueText, styles.normalText, { color: colours.yellow }]}>
+                        Beats per minute: {value}
+                    </Text>
                 </View>
 
                 <View>
@@ -402,9 +412,9 @@ const localStyles = StyleSheet.create({
         fontWeight: '500',
     },
     container: { padding: 20, alignItems: "center" },
-    title: { fontSize: 18, marginBottom: 10 },
+    title: { fontSize: fontSizes.subHeader, color: colours.yellow, marginBottom: 10 },
     slider: { width: "90%", height: 40 },
     labelsContainer: { flexDirection: "row", justifyContent: "space-between", width: "90%", marginTop: 5 },
-    label: { fontSize: 16 },
+    label: { fontSize: fontSizes.normal, color: colours.yellow },
     valueText: { marginTop: 10, fontSize: 18, fontWeight: "bold" },
 });

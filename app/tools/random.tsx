@@ -84,6 +84,13 @@ export default function Random() {
                         keyboardType='numbers-and-punctuation'
                     />
                     {rangeError ? <Text style={styles.errorText}>{rangeError}</Text> : null}
+
+                    <View>
+                        <Text style={styles.smallestText}>
+                            Range: the lower and upper bound of numbers (inclusive) between which the random number will be generated
+                        </Text>
+                    </View>
+
                     <Text style={styles.textLabel}>
                         Increment
                     </Text>
@@ -98,6 +105,12 @@ export default function Random() {
                         keyboardType='number-pad'
                     />
                     {incrementError ? <Text style={styles.errorText}>{incrementError}</Text> : null}
+                </View>
+
+                <View>
+                    <Text style={styles.smallestText}>
+                        Increment: specifies the "step" between the random numbers; for example, an increment of 5 would mean the random number is divisible by 5
+                    </Text>
                 </View>
 
                 {randomNumber > 0 && (

@@ -164,14 +164,14 @@ export default function Tempo() {
                                 <MaterialIcons name={isPlaying ? "stop-circle" : "play-circle-fill"} color={colours.yellow} size={36} />
                             </TouchableOpacity>
                         </View>
-                    </View>
-                    <View>
-                        <Text style={styles.smallestText}>
-                            Based on John Garrity's work, long game tempo (start, take away, top & impact) is 3:1 & short game tempo is 2:1
-                        </Text>
-                    </View>
+                        <View>
+                            <Text style={styles.smallestText}>
+                                Based on John Garrity's work, long game tempo (start, take away, top & impact) is 3:1 & short game tempo is 2:1
+                            </Text>
+                        </View>
 
-                    <Chevrons heading='Why tempo training is important' points={points} />
+                        <Chevrons heading='Why tempo training is important' points={points} />
+                    </View>
                 </View>
             </ScrollView>
         </GestureHandlerRootView>
@@ -179,50 +179,32 @@ export default function Tempo() {
 };
 
 const localStyles = StyleSheet.create({
-    radioButtonRow: {
-        flexDirection: 'row',
-        flex: 2,
+    container: {
+        padding: 20,
+        alignItems: "center"
     },
-    rowHeading: {
-        color: colours.yellow,
+    title: {
         fontSize: fontSizes.subHeader,
-    },
-    headerSelected: {
-        borderColor: colours.yellow,
-        backgroundColor: colours.yellow,
-    },
-    headerNotSelected: {
-        borderColor: colours.yellow,
-        backgroundColor: colours.backgroundAlternate,
-    },
-    headerTextSelected: {
-        color: colours.black,
-    },
-    headerTextNotSelected: {
         color: colours.yellow,
+        marginBottom: 10
     },
-    radioButton: {
-        width: '50%',
-        padding: 15,
-        borderWidth: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderColor: colours.yellow,
-        backgroundColor: colours.backgroundAlternate,
+    slider: {
+        width: "90%",
+        height: 40
     },
-    selected: {
-        borderColor: colours.yellow,
-        backgroundColor: colours.yellow,
-        color: colours.black,
+    labelsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "90%",
+        marginTop: 5
     },
-    radioText: {
-        fontSize: fontSizes.smallText,
-        fontWeight: '500',
+    label: {
+        fontSize: fontSizes.normal,
+        color: colours.yellow
     },
-    container: { padding: 20, alignItems: "center" },
-    title: { fontSize: fontSizes.subHeader, color: colours.yellow, marginBottom: 10 },
-    slider: { width: "90%", height: 40 },
-    labelsContainer: { flexDirection: "row", justifyContent: "space-between", width: "90%", marginTop: 5 },
-    label: { fontSize: fontSizes.normal, color: colours.yellow },
-    valueText: { marginTop: 10, fontSize: 18, fontWeight: "bold" },
+    valueText: {
+        marginTop: 10,
+        fontSize: 18,
+        fontWeight: "bold"
+    },
 });

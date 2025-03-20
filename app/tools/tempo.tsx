@@ -91,6 +91,15 @@ export default function Tempo() {
         }
     };
 
+    const tempoValueChange = async (value: number) => {
+        setTempo(value);
+
+        if (isPlaying) {
+            setIsPlaying(!isPlaying);
+            await stopLoop();
+        }
+    }
+
     const onRefresh = () => {
         setRefreshing(true);
 
@@ -140,7 +149,7 @@ export default function Tempo() {
                             maximumValue={120}
                             step={12}
                             value={tempo}
-                            onValueChange={setTempo}
+                            onValueChange={tempoValueChange}
                             minimumTrackTintColor={colours.yellow}
                             maximumTrackTintColor={colours.yellow}
                             thumbTintColor={colours.yellow}

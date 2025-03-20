@@ -230,6 +230,14 @@ export default function Course() {
               ))}
             </View>
 
+            {activeIndex === 0 && (
+              <View>
+                <Text style={[styles.smallestText, styles.marginBottom]}>
+                  Source: PGA tour online statistics website
+                </Text>
+              </View>
+            )}
+
             {activeIndex === 1 && (
               <View>
                 <Text style={[styles.smallestText, styles.marginBottom]}>

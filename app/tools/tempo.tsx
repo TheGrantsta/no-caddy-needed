@@ -111,7 +111,7 @@ export default function Tempo() {
         }, 750);
     };
 
-    const points = ['Focus on tempo, and not mechanics', 'Common fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Common misconception: amateurs believe they swing "too fast" even though they swing slower than professionals']
+    const points = ['Focus on tempo, and not mechanics - start slow', 'Common fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Common misconception: amateurs believe they swing "too fast" even though they swing slower than professionals']
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -131,11 +131,11 @@ export default function Tempo() {
                     tintColor={colours.yellow} />
             }>
                 <View style={styles.container}>
-                    <View>
-                        <Text style={styles.subHeaderText}>
+                    <View style={styles.headerContainer}>
+                        <Text style={[styles.headerText, styles.marginTop]}>
                             Tempo training
                         </Text>
-                        <Text style={styles.normalText}>
+                        <Text style={[styles.normalText, { margin: 5 }]}>
                             Swing with tempo to self organise
                         </Text>
                     </View>

@@ -67,9 +67,12 @@ export default function Random() {
                     tintColor={colours.yellow} />
             }>
                 <View>
-                    <Text style={styles.subHeaderText}>
-                        Random number generator
-                    </Text>
+                    <View style={styles.headerContainer}>
+                        <Text style={[styles.headerText, styles.marginTop]}>
+                            Random number generator
+                        </Text>
+                    </View>
+
                     <Text style={styles.textLabel}>
                         Range
                     </Text>

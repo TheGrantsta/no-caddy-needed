@@ -130,8 +130,6 @@ export default function Tempo() {
 
     const points = ['Focus on tempo, and not mechanics', 'Common fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Common misconception: amateurs believe they swing "too fast" even though they swing slower than professionals']
 
-    const [value, setValue] = useState(60);
-
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             {refreshing && (
@@ -161,14 +159,13 @@ export default function Tempo() {
                 <View style={localStyles.container}>
                     <Text style={[localStyles.title]}>Long game:</Text>
 
-                    {/* Slider */}
                     <Slider
                         style={[localStyles.slider]}
                         minimumValue={60}
                         maximumValue={90}
                         step={6}
-                        value={value}
-                        onValueChange={setValue}
+                        value={longGameSelectedValue}
+                        onValueChange={setLongGameSelectedValue}
                         minimumTrackTintColor={colours.yellow}
                         maximumTrackTintColor={colours.yellow}
                         thumbTintColor={colours.yellow}
@@ -184,186 +181,23 @@ export default function Tempo() {
                     </View>
 
                     <Text style={[localStyles.valueText, styles.normalText, { color: colours.yellow }]}>
-                        Beats per minute: {value}
+                        Beats per minute: {longGameSelectedValue}
                     </Text>
+                </View>
+
+                <View style={[styles.marginBottom]}>
+                    <TouchableOpacity testID='save-button' style={styles.button} onPress={toggleStartStop}>
+                        <Text style={styles.buttonText}>
+                            {isPlaying ? 'Stop' : 'Play'}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
 
                 <View>
-                    <Text style={styles.subHeaderText}>
-                        Tempo training
+                    <Text style={styles.smallestText}>
+                        Based on John Garrity's work, long game tempo (start, take away, top & impact) is 3:1 & short game tempo is 2:1
                     </Text>
-                    <Text style={styles.normalText}>
-                        Swing with tempo to self organise
-                    </Text>
-                    <View style={{ paddingTop: 20, paddingBottom: 20 }}>
-                        {/* Header row */}
-                        <View style={localStyles.radioButtonRow}>
-                            <TouchableOpacity
-                                key={1}
-                                style={[localStyles.radioButton, isLongGame ? localStyles.headerSelected : localStyles.headerNotSelected]}
-                                onPress={() => handleHeaderPress(true)}>
-                                <Text style={[localStyles.radioText, localStyles.rowHeading, isLongGame ? localStyles.headerTextSelected : localStyles.headerTextNotSelected]}>
-                                    Long game
-                                </Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                key={2}
-                                style={[localStyles.radioButton, isLongGame ? localStyles.headerNotSelected : localStyles.headerSelected]}
-                                onPress={() => handleHeaderPress(false)}>
-                                <Text style={[localStyles.radioText, localStyles.rowHeading, isLongGame ? localStyles.headerTextNotSelected : localStyles.headerTextSelected]}>
-                                    Short game
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        {/* Long game rows */}
-                        {isLongGame && (
-                            <View>
-                                <View style={localStyles.radioButtonRow}>
-                                    <TouchableOpacity
-                                        key={1}
-                                        style={[localStyles.radioButton, longGameSelectedValue === 60 ? localStyles.selected : '']}
-                                        onPress={() => handlePress(60)}>
-                                        <Text style={localStyles.radioText}>
-                                            33/11
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        key={2}
-                                        style={[localStyles.radioButton, longGameSelectedValue === 66 ? localStyles.selected : '']}
-                                        onPress={() => handlePress(66)}>
-                                        <Text style={localStyles.radioText}>
-                                            30/10
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View style={localStyles.radioButtonRow}>
-                                    <TouchableOpacity
-                                        key={3}
-                                        style={[localStyles.radioButton, longGameSelectedValue === 72 ? localStyles.selected : '']}
-                                        onPress={() => handlePress(72)}>
-                                        <Text style={localStyles.radioText}>
-                                            27/9
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        key={4}
-                                        style={[localStyles.radioButton, longGameSelectedValue === 78 ? localStyles.selected : '']}
-                                        onPress={() => handlePress(78)}>
-                                        <Text style={localStyles.radioText}>
-                                            24/8
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View style={localStyles.radioButtonRow}>
-                                    <TouchableOpacity
-                                        key={5}
-                                        style={[localStyles.radioButton, longGameSelectedValue === 84 ? localStyles.selected : '']}
-                                        onPress={() => handlePress(84)}>
-                                        <Text style={localStyles.radioText}>
-                                            21/7
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        key={6}
-                                        style={[localStyles.radioButton, longGameSelectedValue === 90 ? localStyles.selected : '']}
-                                        onPress={() => handlePress(90)}>
-                                        <Text style={localStyles.radioText}>
-                                            18/6
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View>
-                                    <Text style={styles.smallestText}>
-                                        Based on John Garrity's work, long game tempo (start, take away, top & impact) is 3:1
-                                    </Text>
-                                </View>
-                            </View>
-                        )}
-
-                        {/* Short game rows */}
-                        {!isLongGame && (
-                            <View>
-                                <View style={localStyles.radioButtonRow}>
-                                    <TouchableOpacity
-                                        key={1}
-                                        style={[localStyles.radioButton, shortGameSelectedValue === 60 ? localStyles.selected : '']}
-                                        onPress={() => handlePress(60)}>
-                                        <Text style={localStyles.radioText}>
-                                            26/13
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        key={2}
-                                        style={[localStyles.radioButton, shortGameSelectedValue === 66 ? localStyles.selected : '']}
-                                        onPress={() => handlePress(66)}>
-                                        <Text style={localStyles.radioText}>
-                                            24/12
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View style={localStyles.radioButtonRow}>
-                                    <TouchableOpacity
-                                        key={3}
-                                        style={[localStyles.radioButton, shortGameSelectedValue === 72 ? localStyles.selected : '']}
-                                        onPress={() => handlePress(72)}>
-                                        <Text style={localStyles.radioText}>
-                                            22/11
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        key={4}
-                                        style={[localStyles.radioButton, shortGameSelectedValue === 78 ? localStyles.selected : '']}
-                                        onPress={() => handlePress(78)}>
-                                        <Text style={localStyles.radioText}>
-                                            20/10
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View style={localStyles.radioButtonRow}>
-                                    <TouchableOpacity
-                                        key={3}
-                                        style={[localStyles.radioButton, shortGameSelectedValue === 84 ? localStyles.selected : '']}
-                                        onPress={() => handlePress(84)}>
-                                        <Text style={localStyles.radioText}>
-                                            18/9
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        key={4}
-                                        style={[localStyles.radioButton, shortGameSelectedValue === 90 ? localStyles.selected : '']}
-                                        onPress={() => handlePress(90)}>
-                                        <Text style={localStyles.radioText}>
-                                            16/8
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View>
-                                    <Text style={[styles.normalText, { paddingTop: 10, fontSize: fontSizes.smallestText }]}>
-                                        Based on John Garrity's work, short game tempo (start, take away, top & impact) is 2:1
-                                    </Text>
-                                </View>
-                            </View>
-                        )}
-
-                    </View>
-
-                    <View style={[styles.marginBottom]}>
-                        <TouchableOpacity testID='save-button' style={styles.button} onPress={toggleStartStop}>
-                            <Text style={styles.buttonText}>
-                                {isPlaying ? 'Stop' : 'Play'}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
                 </View>
-
                 <Chevrons heading='Why tempo training is important' points={points} />
             </ScrollView>
         </GestureHandlerRootView>

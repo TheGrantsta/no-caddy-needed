@@ -62,6 +62,12 @@ export const insertWedgeChart = async (wedgeChart: any[]) => {
     return success;
 };
 
+export const getAllDrillHistory = () => {
+    const sqlStatement = `SELECT * FROM Drills ORDER BY Id DESC;`
+
+    return get(sqlStatement);
+}
+
 function get(sql: string) {
     const rows: any[] = [];
     const db = SQLite.openDatabaseSync(dbName);

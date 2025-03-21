@@ -2,6 +2,7 @@ import {
     getWedgeChart,
     insertDrillResult,
     insertWedgeChart,
+    getAllDrillHistory
 } from '../database/db';
 
 export const getWedgeChartService = () => {
@@ -21,4 +22,8 @@ export const insertWedgeChartService = (wedgeChart: any) => {
 
 export const insertDrillResultService = (name: any, result: boolean) => {
     return insertDrillResult(name, result);
+}
+
+export const getAllDrillHistoryService = () => {
+    return getAllDrillHistory();
 }

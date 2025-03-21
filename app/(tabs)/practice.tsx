@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { useRef, useState } from "react";
+import { Dimensions, FlatList, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import styles from "@/assets/stlyes";
 import colours from "@/assets/colours";
 import SubMenu from "@/components/SubMenu";
 import { Link } from "expo-router";
 import IconButton from "@/components/IconButton";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function Practice() {
   const [refreshing, setRefreshing] = useState(false);
@@ -18,6 +19,24 @@ export default function Practice() {
   const displaySection = (sectionName: string) => {
     return section === sectionName;
   };
+
+  const tableData = [
+    { id: "1", col1: "Putting - Clock", col2: "Met" },
+    { id: "2", col1: "Pitching - Clock", col2: "Not met" },
+    { id: "3", col1: "Pitching - Ladder", col2: "Met" },
+  ];
+
+  const renderRow = ({ item }: any) => (
+    <View style={styles.row}>
+      <Text style={[styles.cell, { padding: 5, paddingLeft: 10, fontWeight: 'normal', textAlign: 'left' }]}>{item.col1}</Text>
+      <Text style={[styles.cell, { padding: 5 }]}>
+        <MaterialIcons
+          name={item.col2 === 'Met' ? 'check' : 'clear'}
+          color={item.col2 === 'Met' ? colours.yellow : colours.errorText}
+          size={24} />
+      </Text>
+    </View>
+  );
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -124,14 +143,33 @@ export default function Practice() {
             </View>
           </View>
         )}
+
         {/* Tools */}
         {displaySection('history') && (
           <View>
             <View style={styles.viewContainer}>
               <Text style={[styles.subHeaderText, styles.marginTop]}>
-                Practice history
+                Drill history
               </Text>
             </View>
+
+            {/* Table example */}
+            <ScrollView style={styles.container}>
+              <View style={styles.table}>
+                {/* Table Header */}
+                <View style={[styles.row]}>
+                  <Text style={[styles.cell, styles.subHeaderText, { paddingLeft: 10 }]}>Drill</Text>
+                  <Text style={[styles.cell, styles.subHeaderText]}>Target</Text>
+                </View>
+
+                {/* Table Rows */}
+                <FlatList
+                  data={tableData}
+                  renderItem={renderRow}
+                  keyExtractor={(item) => item.id}
+                />
+              </View>
+            </ScrollView>
           </View>
         )}
       </ScrollView>

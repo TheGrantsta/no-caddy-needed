@@ -2,6 +2,10 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import View from '../../app/(tabs)/practice';
 
+jest.mock('../../service/DbService', () => ({
+    getAllDrillHistoryService: jest.fn(() => [])
+}));
+
 jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
     return {
@@ -49,6 +53,18 @@ describe('Practice page ', () => {
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Practice history')).toBeTruthy();
+        expect(getByText('Drill history')).toBeTruthy();
+    });
+
+    it('renders correctly drill history', () => {
+        // Drills (Id, Name, Result
+        const { getByText, getByTestId } = render(<View />);
+
+        const subMenuItem = getByTestId('practice-sub-menu-history');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Drill')).toBeTruthy();
+        expect(getByText('Target')).toBeTruthy();
     });
 });

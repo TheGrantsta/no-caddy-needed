@@ -41,4 +41,14 @@ describe('Practice page ', () => {
         expect(getByText('Tempo')).toBeTruthy();
         expect(getByText('Random')).toBeTruthy();
     });
+
+    it('renders correctly history options', () => {
+        const { getByText, getByTestId } = render(<View />);
+
+        const subMenuItem = getByTestId('practice-sub-menu-history');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Practice history')).toBeTruthy();
+    });
 });

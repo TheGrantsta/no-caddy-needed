@@ -124,7 +124,16 @@ export default function Practice() {
             </View>
           </View>
         )}
-
+        {/* Tools */}
+        {displaySection('history') && (
+          <View>
+            <View style={styles.viewContainer}>
+              <Text style={[styles.subHeaderText, styles.marginTop]}>
+                Practice history
+              </Text>
+            </View>
+          </View>
+        )}
       </ScrollView>
     </GestureHandlerRootView>
   )

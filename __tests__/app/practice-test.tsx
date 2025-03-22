@@ -56,7 +56,7 @@ describe('Practice page ', () => {
         expect(getByText('Drill history')).toBeTruthy();
     });
 
-    it('renders correctly drill history', () => {
+    it('renders correctly drill history headings', () => {
         // Drills (Id, Name, Result, Created_At)
         const { getByText, getByTestId } = render(<View />);
 

@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Dimensions, FlatList, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { useEffect, useState } from "react";
+import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import styles from "@/assets/stlyes";
 import colours from "@/assets/colours";
@@ -12,6 +12,7 @@ import fontSizes from "@/assets/font-sizes";
 export default function Practice() {
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('short-game');
+  const [drillHistory, setDrillHistory] = useState<any[]>([]);
 
   const handleSubMenu = (sectionName: string) => {
     setSection(sectionName);
@@ -21,24 +22,14 @@ export default function Practice() {
     return section === sectionName;
   };
 
-  const tableData = [
-    { id: "1", col1: "Putting - Clock", col2: "Met", col3: "01/01" },
-    { id: "2", col1: "Pitching - Clock", col2: "Not met", col3: "01/01" },
-    { id: "3", col1: "Pitching - Ladder", col2: "Met", col3: "01/01" },
-  ];
+  const fetchData = () => {
+    let temp: any[] = [];
+    temp.push({ id: "1", col1: "Putting - Clock", col2: "Met", col3: "01/01" });
+    temp.push({ id: "2", col1: "Pitching - Clock", col2: "Not met", col3: "01/01" });
+    temp.push({ id: "3", col1: "Pitching - Ladder", col2: "Met", col3: "01/01" });
 
-  const renderRow = ({ item }: any) => (
-    <View style={styles.row}>
-      <Text style={[styles.cell, { padding: 5, paddingLeft: 10, fontWeight: 'normal', textAlign: 'left' }]}>{item.col1}</Text>
-      <Text style={[styles.cell, { padding: 5 }]}>
-        <MaterialIcons
-          name={item.col2 === 'Met' ? 'check' : 'clear'}
-          color={item.col2 === 'Met' ? colours.yellow : colours.errorText}
-          size={24} />
-      </Text>
-      <Text style={[styles.cell, { padding: 5 }]}>{item.col3}</Text>
-    </View>
-  );
+    setDrillHistory(temp);
+  };
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -47,6 +38,10 @@ export default function Practice() {
       setRefreshing(false);
     }, 750);
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <GestureHandlerRootView style={styles.flexOne}>
@@ -166,7 +161,7 @@ export default function Practice() {
                 </View>
 
                 {/* Table Rows */}
-                {tableData.map((item) => (
+                {drillHistory.map((item) => (
                   <View key={item.id} style={[styles.row]}>
                     <Text style={[styles.cell, { fontSize: fontSizes.normal, fontWeight: 'normal', textAlign: 'left', flex: 7 / 12 }]}>
                       {item.col1}

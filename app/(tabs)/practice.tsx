@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import styles from "@/assets/stlyes";
 import colours from "@/assets/colours";
@@ -12,6 +12,7 @@ import fontSizes from "@/assets/font-sizes";
 export default function Practice() {
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('short-game');
+  const [loading, setLoading] = useState(true);
   const [drillHistory, setDrillHistory] = useState<any[]>([]);
 
   const handleSubMenu = (sectionName: string) => {
@@ -23,12 +24,18 @@ export default function Practice() {
   };
 
   const fetchData = () => {
-    let temp: any[] = [];
-    temp.push({ id: "1", col1: "Putting - Clock", col2: "Met", col3: "01/01" });
-    temp.push({ id: "2", col1: "Pitching - Clock", col2: "Not met", col3: "01/01" });
-    temp.push({ id: "3", col1: "Pitching - Ladder", col2: "Met", col3: "01/01" });
+    try {
+      let temp: any[] = [];
+      temp.push({ id: "1", col1: "Putting - Clock", col2: "Met", col3: "01/01" });
+      temp.push({ id: "2", col1: "Pitching - Clock", col2: "Not met", col3: "01/01" });
+      temp.push({ id: "3", col1: "Pitching - Ladder", col2: "Met", col3: "01/01" });
 
-    setDrillHistory(temp);
+      setDrillHistory(temp);
+    } catch (e) {
+      console.error("Error fetching drill history:", e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onRefresh = () => {
@@ -144,41 +151,46 @@ export default function Practice() {
         {/* Tools */}
         {displaySection('history') && (
           <View>
-            <View style={styles.viewContainer}>
-              <Text style={[styles.subHeaderText, styles.marginTop]}>
-                Drill history
-              </Text>
-            </View>
-
-            {/* Table example */}
-            <ScrollView style={styles.container}>
-              <View style={styles.table}>
-                {/* Table Header */}
-                <View style={[styles.row]}>
-                  <Text style={[styles.cell, styles.normalText, { color: colours.yellow, fontWeight: 'bold', flex: 7 / 12 }]}>Drill</Text>
-                  <Text style={[styles.cell, styles.normalText, { color: colours.yellow, fontWeight: 'bold', flex: 2 / 12 }]}>Met</Text>
-                  <Text style={[styles.cell, styles.normalText, { color: colours.yellow, fontWeight: 'bold', flex: 3 / 12 }]}>When</Text>
+            {loading ? (
+              <View>
+                <ActivityIndicator size="large" color={colours.yellow} />
+              </View>
+            ) : (
+              <View>
+                <View style={styles.viewContainer}>
+                  <Text style={[styles.subHeaderText, styles.marginTop]}>
+                    Drill history
+                  </Text>
                 </View>
 
-                {/* Table Rows */}
-                {drillHistory.map((item) => (
-                  <View key={item.id} style={[styles.row]}>
-                    <Text style={[styles.cell, { fontSize: fontSizes.normal, fontWeight: 'normal', textAlign: 'left', flex: 7 / 12 }]}>
-                      {item.col1}
-                    </Text>
-                    <Text style={[styles.cell, { fontSize: fontSizes.normal, fontWeight: 'normal', flex: 2 / 12 }]}>
-                      <MaterialIcons
-                        name={item.col2 === 'Met' ? 'check' : 'clear'}
-                        color={item.col2 === 'Met' ? colours.yellow : colours.errorText}
-                        size={24} />
-                    </Text>
-                    <Text style={[styles.cell, { fontSize: fontSizes.normal, fontWeight: 'normal', flex: 3 / 12 }]}>
-                      {item.col3}
-                    </Text>
+                <ScrollView style={styles.container}>
+                  <View style={styles.table}>
+                    <View style={[styles.row]}>
+                      <Text style={[styles.cell, styles.normalText, { color: colours.yellow, fontWeight: 'bold', flex: 7 / 12 }]}>Drill</Text>
+                      <Text style={[styles.cell, styles.normalText, { color: colours.yellow, fontWeight: 'bold', flex: 2 / 12 }]}>Met</Text>
+                      <Text style={[styles.cell, styles.normalText, { color: colours.yellow, fontWeight: 'bold', flex: 3 / 12 }]}>When</Text>
+                    </View>
+
+                    {drillHistory.map((item) => (
+                      <View key={item.id} style={[styles.row]}>
+                        <Text style={[styles.cell, { fontSize: fontSizes.normal, fontWeight: 'normal', textAlign: 'left', flex: 7 / 12 }]}>
+                          {item.col1}
+                        </Text>
+                        <Text style={[styles.cell, { fontSize: fontSizes.normal, fontWeight: 'normal', flex: 2 / 12 }]}>
+                          <MaterialIcons
+                            name={item.col2 === 'Met' ? 'check' : 'clear'}
+                            color={item.col2 === 'Met' ? colours.yellow : colours.errorText}
+                            size={24} />
+                        </Text>
+                        <Text style={[styles.cell, { fontSize: fontSizes.normal, fontWeight: 'normal', flex: 3 / 12 }]}>
+                          {item.col3}
+                        </Text>
+                      </View>
+                    ))}
                   </View>
-                ))}
+                </ScrollView>
               </View>
-            </ScrollView>
+            )}
           </View>
         )}
       </ScrollView>

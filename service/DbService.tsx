@@ -1,3 +1,4 @@
+import { getTwoDigitDayAndMonth } from '@/app/DateFormatter';
 import {
     getWedgeChart,
     insertDrillResult,
@@ -25,5 +26,16 @@ export const insertDrillResultService = (name: any, result: boolean) => {
 }
 
 export const getAllDrillHistoryService = () => {
-    return getAllDrillHistory();
+    let history: any[] = [];
+
+    getAllDrillHistory().forEach((drill) => {
+        history.push({
+            Id: drill.Id,
+            Name: drill.Name,
+            Result: drill.Result,
+            Created_At: getTwoDigitDayAndMonth(drill.Created_At)
+        });
+    })
+
+    return history;
 }

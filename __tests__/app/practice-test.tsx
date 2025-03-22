@@ -1,9 +1,10 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import View from '../../app/(tabs)/practice';
+import { getAllDrillHistoryService } from '@/service/DbService';
 
 jest.mock('../../service/DbService', () => ({
-    getAllDrillHistoryService: jest.fn(() => [])
+    getAllDrillHistoryService: jest.fn()
 }));
 
 jest.mock('react-native-gesture-handler', () => {
@@ -17,6 +18,10 @@ jest.mock('react-native-gesture-handler', () => {
 });
 
 describe('Practice page ', () => {
+    beforeEach(() => {
+        getAllDrillHistoryService.mockReturnValue([]);
+    });
+
     it('renders correctly with the default text', () => {
         const { getByText } = render(<View />);
 
@@ -57,7 +62,6 @@ describe('Practice page ', () => {
     });
 
     it('renders correctly drill history headings', () => {
-        // Drills (Id, Name, Result, Created_At)
         const { getByText, getByTestId } = render(<View />);
 
         const subMenuItem = getByTestId('practice-sub-menu-history');
@@ -67,5 +71,23 @@ describe('Practice page ', () => {
         expect(getByText('Drill')).toBeTruthy();
         expect(getByText('Met')).toBeTruthy();
         expect(getByText('When')).toBeTruthy();
+    });
+
+    it('renders correctly drill history items', () => {
+        const drills = [
+            { Id: 1, Name: 'Fake - ladder', Result: 1, Created_At: '2025-03-17T13:01:00.684Z' },
+            { Id: 2, Name: 'Fake - clock', Result: 0, Created_At: '2025-03-16T13:01:00.684Z' }
+        ];
+
+        getAllDrillHistoryService.mockReturnValue(drills);
+
+        const { getByText, getByTestId } = render(<View />);
+
+        const subMenuItem = getByTestId('practice-sub-menu-history');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Fake - ladder')).toBeTruthy();
+        expect(getByText('Fake - clock')).toBeTruthy();
     });
 });

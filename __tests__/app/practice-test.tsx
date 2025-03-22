@@ -57,7 +57,7 @@ describe('Practice page ', () => {
     });
 
     it('renders correctly drill history', () => {
-        // Drills (Id, Name, Result
+        // Drills (Id, Name, Result, Created_At)
         const { getByText, getByTestId } = render(<View />);
 
         const subMenuItem = getByTestId('practice-sub-menu-history');
@@ -65,6 +65,7 @@ describe('Practice page ', () => {
         fireEvent.press(subMenuItem);
 
         expect(getByText('Drill')).toBeTruthy();
-        expect(getByText('Target')).toBeTruthy();
+        expect(getByText('Met')).toBeTruthy();
+        expect(getByText('When')).toBeTruthy();
     });
 });

@@ -90,4 +90,38 @@ describe('Practice page ', () => {
         expect(getByText('Fake - ladder')).toBeTruthy();
         expect(getByText('Fake - clock')).toBeTruthy();
     });
+
+    it('renders correctly drill history items paged', () => {
+        const drills = [
+            { Id: 1, Name: 'Fake - 1', Result: 1, Created_At: '2025-03-17T13:01:00.684Z' },
+            { Id: 2, Name: 'Fake - 2', Result: 0, Created_At: '2025-03-16T13:01:00.684Z' },
+            { Id: 3, Name: 'Fake - 3', Result: 0, Created_At: '2025-03-16T13:01:00.684Z' },
+            { Id: 4, Name: 'Fake - 4', Result: 0, Created_At: '2025-03-16T13:01:00.684Z' },
+            { Id: 5, Name: 'Fake - 5', Result: 0, Created_At: '2025-03-16T13:01:00.684Z' },
+            { Id: 6, Name: 'Fake - 6', Result: 0, Created_At: '2025-03-16T13:01:00.684Z' },
+            { Id: 7, Name: 'Fake - 7', Result: 1, Created_At: '2025-03-17T13:01:00.684Z' },
+            { Id: 8, Name: 'Fake - 8', Result: 0, Created_At: '2025-03-16T13:01:00.684Z' },
+            { Id: 9, Name: 'Fake - 9', Result: 0, Created_At: '2025-03-16T13:01:00.684Z' },
+            { Id: 10, Name: 'Fake - 10', Result: 0, Created_At: '2025-03-16T13:01:00.684Z' },
+        ];
+
+        getAllDrillHistoryService.mockReturnValue(drills);
+
+        const { getByText, getByTestId, queryByText } = render(<View />);
+
+        const subMenuItem = getByTestId('practice-sub-menu-history');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Fake - 1')).toBeTruthy();
+        expect(getByText('Fake - 2')).toBeTruthy();
+        expect(getByText('Fake - 3')).toBeTruthy();
+        expect(getByText('Fake - 4')).toBeTruthy();
+        expect(getByText('Fake - 5')).toBeTruthy();
+        expect(getByText('Fake - 6')).toBeTruthy();
+        expect(getByText('Fake - 7')).toBeTruthy();
+        expect(getByText('Fake - 8')).toBeTruthy();
+        expect(queryByText('Fake - 9')).toBeNull();
+        expect(queryByText('Fake - 10')).toBeNull();
+    });
 });

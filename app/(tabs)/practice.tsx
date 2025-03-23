@@ -14,6 +14,8 @@ export default function Practice() {
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('short-game');
   const [loading, setLoading] = useState(true);
+  const [drillHistoryIndex, setDrillHistoryIndex] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const [drillHistory, setDrillHistory] = useState<any[]>([]);
 
   const handleSubMenu = (sectionName: string) => {
@@ -26,7 +28,14 @@ export default function Practice() {
 
   const fetchData = () => {
     try {
-      setDrillHistory(getAllDrillHistoryService());
+      const rows = 8;
+      const items = getAllDrillHistoryService();
+
+      const numberOfPages = items.length % 8 === 0 ? items.length / rows : Math.ceil(items.length / rows) + 1;
+
+      setPageCount(numberOfPages);
+
+      setDrillHistory(items.slice(drillHistoryIndex, rows));
     } catch (e) {
       console.error("Error fetching drill history:", e);
     } finally {
@@ -152,44 +161,75 @@ export default function Practice() {
                 <ActivityIndicator size="large" color={colours.yellow} />
               </View>
             ) : (
-              <View>
-                <View style={styles.viewContainer}>
-                  <Text style={[styles.subHeaderText, styles.marginTop]}>
+              <View style={[{ flex: 1, justifyContent: 'center', alignItems: 'center', borderColor: 'yellow', borderWidth: 2 }]}>
+                <View >
+                  <Text style={{
+                    color: colours.yellow,
+                    fontSize: fontSizes.subHeader,
+                    alignItems: 'baseline',
+                    padding: 6,
+                    marginTop: 10
+                  }}>
                     Drill history
                   </Text>
                 </View>
 
-                <ScrollView style={styles.container}>
-                  <View style={styles.table}>
-                    <View style={[styles.row]}>
-                      <Text style={[styles.cell, styles.normalText, { color: colours.yellow, fontWeight: 'bold', flex: 7 / 12 }]}>Drill</Text>
-                      <Text style={[styles.cell, styles.normalText, { color: colours.yellow, fontWeight: 'bold', flex: 2 / 12 }]}>Met</Text>
-                      <Text style={[styles.cell, styles.normalText, { color: colours.yellow, fontWeight: 'bold', flex: 3 / 12 }]}>When</Text>
+                <ScrollView
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  style={{ borderColor: 'red', borderWidth: 2, width: '100%' }}
+                >
+                  <>
+                    <View style={{ width: '100%', flexDirection: 'row' }}>
+                      <Text style={[styles.subHeaderText, { flex: 7 / 12 }]}>
+                        Drill
+                      </Text>
+                      <Text style={[styles.subHeaderText, { flex: 2 / 12 }]}>
+                        Met
+                      </Text>
+                      <Text style={[styles.subHeaderText, { flex: 3 / 12 }]}>
+                        When
+                      </Text>
                     </View>
 
                     {drillHistory.map((item) => (
                       <View key={item.Id} style={[styles.row]}>
-                        <Text style={[styles.cell, { fontSize: fontSizes.normal, fontWeight: 'normal', textAlign: 'left', flex: 7 / 12 }]}>
+                        <Text style={[styles.cell, { textAlign: 'left', flex: 7 / 12 }]}>
                           {item.Name}
                         </Text>
-                        <Text style={[styles.cell, { fontSize: fontSizes.normal, fontWeight: 'normal', flex: 2 / 12 }]}>
+                        <Text style={[styles.cell, { flex: 2 / 12 }]}>
                           <MaterialIcons
                             name={item.Result === 1 ? 'check' : 'clear'}
                             color={item.Result === 1 ? colours.yellow : colours.errorText}
                             size={24} />
                         </Text>
-                        <Text style={[styles.cell, { fontSize: fontSizes.normal, fontWeight: 'normal', flex: 3 / 12 }]}>
+                        <Text style={[styles.cell, { flex: 3 / 12 }]}>
                           {item.Created_At}
                         </Text>
                       </View>
                     ))}
-                  </View>
+
+                  </>
                 </ScrollView>
+
+                <View style={styles.scrollIndicatorContainer}>
+                  {[...Array(pageCount).keys()].map((index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.scrollIndicatorDot,
+                        drillHistoryIndex === index && styles.scrollActiveDot,
+                      ]}
+                    />
+                  ))}
+
+                </View>
               </View>
+
             )}
           </View>
         )}
       </ScrollView>
-    </GestureHandlerRootView>
+    </GestureHandlerRootView >
   )
 }

@@ -19,7 +19,7 @@ jest.mock('react-native-gesture-handler', () => {
 
 describe('Practice page ', () => {
     beforeEach(() => {
-        getAllDrillHistoryService.mockReturnValue([]);
+        getAllDrillHistoryService.mockReturnValue([[{ Id: 1, Name: 'Fake', Result: 1, Created_At: '' }]]);
     });
 
     it('renders correctly with the default text', () => {
@@ -61,16 +61,16 @@ describe('Practice page ', () => {
         expect(getByText('Drill history')).toBeTruthy();
     });
 
-    it('renders correctly drill history headings', () => {
-        const { getByText, getByTestId } = render(<View />);
+    it('renders correctly drill history headings on each page', () => {
+        const { getAllByText, getByTestId } = render(<View />);
 
         const subMenuItem = getByTestId('practice-sub-menu-history');
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Drill')).toBeTruthy();
-        expect(getByText('Met')).toBeTruthy();
-        expect(getByText('When')).toBeTruthy();
+        expect(getAllByText('Drill').length).toBeGreaterThanOrEqual(2);
+        expect(getAllByText('Met').length).toBeGreaterThanOrEqual(2);
+        expect(getAllByText('When').length).toBeGreaterThanOrEqual(2);
     });
 
     it('renders correctly drill history items', () => {
@@ -107,7 +107,7 @@ describe('Practice page ', () => {
 
         getAllDrillHistoryService.mockReturnValue(drills);
 
-        const { getByText, getByTestId, queryByText } = render(<View />);
+        const { getByText, getByTestId } = render(<View />);
 
         const subMenuItem = getByTestId('practice-sub-menu-history');
 
@@ -121,7 +121,7 @@ describe('Practice page ', () => {
         expect(getByText('Fake - 6')).toBeTruthy();
         expect(getByText('Fake - 7')).toBeTruthy();
         expect(getByText('Fake - 8')).toBeTruthy();
-        expect(queryByText('Fake - 9')).toBeNull();
-        expect(queryByText('Fake - 10')).toBeNull();
+        expect(getByText('Fake - 9')).toBeTruthy();
+        expect(getByText('Fake - 10')).toBeTruthy();
     });
 });

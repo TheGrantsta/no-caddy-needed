@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Dimensions, FlatList, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import styles from "@/assets/stlyes";
 import colours from "@/assets/colours";
@@ -15,8 +15,8 @@ export default function Practice() {
   const [section, setSection] = useState('short-game');
   const [loading, setLoading] = useState(true);
   const [drillHistoryIndex, setDrillHistoryIndex] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
   const [drillHistory, setDrillHistory] = useState<any[]>([]);
+  const flatListRef = useRef(null);
 
   const handleSubMenu = (sectionName: string) => {
     setSection(sectionName);
@@ -28,19 +28,23 @@ export default function Practice() {
 
   const fetchData = () => {
     try {
-      const rows = 8;
       const items = getAllDrillHistoryService();
+      const pages = [items.slice(0, 5), items.slice(5)];
 
-      const numberOfPages = items.length % 8 === 0 ? items.length / rows : Math.ceil(items.length / rows) + 1;
-
-      setPageCount(numberOfPages);
-
-      setDrillHistory(items.slice(drillHistoryIndex, rows));
+      setDrillHistory(pages);
     } catch (e) {
       console.error("Error fetching drill history:", e);
     } finally {
       setLoading(false);
     }
+  };
+
+  const { width } = Dimensions.get('window');
+
+  const handleScroll = (event: any) => {
+    const scrollPosition = event.nativeEvent.contentOffset.x;
+    const index = Math.round(scrollPosition / width);
+    setDrillHistoryIndex(index);
   };
 
   const onRefresh = () => {
@@ -161,59 +165,84 @@ export default function Practice() {
                 <ActivityIndicator size="large" color={colours.yellow} />
               </View>
             ) : (
-              <View style={[{ flex: 1, justifyContent: 'center', alignItems: 'center', borderColor: 'yellow', borderWidth: 2 }]}>
-                <View >
-                  <Text style={{
-                    color: colours.yellow,
-                    fontSize: fontSizes.subHeader,
-                    alignItems: 'baseline',
-                    padding: 6,
-                    marginTop: 10
-                  }}>
-                    Drill history
-                  </Text>
+              <View>
+                <Text style={{
+                  color: colours.yellow,
+                  fontSize: fontSizes.subHeader,
+                  alignItems: 'baseline',
+                  padding: 6,
+                  marginTop: 10
+                }}>
+                  Drill history
+                </Text>
+                {/* <View style={[{ justifyContent: 'center', alignItems: 'center' }]}>
+                  
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <View style={{ width: '100%', flexDirection: 'row' }}>
+                    <Text style={[styles.subHeaderText, { flex: 7 / 12 }]}>
+                      Drill
+                    </Text>
+                    <Text style={[styles.subHeaderText, { flex: 2 / 12 }]}>
+                      Met
+                    </Text>
+                    <Text style={[styles.subHeaderText, { flex: 3 / 12 }]}>
+                      When
+                    </Text>
+                  </View> */}
+
+                <View style={styles.horizontalScrollContainer}>
+                  <FlatList
+                    ref={flatListRef}
+                    data={drillHistory}
+                    keyExtractor={(_, index) => index.toString()}
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    onScroll={handleScroll}
+                    renderItem={({ item }) => (
+                      <View style={[localStyles.page, styles.scrollWrapper, { margin: 10 }]}>
+                        <View style={{ flexDirection: 'row' }}>
+                          <Text style={[styles.subHeaderText, { flex: 9 / 12 }]}>
+                            Drill
+                          </Text>
+                          <Text style={[styles.subHeaderText, { flex: 1 / 12 }]}>
+                            Met
+                          </Text>
+                          <Text style={[styles.subHeaderText, { flex: 2 / 12 }]}>
+                            When
+                          </Text>
+                        </View>
+                        <FlatList
+                          data={item}
+                          keyExtractor={(_, index) => index.toString()}
+                          renderItem={({ item }) => (
+                            <View style={[styles.horizontalScrollContainer, { width: width - 50 }]}>
+                              <View style={[{ flexDirection: 'row' }]}>
+
+                                <Text style={[styles.cell, { textAlign: 'left', flex: 7 / 12, borderWidth: 0 }]}>
+                                  {item.Name}
+                                </Text>
+                                <Text style={[styles.cell, { flex: 2 / 12, borderWidth: 0 }]}>
+                                  <MaterialIcons
+                                    name={item.Result === 1 ? 'check' : 'clear'}
+                                    color={item.Result === 1 ? colours.yellow : colours.errorText}
+                                    size={24} />
+                                </Text>
+                                <Text style={[styles.cell, { flex: 3 / 12, borderWidth: 0 }]}>
+                                  {item.Created_At}
+                                </Text>
+                              </View>
+                            </View>
+                          )}
+                        />
+                      </View>
+                    )}
+                  />
                 </View>
 
-                <ScrollView
-                  pagingEnabled
-                  showsHorizontalScrollIndicator={false}
-                  style={{ borderColor: 'red', borderWidth: 2, width: '100%' }}
-                >
-                  <>
-                    <View style={{ width: '100%', flexDirection: 'row' }}>
-                      <Text style={[styles.subHeaderText, { flex: 7 / 12 }]}>
-                        Drill
-                      </Text>
-                      <Text style={[styles.subHeaderText, { flex: 2 / 12 }]}>
-                        Met
-                      </Text>
-                      <Text style={[styles.subHeaderText, { flex: 3 / 12 }]}>
-                        When
-                      </Text>
-                    </View>
-
-                    {drillHistory.map((item) => (
-                      <View key={item.Id} style={[styles.row]}>
-                        <Text style={[styles.cell, { textAlign: 'left', flex: 7 / 12 }]}>
-                          {item.Name}
-                        </Text>
-                        <Text style={[styles.cell, { flex: 2 / 12 }]}>
-                          <MaterialIcons
-                            name={item.Result === 1 ? 'check' : 'clear'}
-                            color={item.Result === 1 ? colours.yellow : colours.errorText}
-                            size={24} />
-                        </Text>
-                        <Text style={[styles.cell, { flex: 3 / 12 }]}>
-                          {item.Created_At}
-                        </Text>
-                      </View>
-                    ))}
-
-                  </>
-                </ScrollView>
-
                 <View style={styles.scrollIndicatorContainer}>
-                  {[...Array(pageCount).keys()].map((index) => (
+                  {drillHistory.map((index) => (
                     <View
                       key={index}
                       style={[
@@ -225,11 +254,33 @@ export default function Practice() {
 
                 </View>
               </View>
-
             )}
           </View>
         )}
       </ScrollView>
     </GestureHandlerRootView >
   )
-}
+};
+
+const localStyles = StyleSheet.create({
+  page: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  item: {
+    width: 100,
+    height: 100,
+    backgroundColor: "#4A90E2",
+    margin: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+  },
+  text: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});
+

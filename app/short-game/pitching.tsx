@@ -68,7 +68,6 @@ export default function Pitching() {
         </View>
     );
 
-
     const renderDrillItem = ({ item }: any) => (
         <View style={styles.scrollItemContainer}>
             <View style={[styles.container, styles.scrollWrapper]}>

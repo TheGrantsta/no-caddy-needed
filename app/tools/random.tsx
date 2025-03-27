@@ -9,9 +9,9 @@ import fontSizes from '@/assets/font-sizes';
 
 export default function Random() {
     const [refreshing, setRefreshing] = useState(false);
-    const [rangeText, setRangeText] = useState('');
+    const [rangeText, setRangeText] = useState('30-100');
     const [rangeError, setRangeError] = useState('');
-    const [incrementText, setIncrementText] = useState('');
+    const [incrementText, setIncrementText] = useState('10');
     const [incrementError, setIncrementError] = useState('');
     const [randomNumber, setRandomNumber] = useState(0);
 
@@ -41,6 +41,8 @@ export default function Random() {
         setRefreshing(true);
 
         setTimeout(() => {
+            setRangeText('30-100');
+            setIncrementText('10');
             setRangeError('');
             setIncrementError('');
             setRandomNumber(0);
@@ -73,20 +75,22 @@ export default function Random() {
                         </Text>
                     </View>
 
-                    <Text style={styles.textLabel}>
-                        Range
-                    </Text>
-                    <TextInput
-                        style={[styles.textInput, rangeError ? styles.textInputError : null]}
-                        value={rangeText}
-                        placeholder='Lower and upper limits'
-                        onChangeText={(value) => {
-                            handleRangeInput(value)
-                            if (rangeError) setRangeError('');
-                        }}
-                        keyboardType='numbers-and-punctuation'
-                    />
-                    {rangeError ? <Text style={styles.errorText}>{rangeError}</Text> : null}
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={[styles.textLabel, { width: 80 }]}>
+                            Range
+                        </Text>
+                        <TextInput
+                            style={[styles.textInput, rangeError ? styles.textInputError : null, { width: 150 }]}
+                            value={rangeText}
+                            placeholder='Lower and upper limits'
+                            onChangeText={(value) => {
+                                handleRangeInput(value)
+                                if (rangeError) setRangeError('');
+                            }}
+                            keyboardType='numbers-and-punctuation'
+                        />
+                    </View>
+                    {rangeError ? <Text style={[styles.errorText, { marginLeft: 100 }]}>{rangeError}</Text> : null}
 
                     <View>
                         <Text style={styles.smallestText}>
@@ -94,44 +98,55 @@ export default function Random() {
                         </Text>
                     </View>
 
-                    <Text style={styles.textLabel}>
-                        Increment
-                    </Text>
-                    <TextInput
-                        style={[styles.textInput, incrementError ? styles.textInputError : null]}
-                        value={incrementText}
-                        placeholder='Increment'
-                        onChangeText={(value) => {
-                            handleIncrementInput(value)
-                            if (incrementError) setIncrementError('');
-                        }}
-                        keyboardType='number-pad'
-                    />
-                    {incrementError ? <Text style={styles.errorText}>{incrementError}</Text> : null}
-                </View>
+                    <View style={[{ flexDirection: 'row' }, styles.marginTop]}>
+                        <Text style={[styles.textLabel, { width: 80 }]}>
+                            Increment
+                        </Text>
+                        <TextInput
+                            style={[styles.textInput, incrementError ? styles.textInputError : null, { width: 100 }]}
+                            value={incrementText}
+                            placeholder='Increment'
+                            onChangeText={(value) => {
+                                handleIncrementInput(value)
+                                if (incrementError) setIncrementError('');
+                            }}
+                            keyboardType='number-pad'
+                        />
+                    </View>
+                    {incrementError ? <Text style={[styles.errorText, { marginLeft: 100 }]}>{incrementError}</Text> : null}
 
-                <View>
-                    <Text style={styles.smallestText}>
-                        Increment: specifies the "step" between the random numbers; for example, an increment of 5 would mean the random number is divisible by 5
-                    </Text>
-                </View>
-
-                {randomNumber > 0 && (
-                    <View style={localStyles.randomNumberContainer}>
-                        <Text style={localStyles.randomNumberText}>
-                            {randomNumber}
+                    <View>
+                        <Text style={styles.smallestText}>
+                            Increment: specifies the "step" between the random numbers; for example, an increment of 5 would mean the random number is divisible by 5
                         </Text>
                     </View>
-                )}
 
-                <View style={styles.marginTop}>
-                    <TouchableOpacity testID='save-button' style={styles.button} onPress={handleGenerate}>
-                        <Text style={styles.buttonText}>
-                            Run
-                        </Text>
-                    </TouchableOpacity>
+                    {/* {randomNumber > 0 && (
+                        <View style={localStyles.randomNumberContainer}>
+                            <Text style={localStyles.randomNumberText}>
+                                {randomNumber}
+                            </Text>
+                        </View>
+                    )} */}
+
+                    <View style={styles.marginTop}>
+                        <TouchableOpacity testID='save-button' style={styles.button} onPress={handleGenerate}>
+                            <Text style={styles.buttonText}>
+                                Run
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {randomNumber > 0 && (
+                        <View style={localStyles.randomNumberContainer}>
+                            <Text style={localStyles.randomNumberText}>
+                                {randomNumber}
+                            </Text>
+                        </View>
+                    )}
+
+                    <Chevrons heading='Purpose' points={points} />
                 </View>
-                <Chevrons heading='Purpose' points={points} />
             </ScrollView>
         </GestureHandlerRootView>
     );
@@ -139,11 +154,11 @@ export default function Random() {
 
 const localStyles = StyleSheet.create({
     randomNumberContainer: {
-        backgroundColor: colours.backgroundAlternate,
-        borderColor: colours.white,
-        borderWidth: 1,
+        backgroundColor: colours.background,
+        borderColor: colours.yellow,
+        borderWidth: 2,
         borderRadius: 12,
-        marginTop: 15,
+        margin: 15,
         padding: 10,
         alignItems: 'center',
         justifyContent: 'center',

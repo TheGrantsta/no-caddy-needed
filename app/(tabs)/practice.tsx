@@ -44,6 +44,7 @@ export default function Practice() {
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;
     const index = Math.round(scrollPosition / width);
+
     setDrillHistoryIndex(index);
   };
 
@@ -175,21 +176,6 @@ export default function Practice() {
                 }}>
                   Drill history
                 </Text>
-                {/* <View style={[{ justifyContent: 'center', alignItems: 'center' }]}>
-                  
-                </View>
-                <View style={{ flexDirection: 'row' }}>
-                  <View style={{ width: '100%', flexDirection: 'row' }}>
-                    <Text style={[styles.subHeaderText, { flex: 7 / 12 }]}>
-                      Drill
-                    </Text>
-                    <Text style={[styles.subHeaderText, { flex: 2 / 12 }]}>
-                      Met
-                    </Text>
-                    <Text style={[styles.subHeaderText, { flex: 3 / 12 }]}>
-                      When
-                    </Text>
-                  </View> */}
 
                 <View style={styles.horizontalScrollContainer}>
                   <FlatList
@@ -242,7 +228,7 @@ export default function Practice() {
                 </View>
 
                 <View style={styles.scrollIndicatorContainer}>
-                  {drillHistory.map((index) => (
+                  {drillHistory.map((_, index) => (
                     <View
                       key={index}
                       style={[
@@ -251,7 +237,6 @@ export default function Practice() {
                       ]}
                     />
                   ))}
-
                 </View>
               </View>
             )}

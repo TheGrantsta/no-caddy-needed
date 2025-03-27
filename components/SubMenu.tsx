@@ -3,7 +3,7 @@ import colours from '../assets/colours';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
-    showSubMenu: 'practice' | 'on-course' | 'putting' | 'chipping' | 'bunker';
+    showSubMenu: 'practice' | 'on-course' | 'putting' | 'chipping' | 'bunker' | 'pitching';
     selectedItem: string;
     handleSubMenu: (arg: string) => void;
 }

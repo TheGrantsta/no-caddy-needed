@@ -140,7 +140,7 @@ export default function Course() {
               <Chevrons heading='Approach shots' points={points} />
 
               <Text style={[styles.normalText, styles.marginTop, { padding: 10 }]}>
-                * Your shot shape might be different with different clubs; for example, do you draw your wedges and fade your mid-irons?
+                * Your shot shape might be different with different clubs; for example, draw your wedges & fade your mid-irons
               </Text>
               <Text style={[styles.normalText, styles.marginTop, { padding: 10 }]}>
                 Know your tendencies including when hitting full & partial shots

@@ -8,13 +8,29 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/full-logo-transparent.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffd33d"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "splash": {
+        "image": "./assets/images/full-logo-transparent.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffd33d"
+      },
+      "bundleIdentifier": "com.grantsta.nocaddyneeded"
     },
     "android": {
+      "splash": {
+        "image": "./assets/images/full-logo-transparent.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffd33d"
+      },
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/full-logo-transparent.png",
+        "backgroundColor": "#ffd33d"
       },
       "package": "com.grantsta.nocaddyneeded"
     },
@@ -40,16 +56,7 @@
           }
         }
       ],
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
+      "expo-router"
     ],
     "experiments": {
       "typedRoutes": true

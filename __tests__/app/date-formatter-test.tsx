@@ -1,4 +1,4 @@
-import { getTwoDigitDayAndMonth } from '../../app/DateFormatter';
+import getTwoDigitDayAndMonth from '../../app/DateFormatter';
 
 describe('Date formatter', () => {
     it('return two digit day and month with "/" delimitator', () => {

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image } from "react-native";
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -16,6 +16,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const [appIsReady, setAppIsReady] = useState(false);
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -39,12 +40,23 @@ export default function RootLayout() {
 
     setupDatabase();
 
-    if (loaded) {
-      SplashScreen.hideAsync();
+    async function prepareApp() {
+      try {
+        // Simulate loading process (e.g., fetching data, initializing app)
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        await SplashScreen.hideAsync();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
     }
-  }, [loaded]);
 
-  if (!loaded) {
+    prepareApp();
+
+  }, [appIsReady]);
+
+  if (!appIsReady) {
     return null;
   }
 

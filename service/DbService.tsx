@@ -1,4 +1,4 @@
-import { getTwoDigitDayAndMonth } from '@/app/DateFormatter';
+import getTwoDigitDayAndMonth from '@/app/DateFormatter';
 import {
     getWedgeChart,
     insertDrillResult,

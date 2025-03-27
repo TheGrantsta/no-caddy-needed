@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image } from "react-native";
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -23,7 +23,7 @@ export default function RootLayout() {
 
   const LogoTitle = () => (
     <Image
-      source={require("../assets/images/FullLogo_Transparent_NoBuffer.png")}
+      source={require("../assets/images/full-logo-transparent-no-buffer.png")}
       style={{ width: 120, height: 40, resizeMode: "contain" }}
     />
   );
@@ -42,7 +42,6 @@ export default function RootLayout() {
 
     async function prepareApp() {
       try {
-        // Simulate loading process (e.g., fetching data, initializing app)
         await new Promise(resolve => setTimeout(resolve, 3000));
         await SplashScreen.hideAsync();
       } catch (e) {

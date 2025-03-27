@@ -52,6 +52,7 @@ export default function Practice() {
     setRefreshing(true);
 
     setTimeout(() => {
+      fetchData();
       setRefreshing(false);
     }, 750);
   };

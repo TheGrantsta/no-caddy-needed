@@ -30,7 +30,7 @@ export default function Chipping() {
     };
 
     const saveDrillResultHandle = (label: string, result: boolean) => {
-        insertDrillResultService(label, result).then((success) => {
+        insertDrillResultService(`Chipping - ${label}`, result).then((success) => {
             const msg = success ? "Drill result saved" : "Drill result not saved";
 
             toast.show(msg, {

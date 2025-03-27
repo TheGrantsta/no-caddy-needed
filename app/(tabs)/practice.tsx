@@ -29,7 +29,7 @@ export default function Practice() {
   const fetchData = () => {
     try {
       const items = getAllDrillHistoryService();
-      const pages = [items.slice(0, 5), items.slice(5)];
+      const pages = items.length > 0 ? [items.slice(0, 5), items.slice(5)] : [];
 
       setDrillHistory(pages);
     } catch (e) {
@@ -175,7 +175,7 @@ export default function Practice() {
                   padding: 6,
                   marginTop: 10
                 }}>
-                  Drill history
+                  {drillHistory.length > 0 ? "Drill History" : "No drill history yet"}
                 </Text>
 
                 <View style={styles.horizontalScrollContainer}>
@@ -197,7 +197,7 @@ export default function Practice() {
                             Met
                           </Text>
                           <Text style={[styles.subHeaderText, { flex: 2 / 12 }]}>
-                            When
+                            Date
                           </Text>
                         </View>
                         <FlatList

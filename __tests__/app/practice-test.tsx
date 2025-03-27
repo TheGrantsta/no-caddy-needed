@@ -7,6 +7,9 @@ jest.mock('../../service/DbService', () => ({
     getAllDrillHistoryService: jest.fn()
 }));
 
+// Explicitly cast it as a Jest mock function
+const mockedGetAllDrillHistoryService = getAllDrillHistoryService as jest.Mock;
+
 jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
     return {
@@ -19,7 +22,7 @@ jest.mock('react-native-gesture-handler', () => {
 
 describe('Practice page ', () => {
     beforeEach(() => {
-        getAllDrillHistoryService.mockReturnValue([[{ Id: 1, Name: 'Fake', Result: 1, Created_At: '' }]]);
+        mockedGetAllDrillHistoryService.mockReturnValue([[{ Id: 1, Name: 'Fake', Result: 1, Created_At: '' }]]);
     });
 
     it('renders correctly with the default text', () => {
@@ -52,13 +55,20 @@ describe('Practice page ', () => {
     });
 
     it('renders correctly history options', () => {
+        const drills = [
+            { Id: 1, Name: 'Fake - ladder', Result: 1, Created_At: '2025-03-17T13:01:00.684Z' },
+            { Id: 2, Name: 'Fake - clock', Result: 0, Created_At: '2025-03-16T13:01:00.684Z' }
+        ];
+
+        mockedGetAllDrillHistoryService.mockReturnValue(drills);
+
         const { getByText, getByTestId } = render(<View />);
 
         const subMenuItem = getByTestId('practice-sub-menu-history');
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Drill history')).toBeTruthy();
+        expect(getByText('Drill History')).toBeTruthy();
     });
 
     it('renders correctly drill history headings on each page', () => {
@@ -70,7 +80,19 @@ describe('Practice page ', () => {
 
         expect(getAllByText('Drill').length).toBeGreaterThanOrEqual(2);
         expect(getAllByText('Met').length).toBeGreaterThanOrEqual(2);
-        expect(getAllByText('When').length).toBeGreaterThanOrEqual(2);
+        expect(getAllByText('Date').length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('renders correctly when drill history is empty', () => {
+        mockedGetAllDrillHistoryService.mockReturnValue([]);
+
+        const { getByText, getByTestId } = render(<View />);
+
+        const subMenuItem = getByTestId('practice-sub-menu-history');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('No drill history yet')).toBeTruthy();
     });
 
     it('renders correctly drill history items', () => {
@@ -79,7 +101,7 @@ describe('Practice page ', () => {
             { Id: 2, Name: 'Fake - clock', Result: 0, Created_At: '2025-03-16T13:01:00.684Z' }
         ];
 
-        getAllDrillHistoryService.mockReturnValue(drills);
+        mockedGetAllDrillHistoryService.mockReturnValue(drills);
 
         const { getByText, getByTestId } = render(<View />);
 
@@ -105,7 +127,7 @@ describe('Practice page ', () => {
             { Id: 10, Name: 'Fake - 10', Result: 0, Created_At: '2025-03-16T13:01:00.684Z' },
         ];
 
-        getAllDrillHistoryService.mockReturnValue(drills);
+        mockedGetAllDrillHistoryService.mockReturnValue(drills);
 
         const { getByText, getByTestId } = render(<View />);
 

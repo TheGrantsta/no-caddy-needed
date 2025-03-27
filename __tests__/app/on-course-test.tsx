@@ -42,7 +42,7 @@ describe('Course page ', () => {
     it('renders approach tendencies', () => {
         const { getByText } = render(<View />);
 
-        expect(getByText('* Your shot shape might be different with different clubs; for example, do you draw your wedges and fade your mid-irons?')).toBeTruthy();
+        expect(getByText('* Your shot shape might be different with different clubs; for example, draw your wedges & fade your mid-irons')).toBeTruthy();
         expect(getByText('Know your tendencies including when hitting full & partial shots')).toBeTruthy();
     });
 

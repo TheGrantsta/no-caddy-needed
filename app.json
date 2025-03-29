@@ -9,14 +9,14 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/full-logo-transparent.png",
+      "image": "./assets/images/full-logo-transparent-square.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffd33d"
     },
     "ios": {
       "supportsTablet": true,
       "splash": {
-        "image": "./assets/images/full-logo-transparent.png",
+        "image": "./assets/images/full-logo-transparent-square.png",
         "resizeMode": "contain",
         "backgroundColor": "#ffd33d"
       },
@@ -24,12 +24,12 @@
     },
     "android": {
       "splash": {
-        "image": "./assets/images/full-logo-transparent.png",
+        "image": "./assets/images/full-logo-transparent-square.png",
         "resizeMode": "contain",
         "backgroundColor": "#ffd33d"
       },
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/full-logo-transparent.png",
+        "foregroundImage": "./assets/images/full-logo-transparent-square.png",
         "backgroundColor": "#ffd33d"
       },
       "package": "com.grantsta.nocaddyneeded"

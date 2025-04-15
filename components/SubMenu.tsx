@@ -31,7 +31,7 @@ const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {
     return (
         <View style={localStyles.subMenuContainer}>
             {subMenuItems.map((item) => (
-                <View key={item.testId}>
+                <View key={item.testId} style={[localStyles.subMenuItemContainer, selectedItem === item.name ? localStyles.subMenuItemContainerSelected : null]}>
                     <TouchableOpacity testID={item.testId} onPress={() => handleSubMenu(item.name)}>
                         <Text style={[localStyles.subMenuItem, selectedItem === item.name ? localStyles.subMenuItemSelected : null]}>
                             {item.title}
@@ -47,20 +47,29 @@ export default SubMenu;
 
 const localStyles = StyleSheet.create({
     subMenuContainer: {
-        paddingTop: 5,
-        paddingBottom: 5,
+        padding: 7,
+        paddingBottom: 0,
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        borderBottomColor: colours.yellow,
-        borderBottomWidth: 0.5,
         backgroundColor: colours.background,
+        borderBottomWidth: 0.5,
+        borderBottomColor: colours.yellow
+    },
+    subMenuItemContainer: {
+        flex: 1,
+        alignItems: 'center',
+        borderColor: colours.yellow,
+        borderBottomWidth: 4,
+        borderBottomColor: colours.background
+    },
+    subMenuItemContainerSelected: {
+        borderBottomColor: colours.yellow,
     },
     subMenuItem: {
         color: colours.yellow,
         fontSize: fontSizes.normal,
     },
     subMenuItemSelected: {
-        textDecorationLine: 'underline',
         textDecorationColor: colours.yellow,
         textDecorationStyle: 'solid',
         color: colours.yellow,

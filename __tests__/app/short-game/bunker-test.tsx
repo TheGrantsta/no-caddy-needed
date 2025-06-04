@@ -62,6 +62,22 @@ describe('Bunker page ', () => {
         expect(getByText('10-Point game!')).toBeTruthy();
     });
 
+    it('switches back to drills section when SubMenu is used', () => {
+        const { getByTestId, getByText } = render(<View />);
+
+        let subMenuItem = getByTestId('bunker-sub-menu-bunker-games');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Bunker games')).toBeTruthy();
+
+        subMenuItem = getByTestId('bunker-sub-menu-bunker-drills');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Bunker drills')).toBeTruthy();
+    });
+
     it('calls insert button when saving drill result', () => {
         const { getAllByTestId } = render(<View />);
 

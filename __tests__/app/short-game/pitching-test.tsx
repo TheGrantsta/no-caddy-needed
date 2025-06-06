@@ -62,6 +62,22 @@ describe('Pitching page ', () => {
         expect(getByText('5-ball game!')).toBeTruthy();
     });
 
+    it('switches back to drills section when SubMenu is used', () => {
+        const { getByTestId, getByText } = render(<View />);
+
+        let subMenuItem = getByTestId('pitching-sub-menu-pitching-games');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Pitching games')).toBeTruthy();
+
+        subMenuItem = getByTestId('pitching-sub-menu-pitching-drills');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Pitching drills')).toBeTruthy();
+    });
+
     it('calls insert button when saving drill result', () => {
         const { getAllByTestId } = render(<View />);
 
@@ -76,5 +92,28 @@ describe('Pitching page ', () => {
 
             expect(insertDrillResultService).toHaveBeenCalledTimes(1);
         });
+    });
+
+    it('shows error toast when saving drill result fails', async () => {
+        jest.resetModules();
+        const mockShow = jest.fn();
+        jest.doMock('react-native-toast-notifications', () => ({
+            useToast: () => ({ show: mockShow })
+        }));
+        jest.doMock('@/service/DbService', () => ({
+            insertDrillResultService: jest.fn().mockResolvedValue(false)
+        }));
+
+        const { getAllByTestId } = render(<View />);
+
+        const saveButtons = getAllByTestId('save-drill-result-button');
+
+        act(() => {
+            fireEvent.press(saveButtons[0]);
+            jest.runOnlyPendingTimers();
+            jest.advanceTimersByTime(1000);
+        });
+
+        expect(mockShow).toHaveBeenCalledWith(expect.stringContaining('not saved'), expect.any(Object));
     });
 });

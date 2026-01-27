@@ -10,6 +10,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import colours from "@/assets/colours";
 import { initialize } from '@/database/db';
 import { ToastProvider } from 'react-native-toast-notifications';
+import NetworkStatus from '@/components/NetworkStatus';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -162,6 +163,7 @@ export default function RootLayout() {
             }} />
         </Stack>
         <StatusBar style="auto" />
+        <NetworkStatus />
       </ThemeProvider>
     </ToastProvider>
   );

@@ -101,8 +101,7 @@ describe('Course page ', () => {
         expect(getByText('Rough')).toBeTruthy();
     });
 
-    // Test passes but generates warning message about terminating worker process
-    it.skip('renders correctly with stats putting make rates', () => {
+    it('renders correctly with stats putting make rates', async () => {
         const { getByTestId, getByText } = render(<View />);
 
         const subMenuItem = getByTestId('on-course-sub-menu-pro-stats');
@@ -111,18 +110,18 @@ describe('Course page ', () => {
 
         const flatList = getByTestId('on-course-flat-list');
 
-        waitFor(() => {
-            fireEvent.scroll(flatList, {
-                NativeEvent: {
-                    contentOffset: { x: 300, y: 0 },
-                    contentSize: { width: 500, height: 100 },
-                    layoutMeasurement: { width: 300, height: 100 }
-                },
-            });
+        fireEvent.scroll(flatList, {
+            nativeEvent: {
+                contentOffset: { x: 500, y: 0 },
+                contentSize: { width: 500, height: 100 },
+                layoutMeasurement: { width: 300, height: 100 }
+            },
+        });
 
+        await waitFor(() => {
             expect(getByText('Distance (feet)')).toBeTruthy();
             expect(getByText('Make rate')).toBeTruthy();
-            expect(getByText('Source:')).toBeTruthy();
+            expect(getByText(/Source:/)).toBeTruthy();
         });
     });
 });

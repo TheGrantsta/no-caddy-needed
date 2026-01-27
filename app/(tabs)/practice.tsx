@@ -8,7 +8,8 @@ import { Link } from "expo-router";
 import IconButton from "@/components/IconButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import fontSizes from "@/assets/font-sizes";
-import { getAllDrillHistoryService } from "@/service/DbService";
+import { getAllDrillHistoryService, getDrillStatsByTypeService, DrillStats } from "@/service/DbService";
+import DrillStatsChart from "@/components/DrillStatsChart";
 
 export default function Practice() {
   const [refreshing, setRefreshing] = useState(false);
@@ -16,6 +17,7 @@ export default function Practice() {
   const [loading, setLoading] = useState(true);
   const [drillHistoryIndex, setDrillHistoryIndex] = useState(0);
   const [drillHistory, setDrillHistory] = useState<any[]>([]);
+  const [drillStats, setDrillStats] = useState<DrillStats[]>([]);
   const flatListRef = useRef(null);
 
   const handleSubMenu = (sectionName: string) => {
@@ -30,8 +32,10 @@ export default function Practice() {
     try {
       const items = getAllDrillHistoryService();
       const pages = items.length > 0 ? [items.slice(0, 5), items.slice(5)] : [];
+      const stats = getDrillStatsByTypeService();
 
       setDrillHistory(pages);
+      setDrillStats(stats);
     } catch (e) {
       console.error("Error fetching drill history:", e);
     } finally {
@@ -159,7 +163,7 @@ export default function Practice() {
           </View>
         )}
 
-        {/* Tools */}
+        {/* History */}
         {displaySection('history') && (
           <View>
             {loading ? (
@@ -168,6 +172,10 @@ export default function Practice() {
               </View>
             ) : (
               <View>
+                {drillStats.length > 0 && (
+                  <DrillStatsChart stats={drillStats} />
+                )}
+
                 <Text style={{
                   color: colours.yellow,
                   fontSize: fontSizes.subHeader,

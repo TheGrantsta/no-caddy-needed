@@ -39,3 +39,37 @@ export const getAllDrillHistoryService = () => {
 
     return history;
 }
+
+export type DrillStats = {
+    name: string;
+    total: number;
+    met: number;
+    successRate: number;
+};
+
+export const getDrillStatsByTypeService = (): DrillStats[] => {
+    const drills = getAllDrillHistory();
+    const statsMap = new Map<string, { total: number; met: number }>();
+
+    drills.forEach((drill) => {
+        const name = drill.Name;
+        const current = statsMap.get(name) || { total: 0, met: 0 };
+        current.total += 1;
+        if (drill.Result === 1) {
+            current.met += 1;
+        }
+        statsMap.set(name, current);
+    });
+
+    const stats: DrillStats[] = [];
+    statsMap.forEach((value, key) => {
+        stats.push({
+            name: key,
+            total: value.total,
+            met: value.met,
+            successRate: Math.round((value.met / value.total) * 100)
+        });
+    });
+
+    return stats.sort((a, b) => b.total - a.total);
+}

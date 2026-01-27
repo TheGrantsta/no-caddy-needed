@@ -1,14 +1,16 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import View from '../../app/(tabs)/practice';
-import { getAllDrillHistoryService } from '@/service/DbService';
+import { getAllDrillHistoryService, getDrillStatsByTypeService } from '@/service/DbService';
 
 jest.mock('../../service/DbService', () => ({
-    getAllDrillHistoryService: jest.fn()
+    getAllDrillHistoryService: jest.fn(),
+    getDrillStatsByTypeService: jest.fn()
 }));
 
-// Explicitly cast it as a Jest mock function
+// Explicitly cast as Jest mock functions
 const mockedGetAllDrillHistoryService = getAllDrillHistoryService as jest.Mock;
+const mockedGetDrillStatsByTypeService = getDrillStatsByTypeService as jest.Mock;
 
 jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
@@ -22,7 +24,8 @@ jest.mock('react-native-gesture-handler', () => {
 
 describe('Practice page ', () => {
     beforeEach(() => {
-        mockedGetAllDrillHistoryService.mockReturnValue([[{ Id: 1, Name: 'Fake', Result: 1, Created_At: '' }]]);
+        mockedGetAllDrillHistoryService.mockReturnValue([{ Id: 1, Name: 'Fake', Result: 1, Created_At: '' }]);
+        mockedGetDrillStatsByTypeService.mockReturnValue([]);
     });
 
     it('renders correctly with the default text', () => {

@@ -13,9 +13,10 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
+const mockShow = jest.fn();
 jest.mock('react-native-toast-notifications', () => ({
     useToast: () => ({
-        show: jest.fn(),
+        show: mockShow,
     }),
 }));
 
@@ -23,9 +24,16 @@ jest.mock('@/service/DbService', () => ({
     insertDrillResultService: jest.fn().mockResolvedValue(true),
 }));
 
+const mockInsertDrillResultService = insertDrillResultService as jest.Mock;
+
 jest.useFakeTimers();
 
 describe('Pitching page ', () => {
+    beforeEach(() => {
+        mockShow.mockClear();
+        mockInsertDrillResultService.mockClear();
+        mockInsertDrillResultService.mockResolvedValue(true);
+    });
     it('renders correctly with the default text', () => {
         const { getByText } = render(<View />);
 
@@ -90,25 +98,19 @@ describe('Pitching page ', () => {
             jest.runOnlyPendingTimers();
             jest.advanceTimersByTime(1000);
 
-            expect(insertDrillResultService).toHaveBeenCalledTimes(1);
+            expect(mockInsertDrillResultService).toHaveBeenCalledTimes(1);
         });
     });
 
     it('shows error toast when saving drill result fails', async () => {
-        jest.resetModules();
-        const mockShow = jest.fn();
-        jest.doMock('react-native-toast-notifications', () => ({
-            useToast: () => ({ show: mockShow })
-        }));
-        jest.doMock('@/service/DbService', () => ({
-            insertDrillResultService: jest.fn().mockResolvedValue(false)
-        }));
+        mockInsertDrillResultService.mockResolvedValueOnce(false);
+        mockShow.mockClear();
 
         const { getAllByTestId } = render(<View />);
 
         const saveButtons = getAllByTestId('save-drill-result-button');
 
-        act(() => {
+        await act(async () => {
             fireEvent.press(saveButtons[0]);
             jest.runOnlyPendingTimers();
             jest.advanceTimersByTime(1000);

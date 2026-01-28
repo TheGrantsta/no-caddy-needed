@@ -1,0 +1,76 @@
+appId: com.grantsta.nocaddyneeded
+---
+# Google Play Screenshot Flow
+# Captures key screens for app store listing
+
+# Reset app to home screen
+- launchApp:
+    clearState: true
+
+# Wait for app to load (splash screen then home)
+- extendedWaitUntil:
+    visible: "No caddy needed!"
+    timeout: 15000
+
+# Screenshot 1: Home screen
+- tapOn:
+    text: ".*Home.*"
+    index: 0
+- extendedWaitUntil:
+    visible: "Be your own best caddy"
+    timeout: 5000
+- takeScreenshot: screenshots/01-home
+
+# Screenshot 2: On Course (approach shots data)
+- tapOn:
+    text: ".*course.*"
+    index: 1
+- extendedWaitUntil:
+    visible: "Approach shots"
+    timeout: 5000
+- takeScreenshot: screenshots/02-on-course-approach
+
+# Screenshot 3: Wedge Chart
+- tapOn: "Wedge chart"
+- extendedWaitUntil:
+    visible: "Benefits"
+    timeout: 3000
+- takeScreenshot: screenshots/03-on-course-wedge-chart
+
+# Screenshot 4: Pro expections
+- tapOn: "Pros"
+- extendedWaitUntil:
+    visible: "Average proximity to the hole"
+    timeout: 3000
+- takeScreenshot: screenshots/04-pros-approach-shots
+
+# Screenshot 5: Practice tab (Short game)
+- tapOn:
+    text: ".*Home.*"
+    index: 0
+- tapOn:
+    text: ".*Practice.*"
+    index: 1
+- extendedWaitUntil:
+    visible: "Short game practice"
+    timeout: 5000
+- takeScreenshot: screenshots/05-practice-short-game
+
+# Screenshot 6: Tools menu
+- tapOn: "Tools"
+- extendedWaitUntil:
+    visible: "Practice tools"
+    timeout: 5000
+- takeScreenshot: screenshots/06-practice-tools
+
+# Screenshot 7: History menu
+- tapOn: "History"
+- extendedWaitUntil:
+    visible: "No drill history yet"
+    timeout: 5000
+- takeScreenshot: screenshots/07-practice-history
+
+# End of screenshot flow
+- tapOn:
+    text: ".*Home.*"
+    index: 0

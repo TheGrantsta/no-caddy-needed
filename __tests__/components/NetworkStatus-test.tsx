@@ -4,7 +4,10 @@ import NetworkStatus from '../../components/NetworkStatus';
 import NetInfo from '@react-native-community/netinfo';
 
 jest.mock('@react-native-community/netinfo', () => ({
-    addEventListener: jest.fn(),
+    __esModule: true,
+    default: {
+        addEventListener: jest.fn(),
+    },
 }));
 
 jest.useFakeTimers();

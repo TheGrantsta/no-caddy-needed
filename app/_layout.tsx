@@ -163,7 +163,7 @@ export default function RootLayout() {
             }} />
         </Stack>
         <StatusBar style="auto" />
-        {/* <NetworkStatus /> */}
+        <NetworkStatus />
       </ThemeProvider>
     </ToastProvider>
   );

@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
-import NetInfo from '@react-native-community/netinfo';
 import { MaterialIcons } from '@expo/vector-icons';
 import colours from '@/assets/colours';
 import fontSizes from '@/assets/font-sizes';
+
+let NetInfo: typeof import('@react-native-community/netinfo').default | null = null;
+try {
+    NetInfo = require('@react-native-community/netinfo').default;
+} catch {
+    // NetInfo not available (e.g. Expo Go without native module)
+}
 
 export default function NetworkStatus() {
     const [isConnected, setIsConnected] = useState<boolean | null>(true);
@@ -11,6 +17,8 @@ export default function NetworkStatus() {
     const slideAnim = useState(new Animated.Value(-50))[0];
 
     useEffect(() => {
+        if (!NetInfo) return;
+
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
         });

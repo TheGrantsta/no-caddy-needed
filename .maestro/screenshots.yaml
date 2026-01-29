@@ -21,36 +21,43 @@ appId: com.grantsta.nocaddyneeded
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/01-home
 
-# Screenshot 2: On Course (approach shots data)
+# Screenshot 2: On Course (Tiger 5)
 - tapOn:
     text: ".*course.*"
     index: 1
 - extendedWaitUntil:
-    visible: "Approach shots"
+    visible: "Track avoidable mistakes during your round"
     timeout: 5000
-- takeScreenshot: .maestro/screenshots/02-on-course-approach
+- takeScreenshot: .maestro/screenshots/02-on-course-tiger-5
 
-# Screenshot 3: Wedge Chart
+# Screenshot 3: Approach shots
+- tapOn: "Approach"
+- extendedWaitUntil:
+    visible: "Approach shots"
+    timeout: 3000
+- takeScreenshot: .maestro/screenshots/03-on-course-approach
+
+# Screenshot 4: Wedge Chart
 - tapOn: "Wedge chart"
 - extendedWaitUntil:
     visible: "Benefits"
     timeout: 3000
-- takeScreenshot: .maestro/screenshots/03-on-course-wedge-chart
+- takeScreenshot: .maestro/screenshots/04-on-course-wedge-chart
 
-# Screenshot 4: Pro expections
+# Screenshot 5: Pro expections
 - tapOn: "Pros"
 - extendedWaitUntil:
     visible: "Average proximity to the hole"
     timeout: 3000
-- takeScreenshot: .maestro/screenshots/04-on-course-pros-approach-shots
+- takeScreenshot: .maestro/screenshots/05-on-course-pros-approach-shots
 
-# Screenshot 4b: Pros page - swipe to next view
+# Screenshot 5b: Pros page - swipe to next view
 - swipe:
     direction: LEFT
     duration: 500
-- takeScreenshot: .maestro/screenshots/04b-on-course-pros-putt-make-rates
+- takeScreenshot: .maestro/screenshots/05b-on-course-pros-putt-make-rates
 
-# Screenshot 5: Practice tab (Short game)
+# Screenshot 6: Practice tab (Short game)
 - tapOn:
     text: ".*Home.*"
     index: 0
@@ -60,21 +67,21 @@ appId: com.grantsta.nocaddyneeded
 - extendedWaitUntil:
     visible: "Short game practice"
     timeout: 5000
-- takeScreenshot: .maestro/screenshots/05-practice-short-game
+- takeScreenshot: .maestro/screenshots/06-practice-short-game
 
-# Screenshot 6: Tools menu
+# Screenshot 7: Tools menu
 - tapOn: "Tools"
 - extendedWaitUntil:
     visible: "Practice tools"
     timeout: 5000
-- takeScreenshot: .maestro/screenshots/06-practice-tools
+- takeScreenshot: .maestro/screenshots/07-practice-tools
 
-# Screenshot 7: History menu
+# Screenshot 8: History menu
 - tapOn: "History"
 - extendedWaitUntil:
     visible: "No drill history yet"
     timeout: 5000
-- takeScreenshot: .maestro/screenshots/07-practice-history
+- takeScreenshot: .maestro/screenshots/08-practice-history
 
 # End of screenshot flow
 - tapOn:

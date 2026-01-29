@@ -50,6 +50,7 @@ describe('SubMenu component', () => {
             expect(getByText('Approach')).toBeTruthy();
             expect(getByText('Wedge chart')).toBeTruthy();
             expect(getByText('Pros')).toBeTruthy();
+            expect(getByText('Tiger 5')).toBeTruthy();
         });
 
         it('calls handleSubMenu when Wedge chart is pressed', () => {
@@ -60,6 +61,16 @@ describe('SubMenu component', () => {
             fireEvent.press(getByTestId('on-course-sub-menu-wedge-chart'));
 
             expect(mockHandleSubMenu).toHaveBeenCalledWith('wedge-chart');
+        });
+
+        it('calls handleSubMenu when Tiger 5 is pressed', () => {
+            const { getByTestId } = render(
+                <SubMenu showSubMenu="on-course" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
+            );
+
+            fireEvent.press(getByTestId('on-course-sub-menu-tiger-5'));
+
+            expect(mockHandleSubMenu).toHaveBeenCalledWith('tiger-5');
         });
     });
 

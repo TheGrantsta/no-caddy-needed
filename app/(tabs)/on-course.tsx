@@ -1,17 +1,27 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
+import { useToast } from 'react-native-toast-notifications';
 import Chevrons from '../../components/Chevrons';
 import SubMenu from '../../components/SubMenu';
 import WedgeChart from '../../components/WedgeChart';
+import Tiger5Tally from '../../components/Tiger5Tally';
+import { insertTiger5RoundService, getAllTiger5RoundsService, Tiger5Round } from '../../service/DbService';
 import styles from '../../assets/stlyes';
 import colours from '../../assets/colours';
+import fontSizes from '../../assets/font-sizes';
 
 export default function Course() {
   const [refreshing, setRefreshing] = useState(false);
-  const [section, setSection] = useState('approach');
+  const [section, setSection] = useState('tiger-5');
   const [activeIndex, setActiveIndex] = useState(0);
+  const [tiger5Rounds, setTiger5Rounds] = useState<Tiger5Round[]>([]);
   const flatListRef = useRef(null);
+  const toast = useToast();
+
+  useEffect(() => {
+    setTiger5Rounds(getAllTiger5RoundsService());
+  }, []);
 
   const points = ['Target: centre of the green', 'Aim: play for your shot shape *', 'Yardage: closer to the back edge'];
   const benefits = ['Improve distance control', 'Better course management', 'Eliminate guesswork'];
@@ -69,9 +79,30 @@ export default function Course() {
     setRefreshing(true);
 
     setTimeout(() => {
-      setSection('approach');
+      setSection('tiger-5');
+      setTiger5Rounds(getAllTiger5RoundsService());
       setRefreshing(false);
     }, 750);
+  };
+
+  const handleSaveTiger5Round = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => {
+    insertTiger5RoundService(threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips).then((success) => {
+      const msg = success ? 'Round saved' : 'Round not saved';
+
+      toast.show(msg, {
+        type: success ? 'success' : 'danger',
+        textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
+        style: {
+          borderLeftColor: success ? colours.green : colours.errorText,
+          borderLeftWidth: 10,
+          backgroundColor: colours.yellow,
+        },
+      });
+
+      if (success) {
+        setTiger5Rounds(getAllTiger5RoundsService());
+      }
+    });
   };
 
   const handleSubMenu = (sectionName: string) => {
@@ -246,6 +277,47 @@ export default function Course() {
                     The Lost Art of Putting: Introducing the Six Putting Performance Principles
                   </Text> by Gary Nicol & Karl Morris
                 </Text>
+              </View>
+            )}
+          </View>
+        )}
+        {/* Tiger 5 */}
+        {displaySection('tiger-5') && (
+          <View style={styles.container}>
+            <View style={styles.headerContainer}>
+              <Text style={[styles.headerText, styles.marginTop]}>
+                Tiger 5
+              </Text>
+              <Text style={[styles.normalText, styles.marginBottom]}>
+                Track avoidable mistakes during your round
+              </Text>
+            </View>
+
+            <Tiger5Tally onSaveRound={handleSaveTiger5Round} />
+
+            {tiger5Rounds.length === 0 && (
+              <View style={styles.headerContainer}>
+                <Text style={[styles.normalText, styles.marginTop]}>
+                  No round history yet
+                </Text>
+              </View>
+            )}
+
+            {tiger5Rounds.length > 0 && (
+              <View style={{ padding: 15 }}>
+                <Text style={[styles.subHeaderText, { textAlign: 'center' }]}>
+                  Round history
+                </Text>
+                <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.yellow }]}>
+                  <Text style={styles.header}>Date</Text>
+                  <Text style={styles.header}>Total</Text>
+                </View>
+                {tiger5Rounds.map((round) => (
+                  <View key={round.Id} style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
+                    <Text style={styles.normalText}>{round.Created_At}</Text>
+                    <Text style={styles.normalText}>{round.Total}</Text>
+                  </View>
+                ))}
               </View>
             )}
           </View>

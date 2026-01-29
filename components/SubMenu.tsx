@@ -12,6 +12,7 @@ const allSubMenuItems = [
     { testId: 'practice-sub-menu-short-game', name: 'short-game', title: 'Short game' },
     { testId: 'practice-sub-menu-tools', name: 'tools', title: 'Tools' },
     { testId: 'practice-sub-menu-history', name: 'history', title: 'History' },
+    { testId: 'on-course-sub-menu-tiger-5', name: 'tiger-5', title: 'Tiger 5' },
     { testId: 'on-course-sub-menu-approach', name: 'approach', title: 'Approach' },
     { testId: 'on-course-sub-menu-wedge-chart', name: 'wedge-chart', title: 'Wedge chart' },
     { testId: 'on-course-sub-menu-pro-stats', name: 'pros', title: 'Pros' },

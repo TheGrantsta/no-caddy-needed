@@ -3,7 +3,9 @@ import {
     getWedgeChart,
     insertDrillResult,
     insertWedgeChart,
-    getAllDrillHistory
+    getAllDrillHistory,
+    insertTiger5Round,
+    getAllTiger5Rounds
 } from '../database/db';
 
 export const getWedgeChartService = () => {
@@ -72,4 +74,39 @@ export const getDrillStatsByTypeService = (): DrillStats[] => {
     });
 
     return stats.sort((a, b) => b.total - a.total);
+}
+
+export type Tiger5Round = {
+    Id: number;
+    ThreePutts: number;
+    DoubleBogeys: number;
+    BogeysPar5: number;
+    BogeysInside9Iron: number;
+    DoubleChips: number;
+    Total: number;
+    Created_At: string;
+};
+
+export const insertTiger5RoundService = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => {
+    const total = threePutts + doubleBogeys + bogeysPar5 + bogeysInside9Iron + doubleChips;
+    return insertTiger5Round(threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, total);
+};
+
+export const getAllTiger5RoundsService = (): Tiger5Round[] => {
+    const rounds: Tiger5Round[] = [];
+
+    getAllTiger5Rounds().forEach((round: any) => {
+        rounds.push({
+            Id: round.Id,
+            ThreePutts: round.ThreePutts,
+            DoubleBogeys: round.DoubleBogeys,
+            BogeysPar5: round.BogeysPar5,
+            BogeysInside9Iron: round.BogeysInside9Iron,
+            DoubleChips: round.DoubleChips,
+            Total: round.Total,
+            Created_At: getTwoDigitDayAndMonth(round.Created_At),
+        });
+    });
+
+    return rounds;
 }

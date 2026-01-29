@@ -59,6 +59,10 @@ All code contributions must follow Test-Driven Development practices.
    - All tests must pass locally before committing.
    - CI pipelines must run the full test suite on every change.
 
+7. **Pre-push requirement**
+   - Run the full test suite (`npm test`) and confirm all tests pass before every push to remote.
+   - Never push if any tests are failing.
+
 ### Example Workflow
 
 1. Write failing test for new requirement.

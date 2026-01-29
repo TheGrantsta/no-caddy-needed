@@ -9,7 +9,7 @@ No Caddy Needed is a golf practice companion and on-course decision-making app b
 ## Commands
 
 ```bash
-npm test                  # Run all tests (168 tests, 25 suites)
+npm test                  # Run all tests (208 tests, 27 suites)
 npm run test:watch        # Interactive watch mode for TDD
 npm run test:coverage     # Generate coverage report (50% threshold enforced)
 npm run test:changed      # Test only files related to changed code

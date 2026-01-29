@@ -39,7 +39,6 @@ describe('renders homepage', () => {
     });
 
     it('shows heading and points', () => {
-        const points = ['Control low point', 'Improve centre strike', 'Enhance clubface control'];
         const { getByText } = render(<Homepage />);
 
         expect(getByText('Golf - get the ball in the hole in the fewest shots by:')).toBeTruthy();

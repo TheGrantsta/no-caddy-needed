@@ -74,7 +74,6 @@ describe('Random number generator', () => {
     });
 
     it('returns number between lower and upper limit in increments of 1 when there is only one number', () => {
-        const validNumbers = [1];
         const range = '1-1';
         const increment = 1;
 

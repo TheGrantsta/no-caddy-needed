@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor, act } from '@testing-library/react-native';
+import { render, act } from '@testing-library/react-native';
 import NetworkStatus from '../../components/NetworkStatus';
 import NetInfo from '@react-native-community/netinfo';
 

@@ -28,6 +28,7 @@ export default function Tempo() {
                 clearInterval(timeoutRef.current);
             };
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadSound = async () => {

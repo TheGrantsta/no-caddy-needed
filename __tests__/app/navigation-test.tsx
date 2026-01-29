@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
+import { TouchableOpacity } from 'react-native';
 import TabLayout from '../../app/(tabs)/_layout';
 import Homepage from '../../app/(tabs)/index';
 
@@ -21,7 +22,6 @@ jest.mock('expo-router', () => ({
 }));
 
 // Mock Pressable for Link testing
-import { TouchableOpacity, View, Text } from 'react-native';
 const MockPressable = ({ children, testID, onPress }: any) => (
     <TouchableOpacity testID={testID} onPress={onPress}>
         {children}
@@ -40,7 +40,9 @@ jest.mock('react-native-gesture-handler', () => {
 
 // Mock the screen wrapper
 jest.mock('../../app/screen-wrapper', () => {
-    return ({ children }: { children: React.ReactNode }) => <>{children}</>;
+    const ScreenWrapper = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+    ScreenWrapper.displayName = 'ScreenWrapper';
+    return ScreenWrapper;
 });
 
 // Mock Tabs.Screen to capture tab configuration

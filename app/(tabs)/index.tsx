@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Link } from 'expo-router';
 import Chevrons from '@/components/Chevrons';
 import styles from '@/assets/stlyes';
 import colours from '@/assets/colours';
 import IconButton from '@/components/IconButton';
-import fontSizes from '@/assets/font-sizes';
+
 
 export default function HomeScreen() {
   const points = ['Controlling low point', 'Improving centre strike', 'Enhancing clubface control'];
@@ -68,32 +68,4 @@ export default function HomeScreen() {
       </ScrollView>
     </GestureHandlerRootView>
   );
-};
-
-const localStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  toastContainer: {
-    flex: 1,
-    backgroundColor: colours.yellow,
-    paddingVertical: 0,
-    paddingHorizontal: 0,
-    borderRadius: 0,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-    width: '100%'
-  },
-  toastTitle: {
-    color: colours.yellow,
-    fontSize: fontSizes.subHeader,
-    fontWeight: 'bold',
-  },
-  toastMessage: {
-    color: '#e0e0e0',
-    fontSize: 14,
-  },
-});
+}

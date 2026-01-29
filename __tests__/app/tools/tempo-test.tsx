@@ -30,7 +30,9 @@ jest.mock('expo-av', () => ({
 
 jest.mock('@react-native-community/slider', () => {
     const { View } = require('react-native');
-    return (props: any) => <View testID="tempo-slider" {...props} />;
+    const MockSlider = (props: any) => <View testID="tempo-slider" {...props} />;
+    MockSlider.displayName = 'MockSlider';
+    return MockSlider;
 });
 
 describe('Tempo training page', () => {

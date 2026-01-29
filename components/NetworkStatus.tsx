@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { Text, StyleSheet, Animated } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import colours from '@/assets/colours';
 import fontSizes from '@/assets/font-sizes';
@@ -41,7 +41,8 @@ export default function NetworkStatus() {
                 useNativeDriver: true,
             }).start(() => setShowBanner(false));
         }
-    }, [isConnected]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isConnected, slideAnim]);
 
     if (!showBanner) {
         return null;

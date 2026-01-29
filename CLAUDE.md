@@ -26,16 +26,55 @@ npx jest __tests__/service/DbService-test.tsx
 
 ## Development Process: Test-Driven Development (TDD)
 
-All code must follow TDD. No production code without a failing test first.
+All code contributions must follow Test-Driven Development practices.
 
-1. Write a failing test for the new behavior
-2. Run tests — confirm failure
-3. Implement the minimum code to pass
-4. Run tests — confirm success
-5. Refactor, then run tests again
-6. Commit (pre-commit hook runs lint + related tests via Husky/lint-staged)
+### Core Rules
 
-Coverage must include happy paths, edge cases, and error conditions. Never skip or disable tests.
+1. **Write tests before implementation**
+   - Every new feature or behavior must begin with a failing test.
+   - No production code may be written unless a failing test exists that requires it.
+
+2. **Red → Green → Refactor cycle**
+   - Red: Write a test that fails for the desired behavior.
+   - Green: Implement the minimum code necessary to pass the test.
+   - Refactor: Improve code structure without changing behavior, ensuring all tests still pass.
+
+3. **Test coverage requirements**
+   - New code must include tests covering:
+     - Expected behavior (happy paths)
+     - Edge cases
+     - Error conditions
+   - Code without tests will not be accepted.
+
+4. **Test readability**
+   - Tests should be descriptive and document system behavior.
+   - Test names must clearly state intent:
+     - Example: `shouldRejectEmptyPassword()`
+
+5. **No skipping tests**
+   - Do not disable or skip tests to pass CI.
+   - Fix the code or fix the test.
+
+6. **Continuous verification**
+   - All tests must pass locally before committing.
+   - CI pipelines must run the full test suite on every change.
+
+### Example Workflow
+
+1. Write failing test for new requirement.
+2. Run tests → confirm failure.
+3. Implement minimal code to pass.
+4. Run tests → confirm success.
+5. Refactor.
+6. Run tests again.
+7. Commit.
+
+### Definition of Done
+
+A task is complete only when:
+- All tests pass.
+- New functionality is fully tested.
+- No untested production code exists.
 
 ## Architecture
 

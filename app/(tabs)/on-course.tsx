@@ -16,6 +16,7 @@ export default function Course() {
   const [section, setSection] = useState('tiger-5');
   const [activeIndex, setActiveIndex] = useState(0);
   const [tiger5Rounds, setTiger5Rounds] = useState<Tiger5Round[]>([]);
+  const [tiger5RoundActive, setTiger5RoundActive] = useState(false);
   const flatListRef = useRef(null);
   const toast = useToast();
 
@@ -85,7 +86,7 @@ export default function Course() {
     }, 750);
   };
 
-  const handleSaveTiger5Round = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => {
+  const handleEndTiger5Round = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => {
     insertTiger5RoundService(threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips).then((success) => {
       const msg = success ? 'Round saved' : 'Round not saved';
 
@@ -289,13 +290,13 @@ export default function Course() {
                 Tiger 5
               </Text>
               <Text style={[styles.normalText, styles.marginBottom]}>
-                Track avoidable mistakes during your round
+                {tiger5RoundActive ? 'Round in progress' : 'Track avoidable mistakes during your round'}
               </Text>
             </View>
 
-            <Tiger5Tally onSaveRound={handleSaveTiger5Round} />
+            <Tiger5Tally onEndRound={handleEndTiger5Round} onRoundStateChange={setTiger5RoundActive} />
 
-            {tiger5Rounds.length === 0 && (
+            {!tiger5RoundActive && tiger5Rounds.length === 0 && (
               <View style={styles.headerContainer}>
                 <Text style={[styles.normalText, styles.marginTop]}>
                   No round history yet
@@ -303,7 +304,7 @@ export default function Course() {
               </View>
             )}
 
-            {tiger5Rounds.length > 0 && (
+            {!tiger5RoundActive && tiger5Rounds.length > 0 && (
               <View style={{ padding: 15 }}>
                 <Text style={[styles.subHeaderText, { textAlign: 'center' }]}>
                   Round history

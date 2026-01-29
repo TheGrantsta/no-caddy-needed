@@ -143,30 +143,62 @@ describe('Course page ', () => {
     });
 
     describe('Tiger 5 section', () => {
-        it('renders Tiger 5 tally as default section', () => {
-            const { getByTestId, getByText, getAllByText } = render(<View />);
+        it('renders Tiger 5 heading as default section', () => {
+            const { getByText, getAllByText } = render(<View />);
 
             expect(getAllByText('Tiger 5').length).toBeGreaterThanOrEqual(1);
             expect(getByText('Track avoidable mistakes during your round')).toBeTruthy();
-            expect(getByTestId('tiger5-total')).toBeTruthy();
-            expect(getByTestId('tiger5-save-round')).toBeTruthy();
         });
 
-        it('shows tally counters', () => {
-            const { getByText } = render(<View />);
+        it('shows Start round button by default (no counters)', () => {
+            const { getByTestId, queryByTestId } = render(<View />);
+
+            expect(getByTestId('tiger5-start-round')).toBeTruthy();
+            expect(queryByTestId('tiger5-total')).toBeNull();
+            expect(queryByTestId('tiger5-count-three-putts')).toBeNull();
+        });
+
+        it('shows counters after pressing Start round', () => {
+            const { getByTestId, getByText } = render(<View />);
+
+            fireEvent.press(getByTestId('tiger5-start-round'));
 
             expect(getByText('3-putts')).toBeTruthy();
             expect(getByText('Double bogeys')).toBeTruthy();
             expect(getByText('Bogeys on par 5s')).toBeTruthy();
             expect(getByText('Bogeys inside 9-iron')).toBeTruthy();
             expect(getByText('Double chips')).toBeTruthy();
+            expect(getByTestId('tiger5-total')).toBeTruthy();
+            expect(getByTestId('tiger5-end-round')).toBeTruthy();
         });
 
-        it('calls insertTiger5RoundService on save', async () => {
+        it('shows "Round in progress" subtitle during active round', () => {
+            const { getByTestId, getByText } = render(<View />);
+
+            fireEvent.press(getByTestId('tiger5-start-round'));
+
+            expect(getByText('Round in progress')).toBeTruthy();
+        });
+
+        it('hides round history during active round', () => {
+            (getAllTiger5RoundsService as jest.Mock).mockReturnValue([
+                { Id: 1, ThreePutts: 1, DoubleBogeys: 2, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 0, Total: 4, Created_At: '15/06' },
+            ]);
+
+            const { getByTestId, queryByText } = render(<View />);
+
+            fireEvent.press(getByTestId('tiger5-start-round'));
+
+            expect(queryByText('Round history')).toBeNull();
+            expect(queryByText('15/06')).toBeNull();
+        });
+
+        it('calls insertTiger5RoundService on end round', async () => {
             const { getByTestId } = render(<View />);
 
+            fireEvent.press(getByTestId('tiger5-start-round'));
             fireEvent.press(getByTestId('tiger5-increment-three-putts'));
-            fireEvent.press(getByTestId('tiger5-save-round'));
+            fireEvent.press(getByTestId('tiger5-end-round'));
 
             await waitFor(() => {
                 expect(insertTiger5RoundService).toHaveBeenCalledWith(1, 0, 0, 0, 0);

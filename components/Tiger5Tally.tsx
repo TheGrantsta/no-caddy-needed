@@ -4,7 +4,8 @@ import colours from '../assets/colours';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
-    onSaveRound: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => void;
+    onEndRound: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => void;
+    onRoundStateChange?: (active: boolean) => void;
 };
 
 const counters = [
@@ -15,7 +16,8 @@ const counters = [
     { slug: 'double-chips', label: 'Double chips' },
 ];
 
-const Tiger5Tally = ({ onSaveRound }: Props) => {
+const Tiger5Tally = ({ onEndRound, onRoundStateChange }: Props) => {
+    const [roundActive, setRoundActive] = useState(false);
     const [threePutts, setThreePutts] = useState(0);
     const [doubleBogeys, setDoubleBogeys] = useState(0);
     const [bogeysPar5, setBogeysPar5] = useState(0);
@@ -27,14 +29,31 @@ const Tiger5Tally = ({ onSaveRound }: Props) => {
 
     const total = threePutts + doubleBogeys + bogeysPar5 + bogeysInside9Iron + doubleChips;
 
-    const handleSave = () => {
-        onSaveRound(threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips);
+    const handleStartRound = () => {
+        setRoundActive(true);
+        onRoundStateChange?.(true);
+    };
+
+    const handleEndRound = () => {
+        onEndRound(threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips);
         setThreePutts(0);
         setDoubleBogeys(0);
         setBogeysPar5(0);
         setBogeysInside9Iron(0);
         setDoubleChips(0);
+        setRoundActive(false);
+        onRoundStateChange?.(false);
     };
+
+    if (!roundActive) {
+        return (
+            <View style={localStyles.container}>
+                <TouchableOpacity testID="tiger5-start-round" onPress={handleStartRound} style={localStyles.saveButton}>
+                    <Text style={localStyles.saveButtonText}>Start round</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 
     return (
         <View style={localStyles.container}>
@@ -67,8 +86,8 @@ const Tiger5Tally = ({ onSaveRound }: Props) => {
                 {'Total: '}{total}
             </Text>
 
-            <TouchableOpacity testID="tiger5-save-round" onPress={handleSave} style={localStyles.saveButton}>
-                <Text style={localStyles.saveButtonText}>Save round</Text>
+            <TouchableOpacity testID="tiger5-end-round" onPress={handleEndRound} style={localStyles.saveButton}>
+                <Text style={localStyles.saveButtonText}>End round</Text>
             </TouchableOpacity>
         </View>
     );

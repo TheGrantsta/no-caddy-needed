@@ -44,3 +44,6 @@ screenshots/
 # Native builds
 ios/
 android/
+
+# Test coverage
+coverage/

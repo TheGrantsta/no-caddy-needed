@@ -44,6 +44,12 @@ appId: com.grantsta.nocaddyneeded
     timeout: 3000
 - takeScreenshot: .maestro/screenshots/04-on-course-pros-approach-shots
 
+# Screenshot 4b: Pros page - swipe to next view
+- swipe:
+    direction: LEFT
+    duration: 500
+- takeScreenshot: .maestro/screenshots/04b-on-course-pros-putt-make-rates
+
 # Screenshot 5: Practice tab (Short game)
 - tapOn:
     text: ".*Home.*"

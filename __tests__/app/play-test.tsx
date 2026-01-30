@@ -83,12 +83,6 @@ describe('Play screen', () => {
             expect(getByTestId('start-round-button')).toBeTruthy();
         });
 
-        it('shows course par input', () => {
-            const { getByTestId } = render(<Play />);
-
-            expect(getByTestId('course-par-input')).toBeTruthy();
-        });
-
         it('shows no round history message when empty', () => {
             const { getByText } = render(<Play />);
 

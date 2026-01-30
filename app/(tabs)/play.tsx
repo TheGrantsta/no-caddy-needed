@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 import { Link, useRouter } from 'expo-router';
@@ -31,7 +31,6 @@ export default function Play() {
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
     const [currentHole, setCurrentHole] = useState(1);
     const [runningTotal, setRunningTotal] = useState(0);
-    const [coursePar, setCoursePar] = useState('72');
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
     const [showTiger5, setShowTiger5] = useState(false);
     const [tiger5Values, setTiger5Values] = useState({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
@@ -43,7 +42,6 @@ export default function Play() {
         const activeRound = getActiveRoundService();
         if (activeRound) {
             setActiveRoundId(activeRound.Id);
-            setCoursePar(String(activeRound.CoursePar));
         }
         setRoundHistory(getAllRoundHistoryService());
     }, []);
@@ -57,8 +55,7 @@ export default function Play() {
     };
 
     const handleStartRound = async () => {
-        const par = parseInt(coursePar) || 72;
-        const roundId = await startRoundService(par);
+        const roundId = await startRoundService(72);
 
         if (roundId) {
             setActiveRoundId(roundId);
@@ -156,15 +153,6 @@ export default function Play() {
                 {!isRoundActive && (
                     <View style={styles.container}>
                         <View style={localStyles.startRoundContainer}>
-                            <Text style={localStyles.parLabel}>Course par</Text>
-                            <TextInput
-                                testID="course-par-input"
-                                style={localStyles.parInput}
-                                value={coursePar}
-                                onChangeText={setCoursePar}
-                                keyboardType="number-pad"
-                                maxLength={2}
-                            />
                             <TouchableOpacity
                                 testID="start-round-button"
                                 onPress={handleStartRound}
@@ -267,21 +255,6 @@ const localStyles = StyleSheet.create({
     startRoundContainer: {
         padding: 15,
         alignItems: 'center',
-    },
-    parLabel: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-        marginBottom: 8,
-    },
-    parInput: {
-        backgroundColor: colours.white,
-        color: colours.background,
-        fontSize: fontSizes.subHeader,
-        textAlign: 'center',
-        width: 80,
-        height: 44,
-        borderRadius: 8,
-        marginBottom: 15,
     },
     actionButton: {
         backgroundColor: colours.yellow,

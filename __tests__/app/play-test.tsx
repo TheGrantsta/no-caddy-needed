@@ -8,6 +8,7 @@ import {
     getActiveRoundService,
     getAllRoundHistoryService,
     insertTiger5RoundService,
+    getClubDistancesService,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
 
@@ -18,6 +19,13 @@ jest.mock('../../service/DbService', () => ({
     getActiveRoundService: jest.fn(),
     getAllRoundHistoryService: jest.fn(),
     insertTiger5RoundService: jest.fn(),
+    getClubDistancesService: jest.fn(),
+    getWedgeChartService: jest.fn().mockReturnValue([]),
+    insertWedgeChartService: jest.fn(),
+}));
+
+jest.mock('../../database/db', () => ({
+    getWedgeChart: jest.fn().mockReturnValue([]),
 }));
 
 jest.mock('react-native-toast-notifications', () => ({
@@ -60,6 +68,7 @@ const mockAddHoleScore = addHoleScoreService as jest.Mock;
 const mockGetActiveRound = getActiveRoundService as jest.Mock;
 const mockGetAllRoundHistory = getAllRoundHistoryService as jest.Mock;
 const mockInsertTiger5Round = insertTiger5RoundService as jest.Mock;
+const mockGetClubDistances = getClubDistancesService as jest.Mock;
 const mockScheduleReminder = scheduleRoundReminder as jest.Mock;
 const mockCancelReminder = cancelRoundReminder as jest.Mock;
 
@@ -68,6 +77,7 @@ describe('Play screen', () => {
         jest.clearAllMocks();
         mockGetActiveRound.mockReturnValue(null);
         mockGetAllRoundHistory.mockReturnValue([]);
+        mockGetClubDistances.mockReturnValue([]);
     });
 
     describe('Idle state', () => {
@@ -183,19 +193,6 @@ describe('Play screen', () => {
             });
         });
 
-        it('shows running total during round', async () => {
-            mockStartRound.mockResolvedValue(1);
-            mockAddHoleScore.mockResolvedValue(true);
-
-            const { getByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-
-            await waitFor(() => {
-                expect(getByTestId('running-total')).toBeTruthy();
-            });
-        });
-
         it('shows Round in progress text during active round', async () => {
             mockStartRound.mockResolvedValue(1);
 
@@ -251,20 +248,16 @@ describe('Play screen', () => {
         });
     });
 
-    describe('Tiger 5 integration', () => {
-        it('shows Tiger 5 toggle during active round', async () => {
-            mockStartRound.mockResolvedValue(1);
-
+    describe('Sub menu navigation', () => {
+        it('shows sub menu on render', () => {
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
-
-            await waitFor(() => {
-                expect(getByTestId('toggle-tiger5')).toBeTruthy();
-            });
+            expect(getByTestId('play-sub-menu-score')).toBeTruthy();
+            expect(getByTestId('play-sub-menu-distances')).toBeTruthy();
+            expect(getByTestId('play-sub-menu-wedge-chart')).toBeTruthy();
         });
 
-        it('shows Score view by default during active round', async () => {
+        it('shows score input by default during active round', async () => {
             mockStartRound.mockResolvedValue(1);
 
             const { getByTestId, getByText } = render(<Play />);
@@ -273,6 +266,71 @@ describe('Play screen', () => {
 
             await waitFor(() => {
                 expect(getByText('Hole 1')).toBeTruthy();
+            });
+        });
+
+        it('shows distances section when Distances is pressed', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockGetClubDistances.mockReturnValue([]);
+
+            const { getByTestId, getByText } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('play-sub-menu-distances')).toBeTruthy();
+            });
+
+            fireEvent.press(getByTestId('play-sub-menu-distances'));
+
+            expect(getByText('No club distances set')).toBeTruthy();
+        });
+
+        it('shows wedge chart section when Wedge chart is pressed', async () => {
+            mockStartRound.mockResolvedValue(1);
+
+            const { getByTestId, getByText } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('play-sub-menu-wedge-chart')).toBeTruthy();
+            });
+
+            fireEvent.press(getByTestId('play-sub-menu-wedge-chart'));
+
+            expect(getByText('Your wedge distances')).toBeTruthy();
+        });
+
+        it('returns to score input when Play is pressed after switching', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockGetClubDistances.mockReturnValue([]);
+
+            const { getByTestId, getByText } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('play-sub-menu-distances')).toBeTruthy();
+            });
+
+            fireEvent.press(getByTestId('play-sub-menu-distances'));
+            fireEvent.press(getByTestId('play-sub-menu-score'));
+
+            expect(getByText('Hole 1')).toBeTruthy();
+        });
+    });
+
+    describe('Tiger 5 integration', () => {
+        it('shows Tiger 5 toggle in play section', async () => {
+            mockStartRound.mockResolvedValue(1);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('toggle-tiger5')).toBeTruthy();
             });
         });
 

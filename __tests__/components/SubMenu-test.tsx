@@ -41,6 +41,38 @@ describe('SubMenu component', () => {
         });
     });
 
+    describe('Play sub menu', () => {
+        it('renders play menu items', () => {
+            const { getByText } = render(
+                <SubMenu showSubMenu="play" selectedItem="play-score" handleSubMenu={mockHandleSubMenu} />
+            );
+
+            expect(getByText('Play')).toBeTruthy();
+            expect(getByText('Distances')).toBeTruthy();
+            expect(getByText('Wedge chart')).toBeTruthy();
+        });
+
+        it('calls handleSubMenu when Distances is pressed', () => {
+            const { getByTestId } = render(
+                <SubMenu showSubMenu="play" selectedItem="play-score" handleSubMenu={mockHandleSubMenu} />
+            );
+
+            fireEvent.press(getByTestId('play-sub-menu-distances'));
+
+            expect(mockHandleSubMenu).toHaveBeenCalledWith('play-distances');
+        });
+
+        it('calls handleSubMenu when Wedge chart is pressed', () => {
+            const { getByTestId } = render(
+                <SubMenu showSubMenu="play" selectedItem="play-score" handleSubMenu={mockHandleSubMenu} />
+            );
+
+            fireEvent.press(getByTestId('play-sub-menu-wedge-chart'));
+
+            expect(mockHandleSubMenu).toHaveBeenCalledWith('play-wedge-chart');
+        });
+    });
+
     describe('Pointers sub menu', () => {
         it('renders pointers menu items', () => {
             const { getByText } = render(

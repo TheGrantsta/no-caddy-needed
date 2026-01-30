@@ -3,12 +3,15 @@ import colours from '../assets/colours';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
-    showSubMenu: 'practice' | 'pointers' | 'putting' | 'chipping' | 'bunker' | 'pitching';
+    showSubMenu: 'practice' | 'play' | 'pointers' | 'putting' | 'chipping' | 'bunker' | 'pitching';
     selectedItem: string;
     handleSubMenu: (arg: string) => void;
 }
 
 const allSubMenuItems = [
+    { testId: 'play-sub-menu-score', name: 'play-score', title: 'Play' },
+    { testId: 'play-sub-menu-distances', name: 'play-distances', title: 'Distances' },
+    { testId: 'play-sub-menu-wedge-chart', name: 'play-wedge-chart', title: 'Wedge chart' },
     { testId: 'practice-sub-menu-short-game', name: 'short-game', title: 'Short game' },
     { testId: 'practice-sub-menu-tools', name: 'tools', title: 'Tools' },
     { testId: 'practice-sub-menu-history', name: 'history', title: 'History' },

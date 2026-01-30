@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import HoleScoreInput from '../../components/HoleScoreInput';
 import Tiger5Tally from '../../components/Tiger5Tally';
+import SubMenu from '../../components/SubMenu';
+import ClubDistanceList from '../../components/ClubDistanceList';
+import WedgeChart from '../../components/WedgeChart';
 import {
     startRoundService,
     endRoundService,
@@ -12,6 +15,7 @@ import {
     getActiveRoundService,
     getAllRoundHistoryService,
     insertTiger5RoundService,
+    getClubDistancesService,
     Round,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
@@ -32,6 +36,7 @@ export default function Play() {
     const [currentHole, setCurrentHole] = useState(1);
     const [runningTotal, setRunningTotal] = useState(0);
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
+    const [section, setSection] = useState('play-score');
     const [showTiger5, setShowTiger5] = useState(false);
     const [tiger5Values, setTiger5Values] = useState({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
     const [notificationId, setNotificationId] = useState<string | null>(null);
@@ -82,6 +87,14 @@ export default function Play() {
         }
     };
 
+    const handleSubMenu = (sectionName: string) => {
+        setSection(sectionName);
+    };
+
+    const displaySection = (sectionName: string) => {
+        return section === sectionName;
+    };
+
     const handleTiger5ValuesChange = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => {
         setTiger5Values({ threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips });
     };
@@ -118,6 +131,7 @@ export default function Play() {
         setActiveRoundId(null);
         setCurrentHole(1);
         setRunningTotal(0);
+        setSection('play-score');
         setShowTiger5(false);
         setTiger5Values({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
         setRoundHistory(getAllRoundHistoryService());
@@ -143,12 +157,8 @@ export default function Play() {
                     />
                 }
             >
-                <View style={styles.headerContainer}>
-                    <Text style={[styles.headerText, styles.marginTop]}>Play</Text>
-                    <Text style={[styles.normalText, styles.marginBottom]}>
-                        {isRoundActive ? 'Round in progress' : 'Track your score during a round'}
-                    </Text>
-                </View>
+
+                <SubMenu showSubMenu="play" selectedItem={section} handleSubMenu={handleSubMenu} />
 
                 {!isRoundActive && (
                     <View style={styles.container}>
@@ -192,58 +202,72 @@ export default function Play() {
 
                 {isRoundActive && (
                     <View style={styles.container}>
-                        <Text testID="running-total" style={localStyles.runningTotal}>
+                        {/* <Text testID="running-total" style={localStyles.runningTotal}>
                             {formatScore(runningTotal)}
-                        </Text>
+                        </Text> */}
 
-                        <View style={localStyles.toggleRow}>
-                            <TouchableOpacity
-                                testID="toggle-score"
-                                onPress={() => setShowTiger5(false)}
-                                style={[localStyles.toggleButton, !showTiger5 && localStyles.toggleActive]}
-                            >
-                                <Text style={[localStyles.toggleText, !showTiger5 && localStyles.toggleTextActive]}>Score</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                testID="toggle-tiger5"
-                                onPress={() => setShowTiger5(true)}
-                                style={[localStyles.toggleButton, showTiger5 && localStyles.toggleActive]}
-                            >
-                                <Text style={[localStyles.toggleText, showTiger5 && localStyles.toggleTextActive]}>Tiger 5</Text>
-                            </TouchableOpacity>
-                        </View>
+                        {displaySection('play-score') && (
+                            <View>
+                                <View style={styles.headerContainer}>
+                                    <Text style={[styles.normalText, styles.marginTop, styles.marginBottom]}>
+                                        Round in progress
+                                    </Text>
+                                </View>
 
-                        {!showTiger5 && (
-                            <HoleScoreInput
-                                holeNumber={currentHole}
-                                onScore={handleScore}
-                            />
+                                <View style={localStyles.toggleRow}>
+                                    <TouchableOpacity
+                                        testID="toggle-score"
+                                        onPress={() => setShowTiger5(false)}
+                                        style={[localStyles.toggleButton, !showTiger5 && localStyles.toggleActive]}
+                                    >
+                                        <Text style={[localStyles.toggleText, !showTiger5 && localStyles.toggleTextActive]}>Score</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        testID="toggle-tiger5"
+                                        onPress={() => setShowTiger5(true)}
+                                        style={[localStyles.toggleButton, showTiger5 && localStyles.toggleActive]}
+                                    >
+                                        <Text style={[localStyles.toggleText, showTiger5 && localStyles.toggleTextActive]}>Tiger 5</Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                {!showTiger5 && (
+                                    <HoleScoreInput
+                                        holeNumber={currentHole}
+                                        onScore={handleScore}
+                                    />
+                                )}
+
+                                {showTiger5 && (
+                                    <Tiger5Tally
+                                        onEndRound={() => { }}
+                                        roundControlled={true}
+                                        onValuesChange={handleTiger5ValuesChange}
+                                    />
+                                )}
+
+                                <TouchableOpacity
+                                    testID="end-round-button"
+                                    onPress={handleEndRound}
+                                    style={[localStyles.actionButton, localStyles.endRoundButton]}
+                                >
+                                    <Text style={localStyles.actionButtonText}>End round</Text>
+                                </TouchableOpacity>
+                            </View>
                         )}
 
-                        {showTiger5 && (
-                            <Tiger5Tally
-                                onEndRound={() => {}}
-                                roundControlled={true}
-                                onValuesChange={handleTiger5ValuesChange}
-                            />
+                        {displaySection('play-distances') && (
+                            <ClubDistanceList distances={getClubDistancesService()} editable={false} />
                         )}
 
-                        <View style={localStyles.linksRow}>
-                            <Link href='/play/distances' style={localStyles.linkButton}>
-                                <Text style={localStyles.linkButtonText}>Distances</Text>
-                            </Link>
-                            <Link href='/play/wedge-chart' style={localStyles.linkButton}>
-                                <Text style={localStyles.linkButtonText}>Wedge chart</Text>
-                            </Link>
-                        </View>
-
-                        <TouchableOpacity
-                            testID="end-round-button"
-                            onPress={handleEndRound}
-                            style={[localStyles.actionButton, localStyles.endRoundButton]}
-                        >
-                            <Text style={localStyles.actionButtonText}>End round</Text>
-                        </TouchableOpacity>
+                        {displaySection('play-wedge-chart') && (
+                            <View>
+                                <Text style={[styles.normalText, { textAlign: 'center', marginTop: 10 }]}>
+                                    Your wedge distances
+                                </Text>
+                                <WedgeChart isShowButtons={false} />
+                            </View>
+                        )}
                     </View>
                 )}
             </ScrollView>
@@ -302,22 +326,5 @@ const localStyles = StyleSheet.create({
     },
     toggleTextActive: {
         color: colours.background,
-    },
-    linksRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        marginTop: 15,
-        marginHorizontal: 15,
-    },
-    linkButton: {
-        borderWidth: 1,
-        borderColor: colours.yellow,
-        borderRadius: 8,
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-    },
-    linkButtonText: {
-        color: colours.yellow,
-        fontSize: fontSizes.normal,
     },
 });

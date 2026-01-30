@@ -6,6 +6,8 @@ import fontSizes from '../assets/font-sizes';
 type Props = {
     onEndRound: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => void;
     onRoundStateChange?: (active: boolean) => void;
+    roundControlled?: boolean;
+    onValuesChange?: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => void;
 };
 
 const counters = [
@@ -16,8 +18,8 @@ const counters = [
     { slug: 'double-chips', label: 'Double chips' },
 ];
 
-const Tiger5Tally = ({ onEndRound, onRoundStateChange }: Props) => {
-    const [roundActive, setRoundActive] = useState(false);
+const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange }: Props) => {
+    const [roundActive, setRoundActive] = useState(roundControlled === true);
     const [threePutts, setThreePutts] = useState(0);
     const [doubleBogeys, setDoubleBogeys] = useState(0);
     const [bogeysPar5, setBogeysPar5] = useState(0);
@@ -28,6 +30,26 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange }: Props) => {
     const setters = [setThreePutts, setDoubleBogeys, setBogeysPar5, setBogeysInside9Iron, setDoubleChips];
 
     const total = threePutts + doubleBogeys + bogeysPar5 + bogeysInside9Iron + doubleChips;
+
+    const handleIncrement = (index: number) => {
+        const newValue = values[index] + 1;
+        setters[index](newValue);
+        if (onValuesChange) {
+            const newValues = [...values];
+            newValues[index] = newValue;
+            onValuesChange(newValues[0], newValues[1], newValues[2], newValues[3], newValues[4]);
+        }
+    };
+
+    const handleDecrement = (index: number) => {
+        const newValue = Math.max(0, values[index] - 1);
+        setters[index](newValue);
+        if (onValuesChange) {
+            const newValues = [...values];
+            newValues[index] = newValue;
+            onValuesChange(newValues[0], newValues[1], newValues[2], newValues[3], newValues[4]);
+        }
+    };
 
     const handleStartRound = () => {
         setRoundActive(true);
@@ -63,7 +85,7 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange }: Props) => {
                     <View style={localStyles.controls}>
                         <TouchableOpacity
                             testID={`tiger5-decrement-${counter.slug}`}
-                            onPress={() => setters[index](Math.max(0, values[index] - 1))}
+                            onPress={() => handleDecrement(index)}
                             style={localStyles.button}
                         >
                             <Text style={localStyles.buttonText}>-</Text>
@@ -73,7 +95,7 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange }: Props) => {
                         </Text>
                         <TouchableOpacity
                             testID={`tiger5-increment-${counter.slug}`}
-                            onPress={() => setters[index](values[index] + 1)}
+                            onPress={() => handleIncrement(index)}
                             style={localStyles.button}
                         >
                             <Text style={localStyles.buttonText}>+</Text>
@@ -86,9 +108,11 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange }: Props) => {
                 {'Total: '}{total}
             </Text>
 
-            <TouchableOpacity testID="tiger5-end-round" onPress={handleEndRound} style={localStyles.saveButton}>
-                <Text style={localStyles.saveButtonText}>End round</Text>
-            </TouchableOpacity>
+            {!roundControlled && (
+                <TouchableOpacity testID="tiger5-end-round" onPress={handleEndRound} style={localStyles.saveButton}>
+                    <Text style={localStyles.saveButtonText}>End round</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

@@ -2,14 +2,12 @@ import { useState } from 'react';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Link } from 'expo-router';
-import Chevrons from '@/components/Chevrons';
 import styles from '@/assets/stlyes';
 import colours from '@/assets/colours';
 import IconButton from '@/components/IconButton';
 
 
 export default function HomeScreen() {
-  const points = ['Controlling low point', 'Improving centre strike', 'Enhancing clubface control'];
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = () => {
@@ -42,24 +40,28 @@ export default function HomeScreen() {
           <Text style={[styles.normalText, styles.marginBottom]}>
             Golfers seeking smarter practice & setting better on course expectations
           </Text>
-          <Text style={styles.subHeaderText}>
-            Be your own best caddy
-          </Text>
 
           <View style={[styles.iconsContainer, styles.marginTop]}>
-            <Link href='/practice'>
+            <Link href='/play'>
               <View style={styles.iconContainer}>
-                <IconButton iconName='golf-course' label='Practice' size='medium' />
+                <IconButton iconName='sports-golf' label='Play' size='large' />
               </View>
             </Link>
-            <Link href='/on-course'>
+            <Link href='/practice'>
               <View style={styles.iconContainer}>
-                <IconButton iconName='sports-golf' label='On course' size='medium' />
+                <IconButton iconName='golf-course' label='Practice' size='large' />
+              </View>
+            </Link>
+            <Link href='/pointers'>
+              <View style={styles.iconContainer}>
+                <IconButton iconName='lightbulb' label='Pointers' size='large' />
               </View>
             </Link>
           </View>
 
-          <Chevrons heading='Golf - get the ball in the hole in the fewest shots by:' points={points} />
+          <Text style={styles.subHeaderText}>
+            Be your own best caddy
+          </Text>
 
           <Text style={[styles.normalText, styles.marginTop]}>
             Golf is not a game of perfect, or having a perfect swing

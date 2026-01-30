@@ -10,7 +10,16 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import colours from "@/assets/colours";
 import { initialize } from '@/database/db';
 import { ToastProvider } from 'react-native-toast-notifications';
+import * as Notifications from 'expo-notifications';
 import NetworkStatus from '@/components/NetworkStatus';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -40,6 +49,8 @@ export default function RootLayout() {
     };
 
     setupDatabase();
+
+    Notifications.requestPermissionsAsync();
 
     async function prepareApp() {
       try {
@@ -143,6 +154,50 @@ export default function RootLayout() {
             }} />
           <Stack.Screen
             name="tools/tempo"
+            options={{
+              headerTitle: () => <LogoTitle />,
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: colours.yellow,
+              },
+              headerTintColor: colours.background,
+              headerBackButtonDisplayMode: 'minimal',
+            }} />
+          <Stack.Screen
+            name="play/distances"
+            options={{
+              headerTitle: () => <LogoTitle />,
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: colours.yellow,
+              },
+              headerTintColor: colours.background,
+              headerBackButtonDisplayMode: 'minimal',
+            }} />
+          <Stack.Screen
+            name="play/wedge-chart"
+            options={{
+              headerTitle: () => <LogoTitle />,
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: colours.yellow,
+              },
+              headerTintColor: colours.background,
+              headerBackButtonDisplayMode: 'minimal',
+            }} />
+          <Stack.Screen
+            name="play/scorecard"
+            options={{
+              headerTitle: () => <LogoTitle />,
+              headerTitleAlign: "center",
+              headerStyle: {
+                backgroundColor: colours.yellow,
+              },
+              headerTintColor: colours.background,
+              headerBackButtonDisplayMode: 'minimal',
+            }} />
+          <Stack.Screen
+            name="settings"
             options={{
               headerTitle: () => <LogoTitle />,
               headerTitleAlign: "center",

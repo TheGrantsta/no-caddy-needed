@@ -5,7 +5,16 @@ import {
     insertWedgeChart,
     getAllDrillHistory,
     insertTiger5Round,
-    getAllTiger5Rounds
+    getAllTiger5Rounds,
+    insertRound,
+    updateRound,
+    insertRoundHole,
+    getRoundById,
+    getRoundHoles,
+    getActiveRound,
+    getAllRounds,
+    getClubDistances,
+    insertClubDistances,
 } from '../database/db';
 
 export const getWedgeChartService = () => {
@@ -110,3 +119,87 @@ export const getAllTiger5RoundsService = (): Tiger5Round[] => {
 
     return rounds;
 }
+
+// Round types
+export type Round = {
+    Id: number;
+    CoursePar: number;
+    TotalScore: number;
+    StartTime: string;
+    EndTime: string | null;
+    IsCompleted: number;
+    Created_At: string;
+};
+
+export type RoundHole = {
+    Id: number;
+    RoundId: number;
+    HoleNumber: number;
+    ScoreRelativeToPar: number;
+};
+
+export type RoundScorecard = {
+    round: Round;
+    holes: RoundHole[];
+};
+
+export type ClubDistance = {
+    Id: number;
+    Club: string;
+    CarryDistance: number;
+    SortOrder: number;
+};
+
+// Round services
+export const startRoundService = async (coursePar: number): Promise<number | null> => {
+    return insertRound(coursePar);
+};
+
+export const endRoundService = async (roundId: number): Promise<boolean> => {
+    const holes: any[] = getRoundHoles(roundId);
+    const totalScore = holes.reduce((sum: number, hole: any) => sum + hole.ScoreRelativeToPar, 0);
+    return updateRound(roundId, totalScore);
+};
+
+export const addHoleScoreService = async (roundId: number, holeNumber: number, scoreRelativeToPar: number): Promise<boolean> => {
+    return insertRoundHole(roundId, holeNumber, scoreRelativeToPar);
+};
+
+export const getRoundScorecardService = (roundId: number): RoundScorecard | null => {
+    const round = getRoundById(roundId) as Round | null;
+    if (!round) return null;
+
+    const holes = getRoundHoles(roundId) as RoundHole[];
+    return { round, holes };
+};
+
+export const getActiveRoundService = (): Round | null => {
+    return getActiveRound() as Round | null;
+};
+
+export const getAllRoundHistoryService = (): Round[] => {
+    const rounds: Round[] = [];
+
+    getAllRounds().forEach((round: any) => {
+        rounds.push({
+            Id: round.Id,
+            CoursePar: round.CoursePar,
+            TotalScore: round.TotalScore,
+            StartTime: round.StartTime,
+            EndTime: round.EndTime,
+            IsCompleted: round.IsCompleted,
+            Created_At: getTwoDigitDayAndMonth(round.Created_At),
+        });
+    });
+
+    return rounds;
+};
+
+// Club distance services
+export const getClubDistancesService = (): ClubDistance[] => {
+    return getClubDistances() as ClubDistance[];
+};
+
+export const saveClubDistancesService = async (distances: { Club: string; CarryDistance: number; SortOrder: number }[]): Promise<boolean> => {
+    return insertClubDistances(distances);
+};

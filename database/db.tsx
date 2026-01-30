@@ -9,7 +9,10 @@ export const initialize = async () => {
         PRAGMA journal_mode = WAL;
         CREATE TABLE IF NOT EXISTS WedgeChart (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL, HalfSwing INTEGER NOT NULL, ThreeQuarterSwing INTEGER NOT NULL, FullSwing INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS Drills (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, Result BOOLEAN NOT NULL, Created_At TEXT NOT NULL);
-        CREATE TABLE IF NOT EXISTS Tiger5Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, ThreePutts INTEGER NOT NULL DEFAULT 0, DoubleBogeys INTEGER NOT NULL DEFAULT 0, BogeysPar5 INTEGER NOT NULL DEFAULT 0, BogeysInside9Iron INTEGER NOT NULL DEFAULT 0, DoubleChips INTEGER NOT NULL DEFAULT 0, Total INTEGER NOT NULL DEFAULT 0, Created_At TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS Tiger5Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, ThreePutts INTEGER NOT NULL DEFAULT 0, DoubleBogeys INTEGER NOT NULL DEFAULT 0, BogeysPar5 INTEGER NOT NULL DEFAULT 0, BogeysInside9Iron INTEGER NOT NULL DEFAULT 0, DoubleChips INTEGER NOT NULL DEFAULT 0, Total INTEGER NOT NULL DEFAULT 0, RoundId INTEGER, Created_At TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, CoursePar INTEGER NOT NULL, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, Created_At TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS RoundHoles (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, ScoreRelativeToPar INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
+        CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL, SortOrder INTEGER NOT NULL);
     `);
 };
 
@@ -94,6 +97,124 @@ export const getAllDrillHistory = () => {
 
     return get(sqlStatement);
 }
+
+export const insertRound = async (coursePar: number): Promise<number | null> => {
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const now = new Date().toISOString();
+
+        const statement = await db.prepareAsync(
+            'INSERT INTO Rounds (CoursePar, TotalScore, StartTime, IsCompleted, Created_At) VALUES ($CoursePar, 0, $StartTime, 0, $Created_At);'
+        );
+
+        try {
+            const result = await statement.executeAsync({ $CoursePar: coursePar, $StartTime: now, $Created_At: now });
+            return result.lastInsertRowId;
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
+};
+
+export const updateRound = async (roundId: number, totalScore: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const now = new Date().toISOString();
+
+        const statement = await db.prepareAsync(
+            'UPDATE Rounds SET TotalScore = $TotalScore, EndTime = $EndTime, IsCompleted = 1 WHERE Id = $Id;'
+        );
+
+        try {
+            await statement.executeAsync({ $TotalScore: totalScore, $EndTime: now, $Id: roundId });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        console.log(e);
+        success = false;
+    }
+
+    return success;
+};
+
+export const insertRoundHole = async (roundId: number, holeNumber: number, scoreRelativeToPar: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        const statement = await db.prepareAsync(
+            'INSERT INTO RoundHoles (RoundId, HoleNumber, ScoreRelativeToPar) VALUES ($RoundId, $HoleNumber, $ScoreRelativeToPar);'
+        );
+
+        try {
+            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber, $ScoreRelativeToPar: scoreRelativeToPar });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        console.log(e);
+        success = false;
+    }
+
+    return success;
+};
+
+export const getRoundById = (roundId: number) => {
+    const db = SQLite.openDatabaseSync(dbName);
+    const rows = db.getAllSync('SELECT * FROM Rounds WHERE Id = ?;', [roundId]);
+    return rows.length > 0 ? rows[0] : null;
+};
+
+export const getRoundHoles = (roundId: number) => {
+    const db = SQLite.openDatabaseSync(dbName);
+    return db.getAllSync('SELECT * FROM RoundHoles WHERE RoundId = ? ORDER BY HoleNumber ASC;', [roundId]);
+};
+
+export const getActiveRound = () => {
+    const db = SQLite.openDatabaseSync(dbName);
+    const rows = db.getAllSync('SELECT * FROM Rounds WHERE IsCompleted = 0 ORDER BY Id DESC LIMIT 1;');
+    return rows.length > 0 ? rows[0] : null;
+};
+
+export const getAllRounds = () => {
+    const db = SQLite.openDatabaseSync(dbName);
+    return db.getAllSync('SELECT * FROM Rounds WHERE IsCompleted = 1 ORDER BY Id DESC;');
+};
+
+export const getClubDistances = () => {
+    const db = SQLite.openDatabaseSync(dbName);
+    return db.getAllSync('SELECT * FROM ClubDistances ORDER BY SortOrder ASC;');
+};
+
+export const insertClubDistances = async (distances: { Club: string; CarryDistance: number; SortOrder: number }[]): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = SQLite.openDatabaseSync(dbName);
+        db.execSync('DELETE FROM ClubDistances');
+
+        for (const item of distances) {
+            const statement = db.prepareSync(
+                'INSERT INTO ClubDistances (Club, CarryDistance, SortOrder) VALUES ($Club, $CarryDistance, $SortOrder)'
+            );
+
+            try {
+                await statement.executeAsync({ $Club: item.Club, $CarryDistance: item.CarryDistance, $SortOrder: item.SortOrder });
+            } finally {
+                await statement.finalizeAsync();
+            }
+        }
+    } catch (e) {
+        console.log(e);
+        success = false;
+    }
+
+    return success;
+};
 
 function get(sql: string) {
     const rows: any[] = [];

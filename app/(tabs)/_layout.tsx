@@ -33,6 +33,15 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+          name="play"
+          options={{
+            title: 'Play',
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name='sports-golf' color={color} size={30} />
+            )
+          }}
+        />
+        <Tabs.Screen
           name="practice"
           options={{
             title: 'Practice',
@@ -42,20 +51,11 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="on-course"
+          name="pointers"
           options={{
-            title: 'On course',
+            title: 'Pointers',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='sports-golf' color={color} size={30} />
-            )
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: 'Settings',
-            tabBarIcon: ({ color }) => (
-              <MaterialIcons name='settings' color={color} size={30} />
+              <MaterialIcons name='lightbulb' color={color} size={30} />
             )
           }}
         />

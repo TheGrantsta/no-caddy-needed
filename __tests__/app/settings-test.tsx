@@ -1,9 +1,17 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import View from '../../app/(tabs)/settings';
+import View from '../../app/settings';
 
 jest.mock('../../service/DbService', () => ({
-    getWedgeChartService: jest.fn(() => [[]])
+    getWedgeChartService: jest.fn(() => [[]]),
+    getClubDistancesService: jest.fn(() => []),
+    saveClubDistancesService: jest.fn(() => Promise.resolve(true)),
+}));
+
+jest.mock('react-native-toast-notifications', () => ({
+    useToast: () => ({
+        show: jest.fn(),
+    }),
 }));
 
 jest.mock('react-native-gesture-handler', () => {
@@ -27,5 +35,11 @@ describe('Settings page ', () => {
         const { getByText } = render(<View />)
 
         expect(getByText('Wedge chart')).toBeTruthy();
+    });
+
+    it('renders club distances heading', () => {
+        const { getByText } = render(<View />)
+
+        expect(getByText('Club distances')).toBeTruthy();
     });
 });

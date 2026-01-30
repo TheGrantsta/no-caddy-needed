@@ -101,41 +101,53 @@ describe('Main Navigation', () => {
             expect(getByTestId('tab-title-practice').props.children).toBe('Practice');
         });
 
-        it('renders On course tab with correct title', () => {
+        it('renders Play tab with correct title', () => {
             const { getByTestId } = render(<TabLayout />);
 
-            expect(getByTestId('tab-on-course')).toBeTruthy();
-            expect(getByTestId('tab-title-on-course').props.children).toBe('On course');
+            expect(getByTestId('tab-play')).toBeTruthy();
+            expect(getByTestId('tab-title-play').props.children).toBe('Play');
         });
 
-        it('renders Settings tab with correct title', () => {
+        it('renders Pointers tab with correct title', () => {
             const { getByTestId } = render(<TabLayout />);
 
-            expect(getByTestId('tab-settings')).toBeTruthy();
-            expect(getByTestId('tab-title-settings').props.children).toBe('Settings');
+            expect(getByTestId('tab-pointers')).toBeTruthy();
+            expect(getByTestId('tab-title-pointers').props.children).toBe('Pointers');
         });
 
         it('renders all four tabs', () => {
             const { getByTestId } = render(<TabLayout />);
 
             expect(getByTestId('tab-index')).toBeTruthy();
+            expect(getByTestId('tab-play')).toBeTruthy();
             expect(getByTestId('tab-practice')).toBeTruthy();
-            expect(getByTestId('tab-on-course')).toBeTruthy();
-            expect(getByTestId('tab-settings')).toBeTruthy();
+            expect(getByTestId('tab-pointers')).toBeTruthy();
         });
     });
 
     describe('Homepage Navigation Links', () => {
+        it('renders Play navigation link', () => {
+            const { getByTestId } = render(<Homepage />);
+
+            expect(getByTestId('link-/play')).toBeTruthy();
+        });
+
         it('renders Practice navigation link', () => {
             const { getByTestId } = render(<Homepage />);
 
             expect(getByTestId('link-/practice')).toBeTruthy();
         });
 
-        it('renders On course navigation link', () => {
+        it('renders Pointers navigation link', () => {
             const { getByTestId } = render(<Homepage />);
 
-            expect(getByTestId('link-/on-course')).toBeTruthy();
+            expect(getByTestId('link-/pointers')).toBeTruthy();
+        });
+
+        it('displays Play link with correct label', () => {
+            const { getByText } = render(<Homepage />);
+
+            expect(getByText('Play')).toBeTruthy();
         });
 
         it('displays Practice link with correct label', () => {
@@ -144,10 +156,10 @@ describe('Main Navigation', () => {
             expect(getByText('Practice')).toBeTruthy();
         });
 
-        it('displays On course link with correct label', () => {
+        it('displays Pointers link with correct label', () => {
             const { getByText } = render(<Homepage />);
 
-            expect(getByText('On course')).toBeTruthy();
+            expect(getByText('Pointers')).toBeTruthy();
         });
     });
 });

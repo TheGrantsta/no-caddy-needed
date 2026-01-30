@@ -34,17 +34,9 @@ describe('renders homepage', () => {
     it('shows links on homepage', () => {
         const { getByText } = render(<Homepage />);
 
+        expect(getByText('Play')).toBeTruthy();
         expect(getByText('Practice')).toBeTruthy();
-        expect(getByText('On course')).toBeTruthy();
-    });
-
-    it('shows heading and points', () => {
-        const { getByText } = render(<Homepage />);
-
-        expect(getByText('Golf - get the ball in the hole in the fewest shots by:')).toBeTruthy();
-        expect(getByText('Controlling low point')).toBeTruthy();
-        expect(getByText('Improving centre strike')).toBeTruthy();
-        expect(getByText('Enhancing clubface control')).toBeTruthy();
+        expect(getByText('Pointers')).toBeTruthy();
     });
 
     it('shows footer text on homepage', () => {

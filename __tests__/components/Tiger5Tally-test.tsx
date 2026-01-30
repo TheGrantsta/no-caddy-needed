@@ -259,4 +259,64 @@ describe('Tiger5Tally component', () => {
             expect(mockOnRoundStateChange).toHaveBeenCalledWith(false);
         });
     });
+
+    describe('roundControlled mode', () => {
+        const mockOnValuesChange = jest.fn();
+
+        beforeEach(() => {
+            jest.clearAllMocks();
+        });
+
+        it('shows counters immediately without Start button', () => {
+            const { getByTestId, queryByTestId } = render(
+                <Tiger5Tally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
+            );
+
+            expect(getByTestId('tiger5-count-three-putts')).toBeTruthy();
+            expect(getByTestId('tiger5-count-double-bogeys')).toBeTruthy();
+            expect(getByTestId('tiger5-total')).toBeTruthy();
+            expect(queryByTestId('tiger5-start-round')).toBeNull();
+        });
+
+        it('does not show End round button', () => {
+            const { queryByTestId } = render(
+                <Tiger5Tally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
+            );
+
+            expect(queryByTestId('tiger5-end-round')).toBeNull();
+        });
+
+        it('calls onValuesChange when counter changes', () => {
+            const { getByTestId } = render(
+                <Tiger5Tally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
+            );
+
+            fireEvent.press(getByTestId('tiger5-increment-three-putts'));
+
+            expect(mockOnValuesChange).toHaveBeenCalledWith(1, 0, 0, 0, 0);
+        });
+
+        it('calls onValuesChange with all updated values', () => {
+            const { getByTestId } = render(
+                <Tiger5Tally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
+            );
+
+            fireEvent.press(getByTestId('tiger5-increment-three-putts'));
+            fireEvent.press(getByTestId('tiger5-increment-double-bogeys'));
+
+            expect(mockOnValuesChange).toHaveBeenLastCalledWith(1, 1, 0, 0, 0);
+        });
+
+        it('increments and decrements work in roundControlled mode', () => {
+            const { getByTestId } = render(
+                <Tiger5Tally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
+            );
+
+            fireEvent.press(getByTestId('tiger5-increment-double-chips'));
+            fireEvent.press(getByTestId('tiger5-increment-double-chips'));
+            fireEvent.press(getByTestId('tiger5-decrement-double-chips'));
+
+            expect(getByTestId('tiger5-count-double-chips').props.children).toBe(1);
+        });
+    });
 });

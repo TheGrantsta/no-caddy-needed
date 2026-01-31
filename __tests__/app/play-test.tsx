@@ -8,6 +8,7 @@ import {
     getActiveRoundService,
     getAllRoundHistoryService,
     insertTiger5RoundService,
+    getAllTiger5RoundsService,
     getClubDistancesService,
     addRoundPlayersService,
     getRoundPlayersService,
@@ -21,6 +22,7 @@ jest.mock('../../service/DbService', () => ({
     getActiveRoundService: jest.fn(),
     getAllRoundHistoryService: jest.fn(),
     insertTiger5RoundService: jest.fn(),
+    getAllTiger5RoundsService: jest.fn(),
     getClubDistancesService: jest.fn(),
     getWedgeChartService: jest.fn().mockReturnValue([]),
     insertWedgeChartService: jest.fn(),
@@ -72,6 +74,7 @@ const mockAddMultiplayerHoleScores = addMultiplayerHoleScoresService as jest.Moc
 const mockGetActiveRound = getActiveRoundService as jest.Mock;
 const mockGetAllRoundHistory = getAllRoundHistoryService as jest.Mock;
 const mockInsertTiger5Round = insertTiger5RoundService as jest.Mock;
+const mockGetAllTiger5Rounds = getAllTiger5RoundsService as jest.Mock;
 const mockGetClubDistances = getClubDistancesService as jest.Mock;
 const mockScheduleReminder = scheduleRoundReminder as jest.Mock;
 const mockCancelReminder = cancelRoundReminder as jest.Mock;
@@ -83,6 +86,7 @@ describe('Play screen', () => {
         jest.clearAllMocks();
         mockGetActiveRound.mockReturnValue(null);
         mockGetAllRoundHistory.mockReturnValue([]);
+        mockGetAllTiger5Rounds.mockReturnValue([]);
         mockGetClubDistances.mockReturnValue([]);
         mockGetRoundPlayers.mockReturnValue([]);
     });
@@ -136,6 +140,28 @@ describe('Play screen', () => {
             const { getByText } = render(<Play />);
 
             expect(getByText('-2')).toBeTruthy();
+        });
+
+        it('limits round history to 30 items', () => {
+            const rounds = Array.from({ length: 35 }, (_, i) => ({
+                Id: i + 1, CoursePar: 72, TotalScore: i, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
+            }));
+            mockGetAllRoundHistory.mockReturnValue(rounds);
+
+            const { getByText, queryByText } = render(<Play />);
+
+            expect(getByText('30/01')).toBeTruthy();
+            expect(queryByText('31/01')).toBeNull();
+        });
+
+        it('renders round history in a scrollable container', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('round-history-scroll')).toBeTruthy();
         });
     });
 
@@ -699,6 +725,73 @@ describe('Play screen', () => {
 
             expect(getByText('You')).toBeTruthy();
             expect(getByText('Alice')).toBeTruthy();
+        });
+    });
+
+    describe('Tiger 5 chart', () => {
+        const mockTiger5Data = [
+            { Id: 1, ThreePutts: 3, DoubleBogeys: 1, BogeysPar5: 2, BogeysInside9Iron: 4, DoubleChips: 0, Total: 10, Created_At: '15/06' },
+            { Id: 2, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 2, Total: 9, Created_At: '16/06' },
+        ];
+
+        it('does not render chart when no Tiger 5 data', () => {
+            mockGetAllTiger5Rounds.mockReturnValue([]);
+
+            const { queryByText } = render(<Play />);
+
+            expect(queryByText('Tiger 5')).toBeNull();
+        });
+
+        it('renders chart in idle state when data exists', () => {
+            mockGetAllTiger5Rounds.mockReturnValue(mockTiger5Data);
+
+            const { getByText } = render(<Play />);
+
+            expect(getByText('Tiger 5')).toBeTruthy();
+        });
+
+        it('does not render chart during active round', async () => {
+            mockGetAllTiger5Rounds.mockReturnValue(mockTiger5Data);
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId, queryByText } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('end-round-button')).toBeTruthy();
+            });
+
+            expect(queryByText('Tiger 5')).toBeNull();
+        });
+
+        it('refreshes chart after ending a round', async () => {
+            mockGetAllTiger5Rounds.mockReturnValue([]);
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockEndRound.mockResolvedValue(true);
+            mockGetAllRoundHistory.mockReturnValue([]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('end-round-button')).toBeTruthy();
+            });
+
+            fireEvent.press(getByTestId('end-round-button'));
+            fireEvent.press(getByTestId('confirm-end-round-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('start-round-button')).toBeTruthy();
+            });
+
+            // getAllTiger5RoundsService called on mount + after ending round
+            expect(mockGetAllTiger5Rounds).toHaveBeenCalledTimes(2);
         });
     });
 });

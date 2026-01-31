@@ -5,6 +5,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { useRouter } from 'expo-router';
 import MultiplayerHoleScoreInput from '../../components/MultiplayerHoleScoreInput';
 import Tiger5Tally from '../../components/Tiger5Tally';
+import Tiger5Chart from '../../components/Tiger5Chart';
 import SubMenu from '../../components/SubMenu';
 import ClubDistanceList from '../../components/ClubDistanceList';
 import WedgeChart from '../../components/WedgeChart';
@@ -16,11 +17,13 @@ import {
     getActiveRoundService,
     getAllRoundHistoryService,
     insertTiger5RoundService,
+    getAllTiger5RoundsService,
     getClubDistancesService,
     addRoundPlayersService,
     getRoundPlayersService,
     Round,
     RoundPlayer,
+    Tiger5Round,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
 import styles from '../../assets/stlyes';
@@ -40,6 +43,7 @@ export default function Play() {
     const [currentHole, setCurrentHole] = useState(1);
     const [runningTotal, setRunningTotal] = useState(0);
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
+    const [tiger5Rounds, setTiger5Rounds] = useState<Tiger5Round[]>([]);
     const [section, setSection] = useState('play-score');
     const [tiger5Values, setTiger5Values] = useState({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
     const [notificationId, setNotificationId] = useState<string | null>(null);
@@ -60,12 +64,14 @@ export default function Play() {
             }
         }
         setRoundHistory(getAllRoundHistoryService());
+        setTiger5Rounds(getAllTiger5RoundsService());
     }, []);
 
     const onRefresh = () => {
         setRefreshing(true);
         setTimeout(() => {
             setRoundHistory(getAllRoundHistoryService());
+            setTiger5Rounds(getAllTiger5RoundsService());
             setRefreshing(false);
         }, 750);
     };
@@ -199,6 +205,7 @@ export default function Play() {
         setCurrentHoleData(null);
         setShowEndRoundConfirm(false);
         setRoundHistory(getAllRoundHistoryService());
+        setTiger5Rounds(getAllTiger5RoundsService());
     };
 
     const isRoundActive = activeRoundId !== null;
@@ -237,6 +244,8 @@ export default function Play() {
                             </TouchableOpacity>
                         </View>
 
+                        <Tiger5Chart rounds={tiger5Rounds} />
+
                         {roundHistory.length === 0 && (
                             <View style={styles.headerContainer}>
                                 <Text style={[styles.normalText, styles.marginTop]}>
@@ -254,12 +263,14 @@ export default function Play() {
                                     <Text style={styles.header}>Date</Text>
                                     <Text style={styles.header}>Score</Text>
                                 </View>
-                                {roundHistory.map((round) => (
-                                    <View key={round.Id} style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
-                                        <Text style={styles.normalText}>{round.Created_At}</Text>
-                                        <Text style={styles.normalText}>{formatScore(round.TotalScore)}</Text>
-                                    </View>
-                                ))}
+                                <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
+                                    {roundHistory.slice(0, 30).map((round) => (
+                                        <View key={round.Id} style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
+                                            <Text style={styles.normalText}>{round.Created_At}</Text>
+                                            <Text style={styles.normalText}>{formatScore(round.TotalScore)}</Text>
+                                        </View>
+                                    ))}
+                                </ScrollView>
                             </View>
                         )}
                     </View>
@@ -393,5 +404,8 @@ const localStyles = StyleSheet.create({
         color: colours.white,
         fontSize: fontSizes.tableHeader,
         fontWeight: 'bold' as const,
+    },
+    roundHistoryScroll: {
+        maxHeight: 300,
     },
 });

@@ -569,6 +569,8 @@ describe('Play screen', () => {
 
             expect(getByText('3-putts')).toBeTruthy();
             expect(getByText('Double bogeys')).toBeTruthy();
+            // Default holePar is 4, so Bogeys on par 5s should be hidden
+            expect(queryByText('Bogeys on par 5s')).toBeNull();
         });
 
         it('does not show Score/Tiger 5 toggle buttons', async () => {
@@ -725,6 +727,42 @@ describe('Play screen', () => {
 
             expect(getByText('You')).toBeTruthy();
             expect(getByText('Alice')).toBeTruthy();
+        });
+    });
+
+    describe('Tiger 5 total in round history', () => {
+        it('shows T5 column header when round history exists', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+
+            const { getByText } = render(<Play />);
+
+            expect(getByText('T5')).toBeTruthy();
+        });
+
+        it('shows Tiger5 total next to matching round', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+            mockGetAllTiger5Rounds.mockReturnValue([
+                { Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 1, Total: 5, Created_At: '15/06' },
+            ]);
+
+            const { getByText } = render(<Play />);
+
+            expect(getByText('5')).toBeTruthy();
+        });
+
+        it('shows dash when no Tiger5 data for a round', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+            mockGetAllTiger5Rounds.mockReturnValue([]);
+
+            const { getByText } = render(<Play />);
+
+            expect(getByText('-')).toBeTruthy();
         });
     });
 

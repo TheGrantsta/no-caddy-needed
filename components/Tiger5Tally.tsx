@@ -8,6 +8,7 @@ type Props = {
     onRoundStateChange?: (active: boolean) => void;
     roundControlled?: boolean;
     onValuesChange?: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => void;
+    holePar?: number;
 };
 
 const counters = [
@@ -18,7 +19,7 @@ const counters = [
     { slug: 'double-chips', label: 'Double chips' },
 ];
 
-const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange }: Props) => {
+const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar }: Props) => {
     const [roundActive, setRoundActive] = useState(roundControlled === true);
     const [threePutts, setThreePutts] = useState(0);
     const [doubleBogeys, setDoubleBogeys] = useState(0);
@@ -28,8 +29,6 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
 
     const values = [threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips];
     const setters = [setThreePutts, setDoubleBogeys, setBogeysPar5, setBogeysInside9Iron, setDoubleChips];
-
-    const total = threePutts + doubleBogeys + bogeysPar5 + bogeysInside9Iron + doubleChips;
 
     const handleIncrement = (index: number) => {
         const newValue = values[index] + 1;
@@ -79,34 +78,33 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
 
     return (
         <View style={localStyles.container}>
-            {counters.map((counter, index) => (
-                <View key={counter.slug} style={localStyles.row}>
-                    <Text style={localStyles.label}>{counter.label}</Text>
-                    <View style={localStyles.controls}>
-                        <TouchableOpacity
-                            testID={`tiger5-decrement-${counter.slug}`}
-                            onPress={() => handleDecrement(index)}
-                            style={localStyles.button}
-                        >
-                            <Text style={localStyles.buttonText}>-</Text>
-                        </TouchableOpacity>
-                        <Text testID={`tiger5-count-${counter.slug}`} style={localStyles.count}>
-                            {values[index]}
-                        </Text>
-                        <TouchableOpacity
-                            testID={`tiger5-increment-${counter.slug}`}
-                            onPress={() => handleIncrement(index)}
-                            style={localStyles.button}
-                        >
-                            <Text style={localStyles.buttonText}>+</Text>
-                        </TouchableOpacity>
+            {counters.map((counter, index) => {
+                if (counter.slug === 'bogeys-par5' && holePar !== 5) return null;
+                return (
+                    <View key={counter.slug} style={localStyles.row}>
+                        <Text style={localStyles.label}>{counter.label}</Text>
+                        <View style={localStyles.controls}>
+                            <TouchableOpacity
+                                testID={`tiger5-decrement-${counter.slug}`}
+                                onPress={() => handleDecrement(index)}
+                                style={localStyles.button}
+                            >
+                                <Text style={localStyles.buttonText}>-</Text>
+                            </TouchableOpacity>
+                            <Text testID={`tiger5-count-${counter.slug}`} style={localStyles.count}>
+                                {values[index]}
+                            </Text>
+                            <TouchableOpacity
+                                testID={`tiger5-increment-${counter.slug}`}
+                                onPress={() => handleIncrement(index)}
+                                style={localStyles.button}
+                            >
+                                <Text style={localStyles.buttonText}>+</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-            ))}
-
-            <Text testID="tiger5-total" style={localStyles.total}>
-                {'Total: '}{total}
-            </Text>
+                );
+            })}
 
             {!roundControlled && (
                 <TouchableOpacity testID="tiger5-end-round" onPress={handleEndRound} style={localStyles.saveButton}>
@@ -158,14 +156,6 @@ const localStyles = StyleSheet.create({
         fontSize: fontSizes.subHeader,
         minWidth: 40,
         textAlign: 'center',
-    },
-    total: {
-        color: colours.yellow,
-        fontSize: fontSizes.subHeader,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginTop: 15,
-        marginBottom: 10,
     },
     saveButton: {
         backgroundColor: colours.yellow,

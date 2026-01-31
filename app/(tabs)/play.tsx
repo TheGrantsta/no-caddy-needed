@@ -254,25 +254,30 @@ export default function Play() {
                             </View>
                         )}
 
-                        {roundHistory.length > 0 && (
-                            <View style={{ padding: 15 }}>
-                                <Text style={[styles.subHeaderText, { textAlign: 'center' }]}>
-                                    Round history
-                                </Text>
-                                <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.yellow }]}>
-                                    <Text style={styles.header}>Date</Text>
-                                    <Text style={styles.header}>Score</Text>
+                        {roundHistory.length > 0 && (() => {
+                            const tiger5Map = new Map(tiger5Rounds.map(t => [t.Created_At, t.Total]));
+                            return (
+                                <View style={{ padding: 15 }}>
+                                    <Text style={[styles.subHeaderText, { textAlign: 'center' }]}>
+                                        Round history
+                                    </Text>
+                                    <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.yellow }]}>
+                                        <Text style={styles.header}>Date</Text>
+                                        <Text style={styles.header}>Score</Text>
+                                        <Text style={styles.header}>T5</Text>
+                                    </View>
+                                    <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
+                                        {roundHistory.slice(0, 30).map((round) => (
+                                            <View key={round.Id} style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
+                                                <Text style={styles.normalText}>{round.Created_At}</Text>
+                                                <Text style={styles.normalText}>{formatScore(round.TotalScore)}</Text>
+                                                <Text style={styles.normalText}>{tiger5Map.has(round.Created_At) ? tiger5Map.get(round.Created_At) : '-'}</Text>
+                                            </View>
+                                        ))}
+                                    </ScrollView>
                                 </View>
-                                <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
-                                    {roundHistory.slice(0, 30).map((round) => (
-                                        <View key={round.Id} style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
-                                            <Text style={styles.normalText}>{round.Created_At}</Text>
-                                            <Text style={styles.normalText}>{formatScore(round.TotalScore)}</Text>
-                                        </View>
-                                    ))}
-                                </ScrollView>
-                            </View>
-                        )}
+                            );
+                        })()}
                     </View>
                 )}
 
@@ -294,6 +299,7 @@ export default function Play() {
                                         onEndRound={() => { }}
                                         roundControlled={true}
                                         onValuesChange={handleTiger5ValuesChange}
+                                        holePar={currentHoleData?.holePar}
                                     />
                                 ) : undefined}
                             />

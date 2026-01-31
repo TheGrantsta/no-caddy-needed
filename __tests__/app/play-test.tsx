@@ -229,14 +229,33 @@ describe('Play screen', () => {
                 expect(getByText('Hole 1')).toBeTruthy();
             });
 
-            // Change a score to populate current hole data
-            fireEvent.press(getByTestId('increment-1'));
-            fireEvent.press(getByTestId('decrement-1'));
-
             fireEvent.press(getByTestId('next-hole-button'));
 
             await waitFor(() => {
                 expect(getByText('Hole 2')).toBeTruthy();
+            });
+        });
+
+        it('submits default par scores when next hole pressed without changing score', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+            const { getByTestId, getByText } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(getByText('Hole 1')).toBeTruthy();
+            });
+
+            fireEvent.press(getByTestId('next-hole-button'));
+
+            await waitFor(() => {
+                expect(mockAddMultiplayerHoleScores).toHaveBeenCalledWith(1, 1, 4, [
+                    { playerId: 1, playerName: 'You', score: 4 },
+                ]);
             });
         });
 
@@ -258,7 +277,43 @@ describe('Play screen', () => {
     });
 
     describe('Ending a round', () => {
-        it('calls endRoundService when End Round is pressed', async () => {
+        it('shows confirm button when End Round is pressed', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('end-round-button')).toBeTruthy();
+            });
+
+            fireEvent.press(getByTestId('end-round-button'));
+
+            expect(getByTestId('confirm-end-round-button')).toBeTruthy();
+        });
+
+        it('does not call endRoundService until confirm is pressed', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('end-round-button')).toBeTruthy();
+            });
+
+            fireEvent.press(getByTestId('end-round-button'));
+
+            expect(mockEndRound).not.toHaveBeenCalled();
+        });
+
+        it('calls endRoundService when confirm is pressed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockEndRound.mockResolvedValue(true);
@@ -274,13 +329,14 @@ describe('Play screen', () => {
             });
 
             fireEvent.press(getByTestId('end-round-button'));
+            fireEvent.press(getByTestId('confirm-end-round-button'));
 
             await waitFor(() => {
                 expect(mockEndRound).toHaveBeenCalledWith(1);
             });
         });
 
-        it('returns to idle state after ending round', async () => {
+        it('returns to idle state after confirming end round', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockEndRound.mockResolvedValue(true);
@@ -296,10 +352,33 @@ describe('Play screen', () => {
             });
 
             fireEvent.press(getByTestId('end-round-button'));
+            fireEvent.press(getByTestId('confirm-end-round-button'));
 
             await waitFor(() => {
                 expect(getByTestId('start-round-button')).toBeTruthy();
             });
+        });
+
+        it('hides confirm button when cancel is pressed', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('end-round-button')).toBeTruthy();
+            });
+
+            fireEvent.press(getByTestId('end-round-button'));
+            expect(getByTestId('confirm-end-round-button')).toBeTruthy();
+
+            fireEvent.press(getByTestId('cancel-end-round-button'));
+
+            expect(queryByTestId('confirm-end-round-button')).toBeNull();
+            expect(getByTestId('end-round-button')).toBeTruthy();
         });
     });
 
@@ -466,6 +545,7 @@ describe('Play screen', () => {
             });
 
             fireEvent.press(getByTestId('end-round-button'));
+            fireEvent.press(getByTestId('confirm-end-round-button'));
 
             await waitFor(() => {
                 expect(mockInsertTiger5Round).toHaveBeenCalled();
@@ -488,6 +568,7 @@ describe('Play screen', () => {
             });
 
             fireEvent.press(getByTestId('end-round-button'));
+            fireEvent.press(getByTestId('confirm-end-round-button'));
 
             await waitFor(() => {
                 expect(mockInsertTiger5Round).not.toHaveBeenCalled();
@@ -528,6 +609,7 @@ describe('Play screen', () => {
             });
 
             fireEvent.press(getByTestId('end-round-button'));
+            fireEvent.press(getByTestId('confirm-end-round-button'));
 
             await waitFor(() => {
                 expect(mockCancelReminder).toHaveBeenCalledWith('notif-123');
@@ -549,11 +631,8 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByTestId('increment-1')).toBeTruthy();
+                expect(getByTestId('next-hole-button')).toBeTruthy();
             });
-
-            // Change a score to populate current hole data
-            fireEvent.press(getByTestId('increment-1'));
 
             fireEvent.press(getByTestId('next-hole-button'));
 

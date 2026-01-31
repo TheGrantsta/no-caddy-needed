@@ -46,6 +46,7 @@ export default function Play() {
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
     const [currentHoleData, setCurrentHoleData] = useState<{ holeNumber: number; holePar: number; scores: { playerId: number; playerName: string; score: number }[] } | null>(null);
+    const [showEndRoundConfirm, setShowEndRoundConfirm] = useState(false);
     const toast = useToast();
     const router = useRouter();
 
@@ -106,10 +107,16 @@ export default function Play() {
         setCurrentHoleData({ holeNumber, holePar, scores });
     };
 
-    const handleNextHole = async () => {
-        if (!activeRoundId || !currentHoleData) return;
+    const buildDefaultHoleData = () => ({
+        holeNumber: currentHole,
+        holePar: 4,
+        scores: players.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: 4 })),
+    });
 
-        const { holeNumber, holePar, scores } = currentHoleData;
+    const handleNextHole = async () => {
+        if (!activeRoundId) return;
+
+        const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
         const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
         if (success) {
             const userScore = scores.find(s => {
@@ -145,7 +152,15 @@ export default function Play() {
         setTiger5Values({ threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips });
     };
 
-    const handleEndRound = async () => {
+    const handleEndRoundPress = () => {
+        setShowEndRoundConfirm(true);
+    };
+
+    const handleCancelEndRound = () => {
+        setShowEndRoundConfirm(false);
+    };
+
+    const handleConfirmEndRound = async () => {
         if (!activeRoundId) return;
 
         await cancelRoundReminder(notificationId);
@@ -182,6 +197,7 @@ export default function Play() {
         setPlayers([]);
         setShowPlayerSetup(false);
         setCurrentHoleData(null);
+        setShowEndRoundConfirm(false);
         setRoundHistory(getAllRoundHistoryService());
     };
 
@@ -280,13 +296,34 @@ export default function Play() {
                                     <Text style={localStyles.nextHoleButtonText}>Next hole</Text>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity
-                                    testID="end-round-button"
-                                    onPress={handleEndRound}
-                                    style={localStyles.endRoundButton}
-                                >
-                                    <Text style={localStyles.endRoundButtonText}>End round</Text>
-                                </TouchableOpacity>
+                                {!showEndRoundConfirm && (
+                                    <TouchableOpacity
+                                        testID="end-round-button"
+                                        onPress={handleEndRoundPress}
+                                        style={localStyles.endRoundButton}
+                                    >
+                                        <Text style={localStyles.endRoundButtonText}>End round</Text>
+                                    </TouchableOpacity>
+                                )}
+
+                                {showEndRoundConfirm && (
+                                    <View style={localStyles.confirmContainer}>
+                                        <TouchableOpacity
+                                            testID="confirm-end-round-button"
+                                            onPress={handleConfirmEndRound}
+                                            style={localStyles.endRoundButton}
+                                        >
+                                            <Text style={localStyles.endRoundButtonText}>Confirm end round</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            testID="cancel-end-round-button"
+                                            onPress={handleCancelEndRound}
+                                            style={localStyles.nextHoleButton}
+                                        >
+                                            <Text style={localStyles.nextHoleButtonText}>Cancel</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
                             </View>
                         )}
 
@@ -339,6 +376,10 @@ const localStyles = StyleSheet.create({
         color: colours.background,
         fontSize: fontSizes.tableHeader,
         fontWeight: 'bold' as const,
+    },
+    confirmContainer: {
+        marginTop: 20,
+        marginHorizontal: 15,
     },
     endRoundButton: {
         backgroundColor: colours.errorText,

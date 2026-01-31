@@ -13,6 +13,8 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, CoursePar INTEGER NOT NULL, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundHoles (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, ScoreRelativeToPar INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL, SortOrder INTEGER NOT NULL);
+        CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
+        CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
     `);
 };
 
@@ -214,6 +216,58 @@ export const insertClubDistances = async (distances: { Club: string; CarryDistan
     }
 
     return success;
+};
+
+export const insertRoundPlayer = async (roundId: number, playerName: string, isUser: number, sortOrder: number): Promise<number | null> => {
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        const statement = await db.prepareAsync(
+            'INSERT INTO RoundPlayers (RoundId, PlayerName, IsUser, SortOrder) VALUES ($RoundId, $PlayerName, $IsUser, $SortOrder);'
+        );
+
+        try {
+            const result = await statement.executeAsync({ $RoundId: roundId, $PlayerName: playerName, $IsUser: isUser, $SortOrder: sortOrder });
+            return result.lastInsertRowId;
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
+};
+
+export const getRoundPlayers = (roundId: number) => {
+    const db = SQLite.openDatabaseSync(dbName);
+    return db.getAllSync('SELECT * FROM RoundPlayers WHERE RoundId = ? ORDER BY SortOrder ASC;', [roundId]);
+};
+
+export const insertRoundHoleScore = async (roundId: number, roundPlayerId: number, holeNumber: number, holePar: number, score: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        const statement = await db.prepareAsync(
+            'INSERT INTO RoundHoleScores (RoundId, RoundPlayerId, HoleNumber, HolePar, Score) VALUES ($RoundId, $RoundPlayerId, $HoleNumber, $HolePar, $Score);'
+        );
+
+        try {
+            await statement.executeAsync({ $RoundId: roundId, $RoundPlayerId: roundPlayerId, $HoleNumber: holeNumber, $HolePar: holePar, $Score: score });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        console.log(e);
+        success = false;
+    }
+
+    return success;
+};
+
+export const getRoundHoleScores = (roundId: number) => {
+    const db = SQLite.openDatabaseSync(dbName);
+    return db.getAllSync('SELECT * FROM RoundHoleScores WHERE RoundId = ? ORDER BY HoleNumber ASC, RoundPlayerId ASC;', [roundId]);
 };
 
 function get(sql: string) {

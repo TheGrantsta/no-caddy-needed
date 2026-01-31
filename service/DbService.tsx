@@ -15,6 +15,10 @@ import {
     getAllRounds,
     getClubDistances,
     insertClubDistances,
+    insertRoundPlayer,
+    getRoundPlayers,
+    insertRoundHoleScore,
+    getRoundHoleScores,
 } from '../database/db';
 
 export const getWedgeChartService = () => {
@@ -143,6 +147,29 @@ export type RoundScorecard = {
     holes: RoundHole[];
 };
 
+export type RoundPlayer = {
+    Id: number;
+    RoundId: number;
+    PlayerName: string;
+    IsUser: number;
+    SortOrder: number;
+};
+
+export type RoundHoleScore = {
+    Id: number;
+    RoundId: number;
+    RoundPlayerId: number;
+    HoleNumber: number;
+    HolePar: number;
+    Score: number;
+};
+
+export type MultiplayerRoundScorecard = {
+    round: Round;
+    players: RoundPlayer[];
+    holeScores: RoundHoleScore[];
+};
+
 export type ClubDistance = {
     Id: number;
     Club: string;
@@ -156,6 +183,16 @@ export const startRoundService = async (coursePar: number): Promise<number | nul
 };
 
 export const endRoundService = async (roundId: number): Promise<boolean> => {
+    const players = getRoundPlayers(roundId) as RoundPlayer[];
+
+    if (players.length > 0) {
+        const holeScores = getRoundHoleScores(roundId) as RoundHoleScore[];
+        const userPlayer = players.find(p => p.IsUser === 1);
+        const userScores = userPlayer ? holeScores.filter(s => s.RoundPlayerId === userPlayer.Id) : [];
+        const totalScore = userScores.reduce((sum, s) => sum + (s.Score - s.HolePar), 0);
+        return updateRound(roundId, totalScore);
+    }
+
     const holes: any[] = getRoundHoles(roundId);
     const totalScore = holes.reduce((sum: number, hole: any) => sum + hole.ScoreRelativeToPar, 0);
     return updateRound(roundId, totalScore);
@@ -193,6 +230,52 @@ export const getAllRoundHistoryService = (): Round[] => {
     });
 
     return rounds;
+};
+
+// Multiplayer round services
+export const addRoundPlayersService = async (roundId: number, playerNames: string[]): Promise<number[]> => {
+    const ids: number[] = [];
+
+    const userId = await insertRoundPlayer(roundId, 'You', 1, 0);
+    if (userId === null) return [];
+    ids.push(userId);
+
+    for (let i = 0; i < playerNames.length; i++) {
+        const playerId = await insertRoundPlayer(roundId, playerNames[i], 0, i + 1);
+        if (playerId !== null) {
+            ids.push(playerId);
+        }
+    }
+
+    return ids;
+};
+
+export const addMultiplayerHoleScoresService = async (
+    roundId: number,
+    holeNumber: number,
+    holePar: number,
+    scores: { playerId: number; playerName: string; score: number }[]
+): Promise<boolean> => {
+    for (const s of scores) {
+        const success = await insertRoundHoleScore(roundId, s.playerId, holeNumber, holePar, s.score);
+        if (!success) return false;
+    }
+    return true;
+};
+
+export const getRoundPlayersService = (roundId: number): RoundPlayer[] => {
+    return getRoundPlayers(roundId) as RoundPlayer[];
+};
+
+export const getMultiplayerScorecardService = (roundId: number): MultiplayerRoundScorecard | null => {
+    const round = getRoundById(roundId) as Round | null;
+    if (!round) return null;
+
+    const players = getRoundPlayers(roundId) as RoundPlayer[];
+    if (players.length === 0) return null;
+
+    const holeScores = getRoundHoleScores(roundId) as RoundHoleScore[];
+    return { round, players, holeScores };
 };
 
 // Club distance services

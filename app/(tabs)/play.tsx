@@ -3,20 +3,24 @@ import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 import { useRouter } from 'expo-router';
-import HoleScoreInput from '../../components/HoleScoreInput';
+import MultiplayerHoleScoreInput from '../../components/MultiplayerHoleScoreInput';
 import Tiger5Tally from '../../components/Tiger5Tally';
 import SubMenu from '../../components/SubMenu';
 import ClubDistanceList from '../../components/ClubDistanceList';
 import WedgeChart from '../../components/WedgeChart';
+import PlayerSetup from '../../components/PlayerSetup';
 import {
     startRoundService,
     endRoundService,
-    addHoleScoreService,
+    addMultiplayerHoleScoresService,
     getActiveRoundService,
     getAllRoundHistoryService,
     insertTiger5RoundService,
     getClubDistancesService,
+    addRoundPlayersService,
+    getRoundPlayersService,
     Round,
+    RoundPlayer,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
 import styles from '../../assets/stlyes';
@@ -40,6 +44,8 @@ export default function Play() {
     const [showTiger5, setShowTiger5] = useState(false);
     const [tiger5Values, setTiger5Values] = useState({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
     const [notificationId, setNotificationId] = useState<string | null>(null);
+    const [showPlayerSetup, setShowPlayerSetup] = useState(false);
+    const [players, setPlayers] = useState<RoundPlayer[]>([]);
     const toast = useToast();
     const router = useRouter();
 
@@ -47,6 +53,10 @@ export default function Play() {
         const activeRound = getActiveRoundService();
         if (activeRound) {
             setActiveRoundId(activeRound.Id);
+            const roundPlayers = getRoundPlayersService(activeRound.Id);
+            if (roundPlayers.length > 0) {
+                setPlayers(roundPlayers);
+            }
         }
         setRoundHistory(getAllRoundHistoryService());
     }, []);
@@ -59,13 +69,28 @@ export default function Play() {
         }, 750);
     };
 
-    const handleStartRound = async () => {
+    const handleShowPlayerSetup = () => {
+        setShowPlayerSetup(true);
+    };
+
+    const handleStartRound = async (playerNames: string[]) => {
         const roundId = await startRoundService(72);
 
         if (roundId) {
+            const playerIds = await addRoundPlayersService(roundId, playerNames);
+            const roundPlayers = playerIds.map((id, index) => ({
+                Id: id,
+                RoundId: roundId,
+                PlayerName: index === 0 ? 'You' : playerNames[index - 1],
+                IsUser: index === 0 ? 1 : 0,
+                SortOrder: index,
+            }));
+
             setActiveRoundId(roundId);
+            setPlayers(roundPlayers);
             setCurrentHole(1);
             setRunningTotal(0);
+            setShowPlayerSetup(false);
             const nId = await scheduleRoundReminder();
             setNotificationId(nId);
         } else {
@@ -77,12 +102,18 @@ export default function Play() {
         }
     };
 
-    const handleScore = async (holeNumber: number, score: number) => {
+    const handleScore = async (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => {
         if (!activeRoundId) return;
 
-        const success = await addHoleScoreService(activeRoundId, holeNumber, score);
+        const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
         if (success) {
-            setRunningTotal(prev => prev + score);
+            const userScore = scores.find(s => {
+                const player = players.find(p => p.Id === s.playerId);
+                return player && player.IsUser === 1;
+            });
+            if (userScore) {
+                setRunningTotal(prev => prev + (userScore.score - holePar));
+            }
             setCurrentHole(prev => prev + 1);
         }
     };
@@ -134,6 +165,8 @@ export default function Play() {
         setSection('play-score');
         setShowTiger5(false);
         setTiger5Values({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
+        setPlayers([]);
+        setShowPlayerSetup(false);
         setRoundHistory(getAllRoundHistoryService());
     };
 
@@ -160,12 +193,12 @@ export default function Play() {
 
                 <SubMenu showSubMenu="play" selectedItem={section} handleSubMenu={handleSubMenu} />
 
-                {!isRoundActive && (
+                {!isRoundActive && !showPlayerSetup && (
                     <View style={styles.container}>
                         <View style={localStyles.startRoundContainer}>
                             <TouchableOpacity
                                 testID="start-round-button"
-                                onPress={handleStartRound}
+                                onPress={handleShowPlayerSetup}
                                 style={localStyles.actionButton}
                             >
                                 <Text style={localStyles.actionButtonText}>Start round</Text>
@@ -200,12 +233,14 @@ export default function Play() {
                     </View>
                 )}
 
+                {!isRoundActive && showPlayerSetup && (
+                    <View style={styles.container}>
+                        <PlayerSetup onStartRound={handleStartRound} />
+                    </View>
+                )}
+
                 {isRoundActive && (
                     <View style={styles.container}>
-                        {/* <Text testID="running-total" style={localStyles.runningTotal}>
-                            {formatScore(runningTotal)}
-                        </Text> */}
-
                         {displaySection('play-score') && (
                             <View>
                                 <View style={styles.headerContainer}>
@@ -232,9 +267,10 @@ export default function Play() {
                                 </View>
 
                                 {!showTiger5 && (
-                                    <HoleScoreInput
+                                    <MultiplayerHoleScoreInput
                                         holeNumber={currentHole}
-                                        onScore={handleScore}
+                                        players={players}
+                                        onSubmitScores={handleScore}
                                     />
                                 )}
 

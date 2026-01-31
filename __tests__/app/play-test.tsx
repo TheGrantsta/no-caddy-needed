@@ -492,6 +492,18 @@ describe('Play screen', () => {
 
             expect(getByTestId('start-round-button')).toBeTruthy();
         });
+
+        it('hides player setup when switching to distances', () => {
+            const { getByTestId, queryByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            expect(getByTestId('start-button')).toBeTruthy();
+
+            fireEvent.press(getByTestId('play-sub-menu-distances'));
+
+            expect(queryByTestId('start-button')).toBeNull();
+            expect(queryByTestId('add-player-button')).toBeNull();
+        });
     });
 
     describe('Tiger 5 integration', () => {

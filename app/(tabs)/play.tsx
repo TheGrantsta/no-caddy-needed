@@ -264,7 +264,7 @@ export default function Play() {
                     </View>
                 )}
 
-                {!isRoundActive && showPlayerSetup && (
+                {!isRoundActive && showPlayerSetup && displaySection('play-score') && (
                     <View style={styles.container}>
                         <PlayerSetup onStartRound={handleStartRound} />
                     </View>

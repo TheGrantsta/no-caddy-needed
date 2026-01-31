@@ -229,6 +229,10 @@ describe('Play screen', () => {
                 expect(getByText('Hole 1')).toBeTruthy();
             });
 
+            // Change a score to populate current hole data
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('decrement-1'));
+
             fireEvent.press(getByTestId('next-hole-button'));
 
             await waitFor(() => {
@@ -397,28 +401,26 @@ describe('Play screen', () => {
             expect(queryByText('3-putts')).toBeNull();
         });
 
-        it('shows Tiger 5 tally automatically when over par', async () => {
+        it('shows Tiger 5 tally when score is changed to over par', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
-            mockAddMultiplayerHoleScores.mockResolvedValue(true);
 
-            const { getByTestId, getByText } = render(<Play />);
+            const { getByTestId, getByText, queryByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByTestId('next-hole-button')).toBeTruthy();
+                expect(getByTestId('increment-1')).toBeTruthy();
             });
 
-            // Increment score to be above par, then submit
+            expect(queryByText('3-putts')).toBeNull();
+
+            // Increment score to be above par
             fireEvent.press(getByTestId('increment-1'));
-            fireEvent.press(getByTestId('next-hole-button'));
 
-            await waitFor(() => {
-                expect(getByText('3-putts')).toBeTruthy();
-                expect(getByText('Double bogeys')).toBeTruthy();
-            });
+            expect(getByText('3-putts')).toBeTruthy();
+            expect(getByText('Double bogeys')).toBeTruthy();
         });
 
         it('does not show Score/Tiger 5 toggle buttons', async () => {
@@ -547,8 +549,11 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByTestId('next-hole-button')).toBeTruthy();
+                expect(getByTestId('increment-1')).toBeTruthy();
             });
+
+            // Change a score to populate current hole data
+            fireEvent.press(getByTestId('increment-1'));
 
             fireEvent.press(getByTestId('next-hole-button'));
 

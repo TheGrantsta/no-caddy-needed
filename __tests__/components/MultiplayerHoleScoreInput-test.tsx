@@ -9,7 +9,7 @@ const mockPlayers: RoundPlayer[] = [
 ];
 
 describe('MultiplayerHoleScoreInput', () => {
-    const mockOnSubmitScores = jest.fn();
+    const mockOnScoresChange = jest.fn();
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -17,7 +17,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('shows hole number header', () => {
         const { getByText } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(getByText('Hole 1')).toBeTruthy();
@@ -25,7 +25,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('shows par selector with 3, 4, 5 options', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(getByTestId('par-3-button')).toBeTruthy();
@@ -35,18 +35,17 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('defaults to par 4', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(getByTestId('par-4-button')).toBeTruthy();
-        // Default score should be 4 for each player
         expect(getByTestId('player-score-1')).toHaveTextContent('4');
         expect(getByTestId('player-score-2')).toHaveTextContent('4');
     });
 
     it('shows player names', () => {
         const { getByText } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(getByText('You')).toBeTruthy();
@@ -55,7 +54,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('shows increment and decrement buttons for each player', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(getByTestId('increment-1')).toBeTruthy();
@@ -66,7 +65,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('increments player score when + is pressed', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         fireEvent.press(getByTestId('increment-1'));
@@ -76,7 +75,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('decrements player score when - is pressed', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         fireEvent.press(getByTestId('decrement-1'));
@@ -86,10 +85,9 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('does not decrement below 1', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
-        // Default is 4, decrement 3 times to reach 1
         fireEvent.press(getByTestId('decrement-1'));
         fireEvent.press(getByTestId('decrement-1'));
         fireEvent.press(getByTestId('decrement-1'));
@@ -98,36 +96,62 @@ describe('MultiplayerHoleScoreInput', () => {
         expect(getByTestId('player-score-1')).toHaveTextContent('1');
     });
 
-    it('shows Next hole button', () => {
-        const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+    it('does not render Next hole button', () => {
+        const { queryByTestId } = render(
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
-        expect(getByTestId('next-hole-button')).toBeTruthy();
+        expect(queryByTestId('next-hole-button')).toBeNull();
     });
 
-    it('submits all scores when Next hole is pressed', () => {
+    it('calls onScoresChange when a score is incremented', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={3} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={3} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
-        fireEvent.press(getByTestId('increment-1')); // You: 5
-        fireEvent.press(getByTestId('decrement-2')); // Alice: 3
+        mockOnScoresChange.mockClear();
+        fireEvent.press(getByTestId('increment-1'));
 
-        fireEvent.press(getByTestId('next-hole-button'));
-
-        expect(mockOnSubmitScores).toHaveBeenCalledWith(3, 4, [
+        expect(mockOnScoresChange).toHaveBeenCalledWith(3, 4, [
             { playerId: 1, playerName: 'You', score: 5 },
+            { playerId: 2, playerName: 'Alice', score: 4 },
+        ]);
+    });
+
+    it('calls onScoresChange when a score is decremented', () => {
+        const { getByTestId } = render(
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+        );
+
+        mockOnScoresChange.mockClear();
+        fireEvent.press(getByTestId('decrement-2'));
+
+        expect(mockOnScoresChange).toHaveBeenCalledWith(1, 4, [
+            { playerId: 1, playerName: 'You', score: 4 },
+            { playerId: 2, playerName: 'Alice', score: 3 },
+        ]);
+    });
+
+    it('calls onScoresChange when par changes', () => {
+        const { getByTestId } = render(
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+        );
+
+        mockOnScoresChange.mockClear();
+        fireEvent.press(getByTestId('par-3-button'));
+
+        expect(mockOnScoresChange).toHaveBeenCalledWith(1, 3, [
+            { playerId: 1, playerName: 'You', score: 3 },
             { playerId: 2, playerName: 'Alice', score: 3 },
         ]);
     });
 
     it('resets scores to new par when par changes', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
-        fireEvent.press(getByTestId('increment-1')); // You: 5
+        fireEvent.press(getByTestId('increment-1'));
         expect(getByTestId('player-score-1')).toHaveTextContent('5');
 
         fireEvent.press(getByTestId('par-3-button'));
@@ -136,44 +160,16 @@ describe('MultiplayerHoleScoreInput', () => {
         expect(getByTestId('player-score-2')).toHaveTextContent('3');
     });
 
-    it('submits with par 3 when par 3 is selected', () => {
-        const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
-        );
-
-        fireEvent.press(getByTestId('par-3-button'));
-        fireEvent.press(getByTestId('next-hole-button'));
-
-        expect(mockOnSubmitScores).toHaveBeenCalledWith(1, 3, [
-            { playerId: 1, playerName: 'You', score: 3 },
-            { playerId: 2, playerName: 'Alice', score: 3 },
-        ]);
-    });
-
-    it('submits with par 5 when par 5 is selected', () => {
-        const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
-        );
-
-        fireEvent.press(getByTestId('par-5-button'));
-        fireEvent.press(getByTestId('next-hole-button'));
-
-        expect(mockOnSubmitScores).toHaveBeenCalledWith(1, 5, [
-            { playerId: 1, playerName: 'You', score: 5 },
-            { playerId: 2, playerName: 'Alice', score: 5 },
-        ]);
-    });
-
     it('resets scores when hole number changes', () => {
         const { getByTestId, rerender } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
-        fireEvent.press(getByTestId('increment-1')); // You: 5
+        fireEvent.press(getByTestId('increment-1'));
         expect(getByTestId('player-score-1')).toHaveTextContent('5');
 
         rerender(
-            <MultiplayerHoleScoreInput holeNumber={2} players={mockPlayers} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={2} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(getByTestId('player-score-1')).toHaveTextContent('4');
@@ -185,13 +181,14 @@ describe('MultiplayerHoleScoreInput', () => {
         ];
 
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={singlePlayer} onSubmitScores={mockOnSubmitScores} />
+            <MultiplayerHoleScoreInput holeNumber={1} players={singlePlayer} onScoresChange={mockOnScoresChange} />
         );
 
-        fireEvent.press(getByTestId('next-hole-button'));
+        mockOnScoresChange.mockClear();
+        fireEvent.press(getByTestId('increment-1'));
 
-        expect(mockOnSubmitScores).toHaveBeenCalledWith(1, 4, [
-            { playerId: 1, playerName: 'You', score: 4 },
+        expect(mockOnScoresChange).toHaveBeenCalledWith(1, 4, [
+            { playerId: 1, playerName: 'You', score: 5 },
         ]);
     });
 });

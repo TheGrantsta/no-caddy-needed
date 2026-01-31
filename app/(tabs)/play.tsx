@@ -45,6 +45,7 @@ export default function Play() {
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
+    const [currentHoleData, setCurrentHoleData] = useState<{ holeNumber: number; holePar: number; scores: { playerId: number; playerName: string; score: number }[] } | null>(null);
     const toast = useToast();
     const router = useRouter();
 
@@ -101,9 +102,14 @@ export default function Play() {
         }
     };
 
-    const handleScore = async (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => {
-        if (!activeRoundId) return;
+    const handleScoresChange = (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => {
+        setCurrentHoleData({ holeNumber, holePar, scores });
+    };
 
+    const handleNextHole = async () => {
+        if (!activeRoundId || !currentHoleData) return;
+
+        const { holeNumber, holePar, scores } = currentHoleData;
         const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
         if (success) {
             const userScore = scores.find(s => {
@@ -113,8 +119,18 @@ export default function Play() {
             if (userScore) {
                 setRunningTotal(prev => prev + (userScore.score - holePar));
             }
+            setCurrentHoleData(null);
             setCurrentHole(prev => prev + 1);
         }
+    };
+
+    const isUserOverParOnCurrentHole = (): boolean => {
+        if (!currentHoleData) return false;
+        const userPlayer = players.find(p => p.IsUser === 1);
+        if (!userPlayer) return false;
+        const userScore = currentHoleData.scores.find(s => s.playerId === userPlayer.Id);
+        if (!userScore) return false;
+        return userScore.score > currentHoleData.holePar;
     };
 
     const handleSubMenu = (sectionName: string) => {
@@ -165,6 +181,7 @@ export default function Play() {
         setTiger5Values({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
         setPlayers([]);
         setShowPlayerSetup(false);
+        setCurrentHoleData(null);
         setRoundHistory(getAllRoundHistoryService());
     };
 
@@ -244,16 +261,24 @@ export default function Play() {
                                 <MultiplayerHoleScoreInput
                                     holeNumber={currentHole}
                                     players={players}
-                                    onSubmitScores={handleScore}
+                                    onScoresChange={handleScoresChange}
                                 />
 
-                                {runningTotal > 0 && (
+                                {isUserOverParOnCurrentHole() && (
                                     <Tiger5Tally
                                         onEndRound={() => { }}
                                         roundControlled={true}
                                         onValuesChange={handleTiger5ValuesChange}
                                     />
                                 )}
+
+                                <TouchableOpacity
+                                    testID="next-hole-button"
+                                    onPress={handleNextHole}
+                                    style={localStyles.nextHoleButton}
+                                >
+                                    <Text style={localStyles.nextHoleButtonText}>Next hole</Text>
+                                </TouchableOpacity>
 
                                 <TouchableOpacity
                                     testID="end-round-button"
@@ -301,6 +326,19 @@ const localStyles = StyleSheet.create({
         color: colours.background,
         fontSize: fontSizes.tableHeader,
         fontWeight: 'bold',
+    },
+    nextHoleButton: {
+        backgroundColor: colours.yellow,
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center' as const,
+        marginTop: 10,
+        marginHorizontal: 15,
+    },
+    nextHoleButtonText: {
+        color: colours.background,
+        fontSize: fontSizes.tableHeader,
+        fontWeight: 'bold' as const,
     },
     endRoundButton: {
         backgroundColor: colours.errorText,

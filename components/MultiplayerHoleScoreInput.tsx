@@ -7,12 +7,20 @@ import fontSizes from '../assets/font-sizes';
 type Props = {
     holeNumber: number;
     players: RoundPlayer[];
-    onSubmitScores: (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => void;
+    onScoresChange: (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => void;
 };
 
 const parOptions = [3, 4, 5];
 
-const MultiplayerHoleScoreInput = ({ holeNumber, players, onSubmitScores }: Props) => {
+const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>, par: number) => {
+    return players.map(p => ({
+        playerId: p.Id,
+        playerName: p.PlayerName,
+        score: scores[p.Id] || par,
+    }));
+};
+
+const MultiplayerHoleScoreInput = ({ holeNumber, players, onScoresChange }: Props) => {
     const [par, setPar] = useState(4);
     const [scores, setScores] = useState<Record<number, number>>({});
 
@@ -28,26 +36,19 @@ const MultiplayerHoleScoreInput = ({ holeNumber, players, onSubmitScores }: Prop
         const reset: Record<number, number> = {};
         players.forEach(p => { reset[p.Id] = newPar; });
         setScores(reset);
+        onScoresChange(holeNumber, newPar, buildScoresArray(players, reset, newPar));
     };
 
     const handleIncrement = (playerId: number) => {
-        setScores(prev => ({ ...prev, [playerId]: (prev[playerId] || par) + 1 }));
+        const updated = { ...scores, [playerId]: (scores[playerId] || par) + 1 };
+        setScores(updated);
+        onScoresChange(holeNumber, par, buildScoresArray(players, updated, par));
     };
 
     const handleDecrement = (playerId: number) => {
-        setScores(prev => ({
-            ...prev,
-            [playerId]: Math.max(1, (prev[playerId] || par) - 1),
-        }));
-    };
-
-    const handleSubmit = () => {
-        const result = players.map(p => ({
-            playerId: p.Id,
-            playerName: p.PlayerName,
-            score: scores[p.Id] || par,
-        }));
-        onSubmitScores(holeNumber, par, result);
+        const updated = { ...scores, [playerId]: Math.max(1, (scores[playerId] || par) - 1) };
+        setScores(updated);
+        onScoresChange(holeNumber, par, buildScoresArray(players, updated, par));
     };
 
     return (
@@ -93,14 +94,6 @@ const MultiplayerHoleScoreInput = ({ holeNumber, players, onSubmitScores }: Prop
                     </View>
                 </View>
             ))}
-
-            <TouchableOpacity
-                testID="next-hole-button"
-                onPress={handleSubmit}
-                style={localStyles.nextButton}
-            >
-                <Text style={localStyles.nextButtonText}>Next hole</Text>
-            </TouchableOpacity>
         </View>
     );
 };
@@ -178,17 +171,5 @@ const localStyles = StyleSheet.create({
         marginHorizontal: 15,
         minWidth: 30,
         textAlign: 'center',
-    },
-    nextButton: {
-        backgroundColor: colours.yellow,
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    nextButtonText: {
-        color: colours.background,
-        fontSize: fontSizes.tableHeader,
-        fontWeight: 'bold',
     },
 });

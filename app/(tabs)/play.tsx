@@ -224,7 +224,7 @@ export default function Play() {
 
                 <SubMenu showSubMenu="play" selectedItem={section} handleSubMenu={handleSubMenu} />
 
-                {!isRoundActive && !showPlayerSetup && (
+                {!isRoundActive && !showPlayerSetup && displaySection('play-score') && (
                     <View style={styles.container}>
                         <View style={localStyles.startRoundContainer}>
                             <TouchableOpacity
@@ -270,74 +270,74 @@ export default function Play() {
                     </View>
                 )}
 
-                {isRoundActive && (
+                {isRoundActive && displaySection('play-score') && (
                     <View style={styles.container}>
-                        {displaySection('play-score') && (
-                            <View>
-                                <MultiplayerHoleScoreInput
-                                    holeNumber={currentHole}
-                                    players={players}
-                                    onScoresChange={handleScoresChange}
-                                    renderAfterUser={isUserOverParOnCurrentHole() ? (
-                                        <Tiger5Tally
-                                            onEndRound={() => { }}
-                                            roundControlled={true}
-                                            onValuesChange={handleTiger5ValuesChange}
-                                        />
-                                    ) : undefined}
-                                />
+                        <View>
+                            <MultiplayerHoleScoreInput
+                                holeNumber={currentHole}
+                                players={players}
+                                onScoresChange={handleScoresChange}
+                                renderAfterUser={isUserOverParOnCurrentHole() ? (
+                                    <Tiger5Tally
+                                        onEndRound={() => { }}
+                                        roundControlled={true}
+                                        onValuesChange={handleTiger5ValuesChange}
+                                    />
+                                ) : undefined}
+                            />
 
+                            <TouchableOpacity
+                                testID="next-hole-button"
+                                onPress={handleNextHole}
+                                style={localStyles.nextHoleButton}
+                            >
+                                <Text style={localStyles.nextHoleButtonText}>Next hole</Text>
+                            </TouchableOpacity>
+
+                            {!showEndRoundConfirm && (
                                 <TouchableOpacity
-                                    testID="next-hole-button"
-                                    onPress={handleNextHole}
-                                    style={localStyles.nextHoleButton}
+                                    testID="end-round-button"
+                                    onPress={handleEndRoundPress}
+                                    style={localStyles.endRoundButton}
                                 >
-                                    <Text style={localStyles.nextHoleButtonText}>Next hole</Text>
+                                    <Text style={localStyles.endRoundButtonText}>End round</Text>
                                 </TouchableOpacity>
+                            )}
 
-                                {!showEndRoundConfirm && (
+                            {showEndRoundConfirm && (
+                                <View style={localStyles.confirmContainer}>
                                     <TouchableOpacity
-                                        testID="end-round-button"
-                                        onPress={handleEndRoundPress}
+                                        testID="confirm-end-round-button"
+                                        onPress={handleConfirmEndRound}
                                         style={localStyles.endRoundButton}
                                     >
-                                        <Text style={localStyles.endRoundButtonText}>End round</Text>
+                                        <Text style={localStyles.endRoundButtonText}>Confirm end round</Text>
                                     </TouchableOpacity>
-                                )}
+                                    <TouchableOpacity
+                                        testID="cancel-end-round-button"
+                                        onPress={handleCancelEndRound}
+                                        style={localStyles.nextHoleButton}
+                                    >
+                                        <Text style={localStyles.nextHoleButtonText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                        </View>
+                    </View>
+                )}
 
-                                {showEndRoundConfirm && (
-                                    <View style={localStyles.confirmContainer}>
-                                        <TouchableOpacity
-                                            testID="confirm-end-round-button"
-                                            onPress={handleConfirmEndRound}
-                                            style={localStyles.endRoundButton}
-                                        >
-                                            <Text style={localStyles.endRoundButtonText}>Confirm end round</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            testID="cancel-end-round-button"
-                                            onPress={handleCancelEndRound}
-                                            style={localStyles.nextHoleButton}
-                                        >
-                                            <Text style={localStyles.nextHoleButtonText}>Cancel</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                            </View>
-                        )}
+                {displaySection('play-distances') && (
+                    <View style={styles.container}>
+                        <ClubDistanceList distances={getClubDistancesService()} editable={false} />
+                    </View>
+                )}
 
-                        {displaySection('play-distances') && (
-                            <ClubDistanceList distances={getClubDistancesService()} editable={false} />
-                        )}
-
-                        {displaySection('play-wedge-chart') && (
-                            <View>
-                                <Text style={[styles.normalText, { textAlign: 'center', marginTop: 10 }]}>
-                                    Your wedge distances
-                                </Text>
-                                <WedgeChart isShowButtons={false} />
-                            </View>
-                        )}
+                {displaySection('play-wedge-chart') && (
+                    <View style={styles.container}>
+                        <Text style={[styles.normalText, { textAlign: 'center', marginTop: 10 }]}>
+                            Your wedge distances
+                        </Text>
+                        <WedgeChart isShowButtons={false} />
                     </View>
                 )}
             </ScrollView>

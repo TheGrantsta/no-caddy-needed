@@ -461,6 +461,37 @@ describe('Play screen', () => {
 
             expect(getByText('Hole 1')).toBeTruthy();
         });
+
+        it('shows distances when Distances is pressed without active round', () => {
+            mockGetClubDistances.mockReturnValue([]);
+
+            const { getByTestId, getByText, queryByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('play-sub-menu-distances'));
+
+            expect(getByText('No club distances set')).toBeTruthy();
+            expect(queryByTestId('start-round-button')).toBeNull();
+        });
+
+        it('shows wedge chart when Wedge chart is pressed without active round', () => {
+            const { getByTestId, getByText, queryByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('play-sub-menu-wedge-chart'));
+
+            expect(getByText('Your wedge distances')).toBeTruthy();
+            expect(queryByTestId('start-round-button')).toBeNull();
+        });
+
+        it('returns to idle state when Play is pressed after viewing distances', () => {
+            mockGetClubDistances.mockReturnValue([]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('play-sub-menu-distances'));
+            fireEvent.press(getByTestId('play-sub-menu-score'));
+
+            expect(getByTestId('start-round-button')).toBeTruthy();
+        });
     });
 
     describe('Tiger 5 integration', () => {

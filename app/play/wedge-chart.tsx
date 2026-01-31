@@ -6,7 +6,7 @@ import styles from '../../assets/stlyes';
 export default function WedgeChartScreen() {
     return (
         <GestureHandlerRootView style={styles.flexOne}>
-            <ScrollView style={styles.scrollContainer}>
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
                 <View style={styles.headerContainer}>
                     <Text style={[styles.headerText, styles.marginTop]}>Wedge chart</Text>
                     <Text style={[styles.normalText, styles.marginBottom]}>

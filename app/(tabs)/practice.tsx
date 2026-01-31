@@ -77,7 +77,7 @@ export default function Practice() {
         </View>
       )}
 
-      <ScrollView style={styles.scrollContainer} refreshControl={
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer} refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}

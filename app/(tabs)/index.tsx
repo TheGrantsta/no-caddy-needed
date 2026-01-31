@@ -27,7 +27,7 @@ export default function HomeScreen() {
           </Text>
         </View>
       )}
-      <ScrollView style={styles.scrollContainer} refreshControl={
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer} refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}

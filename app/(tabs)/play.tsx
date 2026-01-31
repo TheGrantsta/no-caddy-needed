@@ -213,6 +213,7 @@ export default function Play() {
 
             <ScrollView
                 style={styles.scrollContainer}
+                contentContainerStyle={styles.scrollContentContainer}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}

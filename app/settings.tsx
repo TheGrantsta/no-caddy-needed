@@ -52,6 +52,7 @@ export default function Settings() {
       )}
 
       <ScrollView style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContentContainer}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

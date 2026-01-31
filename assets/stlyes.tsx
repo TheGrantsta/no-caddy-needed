@@ -16,6 +16,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: colours.background,
     },
+    scrollContentContainer: {
+        paddingBottom: 100,
+    },
     viewContainer: {
         alignItems: 'center',
     },

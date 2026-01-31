@@ -41,7 +41,6 @@ export default function Play() {
     const [runningTotal, setRunningTotal] = useState(0);
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
     const [section, setSection] = useState('play-score');
-    const [showTiger5, setShowTiger5] = useState(false);
     const [tiger5Values, setTiger5Values] = useState({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
@@ -163,7 +162,6 @@ export default function Play() {
         setCurrentHole(1);
         setRunningTotal(0);
         setSection('play-score');
-        setShowTiger5(false);
         setTiger5Values({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
         setPlayers([]);
         setShowPlayerSetup(false);
@@ -243,38 +241,13 @@ export default function Play() {
                     <View style={styles.container}>
                         {displaySection('play-score') && (
                             <View>
-                                <View style={styles.headerContainer}>
-                                    <Text style={[styles.normalText, styles.marginTop, styles.marginBottom]}>
-                                        Round in progress
-                                    </Text>
-                                </View>
+                                <MultiplayerHoleScoreInput
+                                    holeNumber={currentHole}
+                                    players={players}
+                                    onSubmitScores={handleScore}
+                                />
 
-                                <View style={localStyles.toggleRow}>
-                                    <TouchableOpacity
-                                        testID="toggle-score"
-                                        onPress={() => setShowTiger5(false)}
-                                        style={[localStyles.toggleButton, !showTiger5 && localStyles.toggleActive]}
-                                    >
-                                        <Text style={[localStyles.toggleText, !showTiger5 && localStyles.toggleTextActive]}>Score</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        testID="toggle-tiger5"
-                                        onPress={() => setShowTiger5(true)}
-                                        style={[localStyles.toggleButton, showTiger5 && localStyles.toggleActive]}
-                                    >
-                                        <Text style={[localStyles.toggleText, showTiger5 && localStyles.toggleTextActive]}>Tiger 5</Text>
-                                    </TouchableOpacity>
-                                </View>
-
-                                {!showTiger5 && (
-                                    <MultiplayerHoleScoreInput
-                                        holeNumber={currentHole}
-                                        players={players}
-                                        onSubmitScores={handleScore}
-                                    />
-                                )}
-
-                                {showTiger5 && (
+                                {runningTotal > 0 && (
                                     <Tiger5Tally
                                         onEndRound={() => { }}
                                         roundControlled={true}
@@ -285,9 +258,9 @@ export default function Play() {
                                 <TouchableOpacity
                                     testID="end-round-button"
                                     onPress={handleEndRound}
-                                    style={[localStyles.actionButton, localStyles.endRoundButton]}
+                                    style={localStyles.endRoundButton}
                                 >
-                                    <Text style={localStyles.actionButtonText}>End round</Text>
+                                    <Text style={localStyles.endRoundButtonText}>End round</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -331,36 +304,15 @@ const localStyles = StyleSheet.create({
     },
     endRoundButton: {
         backgroundColor: colours.errorText,
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center' as const,
         marginTop: 20,
         marginHorizontal: 15,
     },
-    runningTotal: {
-        color: colours.yellow,
-        fontSize: fontSizes.massive,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginVertical: 10,
-    },
-    toggleRow: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginBottom: 10,
-    },
-    toggleButton: {
-        paddingVertical: 8,
-        paddingHorizontal: 20,
-        borderWidth: 1,
-        borderColor: colours.yellow,
-    },
-    toggleActive: {
-        backgroundColor: colours.yellow,
-    },
-    toggleText: {
-        color: colours.yellow,
-        fontSize: fontSizes.normal,
-        fontWeight: 'bold',
-    },
-    toggleTextActive: {
-        color: colours.background,
+    endRoundButtonText: {
+        color: colours.white,
+        fontSize: fontSizes.tableHeader,
+        fontWeight: 'bold' as const,
     },
 });

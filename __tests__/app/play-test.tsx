@@ -236,18 +236,20 @@ describe('Play screen', () => {
             });
         });
 
-        it('shows Round in progress text during active round', async () => {
+        it('does not show Round in progress text during active round', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
-            const { getByTestId, getByText } = render(<Play />);
+            const { getByTestId, queryByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('Round in progress')).toBeTruthy();
+                expect(getByTestId('end-round-button')).toBeTruthy();
             });
+
+            expect(queryByText('Round in progress')).toBeNull();
         });
     });
 
@@ -379,23 +381,26 @@ describe('Play screen', () => {
     });
 
     describe('Tiger 5 integration', () => {
-        it('shows Tiger 5 toggle in play section', async () => {
+        it('does not show Tiger 5 tally when at or under par', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
-            const { getByTestId } = render(<Play />);
+            const { getByTestId, queryByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByTestId('toggle-tiger5')).toBeTruthy();
+                expect(getByTestId('next-hole-button')).toBeTruthy();
             });
+
+            expect(queryByText('3-putts')).toBeNull();
         });
 
-        it('switches to Tiger 5 view when toggle is pressed', async () => {
+        it('shows Tiger 5 tally automatically when over par', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
 
             const { getByTestId, getByText } = render(<Play />);
 
@@ -403,32 +408,34 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByTestId('toggle-tiger5')).toBeTruthy();
+                expect(getByTestId('next-hole-button')).toBeTruthy();
             });
 
-            fireEvent.press(getByTestId('toggle-tiger5'));
+            // Increment score to be above par, then submit
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('next-hole-button'));
 
-            expect(getByText('3-putts')).toBeTruthy();
-            expect(getByText('Double bogeys')).toBeTruthy();
+            await waitFor(() => {
+                expect(getByText('3-putts')).toBeTruthy();
+                expect(getByText('Double bogeys')).toBeTruthy();
+            });
         });
 
-        it('switches back to Score view when toggle is pressed again', async () => {
+        it('does not show Score/Tiger 5 toggle buttons', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
-            const { getByTestId, getByText } = render(<Play />);
+            const { getByTestId, queryByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByTestId('toggle-tiger5')).toBeTruthy();
+                expect(getByTestId('end-round-button')).toBeTruthy();
             });
 
-            fireEvent.press(getByTestId('toggle-tiger5'));
-            fireEvent.press(getByTestId('toggle-score'));
-
-            expect(getByText('Hole 1')).toBeTruthy();
+            expect(queryByTestId('toggle-score')).toBeNull();
+            expect(queryByTestId('toggle-tiger5')).toBeNull();
         });
 
         it('saves Tiger 5 when round ends above par', async () => {

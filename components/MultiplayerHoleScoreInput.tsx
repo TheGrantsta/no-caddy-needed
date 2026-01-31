@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ReactNode } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RoundPlayer } from '../service/DbService';
 import colours from '../assets/colours';
@@ -8,6 +8,7 @@ type Props = {
     holeNumber: number;
     players: RoundPlayer[];
     onScoresChange: (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => void;
+    renderAfterUser?: ReactNode;
 };
 
 const parOptions = [3, 4, 5];
@@ -20,7 +21,7 @@ const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>
     }));
 };
 
-const MultiplayerHoleScoreInput = ({ holeNumber, players, onScoresChange }: Props) => {
+const MultiplayerHoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser }: Props) => {
     const [par, setPar] = useState(4);
     const [scores, setScores] = useState<Record<number, number>>({});
 
@@ -70,30 +71,35 @@ const MultiplayerHoleScoreInput = ({ holeNumber, players, onScoresChange }: Prop
                 ))}
             </View>
 
-            {players.map(player => (
-                <View key={player.Id} style={localStyles.playerRow}>
-                    <Text style={localStyles.playerName}>{player.PlayerName}</Text>
-                    <View style={localStyles.stepperRow}>
-                        <TouchableOpacity
-                            testID={`decrement-${player.Id}`}
-                            onPress={() => handleDecrement(player.Id)}
-                            style={localStyles.stepperButton}
-                        >
-                            <Text style={localStyles.stepperButtonText}>-</Text>
-                        </TouchableOpacity>
-                        <Text testID={`player-score-${player.Id}`} style={localStyles.scoreText}>
-                            {scores[player.Id] || par}
-                        </Text>
-                        <TouchableOpacity
-                            testID={`increment-${player.Id}`}
-                            onPress={() => handleIncrement(player.Id)}
-                            style={localStyles.stepperButton}
-                        >
-                            <Text style={localStyles.stepperButtonText}>+</Text>
-                        </TouchableOpacity>
+            <View testID="players-container">
+                {players.map((player, index) => (
+                    <View key={player.Id}>
+                        <View style={localStyles.playerRow}>
+                            <Text style={localStyles.playerName}>{player.PlayerName}</Text>
+                            <View style={localStyles.stepperRow}>
+                                <TouchableOpacity
+                                    testID={`decrement-${player.Id}`}
+                                    onPress={() => handleDecrement(player.Id)}
+                                    style={localStyles.stepperButton}
+                                >
+                                    <Text style={localStyles.stepperButtonText}>-</Text>
+                                </TouchableOpacity>
+                                <Text testID={`player-score-${player.Id}`} style={localStyles.scoreText}>
+                                    {scores[player.Id] || par}
+                                </Text>
+                                <TouchableOpacity
+                                    testID={`increment-${player.Id}`}
+                                    onPress={() => handleIncrement(player.Id)}
+                                    style={localStyles.stepperButton}
+                                >
+                                    <Text style={localStyles.stepperButtonText}>+</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        {player.IsUser === 1 && renderAfterUser}
                     </View>
-                </View>
-            ))}
+                ))}
+            </View>
         </View>
     );
 };

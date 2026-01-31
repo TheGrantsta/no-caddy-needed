@@ -278,15 +278,14 @@ export default function Play() {
                                     holeNumber={currentHole}
                                     players={players}
                                     onScoresChange={handleScoresChange}
+                                    renderAfterUser={isUserOverParOnCurrentHole() ? (
+                                        <Tiger5Tally
+                                            onEndRound={() => { }}
+                                            roundControlled={true}
+                                            onValuesChange={handleTiger5ValuesChange}
+                                        />
+                                    ) : undefined}
                                 />
-
-                                {isUserOverParOnCurrentHole() && (
-                                    <Tiger5Tally
-                                        onEndRound={() => { }}
-                                        roundControlled={true}
-                                        onValuesChange={handleTiger5ValuesChange}
-                                    />
-                                )}
 
                                 <TouchableOpacity
                                     testID="next-hole-button"

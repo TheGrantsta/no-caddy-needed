@@ -1,4 +1,5 @@
 import React from 'react';
+import { Text } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
 import MultiplayerHoleScoreInput from '../../components/MultiplayerHoleScoreInput';
 import { RoundPlayer } from '../../service/DbService';
@@ -190,5 +191,26 @@ describe('MultiplayerHoleScoreInput', () => {
         expect(mockOnScoresChange).toHaveBeenCalledWith(1, 4, [
             { playerId: 1, playerName: 'You', score: 5 },
         ]);
+    });
+
+    it('renders renderAfterUser content after user player row', () => {
+        const { getByText } = render(
+            <MultiplayerHoleScoreInput
+                holeNumber={1}
+                players={mockPlayers}
+                onScoresChange={mockOnScoresChange}
+                renderAfterUser={<Text>Tiger 5 content</Text>}
+            />
+        );
+
+        expect(getByText('Tiger 5 content')).toBeTruthy();
+    });
+
+    it('does not render renderAfterUser when not provided', () => {
+        const { queryByText } = render(
+            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+        );
+
+        expect(queryByText('Tiger 5 content')).toBeNull();
     });
 });

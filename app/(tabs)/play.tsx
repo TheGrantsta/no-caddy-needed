@@ -188,16 +188,13 @@ export default function Play() {
 
         const success = await endRoundService(activeRoundId);
 
-        // Save Tiger 5 only if above par
-        if (runningTotal > 0) {
-            await insertTiger5RoundService(
-                tiger5Values.threePutts,
-                tiger5Values.doubleBogeys,
-                tiger5Values.bogeysPar5,
-                tiger5Values.bogeysInside9Iron,
-                tiger5Values.doubleChips,
-            );
-        }
+        await insertTiger5RoundService(
+            tiger5Values.threePutts,
+            tiger5Values.doubleBogeys,
+            tiger5Values.bogeysPar5,
+            tiger5Values.bogeysInside9Iron,
+            tiger5Values.doubleChips,
+        );
 
         toast.show(success ? 'Round saved' : 'Round not saved', {
             type: success ? 'success' : 'danger',

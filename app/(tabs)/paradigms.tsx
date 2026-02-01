@@ -6,7 +6,7 @@ import SubMenu from '../../components/SubMenu';
 import styles from '../../assets/stlyes';
 import colours from '../../assets/colours';
 
-export default function Pointers() {
+export default function Paradigms() {
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('approach');
   const [activeIndex, setActiveIndex] = useState(0);
@@ -107,7 +107,7 @@ export default function Pointers() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SubMenu showSubMenu='pointers' selectedItem={section} handleSubMenu={handleSubMenu} />
+      <SubMenu showSubMenu='paradigms' selectedItem={section} handleSubMenu={handleSubMenu} />
 
       {refreshing && (
         <View style={styles.updateOverlay}>
@@ -129,7 +129,7 @@ export default function Pointers() {
           <View style={styles.container}>
             <View style={styles.headerContainer}>
               <Text style={[styles.headerText, styles.marginTop]}>
-                Pointers
+                Paradigms
               </Text>
               <Text style={[styles.normalText, styles.marginBottom]}>
                 Make better on course decisions & choose better targets
@@ -153,7 +153,7 @@ export default function Pointers() {
             <View style={styles.container}>
               <View style={styles.headerContainer}>
                 <Text style={[styles.headerText, { marginTop: 10 }]}>
-                  Pointers
+                  Paradigms
                 </Text>
                 <Text style={[styles.normalText, { marginBottom: 10 }]}>
                   Manage your expectations, better!
@@ -184,7 +184,7 @@ export default function Pointers() {
 
               <View style={styles.horizontalScrollContainer}>
                 <FlatList
-                  testID='pointers-flat-list'
+                  testID='paradigms-flat-list'
                   ref={flatListRef}
                   data={proStats}
                   horizontal

@@ -108,11 +108,11 @@ describe('Main Navigation', () => {
             expect(getByTestId('tab-title-play').props.children).toBe('Play');
         });
 
-        it('renders Pointers tab with correct title', () => {
+        it('renders Paradigms tab with correct title', () => {
             const { getByTestId } = render(<TabLayout />);
 
-            expect(getByTestId('tab-pointers')).toBeTruthy();
-            expect(getByTestId('tab-title-pointers').props.children).toBe('Pointers');
+            expect(getByTestId('tab-paradigms')).toBeTruthy();
+            expect(getByTestId('tab-title-paradigms').props.children).toBe('Paradigms');
         });
 
         it('renders all four tabs', () => {
@@ -121,7 +121,7 @@ describe('Main Navigation', () => {
             expect(getByTestId('tab-index')).toBeTruthy();
             expect(getByTestId('tab-play')).toBeTruthy();
             expect(getByTestId('tab-practice')).toBeTruthy();
-            expect(getByTestId('tab-pointers')).toBeTruthy();
+            expect(getByTestId('tab-paradigms')).toBeTruthy();
         });
     });
 
@@ -138,10 +138,10 @@ describe('Main Navigation', () => {
             expect(getByTestId('link-/practice')).toBeTruthy();
         });
 
-        it('renders Pointers navigation link', () => {
+        it('renders Paradigms navigation link', () => {
             const { getByTestId } = render(<Homepage />);
 
-            expect(getByTestId('link-/pointers')).toBeTruthy();
+            expect(getByTestId('link-/paradigms')).toBeTruthy();
         });
 
         it('displays Play link with correct label', () => {
@@ -156,10 +156,10 @@ describe('Main Navigation', () => {
             expect(getByText('Practice')).toBeTruthy();
         });
 
-        it('displays Pointers link with correct label', () => {
+        it('displays Paradigms link with correct label', () => {
             const { getByText } = render(<Homepage />);
 
-            expect(getByText('Pointers')).toBeTruthy();
+            expect(getByText('Paradigms')).toBeTruthy();
         });
     });
 });

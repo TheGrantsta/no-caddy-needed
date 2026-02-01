@@ -36,7 +36,7 @@ describe('renders homepage', () => {
 
         expect(getByText('Play')).toBeTruthy();
         expect(getByText('Practice')).toBeTruthy();
-        expect(getByText('Pointers')).toBeTruthy();
+        expect(getByText('Paradigms')).toBeTruthy();
     });
 
     it('shows footer text on homepage', () => {

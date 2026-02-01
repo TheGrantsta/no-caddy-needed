@@ -51,9 +51,9 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="pointers"
+          name="paradigms"
           options={{
-            title: 'Pointers',
+            title: 'Paradigms',
             tabBarIcon: ({ color }) => (
               <MaterialIcons name='lightbulb' color={color} size={30} />
             )

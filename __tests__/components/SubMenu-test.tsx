@@ -73,10 +73,10 @@ describe('SubMenu component', () => {
         });
     });
 
-    describe('Pointers sub menu', () => {
-        it('renders pointers menu items', () => {
+    describe('Paradigms sub menu', () => {
+        it('renders paradigms menu items', () => {
             const { getByText } = render(
-                <SubMenu showSubMenu="pointers" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="paradigms" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
             );
 
             expect(getByText('Approach')).toBeTruthy();
@@ -85,10 +85,10 @@ describe('SubMenu component', () => {
 
         it('calls handleSubMenu when Pros is pressed', () => {
             const { getByTestId } = render(
-                <SubMenu showSubMenu="pointers" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="paradigms" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
             );
 
-            fireEvent.press(getByTestId('pointers-sub-menu-pro-stats'));
+            fireEvent.press(getByTestId('paradigms-sub-menu-pro-stats'));
 
             expect(mockHandleSubMenu).toHaveBeenCalledWith('pros');
         });

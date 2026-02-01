@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import View from '../../app/(tabs)/pointers';
+import View from '../../app/(tabs)/paradigms';
 
 jest.mock('react-native-toast-notifications', () => ({
     useToast: () => ({
@@ -18,7 +18,7 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
-describe('Pointers page ', () => {
+describe('Paradigms page ', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
@@ -27,7 +27,7 @@ describe('Pointers page ', () => {
         it('renders correctly with the default text', () => {
             const { getByText } = render(<View />);
 
-            expect(getByText('Pointers')).toBeTruthy();
+            expect(getByText('Paradigms')).toBeTruthy();
             expect(getByText('Make better on course decisions & choose better targets')).toBeTruthy();
         });
 
@@ -51,7 +51,7 @@ describe('Pointers page ', () => {
     it('renders correctly with stats heading', () => {
         const { getByTestId, getByText } = render(<View />);
 
-        const subMenuItem = getByTestId('pointers-sub-menu-pro-stats');
+        const subMenuItem = getByTestId('paradigms-sub-menu-pro-stats');
 
         fireEvent.press(subMenuItem);
 
@@ -61,7 +61,7 @@ describe('Pointers page ', () => {
     it('renders correctly with stats approach shots headings', () => {
         const { getByTestId, getByText } = render(<View />);
 
-        const subMenuItem = getByTestId('pointers-sub-menu-pro-stats');
+        const subMenuItem = getByTestId('paradigms-sub-menu-pro-stats');
 
         fireEvent.press(subMenuItem);
 
@@ -72,7 +72,7 @@ describe('Pointers page ', () => {
     it('renders correctly with stats approach shot proximity', () => {
         const { getByTestId, getByText } = render(<View />);
 
-        const subMenuItem = getByTestId('pointers-sub-menu-pro-stats');
+        const subMenuItem = getByTestId('paradigms-sub-menu-pro-stats');
 
         fireEvent.press(subMenuItem);
 
@@ -84,11 +84,11 @@ describe('Pointers page ', () => {
     it('renders correctly with stats putting make rates', async () => {
         const { getByTestId, getByText } = render(<View />);
 
-        const subMenuItem = getByTestId('pointers-sub-menu-pro-stats');
+        const subMenuItem = getByTestId('paradigms-sub-menu-pro-stats');
 
         fireEvent.press(subMenuItem);
 
-        const flatList = getByTestId('pointers-flat-list');
+        const flatList = getByTestId('paradigms-flat-list');
 
         fireEvent.scroll(flatList, {
             nativeEvent: {

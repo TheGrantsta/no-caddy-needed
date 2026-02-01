@@ -52,9 +52,9 @@ export default function HomeScreen() {
                 <IconButton iconName='golf-course' label='Practice' size='large' />
               </View>
             </Link>
-            <Link href='/pointers'>
+            <Link href='/paradigms'>
               <View style={styles.iconContainer}>
-                <IconButton iconName='lightbulb' label='Pointers' size='large' />
+                <IconButton iconName='lightbulb' label='Paradigms' size='large' />
               </View>
             </Link>
           </View>

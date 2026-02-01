@@ -39,82 +39,127 @@ const MultiplayerScorecard = ({ round, players, holeScores }: Props) => {
     const getScoreColor = (score: number, par: number) => {
         if (score < par) return localStyles.underParText;
         if (score > par) return localStyles.overParText;
-        return undefined;
+        return localStyles.atParText;
     };
 
-    const renderHoleGrid = (holes: number[]) => (
-        <View>
-            <View style={localStyles.gridRow}>
-                <View style={localStyles.labelCell} />
-                {holes.map(h => (
-                    <View key={h} style={localStyles.holeCell}>
-                        <Text testID={`hole-number-${h}`} style={localStyles.holeNumberText}>{h}</Text>
-                    </View>
-                ))}
-            </View>
+    const getPlayerStrokeTotal = (playerId: number, holes: number[]): number => {
+        return holeScores
+            .filter(s => s.RoundPlayerId === playerId && holes.includes(s.HoleNumber))
+            .reduce((sum, s) => sum + s.Score, 0);
+    };
 
-            <View style={localStyles.gridRow}>
-                <View style={localStyles.labelCell}>
-                    <Text style={localStyles.labelText}>Par</Text>
+    const getParTotalForHoles = (holes: number[]): number => {
+        return holes.reduce((sum, h) => sum + getHolePar(h), 0);
+    };
+
+    const renderHoleGrid = (holes: number[], nineLabel: string) => {
+        const parTotal = getParTotalForHoles(holes);
+
+        return (
+            <View>
+                <View style={localStyles.gridRow}>
+                    <View style={localStyles.labelCell} />
+                    {holes.map(h => (
+                        <View key={h} style={localStyles.holeCell}>
+                            <Text testID={`hole-number-${h}`} style={localStyles.holeNumberText}>{h}</Text>
+                        </View>
+                    ))}
+                    <View style={localStyles.holeCell}>
+                        <Text style={localStyles.holeNumberText}>Tot</Text>
+                    </View>
                 </View>
-                {holes.map(h => (
-                    <View key={h} style={localStyles.holeCell}>
-                        <Text testID={`hole-par-${h}`} style={localStyles.parText}>{getHolePar(h)}</Text>
-                    </View>
-                ))}
-            </View>
 
-            {players.map(player => (
-                <View key={player.Id} style={localStyles.gridRow}>
+                <View style={localStyles.gridRow}>
                     <View style={localStyles.labelCell}>
-                        <Text style={localStyles.playerNameText}>{player.PlayerName}</Text>
+                        <Text style={localStyles.labelText}>Par</Text>
                     </View>
-                    {holes.map(h => {
-                        const score = getPlayerScoreForHole(player.Id, h);
-                        const par = getHolePar(h);
-                        return (
-                            <View key={h} style={localStyles.holeCell}>
+                    {holes.map(h => (
+                        <View key={h} style={localStyles.holeCell}>
+                            <Text testID={`hole-par-${h}`} style={localStyles.parText}>{getHolePar(h)}</Text>
+                        </View>
+                    ))}
+                    <View style={localStyles.holeCell}>
+                        <Text testID={`${nineLabel}-par-total`} style={localStyles.parText}>{parTotal}</Text>
+                    </View>
+                </View>
+
+                {players.map(player => {
+                    const strokeTotal = getPlayerStrokeTotal(player.Id, holes);
+                    return (
+                        <View key={player.Id} style={localStyles.gridRow}>
+                            <View style={localStyles.labelCell}>
+                                <Text style={localStyles.playerNameText}>{player.PlayerName}</Text>
+                            </View>
+                            {holes.map(h => {
+                                const score = getPlayerScoreForHole(player.Id, h);
+                                const par = getHolePar(h);
+                                return (
+                                    <View key={h} style={localStyles.holeCell}>
+                                        <Text
+                                            testID={`hole-${h}-player-${player.Id}-score`}
+                                            style={[localStyles.scoreText, score !== null ? getScoreColor(score, par) : undefined]}
+                                        >
+                                            {score !== null ? score : '-'}
+                                        </Text>
+                                    </View>
+                                );
+                            })}
+                            <View style={localStyles.holeCell}>
                                 <Text
-                                    testID={`hole-${h}-player-${player.Id}-score`}
-                                    style={[localStyles.scoreText, score !== null ? getScoreColor(score, par) : undefined]}
+                                    testID={`${nineLabel}-player-${player.Id}-total`}
+                                    style={[localStyles.scoreText, getScoreColor(strokeTotal, parTotal)]}
                                 >
-                                    {score !== null ? score : '-'}
+                                    {strokeTotal}
                                 </Text>
                             </View>
-                        );
-                    })}
-                </View>
-            ))}
-        </View>
-    );
+                        </View>
+                    );
+                })}
+            </View>
+        );
+    };
 
     return (
         <View style={localStyles.container}>
-            <Text style={localStyles.coursePar}>Par {round.CoursePar}</Text>
-
-            {players.map(player => (
-                <View key={player.Id} style={localStyles.totalRow}>
-                    <Text style={localStyles.totalPlayerName}>{player.PlayerName}</Text>
-                    <Text
-                        testID={`player-total-${player.Id}`}
-                        style={localStyles.totalScore}
-                    >
-                        {formatScore(getPlayerTotal(player.Id))}
-                    </Text>
-                </View>
-            ))}
-
             {front9Holes.length > 0 && (
                 <View style={localStyles.nineSection}>
                     <Text style={localStyles.nineHeader}>Front 9</Text>
-                    {renderHoleGrid(front9Holes)}
+                    {renderHoleGrid(front9Holes, 'front9')}
                 </View>
             )}
 
             {back9Holes.length > 0 && (
                 <View style={localStyles.nineSection}>
                     <Text style={localStyles.nineHeader}>Back 9</Text>
-                    {renderHoleGrid(back9Holes)}
+                    {renderHoleGrid(back9Holes, 'back9')}
+                </View>
+            )}
+
+            {holeNumbers.length > 0 && (
+                <View style={localStyles.roundTotalSection}>
+                    {players.map(player => {
+                        const allHoles = [...front9Holes, ...back9Holes];
+                        const strokeTotal = getPlayerStrokeTotal(player.Id, allHoles);
+                        const parTotal = getParTotalForHoles(allHoles);
+                        const relativeTotal = getPlayerTotal(player.Id);
+                        return (
+                            <View key={player.Id} style={localStyles.totalRow}>
+                                <Text style={localStyles.totalPlayerName}>{player.PlayerName}</Text>
+                                <Text
+                                    testID={`round-player-${player.Id}-total`}
+                                    style={[localStyles.totalScore, getScoreColor(strokeTotal, parTotal)]}
+                                >
+                                    {strokeTotal}
+                                </Text>
+                                <Text
+                                    testID={`player-total-${player.Id}`}
+                                    style={[localStyles.totalScore, getScoreColor(relativeTotal, 0)]}
+                                >
+                                    ({formatScore(relativeTotal)})
+                                </Text>
+                            </View>
+                        );
+                    })}
                 </View>
             )}
         </View>
@@ -126,12 +171,6 @@ export default MultiplayerScorecard;
 const localStyles = StyleSheet.create({
     container: {
         padding: 15,
-    },
-    coursePar: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-        textAlign: 'center',
-        marginBottom: 10,
     },
     totalRow: {
         flexDirection: 'row',
@@ -171,19 +210,19 @@ const localStyles = StyleSheet.create({
     },
     holeNumberText: {
         color: colours.text,
-        fontSize: fontSizes.smallestText,
+        fontSize: fontSizes.normal,
     },
     parText: {
         color: colours.text,
-        fontSize: fontSizes.smallestText,
+        fontSize: fontSizes.normal,
     },
     labelText: {
         color: colours.text,
-        fontSize: fontSizes.smallestText,
+        fontSize: fontSizes.normal,
     },
     playerNameText: {
         color: colours.text,
-        fontSize: fontSizes.smallestText,
+        fontSize: fontSizes.normal,
     },
     scoreText: {
         color: colours.text,
@@ -195,5 +234,14 @@ const localStyles = StyleSheet.create({
     },
     overParText: {
         color: colours.errorText,
+    },
+    atParText: {
+        color: colours.yellow,
+    },
+    roundTotalSection: {
+        marginTop: 15,
+        borderTopWidth: 1,
+        borderTopColor: colours.yellow,
+        paddingTop: 10,
     },
 });

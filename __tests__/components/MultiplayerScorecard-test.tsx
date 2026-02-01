@@ -37,12 +37,12 @@ const makeScores = (holes: { holeNumber: number; holePar: number; scores: number
 };
 
 describe('MultiplayerScorecard', () => {
-    it('shows course par header', () => {
-        const { getByText } = render(
+    it('does not show course par text', () => {
+        const { queryByText } = render(
             <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={[]} />
         );
 
-        expect(getByText('Par 72')).toBeTruthy();
+        expect(queryByText('Par 72')).toBeNull();
     });
 
     it('shows player totals relative to par', () => {
@@ -56,9 +56,9 @@ describe('MultiplayerScorecard', () => {
         );
 
         // You: (5-4)+(4-4) = +1
-        expect(getByTestId('player-total-1')).toHaveTextContent('+1');
+        expect(getByTestId('player-total-1')).toHaveTextContent('(+1)');
         // Alice: (3-4)+(5-4) = E
-        expect(getByTestId('player-total-2')).toHaveTextContent('E');
+        expect(getByTestId('player-total-2')).toHaveTextContent('(E)');
     });
 
     it('shows under par total as negative', () => {
@@ -70,8 +70,8 @@ describe('MultiplayerScorecard', () => {
             <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
-        expect(getByTestId('player-total-1')).toHaveTextContent('-1');
-        expect(getByTestId('player-total-2')).toHaveTextContent('-1');
+        expect(getByTestId('player-total-1')).toHaveTextContent('(-1)');
+        expect(getByTestId('player-total-2')).toHaveTextContent('(-1)');
     });
 
     it('shows front 9 section when holes exist', () => {
@@ -153,11 +153,12 @@ describe('MultiplayerScorecard', () => {
     });
 
     it('handles empty hole scores', () => {
-        const { getByText } = render(
+        const { queryByText } = render(
             <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={[]} />
         );
 
-        expect(getByText('Par 72')).toBeTruthy();
+        expect(queryByText('Front 9')).toBeNull();
+        expect(queryByText('Back 9')).toBeNull();
     });
 
     it('shows even par total as E', () => {
@@ -169,7 +170,259 @@ describe('MultiplayerScorecard', () => {
             <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
-        expect(getByTestId('player-total-1')).toHaveTextContent('E');
-        expect(getByTestId('player-total-2')).toHaveTextContent('E');
+        expect(getByTestId('player-total-1')).toHaveTextContent('(E)');
+        expect(getByTestId('player-total-2')).toHaveTextContent('(E)');
+    });
+
+    describe('Grid font sizes', () => {
+        it('uses same font size for hole numbers as player scores', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [4, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('hole-number-1')).toHaveStyle({ fontSize: 18 });
+        });
+
+        it('uses same font size for par values as player scores', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [4, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('hole-par-1')).toHaveStyle({ fontSize: 18 });
+        });
+    });
+
+    describe('Summary section', () => {
+        it('shows player relative-to-par score in summary', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [5, 3] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('player-total-1')).toHaveTextContent('(+1)');
+            expect(getByTestId('player-total-2')).toHaveTextContent('(-1)');
+        });
+
+        it('shows stroke total in summary with single nine data', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [5, 3] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('round-player-1-total')).toHaveTextContent('5');
+            expect(getByTestId('round-player-2-total')).toHaveTextContent('3');
+        });
+    });
+
+    describe('Score colour coding', () => {
+        it('applies yellow colour to par scores', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [4, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#ffd33d' });
+        });
+
+        it('applies green colour to under par scores', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [3, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#00C851' });
+        });
+
+        it('applies red colour to over par scores', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [5, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#fd0303' });
+        });
+    });
+
+    describe('Total colour coding', () => {
+        it('applies yellow colour to even par total', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [4, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('player-total-1')).toHaveStyle({ color: '#ffd33d' });
+        });
+
+        it('applies green colour to under par total', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [3, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('player-total-1')).toHaveStyle({ color: '#00C851' });
+        });
+
+        it('applies red colour to over par total', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [5, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('player-total-1')).toHaveStyle({ color: '#fd0303' });
+        });
+    });
+
+    describe('Nine-hole sub-totals', () => {
+        it('shows front 9 par total', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [4, 4] },
+                { holeNumber: 2, holePar: 3, scores: [3, 3] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('front9-par-total')).toHaveTextContent('7');
+        });
+
+        it('shows front 9 player stroke totals', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [5, 3] },
+                { holeNumber: 2, holePar: 3, scores: [3, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('front9-player-1-total')).toHaveTextContent('8');
+            expect(getByTestId('front9-player-2-total')).toHaveTextContent('7');
+        });
+
+        it('shows back 9 par total', () => {
+            const holeScores = makeScores([
+                { holeNumber: 10, holePar: 4, scores: [4, 4] },
+                { holeNumber: 11, holePar: 5, scores: [5, 5] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('back9-par-total')).toHaveTextContent('9');
+        });
+
+        it('shows back 9 player stroke totals', () => {
+            const holeScores = makeScores([
+                { holeNumber: 10, holePar: 4, scores: [5, 3] },
+                { holeNumber: 11, holePar: 5, scores: [4, 6] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('back9-player-1-total')).toHaveTextContent('9');
+            expect(getByTestId('back9-player-2-total')).toHaveTextContent('9');
+        });
+
+        it('colour codes sub-total yellow when at par', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [4, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#ffd33d' });
+        });
+
+        it('colour codes sub-total green when under par', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [3, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#00C851' });
+        });
+
+        it('colour codes sub-total red when over par', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [5, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#fd0303' });
+        });
+
+        it('shows round total as sum of front and back 9 stroke totals', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [5, 3] },
+                { holeNumber: 10, holePar: 4, scores: [3, 5] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('round-player-1-total')).toHaveTextContent('8');
+            expect(getByTestId('round-player-2-total')).toHaveTextContent('8');
+        });
+
+        it('colour codes round stroke total based on par', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [5, 3] },
+                { holeNumber: 10, holePar: 4, scores: [5, 3] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            );
+
+            // You: 10 strokes, par 8 -> over par -> red
+            expect(getByTestId('round-player-1-total')).toHaveStyle({ color: '#fd0303' });
+            // Alice: 6 strokes, par 8 -> under par -> green
+            expect(getByTestId('round-player-2-total')).toHaveStyle({ color: '#00C851' });
+        });
     });
 });

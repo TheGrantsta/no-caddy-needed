@@ -10,6 +10,7 @@ import SubMenu from '../../components/SubMenu';
 import ClubDistanceList from '../../components/ClubDistanceList';
 import WedgeChart from '../../components/WedgeChart';
 import PlayerSetup from '../../components/PlayerSetup';
+import MultiplayerScorecard from '../../components/MultiplayerScorecard';
 import {
     startRoundService,
     endRoundService,
@@ -21,9 +22,11 @@ import {
     getClubDistancesService,
     addRoundPlayersService,
     getRoundPlayersService,
+    getMultiplayerScorecardService,
     Round,
     RoundPlayer,
     Tiger5Round,
+    MultiplayerRoundScorecard,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
 import styles from '../../assets/stlyes';
@@ -51,6 +54,7 @@ export default function Play() {
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
     const [currentHoleData, setCurrentHoleData] = useState<{ holeNumber: number; holePar: number; scores: { playerId: number; playerName: string; score: number }[] } | null>(null);
     const [showEndRoundConfirm, setShowEndRoundConfirm] = useState(false);
+    const [scorecardData, setScorecardData] = useState<MultiplayerRoundScorecard | null>(null);
     const toast = useToast();
     const router = useRouter();
 
@@ -133,17 +137,12 @@ export default function Play() {
                 setRunningTotal(prev => prev + (userScore.score - holePar));
             }
             setCurrentHoleData(null);
-            setCurrentHole(prev => prev + 1);
+            if (currentHole >= 18) {
+                setShowEndRoundConfirm(true);
+            } else {
+                setCurrentHole(prev => prev + 1);
+            }
         }
-    };
-
-    const isUserOverParOnCurrentHole = (): boolean => {
-        if (!currentHoleData) return false;
-        const userPlayer = players.find(p => p.IsUser === 1);
-        if (!userPlayer) return false;
-        const userScore = currentHoleData.scores.find(s => s.playerId === userPlayer.Id);
-        if (!userScore) return false;
-        return userScore.score > currentHoleData.holePar;
     };
 
     const handleSubMenu = (sectionName: string) => {
@@ -164,6 +163,21 @@ export default function Play() {
 
     const handleCancelEndRound = () => {
         setShowEndRoundConfirm(false);
+    };
+
+    const resetToIdle = () => {
+        setActiveRoundId(null);
+        setCurrentHole(1);
+        setRunningTotal(0);
+        setSection('play-score');
+        setTiger5Values({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
+        setPlayers([]);
+        setShowPlayerSetup(false);
+        setCurrentHoleData(null);
+        setShowEndRoundConfirm(false);
+        setScorecardData(null);
+        setRoundHistory(getAllRoundHistoryService());
+        setTiger5Rounds(getAllTiger5RoundsService());
     };
 
     const handleConfirmEndRound = async () => {
@@ -195,17 +209,17 @@ export default function Play() {
             },
         });
 
-        setActiveRoundId(null);
-        setCurrentHole(1);
-        setRunningTotal(0);
-        setSection('play-score');
-        setTiger5Values({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
-        setPlayers([]);
-        setShowPlayerSetup(false);
-        setCurrentHoleData(null);
-        setShowEndRoundConfirm(false);
-        setRoundHistory(getAllRoundHistoryService());
-        setTiger5Rounds(getAllTiger5RoundsService());
+        const scorecard = getMultiplayerScorecardService(activeRoundId);
+        if (scorecard) {
+            setScorecardData(scorecard);
+            setShowEndRoundConfirm(false);
+        } else {
+            resetToIdle();
+        }
+    };
+
+    const handleScorecardDone = () => {
+        resetToIdle();
     };
 
     const isRoundActive = activeRoundId !== null;
@@ -232,7 +246,7 @@ export default function Play() {
 
                 <SubMenu showSubMenu="play" selectedItem={section} handleSubMenu={handleSubMenu} />
 
-                {!isRoundActive && !showPlayerSetup && displaySection('play-score') && (
+                {!isRoundActive && !showPlayerSetup && !scorecardData && displaySection('play-score') && (
                     <View style={styles.container}>
                         <View style={localStyles.startRoundContainer}>
                             <TouchableOpacity
@@ -287,21 +301,21 @@ export default function Play() {
                     </View>
                 )}
 
-                {isRoundActive && displaySection('play-score') && (
+                {isRoundActive && !scorecardData && displaySection('play-score') && (
                     <View style={styles.container}>
                         <View>
                             <MultiplayerHoleScoreInput
                                 holeNumber={currentHole}
                                 players={players}
                                 onScoresChange={handleScoresChange}
-                                renderAfterUser={isUserOverParOnCurrentHole() ? (
+                                renderAfterUser={
                                     <Tiger5Tally
                                         onEndRound={() => { }}
                                         roundControlled={true}
                                         onValuesChange={handleTiger5ValuesChange}
                                         holePar={currentHoleData?.holePar}
                                     />
-                                ) : undefined}
+                                }
                             />
 
                             <TouchableOpacity
@@ -341,6 +355,24 @@ export default function Play() {
                                 </View>
                             )}
                         </View>
+                    </View>
+                )}
+
+                {scorecardData && displaySection('play-score') && (
+                    <View style={styles.container}>
+                        <Text style={localStyles.scorecardHeader}>Scorecard</Text>
+                        <MultiplayerScorecard
+                            round={scorecardData.round}
+                            players={scorecardData.players}
+                            holeScores={scorecardData.holeScores}
+                        />
+                        <TouchableOpacity
+                            testID="scorecard-done-button"
+                            onPress={handleScorecardDone}
+                            style={localStyles.actionButton}
+                        >
+                            <Text style={localStyles.actionButtonText}>Done</Text>
+                        </TouchableOpacity>
                     </View>
                 )}
 
@@ -413,5 +445,13 @@ const localStyles = StyleSheet.create({
     },
     roundHistoryScroll: {
         maxHeight: 300,
+    },
+    scorecardHeader: {
+        color: colours.text,
+        fontSize: fontSizes.subHeader,
+        fontWeight: 'bold',
+        textAlign: 'center' as const,
+        marginTop: 10,
+        marginBottom: 5,
     },
 });

@@ -87,10 +87,6 @@ export default function Tiger5Chart({ rounds }: Props) {
 
             <View style={localStyles.legend}>
                 <View style={localStyles.legendItem}>
-                    <View style={[localStyles.legendDot, { backgroundColor: colours.green }]} />
-                    <Text style={localStyles.legendText}>Least problem</Text>
-                </View>
-                <View style={localStyles.legendItem}>
                     <View style={[localStyles.legendDot, { backgroundColor: colours.errorText }]} />
                     <Text style={localStyles.legendText}>Biggest problem</Text>
                 </View>

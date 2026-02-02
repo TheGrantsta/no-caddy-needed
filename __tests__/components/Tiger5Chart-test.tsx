@@ -125,6 +125,5 @@ describe('Tiger5Chart component', () => {
         const { getByText } = render(<Tiger5Chart rounds={mockRounds} />);
 
         expect(getByText('Biggest problem')).toBeTruthy();
-        expect(getByText('Least problem')).toBeTruthy();
     });
 });

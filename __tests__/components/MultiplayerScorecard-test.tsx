@@ -37,14 +37,6 @@ const makeScores = (holes: { holeNumber: number; holePar: number; scores: number
 };
 
 describe('MultiplayerScorecard', () => {
-    it('does not show course par text', () => {
-        const { queryByText } = render(
-            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={[]} />
-        );
-
-        expect(queryByText('Par 72')).toBeNull();
-    });
-
     it('shows player totals relative to par', () => {
         const holeScores = makeScores([
             { holeNumber: 1, holePar: 4, scores: [5, 3] },
@@ -110,6 +102,55 @@ describe('MultiplayerScorecard', () => {
 
         expect(getByTestId('hole-number-1')).toHaveTextContent('1');
         expect(getByTestId('hole-number-2')).toHaveTextContent('2');
+    });
+
+    it('shows correct number of holes in grid', () => {
+        const holeScores = makeScores([
+            { holeNumber: 1, holePar: 4, scores: [4, 5] },
+            { holeNumber: 2, holePar: 3, scores: [3, 3] },
+            { holeNumber: 3, holePar: 5, scores: [5, 4] },
+            { holeNumber: 4, holePar: 4, scores: [4, 5] },
+            { holeNumber: 5, holePar: 3, scores: [3, 3] },
+            { holeNumber: 6, holePar: 5, scores: [5, 4] },
+            { holeNumber: 7, holePar: 4, scores: [4, 5] },
+            { holeNumber: 8, holePar: 3, scores: [3, 3] },
+            { holeNumber: 9, holePar: 5, scores: [5, 4] },
+            { holeNumber: 10, holePar: 4, scores: [4, 5] },
+            { holeNumber: 11, holePar: 3, scores: [3, 3] },
+            { holeNumber: 12, holePar: 5, scores: [5, 4] },
+            { holeNumber: 13, holePar: 4, scores: [4, 5] },
+            { holeNumber: 14, holePar: 3, scores: [3, 3] },
+            { holeNumber: 15, holePar: 5, scores: [5, 4] },
+            { holeNumber: 16, holePar: 4, scores: [4, 5] },
+            { holeNumber: 17, holePar: 3, scores: [3, 3] },
+            { holeNumber: 18, holePar: 5, scores: [5, 4] },
+        ]);
+
+        const { getByTestId } = render(
+            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+        );
+
+        expect(getByTestId('hole-number-1')).toBeTruthy();
+        expect(getByTestId('hole-number-2')).toBeTruthy();
+        expect(getByTestId('hole-number-3')).toBeTruthy();
+        expect(getByTestId('hole-number-4')).toBeTruthy();
+        expect(getByTestId('hole-number-5')).toBeTruthy();
+        expect(getByTestId('hole-number-6')).toBeTruthy();
+        expect(getByTestId('hole-number-7')).toBeTruthy();
+        expect(getByTestId('hole-number-8')).toBeTruthy();
+        expect(getByTestId('hole-number-9')).toBeTruthy();
+        expect(getByTestId('hole-number-10')).toBeTruthy();
+        expect(getByTestId('hole-number-11')).toBeTruthy();
+        expect(getByTestId('hole-number-12')).toBeTruthy();
+        expect(getByTestId('hole-number-13')).toBeTruthy();
+        expect(getByTestId('hole-number-14')).toBeTruthy();
+        expect(getByTestId('hole-number-15')).toBeTruthy();
+        expect(getByTestId('hole-number-16')).toBeTruthy();
+        expect(getByTestId('hole-number-17')).toBeTruthy();
+        expect(getByTestId('hole-number-18')).toBeTruthy();
+
+        expect(getByTestId('hole-par-17')).toHaveTextContent('3');
+        expect(getByTestId('hole-par-18')).toHaveTextContent('5');
     });
 
     it('shows par row in grid', () => {

@@ -46,3 +46,7 @@ Track five avoidable scoring mistakes during a round to identify leaks and lower
 - What does the trend view look like — simple list of past rounds, or charts/graphs?
 - Should there be a way to edit or delete a saved round?
 - Should the tally screen have an "end round" action, or auto-save on navigation away?
+
+## Status
+
+- Complete

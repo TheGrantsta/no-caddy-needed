@@ -6,13 +6,16 @@ import { useToast } from 'react-native-toast-notifications';
 import RoundScorecard from '../../components/RoundScorecard';
 import MultiplayerScorecard from '../../components/MultiplayerScorecard';
 import ScoreEditor from '../../components/ScoreEditor';
+import Tiger5Chart from '../../components/Tiger5Chart';
 import {
     getRoundScorecardService,
     getMultiplayerScorecardService,
     updateScorecardService,
+    getTiger5ForRoundService,
     RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
+    Tiger5Round,
 } from '../../service/DbService';
 import styles from '../../assets/stlyes';
 
@@ -26,6 +29,7 @@ export default function ScorecardScreen() {
     const [editedScores, setEditedScores] = useState<RoundHoleScore[]>([]);
     const [selectedScore, setSelectedScore] = useState<{ holeNumber: number; playerId: number } | null>(null);
     const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+    const [tiger5Round, setTiger5Round] = useState<Tiger5Round | null>(null);
 
     useEffect(() => {
         loadData();
@@ -36,6 +40,10 @@ export default function ScorecardScreen() {
         setMultiplayerScorecard(mp);
         const sc = mp ? null : getRoundScorecardService(Number(roundId));
         setScorecard(sc);
+        const round = mp?.round || sc?.round;
+        if (round) {
+            setTiger5Round(getTiger5ForRoundService(round.Created_At));
+        }
     };
 
     const handleEdit = () => {
@@ -177,6 +185,10 @@ export default function ScorecardScreen() {
                                     <Text style={styles.buttonText}>Edit</Text>
                                 </TouchableOpacity>
                             </View>
+                        )}
+
+                        {!isEditing && tiger5Round && (
+                            <Tiger5Chart rounds={[tiger5Round]} />
                         )}
 
                         {isEditing && !showSaveConfirm && (

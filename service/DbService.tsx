@@ -289,6 +289,28 @@ export const saveClubDistancesService = async (distances: { Club: string; CarryD
     return insertClubDistances(distances);
 };
 
+export const getTiger5ForRoundService = (roundCreatedAt: string): Tiger5Round | null => {
+    const roundDate = getTwoDigitDayAndMonth(roundCreatedAt);
+    const tiger5Rounds = getAllTiger5Rounds();
+
+    for (const t5 of tiger5Rounds) {
+        if (getTwoDigitDayAndMonth(t5.Created_At) === roundDate) {
+            return {
+                Id: t5.Id,
+                ThreePutts: t5.ThreePutts,
+                DoubleBogeys: t5.DoubleBogeys,
+                BogeysPar5: t5.BogeysPar5,
+                BogeysInside9Iron: t5.BogeysInside9Iron,
+                DoubleChips: t5.DoubleChips,
+                Total: t5.Total,
+                Created_At: getTwoDigitDayAndMonth(t5.Created_At),
+            };
+        }
+    }
+
+    return null;
+};
+
 export const updateScorecardService = async (roundId: number, updatedScores: { id: number; score: number }[]): Promise<boolean> => {
     for (const s of updatedScores) {
         const success = await updateRoundHoleScore(s.id, s.score);

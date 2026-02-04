@@ -1,9 +1,10 @@
-import { updateScorecardService } from '../../service/DbService';
+import { updateScorecardService, getTiger5ForRoundService } from '../../service/DbService';
 import {
     updateRoundHoleScore,
     updateRoundTotalScore,
     getRoundHoleScores,
     getRoundPlayers,
+    getAllTiger5Rounds,
 } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
@@ -11,12 +12,14 @@ jest.mock('../../database/db', () => ({
     updateRoundTotalScore: jest.fn(),
     getRoundHoleScores: jest.fn(),
     getRoundPlayers: jest.fn(),
+    getAllTiger5Rounds: jest.fn(),
 }));
 
 const mockUpdateRoundHoleScore = updateRoundHoleScore as jest.Mock;
 const mockUpdateRoundTotalScore = updateRoundTotalScore as jest.Mock;
 const mockGetRoundHoleScores = getRoundHoleScores as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayers as jest.Mock;
+const mockGetAllTiger5Rounds = getAllTiger5Rounds as jest.Mock;
 
 describe('updateScorecardService', () => {
     beforeEach(() => {
@@ -100,5 +103,41 @@ describe('updateScorecardService', () => {
         const result = await updateScorecardService(1, [{ id: 10, score: 5 }]);
 
         expect(result).toBe(false);
+    });
+});
+
+describe('getTiger5ForRoundService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('returns matching tiger 5 round by date', () => {
+        mockGetAllTiger5Rounds.mockReturnValue([
+            { Id: 1, ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, Total: 1, Created_At: '2025-06-15T14:00:00.000Z' },
+            { Id: 2, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, Total: 3, Created_At: '2025-06-16T14:00:00.000Z' },
+        ]);
+
+        const result = getTiger5ForRoundService('2025-06-15T10:00:00.000Z');
+
+        expect(result).not.toBeNull();
+        expect(result!.Id).toBe(1);
+    });
+
+    it('returns null when no matching tiger 5 round', () => {
+        mockGetAllTiger5Rounds.mockReturnValue([
+            { Id: 1, ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, Total: 1, Created_At: '2025-06-15T14:00:00.000Z' },
+        ]);
+
+        const result = getTiger5ForRoundService('2025-07-01T10:00:00.000Z');
+
+        expect(result).toBeNull();
+    });
+
+    it('returns null when no tiger 5 rounds exist', () => {
+        mockGetAllTiger5Rounds.mockReturnValue([]);
+
+        const result = getTiger5ForRoundService('2025-06-15T10:00:00.000Z');
+
+        expect(result).toBeNull();
     });
 });

@@ -28,7 +28,7 @@ Delete the scorecard for a previously saved round by sliding the row left based 
 
 ## Status
 
-- To be implemented
+- Complete
 
 ## Priority
 

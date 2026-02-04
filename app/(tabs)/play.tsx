@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 import { useRouter } from 'expo-router';
 import MultiplayerHoleScoreInput from '../../components/MultiplayerHoleScoreInput';
@@ -23,7 +23,6 @@ import {
     addRoundPlayersService,
     getRoundPlayersService,
     getMultiplayerScorecardService,
-    deleteRoundService,
     Round,
     RoundPlayer,
     Tiger5Round,
@@ -56,8 +55,6 @@ export default function Play() {
     const [currentHoleData, setCurrentHoleData] = useState<{ holeNumber: number; holePar: number; scores: { playerId: number; playerName: string; score: number }[] } | null>(null);
     const [showEndRoundConfirm, setShowEndRoundConfirm] = useState(false);
     const [scorecardData, setScorecardData] = useState<MultiplayerRoundScorecard | null>(null);
-    const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
-    const swipeableRefs = useRef<Map<number, Swipeable | null>>(new Map());
     const toast = useToast();
     const router = useRouter();
 
@@ -222,71 +219,6 @@ export default function Play() {
         resetToIdle();
     };
 
-    const handleDeletePress = (roundId: number) => {
-        setConfirmDeleteId(roundId);
-    };
-
-    const handleCancelDelete = () => {
-        setConfirmDeleteId(null);
-        swipeableRefs.current.get(confirmDeleteId!)?.close();
-    };
-
-    const handleConfirmDelete = async (roundId: number) => {
-        const success = await deleteRoundService(roundId);
-
-        const toastStyle = {
-            textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' as const },
-            style: {
-                borderLeftColor: success ? colours.green : colours.errorText,
-                borderLeftWidth: 10,
-                backgroundColor: colours.yellow,
-            },
-        };
-
-        if (success) {
-            toast.show('Round deleted', { type: 'success', ...toastStyle });
-            setRoundHistory(getAllRoundHistoryService());
-            setTiger5Rounds(getAllTiger5RoundsService());
-        } else {
-            toast.show('Failed to delete round', { type: 'danger', ...toastStyle });
-        }
-
-        setConfirmDeleteId(null);
-    };
-
-    const renderRightActions = (roundId: number) => {
-        if (confirmDeleteId === roundId) {
-            return (
-                <View style={localStyles.deleteActionsContainer}>
-                    <TouchableOpacity
-                        testID={`confirm-delete-round-${roundId}`}
-                        onPress={() => handleConfirmDelete(roundId)}
-                        style={localStyles.confirmDeleteButton}
-                    >
-                        <Text style={localStyles.deleteButtonText}>Confirm</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        testID={`cancel-delete-round-${roundId}`}
-                        onPress={handleCancelDelete}
-                        style={localStyles.cancelDeleteButton}
-                    >
-                        <Text style={localStyles.cancelDeleteText}>Cancel</Text>
-                    </TouchableOpacity>
-                </View>
-            );
-        }
-
-        return (
-            <TouchableOpacity
-                testID={`delete-round-${roundId}`}
-                onPress={() => handleDeletePress(roundId)}
-                style={localStyles.deleteButton}
-            >
-                <Text style={localStyles.deleteButtonText}>Delete</Text>
-            </TouchableOpacity>
-        );
-    };
-
     const isRoundActive = activeRoundId !== null;
 
     return (
@@ -347,23 +279,17 @@ export default function Play() {
                                     </View>
                                     <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
                                         {roundHistory.slice(0, 30).map((round) => (
-                                            <Swipeable
+                                            <TouchableOpacity
                                                 key={round.Id}
-                                                ref={(ref) => { swipeableRefs.current.set(round.Id, ref); }}
-                                                renderRightActions={() => renderRightActions(round.Id)}
-                                                overshootRight={false}
+                                                testID={`round-history-row-${round.Id}`}
+                                                onPress={() => router.push({ pathname: '/play/scorecard', params: { roundId: String(round.Id) } })}
                                             >
-                                                <TouchableOpacity
-                                                    testID={`round-history-row-${round.Id}`}
-                                                    onPress={() => router.push({ pathname: '/play/scorecard', params: { roundId: String(round.Id) } })}
-                                                >
-                                                    <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
-                                                        <Text style={styles.normalText}>{round.Created_At}</Text>
-                                                        <Text style={styles.normalText}>{formatScore(round.TotalScore)}</Text>
-                                                        <Text style={styles.normalText}>{tiger5Map.has(round.Created_At) ? tiger5Map.get(round.Created_At) : '-'}</Text>
-                                                    </View>
-                                                </TouchableOpacity>
-                                            </Swipeable>
+                                                <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
+                                                    <Text style={styles.normalText}>{round.Created_At}</Text>
+                                                    <Text style={styles.normalText}>{formatScore(round.TotalScore)}</Text>
+                                                    <Text style={styles.normalText}>{tiger5Map.has(round.Created_At) ? tiger5Map.get(round.Created_At) : '-'}</Text>
+                                                </View>
+                                            </TouchableOpacity>
                                         ))}
                                     </ScrollView>
                                 </View>
@@ -522,37 +448,6 @@ const localStyles = StyleSheet.create({
     },
     roundHistoryScroll: {
         maxHeight: 300,
-    },
-    deleteButton: {
-        backgroundColor: colours.errorText,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-    },
-    deleteButtonText: {
-        color: colours.white,
-        fontSize: fontSizes.smallText,
-        fontWeight: 'bold' as const,
-    },
-    deleteActionsContainer: {
-        flexDirection: 'row' as const,
-    },
-    confirmDeleteButton: {
-        backgroundColor: colours.errorText,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 10,
-    },
-    cancelDeleteButton: {
-        backgroundColor: colours.yellow,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 10,
-    },
-    cancelDeleteText: {
-        color: colours.background,
-        fontSize: fontSizes.smallText,
-        fontWeight: 'bold' as const,
     },
     scorecardHeader: {
         color: colours.text,

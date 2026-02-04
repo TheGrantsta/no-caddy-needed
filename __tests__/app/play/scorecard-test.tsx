@@ -1,21 +1,23 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, getTiger5ForRoundService } from '../../../service/DbService';
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, getTiger5ForRoundService, deleteRoundService } from '../../../service/DbService';
 
 const mockShow = jest.fn();
+const mockBack = jest.fn();
 
 jest.mock('../../../service/DbService', () => ({
     getRoundScorecardService: jest.fn(),
     getMultiplayerScorecardService: jest.fn(),
     updateScorecardService: jest.fn(),
     getTiger5ForRoundService: jest.fn(),
+    deleteRoundService: jest.fn(),
 }));
 
 jest.mock('expo-router', () => ({
     useLocalSearchParams: () => ({ roundId: '1' }),
     useRouter: () => ({
-        back: jest.fn(),
+        back: mockBack,
     }),
 }));
 
@@ -39,6 +41,7 @@ const mockGetRoundScorecard = getRoundScorecardService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
 const mockUpdateScorecard = updateScorecardService as jest.Mock;
 const mockGetTiger5ForRound = getTiger5ForRoundService as jest.Mock;
+const mockDeleteRound = deleteRoundService as jest.Mock;
 
 const multiplayerData = {
     round: { Id: 1, CoursePar: 72, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '' },
@@ -346,6 +349,132 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('edit-scorecard-button'));
 
             expect(queryByText('Tiger 5')).toBeNull();
+        });
+    });
+
+    describe('Delete round', () => {
+        it('shows delete button for multiplayer scorecard', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            expect(getByTestId('delete-round-button')).toBeTruthy();
+        });
+
+        it('does not show delete button for legacy scorecard', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(null);
+            mockGetRoundScorecard.mockReturnValue({
+                round: { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '' },
+                holes: [{ Id: 1, RoundId: 1, HoleNumber: 1, ScoreRelativeToPar: 3 }],
+            });
+
+            const { queryByTestId } = render(<ScorecardScreen />);
+
+            expect(queryByTestId('delete-round-button')).toBeNull();
+        });
+
+        it('does not show delete button in edit mode', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+
+            expect(queryByTestId('delete-round-button')).toBeNull();
+        });
+
+        it('shows delete confirmation when delete pressed', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('delete-round-button'));
+
+            expect(getByTestId('confirm-delete-button')).toBeTruthy();
+            expect(getByTestId('cancel-delete-button')).toBeTruthy();
+        });
+
+        it('hides delete button when showing confirmation', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('delete-round-button'));
+
+            expect(queryByTestId('delete-round-button')).toBeNull();
+        });
+
+        it('calls deleteRoundService on confirm delete', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockDeleteRound.mockResolvedValue(true);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('delete-round-button'));
+            fireEvent.press(getByTestId('confirm-delete-button'));
+
+            await waitFor(() => {
+                expect(mockDeleteRound).toHaveBeenCalledWith(1);
+            });
+        });
+
+        it('shows success toast and navigates back after delete', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockDeleteRound.mockResolvedValue(true);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('delete-round-button'));
+            fireEvent.press(getByTestId('confirm-delete-button'));
+
+            await waitFor(() => {
+                expect(mockShow).toHaveBeenCalledWith('Round deleted', { type: 'success' });
+                expect(mockBack).toHaveBeenCalled();
+            });
+        });
+
+        it('shows error toast when delete fails', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockDeleteRound.mockResolvedValue(false);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('delete-round-button'));
+            fireEvent.press(getByTestId('confirm-delete-button'));
+
+            await waitFor(() => {
+                expect(mockShow).toHaveBeenCalledWith('Failed to delete round', { type: 'danger' });
+            });
+        });
+
+        it('does not navigate back when delete fails', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockDeleteRound.mockResolvedValue(false);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('delete-round-button'));
+            fireEvent.press(getByTestId('confirm-delete-button'));
+
+            await waitFor(() => {
+                expect(mockShow).toHaveBeenCalled();
+            });
+            expect(mockBack).not.toHaveBeenCalled();
+        });
+
+        it('hides confirmation when cancel delete pressed', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('delete-round-button'));
+
+            expect(getByTestId('confirm-delete-button')).toBeTruthy();
+
+            fireEvent.press(getByTestId('cancel-delete-button'));
+
+            expect(queryByTestId('confirm-delete-button')).toBeNull();
+            expect(getByTestId('delete-round-button')).toBeTruthy();
         });
     });
 });

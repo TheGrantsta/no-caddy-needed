@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useToast } from 'react-native-toast-notifications';
 import RoundScorecard from '../../components/RoundScorecard';
 import MultiplayerScorecard from '../../components/MultiplayerScorecard';
@@ -12,6 +12,7 @@ import {
     getMultiplayerScorecardService,
     updateScorecardService,
     getTiger5ForRoundService,
+    deleteRoundService,
     RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
@@ -22,6 +23,7 @@ import styles from '../../assets/stlyes';
 export default function ScorecardScreen() {
     const { roundId } = useLocalSearchParams<{ roundId: string }>();
     const toast = useToast();
+    const router = useRouter();
 
     const [multiplayerScorecard, setMultiplayerScorecard] = useState<MultiplayerRoundScorecard | null>(null);
     const [scorecard, setScorecard] = useState<RoundScorecardType | null>(null);
@@ -30,6 +32,7 @@ export default function ScorecardScreen() {
     const [selectedScore, setSelectedScore] = useState<{ holeNumber: number; playerId: number } | null>(null);
     const [showSaveConfirm, setShowSaveConfirm] = useState(false);
     const [tiger5Round, setTiger5Round] = useState<Tiger5Round | null>(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -136,6 +139,25 @@ export default function ScorecardScreen() {
         setShowSaveConfirm(false);
     };
 
+    const handleDelete = () => {
+        setShowDeleteConfirm(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        const success = await deleteRoundService(Number(roundId));
+        if (success) {
+            toast.show('Round deleted', { type: 'success' });
+            router.back();
+        } else {
+            toast.show('Failed to delete round', { type: 'danger' });
+            setShowDeleteConfirm(false);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setShowDeleteConfirm(false);
+    };
+
     if (!multiplayerScorecard && !scorecard) {
         return (
             <GestureHandlerRootView style={styles.flexOne}>
@@ -189,6 +211,37 @@ export default function ScorecardScreen() {
 
                         {!isEditing && tiger5Round && (
                             <Tiger5Chart rounds={[tiger5Round]} />
+                        )}
+
+                        {!isEditing && !showDeleteConfirm && (
+                            <View style={styles.headerContainer}>
+                                <TouchableOpacity
+                                    testID="delete-round-button"
+                                    style={[styles.button, { backgroundColor: '#fd0303' }]}
+                                    onPress={handleDelete}
+                                >
+                                    <Text style={styles.buttonText}>Delete round</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {!isEditing && showDeleteConfirm && (
+                            <View style={styles.buttonContainer}>
+                                <TouchableOpacity
+                                    testID="cancel-delete-button"
+                                    style={styles.button}
+                                    onPress={handleCancelDelete}
+                                >
+                                    <Text style={styles.buttonText}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    testID="confirm-delete-button"
+                                    style={[styles.button, { backgroundColor: '#fd0303' }]}
+                                    onPress={handleConfirmDelete}
+                                >
+                                    <Text style={styles.buttonText}>Confirm delete</Text>
+                                </TouchableOpacity>
+                            </View>
                         )}
 
                         {isEditing && !showSaveConfirm && (

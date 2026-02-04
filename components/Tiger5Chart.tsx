@@ -22,7 +22,7 @@ const CATEGORY_LABELS: { key: keyof Tiger5Round; label: string }[] = [
 ];
 
 export default function Tiger5Chart({ rounds }: Props) {
-    if (rounds.length === 0) {
+    if (rounds.length === 0 || rounds.every(r => r.Total === 0)) {
         return null;
     }
 

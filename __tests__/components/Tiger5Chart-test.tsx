@@ -19,6 +19,15 @@ describe('Tiger5Chart component', () => {
         expect(queryByText('Tiger 5')).toBeNull();
     });
 
+    it('returns null when rounds total score is zero', () => {
+        const emptyRound: Tiger5Round[] = [
+            { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, Total: 0, Created_At: '15/06' },
+        ];
+        const { queryByText } = render(<Tiger5Chart rounds={emptyRound} />);
+
+        expect(queryByText('Tiger 5')).toBeNull();
+    });
+
     it('renders the title', () => {
         const { getByText } = render(<Tiger5Chart rounds={mockRounds} />);
 
@@ -68,17 +77,6 @@ describe('Tiger5Chart component', () => {
 
         const labels = getAllByTestId('tiger5-chart-label');
         expect(labels).toHaveLength(5);
-    });
-
-    it('handles all zeros', () => {
-        const zeroRounds: Tiger5Round[] = [
-            { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, Total: 0, Created_At: '15/06' },
-        ];
-
-        const { getByText, getAllByTestId } = render(<Tiger5Chart rounds={zeroRounds} />);
-
-        expect(getByText('Tiger 5')).toBeTruthy();
-        expect(getAllByTestId('tiger5-chart-label')).toHaveLength(5);
     });
 
     it('colors highest category bar red', () => {

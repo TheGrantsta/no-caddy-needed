@@ -98,3 +98,25 @@ Repomix can create a prompt-friendly version of your repo that can be uploaded a
    This file contains all the files in the repository combined into one. I want to refactor the code, so please review it first. Suggest improvements as todo list
    ```
 
+4. Claude 
+
+   ```Epic implementation suggestion
+      You are an implementation engine.
+
+      Given the epic below, do not restate it.
+      Do not add features.
+      Do not explain decisions.
+
+      Task:
+      Break this epic into the minimum set of implementation tasks that fully satisfy the acceptance criteria.
+
+      Output format:
+      - Task ID
+      - Task description (1 sentence)
+      - Inputs
+      - Outputs
+      - Done condition (objective)
+
+      Epic:
+      <PASTE EPIC>
+   ```

@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Play from '../../app/(tabs)/play';
 import {
     startRoundService,
@@ -283,7 +283,9 @@ describe('Play screen', () => {
                 expect(getByText('Hole 1')).toBeTruthy();
             });
 
-            fireEvent.press(getByTestId('next-hole-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
 
             await waitFor(() => {
                 expect(getByText('Hole 2')).toBeTruthy();
@@ -304,7 +306,9 @@ describe('Play screen', () => {
                 expect(getByText('Hole 1')).toBeTruthy();
             });
 
-            fireEvent.press(getByTestId('next-hole-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
 
             await waitFor(() => {
                 expect(mockAddMultiplayerHoleScores).toHaveBeenCalledWith(1, 1, 4, [
@@ -383,7 +387,9 @@ describe('Play screen', () => {
             });
 
             fireEvent.press(getByTestId('end-round-button'));
-            fireEvent.press(getByTestId('confirm-end-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('confirm-end-round-button'));
+            });
 
             await waitFor(() => {
                 expect(mockEndRound).toHaveBeenCalledWith(1);
@@ -406,7 +412,9 @@ describe('Play screen', () => {
             });
 
             fireEvent.press(getByTestId('end-round-button'));
-            fireEvent.press(getByTestId('confirm-end-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('confirm-end-round-button'));
+            });
 
             await waitFor(() => {
                 expect(getByTestId('start-round-button')).toBeTruthy();
@@ -616,14 +624,18 @@ describe('Play screen', () => {
 
             // Increment score to be above par, then submit
             fireEvent.press(getByTestId('increment-1'));
-            fireEvent.press(getByTestId('next-hole-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
 
             await waitFor(() => {
                 expect(getByTestId('end-round-button')).toBeTruthy();
             });
 
             fireEvent.press(getByTestId('end-round-button'));
-            fireEvent.press(getByTestId('confirm-end-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('confirm-end-round-button'));
+            });
 
             await waitFor(() => {
                 expect(mockInsertTiger5Round).toHaveBeenCalled();
@@ -646,7 +658,9 @@ describe('Play screen', () => {
             });
 
             fireEvent.press(getByTestId('end-round-button'));
-            fireEvent.press(getByTestId('confirm-end-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('confirm-end-round-button'));
+            });
 
             await waitFor(() => {
                 expect(mockInsertTiger5Round).not.toHaveBeenCalled();
@@ -687,7 +701,9 @@ describe('Play screen', () => {
             });
 
             fireEvent.press(getByTestId('end-round-button'));
-            fireEvent.press(getByTestId('confirm-end-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('confirm-end-round-button'));
+            });
 
             await waitFor(() => {
                 expect(mockCancelReminder).toHaveBeenCalledWith('notif-123');
@@ -712,7 +728,9 @@ describe('Play screen', () => {
                 expect(getByTestId('next-hole-button')).toBeTruthy();
             });
 
-            fireEvent.press(getByTestId('next-hole-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
 
             await waitFor(() => {
                 expect(mockAddMultiplayerHoleScores).toHaveBeenCalled();
@@ -783,7 +801,9 @@ describe('Play screen', () => {
             });
 
             for (let i = 1; i < targetHole; i++) {
-                fireEvent.press(getByTestId('next-hole-button'));
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
                 await waitFor(() => {
                     expect(getByText(`Hole ${i + 1}`)).toBeTruthy();
                 });
@@ -799,7 +819,9 @@ describe('Play screen', () => {
 
             await startRoundAndAdvanceToHole(getByTestId, getByText, 18);
 
-            fireEvent.press(getByTestId('next-hole-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
 
             await waitFor(() => {
                 expect(getByTestId('confirm-end-round-button')).toBeTruthy();
@@ -817,7 +839,9 @@ describe('Play screen', () => {
 
             await startRoundAndAdvanceToHole(getByTestId, getByText, 18);
 
-            fireEvent.press(getByTestId('next-hole-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
 
             await waitFor(() => {
                 expect(mockAddMultiplayerHoleScores).toHaveBeenCalledWith(
@@ -837,7 +861,9 @@ describe('Play screen', () => {
             });
 
             fireEvent.press(getByTestId('end-round-button'));
-            fireEvent.press(getByTestId('confirm-end-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('confirm-end-round-button'));
+            });
         };
 
         const mockScorecardData = {
@@ -993,7 +1019,9 @@ describe('Play screen', () => {
             });
 
             fireEvent.press(getByTestId('end-round-button'));
-            fireEvent.press(getByTestId('confirm-end-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('confirm-end-round-button'));
+            });
 
             await waitFor(() => {
                 expect(getByTestId('start-round-button')).toBeTruthy();

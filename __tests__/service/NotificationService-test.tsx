@@ -38,11 +38,13 @@ describe('NotificationService', () => {
         });
 
         it('returns null when scheduling fails', async () => {
+            const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
             mockSchedule.mockRejectedValue(new Error('failed'));
 
             const result = await scheduleRoundReminder();
 
             expect(result).toBeNull();
+            consoleSpy.mockRestore();
         });
     });
 

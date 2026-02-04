@@ -14,16 +14,9 @@ jest.mock('react-native-gesture-handler', () => {
 
 jest.mock('expo-av', () => ({
     Audio: {
-        setAudioModeAsync: jest.fn().mockResolvedValue(undefined),
+        setAudioModeAsync: jest.fn().mockReturnValue(new Promise(() => {})),
         Sound: {
-            createAsync: jest.fn().mockResolvedValue({
-                sound: {
-                    playAsync: jest.fn(),
-                    replayAsync: jest.fn(),
-                    stopAsync: jest.fn(),
-                    unloadAsync: jest.fn(),
-                },
-            }),
+            createAsync: jest.fn().mockReturnValue(new Promise(() => {})),
         },
     },
 }));

@@ -23,7 +23,7 @@ export default function Settings() {
     }, 750);
   };
 
-  const handleSaveDistances = async (data: { Club: string; CarryDistance: number; SortOrder: number }[]) => {
+  const handleSaveDistances = async (data: { Club: string; CarryDistance: number; TotalDistance: number; SortOrder: number }[]) => {
     const success = await saveClubDistancesService(data);
 
     toast.show(success ? 'Distances saved' : 'Distances not saved', {
@@ -79,7 +79,6 @@ export default function Settings() {
         <View style={styles.container}>
           <ClubDistanceList
             distances={distances}
-            editable={true}
             onSave={handleSaveDistances}
           />
         </View>

@@ -5,6 +5,13 @@ import { getClubDistancesService } from '../../../service/DbService';
 
 jest.mock('../../../service/DbService', () => ({
     getClubDistancesService: jest.fn(),
+    saveClubDistancesService: jest.fn(),
+}));
+
+jest.mock('react-native-toast-notifications', () => ({
+    useToast: () => ({
+        show: jest.fn(),
+    }),
 }));
 
 jest.mock('react-native-gesture-handler', () => {
@@ -34,13 +41,14 @@ describe('Distances screen', () => {
 
     it('shows club distances when data exists', () => {
         mockGetClubDistances.mockReturnValue([
-            { Id: 1, Club: 'Driver', CarryDistance: 250, SortOrder: 1 },
+            { Id: 1, Club: 'Driver', CarryDistance: 250, TotalDistance: 270, SortOrder: 1 },
         ]);
 
-        const { getByText } = render(<DistancesScreen />);
+        const { getByTestId, getByText } = render(<DistancesScreen />);
 
-        expect(getByText('Driver')).toBeTruthy();
-        expect(getByText('250')).toBeTruthy();
+        expect(getByText('1 clubs in your bag')).toBeTruthy();
+        expect(getByTestId('club-input-0').props.value).toBe('Driver');
+        expect(getByTestId('distance-input-0').props.value).toBe('250');
     });
 
     it('shows empty message when no distances exist', () => {
@@ -48,6 +56,22 @@ describe('Distances screen', () => {
 
         const { getByText } = render(<DistancesScreen />);
 
-        expect(getByText('No club distances set')).toBeTruthy();
+        expect(getByText('No clubs in your bag')).toBeTruthy();
+    });
+
+    it('shows add club button', () => {
+        mockGetClubDistances.mockReturnValue([]);
+
+        const { getByTestId } = render(<DistancesScreen />);
+
+        expect(getByTestId('add-club-button')).toBeTruthy();
+    });
+
+    it('shows save button', () => {
+        mockGetClubDistances.mockReturnValue([]);
+
+        const { getByTestId } = render(<DistancesScreen />);
+
+        expect(getByTestId('save-distances-button')).toBeTruthy();
     });
 });

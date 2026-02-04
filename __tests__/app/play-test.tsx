@@ -483,7 +483,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('play-sub-menu-distances'));
 
-            expect(getByText('No club distances set')).toBeTruthy();
+            expect(getByText('No clubs in your bag')).toBeTruthy();
         });
 
         it('shows wedge chart section when Wedge chart is pressed', async () => {
@@ -531,7 +531,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('play-sub-menu-distances'));
 
-            expect(getByText('No club distances set')).toBeTruthy();
+            expect(getByText('No clubs in your bag')).toBeTruthy();
             expect(queryByTestId('start-round-button')).toBeNull();
         });
 

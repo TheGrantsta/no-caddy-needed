@@ -7,7 +7,6 @@ import MultiplayerHoleScoreInput from '../../components/MultiplayerHoleScoreInpu
 import Tiger5Tally from '../../components/Tiger5Tally';
 import Tiger5Chart from '../../components/Tiger5Chart';
 import SubMenu from '../../components/SubMenu';
-import ClubDistanceList from '../../components/ClubDistanceList';
 import WedgeChart from '../../components/WedgeChart';
 import PlayerSetup from '../../components/PlayerSetup';
 import MultiplayerScorecard from '../../components/MultiplayerScorecard';
@@ -19,7 +18,6 @@ import {
     getAllRoundHistoryService,
     insertTiger5RoundService,
     getAllTiger5RoundsService,
-    getClubDistancesService,
     addRoundPlayersService,
     getRoundPlayersService,
     getMultiplayerScorecardService,
@@ -33,6 +31,7 @@ import styles from '../../assets/stlyes';
 import colours from '../../assets/colours';
 import fontSizes from '../../assets/font-sizes';
 import { StyleSheet } from 'react-native';
+import DistancesScreen from '../play/distances';
 
 const formatScore = (score: number): string => {
     if (score === 0) return 'E';
@@ -383,7 +382,7 @@ export default function Play() {
 
                 {displaySection('play-distances') && (
                     <View style={styles.container}>
-                        <ClubDistanceList distances={getClubDistancesService()} editable={false} />
+                        <DistancesScreen />
                     </View>
                 )}
 

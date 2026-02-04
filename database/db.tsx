@@ -12,7 +12,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS Tiger5Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, ThreePutts INTEGER NOT NULL DEFAULT 0, DoubleBogeys INTEGER NOT NULL DEFAULT 0, BogeysPar5 INTEGER NOT NULL DEFAULT 0, BogeysInside9Iron INTEGER NOT NULL DEFAULT 0, DoubleChips INTEGER NOT NULL DEFAULT 0, Total INTEGER NOT NULL DEFAULT 0, RoundId INTEGER, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, CoursePar INTEGER NOT NULL, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundHoles (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, ScoreRelativeToPar INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
-        CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL, SortOrder INTEGER NOT NULL);
+        CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
     `);
@@ -190,10 +190,10 @@ export const getAllRounds = () => {
 
 export const getClubDistances = () => {
     const db = SQLite.openDatabaseSync(dbName);
-    return db.getAllSync('SELECT * FROM ClubDistances ORDER BY SortOrder ASC;');
+    return db.getAllSync('SELECT * FROM ClubDistances ORDER BY CarryDistance DESC;');
 };
 
-export const insertClubDistances = async (distances: { Club: string; CarryDistance: number; SortOrder: number }[]): Promise<boolean> => {
+export const insertClubDistances = async (distances: { Club: string; CarryDistance: number; }[]): Promise<boolean> => {
     let success = true;
     try {
         const db = SQLite.openDatabaseSync(dbName);
@@ -201,17 +201,18 @@ export const insertClubDistances = async (distances: { Club: string; CarryDistan
 
         for (const item of distances) {
             const statement = db.prepareSync(
-                'INSERT INTO ClubDistances (Club, CarryDistance, SortOrder) VALUES ($Club, $CarryDistance, $SortOrder)'
+                'INSERT INTO ClubDistances (Club, CarryDistance) VALUES ($Club, $CarryDistance)'
             );
 
             try {
-                await statement.executeAsync({ $Club: item.Club, $CarryDistance: item.CarryDistance, $SortOrder: item.SortOrder });
+                await statement.executeAsync({ $Club: item.Club, $CarryDistance: item.CarryDistance });
             } finally {
                 await statement.finalizeAsync();
             }
         }
     } catch (e) {
         console.log(e);
+        alert(e.message);
         success = false;
     }
 

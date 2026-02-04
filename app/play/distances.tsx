@@ -1,11 +1,32 @@
 import { ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ClubDistanceList from '../../components/ClubDistanceList';
-import { getClubDistancesService } from '../../service/DbService';
+import { getClubDistancesService, saveClubDistancesService } from '../../service/DbService';
+import { useToast } from 'react-native-toast-notifications';
 import styles from '../../assets/stlyes';
+import colours from '@/assets/colours';
+import fontSizes from '@/assets/font-sizes';
 
 export default function DistancesScreen() {
+    const toast = useToast();
     const distances = getClubDistancesService();
+    const handleSave = async (distances: { Club: string; CarryDistance: number; TotalDistance: number; SortOrder: number }[]) => {
+        const saved = await saveClubDistancesService(distances);
+
+        if (saved) {
+            toast.show('Clubs saved', {
+                type: 'success',
+                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
+                style: { borderLeftColor: colours.green, borderLeftWidth: 10, backgroundColor: colours.yellow },
+            });
+        } else {
+            toast.show('Failed to save clubs', {
+                type: 'danger',
+                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
+                style: { borderLeftColor: colours.errorText, borderLeftWidth: 10, backgroundColor: colours.yellow },
+            });
+        }
+    };
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>
@@ -13,10 +34,10 @@ export default function DistancesScreen() {
                 <View style={styles.headerContainer}>
                     <Text style={[styles.headerText, styles.marginTop]}>Distances</Text>
                     <Text style={[styles.normalText, styles.marginBottom]}>
-                        Your club carry distances
+                        {distances.length === 0 ? 'No clubs in your bag' : `${distances.length} clubs in your bag`}
                     </Text>
                 </View>
-                <ClubDistanceList distances={distances} editable={false} />
+                <ClubDistanceList distances={distances} onSave={handleSave} />
             </ScrollView>
         </GestureHandlerRootView>
     );

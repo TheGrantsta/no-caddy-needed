@@ -30,9 +30,9 @@ describe('getClubDistancesService', () => {
 
     it('returns club distances sorted by sort order', () => {
         mockGetClubDistances.mockReturnValue([
-            { Id: 1, Club: 'Driver', CarryDistance: 250, SortOrder: 1 },
-            { Id: 2, Club: '3 Wood', CarryDistance: 230, SortOrder: 2 },
-            { Id: 3, Club: '5 Iron', CarryDistance: 180, SortOrder: 3 },
+            { Id: 1, Club: 'Driver', CarryDistance: 250, TotalDistance: 270, SortOrder: 1 },
+            { Id: 2, Club: '3 Wood', CarryDistance: 230, TotalDistance: 245, SortOrder: 2 },
+            { Id: 3, Club: '5 Iron', CarryDistance: 180, TotalDistance: 190, SortOrder: 3 },
         ]);
 
         const result = getClubDistancesService();
@@ -40,12 +40,13 @@ describe('getClubDistancesService', () => {
         expect(result).toHaveLength(3);
         expect(result[0].Club).toBe('Driver');
         expect(result[0].CarryDistance).toBe(250);
+        expect(result[0].TotalDistance).toBe(270);
         expect(result[2].Club).toBe('5 Iron');
     });
 
     it('preserves all fields from database', () => {
         mockGetClubDistances.mockReturnValue([
-            { Id: 1, Club: 'PW', CarryDistance: 130, SortOrder: 10 },
+            { Id: 1, Club: 'PW', CarryDistance: 130, TotalDistance: 140, SortOrder: 10 },
         ]);
 
         const result = getClubDistancesService();
@@ -54,6 +55,7 @@ describe('getClubDistancesService', () => {
             Id: 1,
             Club: 'PW',
             CarryDistance: 130,
+            TotalDistance: 140,
             SortOrder: 10,
         });
     });
@@ -68,8 +70,8 @@ describe('saveClubDistancesService', () => {
         mockInsertClubDistances.mockResolvedValue(true);
 
         const distances = [
-            { Club: 'Driver', CarryDistance: 250, SortOrder: 1 },
-            { Club: '3 Wood', CarryDistance: 230, SortOrder: 2 },
+            { Club: 'Driver', CarryDistance: 250, TotalDistance: 270, SortOrder: 1 },
+            { Club: '3 Wood', CarryDistance: 230, TotalDistance: 245, SortOrder: 2 },
         ];
 
         const result = await saveClubDistancesService(distances);

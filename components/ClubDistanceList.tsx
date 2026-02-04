@@ -7,27 +7,28 @@ type ClubDistance = {
     Id: number;
     Club: string;
     CarryDistance: number;
+    TotalDistance: number;
     SortOrder: number;
 };
 
 type EditableRow = {
     club: string;
     distance: string;
+    totalDistance: number;
 };
 
 type Props = {
     distances: ClubDistance[];
-    editable: boolean;
-    onSave?: (distances: { Club: string; CarryDistance: number; SortOrder: number }[]) => void;
+    onSave?: (distances: { Club: string; CarryDistance: number; TotalDistance: number; SortOrder: number }[]) => void;
 };
 
-const ClubDistanceList = ({ distances, editable, onSave }: Props) => {
+const ClubDistanceList = ({ distances, onSave }: Props) => {
     const [rows, setRows] = useState<EditableRow[]>(
-        distances.map(d => ({ club: d.Club, distance: String(d.CarryDistance) }))
+        distances.map(d => ({ club: d.Club, distance: String(d.CarryDistance), totalDistance: d.TotalDistance }))
     );
 
     const handleAddRow = () => {
-        setRows([...rows, { club: '', distance: '' }]);
+        setRows([...rows, { club: '', distance: '', totalDistance: 0 }]);
     };
 
     const handleUpdateRow = (index: number, field: 'club' | 'distance', value: string) => {
@@ -38,40 +39,18 @@ const ClubDistanceList = ({ distances, editable, onSave }: Props) => {
 
     const handleSave = () => {
         if (!onSave) return;
+
         const data = rows
             .filter(r => r.club.trim() && r.distance.trim())
             .map((r, i) => ({
                 Club: r.club.trim(),
                 CarryDistance: parseInt(r.distance) || 0,
+                TotalDistance: r.totalDistance,
                 SortOrder: i + 1,
             }));
+
         onSave(data);
     };
-
-    if (!editable) {
-        if (distances.length === 0) {
-            return (
-                <View style={localStyles.container}>
-                    <Text style={localStyles.emptyText}>No club distances set</Text>
-                </View>
-            );
-        }
-
-        return (
-            <View style={localStyles.container}>
-                <View style={localStyles.headerRow}>
-                    <Text style={[localStyles.headerCell, localStyles.clubCell]}>Club</Text>
-                    <Text style={[localStyles.headerCell, localStyles.distanceCell]}>Carry (yards)</Text>
-                </View>
-                {distances.map((d) => (
-                    <View key={d.Id} style={localStyles.row}>
-                        <Text style={[localStyles.cell, localStyles.clubCell]}>{d.Club}</Text>
-                        <Text style={[localStyles.cell, localStyles.distanceCell]}>{d.CarryDistance}</Text>
-                    </View>
-                ))}
-            </View>
-        );
-    }
 
     return (
         <View style={localStyles.container}>
@@ -100,13 +79,17 @@ const ClubDistanceList = ({ distances, editable, onSave }: Props) => {
                     />
                 </View>
             ))}
+
             <TouchableOpacity
                 testID="add-club-button"
                 onPress={handleAddRow}
                 style={localStyles.addButton}
             >
-                <Text style={localStyles.addButtonText}>+ Add club</Text>
+                {distances.length !== 14 && (
+                    <Text style={localStyles.addButtonText}>+ Add club</Text>
+                )}
             </TouchableOpacity>
+
             <TouchableOpacity
                 testID="save-distances-button"
                 onPress={handleSave}
@@ -161,8 +144,6 @@ const localStyles = StyleSheet.create({
     input: {
         color: colours.text,
         fontSize: fontSizes.normal,
-        borderBottomWidth: 1,
-        borderBottomColor: colours.backgroundAlternate,
         paddingVertical: 4,
     },
     addButton: {

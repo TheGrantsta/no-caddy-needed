@@ -177,6 +177,7 @@ export type ClubDistance = {
     Id: number;
     Club: string;
     CarryDistance: number;
+    TotalDistance: number;
     SortOrder: number;
 };
 
@@ -290,7 +291,7 @@ export const getClubDistancesService = (): ClubDistance[] => {
     return getClubDistances() as ClubDistance[];
 };
 
-export const saveClubDistancesService = async (distances: { Club: string; CarryDistance: number; SortOrder: number }[]): Promise<boolean> => {
+export const saveClubDistancesService = async (distances: { Club: string; CarryDistance: number; TotalDistance: number; SortOrder: number }[]): Promise<boolean> => {
     return insertClubDistances(distances);
 };
 

@@ -31,7 +31,7 @@ View and edit the distance chart to make better decisions on the course. The dis
 
 ## Status
 
-- To be implemented
+- Complete
 
 ## Priority
 

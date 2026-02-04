@@ -60,7 +60,8 @@ All code contributions must follow Test-Driven Development practices.
    - CI pipelines must run the full test suite on every change.
 
 7. **Pre-push requirement**
-   - Run the full test suite (`npm test`) and confirm all tests pass before every push to remote.
+   - Run the full test suite (`npm test`) and confirm all tests pass without warning messages before every push to remote.
+   - If there are warning messages in the tests, resolve warnings messages and commit changes with an appropriate comment.
    - Never push if any tests are failing.
 
 ### Example Workflow

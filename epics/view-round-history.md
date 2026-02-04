@@ -30,7 +30,7 @@ View the scorecard for a previously saved round and give the person the option o
 
 ## Status
 
-- To be implemented
+- Complete
 
 ## Priority
 

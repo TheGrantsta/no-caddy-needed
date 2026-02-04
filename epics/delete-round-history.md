@@ -2,7 +2,7 @@
 
 ## Concept
 
-Delete the scorecard for a previously saved round by sliding the row left based on the implementation of 'drill history'
+Delete the scorecard for a previously saved round by sliding the row left based on the common iphone implementation pattern
 
 ## Key Decisions
 

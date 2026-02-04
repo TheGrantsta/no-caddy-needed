@@ -19,6 +19,8 @@ import {
     getRoundPlayers,
     insertRoundHoleScore,
     getRoundHoleScores,
+    updateRoundHoleScore,
+    updateRoundTotalScore,
 } from '../database/db';
 
 export const getWedgeChartService = () => {
@@ -285,4 +287,19 @@ export const getClubDistancesService = (): ClubDistance[] => {
 
 export const saveClubDistancesService = async (distances: { Club: string; CarryDistance: number; SortOrder: number }[]): Promise<boolean> => {
     return insertClubDistances(distances);
+};
+
+export const updateScorecardService = async (roundId: number, updatedScores: { id: number; score: number }[]): Promise<boolean> => {
+    for (const s of updatedScores) {
+        const success = await updateRoundHoleScore(s.id, s.score);
+        if (!success) return false;
+    }
+
+    const players = getRoundPlayers(roundId) as RoundPlayer[];
+    const holeScores = getRoundHoleScores(roundId) as RoundHoleScore[];
+    const userPlayer = players.find(p => p.IsUser === 1);
+    const userScores = userPlayer ? holeScores.filter(s => s.RoundPlayerId === userPlayer.Id) : [];
+    const totalScore = userScores.reduce((sum, s) => sum + (s.Score - s.HolePar), 0);
+
+    return updateRoundTotalScore(roundId, totalScore);
 };

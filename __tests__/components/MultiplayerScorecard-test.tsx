@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import MultiplayerScorecard from '../../components/MultiplayerScorecard';
 import { Round, RoundPlayer, RoundHoleScore } from '../../service/DbService';
 
@@ -464,6 +464,82 @@ describe('MultiplayerScorecard', () => {
             expect(getByTestId('round-player-1-total')).toHaveStyle({ color: '#fd0303' });
             // Alice: 6 strokes, par 8 -> under par -> green
             expect(getByTestId('round-player-2-total')).toHaveStyle({ color: '#00C851' });
+        });
+    });
+
+    describe('Edit mode', () => {
+        it('does not call onScoreSelect when editable is not passed', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [4, 4] },
+            ]);
+            const onScoreSelect = jest.fn();
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} onScoreSelect={onScoreSelect} />
+            );
+
+            fireEvent.press(getByTestId('hole-1-player-1-score'));
+
+            expect(onScoreSelect).not.toHaveBeenCalled();
+        });
+
+        it('calls onScoreSelect when cell tapped in edit mode', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [4, 4] },
+            ]);
+            const onScoreSelect = jest.fn();
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard
+                    round={mockRound}
+                    players={mockPlayers}
+                    holeScores={holeScores}
+                    editable={true}
+                    onScoreSelect={onScoreSelect}
+                />
+            );
+
+            fireEvent.press(getByTestId('score-cell-1-1'));
+
+            expect(onScoreSelect).toHaveBeenCalledWith(1, 1);
+        });
+
+        it('highlights selected cell with yellow border', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [4, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard
+                    round={mockRound}
+                    players={mockPlayers}
+                    holeScores={holeScores}
+                    editable={true}
+                    selectedScore={{ holeNumber: 1, playerId: 1 }}
+                    onScoreSelect={jest.fn()}
+                />
+            );
+
+            expect(getByTestId('score-cell-1-1')).toHaveStyle({ borderWidth: 2, borderColor: '#ffd33d' });
+        });
+
+        it('does not highlight unselected cells', () => {
+            const holeScores = makeScores([
+                { holeNumber: 1, holePar: 4, scores: [4, 4] },
+            ]);
+
+            const { getByTestId } = render(
+                <MultiplayerScorecard
+                    round={mockRound}
+                    players={mockPlayers}
+                    holeScores={holeScores}
+                    editable={true}
+                    selectedScore={{ holeNumber: 1, playerId: 1 }}
+                    onScoreSelect={jest.fn()}
+                />
+            );
+
+            expect(getByTestId('score-cell-1-2')).not.toHaveStyle({ borderWidth: 2 });
         });
     });
 });

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Round, RoundPlayer, RoundHoleScore } from '../service/DbService';
 import colours from '../assets/colours';
 import fontSizes from '../assets/font-sizes';
@@ -7,6 +7,9 @@ type Props = {
     round: Round;
     players: RoundPlayer[];
     holeScores: RoundHoleScore[];
+    editable?: boolean;
+    selectedScore?: { holeNumber: number; playerId: number } | null;
+    onScoreSelect?: (holeNumber: number, playerId: number) => void;
 };
 
 const formatScore = (score: number): string => {
@@ -15,7 +18,7 @@ const formatScore = (score: number): string => {
     return `${score}`;
 };
 
-const MultiplayerScorecard = ({ round, players, holeScores }: Props) => {
+const MultiplayerScorecard = ({ round, players, holeScores, editable, selectedScore, onScoreSelect }: Props) => {
     const holeNumbers = [...new Set(holeScores.map(s => s.HoleNumber))].sort((a, b) => a - b);
     const front9Holes = holeNumbers.filter(h => h <= 9);
     const back9Holes = holeNumbers.filter(h => h > 9);
@@ -93,14 +96,32 @@ const MultiplayerScorecard = ({ round, players, holeScores }: Props) => {
                             {holes.map(h => {
                                 const score = getPlayerScoreForHole(player.Id, h);
                                 const par = getHolePar(h);
+                                const isSelected = selectedScore?.holeNumber === h && selectedScore?.playerId === player.Id;
+                                const cellContent = (
+                                    <Text
+                                        testID={`hole-${h}-player-${player.Id}-score`}
+                                        style={[localStyles.scoreText, score !== null ? getScoreColor(score, par) : undefined]}
+                                    >
+                                        {score !== null ? score : '-'}
+                                    </Text>
+                                );
+
+                                if (editable) {
+                                    return (
+                                        <TouchableOpacity
+                                            key={h}
+                                            testID={`score-cell-${h}-${player.Id}`}
+                                            style={[localStyles.holeCell, isSelected && localStyles.selectedCell]}
+                                            onPress={() => onScoreSelect?.(h, player.Id)}
+                                        >
+                                            {cellContent}
+                                        </TouchableOpacity>
+                                    );
+                                }
+
                                 return (
                                     <View key={h} style={localStyles.holeCell}>
-                                        <Text
-                                            testID={`hole-${h}-player-${player.Id}-score`}
-                                            style={[localStyles.scoreText, score !== null ? getScoreColor(score, par) : undefined]}
-                                        >
-                                            {score !== null ? score : '-'}
-                                        </Text>
+                                        {cellContent}
                                     </View>
                                 );
                             })}
@@ -237,6 +258,11 @@ const localStyles = StyleSheet.create({
     },
     atParText: {
         color: colours.yellow,
+    },
+    selectedCell: {
+        borderWidth: 2,
+        borderColor: colours.yellow,
+        borderRadius: 4,
     },
     roundTotalSection: {
         marginTop: 15,

@@ -270,6 +270,50 @@ export const getRoundHoleScores = (roundId: number) => {
     return db.getAllSync('SELECT * FROM RoundHoleScores WHERE RoundId = ? ORDER BY HoleNumber ASC, RoundPlayerId ASC;', [roundId]);
 };
 
+export const updateRoundHoleScore = async (id: number, score: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        const statement = await db.prepareAsync(
+            'UPDATE RoundHoleScores SET Score = $Score WHERE Id = $Id;'
+        );
+
+        try {
+            await statement.executeAsync({ $Score: score, $Id: id });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        console.log(e);
+        success = false;
+    }
+
+    return success;
+};
+
+export const updateRoundTotalScore = async (roundId: number, totalScore: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        const statement = await db.prepareAsync(
+            'UPDATE Rounds SET TotalScore = $TotalScore WHERE Id = $Id;'
+        );
+
+        try {
+            await statement.executeAsync({ $TotalScore: totalScore, $Id: roundId });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        console.log(e);
+        success = false;
+    }
+
+    return success;
+};
+
 function get(sql: string) {
     const rows: any[] = [];
     const db = SQLite.openDatabaseSync(dbName);

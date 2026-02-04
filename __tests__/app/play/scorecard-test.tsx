@@ -1,11 +1,14 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService } from '../../../service/DbService';
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService } from '../../../service/DbService';
+
+const mockShow = jest.fn();
 
 jest.mock('../../../service/DbService', () => ({
     getRoundScorecardService: jest.fn(),
     getMultiplayerScorecardService: jest.fn(),
+    updateScorecardService: jest.fn(),
 }));
 
 jest.mock('expo-router', () => ({
@@ -25,8 +28,27 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
+jest.mock('react-native-toast-notifications', () => ({
+    useToast: () => ({
+        show: mockShow,
+    }),
+}));
+
 const mockGetRoundScorecard = getRoundScorecardService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
+const mockUpdateScorecard = updateScorecardService as jest.Mock;
+
+const multiplayerData = {
+    round: { Id: 1, CoursePar: 72, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '' },
+    players: [
+        { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+        { Id: 2, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 1 },
+    ],
+    holeScores: [
+        { Id: 10, RoundId: 1, RoundPlayerId: 1, HoleNumber: 1, HolePar: 4, Score: 5 },
+        { Id: 11, RoundId: 1, RoundPlayerId: 2, HoleNumber: 1, HolePar: 4, Score: 3 },
+    ],
+};
 
 describe('Scorecard screen', () => {
     beforeEach(() => {
@@ -71,17 +93,7 @@ describe('Scorecard screen', () => {
     });
 
     it('renders multiplayer scorecard when multiplayer data exists', () => {
-        mockGetMultiplayerScorecard.mockReturnValue({
-            round: { Id: 1, CoursePar: 72, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '' },
-            players: [
-                { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
-                { Id: 2, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 1 },
-            ],
-            holeScores: [
-                { Id: 1, RoundId: 1, RoundPlayerId: 1, HoleNumber: 1, HolePar: 4, Score: 5 },
-                { Id: 2, RoundId: 1, RoundPlayerId: 2, HoleNumber: 1, HolePar: 4, Score: 3 },
-            ],
-        });
+        mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
         const { getByText, getByTestId } = render(<ScorecardScreen />);
 
@@ -102,5 +114,201 @@ describe('Scorecard screen', () => {
         const { getByTestId } = render(<ScorecardScreen />);
 
         expect(getByTestId('scorecard-total')).toBeTruthy();
+    });
+
+    describe('Edit mode', () => {
+        it('shows edit button for multiplayer scorecard', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            expect(getByTestId('edit-scorecard-button')).toBeTruthy();
+        });
+
+        it('does not show edit button for legacy scorecard', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(null);
+            mockGetRoundScorecard.mockReturnValue({
+                round: { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '' },
+                holes: [{ Id: 1, RoundId: 1, HoleNumber: 1, ScoreRelativeToPar: 3 }],
+            });
+
+            const { queryByTestId } = render(<ScorecardScreen />);
+
+            expect(queryByTestId('edit-scorecard-button')).toBeNull();
+        });
+
+        it('enters edit mode when edit pressed', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+
+            expect(getByTestId('save-scorecard-button')).toBeTruthy();
+            expect(getByTestId('cancel-edit-button')).toBeTruthy();
+            expect(queryByTestId('edit-scorecard-button')).toBeNull();
+        });
+
+        it('shows score editor when cell selected in edit mode', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, getByText } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+
+            expect(getByText('Hole 1 - You')).toBeTruthy();
+            expect(getByTestId('score-editor-value')).toHaveTextContent('5');
+        });
+
+        it('increments selected score', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('score-editor-increment'));
+
+            expect(getByTestId('score-editor-value')).toHaveTextContent('6');
+            expect(getByTestId('hole-1-player-1-score')).toHaveTextContent('6');
+        });
+
+        it('decrements selected score', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('score-editor-decrement'));
+
+            expect(getByTestId('score-editor-value')).toHaveTextContent('4');
+            expect(getByTestId('hole-1-player-1-score')).toHaveTextContent('4');
+        });
+
+        it('does not decrement below 1', () => {
+            const data = {
+                ...multiplayerData,
+                holeScores: [
+                    { Id: 10, RoundId: 1, RoundPlayerId: 1, HoleNumber: 1, HolePar: 4, Score: 1 },
+                    { Id: 11, RoundId: 1, RoundPlayerId: 2, HoleNumber: 1, HolePar: 4, Score: 3 },
+                ],
+            };
+            mockGetMultiplayerScorecard.mockReturnValue(data);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('score-editor-decrement'));
+
+            expect(getByTestId('score-editor-value')).toHaveTextContent('1');
+        });
+
+        it('shows save confirmation when save pressed', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+
+            expect(getByTestId('confirm-save-button')).toBeTruthy();
+            expect(getByTestId('cancel-save-button')).toBeTruthy();
+        });
+
+        it('calls update service on confirm save', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(true);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('score-editor-increment'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(mockUpdateScorecard).toHaveBeenCalledWith(1, [{ id: 10, score: 6 }]);
+            });
+        });
+
+        it('shows success toast after save', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(true);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(mockShow).toHaveBeenCalledWith('Scorecard updated', { type: 'success' });
+            });
+        });
+
+        it('shows error toast when save fails', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(false);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(mockShow).toHaveBeenCalledWith('Failed to update scorecard', { type: 'danger' });
+            });
+        });
+
+        it('exits edit mode after successful save', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(true);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(queryByTestId('save-scorecard-button')).toBeNull();
+                expect(getByTestId('edit-scorecard-button')).toBeTruthy();
+            });
+        });
+
+        it('discards changes when cancel edit pressed', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('score-editor-increment'));
+            fireEvent.press(getByTestId('cancel-edit-button'));
+
+            expect(queryByTestId('save-scorecard-button')).toBeNull();
+            expect(getByTestId('edit-scorecard-button')).toBeTruthy();
+            expect(getByTestId('hole-1-player-1-score')).toHaveTextContent('5');
+        });
+
+        it('hides save confirm when cancel save pressed', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+
+            expect(getByTestId('confirm-save-button')).toBeTruthy();
+
+            fireEvent.press(getByTestId('cancel-save-button'));
+
+            expect(queryByTestId('confirm-save-button')).toBeNull();
+        });
     });
 });

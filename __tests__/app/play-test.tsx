@@ -47,12 +47,13 @@ jest.mock('../../service/NotificationService', () => ({
     cancelRoundReminder: jest.fn(),
 }));
 
+const mockPush = jest.fn();
 jest.mock('expo-router', () => {
     const React = require('react');
     const { View } = require('react-native');
     return {
         useRouter: () => ({
-            push: jest.fn(),
+            push: mockPush,
         }),
         Link: ({ children, href }: { children: React.ReactNode; href: string }) => (
             <View testID={`link-${href}`}>{children}</View>
@@ -166,6 +167,28 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             expect(getByTestId('round-history-scroll')).toBeTruthy();
+        });
+
+        it('renders round history rows as tappable', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('round-history-row-1')).toBeTruthy();
+        });
+
+        it('navigates to scorecard when round history row is pressed', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('round-history-row-1'));
+
+            expect(mockPush).toHaveBeenCalledWith({ pathname: '/play/scorecard', params: { roundId: '1' } });
         });
     });
 

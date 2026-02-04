@@ -279,11 +279,17 @@ export default function Play() {
                                     </View>
                                     <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
                                         {roundHistory.slice(0, 30).map((round) => (
-                                            <View key={round.Id} style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
-                                                <Text style={styles.normalText}>{round.Created_At}</Text>
-                                                <Text style={styles.normalText}>{formatScore(round.TotalScore)}</Text>
-                                                <Text style={styles.normalText}>{tiger5Map.has(round.Created_At) ? tiger5Map.get(round.Created_At) : '-'}</Text>
-                                            </View>
+                                            <TouchableOpacity
+                                                key={round.Id}
+                                                testID={`round-history-row-${round.Id}`}
+                                                onPress={() => router.push({ pathname: '/play/scorecard', params: { roundId: String(round.Id) } })}
+                                            >
+                                                <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
+                                                    <Text style={styles.normalText}>{round.Created_At}</Text>
+                                                    <Text style={styles.normalText}>{formatScore(round.TotalScore)}</Text>
+                                                    <Text style={styles.normalText}>{tiger5Map.has(round.Created_At) ? tiger5Map.get(round.Created_At) : '-'}</Text>
+                                                </View>
+                                            </TouchableOpacity>
                                         ))}
                                     </ScrollView>
                                 </View>

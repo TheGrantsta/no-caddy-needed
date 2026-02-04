@@ -197,7 +197,7 @@ export default function ScorecardScreen() {
                             />
                         )}
 
-                        {!isEditing && (
+                        {!isEditing && !showDeleteConfirm && (
                             <View style={styles.headerContainer}>
                                 <TouchableOpacity
                                     testID="edit-scorecard-button"
@@ -213,7 +213,7 @@ export default function ScorecardScreen() {
                             <View style={styles.headerContainer}>
                                 <TouchableOpacity
                                     testID="delete-round-button"
-                                    style={[styles.button, { backgroundColor: '#fd0303' }]}
+                                    style={[styles.largeButton, { backgroundColor: '#fd0303' }]}
                                     onPress={handleDelete}
                                 >
                                     <Text style={styles.buttonText}>Delete round</Text>
@@ -221,7 +221,7 @@ export default function ScorecardScreen() {
                             </View>
                         )}
 
-                        {!isEditing && tiger5Round && (
+                        {!isEditing && !showDeleteConfirm && tiger5Round && (
                             <Tiger5Chart rounds={[tiger5Round]} />
                         )}
 
@@ -229,17 +229,17 @@ export default function ScorecardScreen() {
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity
                                     testID="cancel-delete-button"
-                                    style={styles.largeButton}
+                                    style={styles.button}
                                     onPress={handleCancelDelete}
                                 >
                                     <Text style={styles.buttonText}>Cancel</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     testID="confirm-delete-button"
-                                    style={[styles.largeButton, { backgroundColor: '#fd0303' }]}
+                                    style={[styles.button, { backgroundColor: '#fd0303' }]}
                                     onPress={handleConfirmDelete}
                                 >
-                                    <Text style={styles.buttonText}>Confirm delete</Text>
+                                    <Text style={styles.buttonText}>Confirm</Text>
                                 </TouchableOpacity>
                             </View>
                         )}

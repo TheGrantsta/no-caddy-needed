@@ -212,7 +212,6 @@ export const insertClubDistances = async (distances: { Club: string; CarryDistan
         }
     } catch (e) {
         console.log(e);
-        alert(e.message);
         success = false;
     }
 

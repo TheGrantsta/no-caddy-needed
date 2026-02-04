@@ -201,16 +201,12 @@ export default function ScorecardScreen() {
                             <View style={styles.headerContainer}>
                                 <TouchableOpacity
                                     testID="edit-scorecard-button"
-                                    style={styles.button}
+                                    style={styles.largeButton}
                                     onPress={handleEdit}
                                 >
                                     <Text style={styles.buttonText}>Edit</Text>
                                 </TouchableOpacity>
                             </View>
-                        )}
-
-                        {!isEditing && tiger5Round && (
-                            <Tiger5Chart rounds={[tiger5Round]} />
                         )}
 
                         {!isEditing && !showDeleteConfirm && (
@@ -225,18 +221,22 @@ export default function ScorecardScreen() {
                             </View>
                         )}
 
+                        {!isEditing && tiger5Round && (
+                            <Tiger5Chart rounds={[tiger5Round]} />
+                        )}
+
                         {!isEditing && showDeleteConfirm && (
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity
                                     testID="cancel-delete-button"
-                                    style={styles.button}
+                                    style={styles.largeButton}
                                     onPress={handleCancelDelete}
                                 >
                                     <Text style={styles.buttonText}>Cancel</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     testID="confirm-delete-button"
-                                    style={[styles.button, { backgroundColor: '#fd0303' }]}
+                                    style={[styles.largeButton, { backgroundColor: '#fd0303' }]}
                                     onPress={handleConfirmDelete}
                                 >
                                     <Text style={styles.buttonText}>Confirm delete</Text>

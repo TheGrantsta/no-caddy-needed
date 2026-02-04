@@ -102,6 +102,14 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         flexDirection: 'row',
     },
+    largeButton: {
+        backgroundColor: colours.yellow,
+        padding: 10,
+        borderRadius: 8,
+        width: '90%',
+        alignItems: 'center',
+        margin: 5,
+    },
     button: {
         backgroundColor: colours.yellow,
         padding: 10,

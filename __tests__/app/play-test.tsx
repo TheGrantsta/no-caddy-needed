@@ -13,6 +13,7 @@ import {
     addRoundPlayersService,
     getRoundPlayersService,
     getMultiplayerScorecardService,
+    deleteRoundService,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
 
@@ -30,15 +31,17 @@ jest.mock('../../service/DbService', () => ({
     addRoundPlayersService: jest.fn(),
     getRoundPlayersService: jest.fn(),
     getMultiplayerScorecardService: jest.fn(),
+    deleteRoundService: jest.fn(),
 }));
 
 jest.mock('../../database/db', () => ({
     getWedgeChart: jest.fn().mockReturnValue([]),
 }));
 
+const mockToastShow = jest.fn();
 jest.mock('react-native-toast-notifications', () => ({
     useToast: () => ({
-        show: jest.fn(),
+        show: mockToastShow,
     }),
 }));
 
@@ -62,12 +65,17 @@ jest.mock('expo-router', () => {
 });
 
 jest.mock('react-native-gesture-handler', () => {
+    const React = require('react');
+    const { View } = require('react-native');
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
     return {
         ...GestureHandler,
         GestureHandlerRootView: jest
             .fn()
             .mockImplementation(({ children }) => children),
+        Swipeable: jest.fn().mockImplementation(({ children, renderRightActions }) => (
+            <View>{children}{renderRightActions && renderRightActions()}</View>
+        )),
     };
 });
 
@@ -84,6 +92,7 @@ const mockCancelReminder = cancelRoundReminder as jest.Mock;
 const mockAddRoundPlayers = addRoundPlayersService as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayersService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
+const mockDeleteRound = deleteRoundService as jest.Mock;
 
 describe('Play screen', () => {
     beforeEach(() => {
@@ -1000,6 +1009,110 @@ describe('Play screen', () => {
 
             // getAllTiger5RoundsService called on mount + after ending round
             expect(mockGetAllTiger5Rounds).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe('Delete round', () => {
+        it('shows delete button for each round history row', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('delete-round-1')).toBeTruthy();
+        });
+
+        it('shows confirmation when delete is pressed', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('delete-round-1'));
+
+            expect(getByTestId('confirm-delete-round-1')).toBeTruthy();
+            expect(getByTestId('cancel-delete-round-1')).toBeTruthy();
+        });
+
+        it('calls deleteRoundService when confirmed', async () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+            mockDeleteRound.mockResolvedValue(true);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('delete-round-1'));
+            fireEvent.press(getByTestId('confirm-delete-round-1'));
+
+            await waitFor(() => {
+                expect(mockDeleteRound).toHaveBeenCalledWith(1);
+            });
+        });
+
+        it('refreshes round history after successful delete', async () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+            mockDeleteRound.mockResolvedValue(true);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('delete-round-1'));
+            fireEvent.press(getByTestId('confirm-delete-round-1'));
+
+            await waitFor(() => {
+                // Called on mount + after delete
+                expect(mockGetAllRoundHistory).toHaveBeenCalledTimes(2);
+            });
+        });
+
+        it('shows success toast after delete', async () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+            mockDeleteRound.mockResolvedValue(true);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('delete-round-1'));
+            fireEvent.press(getByTestId('confirm-delete-round-1'));
+
+            await waitFor(() => {
+                expect(mockToastShow).toHaveBeenCalledWith('Round deleted', expect.objectContaining({ type: 'success' }));
+            });
+        });
+
+        it('shows error toast when delete fails', async () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+            mockDeleteRound.mockResolvedValue(false);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('delete-round-1'));
+            fireEvent.press(getByTestId('confirm-delete-round-1'));
+
+            await waitFor(() => {
+                expect(mockToastShow).toHaveBeenCalledWith('Failed to delete round', expect.objectContaining({ type: 'danger' }));
+            });
+        });
+
+        it('hides confirmation when cancel is pressed', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('delete-round-1'));
+            expect(getByTestId('confirm-delete-round-1')).toBeTruthy();
+
+            fireEvent.press(getByTestId('cancel-delete-round-1'));
+            expect(queryByTestId('confirm-delete-round-1')).toBeNull();
         });
     });
 });

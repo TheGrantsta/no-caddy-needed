@@ -21,6 +21,7 @@ import {
     getRoundHoleScores,
     updateRoundHoleScore,
     updateRoundTotalScore,
+    deleteRound,
 } from '../database/db';
 
 export const getWedgeChartService = () => {
@@ -232,6 +233,10 @@ export const getAllRoundHistoryService = (): Round[] => {
     });
 
     return rounds;
+};
+
+export const deleteRoundService = async (roundId: number): Promise<boolean> => {
+    return deleteRound(roundId);
 };
 
 // Multiplayer round services

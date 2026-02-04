@@ -314,6 +314,25 @@ export const updateRoundTotalScore = async (roundId: number, totalScore: number)
     return success;
 };
 
+export const deleteRound = async (roundId: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        await db.execAsync(`
+            DELETE FROM RoundHoleScores WHERE RoundId = ${roundId};
+            DELETE FROM RoundPlayers WHERE RoundId = ${roundId};
+            DELETE FROM RoundHoles WHERE RoundId = ${roundId};
+            DELETE FROM Rounds WHERE Id = ${roundId};
+        `);
+    } catch (e) {
+        console.log(e);
+        success = false;
+    }
+
+    return success;
+};
+
 function get(sql: string) {
     const rows: any[] = [];
     const db = SQLite.openDatabaseSync(dbName);

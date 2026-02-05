@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import { StyleSheet, View, Pressable, Text } from 'react-native';
-import colours from '../assets/colours';
+import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
@@ -10,6 +11,41 @@ type Props = {
 };
 
 export default function SmallButton({ testId, label, selected, onPress }: Props) {
+    const colours = useThemeColours();
+
+    const styles = useMemo(() => StyleSheet.create({
+        buttonContainer: {
+            width: 175,
+            height: 38,
+            margin: 5,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        button: {
+            borderRadius: 10,
+            borderColor: colours.yellow,
+            borderWidth: 1,
+            backgroundColor: colours.mutedYellow,
+            width: '100%',
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+        },
+        buttonIcon: {
+            paddingRight: 8,
+        },
+        buttonLabel: {
+            color: colours.text,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        selected: {
+            color: colours.background,
+            backgroundColor: colours.yellow,
+        },
+    }), [colours]);
+
     return (
         <View style={styles.buttonContainer}>
             <Pressable
@@ -23,36 +59,3 @@ export default function SmallButton({ testId, label, selected, onPress }: Props)
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    buttonContainer: {
-        width: 175,
-        height: 38,
-        margin: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    button: {
-        borderRadius: 10,
-        borderColor: colours.yellow,
-        borderWidth: 1,
-        backgroundColor: colours.mutedYellow,
-        width: '100%',
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-    },
-    buttonIcon: {
-        paddingRight: 8,
-    },
-    buttonLabel: {
-        color: colours.text,
-        fontSize: fontSizes.tableHeader,
-        fontWeight: 'bold',
-    },
-    selected: {
-        color: colours.background,
-        backgroundColor: colours.yellow,
-    },
-});

@@ -2,10 +2,11 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import colours from '@/assets/colours';
+import { useThemeColours } from '@/context/ThemeContext';
 import ScreenWrapper from '../screen-wrapper';
 
 export default function TabLayout() {
+  const colours = useThemeColours();
 
   return (
     <ScreenWrapper>

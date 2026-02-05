@@ -3,6 +3,16 @@ import { fireEvent, render } from '@testing-library/react-native';
 import WedgeChart from '../../components/WedgeChart';
 import type { WedgeChartData } from '../../service/DbService';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
 describe('WedgeChart component', () => {
     const emptyData: WedgeChartData = { distanceNames: [], clubs: [] };
 

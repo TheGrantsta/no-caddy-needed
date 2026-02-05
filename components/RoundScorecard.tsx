@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import colours from '../assets/colours';
+import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
 
 type RoundHole = {
@@ -28,6 +29,69 @@ const formatHoleScore = (score: number): string => {
 };
 
 const RoundScorecard = ({ totalScore, coursePar, holes }: Props) => {
+    const colours = useThemeColours();
+
+    const localStyles = useMemo(() => StyleSheet.create({
+        container: {
+            padding: 15,
+        },
+        parText: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+            textAlign: 'center',
+            marginBottom: 5,
+        },
+        totalScore: {
+            color: colours.yellow,
+            fontSize: fontSizes.massive,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: 20,
+        },
+        nineSection: {
+            marginBottom: 15,
+        },
+        nineHeader: {
+            color: colours.yellow,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            marginBottom: 10,
+        },
+        holesGrid: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+        },
+        holeCell: {
+            width: '11.11%',
+            alignItems: 'center',
+            paddingVertical: 5,
+        },
+        holeNumber: {
+            color: colours.text,
+            fontSize: fontSizes.smallestText,
+        },
+        holeScore: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        underParText: {
+            color: colours.green,
+        },
+        overParText: {
+            color: colours.errorText,
+        },
+        nineTotal: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+            textAlign: 'right',
+            marginTop: 5,
+            borderTopWidth: 0.5,
+            borderTopColor: colours.yellow,
+            paddingTop: 5,
+        },
+    }), [colours]);
+
     const front9 = holes.filter(h => h.HoleNumber <= 9);
     const back9 = holes.filter(h => h.HoleNumber > 9);
     const front9Total = front9.reduce((sum, h) => sum + h.ScoreRelativeToPar, 0);
@@ -96,64 +160,3 @@ const RoundScorecard = ({ totalScore, coursePar, holes }: Props) => {
 };
 
 export default RoundScorecard;
-
-const localStyles = StyleSheet.create({
-    container: {
-        padding: 15,
-    },
-    parText: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-        textAlign: 'center',
-        marginBottom: 5,
-    },
-    totalScore: {
-        color: colours.yellow,
-        fontSize: fontSizes.massive,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 20,
-    },
-    nineSection: {
-        marginBottom: 15,
-    },
-    nineHeader: {
-        color: colours.yellow,
-        fontSize: fontSizes.subHeader,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    holesGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
-    holeCell: {
-        width: '11.11%',
-        alignItems: 'center',
-        paddingVertical: 5,
-    },
-    holeNumber: {
-        color: colours.text,
-        fontSize: fontSizes.smallestText,
-    },
-    holeScore: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-        fontWeight: 'bold',
-    },
-    underParText: {
-        color: colours.green,
-    },
-    overParText: {
-        color: colours.errorText,
-    },
-    nineTotal: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-        textAlign: 'right',
-        marginTop: 5,
-        borderTopWidth: 0.5,
-        borderTopColor: colours.yellow,
-        paddingTop: 5,
-    },
-});

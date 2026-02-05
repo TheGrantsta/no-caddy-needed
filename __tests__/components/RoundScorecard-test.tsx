@@ -2,6 +2,16 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import RoundScorecard from '../../components/RoundScorecard';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
 describe('RoundScorecard component', () => {
     it('displays round total score', () => {
         const holes = [

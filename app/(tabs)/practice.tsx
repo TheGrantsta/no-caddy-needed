@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Dimensions, FlatList, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import styles from "@/assets/stlyes";
-import colours from "@/assets/colours";
+import { useStyles } from "@/hooks/useStyles";
+import { useThemeColours } from "@/context/ThemeContext";
 import SubMenu from "@/components/SubMenu";
 import { Link } from "expo-router";
 import IconButton from "@/components/IconButton";
@@ -12,6 +12,8 @@ import { getAllDrillHistoryService, getDrillStatsByTypeService, DrillStats } fro
 import DrillStatsChart from "@/components/DrillStatsChart";
 
 export default function Practice() {
+  const styles = useStyles();
+  const colours = useThemeColours();
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('short-game');
   const [loading, setLoading] = useState(true);
@@ -277,4 +279,3 @@ const localStyles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-

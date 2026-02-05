@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ScrollView, View, Text, TextInput, StyleSheet, RefreshControl, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getRandomNumber } from '../../assets/random-number';
 import Chevrons from '@/components/Chevrons';
-import styles from '@/assets/stlyes';
-import colours from '@/assets/colours';
+import { useStyles } from '@/hooks/useStyles';
+import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 
 export default function Random() {
+    const styles = useStyles();
+    const colours = useThemeColours();
     const [refreshing, setRefreshing] = useState(false);
     const [rangeText, setRangeText] = useState('30-100');
     const [rangeError, setRangeError] = useState('');
@@ -51,6 +53,27 @@ export default function Random() {
     };
 
     const points = ['Randomise practice to mimic play', 'Use your pre-shot routine', 'Use your post-shot routine'];
+
+    const localStyles = useMemo(() => StyleSheet.create({
+        randomNumberContainer: {
+            backgroundColor: colours.background,
+            borderColor: colours.yellow,
+            borderWidth: 2,
+            borderRadius: 12,
+            margin: 15,
+            padding: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+        },
+        randomNumberText: {
+            color: colours.yellow,
+            fontSize: fontSizes.massive,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            fontFamily: 'Arial',
+        },
+    }), [colours]);
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -151,24 +174,3 @@ export default function Random() {
         </GestureHandlerRootView>
     );
 };
-
-const localStyles = StyleSheet.create({
-    randomNumberContainer: {
-        backgroundColor: colours.background,
-        borderColor: colours.yellow,
-        borderWidth: 2,
-        borderRadius: 12,
-        margin: 15,
-        padding: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-    },
-    randomNumberText: {
-        color: colours.yellow,
-        fontSize: fontSizes.massive,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        fontFamily: 'Arial',
-    },
-});

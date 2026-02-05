@@ -2,6 +2,16 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import Tiger5Tally from '../../components/Tiger5Tally';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
 describe('Tiger5Tally component', () => {
     const mockOnEndRound = jest.fn();
     const mockOnRoundStateChange = jest.fn();

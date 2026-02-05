@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import Instructions from "./Instructions";
-import styles from "@/assets/stlyes";
-import colours from "@/assets/colours";
+import { useStyles } from '@/hooks/useStyles';
+import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from "@/assets/font-sizes";
 
 type Props = {
@@ -17,7 +17,42 @@ type Props = {
 };
 
 export default function Drill({ label, iconName, target, objective, setUp, howToPlay, saveDrillResult }: Props) {
+    const styles = useStyles();
+    const colours = useThemeColours();
     const [isAchieved, setIsAchieved] = useState(true);
+
+    const localStyles = useMemo(() => StyleSheet.create({
+        contentText: {
+            marginTop: 5,
+            fontSize: fontSizes.normal,
+            color: colours.white,
+        },
+        toggleWrapper: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            width: 150,
+        },
+        toggleContainer: {
+            width: 45,
+            height: 15,
+            borderRadius: 10,
+            backgroundColor: colours.backgroundLight,
+            justifyContent: 'center',
+        },
+        toggleOn: {
+            backgroundColor: colours.yellow,
+        },
+        toggleCircle: {
+            width: 20,
+            height: 20,
+            borderRadius: 10,
+            backgroundColor: colours.backgroundLight,
+            alignSelf: 'flex-start',
+        },
+        circleOn: {
+            alignSelf: 'flex-end',
+        },
+    }), [colours]);
 
     const toggleSwitch = () => {
         setIsAchieved((previousState) => !previousState);
@@ -65,36 +100,3 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
         </View>
     )
 };
-
-const localStyles = StyleSheet.create({
-    contentText: {
-        marginTop: 5,
-        fontSize: fontSizes.normal,
-        color: colours.white,
-    },
-    toggleWrapper: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: 150,
-    },
-    toggleContainer: {
-        width: 45,
-        height: 15,
-        borderRadius: 10,
-        backgroundColor: colours.backgroundLight,
-        justifyContent: 'center',
-    },
-    toggleOn: {
-        backgroundColor: colours.yellow,
-    },
-    toggleCircle: {
-        width: 20,
-        height: 20,
-        borderRadius: 10,
-        backgroundColor: colours.backgroundLight,
-        alignSelf: 'flex-start',
-    },
-    circleOn: {
-        alignSelf: 'flex-end',
-    },
-});

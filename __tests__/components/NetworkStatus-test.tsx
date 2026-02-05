@@ -3,6 +3,16 @@ import { render, act } from '@testing-library/react-native';
 import NetworkStatus from '../../components/NetworkStatus';
 import NetInfo from '@react-native-community/netinfo';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
 jest.mock('@react-native-community/netinfo', () => ({
     __esModule: true,
     default: {

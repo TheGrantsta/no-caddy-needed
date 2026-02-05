@@ -2,6 +2,20 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import Random from '../../../app/tools/random';
 
+jest.mock('../../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
+jest.mock('../../../hooks/useStyles', () => ({
+    useStyles: () => require('../../../assets/stlyes').default,
+}));
+
 jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
     return {

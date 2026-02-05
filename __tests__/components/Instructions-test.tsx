@@ -2,6 +2,10 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import Instructions from '../../components/Instructions';
 
+jest.mock('../../hooks/useStyles', () => ({
+    useStyles: () => require('../../assets/stlyes').default,
+}));
+
 describe('Instructions component', () => {
     const defaultProps = {
         objective: 'Complete 5 successful putts',

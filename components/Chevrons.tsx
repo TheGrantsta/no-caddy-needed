@@ -1,8 +1,8 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import styles from '../assets/stlyes';
-import colours from '../assets/colours';
+import { useStyles } from '../hooks/useStyles';
+import { useThemeColours } from '../context/ThemeContext';
 
 type Props = {
     heading: string;
@@ -10,6 +10,9 @@ type Props = {
 }
 
 function Chevrons({ heading, points }: Props): React.JSX.Element {
+    const styles = useStyles();
+    const colours = useThemeColours();
+
     return (
         <View>
             <Text style={styles.subHeaderText}>

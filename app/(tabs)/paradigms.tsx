@@ -3,10 +3,12 @@ import { Dimensions, FlatList, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import Chevrons from '../../components/Chevrons';
 import SubMenu from '../../components/SubMenu';
-import styles from '../../assets/stlyes';
-import colours from '../../assets/colours';
+import { useStyles } from '../../hooks/useStyles';
+import { useThemeColours } from '../../context/ThemeContext';
 
 export default function Paradigms() {
+  const styles = useStyles();
+  const colours = useThemeColours();
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('approach');
   const [activeIndex, setActiveIndex] = useState(0);

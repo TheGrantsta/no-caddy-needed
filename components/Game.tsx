@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Instructions from './Instructions';
-import colours from '@/assets/colours';
-import styles from '@/assets/stlyes';
+import { useThemeColours } from '@/context/ThemeContext';
+import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
     subHeading: string;
@@ -11,6 +11,18 @@ type Props = {
 
 
 export default function Game({ subHeading, games }: Props) {
+    const styles = useStyles();
+    const colours = useThemeColours();
+
+    const localStyles = useMemo(() => StyleSheet.create({
+        wrapper: {
+            margin: 5,
+            borderRadius: 10,
+            borderColor: colours.border,
+            borderWidth: 1,
+        },
+    }), [colours]);
+
     return (
         <View>
             <Text style={[styles.normalText, { margin: 5 }]}>
@@ -29,12 +41,3 @@ export default function Game({ subHeading, games }: Props) {
         </View>
     )
 };
-
-const localStyles = StyleSheet.create({
-    wrapper: {
-        margin: 5,
-        borderRadius: 10,
-        borderColor: colours.border,
-        borderWidth: 1,
-    },
-});

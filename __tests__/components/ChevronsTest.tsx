@@ -2,6 +2,20 @@ import * as React from 'react';
 import { render } from '@testing-library/react-native';
 import Chevrons from '@/components/Chevrons';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
+jest.mock('../../hooks/useStyles', () => ({
+    useStyles: () => require('../../assets/stlyes').default,
+}));
+
 describe('renders chevrons', () => {
     it('shows heading', () => {
         const points: string[] = [];

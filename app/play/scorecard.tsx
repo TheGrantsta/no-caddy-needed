@@ -18,11 +18,13 @@ import {
     RoundScorecard as RoundScorecardType,
     Tiger5Round,
 } from '../../service/DbService';
-import styles from '../../assets/stlyes';
-import colours from '@/assets/colours';
+import { useStyles } from '../../hooks/useStyles';
+import { useThemeColours } from '../../context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 
 export default function ScorecardScreen() {
+    const styles = useStyles();
+    const colours = useThemeColours();
     const { roundId } = useLocalSearchParams<{ roundId: string }>();
     const toast = useToast();
     const router = useRouter();

@@ -16,6 +16,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
+        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1);
     `);
 };
 
@@ -351,6 +352,35 @@ export const deleteRound = async (roundId: number): Promise<boolean> => {
             DELETE FROM RoundHoles WHERE RoundId = ${roundId};
             DELETE FROM Rounds WHERE Id = ${roundId};
         `);
+    } catch (e) {
+        console.log(e);
+        success = false;
+    }
+
+    return success;
+};
+
+export const getSettings = () => {
+    const db = SQLite.openDatabaseSync(dbName);
+    const rows = db.getAllSync('SELECT * FROM Settings LIMIT 1;');
+    return rows.length > 0 ? rows[0] : null;
+};
+
+export const saveSettings = async (theme: string, notificationsEnabled: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = SQLite.openDatabaseSync(dbName);
+        db.execSync('DELETE FROM Settings');
+
+        const statement = db.prepareSync(
+            'INSERT INTO Settings (Theme, NotificationsEnabled) VALUES ($Theme, $NotificationsEnabled)'
+        );
+
+        try {
+            await statement.executeAsync({ $Theme: theme, $NotificationsEnabled: notificationsEnabled });
+        } finally {
+            await statement.finalizeAsync();
+        }
     } catch (e) {
         console.log(e);
         success = false;

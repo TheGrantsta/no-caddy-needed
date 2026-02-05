@@ -74,6 +74,25 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
    iOS requires Apple developer account
 
+## Capturing screenshots
+
+1. Install maestro
+
+   ```bash
+   npm install -g maestro-cli
+   ```
+2. Connect device
+
+   ```bash
+   maestro devices
+   ```
+
+3. Run screenshots
+   
+   ```bash
+   maestro test .maestro/screenshots.yaml
+   ```
+
 ## Integrating with AI
 
 Repomix can create a prompt-friendly version of your repo that can be uploaded along with a prompt into an AI-assistant
@@ -98,7 +117,9 @@ Repomix can create a prompt-friendly version of your repo that can be uploaded a
    This file contains all the files in the repository combined into one. I want to refactor the code, so please review it first. Suggest improvements as todo list
    ```
 
-4. Claude 
+## Agentic AI
+
+### Claude 
 
    ```Epic implementation suggestion
       You are an implementation engine.

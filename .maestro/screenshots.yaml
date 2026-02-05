@@ -21,67 +21,89 @@ appId: com.grantsta.nocaddyneeded
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/01-home
 
-# Screenshot 2: On Course (Tiger 5)
+# Screenshot 2: Play (Tiger 5)
 - tapOn:
-    text: ".*course.*"
-    index: 1
+    text: ".*play.*"
+    index: 0
 - extendedWaitUntil:
-    visible: "Track avoidable mistakes during your round"
+    visible: "Tiger 5"
     timeout: 5000
-- takeScreenshot: .maestro/screenshots/02-on-course-tiger-5
+- takeScreenshot: .maestro/screenshots/02-play-tiger-5
 
-# Screenshot 3: Approach shots
-- tapOn: "Approach"
+# Screenshot 3: Start round
+- tapOn:
+    text: ".*start.*"
+    index: 0
 - extendedWaitUntil:
-    visible: "Approach shots"
-    timeout: 3000
-- takeScreenshot: .maestro/screenshots/03-on-course-approach
+    visible: "You"
+    timeout: 5000
+- takeScreenshot: .maestro/screenshots/02A-play-start-round
 
-# Screenshot 4: Wedge Chart
+# Screenshot 4: Distances
+- tapOn: "Distances"
+- extendedWaitUntil:
+    visible: "Distances"
+    timeout: 5000
+- takeScreenshot: .maestro/screenshots/02B-play-distances
+
+# Screenshot 5: Wedge Chart
 - tapOn: "Wedge chart"
 - extendedWaitUntil:
-    visible: "Benefits"
-    timeout: 3000
-- takeScreenshot: .maestro/screenshots/04-on-course-wedge-chart
+    visible: "Your wedge carry distances"
+    timeout: 5000
+- takeScreenshot: .maestro/screenshots/02C-play-wedge-chart
 
-# Screenshot 5: Pro expections
-- tapOn: "Pros"
-- extendedWaitUntil:
-    visible: "Average proximity to the hole"
-    timeout: 3000
-- takeScreenshot: .maestro/screenshots/05-on-course-pros-approach-shots
-
-# Screenshot 5b: Pros page - swipe to next view
-- swipe:
-    direction: LEFT
-    duration: 500
-- takeScreenshot: .maestro/screenshots/05b-on-course-pros-putt-make-rates
-
-# Screenshot 6: Practice tab (Short game)
+# Return: Home screen
 - tapOn:
     text: ".*Home.*"
     index: 0
-- tapOn:
-    text: ".*Practice.*"
-    index: 1
-- extendedWaitUntil:
-    visible: "Short game practice"
-    timeout: 5000
-- takeScreenshot: .maestro/screenshots/06-practice-short-game
 
-# Screenshot 7: Tools menu
-- tapOn: "Tools"
+# Screenshot 5: Practice
+- tapOn: "Practice"
+- extendedWaitUntil:
+    visible: "Make your practice time more effective"
+    timeout: 5000
+- takeScreenshot: .maestro/screenshots/03-practice-options
+
+# Screenshot 6: Tools
+- tapOn:
+    text: ".*tools.*"
 - extendedWaitUntil:
     visible: "Practice tools"
     timeout: 5000
-- takeScreenshot: .maestro/screenshots/07-practice-tools
+- takeScreenshot: .maestro/screenshots/03B-practice-tools
 
-# Screenshot 8: History menu
+# Screenshot 7: History
 - tapOn: "History"
 - extendedWaitUntil:
-    visible: "No drill history yet"
+    visible: "Success Rate by Drill"
     timeout: 5000
-- takeScreenshot: .maestro/screenshots/08-practice-history
+- takeScreenshot: .maestro/screenshots/03C-practice-history
+
+# Return: Home screen
+- tapOn:
+    text: ".*Home.*"
+    index: 0
+
+# Screenshot 8: Paradigm
+- tapOn: "Paradigms"
+- extendedWaitUntil:
+    visible: "Make better on course decisions & choose better targets"
+    timeout: 5000
+- takeScreenshot: .maestro/screenshots/04-paradigms-options
+
+# Screenshot 9: Pros menu
+- tapOn: "Pros"
+- extendedWaitUntil:
+    visible: "Approach shots"
+    timeout: 5000
+- takeScreenshot: .maestro/screenshots/04A-paradigms-pros-approach-shots
+
+# Screenshot 10: Pros menu
+- swipe:
+    direction: LEFT
+    duration: 500
+- takeScreenshot: .maestro/screenshots/04B-paradigms-pros-putt-make-rates
 
 # End of screenshot flow
 - tapOn:

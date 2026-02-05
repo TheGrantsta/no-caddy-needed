@@ -4,14 +4,16 @@ import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
-    onStartRound: (playerNames: string[]) => void;
+    onStartRound: (playerNames: string[], courseName: string) => void;
+    recentCourseNames?: string[];
 };
 
 const MAX_ADDITIONAL_PLAYERS = 3;
 
-const PlayerSetup = ({ onStartRound }: Props) => {
+const PlayerSetup = ({ onStartRound, recentCourseNames }: Props) => {
     const colours = useThemeColours();
     const [additionalPlayers, setAdditionalPlayers] = useState<string[]>([]);
+    const [courseName, setCourseName] = useState('');
 
     const handleAddPlayer = () => {
         if (additionalPlayers.length < MAX_ADDITIONAL_PLAYERS) {
@@ -31,7 +33,7 @@ const PlayerSetup = ({ onStartRound }: Props) => {
 
     const handleStart = () => {
         const names = additionalPlayers.filter(name => name.trim().length > 0);
-        onStartRound(names);
+        onStartRound(names, courseName);
     };
 
     const localStyles = useMemo(() => StyleSheet.create({
@@ -55,6 +57,14 @@ const PlayerSetup = ({ onStartRound }: Props) => {
             borderBottomWidth: 1,
             borderBottomColor: colours.yellow,
             paddingVertical: 5,
+        },
+        courseNameInput: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+            borderBottomWidth: 1,
+            borderBottomColor: colours.yellow,
+            paddingVertical: 5,
+            marginBottom: 15,
         },
         removeButton: {
             marginLeft: 10,
@@ -85,10 +95,51 @@ const PlayerSetup = ({ onStartRound }: Props) => {
             fontSize: fontSizes.tableHeader,
             fontWeight: 'bold',
         },
+        recentLabel: {
+            color: colours.text,
+            fontSize: fontSizes.small,
+            marginBottom: 5,
+        },
+        recentItem: {
+            paddingVertical: 6,
+            paddingHorizontal: 10,
+        },
+        recentItemText: {
+            color: colours.yellow,
+            fontSize: fontSizes.normal,
+        },
+        recentContainer: {
+            marginBottom: 10,
+        },
     }), [colours]);
 
     return (
         <View style={localStyles.container}>
+            <TextInput
+                testID="course-name-input"
+                style={localStyles.courseNameInput}
+                placeholder="Course name"
+                placeholderTextColor={colours.backgroundAlternate}
+                value={courseName}
+                onChangeText={setCourseName}
+            />
+
+            {recentCourseNames && recentCourseNames.length > 0 && (
+                <View style={localStyles.recentContainer}>
+                    <Text style={localStyles.recentLabel}>Recent</Text>
+                    {recentCourseNames.map((name) => (
+                        <TouchableOpacity
+                            key={name}
+                            testID={`recent-course-${name}`}
+                            onPress={() => setCourseName(name)}
+                            style={localStyles.recentItem}
+                        >
+                            <Text style={localStyles.recentItemText}>{name}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            )}
+
             <View style={localStyles.playerRow}>
                 <Text style={localStyles.playerName}>You</Text>
             </View>

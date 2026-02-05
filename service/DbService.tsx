@@ -16,6 +16,7 @@ import {
     getAllRounds,
     getClubDistances,
     insertClubDistances,
+    getDistinctCourseNames,
     insertRoundPlayer,
     getRoundPlayers,
     insertRoundHoleScore,
@@ -173,6 +174,7 @@ export type Round = {
     StartTime: string;
     EndTime: string | null;
     IsCompleted: number;
+    CourseName: string | null;
     Created_At: string;
 };
 
@@ -220,8 +222,8 @@ export type ClubDistance = {
 };
 
 // Round services
-export const startRoundService = async (coursePar: number): Promise<number | null> => {
-    return insertRound(coursePar);
+export const startRoundService = async (coursePar: number, courseName: string): Promise<number | null> => {
+    return insertRound(coursePar, courseName);
 };
 
 export const endRoundService = async (roundId: number): Promise<boolean> => {
@@ -267,6 +269,7 @@ export const getAllRoundHistoryService = (): Round[] => {
             StartTime: round.StartTime,
             EndTime: round.EndTime,
             IsCompleted: round.IsCompleted,
+            CourseName: round.CourseName ?? null,
             Created_At: getTwoDigitDayAndMonth(round.Created_At),
         });
     });
@@ -276,6 +279,11 @@ export const getAllRoundHistoryService = (): Round[] => {
 
 export const deleteRoundService = async (roundId: number): Promise<boolean> => {
     return deleteRound(roundId);
+};
+
+export const getRecentCourseNamesService = (): string[] => {
+    const rows = getDistinctCourseNames() as { CourseName: string }[];
+    return rows.map(r => r.CourseName);
 };
 
 // Multiplayer round services

@@ -9,6 +9,7 @@ import {
     addMultiplayerHoleScoresService,
     getRoundPlayersService,
     getMultiplayerScorecardService,
+    getRecentCourseNamesService,
 } from '../../service/DbService';
 import {
     insertRound,
@@ -22,6 +23,7 @@ import {
     getRoundPlayers,
     insertRoundHoleScore,
     getRoundHoleScores,
+    getDistinctCourseNames,
 } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
@@ -36,6 +38,7 @@ jest.mock('../../database/db', () => ({
     getRoundPlayers: jest.fn(),
     insertRoundHoleScore: jest.fn(),
     getRoundHoleScores: jest.fn(),
+    getDistinctCourseNames: jest.fn(),
 }));
 
 const mockInsertRound = insertRound as jest.Mock;
@@ -49,6 +52,7 @@ const mockInsertRoundPlayer = insertRoundPlayer as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayers as jest.Mock;
 const mockInsertRoundHoleScore = insertRoundHoleScore as jest.Mock;
 const mockGetRoundHoleScores = getRoundHoleScores as jest.Mock;
+const mockGetDistinctCourseNames = getDistinctCourseNames as jest.Mock;
 
 describe('startRoundService', () => {
     beforeEach(() => {
@@ -58,18 +62,27 @@ describe('startRoundService', () => {
     it('creates a new round and returns the round ID', async () => {
         mockInsertRound.mockResolvedValue(42);
 
-        const result = await startRoundService(72);
+        const result = await startRoundService(72, 'St Andrews');
 
-        expect(mockInsertRound).toHaveBeenCalledWith(72);
+        expect(mockInsertRound).toHaveBeenCalledWith(72, 'St Andrews');
         expect(result).toBe(42);
     });
 
     it('returns null when insert fails', async () => {
         mockInsertRound.mockResolvedValue(null);
 
-        const result = await startRoundService(72);
+        const result = await startRoundService(72, '');
 
         expect(result).toBeNull();
+    });
+
+    it('passes empty string when no course name provided', async () => {
+        mockInsertRound.mockResolvedValue(1);
+
+        const result = await startRoundService(72, '');
+
+        expect(mockInsertRound).toHaveBeenCalledWith(72, '');
+        expect(result).toBe(1);
     });
 });
 
@@ -234,7 +247,7 @@ describe('getAllRoundHistoryService', () => {
 
     it('returns formatted rounds with dd/mm dates', () => {
         mockGetAllRounds.mockReturnValue([
-            { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z' },
+            { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: 'St Andrews' },
         ]);
 
         const result = getAllRoundHistoryService();
@@ -246,8 +259,8 @@ describe('getAllRoundHistoryService', () => {
 
     it('returns multiple rounds sorted by most recent', () => {
         mockGetAllRounds.mockReturnValue([
-            { Id: 2, CoursePar: 72, TotalScore: -1, IsCompleted: 1, StartTime: '2025-07-01T10:00:00.000Z', EndTime: '2025-07-01T14:00:00.000Z', Created_At: '2025-07-01T10:00:00.000Z' },
-            { Id: 1, CoursePar: 72, TotalScore: 5, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z' },
+            { Id: 2, CoursePar: 72, TotalScore: -1, IsCompleted: 1, StartTime: '2025-07-01T10:00:00.000Z', EndTime: '2025-07-01T14:00:00.000Z', Created_At: '2025-07-01T10:00:00.000Z', CourseName: 'Pebble Beach' },
+            { Id: 1, CoursePar: 72, TotalScore: 5, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
         ]);
 
         const result = getAllRoundHistoryService();
@@ -255,6 +268,26 @@ describe('getAllRoundHistoryService', () => {
         expect(result).toHaveLength(2);
         expect(result[0].Id).toBe(2);
         expect(result[1].Id).toBe(1);
+    });
+
+    it('includes CourseName in returned rounds', () => {
+        mockGetAllRounds.mockReturnValue([
+            { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: 'St Andrews' },
+        ]);
+
+        const result = getAllRoundHistoryService();
+
+        expect(result[0].CourseName).toBe('St Andrews');
+    });
+
+    it('returns null CourseName when not set', () => {
+        mockGetAllRounds.mockReturnValue([
+            { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
+        ]);
+
+        const result = getAllRoundHistoryService();
+
+        expect(result[0].CourseName).toBeNull();
     });
 });
 
@@ -470,5 +503,30 @@ describe('endRoundService multiplayer path', () => {
 
         expect(mockGetRoundHoles).toHaveBeenCalledWith(1);
         expect(mockUpdateRound).toHaveBeenCalledWith(1, 1);
+    });
+});
+
+describe('getRecentCourseNamesService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('returns distinct course names', () => {
+        mockGetDistinctCourseNames.mockReturnValue([
+            { CourseName: 'St Andrews' },
+            { CourseName: 'Pebble Beach' },
+        ]);
+
+        const result = getRecentCourseNamesService();
+
+        expect(result).toEqual(['St Andrews', 'Pebble Beach']);
+    });
+
+    it('returns empty array when no course names exist', () => {
+        mockGetDistinctCourseNames.mockReturnValue([]);
+
+        const result = getRecentCourseNamesService();
+
+        expect(result).toEqual([]);
     });
 });

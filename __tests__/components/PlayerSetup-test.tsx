@@ -68,16 +68,18 @@ describe('PlayerSetup', () => {
         expect(queryByTestId('player-name-input-0')).toBeNull();
     });
 
-    it('calls onStartRound with empty array when no players added', () => {
+    it('calls onStartRound with empty array and empty course name when nothing entered', () => {
         const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
 
         fireEvent.press(getByTestId('start-button'));
 
-        expect(mockOnStartRound).toHaveBeenCalledWith([]);
+        expect(mockOnStartRound).toHaveBeenCalledWith([], '');
     });
 
-    it('calls onStartRound with player names', () => {
+    it('calls onStartRound with player names and course name', () => {
         const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+        fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
 
         fireEvent.press(getByTestId('add-player-button'));
         fireEvent.changeText(getByTestId('player-name-input-0'), 'Alice');
@@ -87,7 +89,7 @@ describe('PlayerSetup', () => {
 
         fireEvent.press(getByTestId('start-button'));
 
-        expect(mockOnStartRound).toHaveBeenCalledWith(['Alice', 'Bob']);
+        expect(mockOnStartRound).toHaveBeenCalledWith(['Alice', 'Bob'], 'St Andrews');
     });
 
     it('filters out empty player names on start', () => {
@@ -101,7 +103,7 @@ describe('PlayerSetup', () => {
 
         fireEvent.press(getByTestId('start-button'));
 
-        expect(mockOnStartRound).toHaveBeenCalledWith(['Alice']);
+        expect(mockOnStartRound).toHaveBeenCalledWith(['Alice'], '');
     });
 
     it('shows add player button again after removing a player when at max', () => {
@@ -114,5 +116,58 @@ describe('PlayerSetup', () => {
         fireEvent.press(getByTestId('remove-player-1'));
 
         expect(getByTestId('add-player-button')).toBeTruthy();
+    });
+
+    describe('Course name input', () => {
+        it('renders course name input', () => {
+            const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            expect(getByTestId('course-name-input')).toBeTruthy();
+        });
+
+        it('passes typed course name to onStartRound', () => {
+            const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            fireEvent.changeText(getByTestId('course-name-input'), 'Pebble Beach');
+            fireEvent.press(getByTestId('start-button'));
+
+            expect(mockOnStartRound).toHaveBeenCalledWith([], 'Pebble Beach');
+        });
+    });
+
+    describe('Recent course names', () => {
+        it('shows recent course names when provided', () => {
+            const { getByText } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews', 'Pebble Beach']} />
+            );
+
+            expect(getByText('St Andrews')).toBeTruthy();
+            expect(getByText('Pebble Beach')).toBeTruthy();
+        });
+
+        it('does not show recent section when list is empty', () => {
+            const { queryByText } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={[]} />
+            );
+
+            expect(queryByText('Recent')).toBeNull();
+        });
+
+        it('populates course name input when recent name is tapped', () => {
+            const { getByTestId, getByText } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews']} />
+            );
+
+            fireEvent.press(getByText('St Andrews'));
+            fireEvent.press(getByTestId('start-button'));
+
+            expect(mockOnStartRound).toHaveBeenCalledWith([], 'St Andrews');
+        });
+
+        it('does not show recent section when prop is not provided', () => {
+            const { queryByText } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            expect(queryByText('Recent')).toBeNull();
+        });
     });
 });

@@ -21,6 +21,7 @@ import {
     addRoundPlayersService,
     getRoundPlayersService,
     getMultiplayerScorecardService,
+    getRecentCourseNamesService,
     Round,
     RoundPlayer,
     Tiger5Round,
@@ -56,6 +57,7 @@ export default function Play() {
     const [currentHoleData, setCurrentHoleData] = useState<{ holeNumber: number; holePar: number; scores: { playerId: number; playerName: string; score: number }[] } | null>(null);
     const [showEndRoundConfirm, setShowEndRoundConfirm] = useState(false);
     const [scorecardData, setScorecardData] = useState<MultiplayerRoundScorecard | null>(null);
+    const [recentCourseNames, setRecentCourseNames] = useState<string[]>([]);
     const toast = useToast();
     const router = useRouter();
 
@@ -131,6 +133,7 @@ export default function Play() {
         }
         setRoundHistory(getAllRoundHistoryService());
         setTiger5Rounds(getAllTiger5RoundsService());
+        setRecentCourseNames(getRecentCourseNamesService());
     }, []);
 
     const onRefresh = () => {
@@ -146,8 +149,8 @@ export default function Play() {
         setShowPlayerSetup(true);
     };
 
-    const handleStartRound = async (playerNames: string[]) => {
-        const roundId = await startRoundService(72);
+    const handleStartRound = async (playerNames: string[], courseName: string) => {
+        const roundId = await startRoundService(72, courseName);
 
         if (roundId) {
             const playerIds = await addRoundPlayersService(roundId, playerNames);
@@ -240,6 +243,7 @@ export default function Play() {
         setScorecardData(null);
         setRoundHistory(getAllRoundHistoryService());
         setTiger5Rounds(getAllTiger5RoundsService());
+        setRecentCourseNames(getRecentCourseNamesService());
     };
 
     const handleConfirmEndRound = async () => {
@@ -349,7 +353,7 @@ export default function Play() {
                                                 onPress={() => router.push({ pathname: '/play/scorecard', params: { roundId: String(round.Id) } })}
                                             >
                                                 <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
-                                                    <Text style={styles.normalText}>{round.Created_At}</Text>
+                                                    <Text style={styles.normalText}>{round.CourseName ? `${round.Created_At} - ${round.CourseName}` : round.Created_At}</Text>
                                                     <Text style={styles.normalText}>{formatScore(round.TotalScore)}</Text>
                                                     <Text style={styles.normalText}>{tiger5Map.has(round.Created_At) ? tiger5Map.get(round.Created_At) : '-'}</Text>
                                                 </View>
@@ -364,7 +368,7 @@ export default function Play() {
 
                 {!isRoundActive && showPlayerSetup && displaySection('play-score') && (
                     <View style={styles.container}>
-                        <PlayerSetup onStartRound={handleStartRound} />
+                        <PlayerSetup onStartRound={handleStartRound} recentCourseNames={recentCourseNames} />
                     </View>
                 )}
 

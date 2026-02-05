@@ -14,6 +14,7 @@ import {
     addRoundPlayersService,
     getRoundPlayersService,
     getMultiplayerScorecardService,
+    getRecentCourseNamesService,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
 
@@ -45,6 +46,7 @@ jest.mock('../../service/DbService', () => ({
     addRoundPlayersService: jest.fn(),
     getRoundPlayersService: jest.fn(),
     getMultiplayerScorecardService: jest.fn(),
+    getRecentCourseNamesService: jest.fn(),
 }));
 
 jest.mock('../../database/db', () => ({
@@ -101,6 +103,7 @@ const mockCancelReminder = cancelRoundReminder as jest.Mock;
 const mockAddRoundPlayers = addRoundPlayersService as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayersService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
+const mockGetRecentCourseNames = getRecentCourseNamesService as jest.Mock;
 
 describe('Play screen', () => {
     beforeEach(() => {
@@ -111,6 +114,7 @@ describe('Play screen', () => {
         mockGetClubDistances.mockReturnValue([]);
         mockGetRoundPlayers.mockReturnValue([]);
         mockGetMultiplayerScorecard.mockReturnValue(null);
+        mockGetRecentCourseNames.mockReturnValue([]);
     });
 
     describe('Idle state', () => {
@@ -198,7 +202,7 @@ describe('Play screen', () => {
 
         it('navigates to scorecard when round history row is pressed', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
             ]);
 
             const { getByTestId } = render(<Play />);
@@ -206,6 +210,26 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('round-history-row-1'));
 
             expect(mockPush).toHaveBeenCalledWith({ pathname: '/play/scorecard', params: { roundId: '1' } });
+        });
+
+        it('shows course name in round history when set', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: 'St Andrews' },
+            ]);
+
+            const { getByText } = render(<Play />);
+
+            expect(getByText('15/06 - St Andrews')).toBeTruthy();
+        });
+
+        it('does not show course name text when CourseName is null', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
+            ]);
+
+            const { queryByTestId } = render(<Play />);
+
+            expect(queryByTestId('round-history-course-1')).toBeNull();
         });
     });
 
@@ -219,6 +243,17 @@ describe('Play screen', () => {
             expect(getByTestId('add-player-button')).toBeTruthy();
         });
 
+        it('shows recent course names in player setup', () => {
+            mockGetRecentCourseNames.mockReturnValue(['St Andrews', 'Pebble Beach']);
+
+            const { getByTestId, getByText } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+
+            expect(getByText('St Andrews')).toBeTruthy();
+            expect(getByText('Pebble Beach')).toBeTruthy();
+        });
+
         it('starts round after player setup is completed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
@@ -229,8 +264,23 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(mockStartRound).toHaveBeenCalledWith(72);
+                expect(mockStartRound).toHaveBeenCalledWith(72, '');
                 expect(mockAddRoundPlayers).toHaveBeenCalledWith(1, []);
+            });
+        });
+
+        it('passes course name to startRoundService', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(mockStartRound).toHaveBeenCalledWith(72, 'St Andrews');
             });
         });
 

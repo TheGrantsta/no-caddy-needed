@@ -37,7 +37,7 @@ describe('Wedge Chart screen', () => {
     it('renders wedge distances subtitle', () => {
         const { getByText } = render(<WedgeChartScreen />);
 
-        expect(getByText('Your wedge distances')).toBeTruthy();
+        expect(getByText('Your wedge carry distances')).toBeTruthy();
     });
 
     it('shows save button', () => {

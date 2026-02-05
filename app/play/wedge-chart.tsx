@@ -35,7 +35,7 @@ export default function WedgeChartScreen() {
                 <View style={styles.headerContainer}>
                     <Text style={[styles.headerText, styles.marginTop]}>Wedge chart</Text>
                     <Text style={[styles.normalText, styles.marginBottom]}>
-                        Your wedge distances
+                        Your wedge carry distances
                     </Text>
                 </View>
                 <WedgeChart data={data} onSave={handleSave} />

@@ -502,7 +502,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('play-sub-menu-wedge-chart'));
 
-            expect(getByText('Your wedge distances')).toBeTruthy();
+            expect(getByText('Your wedge carry distances')).toBeTruthy();
         });
 
         it('returns to score input when Play is pressed after switching', async () => {
@@ -541,7 +541,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('play-sub-menu-wedge-chart'));
 
-            expect(getByText('Your wedge distances')).toBeTruthy();
+            expect(getByText('Your wedge carry distances')).toBeTruthy();
             expect(queryByTestId('start-round-button')).toBeNull();
         });
 

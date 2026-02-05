@@ -9,9 +9,17 @@ describe('Colour palettes', () => {
     });
 
     it('brand colours match between palettes', () => {
-        expect(darkColours.yellow).toBe(lightColours.yellow);
-        expect(darkColours.mutedYellow).toBe(lightColours.mutedYellow);
         expect(darkColours.green).toBe(lightColours.green);
+    });
+
+    it('light theme uses dark amber accent instead of yellow', () => {
+        expect(lightColours.yellow).toBe('#2E7D32');
+        expect(lightColours.mutedYellow).toBe('#1B5E20');
+    });
+
+    it('dark theme keeps original yellow accent', () => {
+        expect(darkColours.yellow).toBe('#ffd33d');
+        expect(darkColours.mutedYellow).toBe('#e6be36');
     });
 
     it('light theme white is dark for contrast on light background', () => {

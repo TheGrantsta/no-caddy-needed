@@ -3,6 +3,16 @@ import { render } from '@testing-library/react-native';
 import DrillStatsChart from '../../components/DrillStatsChart';
 import { DrillStats } from '@/service/DbService';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
 describe('DrillStatsChart component', () => {
     const mockStats: DrillStats[] = [
         { name: 'Putting - Gate', total: 10, met: 8, successRate: 80 },

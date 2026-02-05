@@ -6,12 +6,11 @@ import { Link, Stack } from 'expo-router';
 import { MaterialIcons } from "@expo/vector-icons";
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import colours from "@/assets/colours";
 import { initialize } from '@/database/db';
 import { ToastProvider } from 'react-native-toast-notifications';
 import * as Notifications from 'expo-notifications';
 import NetworkStatus from '@/components/NetworkStatus';
+import { AppThemeProvider, useTheme } from '@/context/ThemeContext';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -24,19 +23,164 @@ Notifications.setNotificationHandler({
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+const LogoTitle = () => (
+  <Image
+    source={require("../assets/images/full-logo-transparent-no-buffer.png")}
+    style={{ width: 120, height: 40, resizeMode: "contain" }}
+  />
+);
+
+function ThemedApp() {
+  const { theme, colours } = useTheme();
+
+  return (
+    <ThemeProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
+      <Stack>
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerRight: () => (
+              <Link href='../settings'>
+                <MaterialIcons name="settings" size={24} color={colours.background} style={{ marginRight: 15 }} />
+              </Link>
+            ),
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+          }} />
+        <Stack.Screen
+          name="short-game/putting"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="short-game/chipping"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="short-game/pitching"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="short-game/bunker"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="tools/random"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="tools/tempo"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="play/distances"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="play/wedge-chart"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="play/scorecard"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="settings"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="+not-found"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.yellow,
+            },
+          }} />
+      </Stack>
+      <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+      <NetworkStatus />
+    </ThemeProvider>
+  );
+}
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [appIsReady, setAppIsReady] = useState(false);
   useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-
-  const LogoTitle = () => (
-    <Image
-      source={require("../assets/images/full-logo-transparent-no-buffer.png")}
-      style={{ width: 120, height: 40, resizeMode: "contain" }}
-    />
-  );
 
   useEffect(() => {
     const setupDatabase = () => {
@@ -74,152 +218,14 @@ export default function RootLayout() {
   return (
     <ToastProvider
       placement="bottom"
-      dangerIcon={<MaterialIcons name="close" color={colours.errorText} size={24} />}
-      successIcon={<MaterialIcons name="check" color={colours.background} size={24} />}
       offset={80}
       style={{
         maxWidth: "100%",
       }}
     >
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen
-            name="(tabs)"
-            options={{
-              headerTitle: () => <LogoTitle />,
-              headerTitleAlign: "center",
-              headerRight: () => (
-                <Link href='../settings'>
-                  <MaterialIcons name="settings" size={24} color={colours.background} style={{ marginRight: 15 }} />
-                </Link>
-              ),
-              headerStyle: {
-                backgroundColor: colours.yellow,
-              },
-            }} />
-          <Stack.Screen
-            name="short-game/putting"
-            options={{
-              headerTitle: () => <LogoTitle />,
-              headerTitleAlign: "center",
-              headerStyle: {
-                backgroundColor: colours.yellow,
-              },
-              headerTintColor: colours.background,
-              headerBackButtonDisplayMode: 'minimal',
-            }} />
-          <Stack.Screen
-            name="short-game/chipping"
-            options={{
-              headerTitle: () => <LogoTitle />,
-              headerTitleAlign: "center",
-              headerStyle: {
-                backgroundColor: colours.yellow,
-              },
-              headerTintColor: colours.background,
-              headerBackButtonDisplayMode: 'minimal',
-            }} />
-          <Stack.Screen
-            name="short-game/pitching"
-            options={{
-              headerTitle: () => <LogoTitle />,
-              headerTitleAlign: "center",
-              headerStyle: {
-                backgroundColor: colours.yellow,
-              },
-              headerTintColor: colours.background,
-              headerBackButtonDisplayMode: 'minimal',
-            }} />
-          <Stack.Screen
-            name="short-game/bunker"
-            options={{
-              headerTitle: () => <LogoTitle />,
-              headerTitleAlign: "center",
-              headerStyle: {
-                backgroundColor: colours.yellow,
-              },
-              headerTintColor: colours.background,
-              headerBackButtonDisplayMode: 'minimal',
-            }} />
-          <Stack.Screen
-            name="tools/random"
-            options={{
-              headerTitle: () => <LogoTitle />,
-              headerTitleAlign: "center",
-              headerStyle: {
-                backgroundColor: colours.yellow,
-              },
-              headerTintColor: colours.background,
-              headerBackButtonDisplayMode: 'minimal',
-            }} />
-          <Stack.Screen
-            name="tools/tempo"
-            options={{
-              headerTitle: () => <LogoTitle />,
-              headerTitleAlign: "center",
-              headerStyle: {
-                backgroundColor: colours.yellow,
-              },
-              headerTintColor: colours.background,
-              headerBackButtonDisplayMode: 'minimal',
-            }} />
-          <Stack.Screen
-            name="play/distances"
-            options={{
-              headerTitle: () => <LogoTitle />,
-              headerTitleAlign: "center",
-              headerStyle: {
-                backgroundColor: colours.yellow,
-              },
-              headerTintColor: colours.background,
-              headerBackButtonDisplayMode: 'minimal',
-            }} />
-          <Stack.Screen
-            name="play/wedge-chart"
-            options={{
-              headerTitle: () => <LogoTitle />,
-              headerTitleAlign: "center",
-              headerStyle: {
-                backgroundColor: colours.yellow,
-              },
-              headerTintColor: colours.background,
-              headerBackButtonDisplayMode: 'minimal',
-            }} />
-          <Stack.Screen
-            name="play/scorecard"
-            options={{
-              headerTitle: () => <LogoTitle />,
-              headerTitleAlign: "center",
-              headerStyle: {
-                backgroundColor: colours.yellow,
-              },
-              headerTintColor: colours.background,
-              headerBackButtonDisplayMode: 'minimal',
-            }} />
-          <Stack.Screen
-            name="settings"
-            options={{
-              headerTitle: () => <LogoTitle />,
-              headerTitleAlign: "center",
-              headerStyle: {
-                backgroundColor: colours.yellow,
-              },
-              headerTintColor: colours.background,
-              headerBackButtonDisplayMode: 'minimal',
-            }} />
-          <Stack.Screen
-            name="+not-found"
-            options={{
-              headerTitle: () => <LogoTitle />,
-              headerTitleAlign: "center",
-              headerStyle: {
-                backgroundColor: colours.yellow,
-              },
-            }} />
-        </Stack>
-        <StatusBar style="auto" />
-        <NetworkStatus />
-      </ThemeProvider>
+      <AppThemeProvider>
+        <ThemedApp />
+      </AppThemeProvider>
     </ToastProvider>
   );
 };

@@ -2,6 +2,16 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import ScoreEditor from '../../components/ScoreEditor';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
 describe('ScoreEditor', () => {
     it('shows hole number and player name', () => {
         const { getByText } = render(

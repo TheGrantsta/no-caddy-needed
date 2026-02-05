@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import colours from '../assets/colours';
+import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
@@ -28,7 +29,40 @@ const allSubMenuItems = [
 ]
 
 const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {
+    const colours = useThemeColours();
     const subMenuItems = allSubMenuItems.filter(item => item.testId.startsWith(showSubMenu));
+
+    const localStyles = useMemo(() => StyleSheet.create({
+        subMenuContainer: {
+            padding: 7,
+            paddingBottom: 0,
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            backgroundColor: colours.background,
+            borderBottomWidth: 0.5,
+            borderBottomColor: colours.yellow
+        },
+        subMenuItemContainer: {
+            flex: 1,
+            alignItems: 'center',
+            borderColor: colours.yellow,
+            borderBottomWidth: 4,
+            borderBottomColor: colours.background
+        },
+        subMenuItemContainerSelected: {
+            borderBottomColor: colours.yellow,
+        },
+        subMenuItem: {
+            color: colours.yellow,
+            fontSize: fontSizes.normal,
+        },
+        subMenuItemSelected: {
+            textDecorationColor: colours.yellow,
+            textDecorationStyle: 'solid',
+            color: colours.yellow,
+            fontSize: fontSizes.normal,
+        }
+    }), [colours]);
 
     return (
         <View style={localStyles.subMenuContainer}>
@@ -46,35 +80,3 @@ const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {
 };
 
 export default SubMenu;
-
-const localStyles = StyleSheet.create({
-    subMenuContainer: {
-        padding: 7,
-        paddingBottom: 0,
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        backgroundColor: colours.background,
-        borderBottomWidth: 0.5,
-        borderBottomColor: colours.yellow
-    },
-    subMenuItemContainer: {
-        flex: 1,
-        alignItems: 'center',
-        borderColor: colours.yellow,
-        borderBottomWidth: 4,
-        borderBottomColor: colours.background
-    },
-    subMenuItemContainerSelected: {
-        borderBottomColor: colours.yellow,
-    },
-    subMenuItem: {
-        color: colours.yellow,
-        fontSize: fontSizes.normal,
-    },
-    subMenuItemSelected: {
-        textDecorationColor: colours.yellow,
-        textDecorationStyle: 'solid',
-        color: colours.yellow,
-        fontSize: fontSizes.normal,
-    }
-});

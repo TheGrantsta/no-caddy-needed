@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import styles from '@/assets/stlyes';
+import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
     objective: string;
@@ -8,6 +8,8 @@ type Props = {
     howToPlay: string;
 };
 export default function Instructions({ objective, setUp, howToPlay }: Props) {
+    const styles = useStyles();
+
     return (
         <View>
             <Text style={[styles.normalText, localStyles.contentText]}>

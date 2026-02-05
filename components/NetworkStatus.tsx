@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Text, StyleSheet, Animated } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import colours from '@/assets/colours';
+import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 
 let NetInfo: typeof import('@react-native-community/netinfo').default | null = null;
@@ -12,6 +12,7 @@ try {
 }
 
 export default function NetworkStatus() {
+    const colours = useThemeColours();
     const [isConnected, setIsConnected] = useState<boolean | null>(true);
     const [showBanner, setShowBanner] = useState(false);
     const slideAnim = useState(new Animated.Value(-50))[0];
@@ -44,6 +45,28 @@ export default function NetworkStatus() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isConnected, slideAnim]);
 
+    const styles = useMemo(() => StyleSheet.create({
+        container: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: colours.backgroundAlternate,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            zIndex: 1000,
+        },
+        text: {
+            color: colours.white,
+            fontSize: fontSizes.small,
+            marginLeft: 8,
+            fontWeight: '500',
+        },
+    }), [colours]);
+
     if (!showBanner) {
         return null;
     }
@@ -61,25 +84,3 @@ export default function NetworkStatus() {
         </Animated.View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: colours.backgroundAlternate,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        zIndex: 1000,
-    },
-    text: {
-        color: colours.white,
-        fontSize: fontSizes.small,
-        marginLeft: 8,
-        fontWeight: '500',
-    },
-});

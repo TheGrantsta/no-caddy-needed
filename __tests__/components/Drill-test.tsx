@@ -2,6 +2,20 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import Drill from '../../components/Drill';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
+jest.mock('../../hooks/useStyles', () => ({
+    useStyles: () => require('../../assets/stlyes').default,
+}));
+
 describe('Drill component', () => {
     const defaultProps = {
         label: 'Test Drill',

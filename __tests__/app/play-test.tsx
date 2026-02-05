@@ -1,6 +1,7 @@
 import React from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Play from '../../app/(tabs)/play';
+
 import {
     startRoundService,
     endRoundService,
@@ -15,6 +16,20 @@ import {
     getMultiplayerScorecardService,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
+
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
+jest.mock('../../hooks/useStyles', () => ({
+    useStyles: () => require('../../assets/stlyes').default,
+}));
 
 jest.mock('../../service/DbService', () => ({
     startRoundService: jest.fn(),

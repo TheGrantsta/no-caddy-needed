@@ -2,6 +2,16 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import ClubDistanceList from '../../components/ClubDistanceList';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
 describe('ClubDistanceList component', () => {
     const mockDistances = [
         { Id: 1, Club: 'Driver', CarryDistance: 250, TotalDistance: 270, SortOrder: 1 },

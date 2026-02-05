@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import colours from '../assets/colours';
+import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
@@ -20,6 +20,7 @@ const counters = [
 ];
 
 const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar }: Props) => {
+    const colours = useThemeColours();
     const [roundActive, setRoundActive] = useState(roundControlled === true);
     const [threePutts, setThreePutts] = useState(0);
     const [doubleBogeys, setDoubleBogeys] = useState(0);
@@ -29,6 +30,60 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
 
     const values = [threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips];
     const setters = [setThreePutts, setDoubleBogeys, setBogeysPar5, setBogeysInside9Iron, setDoubleChips];
+
+    const localStyles = useMemo(() => StyleSheet.create({
+        container: {
+            padding: 15,
+        },
+        row: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingVertical: 8,
+            borderBottomWidth: 0.5,
+            borderBottomColor: colours.yellow,
+        },
+        label: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+            flex: 1,
+        },
+        controls: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        button: {
+            backgroundColor: colours.yellow,
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        buttonText: {
+            color: colours.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        count: {
+            color: colours.text,
+            fontSize: fontSizes.subHeader,
+            minWidth: 40,
+            textAlign: 'center',
+        },
+        saveButton: {
+            backgroundColor: colours.yellow,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginTop: 5,
+        },
+        saveButtonText: {
+            color: colours.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+    }), [colours]);
 
     const handleIncrement = (index: number) => {
         const newValue = values[index] + 1;
@@ -116,57 +171,3 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
 };
 
 export default Tiger5Tally;
-
-const localStyles = StyleSheet.create({
-    container: {
-        padding: 15,
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 8,
-        borderBottomWidth: 0.5,
-        borderBottomColor: colours.yellow,
-    },
-    label: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-        flex: 1,
-    },
-    controls: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    button: {
-        backgroundColor: colours.yellow,
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: colours.background,
-        fontSize: fontSizes.tableHeader,
-        fontWeight: 'bold',
-    },
-    count: {
-        color: colours.text,
-        fontSize: fontSizes.subHeader,
-        minWidth: 40,
-        textAlign: 'center',
-    },
-    saveButton: {
-        backgroundColor: colours.yellow,
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 5,
-    },
-    saveButtonText: {
-        color: colours.background,
-        fontSize: fontSizes.tableHeader,
-        fontWeight: 'bold',
-    },
-});

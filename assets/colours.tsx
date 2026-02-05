@@ -1,4 +1,21 @@
-export default {
+export type ThemeColours = {
+    text: string;
+    white: string;
+    black: string;
+    yellow: string;
+    mutedYellow: string;
+    errorText: string;
+    background: string;
+    backgroundLight: string;
+    backgroundDelete: string;
+    backgroundAlternate: string;
+    border: string;
+    borderEdit: string;
+    borderError: string;
+    green: string;
+};
+
+export const darkColours: ThemeColours = {
     text: '#fffae7',
     white: '#fff',
     black: '#000',
@@ -14,3 +31,22 @@ export default {
     borderError: '#fd0303',
     green: '#00C851',
 };
+
+export const lightColours: ThemeColours = {
+    text: '#1a1a2e',
+    white: '#fff',
+    black: '#000',
+    yellow: '#ffd33d',
+    mutedYellow: '#e6be36',
+    errorText: '#d32f2f',
+    background: '#f5f5f0',
+    backgroundLight: '#ffffff',
+    backgroundDelete: '#d32f2f',
+    backgroundAlternate: '#dfe3e8',
+    border: '#3a3a3a',
+    borderEdit: '#999',
+    borderError: '#d32f2f',
+    green: '#00C851',
+};
+
+export default darkColours;

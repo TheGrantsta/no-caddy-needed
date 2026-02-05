@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import colours from '@/assets/colours';
+import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 import { DrillStats } from '@/service/DbService';
 
@@ -9,6 +9,88 @@ type Props = {
 };
 
 export default function DrillStatsChart({ stats }: Props) {
+    const colours = useThemeColours();
+
+    const localStyles = useMemo(() => StyleSheet.create({
+        container: {
+            padding: 10,
+            marginBottom: 10,
+        },
+        title: {
+            color: colours.yellow,
+            fontSize: fontSizes.subHeader,
+            marginBottom: 15,
+        },
+        barContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 8,
+        },
+        labelContainer: {
+            width: 100,
+            paddingRight: 5,
+        },
+        label: {
+            color: colours.white,
+            fontSize: fontSizes.small,
+        },
+        barWrapper: {
+            flex: 1,
+            flexDirection: 'row',
+            height: 20,
+            borderRadius: 4,
+            overflow: 'hidden',
+        },
+        bar: {
+            height: '100%',
+            borderTopLeftRadius: 4,
+            borderBottomLeftRadius: 4,
+        },
+        barBackground: {
+            height: '100%',
+            backgroundColor: colours.backgroundLight,
+        },
+        statsContainer: {
+            width: 70,
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+        },
+        statsText: {
+            color: colours.yellow,
+            fontSize: fontSizes.small,
+            fontWeight: 'bold',
+            marginRight: 2,
+        },
+        countText: {
+            color: colours.white,
+            fontSize: fontSizes.smallest,
+        },
+        legend: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginTop: 15,
+            paddingTop: 10,
+            borderTopWidth: 1,
+            borderTopColor: colours.border,
+        },
+        legendItem: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginHorizontal: 10,
+        },
+        legendDot: {
+            width: 10,
+            height: 10,
+            borderRadius: 5,
+            marginRight: 5,
+        },
+        legendText: {
+            color: colours.white,
+            fontSize: fontSizes.smallest,
+        },
+    }), [colours]);
+
     if (stats.length === 0) {
         return null;
     }
@@ -84,83 +166,3 @@ export default function DrillStatsChart({ stats }: Props) {
         </View>
     );
 }
-
-const localStyles = StyleSheet.create({
-    container: {
-        padding: 10,
-        marginBottom: 10,
-    },
-    title: {
-        color: colours.yellow,
-        fontSize: fontSizes.subHeader,
-        marginBottom: 15,
-    },
-    barContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    labelContainer: {
-        width: 100,
-        paddingRight: 5,
-    },
-    label: {
-        color: colours.white,
-        fontSize: fontSizes.small,
-    },
-    barWrapper: {
-        flex: 1,
-        flexDirection: 'row',
-        height: 20,
-        borderRadius: 4,
-        overflow: 'hidden',
-    },
-    bar: {
-        height: '100%',
-        borderTopLeftRadius: 4,
-        borderBottomLeftRadius: 4,
-    },
-    barBackground: {
-        height: '100%',
-        backgroundColor: colours.backgroundLight,
-    },
-    statsContainer: {
-        width: 70,
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-    },
-    statsText: {
-        color: colours.yellow,
-        fontSize: fontSizes.small,
-        fontWeight: 'bold',
-        marginRight: 2,
-    },
-    countText: {
-        color: colours.white,
-        fontSize: fontSizes.smallest,
-    },
-    legend: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: 15,
-        paddingTop: 10,
-        borderTopWidth: 1,
-        borderTopColor: colours.border,
-    },
-    legendItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginHorizontal: 10,
-    },
-    legendDot: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
-        marginRight: 5,
-    },
-    legendText: {
-        color: colours.white,
-        fontSize: fontSizes.smallest,
-    },
-});

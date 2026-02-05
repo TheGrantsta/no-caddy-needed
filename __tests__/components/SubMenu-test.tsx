@@ -2,6 +2,16 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import SubMenu from '../../components/SubMenu';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
 describe('SubMenu component', () => {
     const mockHandleSubMenu = jest.fn();
 

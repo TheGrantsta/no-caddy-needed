@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import colours from '@/assets/colours';
+import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 import { Tiger5Round } from '@/service/DbService';
 
@@ -22,6 +22,82 @@ const CATEGORY_LABELS: { key: keyof Tiger5Round; label: string }[] = [
 ];
 
 export default function Tiger5Chart({ rounds }: Props) {
+    const colours = useThemeColours();
+
+    const localStyles = useMemo(() => StyleSheet.create({
+        container: {
+            padding: 10,
+            marginBottom: 10,
+        },
+        title: {
+            color: colours.yellow,
+            fontSize: fontSizes.subHeader,
+            marginBottom: 15,
+            textAlign: 'center',
+        },
+        barContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 8,
+        },
+        labelContainer: {
+            width: 120,
+            paddingRight: 5,
+        },
+        label: {
+            color: colours.white,
+            fontSize: fontSizes.smallestText,
+        },
+        barWrapper: {
+            flex: 1,
+            flexDirection: 'row',
+            height: 20,
+            borderRadius: 4,
+            overflow: 'hidden',
+        },
+        bar: {
+            height: '100%',
+            borderTopLeftRadius: 4,
+            borderBottomLeftRadius: 4,
+        },
+        barBackground: {
+            height: '100%',
+            backgroundColor: colours.backgroundLight,
+        },
+        countContainer: {
+            width: 40,
+            alignItems: 'flex-end',
+        },
+        countText: {
+            color: colours.yellow,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+        },
+        legend: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginTop: 15,
+            paddingTop: 10,
+            borderTopWidth: 1,
+            borderTopColor: colours.border,
+        },
+        legendItem: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginHorizontal: 10,
+        },
+        legendDot: {
+            width: 10,
+            height: 10,
+            borderRadius: 5,
+            marginRight: 5,
+        },
+        legendText: {
+            color: colours.white,
+            fontSize: fontSizes.smallestText,
+        },
+    }), [colours]);
+
     if (rounds.length === 0 || rounds.every(r => r.Total === 0)) {
         return null;
     }
@@ -94,77 +170,3 @@ export default function Tiger5Chart({ rounds }: Props) {
         </View>
     );
 }
-
-const localStyles = StyleSheet.create({
-    container: {
-        padding: 10,
-        marginBottom: 10,
-    },
-    title: {
-        color: colours.yellow,
-        fontSize: fontSizes.subHeader,
-        marginBottom: 15,
-        textAlign: 'center',
-    },
-    barContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    labelContainer: {
-        width: 120,
-        paddingRight: 5,
-    },
-    label: {
-        color: colours.white,
-        fontSize: fontSizes.smallestText,
-    },
-    barWrapper: {
-        flex: 1,
-        flexDirection: 'row',
-        height: 20,
-        borderRadius: 4,
-        overflow: 'hidden',
-    },
-    bar: {
-        height: '100%',
-        borderTopLeftRadius: 4,
-        borderBottomLeftRadius: 4,
-    },
-    barBackground: {
-        height: '100%',
-        backgroundColor: colours.backgroundLight,
-    },
-    countContainer: {
-        width: 40,
-        alignItems: 'flex-end',
-    },
-    countText: {
-        color: colours.yellow,
-        fontSize: fontSizes.smallText,
-        fontWeight: 'bold',
-    },
-    legend: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: 15,
-        paddingTop: 10,
-        borderTopWidth: 1,
-        borderTopColor: colours.border,
-    },
-    legendItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginHorizontal: 10,
-    },
-    legendDot: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
-        marginRight: 5,
-    },
-    legendText: {
-        color: colours.white,
-        fontSize: fontSizes.smallestText,
-    },
-});

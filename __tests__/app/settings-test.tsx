@@ -3,6 +3,22 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import Settings from '../../app/settings';
 import { getSettingsService, saveSettingsService } from '../../service/DbService';
 
+const mockSetTheme = jest.fn();
+
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: mockSetTheme,
+    }),
+}));
+
+jest.mock('../../hooks/useStyles', () => ({
+    useStyles: () => require('../../assets/stlyes').default,
+}));
+
 jest.mock('../../service/DbService', () => ({
     getSettingsService: jest.fn(() => ({ theme: 'dark', notificationsEnabled: true })),
     saveSettingsService: jest.fn(() => Promise.resolve(true)),
@@ -92,16 +108,13 @@ describe('Settings page', () => {
         expect(getByText('Off')).toBeTruthy();
     });
 
-    it('calls saveSettingsService when theme toggle is pressed', async () => {
+    it('calls setTheme when theme toggle is pressed', async () => {
         const { getByTestId } = render(<Settings />);
 
         fireEvent(getByTestId('theme-toggle'), 'valueChange', true);
 
         await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith({
-                theme: 'light',
-                notificationsEnabled: true,
-            });
+            expect(mockSetTheme).toHaveBeenCalledWith('light');
         });
     });
 

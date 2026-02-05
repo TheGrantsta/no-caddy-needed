@@ -3,6 +3,20 @@ import { render } from '@testing-library/react-native';
 import DistancesScreen from '../../../app/play/distances';
 import { getClubDistancesService } from '../../../service/DbService';
 
+jest.mock('../../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
+jest.mock('../../../hooks/useStyles', () => ({
+    useStyles: () => require('../../../assets/stlyes').default,
+}));
+
 jest.mock('../../../service/DbService', () => ({
     getClubDistancesService: jest.fn(),
     saveClubDistancesService: jest.fn(),

@@ -6,12 +6,14 @@ import { useToast } from 'react-native-toast-notifications';
 import { insertDrillResultService } from "@/service/DbService";
 import SubMenu from "@/components/SubMenu";
 import Drill from "@/components/Drill";
-import styles from "@/assets/stlyes";
-import colours from "@/assets/colours";
+import { useStyles } from "@/hooks/useStyles";
+import { useThemeColours } from "@/context/ThemeContext";
 import fontSizes from "@/assets/font-sizes";
 import Instructions from "@/components/Instructions";
 
 export default function Bunker() {
+    const styles = useStyles();
+    const colours = useThemeColours();
     const [refreshing, setRefreshing] = useState(false);
     const [section, setSection] = useState('bunker-drills');
     const [gameActiveIndex, setGameActiveIndex] = useState(0);

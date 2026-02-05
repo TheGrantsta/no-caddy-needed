@@ -1,8 +1,8 @@
 import { Dimensions, StyleSheet } from 'react-native';
-import colours from './colours';
+import colours, { ThemeColours } from './colours';
 import fontSizes from './font-sizes';
 
-const styles = StyleSheet.create({
+export const createStyles = (c: ThemeColours) => StyleSheet.create({
     flexOne: {
         flex: 1,
     },
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         flex: 1,
-        backgroundColor: colours.background,
+        backgroundColor: c.background,
     },
     scrollContentContainer: {
         paddingBottom: 100,
@@ -32,14 +32,14 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: colours.background,
+        backgroundColor: c.background,
     },
     headerContainer: {
         justifyContent: 'center',
         alignItems: 'center',
     },
     iconsContainer: {
-        backgroundColor: colours.background,
+        backgroundColor: c.background,
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-evenly',
@@ -51,30 +51,30 @@ const styles = StyleSheet.create({
         padding: 15,
     },
     wrapper: {
-        borderColor: colours.border,
+        borderColor: c.border,
         borderWidth: 2,
         borderRadius: 10,
         marginTop: 10
     },
     headerText: {
-        color: colours.yellow,
+        color: c.yellow,
         fontSize: fontSizes.header,
         alignItems: 'center',
         padding: 8,
     },
     subHeaderText: {
-        color: colours.yellow,
+        color: c.yellow,
         fontSize: fontSizes.subHeader,
         alignItems: 'baseline',
         padding: 6,
     },
     normalText: {
-        color: colours.text,
+        color: c.text,
         fontSize: fontSizes.normal,
         alignItems: 'center',
     },
     smallestText: {
-        color: colours.text,
+        color: c.text,
         fontSize: fontSizes.smallestText,
         alignItems: 'center',
         padding: 5,
@@ -86,11 +86,11 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0,
         justifyContent: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.85)', // Transparent black
+        backgroundColor: 'rgba(0, 0, 0, 0.85)',
         zIndex: 1000,
     },
     overlayText: {
-        color: colours.white,
+        color: c.white,
         fontSize: fontSizes.normal,
         paddingBottom: 20,
         paddingLeft: 10,
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     largeButton: {
-        backgroundColor: colours.yellow,
+        backgroundColor: c.yellow,
         padding: 10,
         borderRadius: 8,
         width: '90%',
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         margin: 5,
     },
     button: {
-        backgroundColor: colours.yellow,
+        backgroundColor: c.yellow,
         padding: 10,
         borderRadius: 8,
         width: 100,
@@ -119,15 +119,15 @@ const styles = StyleSheet.create({
         margin: 5,
     },
     buttonText: {
-        color: colours.background,
+        color: c.background,
         fontSize: fontSizes.tableHeader,
         fontWeight: 'bold',
     },
     yellowText: {
-        color: colours.yellow,
+        color: c.yellow,
     },
     deleteBackground: {
-        backgroundColor: colours.backgroundDelete,
+        backgroundColor: c.backgroundDelete,
         position: 'absolute',
         right: 0,
         left: 0,
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
         width: '90%',
     },
     deleteText: {
-        color: colours.white,
+        color: c.white,
         fontSize: fontSizes.normal,
         fontWeight: 'bold',
         padding: 2,
@@ -149,13 +149,13 @@ const styles = StyleSheet.create({
         marginBottom: 2,
     },
     card: {
-        backgroundColor: colours.background,
+        backgroundColor: c.background,
         paddingTop: 3,
         width: '90%',
     },
     cardText: {
         flex: 1,
-        color: colours.text,
+        color: c.text,
         fontSize: fontSizes.smallText,
         paddingLeft: 2,
     },
@@ -164,37 +164,37 @@ const styles = StyleSheet.create({
     },
     textarea: {
         height: 150,
-        borderColor: colours.border,
+        borderColor: c.border,
         borderWidth: 1,
         padding: 10,
         borderRadius: 5,
-        backgroundColor: colours.backgroundLight,
+        backgroundColor: c.backgroundLight,
         fontSize: fontSizes.normal,
     },
     textareaError: {
-        borderColor: colours.borderError,
+        borderColor: c.borderError,
     },
     errorText: {
-        color: colours.errorText,
+        color: c.errorText,
         fontSize: fontSizes.normal,
         marginTop: 5,
     },
     textLabel: {
         fontSize: fontSizes.smallText,
-        color: colours.white,
+        color: c.white,
         margin: 5,
     },
     textInput: {
         height: 40,
-        borderColor: colours.border,
+        borderColor: c.border,
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,
         fontSize: fontSizes.smallText,
-        color: colours.white,
+        color: c.white,
     },
     textInputError: {
-        borderColor: colours.borderError,
+        borderColor: c.borderError,
     },
     table: {
         marginTop: 20,
@@ -202,27 +202,27 @@ const styles = StyleSheet.create({
         marginRight: 20,
         marginBottom: 5,
         borderWidth: 1,
-        borderColor: colours.border,
+        borderColor: c.border,
     },
     row: {
         flexDirection: 'row',
     },
     alternateRow: {
-        backgroundColor: colours.backgroundAlternate,
-        color: colours.black,
+        backgroundColor: c.backgroundAlternate,
+        color: c.black,
     },
     cell: {
         flex: 4,
         borderWidth: 1,
-        borderColor: colours.border,
+        borderColor: c.border,
         padding: 10,
         textAlign: 'center',
-        color: colours.white,
+        color: c.white,
         fontSize: fontSizes.smallText,
         fontWeight: 'bold',
     },
     header: {
-        color: colours.yellow,
+        color: c.yellow,
         fontSize: fontSizes.tableHeader,
         fontWeight: 'bold',
     },
@@ -235,10 +235,10 @@ const styles = StyleSheet.create({
     },
     updateOverlay: {
         width: '100%',
-        backgroundColor: colours.background,
+        backgroundColor: c.background,
     },
     updateText: {
-        color: colours.yellow,
+        color: c.yellow,
         marginTop: 5,
         fontSize: fontSizes.normal,
         textAlign: 'center',
@@ -246,9 +246,9 @@ const styles = StyleSheet.create({
     scrollWrapper: {
         margin: 5,
         borderRadius: 5,
-        borderColor: colours.yellow,
+        borderColor: c.yellow,
         borderWidth: 2,
-        borderLeftColor: colours.yellow,
+        borderLeftColor: c.yellow,
         borderLeftWidth: 10,
     },
     horizontalScrollContainer: {
@@ -276,15 +276,15 @@ const styles = StyleSheet.create({
         width: 10,
         height: 10,
         borderRadius: 5,
-        backgroundColor: colours.backgroundAlternate,
+        backgroundColor: c.backgroundAlternate,
         marginHorizontal: 5,
-        borderColor: colours.backgroundAlternate,
+        borderColor: c.backgroundAlternate,
         borderWidth: 1,
     },
     scrollActiveDot: {
-        backgroundColor: colours.yellow,
-        borderColor: colours.yellow,
+        backgroundColor: c.yellow,
+        borderColor: c.yellow,
     },
 });
 
-export default styles;
+export default createStyles(colours);

@@ -3,6 +3,20 @@ import { fireEvent, render } from '@testing-library/react-native';
 import View from '../../app/(tabs)/practice';
 import { getAllDrillHistoryService, getDrillStatsByTypeService } from '@/service/DbService';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
+jest.mock('../../hooks/useStyles', () => ({
+    useStyles: () => require('../../assets/stlyes').default,
+}));
+
 jest.mock('../../service/DbService', () => ({
     getAllDrillHistoryService: jest.fn(),
     getDrillStatsByTypeService: jest.fn()

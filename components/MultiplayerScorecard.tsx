@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Round, RoundPlayer, RoundHoleScore } from '../service/DbService';
-import colours from '../assets/colours';
+import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
@@ -19,6 +20,91 @@ const formatScore = (score: number): string => {
 };
 
 const MultiplayerScorecard = ({ round, players, holeScores, editable, selectedScore, onScoreSelect }: Props) => {
+    const colours = useThemeColours();
+
+    const localStyles = useMemo(() => StyleSheet.create({
+        container: {
+            padding: 15,
+        },
+        totalRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingVertical: 4,
+        },
+        totalPlayerName: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+        },
+        totalScore: {
+            color: colours.yellow,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        nineSection: {
+            marginTop: 15,
+        },
+        nineHeader: {
+            color: colours.yellow,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            marginBottom: 10,
+        },
+        gridRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        labelCell: {
+            width: 60,
+            paddingVertical: 4,
+        },
+        holeCell: {
+            flex: 1,
+            alignItems: 'center',
+            paddingVertical: 4,
+        },
+        holeNumberText: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+        },
+        parText: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+        },
+        labelText: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+        },
+        playerNameText: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+        },
+        scoreText: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        underParText: {
+            color: colours.green,
+        },
+        overParText: {
+            color: colours.errorText,
+        },
+        atParText: {
+            color: colours.yellow,
+        },
+        selectedCell: {
+            borderWidth: 2,
+            borderColor: colours.yellow,
+            borderRadius: 4,
+        },
+        roundTotalSection: {
+            marginTop: 15,
+            borderTopWidth: 1,
+            borderTopColor: colours.yellow,
+            paddingTop: 10,
+        },
+    }), [colours]);
+
     const holeNumbers = [...new Set(holeScores.map(s => s.HoleNumber))].sort((a, b) => a - b);
     const front9Holes = holeNumbers.filter(h => h <= 9);
     const back9Holes = holeNumbers.filter(h => h > 9);
@@ -188,86 +274,3 @@ const MultiplayerScorecard = ({ round, players, holeScores, editable, selectedSc
 };
 
 export default MultiplayerScorecard;
-
-const localStyles = StyleSheet.create({
-    container: {
-        padding: 15,
-    },
-    totalRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 4,
-    },
-    totalPlayerName: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-    },
-    totalScore: {
-        color: colours.yellow,
-        fontSize: fontSizes.normal,
-        fontWeight: 'bold',
-    },
-    nineSection: {
-        marginTop: 15,
-    },
-    nineHeader: {
-        color: colours.yellow,
-        fontSize: fontSizes.subHeader,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    gridRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    labelCell: {
-        width: 60,
-        paddingVertical: 4,
-    },
-    holeCell: {
-        flex: 1,
-        alignItems: 'center',
-        paddingVertical: 4,
-    },
-    holeNumberText: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-    },
-    parText: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-    },
-    labelText: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-    },
-    playerNameText: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-    },
-    scoreText: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-        fontWeight: 'bold',
-    },
-    underParText: {
-        color: colours.green,
-    },
-    overParText: {
-        color: colours.errorText,
-    },
-    atParText: {
-        color: colours.yellow,
-    },
-    selectedCell: {
-        borderWidth: 2,
-        borderColor: colours.yellow,
-        borderRadius: 4,
-    },
-    roundTotalSection: {
-        marginTop: 15,
-        borderTopWidth: 1,
-        borderTopColor: colours.yellow,
-        paddingTop: 10,
-    },
-});

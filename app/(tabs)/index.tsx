@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Link } from 'expo-router';
-import styles from '@/assets/stlyes';
-import colours from '@/assets/colours';
+import { useStyles } from '@/hooks/useStyles';
+import { useThemeColours } from '@/context/ThemeContext';
 import IconButton from '@/components/IconButton';
 
 
 export default function HomeScreen() {
+  const styles = useStyles();
+  const colours = useThemeColours();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = () => {

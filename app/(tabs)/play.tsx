@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
@@ -27,8 +27,8 @@ import {
     MultiplayerRoundScorecard,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
-import styles from '../../assets/stlyes';
-import colours from '../../assets/colours';
+import { useStyles } from '../../hooks/useStyles';
+import { useThemeColours } from '../../context/ThemeContext';
 import fontSizes from '../../assets/font-sizes';
 import { StyleSheet } from 'react-native';
 import DistancesScreen from '../play/distances';
@@ -40,6 +40,8 @@ const formatScore = (score: number): string => {
 };
 
 export default function Play() {
+    const styles = useStyles();
+    const colours = useThemeColours();
     const [refreshing, setRefreshing] = useState(false);
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
     const [currentHole, setCurrentHole] = useState(1);
@@ -56,6 +58,67 @@ export default function Play() {
     const [scorecardData, setScorecardData] = useState<MultiplayerRoundScorecard | null>(null);
     const toast = useToast();
     const router = useRouter();
+
+    const localStyles = useMemo(() => StyleSheet.create({
+        startRoundContainer: {
+            padding: 15,
+            alignItems: 'center',
+        },
+        actionButton: {
+            backgroundColor: colours.yellow,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            width: '100%',
+            marginTop: 5,
+        },
+        actionButtonText: {
+            color: colours.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        nextHoleButton: {
+            backgroundColor: colours.yellow,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center' as const,
+            marginTop: 10,
+            marginHorizontal: 15,
+        },
+        nextHoleButtonText: {
+            color: colours.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold' as const,
+        },
+        confirmContainer: {
+            marginTop: 20,
+            marginHorizontal: 15,
+        },
+        endRoundButton: {
+            backgroundColor: colours.errorText,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center' as const,
+            marginTop: 20,
+            marginHorizontal: 15,
+        },
+        endRoundButtonText: {
+            color: colours.white,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold' as const,
+        },
+        roundHistoryScroll: {
+            maxHeight: 300,
+        },
+        scorecardHeader: {
+            color: colours.text,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            textAlign: 'center' as const,
+            marginTop: 10,
+            marginBottom: 5,
+        },
+    }), [colours]);
 
     useEffect(() => {
         const activeRound = getActiveRoundService();
@@ -395,64 +458,3 @@ export default function Play() {
         </GestureHandlerRootView>
     );
 }
-
-const localStyles = StyleSheet.create({
-    startRoundContainer: {
-        padding: 15,
-        alignItems: 'center',
-    },
-    actionButton: {
-        backgroundColor: colours.yellow,
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        width: '100%',
-        marginTop: 5,
-    },
-    actionButtonText: {
-        color: colours.background,
-        fontSize: fontSizes.tableHeader,
-        fontWeight: 'bold',
-    },
-    nextHoleButton: {
-        backgroundColor: colours.yellow,
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center' as const,
-        marginTop: 10,
-        marginHorizontal: 15,
-    },
-    nextHoleButtonText: {
-        color: colours.background,
-        fontSize: fontSizes.tableHeader,
-        fontWeight: 'bold' as const,
-    },
-    confirmContainer: {
-        marginTop: 20,
-        marginHorizontal: 15,
-    },
-    endRoundButton: {
-        backgroundColor: colours.errorText,
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center' as const,
-        marginTop: 20,
-        marginHorizontal: 15,
-    },
-    endRoundButtonText: {
-        color: colours.white,
-        fontSize: fontSizes.tableHeader,
-        fontWeight: 'bold' as const,
-    },
-    roundHistoryScroll: {
-        maxHeight: 300,
-    },
-    scorecardHeader: {
-        color: colours.text,
-        fontSize: fontSizes.subHeader,
-        fontWeight: 'bold',
-        textAlign: 'center' as const,
-        marginTop: 10,
-        marginBottom: 5,
-    },
-});

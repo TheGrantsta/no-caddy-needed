@@ -4,6 +4,16 @@ import { render, fireEvent } from '@testing-library/react-native';
 import MultiplayerHoleScoreInput from '../../components/MultiplayerHoleScoreInput';
 import { RoundPlayer } from '../../service/DbService';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
 const mockPlayers: RoundPlayer[] = [
     { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
     { Id: 2, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 1 },

@@ -4,6 +4,16 @@ import Tiger5Chart from '../../components/Tiger5Chart';
 import { Tiger5Round } from '@/service/DbService';
 import colours from '../../assets/colours';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
 describe('Tiger5Chart component', () => {
     const mockRounds: Tiger5Round[] = [
         { Id: 1, ThreePutts: 3, DoubleBogeys: 1, BogeysPar5: 2, BogeysInside9Iron: 4, DoubleChips: 0, Total: 10, Created_At: '15/06' },

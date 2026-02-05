@@ -1,7 +1,7 @@
-import { useEffect, useState, ReactNode } from 'react';
+import { useEffect, useMemo, useState, ReactNode } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RoundPlayer } from '../service/DbService';
-import colours from '../assets/colours';
+import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
@@ -22,6 +22,7 @@ const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>
 };
 
 const MultiplayerHoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser }: Props) => {
+    const colours = useThemeColours();
     const [par, setPar] = useState(4);
     const [scores, setScores] = useState<Record<number, number>>({});
 
@@ -51,6 +52,80 @@ const MultiplayerHoleScoreInput = ({ holeNumber, players, onScoresChange, render
         setScores(updated);
         onScoresChange(holeNumber, par, buildScoresArray(players, updated, par));
     };
+
+    const localStyles = useMemo(() => StyleSheet.create({
+        container: {
+            padding: 15,
+        },
+        holeText: {
+            color: colours.yellow,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: 15,
+        },
+        parRow: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginBottom: 20,
+        },
+        parButton: {
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            borderWidth: 1,
+            borderColor: colours.yellow,
+            marginHorizontal: 5,
+            borderRadius: 4,
+        },
+        parButtonActive: {
+            backgroundColor: colours.yellow,
+        },
+        parButtonText: {
+            color: colours.yellow,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        parButtonTextActive: {
+            color: colours.background,
+        },
+        playerRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 15,
+            paddingVertical: 5,
+        },
+        playerName: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+            flex: 1,
+        },
+        stepperRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        stepperButton: {
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: colours.yellow,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        stepperButtonText: {
+            color: colours.background,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+        },
+        scoreText: {
+            color: colours.text,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            marginHorizontal: 15,
+            minWidth: 30,
+            textAlign: 'center',
+        },
+    }), [colours]);
 
     return (
         <View style={localStyles.container}>
@@ -105,77 +180,3 @@ const MultiplayerHoleScoreInput = ({ holeNumber, players, onScoresChange, render
 };
 
 export default MultiplayerHoleScoreInput;
-
-const localStyles = StyleSheet.create({
-    container: {
-        padding: 15,
-    },
-    holeText: {
-        color: colours.yellow,
-        fontSize: fontSizes.header,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 15,
-    },
-    parRow: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginBottom: 20,
-    },
-    parButton: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderWidth: 1,
-        borderColor: colours.yellow,
-        marginHorizontal: 5,
-        borderRadius: 4,
-    },
-    parButtonActive: {
-        backgroundColor: colours.yellow,
-    },
-    parButtonText: {
-        color: colours.yellow,
-        fontSize: fontSizes.normal,
-        fontWeight: 'bold',
-    },
-    parButtonTextActive: {
-        color: colours.background,
-    },
-    playerRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 15,
-        paddingVertical: 5,
-    },
-    playerName: {
-        color: colours.text,
-        fontSize: fontSizes.normal,
-        flex: 1,
-    },
-    stepperRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    stepperButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: colours.yellow,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    stepperButtonText: {
-        color: colours.background,
-        fontSize: fontSizes.subHeader,
-        fontWeight: 'bold',
-    },
-    scoreText: {
-        color: colours.text,
-        fontSize: fontSizes.header,
-        fontWeight: 'bold',
-        marginHorizontal: 15,
-        minWidth: 30,
-        textAlign: 'center',
-    },
-});

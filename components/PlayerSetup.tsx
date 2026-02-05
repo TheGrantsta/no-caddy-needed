@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import colours from '../assets/colours';
+import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
@@ -10,6 +10,7 @@ type Props = {
 const MAX_ADDITIONAL_PLAYERS = 3;
 
 const PlayerSetup = ({ onStartRound }: Props) => {
+    const colours = useThemeColours();
     const [additionalPlayers, setAdditionalPlayers] = useState<string[]>([]);
 
     const handleAddPlayer = () => {
@@ -32,6 +33,59 @@ const PlayerSetup = ({ onStartRound }: Props) => {
         const names = additionalPlayers.filter(name => name.trim().length > 0);
         onStartRound(names);
     };
+
+    const localStyles = useMemo(() => StyleSheet.create({
+        container: {
+            padding: 15,
+        },
+        playerRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 10,
+        },
+        playerName: {
+            color: colours.yellow,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        input: {
+            flex: 1,
+            color: colours.text,
+            fontSize: fontSizes.normal,
+            borderBottomWidth: 1,
+            borderBottomColor: colours.yellow,
+            paddingVertical: 5,
+        },
+        removeButton: {
+            marginLeft: 10,
+            padding: 5,
+        },
+        removeButtonText: {
+            color: colours.errorText,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        addButton: {
+            paddingVertical: 10,
+            alignItems: 'center',
+        },
+        addButtonText: {
+            color: colours.yellow,
+            fontSize: fontSizes.normal,
+        },
+        startButton: {
+            backgroundColor: colours.yellow,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginTop: 10,
+        },
+        startButtonText: {
+            color: colours.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+    }), [colours]);
 
     return (
         <View style={localStyles.container}>
@@ -81,56 +135,3 @@ const PlayerSetup = ({ onStartRound }: Props) => {
 };
 
 export default PlayerSetup;
-
-const localStyles = StyleSheet.create({
-    container: {
-        padding: 15,
-    },
-    playerRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    playerName: {
-        color: colours.yellow,
-        fontSize: fontSizes.normal,
-        fontWeight: 'bold',
-    },
-    input: {
-        flex: 1,
-        color: colours.text,
-        fontSize: fontSizes.normal,
-        borderBottomWidth: 1,
-        borderBottomColor: colours.yellow,
-        paddingVertical: 5,
-    },
-    removeButton: {
-        marginLeft: 10,
-        padding: 5,
-    },
-    removeButtonText: {
-        color: colours.errorText,
-        fontSize: fontSizes.normal,
-        fontWeight: 'bold',
-    },
-    addButton: {
-        paddingVertical: 10,
-        alignItems: 'center',
-    },
-    addButtonText: {
-        color: colours.yellow,
-        fontSize: fontSizes.normal,
-    },
-    startButton: {
-        backgroundColor: colours.yellow,
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    startButtonText: {
-        color: colours.background,
-        fontSize: fontSizes.tableHeader,
-        fontWeight: 'bold',
-    },
-});

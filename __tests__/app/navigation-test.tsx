@@ -4,6 +4,16 @@ import { TouchableOpacity } from 'react-native';
 import TabLayout from '../../app/(tabs)/_layout';
 import Homepage from '../../app/(tabs)/index';
 
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
 // Mock expo-router
 const mockPush = jest.fn();
 const mockNavigate = jest.fn();

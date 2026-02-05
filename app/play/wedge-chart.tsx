@@ -3,11 +3,13 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import WedgeChart from '../../components/WedgeChart';
 import { getWedgeChartService, saveWedgeChartService, WedgeChartData } from '../../service/DbService';
 import { useToast } from 'react-native-toast-notifications';
-import styles from '../../assets/stlyes';
-import colours from '@/assets/colours';
+import { useStyles } from '../../hooks/useStyles';
+import { useThemeColours } from '../../context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 
 export default function WedgeChartScreen() {
+    const styles = useStyles();
+    const colours = useThemeColours();
     const toast = useToast();
     const data = getWedgeChartService();
 

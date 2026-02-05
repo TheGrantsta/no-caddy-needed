@@ -190,6 +190,22 @@ describe('Play screen', () => {
             expect(getByTestId('round-history-scroll')).toBeTruthy();
         });
 
+        it('renders date column at 70% width and score and t5 columns at 15% width', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            const dateHeader = getByTestId('round-history-header-date');
+            const scoreHeader = getByTestId('round-history-header-score');
+            const t5Header = getByTestId('round-history-header-t5');
+
+            expect(dateHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '70%' })]));
+            expect(scoreHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '15%' })]));
+            expect(t5Header.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '15%' })]));
+        });
+
         it('renders round history rows as tappable', () => {
             mockGetAllRoundHistory.mockReturnValue([
                 { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },

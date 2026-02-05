@@ -30,6 +30,7 @@ import {
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
+import { useOrientation } from '../../hooks/useOrientation';
 import fontSizes from '../../assets/font-sizes';
 import { StyleSheet } from 'react-native';
 import DistancesScreen from '../play/distances';
@@ -43,6 +44,7 @@ const formatScore = (score: number): string => {
 export default function Play() {
     const styles = useStyles();
     const colours = useThemeColours();
+    const { landscapePadding } = useOrientation();
     const [refreshing, setRefreshing] = useState(false);
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
     const [currentHole, setCurrentHole] = useState(1);
@@ -306,7 +308,7 @@ export default function Play() {
 
             <ScrollView
                 style={styles.scrollContainer}
-                contentContainerStyle={styles.scrollContentContainer}
+                contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}

@@ -8,12 +8,14 @@ import SubMenu from "@/components/SubMenu";
 import Drill from "@/components/Drill";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
+import { useOrientation } from "@/hooks/useOrientation";
 import fontSizes from "@/assets/font-sizes";
 import Instructions from "@/components/Instructions";
 
 export default function Bunker() {
     const styles = useStyles();
     const colours = useThemeColours();
+    const { landscapePadding } = useOrientation();
     const [refreshing, setRefreshing] = useState(false);
     const [section, setSection] = useState('bunker-drills');
     const [gameActiveIndex, setGameActiveIndex] = useState(0);

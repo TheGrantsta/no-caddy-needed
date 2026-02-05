@@ -3,6 +3,7 @@ import { ActivityIndicator, Dimensions, FlatList, RefreshControl, ScrollView, St
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
+import { useOrientation } from "@/hooks/useOrientation";
 import SubMenu from "@/components/SubMenu";
 import { Link } from "expo-router";
 import IconButton from "@/components/IconButton";
@@ -14,6 +15,7 @@ import DrillStatsChart from "@/components/DrillStatsChart";
 export default function Practice() {
   const styles = useStyles();
   const colours = useThemeColours();
+  const { landscapePadding } = useOrientation();
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('short-game');
   const [loading, setLoading] = useState(true);
@@ -79,7 +81,7 @@ export default function Practice() {
         </View>
       )}
 
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer} refreshControl={
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}

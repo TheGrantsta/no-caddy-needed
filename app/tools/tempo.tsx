@@ -8,10 +8,12 @@ import Slider from '@react-native-community/slider';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 import { useStyles } from '@/hooks/useStyles';
+import { useOrientation } from '@/hooks/useOrientation';
 
 export default function Tempo() {
     const colours = useThemeColours();
     const styles = useStyles();
+    const { landscapePadding } = useOrientation();
     const [refreshing, setRefreshing] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [tempo, setTempo] = useState(60);
@@ -157,7 +159,7 @@ export default function Tempo() {
                 </View>
             )}
 
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer} refreshControl={
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}

@@ -5,12 +5,14 @@ import { useToast } from 'react-native-toast-notifications';
 import { getSettingsService, saveSettingsService, AppSettings } from '../service/DbService';
 import { useStyles } from '../hooks/useStyles';
 import { useTheme } from '../context/ThemeContext';
+import { useOrientation } from '../hooks/useOrientation';
 import fontSizes from '../assets/font-sizes';
 
 export default function Settings() {
   const toast = useToast();
   const { colours, setTheme } = useTheme();
   const styles = useStyles();
+  const { landscapePadding } = useOrientation();
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
 
   const handleToggleTheme = async (value: boolean) => {
@@ -49,7 +51,7 @@ export default function Settings() {
 
   return (
     <GestureHandlerRootView style={styles.flexOne}>
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
         <View style={styles.headerContainer}>
           <Text style={[styles.headerText, styles.marginTop]}>Settings</Text>
         </View>

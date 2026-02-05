@@ -5,10 +5,12 @@ import Chevrons from '../../components/Chevrons';
 import SubMenu from '../../components/SubMenu';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
+import { useOrientation } from '../../hooks/useOrientation';
 
 export default function Paradigms() {
   const styles = useStyles();
   const colours = useThemeColours();
+  const { landscapePadding } = useOrientation();
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('approach');
   const [activeIndex, setActiveIndex] = useState(0);
@@ -119,7 +121,7 @@ export default function Paradigms() {
         </View>
       )}
 
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer} refreshControl={
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}

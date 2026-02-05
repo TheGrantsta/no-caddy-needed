@@ -5,11 +5,13 @@ import { getClubDistancesService, saveClubDistancesService } from '../../service
 import { useToast } from 'react-native-toast-notifications';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
+import { useOrientation } from '../../hooks/useOrientation';
 import fontSizes from '@/assets/font-sizes';
 
 export default function DistancesScreen() {
     const styles = useStyles();
     const colours = useThemeColours();
+    const { landscapePadding } = useOrientation();
     const toast = useToast();
     const distances = getClubDistancesService();
     const handleSave = async (distances: { Club: string; CarryDistance: number; TotalDistance: number; SortOrder: number }[]) => {
@@ -32,7 +34,7 @@ export default function DistancesScreen() {
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
                 <View style={styles.headerContainer}>
                     <Text style={[styles.headerText, styles.marginTop]}>Distances</Text>
                     <Text style={[styles.normalText, styles.marginBottom]}>Club carry distances</Text>

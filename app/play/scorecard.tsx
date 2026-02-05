@@ -20,11 +20,13 @@ import {
 } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
+import { useOrientation } from '../../hooks/useOrientation';
 import fontSizes from '@/assets/font-sizes';
 
 export default function ScorecardScreen() {
     const styles = useStyles();
     const colours = useThemeColours();
+    const { landscapePadding } = useOrientation();
     const { roundId } = useLocalSearchParams<{ roundId: string }>();
     const toast = useToast();
     const router = useRouter();
@@ -187,7 +189,7 @@ export default function ScorecardScreen() {
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
                 <View style={styles.headerContainer}>
                     <Text style={[styles.headerText, styles.marginTop]}>Scorecard</Text>
                     {courseName && (

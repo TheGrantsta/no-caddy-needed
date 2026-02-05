@@ -5,11 +5,13 @@ import { getWedgeChartService, saveWedgeChartService, WedgeChartData } from '../
 import { useToast } from 'react-native-toast-notifications';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
+import { useOrientation } from '../../hooks/useOrientation';
 import fontSizes from '@/assets/font-sizes';
 
 export default function WedgeChartScreen() {
     const styles = useStyles();
     const colours = useThemeColours();
+    const { landscapePadding } = useOrientation();
     const toast = useToast();
     const data = getWedgeChartService();
 
@@ -33,7 +35,7 @@ export default function WedgeChartScreen() {
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
                 <View style={styles.headerContainer}>
                     <Text style={[styles.headerText, styles.marginTop]}>Wedge chart</Text>
                     <Text style={[styles.normalText, styles.marginBottom]}>

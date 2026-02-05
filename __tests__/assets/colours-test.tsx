@@ -12,8 +12,14 @@ describe('Colour palettes', () => {
         expect(darkColours.yellow).toBe(lightColours.yellow);
         expect(darkColours.mutedYellow).toBe(lightColours.mutedYellow);
         expect(darkColours.green).toBe(lightColours.green);
-        expect(darkColours.white).toBe(lightColours.white);
-        expect(darkColours.black).toBe(lightColours.black);
+    });
+
+    it('light theme white is dark for contrast on light background', () => {
+        expect(lightColours.white).toBe('#1a1a2e');
+    });
+
+    it('light theme backgroundLight contrasts with light background', () => {
+        expect(lightColours.backgroundLight).toBe('#dfe3e8');
     });
 
     it('darkColours has expected background value', () => {

@@ -34,13 +34,13 @@ export const darkColours: ThemeColours = {
 
 export const lightColours: ThemeColours = {
     text: '#1a1a2e',
-    white: '#fff',
+    white: '#1a1a2e',
     black: '#000',
     yellow: '#ffd33d',
     mutedYellow: '#e6be36',
     errorText: '#d32f2f',
     background: '#f5f5f0',
-    backgroundLight: '#ffffff',
+    backgroundLight: '#dfe3e8',
     backgroundDelete: '#d32f2f',
     backgroundAlternate: '#dfe3e8',
     border: '#3a3a3a',

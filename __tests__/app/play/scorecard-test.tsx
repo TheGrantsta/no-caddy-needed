@@ -58,7 +58,7 @@ const mockGetTiger5ForRound = getTiger5ForRoundService as jest.Mock;
 const mockDeleteRound = deleteRoundService as jest.Mock;
 
 const multiplayerData = {
-    round: { Id: 1, CoursePar: 72, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '' },
+    round: { Id: 1, CoursePar: 72, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '' },
     players: [
         { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
         { Id: 2, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 1 },
@@ -77,7 +77,7 @@ describe('Scorecard screen', () => {
 
     it('renders scorecard heading', () => {
         mockGetRoundScorecard.mockReturnValue({
-            round: { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '' },
+            round: { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '' },
             holes: [
                 { Id: 1, RoundId: 1, HoleNumber: 1, ScoreRelativeToPar: 1 },
                 { Id: 2, RoundId: 1, HoleNumber: 2, ScoreRelativeToPar: 0 },
@@ -88,6 +88,37 @@ describe('Scorecard screen', () => {
         const { getByText } = render(<ScorecardScreen />);
 
         expect(getByText('Scorecard')).toBeTruthy();
+    });
+
+    it('shows course name when present on multiplayer scorecard', () => {
+        const data = {
+            ...multiplayerData,
+            round: { ...multiplayerData.round, CourseName: 'St Andrews' },
+        };
+        mockGetMultiplayerScorecard.mockReturnValue(data);
+
+        const { getByText } = render(<ScorecardScreen />);
+
+        expect(getByText('St Andrews')).toBeTruthy();
+    });
+
+    it('does not show course name when CourseName is null', () => {
+        mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+        const { queryByTestId } = render(<ScorecardScreen />);
+
+        expect(queryByTestId('scorecard-course-name')).toBeNull();
+    });
+
+    it('shows course name on legacy scorecard when present', () => {
+        mockGetRoundScorecard.mockReturnValue({
+            round: { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: 'Pebble Beach', Created_At: '' },
+            holes: [{ Id: 1, RoundId: 1, HoleNumber: 1, ScoreRelativeToPar: 3 }],
+        });
+
+        const { getByText } = render(<ScorecardScreen />);
+
+        expect(getByText('Pebble Beach')).toBeTruthy();
     });
 
     it('renders RoundScorecard component with correct props', () => {

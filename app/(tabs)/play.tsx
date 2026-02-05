@@ -21,6 +21,7 @@ import {
     addRoundPlayersService,
     getRoundPlayersService,
     getMultiplayerScorecardService,
+    getRecentCourseNamesService,
     Round,
     RoundPlayer,
     Tiger5Round,
@@ -56,6 +57,7 @@ export default function Play() {
     const [currentHoleData, setCurrentHoleData] = useState<{ holeNumber: number; holePar: number; scores: { playerId: number; playerName: string; score: number }[] } | null>(null);
     const [showEndRoundConfirm, setShowEndRoundConfirm] = useState(false);
     const [scorecardData, setScorecardData] = useState<MultiplayerRoundScorecard | null>(null);
+    const [recentCourseNames, setRecentCourseNames] = useState<string[]>([]);
     const toast = useToast();
     const router = useRouter();
 
@@ -110,6 +112,13 @@ export default function Play() {
         roundHistoryScroll: {
             maxHeight: 300,
         },
+        historyDateColumn: {
+            width: '70%' as const,
+        },
+        historyNarrowColumn: {
+            width: '15%' as const,
+            textAlign: 'center' as const,
+        },
         scorecardHeader: {
             color: colours.text,
             fontSize: fontSizes.subHeader,
@@ -131,6 +140,7 @@ export default function Play() {
         }
         setRoundHistory(getAllRoundHistoryService());
         setTiger5Rounds(getAllTiger5RoundsService());
+        setRecentCourseNames(getRecentCourseNamesService());
     }, []);
 
     const onRefresh = () => {
@@ -146,8 +156,8 @@ export default function Play() {
         setShowPlayerSetup(true);
     };
 
-    const handleStartRound = async (playerNames: string[]) => {
-        const roundId = await startRoundService(72);
+    const handleStartRound = async (playerNames: string[], courseName: string) => {
+        const roundId = await startRoundService(72, courseName);
 
         if (roundId) {
             const playerIds = await addRoundPlayersService(roundId, playerNames);
@@ -240,6 +250,7 @@ export default function Play() {
         setScorecardData(null);
         setRoundHistory(getAllRoundHistoryService());
         setTiger5Rounds(getAllTiger5RoundsService());
+        setRecentCourseNames(getRecentCourseNamesService());
     };
 
     const handleConfirmEndRound = async () => {
@@ -336,10 +347,10 @@ export default function Play() {
                                     <Text style={[styles.subHeaderText, { textAlign: 'center' }]}>
                                         Round history
                                     </Text>
-                                    <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.yellow }]}>
-                                        <Text style={styles.header}>Date</Text>
-                                        <Text style={styles.header}>Score</Text>
-                                        <Text style={styles.header}>T5</Text>
+                                    <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.yellow }]}>
+                                        <Text testID="round-history-header-date" style={[styles.normalText, localStyles.historyDateColumn]}>Date</Text>
+                                        <Text testID="round-history-header-score" style={[styles.normalText, localStyles.historyNarrowColumn]}>Score</Text>
+                                        <Text testID="round-history-header-t5" style={[styles.normalText, localStyles.historyNarrowColumn]}>T5</Text>
                                     </View>
                                     <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
                                         {roundHistory.slice(0, 30).map((round) => (
@@ -348,10 +359,10 @@ export default function Play() {
                                                 testID={`round-history-row-${round.Id}`}
                                                 onPress={() => router.push({ pathname: '/play/scorecard', params: { roundId: String(round.Id) } })}
                                             >
-                                                <View style={[styles.row, { justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
-                                                    <Text style={styles.normalText}>{round.Created_At}</Text>
-                                                    <Text style={styles.normalText}>{formatScore(round.TotalScore)}</Text>
-                                                    <Text style={styles.normalText}>{tiger5Map.has(round.Created_At) ? tiger5Map.get(round.Created_At) : '-'}</Text>
+                                                <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
+                                                    <Text style={[styles.normalText, localStyles.historyDateColumn]}>{round.CourseName ? `${round.Created_At} - ${round.CourseName}` : round.Created_At}</Text>
+                                                    <Text style={[styles.normalText, localStyles.historyNarrowColumn]}>{formatScore(round.TotalScore)}</Text>
+                                                    <Text style={[styles.normalText, localStyles.historyNarrowColumn]}>{tiger5Map.has(round.Created_At) ? tiger5Map.get(round.Created_At) : '-'}</Text>
                                                 </View>
                                             </TouchableOpacity>
                                         ))}
@@ -364,7 +375,7 @@ export default function Play() {
 
                 {!isRoundActive && showPlayerSetup && displaySection('play-score') && (
                     <View style={styles.container}>
-                        <PlayerSetup onStartRound={handleStartRound} />
+                        <PlayerSetup onStartRound={handleStartRound} recentCourseNames={recentCourseNames} />
                     </View>
                 )}
 

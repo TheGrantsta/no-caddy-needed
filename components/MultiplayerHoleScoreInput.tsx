@@ -23,33 +23,32 @@ const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>
 
 const MultiplayerHoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser }: Props) => {
     const colours = useThemeColours();
-    const [par, setPar] = useState(4);
-    const [scores, setScores] = useState<Record<number, number>>({});
+    const [state, setState] = useState<{ par: number; scores: Record<number, number> }>({ par: 4, scores: {} });
 
     useEffect(() => {
         const initial: Record<number, number> = {};
         players.forEach(p => { initial[p.Id] = 4; });
-        setPar(4);
-        setScores(initial);
+        setState({ par: 4, scores: initial });
     }, [holeNumber]);
 
+    const { par, scores } = state;
+
     const handleParChange = (newPar: number) => {
-        setPar(newPar);
         const reset: Record<number, number> = {};
         players.forEach(p => { reset[p.Id] = newPar; });
-        setScores(reset);
+        setState({ par: newPar, scores: reset });
         onScoresChange(holeNumber, newPar, buildScoresArray(players, reset, newPar));
     };
 
     const handleIncrement = (playerId: number) => {
         const updated = { ...scores, [playerId]: (scores[playerId] || par) + 1 };
-        setScores(updated);
+        setState({ par, scores: updated });
         onScoresChange(holeNumber, par, buildScoresArray(players, updated, par));
     };
 
     const handleDecrement = (playerId: number) => {
         const updated = { ...scores, [playerId]: Math.max(1, (scores[playerId] || par) - 1) };
-        setScores(updated);
+        setState({ par, scores: updated });
         onScoresChange(holeNumber, par, buildScoresArray(players, updated, par));
     };
 

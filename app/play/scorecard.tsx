@@ -170,6 +170,9 @@ export default function ScorecardScreen() {
         setShowDeleteConfirm(false);
     };
 
+    const round = multiplayerScorecard?.round || scorecard?.round;
+    const courseName = round?.CourseName;
+
     if (!multiplayerScorecard && !scorecard) {
         return (
             <GestureHandlerRootView style={styles.flexOne}>
@@ -187,6 +190,9 @@ export default function ScorecardScreen() {
             <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
                 <View style={styles.headerContainer}>
                     <Text style={[styles.headerText, styles.marginTop]}>Scorecard</Text>
+                    {courseName && (
+                        <Text testID="scorecard-course-name" style={styles.subHeaderText}>{courseName}</Text>
+                    )}
                 </View>
                 {multiplayerScorecard && (
                     <>

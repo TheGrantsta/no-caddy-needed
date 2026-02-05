@@ -11,7 +11,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS WedgeChartEntries (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL, DistanceName TEXT NOT NULL, Distance INTEGER NOT NULL, ClubSortOrder INTEGER NOT NULL, DistanceSortOrder INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS Drills (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, Result BOOLEAN NOT NULL, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS Tiger5Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, ThreePutts INTEGER NOT NULL DEFAULT 0, DoubleBogeys INTEGER NOT NULL DEFAULT 0, BogeysPar5 INTEGER NOT NULL DEFAULT 0, BogeysInside9Iron INTEGER NOT NULL DEFAULT 0, DoubleChips INTEGER NOT NULL DEFAULT 0, Total INTEGER NOT NULL DEFAULT 0, RoundId INTEGER, Created_At TEXT NOT NULL);
-        CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, CoursePar INTEGER NOT NULL, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, Created_At TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, CoursePar INTEGER NOT NULL, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, CourseName TEXT, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundHoles (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, ScoreRelativeToPar INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
@@ -127,17 +127,17 @@ export const getAllDrillHistory = () => {
     return get(sqlStatement);
 }
 
-export const insertRound = async (coursePar: number): Promise<number | null> => {
+export const insertRound = async (coursePar: number, courseName: string): Promise<number | null> => {
     try {
         const db = await SQLite.openDatabaseAsync(dbName);
         const now = new Date().toISOString();
 
         const statement = await db.prepareAsync(
-            'INSERT INTO Rounds (CoursePar, TotalScore, StartTime, IsCompleted, Created_At) VALUES ($CoursePar, 0, $StartTime, 0, $Created_At);'
+            'INSERT INTO Rounds (CoursePar, TotalScore, StartTime, IsCompleted, CourseName, Created_At) VALUES ($CoursePar, 0, $StartTime, 0, $CourseName, $Created_At);'
         );
 
         try {
-            const result = await statement.executeAsync({ $CoursePar: coursePar, $StartTime: now, $Created_At: now });
+            const result = await statement.executeAsync({ $CoursePar: coursePar, $StartTime: now, $CourseName: courseName || null, $Created_At: now });
             return result.lastInsertRowId;
         } finally {
             await statement.finalizeAsync();
@@ -213,6 +213,11 @@ export const getActiveRound = () => {
 export const getAllRounds = () => {
     const db = SQLite.openDatabaseSync(dbName);
     return db.getAllSync('SELECT * FROM Rounds WHERE IsCompleted = 1 ORDER BY Id DESC;');
+};
+
+export const getDistinctCourseNames = () => {
+    const db = SQLite.openDatabaseSync(dbName);
+    return db.getAllSync("SELECT DISTINCT CourseName FROM Rounds WHERE CourseName IS NOT NULL AND CourseName != '' ORDER BY Id DESC;");
 };
 
 export const getClubDistances = () => {

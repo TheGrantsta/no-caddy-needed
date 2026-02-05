@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
-import WedgeChart from '../components/WedgeChart';
 import ClubDistanceList from '../components/ClubDistanceList';
 import { getClubDistancesService, saveClubDistancesService } from '../service/DbService';
 import styles from '../assets/stlyes';
@@ -64,10 +63,6 @@ export default function Settings() {
           <Text style={[styles.headerText, styles.marginTop]}>
             Settings
           </Text>
-        </View>
-
-        <View style={styles.container}>
-          <WedgeChart isShowButtons={true} />
         </View>
 
         <View style={styles.headerContainer}>

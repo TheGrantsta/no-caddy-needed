@@ -1,120 +1,127 @@
+import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import WedgeChart from '../../components/WedgeChart';
-import { getWedgeChartService } from '../../service/DbService';
+import type { WedgeChartData } from '../../service/DbService';
 
-jest.mock('../../service/DbService', () => ({
-    getWedgeChartService: jest.fn(() => [[]])
-}));
+describe('WedgeChart component', () => {
+    const emptyData: WedgeChartData = { distanceNames: [], clubs: [] };
 
-describe('Wedge chart component', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-        (getWedgeChartService as jest.Mock).mockReturnValue([]);
+    const populatedData: WedgeChartData = {
+        distanceNames: ['1/2', '3/4', 'Full'],
+        clubs: [
+            { club: 'PW', distances: [{ name: '1/2', distance: 90 }, { name: '3/4', distance: 110 }, { name: 'Full', distance: 130 }] },
+            { club: 'SW', distances: [{ name: '1/2', distance: 50 }, { name: '3/4', distance: 70 }, { name: 'Full', distance: 90 }] },
+        ],
+    };
+
+    it('renders table header with Club label', () => {
+        const { getByText } = render(<WedgeChart data={emptyData} />);
+
+        expect(getByText('Club')).toBeTruthy();
     });
 
-    it('renders heading', () => {
-        const { getByText } = render(<WedgeChart isShowButtons={false} />)
+    it('renders distance name inputs when data has distance names', () => {
+        const { getByTestId } = render(<WedgeChart data={populatedData} />);
 
-        expect(getByText('Wedge chart')).toBeTruthy();
+        expect(getByTestId('distance-name-input-0').props.value).toBe('1/2');
+        expect(getByTestId('distance-name-input-1').props.value).toBe('3/4');
+        expect(getByTestId('distance-name-input-2').props.value).toBe('Full');
     });
 
-    it('renders add button', () => {
-        const { getByTestId } = render(<WedgeChart isShowButtons={true} />);
+    it('renders club names in inputs', () => {
+        const { getByTestId } = render(<WedgeChart data={populatedData} />);
 
-        expect(getByTestId('add-button')).toBeTruthy();
+        expect(getByTestId('wedge-club-input-0').props.value).toBe('PW');
+        expect(getByTestId('wedge-club-input-1').props.value).toBe('SW');
     });
 
-    it('does NOT render add button when isShowButtons to false', () => {
-        const { queryByTestId } = render(<WedgeChart isShowButtons={false} />);
+    it('renders distance values in inputs', () => {
+        const { getByTestId } = render(<WedgeChart data={populatedData} />);
 
-        expect(queryByTestId('add-button')).toBeNull();
+        expect(getByTestId('wedge-distance-input-0-0').props.value).toBe('90');
+        expect(getByTestId('wedge-distance-input-0-2').props.value).toBe('130');
+        expect(getByTestId('wedge-distance-input-1-0').props.value).toBe('50');
     });
 
-    it('renders default text if wedge chart has not been set', () => {
-        const { getByText } = render(<WedgeChart isShowButtons={true} />);
+    it('shows add club button when fewer than 4 clubs', () => {
+        const { getByTestId } = render(<WedgeChart data={emptyData} />);
 
-        expect(getByText('Wedge chart not set')).toBeTruthy();
+        expect(getByTestId('add-wedge-club-button')).toBeTruthy();
     });
 
-    it('renders edit button if wedge chart is set', () => {
-        const data = [
-            ['PW', '100', '110', '120']
-        ];
+    it('hides add club button when 4 clubs exist', () => {
+        const fourClubs: WedgeChartData = {
+            distanceNames: ['Full'],
+            clubs: [
+                { club: 'PW', distances: [{ name: 'Full', distance: 130 }] },
+                { club: 'GW', distances: [{ name: 'Full', distance: 110 }] },
+                { club: 'SW', distances: [{ name: 'Full', distance: 90 }] },
+                { club: 'LW', distances: [{ name: 'Full', distance: 70 }] },
+            ],
+        };
 
-        (getWedgeChartService as jest.Mock).mockReturnValue(data);
-        const { getByText } = render(<WedgeChart isShowButtons={true} />)
+        const { queryByTestId } = render(<WedgeChart data={fourClubs} />);
 
-        expect(getByText('Edit')).toBeTruthy();
+        expect(queryByTestId('add-wedge-club-button')).toBeNull();
     });
 
-    it('renders wedge chart heading and row', () => {
-        const data = [
-            ['Swing/Wedge', '1/2', '3/4', 'Full'],
-            ['PW', '100', '110', '120']
-        ];
+    it('shows add distance button when fewer than 6 distances', () => {
+        const { getByTestId } = render(<WedgeChart data={emptyData} />);
 
-        (getWedgeChartService as jest.Mock).mockReturnValue(data);
-        const { getByText } = render(<WedgeChart isShowButtons={true} />)
-
-        expect(getByText('Swing/Wedge')).toBeTruthy();
-        expect(getByText('1/2')).toBeTruthy();
-        expect(getByText('3/4')).toBeTruthy();
-        expect(getByText('Full')).toBeTruthy();
-
-        expect(getByText('PW')).toBeTruthy();
-        expect(getByText('100')).toBeTruthy();
-        expect(getByText('110')).toBeTruthy();
-        expect(getByText('120')).toBeTruthy();
+        expect(getByTestId('add-wedge-distance-button')).toBeTruthy();
     });
 
-    it('renders save and cancel buttons when wedge chart is set and edit button clicked', async () => {
-        const data = [
-            ['PW', '100', '110', '120']
-        ];
+    it('hides add distance button when 6 distances exist', () => {
+        const sixDistances: WedgeChartData = {
+            distanceNames: ['1', '2', '3', '4', '5', '6'],
+            clubs: [],
+        };
 
-        (getWedgeChartService as jest.Mock).mockReturnValue(data);
-        const { getByText, getByTestId } = render(<WedgeChart isShowButtons={true} />)
+        const { queryByTestId } = render(<WedgeChart data={sixDistances} />);
 
-        expect(getByText('Edit')).toBeTruthy();
-
-        const button = getByTestId('add-button');
-
-        fireEvent.press(button);
-
-        expect(getByText('Cancel')).toBeTruthy();
-        expect(getByText('Save')).toBeTruthy();
+        expect(queryByTestId('add-wedge-distance-button')).toBeNull();
     });
 
-    it('renders points when empty wedge chart and add button clicked', () => {
-        const { getByText, getByTestId } = render(<WedgeChart isShowButtons={true} />)
+    it('adds a new club row when add club is pressed', () => {
+        const dataWithOneDistance: WedgeChartData = {
+            distanceNames: ['Full'],
+            clubs: [],
+        };
 
-        const button = getByTestId('add-button');
+        const { getByTestId } = render(<WedgeChart data={dataWithOneDistance} />);
 
-        fireEvent.press(button);
+        fireEvent.press(getByTestId('add-wedge-club-button'));
 
-        expect(getByText('How to create a wedge chart')).toBeTruthy();
-        expect(getByText('Record your carry distances')).toBeTruthy();
-        expect(getByText('Replicate your conditions')).toBeTruthy();
-        expect(getByText('Visualize your data')).toBeTruthy();
-        expect(getByText('Use a launch monitor')).toBeTruthy();
+        expect(getByTestId('wedge-club-input-0')).toBeTruthy();
+        expect(getByTestId('wedge-distance-input-0-0')).toBeTruthy();
     });
 
-    it('renders points when wedge chart is set and edit button clicked', () => {
-        const data = [
-            ['PW', '100', '110', '120']
-        ];
+    it('adds a new distance column when add distance is pressed', () => {
+        const dataWithOneClub: WedgeChartData = {
+            distanceNames: ['Full'],
+            clubs: [{ club: 'PW', distances: [{ name: 'Full', distance: 130 }] }],
+        };
 
-        (getWedgeChartService as jest.Mock).mockReturnValue(data);
-        const { getByText, getByTestId } = render(<WedgeChart isShowButtons={true} />)
+        const { getByTestId } = render(<WedgeChart data={dataWithOneClub} />);
 
-        const button = getByTestId('add-button');
+        fireEvent.press(getByTestId('add-wedge-distance-button'));
 
-        fireEvent.press(button);
+        expect(getByTestId('distance-name-input-1')).toBeTruthy();
+        expect(getByTestId('wedge-distance-input-0-1')).toBeTruthy();
+    });
 
-        expect(getByText('How to create a wedge chart')).toBeTruthy();
-        expect(getByText('Record your carry distances')).toBeTruthy();
-        expect(getByText('Replicate your conditions')).toBeTruthy();
-        expect(getByText('Visualize your data')).toBeTruthy();
-        expect(getByText('Use a launch monitor')).toBeTruthy();
+    it('shows save button', () => {
+        const { getByTestId } = render(<WedgeChart data={emptyData} />);
+
+        expect(getByTestId('save-wedge-chart-button')).toBeTruthy();
+    });
+
+    it('calls onSave with chart data when save is pressed', () => {
+        const mockOnSave = jest.fn();
+        const { getByTestId } = render(<WedgeChart data={populatedData} onSave={mockOnSave} />);
+
+        fireEvent.press(getByTestId('save-wedge-chart-button'));
+
+        expect(mockOnSave).toHaveBeenCalledWith(populatedData);
     });
 });

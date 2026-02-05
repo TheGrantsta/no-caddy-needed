@@ -1,8 +1,9 @@
 import getTwoDigitDayAndMonth from '@/app/DateFormatter';
 import {
-    getWedgeChart,
-    insertDrillResult,
+    getWedgeChartDistanceNames,
+    getWedgeChartEntries,
     insertWedgeChart,
+    insertDrillResult,
     getAllDrillHistory,
     insertTiger5Round,
     getAllTiger5Rounds,
@@ -24,19 +25,54 @@ import {
     deleteRound,
 } from '../database/db';
 
-export const getWedgeChartService = () => {
-    let wedgeChart: any[][] = [];
-    const items = getWedgeChart();
-
-    items.forEach((item) => {
-        wedgeChart.push([item.Club, item.HalfSwing, item.ThreeQuarterSwing, item.FullSwing]);
-    });
-
-    return wedgeChart;
+export type WedgeChartClub = {
+    club: string;
+    distances: { name: string; distance: number }[];
 };
 
-export const insertWedgeChartService = (wedgeChart: any) => {
-    return insertWedgeChart(wedgeChart);
+export type WedgeChartData = {
+    distanceNames: string[];
+    clubs: WedgeChartClub[];
+};
+
+export const getWedgeChartService = (): WedgeChartData => {
+    const nameRows = getWedgeChartDistanceNames() as { Id: number; Name: string; SortOrder: number }[];
+    const entryRows = getWedgeChartEntries() as { Id: number; Club: string; DistanceName: string; Distance: number; ClubSortOrder: number; DistanceSortOrder: number }[];
+
+    const distanceNames = nameRows.map(r => r.Name);
+
+    const clubMap = new Map<string, { sortOrder: number; distances: { name: string; distance: number }[] }>();
+    for (const entry of entryRows) {
+        if (!clubMap.has(entry.Club)) {
+            clubMap.set(entry.Club, { sortOrder: entry.ClubSortOrder, distances: [] });
+        }
+        clubMap.get(entry.Club)!.distances.push({ name: entry.DistanceName, distance: entry.Distance });
+    }
+
+    const clubs: WedgeChartClub[] = Array.from(clubMap.entries())
+        .sort((a, b) => a[1].sortOrder - b[1].sortOrder)
+        .map(([club, data]) => ({ club, distances: data.distances }));
+
+    return { distanceNames, clubs };
+};
+
+export const saveWedgeChartService = async (data: WedgeChartData): Promise<boolean> => {
+    const distanceNames = data.distanceNames.map((name, i) => ({ Name: name, SortOrder: i + 1 }));
+    const entries: { Club: string; DistanceName: string; Distance: number; ClubSortOrder: number; DistanceSortOrder: number }[] = [];
+
+    data.clubs.forEach((club, clubIndex) => {
+        club.distances.forEach((d, distIndex) => {
+            entries.push({
+                Club: club.club,
+                DistanceName: d.name,
+                Distance: d.distance,
+                ClubSortOrder: clubIndex + 1,
+                DistanceSortOrder: distIndex + 1,
+            });
+        });
+    });
+
+    return insertWedgeChart(distanceNames, entries);
 };
 
 export const insertDrillResultService = (name: any, result: boolean) => {

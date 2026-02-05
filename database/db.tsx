@@ -7,7 +7,8 @@ export const initialize = async () => {
 
     await db.execAsync(`
         PRAGMA journal_mode = WAL;
-        CREATE TABLE IF NOT EXISTS WedgeChart (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL, HalfSwing INTEGER NOT NULL, ThreeQuarterSwing INTEGER NOT NULL, FullSwing INTEGER NOT NULL);
+        CREATE TABLE IF NOT EXISTS WedgeChartDistanceNames (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, SortOrder INTEGER NOT NULL);
+        CREATE TABLE IF NOT EXISTS WedgeChartEntries (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL, DistanceName TEXT NOT NULL, Distance INTEGER NOT NULL, ClubSortOrder INTEGER NOT NULL, DistanceSortOrder INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS Drills (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, Result BOOLEAN NOT NULL, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS Tiger5Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, ThreePutts INTEGER NOT NULL DEFAULT 0, DoubleBogeys INTEGER NOT NULL DEFAULT 0, BogeysPar5 INTEGER NOT NULL DEFAULT 0, BogeysInside9Iron INTEGER NOT NULL DEFAULT 0, DoubleChips INTEGER NOT NULL DEFAULT 0, Total INTEGER NOT NULL DEFAULT 0, RoundId INTEGER, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, CoursePar INTEGER NOT NULL, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, Created_At TEXT NOT NULL);
@@ -38,32 +39,57 @@ export const insertDrillResult = async (name: string, result: boolean) => {
     return success;
 };
 
-export const getWedgeChart = () => {
-    const sqlStatement = 'SELECT * FROM WedgeChart ORDER BY FullSwing DESC;';
-
-    return get(sqlStatement);
-}
-
-export const insertWedgeChart = async (wedgeChart: any[]) => {
-    let success = true;
+export const getWedgeChartDistanceNames = () => {
     const db = SQLite.openDatabaseSync(dbName);
+    return db.getAllSync('SELECT * FROM WedgeChartDistanceNames ORDER BY SortOrder ASC;');
+};
 
-    db.execSync('DELETE FROM WedgeChart');
+export const getWedgeChartEntries = () => {
+    const db = SQLite.openDatabaseSync(dbName);
+    return db.getAllSync('SELECT * FROM WedgeChartEntries ORDER BY ClubSortOrder ASC, DistanceSortOrder ASC;');
+};
 
-    wedgeChart.forEach(async (item) => {
-        const statement = db.prepareSync(
-            'INSERT INTO WedgeChart (Club, HalfSwing, ThreeQuarterSwing, FullSwing) VALUES ($Club, $HalfSwing, $ThreeQuarterSwing, $FullSwing)'
-        );
+export const insertWedgeChart = async (
+    distanceNames: { Name: string; SortOrder: number }[],
+    entries: { Club: string; DistanceName: string; Distance: number; ClubSortOrder: number; DistanceSortOrder: number }[]
+): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = SQLite.openDatabaseSync(dbName);
+        db.execSync('DELETE FROM WedgeChartDistanceNames');
+        db.execSync('DELETE FROM WedgeChartEntries');
 
-        try {
-            await statement.executeAsync({ $Club: item[0], $HalfSwing: item[1], $ThreeQuarterSwing: item[2], $FullSwing: item[3] });
-        } catch (e) {
-            console.log(e);
-            success = false;
-        } finally {
-            await statement.finalizeAsync();
+        for (const dn of distanceNames) {
+            const statement = db.prepareSync(
+                'INSERT INTO WedgeChartDistanceNames (Name, SortOrder) VALUES ($Name, $SortOrder)'
+            );
+            try {
+                await statement.executeAsync({ $Name: dn.Name, $SortOrder: dn.SortOrder });
+            } finally {
+                await statement.finalizeAsync();
+            }
         }
-    });
+
+        for (const entry of entries) {
+            const statement = db.prepareSync(
+                'INSERT INTO WedgeChartEntries (Club, DistanceName, Distance, ClubSortOrder, DistanceSortOrder) VALUES ($Club, $DistanceName, $Distance, $ClubSortOrder, $DistanceSortOrder)'
+            );
+            try {
+                await statement.executeAsync({
+                    $Club: entry.Club,
+                    $DistanceName: entry.DistanceName,
+                    $Distance: entry.Distance,
+                    $ClubSortOrder: entry.ClubSortOrder,
+                    $DistanceSortOrder: entry.DistanceSortOrder,
+                });
+            } finally {
+                await statement.finalizeAsync();
+            }
+        }
+    } catch (e) {
+        console.log(e);
+        success = false;
+    }
 
     return success;
 };

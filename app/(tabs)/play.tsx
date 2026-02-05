@@ -7,7 +7,7 @@ import MultiplayerHoleScoreInput from '../../components/MultiplayerHoleScoreInpu
 import Tiger5Tally from '../../components/Tiger5Tally';
 import Tiger5Chart from '../../components/Tiger5Chart';
 import SubMenu from '../../components/SubMenu';
-import WedgeChart from '../../components/WedgeChart';
+import WedgeChartScreen from '../play/wedge-chart';
 import PlayerSetup from '../../components/PlayerSetup';
 import MultiplayerScorecard from '../../components/MultiplayerScorecard';
 import {
@@ -388,10 +388,7 @@ export default function Play() {
 
                 {displaySection('play-wedge-chart') && (
                     <View style={styles.container}>
-                        <Text style={[styles.normalText, { textAlign: 'center', marginTop: 10 }]}>
-                            Your wedge distances
-                        </Text>
-                        <WedgeChart isShowButtons={false} />
+                        <WedgeChartScreen />
                     </View>
                 )}
             </ScrollView>

@@ -428,7 +428,7 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('confirm-delete-button'));
 
             await waitFor(() => {
-                expect(mockShow).toHaveBeenCalledWith('Round deleted', { type: 'success' });
+                expect(mockShow).toHaveBeenCalledWith('Round deleted', expect.objectContaining({ type: 'success' }));
                 expect(mockBack).toHaveBeenCalled();
             });
         });
@@ -443,7 +443,7 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('confirm-delete-button'));
 
             await waitFor(() => {
-                expect(mockShow).toHaveBeenCalledWith('Failed to delete round', { type: 'danger' });
+                expect(mockShow).toHaveBeenCalledWith('Failed to delete round', expect.objectContaining({ type: 'danger' }));
             });
         });
 

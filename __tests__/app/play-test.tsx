@@ -25,15 +25,16 @@ jest.mock('../../service/DbService', () => ({
     insertTiger5RoundService: jest.fn(),
     getAllTiger5RoundsService: jest.fn(),
     getClubDistancesService: jest.fn(),
-    getWedgeChartService: jest.fn().mockReturnValue([]),
-    insertWedgeChartService: jest.fn(),
+    getWedgeChartService: jest.fn().mockReturnValue({ distanceNames: [], clubs: [] }),
+    saveWedgeChartService: jest.fn(),
     addRoundPlayersService: jest.fn(),
     getRoundPlayersService: jest.fn(),
     getMultiplayerScorecardService: jest.fn(),
 }));
 
 jest.mock('../../database/db', () => ({
-    getWedgeChart: jest.fn().mockReturnValue([]),
+    getWedgeChartDistanceNames: jest.fn().mockReturnValue([]),
+    getWedgeChartEntries: jest.fn().mockReturnValue([]),
 }));
 
 const mockToastShow = jest.fn();

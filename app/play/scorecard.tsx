@@ -19,6 +19,8 @@ import {
     Tiger5Round,
 } from '../../service/DbService';
 import styles from '../../assets/stlyes';
+import colours from '@/assets/colours';
+import fontSizes from '@/assets/font-sizes';
 
 export default function ScorecardScreen() {
     const { roundId } = useLocalSearchParams<{ roundId: string }>();
@@ -146,10 +148,18 @@ export default function ScorecardScreen() {
     const handleConfirmDelete = async () => {
         const success = await deleteRoundService(Number(roundId));
         if (success) {
-            toast.show('Round deleted', { type: 'success' });
+            toast.show('Round deleted', {
+                type: 'success',
+                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
+                style: { borderLeftColor: colours.green, borderLeftWidth: 10, backgroundColor: colours.yellow },
+            });
             router.back();
         } else {
-            toast.show('Failed to delete round', { type: 'danger' });
+            toast.show('Failed to delete round', {
+                type: 'danger',
+                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
+                style: { borderLeftColor: colours.errorText, borderLeftWidth: 10, backgroundColor: colours.yellow },
+            });
             setShowDeleteConfirm(false);
         }
     };

@@ -3,7 +3,6 @@ import { render } from '@testing-library/react-native';
 import View from '../../app/settings';
 
 jest.mock('../../service/DbService', () => ({
-    getWedgeChartService: jest.fn(() => [[]]),
     getClubDistancesService: jest.fn(() => []),
     saveClubDistancesService: jest.fn(() => Promise.resolve(true)),
 }));
@@ -31,14 +30,8 @@ describe('Settings page ', () => {
         expect(getByText('Settings')).toBeTruthy();
     });
 
-    it('renders heading', () => {
-        const { getByText } = render(<View />)
-
-        expect(getByText('Wedge chart')).toBeTruthy();
-    });
-
     it('renders club distances heading', () => {
-        const { getByText } = render(<View />)
+        const { getByText } = render(<View />);
 
         expect(getByText('Club distances')).toBeTruthy();
     });

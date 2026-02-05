@@ -35,9 +35,7 @@ export default function DistancesScreen() {
             <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
                 <View style={styles.headerContainer}>
                     <Text style={[styles.headerText, styles.marginTop]}>Distances</Text>
-                    <Text style={[styles.normalText, styles.marginBottom]}>
-                        {distances.length === 0 ? 'No clubs in your bag' : `${distances.length} clubs in your bag`}
-                    </Text>
+                    <Text style={[styles.normalText, styles.marginBottom]}>Club carry distances</Text>
                 </View>
                 <ClubDistanceList distances={distances} onSave={handleSave} />
             </ScrollView>

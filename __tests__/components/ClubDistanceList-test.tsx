@@ -45,7 +45,7 @@ describe('ClubDistanceList component', () => {
         );
 
         expect(getByText('Club')).toBeTruthy();
-        expect(getByText('Carry (yards)')).toBeTruthy();
+        expect(getByText('Distance')).toBeTruthy();
     });
 
     it('shows Save button', () => {

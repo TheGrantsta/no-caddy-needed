@@ -123,7 +123,7 @@ const ClubDistanceList = ({ distances, onSave }: Props) => {
         <View style={localStyles.container}>
             <View style={localStyles.headerRow}>
                 <Text style={[localStyles.headerCell, localStyles.clubCell]}>Club</Text>
-                <Text style={[localStyles.headerCell, localStyles.distanceCell]}>Carry (yards)</Text>
+                <Text style={[localStyles.headerCell, localStyles.distanceCell]}>Distance</Text>
             </View>
             {rows.map((row, index) => (
                 <View key={index} style={localStyles.row}>

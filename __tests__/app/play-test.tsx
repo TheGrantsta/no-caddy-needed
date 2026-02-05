@@ -289,7 +289,7 @@ describe('Play screen', () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
-            const { getByTestId } = render(<Play />);
+            const { getByTestId, getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
@@ -297,6 +297,7 @@ describe('Play screen', () => {
 
             await waitFor(() => {
                 expect(mockStartRound).toHaveBeenCalledWith(72, 'St Andrews');
+                expect(getByText('Hole 1')).toBeTruthy();
             });
         });
 

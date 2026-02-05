@@ -31,7 +31,7 @@ View and edit the wedge chart to make better decisions on the course. The wedge 
 
 ## Status
 
-- To be implemented
+- Complete
 
 ## Priority
 

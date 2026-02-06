@@ -11,6 +11,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import fontSizes from "@/assets/font-sizes";
 import { getAllDrillHistoryService, getDrillStatsByTypeService, DrillStats } from "@/service/DbService";
 import DrillStatsChart from "@/components/DrillStatsChart";
+import Chevrons from "@/components/Chevrons";
 
 export default function Practice() {
   const styles = useStyles();
@@ -23,6 +24,8 @@ export default function Practice() {
   const [drillHistory, setDrillHistory] = useState<any[]>([]);
   const [drillStats, setDrillStats] = useState<DrillStats[]>([]);
   const flatListRef = useRef(null);
+
+  const points = ['Honesty: be honest with yourself and identify the shots you avoid, or can’t play, and give yourself time', 'Data: use your Tiger 5 stats as a guide; focus your practice on what will make the biggest difference'];
 
   const handleSubMenu = (sectionName: string) => {
     setSection(sectionName);
@@ -134,11 +137,7 @@ export default function Practice() {
               </View>
             </View>
 
-            <View>
-              <Text style={[styles.normalText, styles.marginTop]}>
-                Only you will know what you need to practice - be honest with yourself, identify shots you avoid or can't play, and give yourself time
-              </Text>
-            </View>
+            <Chevrons heading='Intention' points={points} />
           </View>
         )}
 

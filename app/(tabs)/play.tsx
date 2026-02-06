@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useToast } from 'react-native-toast-notifications';
 import { useRouter } from 'expo-router';
 import MultiplayerHoleScoreInput from '../../components/MultiplayerHoleScoreInput';
 import Tiger5Tally from '../../components/Tiger5Tally';
@@ -31,6 +30,7 @@ import { scheduleRoundReminder, cancelRoundReminder } from '../../service/Notifi
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
+import { useAppToast } from '../../hooks/useAppToast';
 import fontSizes from '../../assets/font-sizes';
 import { StyleSheet } from 'react-native';
 import DistancesScreen from '../play/distances';
@@ -60,7 +60,7 @@ export default function Play() {
     const [showEndRoundConfirm, setShowEndRoundConfirm] = useState(false);
     const [scorecardData, setScorecardData] = useState<MultiplayerRoundScorecard | null>(null);
     const [recentCourseNames, setRecentCourseNames] = useState<string[]>([]);
-    const toast = useToast();
+    const { showError, showResult } = useAppToast();
     const router = useRouter();
 
     const localStyles = useMemo(() => StyleSheet.create({
@@ -179,11 +179,7 @@ export default function Play() {
             const nId = await scheduleRoundReminder();
             setNotificationId(nId);
         } else {
-            toast.show('Failed to start round', {
-                type: 'danger',
-                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-                style: { borderLeftColor: colours.errorText, borderLeftWidth: 10, backgroundColor: colours.yellow },
-            });
+            showError('Failed to start round');
         }
     };
 
@@ -273,15 +269,7 @@ export default function Play() {
             );
         }
 
-        toast.show(success ? 'Round saved' : 'Round not saved', {
-            type: success ? 'success' : 'danger',
-            textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-            style: {
-                borderLeftColor: success ? colours.green : colours.errorText,
-                borderLeftWidth: 10,
-                backgroundColor: colours.yellow,
-            },
-        });
+        showResult(success, 'Round saved', 'Round not saved');
 
         const scorecard = getMultiplayerScorecardService(activeRoundId);
         if (scorecard) {

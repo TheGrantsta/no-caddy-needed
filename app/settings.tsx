@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import { ScrollView, Switch, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useToast } from 'react-native-toast-notifications';
 import { getSettingsService, saveSettingsService, AppSettings } from '../service/DbService';
 import { useStyles } from '../hooks/useStyles';
 import { useTheme } from '../context/ThemeContext';
 import { useOrientation } from '../hooks/useOrientation';
-import fontSizes from '../assets/font-sizes';
+import { useAppToast } from '../hooks/useAppToast';
 
 export default function Settings() {
-  const toast = useToast();
   const { colours, setTheme } = useTheme();
   const styles = useStyles();
   const { landscapePadding } = useOrientation();
+  const { showSuccess, showResult } = useAppToast();
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
 
   const handleToggleTheme = async (value: boolean) => {
@@ -21,15 +20,7 @@ export default function Settings() {
     setSettings(updated);
     setTheme(newTheme);
 
-    toast.show('Settings saved', {
-      type: 'success',
-      textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-      style: {
-        borderLeftColor: colours.green,
-        borderLeftWidth: 10,
-        backgroundColor: colours.yellow,
-      },
-    });
+    showSuccess('Settings saved');
   };
 
   const handleToggleNotifications = async (value: boolean) => {
@@ -38,15 +29,7 @@ export default function Settings() {
 
     const success = await saveSettingsService(updated);
 
-    toast.show(success ? 'Settings saved' : 'Failed to save settings', {
-      type: success ? 'success' : 'danger',
-      textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-      style: {
-        borderLeftColor: success ? colours.green : colours.errorText,
-        borderLeftWidth: 10,
-        backgroundColor: colours.yellow,
-      },
-    });
+    showResult(success, 'Settings saved', 'Failed to save settings');
   };
 
   return (

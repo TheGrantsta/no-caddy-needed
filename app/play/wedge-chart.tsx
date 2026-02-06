@@ -5,10 +5,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import WedgeChart from '../../components/WedgeChart';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import { getWedgeChartService, saveWedgeChartService, WedgeChartData, getSettingsService, saveSettingsService } from '../../service/DbService';
-import { useToast } from 'react-native-toast-notifications';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
+import { useAppToast } from '../../hooks/useAppToast';
 import fontSizes from '@/assets/font-sizes';
 
 const ONBOARDING_STEPS = [
@@ -21,7 +21,7 @@ export default function WedgeChartScreen() {
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const toast = useToast();
+    const { showResult } = useAppToast();
     const data = getWedgeChartService();
     const settings = getSettingsService();
     const chartIsEmpty = data.clubs.length === 0;
@@ -40,39 +40,13 @@ export default function WedgeChartScreen() {
 
     const handleSave = async (chartData: WedgeChartData) => {
         const saved = await saveWedgeChartService(chartData);
-
-        if (saved) {
-            toast.show('Wedge chart saved', {
-                type: 'success',
-                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-                style: { borderLeftColor: colours.green, borderLeftWidth: 10, backgroundColor: colours.yellow },
-            });
-        } else {
-            toast.show('Failed to save wedge chart', {
-                type: 'danger',
-                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-                style: { borderLeftColor: colours.errorText, borderLeftWidth: 10, backgroundColor: colours.yellow },
-            });
-        }
+        showResult(saved, 'Wedge chart saved', 'Failed to save wedge chart');
     };
 
     const handleClear = async () => {
         const saved = await saveWedgeChartService({ distanceNames: [], clubs: [] });
         setShowClearConfirm(false);
-
-        if (saved) {
-            toast.show('Wedge chart cleared', {
-                type: 'success',
-                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-                style: { borderLeftColor: colours.green, borderLeftWidth: 10, backgroundColor: colours.yellow },
-            });
-        } else {
-            toast.show('Failed to clear wedge chart', {
-                type: 'danger',
-                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-                style: { borderLeftColor: colours.errorText, borderLeftWidth: 10, backgroundColor: colours.yellow },
-            });
-        }
+        showResult(saved, 'Wedge chart cleared', 'Failed to clear wedge chart');
     };
 
     return (

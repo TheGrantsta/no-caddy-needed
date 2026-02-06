@@ -5,10 +5,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import ClubDistanceList from '../../components/ClubDistanceList';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import { getClubDistancesService, saveClubDistancesService, getSettingsService, saveSettingsService } from '../../service/DbService';
-import { useToast } from 'react-native-toast-notifications';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
+import { useAppToast } from '../../hooks/useAppToast';
 import fontSizes from '@/assets/font-sizes';
 
 const ONBOARDING_STEPS = [
@@ -21,7 +21,7 @@ export default function DistancesScreen() {
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const toast = useToast();
+    const { showResult } = useAppToast();
     const distances = getClubDistancesService();
     const settings = getSettingsService();
     const distancesIsEmpty = distances.length === 0;
@@ -40,39 +40,13 @@ export default function DistancesScreen() {
 
     const handleSave = async (distances: { Club: string; CarryDistance: number; TotalDistance: number; SortOrder: number }[]) => {
         const saved = await saveClubDistancesService(distances);
-
-        if (saved) {
-            toast.show('Clubs saved', {
-                type: 'success',
-                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-                style: { borderLeftColor: colours.green, borderLeftWidth: 10, backgroundColor: colours.yellow },
-            });
-        } else {
-            toast.show('Failed to save clubs', {
-                type: 'danger',
-                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-                style: { borderLeftColor: colours.errorText, borderLeftWidth: 10, backgroundColor: colours.yellow },
-            });
-        }
+        showResult(saved, 'Clubs saved', 'Failed to save clubs');
     };
 
     const handleClear = async () => {
         const saved = await saveClubDistancesService([]);
         setShowClearConfirm(false);
-
-        if (saved) {
-            toast.show('Distances cleared', {
-                type: 'success',
-                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-                style: { borderLeftColor: colours.green, borderLeftWidth: 10, backgroundColor: colours.yellow },
-            });
-        } else {
-            toast.show('Failed to clear distances', {
-                type: 'danger',
-                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-                style: { borderLeftColor: colours.errorText, borderLeftWidth: 10, backgroundColor: colours.yellow },
-            });
-        }
+        showResult(saved, 'Distances cleared', 'Failed to clear distances');
     };
 
     return (

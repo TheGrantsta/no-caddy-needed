@@ -21,6 +21,7 @@ import {
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
+import { useAppToast } from '../../hooks/useAppToast';
 import fontSizes from '@/assets/font-sizes';
 
 export default function ScorecardScreen() {
@@ -29,6 +30,7 @@ export default function ScorecardScreen() {
     const { landscapePadding } = useOrientation();
     const { roundId } = useLocalSearchParams<{ roundId: string }>();
     const toast = useToast();
+    const { showResult } = useAppToast();
     const router = useRouter();
 
     const [multiplayerScorecard, setMultiplayerScorecard] = useState<MultiplayerRoundScorecard | null>(null);
@@ -151,19 +153,10 @@ export default function ScorecardScreen() {
 
     const handleConfirmDelete = async () => {
         const success = await deleteRoundService(Number(roundId));
+        showResult(success, 'Round deleted', 'Failed to delete round');
         if (success) {
-            toast.show('Round deleted', {
-                type: 'success',
-                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-                style: { borderLeftColor: colours.green, borderLeftWidth: 10, backgroundColor: colours.yellow },
-            });
             router.back();
         } else {
-            toast.show('Failed to delete round', {
-                type: 'danger',
-                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
-                style: { borderLeftColor: colours.errorText, borderLeftWidth: 10, backgroundColor: colours.yellow },
-            });
             setShowDeleteConfirm(false);
         }
     };

@@ -246,20 +246,20 @@ export default function ScorecardScreen() {
                         )}
 
                         {!isEditing && showDeleteConfirm && (
-                            <View style={styles.buttonContainer}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20, gap: 10 }}>
                                 <TouchableOpacity
                                     testID="cancel-delete-button"
-                                    style={styles.button}
                                     onPress={handleCancelDelete}
+                                    style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, borderWidth: 1, borderColor: colours.backgroundAlternate }}
                                 >
-                                    <Text style={styles.buttonText}>Cancel</Text>
+                                    <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     testID="confirm-delete-button"
-                                    style={[styles.button, { backgroundColor: '#fd0303' }]}
                                     onPress={handleConfirmDelete}
+                                    style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.errorText }}
                                 >
-                                    <Text style={styles.buttonText}>Confirm</Text>
+                                    <Text style={{ color: colours.text, fontSize: fontSizes.normal }}>Confirm delete</Text>
                                 </TouchableOpacity>
                             </View>
                         )}

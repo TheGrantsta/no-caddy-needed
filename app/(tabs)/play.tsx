@@ -410,27 +410,27 @@ export default function Play() {
                                 <TouchableOpacity
                                     testID="end-round-button"
                                     onPress={handleEndRoundPress}
-                                    style={localStyles.endRoundButton}
+                                    style={{ padding: 12, alignItems: 'center', marginTop: 20 }}
                                 >
-                                    <Text style={localStyles.endRoundButtonText}>End round</Text>
+                                    <Text style={{ color: colours.errorText, fontSize: fontSizes.normal }}>End round</Text>
                                 </TouchableOpacity>
                             )}
 
                             {showEndRoundConfirm && (
-                                <View style={localStyles.confirmContainer}>
-                                    <TouchableOpacity
-                                        testID="confirm-end-round-button"
-                                        onPress={handleConfirmEndRound}
-                                        style={localStyles.endRoundButton}
-                                    >
-                                        <Text style={localStyles.endRoundButtonText}>Confirm end round</Text>
-                                    </TouchableOpacity>
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20, gap: 10 }}>
                                     <TouchableOpacity
                                         testID="cancel-end-round-button"
                                         onPress={handleCancelEndRound}
-                                        style={localStyles.nextHoleButton}
+                                        style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, borderWidth: 1, borderColor: colours.backgroundAlternate }}
                                     >
-                                        <Text style={localStyles.nextHoleButtonText}>Cancel</Text>
+                                        <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        testID="confirm-end-round-button"
+                                        onPress={handleConfirmEndRound}
+                                        style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.errorText }}
+                                    >
+                                        <Text style={{ color: colours.text, fontSize: fontSizes.normal }}>Confirm end round</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}

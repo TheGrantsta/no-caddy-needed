@@ -16,7 +16,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
-        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0);
+        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0);
     `);
 };
 
@@ -371,18 +371,18 @@ export const getSettings = () => {
     return rows.length > 0 ? rows[0] : null;
 };
 
-export const saveSettings = async (theme: string, notificationsEnabled: number, wedgeChartOnboardingSeen: number): Promise<boolean> => {
+export const saveSettings = async (theme: string, notificationsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number): Promise<boolean> => {
     let success = true;
     try {
         const db = SQLite.openDatabaseSync(dbName);
         db.execSync('DELETE FROM Settings');
 
         const statement = db.prepareSync(
-            'INSERT INTO Settings (Theme, NotificationsEnabled, WedgeChartOnboardingSeen) VALUES ($Theme, $NotificationsEnabled, $WedgeChartOnboardingSeen)'
+            'INSERT INTO Settings (Theme, NotificationsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen) VALUES ($Theme, $NotificationsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen)'
         );
 
         try {
-            await statement.executeAsync({ $Theme: theme, $NotificationsEnabled: notificationsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen });
+            await statement.executeAsync({ $Theme: theme, $NotificationsEnabled: notificationsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen });
         } finally {
             await statement.finalizeAsync();
         }

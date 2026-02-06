@@ -368,24 +368,26 @@ export type AppSettings = {
     theme: 'dark' | 'light';
     notificationsEnabled: boolean;
     wedgeChartOnboardingSeen: boolean;
+    distancesOnboardingSeen: boolean;
 };
 
 export const getSettingsService = (): AppSettings => {
-    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; WedgeChartOnboardingSeen: number } | null;
+    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number } | null;
 
     if (!row) {
-        return { theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: false };
+        return { theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false };
     }
 
     return {
         theme: row.Theme as 'dark' | 'light',
         notificationsEnabled: row.NotificationsEnabled === 1,
         wedgeChartOnboardingSeen: row.WedgeChartOnboardingSeen === 1,
+        distancesOnboardingSeen: row.DistancesOnboardingSeen === 1,
     };
 };
 
 export const saveSettingsService = async (settings: AppSettings): Promise<boolean> => {
-    return saveSettings(settings.theme, settings.notificationsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0);
+    return saveSettings(settings.theme, settings.notificationsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0);
 };
 
 export const updateScorecardService = async (roundId: number, updatedScores: { id: number; score: number }[]): Promise<boolean> => {

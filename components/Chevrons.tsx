@@ -13,6 +13,28 @@ function Chevrons({ heading, points }: Props): React.JSX.Element {
     const styles = useStyles();
     const colours = useThemeColours();
 
+    const renderPoint = (point: string, index: number) => {
+        const colonIndex = point.indexOf(':');
+
+        if (colonIndex === -1) {
+            return (
+                <Text style={styles.normalText}>
+                    {point}
+                </Text>
+            );
+        }
+
+        const label = point.substring(0, colonIndex + 1);
+        const description = point.substring(colonIndex + 1);
+
+        return (
+            <Text style={styles.normalText}>
+                <Text testID={`point-label-${index}`} style={{ color: colours.yellow }}>{label}</Text>
+                <Text testID={`point-description-${index}`}>{description}</Text>
+            </Text>
+        );
+    };
+
     return (
         <View>
             <Text style={styles.subHeaderText}>
@@ -23,9 +45,7 @@ function Chevrons({ heading, points }: Props): React.JSX.Element {
                     points.map((point, index) => (
                         <View key={index} style={styles.principlesContainer}>
                             <MaterialIcons name="chevron-right" color={colours.yellow} size={24} />
-                            <Text style={styles.normalText}>
-                                {point}
-                            </Text>
+                            {renderPoint(point, index)}
                         </View>
                     ))
                 }

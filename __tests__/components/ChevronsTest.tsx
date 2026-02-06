@@ -32,4 +32,33 @@ describe('renders chevrons', () => {
         expect(getByText('Point 2')).toBeTruthy();
         expect(getByText('Point 3')).toBeTruthy();
     });
+
+    it('splits point on first colon with label in yellow', () => {
+        const points = ['Label: This is the description'];
+        const { getByTestId } = render(<Chevrons heading='fake heading' points={points} />);
+
+        const label = getByTestId('point-label-0');
+        const description = getByTestId('point-description-0');
+
+        expect(label.props.children).toBe('Label:');
+        expect(description.props.children).toBe(' This is the description');
+    });
+
+    it('handles points without colon', () => {
+        const points = ['No colon here'];
+        const { getByText } = render(<Chevrons heading='fake heading' points={points} />);
+
+        expect(getByText('No colon here')).toBeTruthy();
+    });
+
+    it('splits only on first colon when multiple colons exist', () => {
+        const points = ['First: Second: Third'];
+        const { getByTestId } = render(<Chevrons heading='fake heading' points={points} />);
+
+        const label = getByTestId('point-label-0');
+        const description = getByTestId('point-description-0');
+
+        expect(label.props.children).toBe('First:');
+        expect(description.props.children).toBe(' Second: Third');
+    });
 });

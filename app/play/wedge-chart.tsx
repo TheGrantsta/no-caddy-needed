@@ -62,7 +62,6 @@ export default function WedgeChartScreen() {
                         <TouchableOpacity
                             testID="info-button"
                             onPress={handleShowOnboarding}
-                            style={{ position: 'absolute', left: 0, padding: 5 }}
                         >
                             <MaterialIcons name="info-outline" size={24} color={colours.yellow} />
                         </TouchableOpacity>

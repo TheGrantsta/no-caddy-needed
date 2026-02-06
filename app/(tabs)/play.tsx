@@ -377,7 +377,7 @@ export default function Play() {
 
                 {!isRoundActive && showPlayerSetup && displaySection('play-score') && (
                     <View style={styles.container}>
-                        <PlayerSetup onStartRound={handleStartRound} recentCourseNames={recentCourseNames} />
+                        <PlayerSetup onStartRound={handleStartRound} onCancel={() => setShowPlayerSetup(false)} recentCourseNames={recentCourseNames} />
                     </View>
                 )}
 

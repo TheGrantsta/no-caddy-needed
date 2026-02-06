@@ -170,4 +170,32 @@ describe('PlayerSetup', () => {
             expect(queryByText('Recent')).toBeNull();
         });
     });
+
+    describe('Cancel button', () => {
+        it('shows cancel button when onCancel is provided', () => {
+            const mockOnCancel = jest.fn();
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} onCancel={mockOnCancel} />
+            );
+
+            expect(getByTestId('cancel-button')).toBeTruthy();
+        });
+
+        it('does not show cancel button when onCancel is not provided', () => {
+            const { queryByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            expect(queryByTestId('cancel-button')).toBeNull();
+        });
+
+        it('calls onCancel when cancel button is pressed', () => {
+            const mockOnCancel = jest.fn();
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} onCancel={mockOnCancel} />
+            );
+
+            fireEvent.press(getByTestId('cancel-button'));
+
+            expect(mockOnCancel).toHaveBeenCalled();
+        });
+    });
 });

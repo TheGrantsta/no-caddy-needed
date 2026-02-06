@@ -26,23 +26,23 @@ describe('getSettingsService', () => {
 
         const result = getSettingsService();
 
-        expect(result).toEqual({ theme: 'dark', notificationsEnabled: true });
+        expect(result).toEqual({ theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: false });
     });
 
     it('returns settings from database', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'light', NotificationsEnabled: 1 });
+        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'light', NotificationsEnabled: 1, WedgeChartOnboardingSeen: 0 });
 
         const result = getSettingsService();
 
-        expect(result).toEqual({ theme: 'light', notificationsEnabled: true });
+        expect(result).toEqual({ theme: 'light', notificationsEnabled: true, wedgeChartOnboardingSeen: false });
     });
 
     it('maps NotificationsEnabled 0 to false', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 0 });
+        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 0, WedgeChartOnboardingSeen: 1 });
 
         const result = getSettingsService();
 
-        expect(result).toEqual({ theme: 'dark', notificationsEnabled: false });
+        expect(result).toEqual({ theme: 'dark', notificationsEnabled: false, wedgeChartOnboardingSeen: true });
     });
 });
 
@@ -54,26 +54,35 @@ describe('saveSettingsService', () => {
     it('saves settings to database', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
-        const settings: AppSettings = { theme: 'light', notificationsEnabled: false };
+        const settings: AppSettings = { theme: 'light', notificationsEnabled: false, wedgeChartOnboardingSeen: false };
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('light', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith('light', 0, 0);
     });
 
     it('maps notificationsEnabled true to 1', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
-        const settings: AppSettings = { theme: 'dark', notificationsEnabled: true };
+        const settings: AppSettings = { theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: false };
         await saveSettingsService(settings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 0);
+    });
+
+    it('maps wedgeChartOnboardingSeen true to 1', async () => {
+        mockSaveSettings.mockResolvedValue(true);
+
+        const settings: AppSettings = { theme: 'dark', notificationsEnabled: false, wedgeChartOnboardingSeen: true };
+        await saveSettingsService(settings);
+
+        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 0, 1);
     });
 
     it('returns false when save fails', async () => {
         mockSaveSettings.mockResolvedValue(false);
 
-        const result = await saveSettingsService({ theme: 'dark', notificationsEnabled: true });
+        const result = await saveSettingsService({ theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: false });
 
         expect(result).toBe(false);
     });

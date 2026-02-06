@@ -47,6 +47,12 @@ jest.mock('../../service/DbService', () => ({
     getRoundPlayersService: jest.fn(),
     getMultiplayerScorecardService: jest.fn(),
     getRecentCourseNamesService: jest.fn(),
+    getSettingsService: jest.fn().mockReturnValue({
+        theme: 'dark',
+        notificationsEnabled: true,
+        wedgeChartOnboardingSeen: true,
+    }),
+    saveSettingsService: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock('../../database/db', () => ({
@@ -268,6 +274,20 @@ describe('Play screen', () => {
 
             expect(getByText('St Andrews')).toBeTruthy();
             expect(getByText('Pebble Beach')).toBeTruthy();
+        });
+
+        it('returns to idle state when cancel is pressed in player setup', () => {
+            const { getByTestId, queryByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            expect(getByTestId('start-button')).toBeTruthy();
+            expect(getByTestId('cancel-button')).toBeTruthy();
+
+            fireEvent.press(getByTestId('cancel-button'));
+
+            expect(getByTestId('start-round-button')).toBeTruthy();
+            expect(queryByTestId('start-button')).toBeNull();
+            expect(queryByTestId('cancel-button')).toBeNull();
         });
 
         it('starts round after player setup is completed', async () => {

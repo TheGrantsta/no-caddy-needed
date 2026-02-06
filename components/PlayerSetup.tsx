@@ -5,12 +5,13 @@ import fontSizes from '../assets/font-sizes';
 
 type Props = {
     onStartRound: (playerNames: string[], courseName: string) => void;
+    onCancel?: () => void;
     recentCourseNames?: string[];
 };
 
 const MAX_ADDITIONAL_PLAYERS = 3;
 
-const PlayerSetup = ({ onStartRound, recentCourseNames }: Props) => {
+const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
     const colours = useThemeColours();
     const [additionalPlayers, setAdditionalPlayers] = useState<string[]>([]);
     const [courseName, setCourseName] = useState('');
@@ -92,6 +93,18 @@ const PlayerSetup = ({ onStartRound, recentCourseNames }: Props) => {
         },
         startButtonText: {
             color: colours.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        cancelButton: {
+            backgroundColor: colours.errorText,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginTop: 10,
+        },
+        cancelButtonText: {
+            color: colours.white,
             fontSize: fontSizes.tableHeader,
             fontWeight: 'bold',
         },
@@ -181,6 +194,16 @@ const PlayerSetup = ({ onStartRound, recentCourseNames }: Props) => {
             >
                 <Text style={localStyles.startButtonText}>Start</Text>
             </TouchableOpacity>
+
+            {onCancel && (
+                <TouchableOpacity
+                    testID="cancel-button"
+                    onPress={onCancel}
+                    style={localStyles.cancelButton}
+                >
+                    <Text style={localStyles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

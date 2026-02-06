@@ -19,6 +19,20 @@ jest.mock('../../../hooks/useStyles', () => ({
 jest.mock('../../../service/DbService', () => ({
     getWedgeChartService: jest.fn(() => ({ distanceNames: [], clubs: [] })),
     saveWedgeChartService: jest.fn(),
+    getSettingsService: jest.fn(() => ({
+        theme: 'dark',
+        notificationsEnabled: true,
+        wedgeChartOnboardingSeen: true,
+    })),
+    saveSettingsService: jest.fn(() => Promise.resolve(true)),
+}));
+
+jest.mock('../../../hooks/useOrientation', () => ({
+    useOrientation: () => ({
+        isLandscape: false,
+        isPortrait: true,
+        landscapePadding: {},
+    }),
 }));
 
 jest.mock('react-native-toast-notifications', () => ({

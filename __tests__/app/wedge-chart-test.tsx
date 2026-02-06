@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import WedgeChartScreen from '../../app/play/wedge-chart';
 
-import { getSettingsService, saveSettingsService } from '../../service/DbService';
+import { getSettingsService, saveSettingsService, getWedgeChartService } from '../../service/DbService';
 
 jest.mock('react-native-gesture-handler', () => ({
     GestureHandlerRootView: ({ children }: { children: React.ReactNode }) => children,
@@ -46,6 +46,7 @@ jest.mock('../../service/DbService', () => ({
 
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
+const mockGetWedgeChartService = getWedgeChartService as jest.Mock;
 
 describe('WedgeChartScreen', () => {
     beforeEach(() => {
@@ -55,10 +56,14 @@ describe('WedgeChartScreen', () => {
             notificationsEnabled: true,
             wedgeChartOnboardingSeen: false,
         });
+        mockGetWedgeChartService.mockReturnValue({
+            distanceNames: [],
+            clubs: [],
+        });
     });
 
     describe('Onboarding overlay', () => {
-        it('shows onboarding overlay on first load when wedgeChartOnboardingSeen is false', () => {
+        it('shows onboarding overlay on first load when chart is empty and wedgeChartOnboardingSeen is false', () => {
             const { getByTestId } = render(<WedgeChartScreen />);
 
             expect(getByTestId('onboarding-overlay')).toBeTruthy();
@@ -69,6 +74,33 @@ describe('WedgeChartScreen', () => {
                 theme: 'dark',
                 notificationsEnabled: true,
                 wedgeChartOnboardingSeen: true,
+            });
+
+            const { queryByTestId } = render(<WedgeChartScreen />);
+
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+        });
+
+        it('does not show onboarding overlay when chart has data', () => {
+            mockGetWedgeChartService.mockReturnValue({
+                distanceNames: ['Half', 'Full'],
+                clubs: [{ club: 'PW', distances: [{ name: 'Half', distance: 100 }] }],
+            });
+
+            const { queryByTestId } = render(<WedgeChartScreen />);
+
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+        });
+
+        it('does not show onboarding overlay when chart has data even if wedgeChartOnboardingSeen is false', () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: false,
+            });
+            mockGetWedgeChartService.mockReturnValue({
+                distanceNames: ['Half'],
+                clubs: [{ club: 'SW', distances: [{ name: 'Half', distance: 80 }] }],
             });
 
             const { queryByTestId } = render(<WedgeChartScreen />);

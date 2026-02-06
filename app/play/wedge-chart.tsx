@@ -24,7 +24,8 @@ export default function WedgeChartScreen() {
     const toast = useToast();
     const data = getWedgeChartService();
     const settings = getSettingsService();
-    const [showOnboarding, setShowOnboarding] = useState(!settings.wedgeChartOnboardingSeen);
+    const chartIsEmpty = data.clubs.length === 0;
+    const [showOnboarding, setShowOnboarding] = useState(!settings.wedgeChartOnboardingSeen && chartIsEmpty);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);

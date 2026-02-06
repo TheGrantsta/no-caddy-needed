@@ -156,7 +156,7 @@ export default function Pitching() {
                 </View>
             )}
 
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer} refreshControl={
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import WedgeChartScreen from '../../app/play/wedge-chart';
 
-import { getSettingsService, saveSettingsService, getWedgeChartService } from '../../service/DbService';
+import { getSettingsService, saveSettingsService, getWedgeChartService, saveWedgeChartService } from '../../service/DbService';
 
 jest.mock('react-native-gesture-handler', () => ({
     GestureHandlerRootView: ({ children }: { children: React.ReactNode }) => children,
@@ -47,6 +47,7 @@ jest.mock('../../service/DbService', () => ({
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
 const mockGetWedgeChartService = getWedgeChartService as jest.Mock;
+const mockSaveWedgeChartService = saveWedgeChartService as jest.Mock;
 
 describe('WedgeChartScreen', () => {
     beforeEach(() => {
@@ -160,6 +161,88 @@ describe('WedgeChartScreen', () => {
             fireEvent.press(getByTestId('info-button'));
 
             expect(getByTestId('onboarding-overlay')).toBeTruthy();
+        });
+    });
+
+    describe('Clear button', () => {
+        beforeEach(() => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+            });
+            mockGetWedgeChartService.mockReturnValue({
+                distanceNames: ['Half', 'Full'],
+                clubs: [{ club: 'PW', distances: [{ name: 'Half', distance: 100 }, { name: 'Full', distance: 120 }] }],
+            });
+        });
+
+        it('renders clear button when chart has data', () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+
+            expect(getByTestId('clear-button')).toBeTruthy();
+        });
+
+        it('does not render clear button when chart is empty', () => {
+            mockGetWedgeChartService.mockReturnValue({
+                distanceNames: [],
+                clubs: [],
+            });
+
+            const { queryByTestId } = render(<WedgeChartScreen />);
+
+            expect(queryByTestId('clear-button')).toBeNull();
+        });
+
+        it('shows confirmation button when clear is pressed', () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('clear-button'));
+
+            expect(getByTestId('confirm-clear-button')).toBeTruthy();
+        });
+
+        it('hides clear button and shows confirm when clear is pressed', () => {
+            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('clear-button'));
+
+            expect(queryByTestId('clear-button')).toBeNull();
+            expect(getByTestId('confirm-clear-button')).toBeTruthy();
+        });
+
+        it('clears data when confirm is pressed', async () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('clear-button'));
+            fireEvent.press(getByTestId('confirm-clear-button'));
+
+            await waitFor(() => {
+                expect(mockSaveWedgeChartService).toHaveBeenCalledWith({
+                    distanceNames: [],
+                    clubs: [],
+                });
+            });
+        });
+
+        it('shows cancel button when clear is pressed', () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('clear-button'));
+
+            expect(getByTestId('cancel-clear-button')).toBeTruthy();
+        });
+
+        it('returns to normal state when cancel is pressed', () => {
+            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('clear-button'));
+            expect(queryByTestId('clear-button')).toBeNull();
+
+            fireEvent.press(getByTestId('cancel-clear-button'));
+
+            expect(getByTestId('clear-button')).toBeTruthy();
+            expect(queryByTestId('confirm-clear-button')).toBeNull();
         });
     });
 });

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import DistancesScreen from '../../app/play/distances';
 
-import { getSettingsService, saveSettingsService, getClubDistancesService } from '../../service/DbService';
+import { getSettingsService, saveSettingsService, getClubDistancesService, saveClubDistancesService } from '../../service/DbService';
 
 jest.mock('react-native-gesture-handler', () => ({
     GestureHandlerRootView: ({ children }: { children: React.ReactNode }) => children,
@@ -45,6 +45,7 @@ jest.mock('../../service/DbService', () => ({
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
 const mockGetClubDistancesService = getClubDistancesService as jest.Mock;
+const mockSaveClubDistancesService = saveClubDistancesService as jest.Mock;
 
 describe('DistancesScreen', () => {
     beforeEach(() => {
@@ -159,6 +160,83 @@ describe('DistancesScreen', () => {
             fireEvent.press(getByTestId('info-button'));
 
             expect(getByTestId('onboarding-overlay')).toBeTruthy();
+        });
+    });
+
+    describe('Clear button', () => {
+        beforeEach(() => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: false,
+                distancesOnboardingSeen: true,
+            });
+            mockGetClubDistancesService.mockReturnValue([
+                { Id: 1, Club: 'Driver', CarryDistance: 250, TotalDistance: 270, SortOrder: 1 },
+                { Id: 2, Club: '7 Iron', CarryDistance: 150, TotalDistance: 160, SortOrder: 2 },
+            ]);
+        });
+
+        it('renders clear button when distances list has data', () => {
+            const { getByTestId } = render(<DistancesScreen />);
+
+            expect(getByTestId('clear-button')).toBeTruthy();
+        });
+
+        it('does not render clear button when distances list is empty', () => {
+            mockGetClubDistancesService.mockReturnValue([]);
+
+            const { queryByTestId } = render(<DistancesScreen />);
+
+            expect(queryByTestId('clear-button')).toBeNull();
+        });
+
+        it('shows confirmation button when clear is pressed', () => {
+            const { getByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('clear-button'));
+
+            expect(getByTestId('confirm-clear-button')).toBeTruthy();
+        });
+
+        it('hides clear button and shows confirm when clear is pressed', () => {
+            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('clear-button'));
+
+            expect(queryByTestId('clear-button')).toBeNull();
+            expect(getByTestId('confirm-clear-button')).toBeTruthy();
+        });
+
+        it('clears data when confirm is pressed', async () => {
+            const { getByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('clear-button'));
+            fireEvent.press(getByTestId('confirm-clear-button'));
+
+            await waitFor(() => {
+                expect(mockSaveClubDistancesService).toHaveBeenCalledWith([]);
+            });
+        });
+
+        it('shows cancel button when clear is pressed', () => {
+            const { getByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('clear-button'));
+
+            expect(getByTestId('cancel-clear-button')).toBeTruthy();
+        });
+
+        it('returns to normal state when cancel is pressed', () => {
+            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('clear-button'));
+            expect(queryByTestId('clear-button')).toBeNull();
+
+            fireEvent.press(getByTestId('cancel-clear-button'));
+
+            expect(getByTestId('clear-button')).toBeTruthy();
+            expect(queryByTestId('confirm-clear-button')).toBeNull();
         });
     });
 });

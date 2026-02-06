@@ -26,6 +26,7 @@ export default function DistancesScreen() {
     const settings = getSettingsService();
     const distancesIsEmpty = distances.length === 0;
     const [showOnboarding, setShowOnboarding] = useState(!settings.distancesOnboardingSeen && distancesIsEmpty);
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);
@@ -55,6 +56,25 @@ export default function DistancesScreen() {
         }
     };
 
+    const handleClear = async () => {
+        const saved = await saveClubDistancesService([]);
+        setShowClearConfirm(false);
+
+        if (saved) {
+            toast.show('Distances cleared', {
+                type: 'success',
+                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
+                style: { borderLeftColor: colours.green, borderLeftWidth: 10, backgroundColor: colours.yellow },
+            });
+        } else {
+            toast.show('Failed to clear distances', {
+                type: 'danger',
+                textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
+                style: { borderLeftColor: colours.errorText, borderLeftWidth: 10, backgroundColor: colours.yellow },
+            });
+        }
+    };
+
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
@@ -71,6 +91,35 @@ export default function DistancesScreen() {
                     <Text style={[styles.normalText, styles.marginBottom]}>Club carry distances</Text>
                 </View>
                 <ClubDistanceList distances={distances} onSave={handleSave} />
+
+                {!distancesIsEmpty && !showClearConfirm && (
+                    <TouchableOpacity
+                        testID="clear-button"
+                        onPress={() => setShowClearConfirm(true)}
+                        style={{ padding: 12, alignItems: 'center', marginTop: 20 }}
+                    >
+                        <Text style={{ color: colours.errorText, fontSize: fontSizes.normal }}>Clear all</Text>
+                    </TouchableOpacity>
+                )}
+
+                {showClearConfirm && (
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20, gap: 10 }}>
+                        <TouchableOpacity
+                            testID="cancel-clear-button"
+                            onPress={() => setShowClearConfirm(false)}
+                            style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, borderWidth: 1, borderColor: colours.backgroundAlternate }}
+                        >
+                            <Text style={{ color: colours.text, fontSize: fontSizes.normal }}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            testID="confirm-clear-button"
+                            onPress={handleClear}
+                            style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.errorText }}
+                        >
+                            <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Confirm clear</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </ScrollView>
 
             <OnboardingOverlay

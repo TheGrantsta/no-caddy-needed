@@ -8,17 +8,22 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { initialize } from '@/database/db';
 import { ToastProvider } from 'react-native-toast-notifications';
-import * as Notifications from 'expo-notifications';
 import NetworkStatus from '@/components/NetworkStatus';
 import { AppThemeProvider, useTheme } from '@/context/ThemeContext';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+let Notifications: typeof import('expo-notifications') | null = null;
+try {
+  Notifications = require('expo-notifications');
+  Notifications?.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
+} catch {
+  // Native module not available
+}
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -183,21 +188,16 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    const setupDatabase = () => {
-      try {
-        initialize();
-      }
-      catch (error) {
-        console.error('Setup database error', error);
-      }
-    };
-
-    setupDatabase();
-
-    Notifications.requestPermissionsAsync();
-
     async function prepareApp() {
       try {
+        // Initialize database first
+        await initialize();
+
+        // Request notification permissions if available
+        if (Notifications) {
+          Notifications.requestPermissionsAsync();
+        }
+
         await new Promise(resolve => setTimeout(resolve, 3000));
         await SplashScreen.hideAsync();
       } catch (e) {
@@ -208,8 +208,7 @@ export default function RootLayout() {
     }
 
     prepareApp();
-
-  }, [appIsReady]);
+  }, []);
 
   if (!appIsReady) {
     return null;

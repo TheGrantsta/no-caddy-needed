@@ -46,17 +46,17 @@ export default function HomeScreen() {
           </Text>
 
           <View style={[styles.iconsContainer, styles.marginTop]}>
-            <Link href='/play'>
+            <Link testID="home-play-link" href='/play'>
               <View style={styles.iconContainer}>
                 <IconButton iconName='sports-golf' label='Play' size='medium' />
               </View>
             </Link>
-            <Link href='/practice'>
+            <Link testID="home-practice-link" href='/practice'>
               <View style={styles.iconContainer}>
                 <IconButton iconName='golf-course' label='Practice' size='medium' />
               </View>
             </Link>
-            <Link href='/paradigms'>
+            <Link testID="home-paradigms-link" href='/paradigms'>
               <View style={styles.iconContainer}>
                 <IconButton iconName='lightbulb' label='Paradigms' size='medium' />
               </View>

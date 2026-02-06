@@ -1,6 +1,13 @@
-import * as Notifications from 'expo-notifications';
+let Notifications: typeof import('expo-notifications') | null = null;
+
+try {
+    Notifications = require('expo-notifications');
+} catch {
+    // Native module not available (e.g., Expo Go without dev build)
+}
 
 export const scheduleRoundReminder = async (): Promise<string | null> => {
+    if (!Notifications) return null;
     try {
         const id = await Notifications.scheduleNotificationAsync({
             content: {
@@ -20,6 +27,10 @@ export const scheduleRoundReminder = async (): Promise<string | null> => {
 };
 
 export const cancelRoundReminder = async (notificationId: string | null): Promise<void> => {
-    if (!notificationId) return;
-    await Notifications.cancelScheduledNotificationAsync(notificationId);
+    if (!Notifications || !notificationId) return;
+    try {
+        await Notifications.cancelScheduledNotificationAsync(notificationId);
+    } catch (e) {
+        console.log(e);
+    }
 };

@@ -16,7 +16,7 @@ export default function Paradigms() {
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef(null);
 
-  const points = ['Target: centre of the green', 'Aim: play for your shot shape *', 'Yardage: closer to the back edge'];
+  const points = ['Target: centre of the green — play for your shot dispersion', 'Aim: think shotgun pattern, not rifle precision', 'Strategy: favour the side with the most room and the safest miss', 'Avoid: eliminate big numbers by staying away from water and severe hazards'];
 
   const { width } = Dimensions.get('window');
 
@@ -142,10 +142,10 @@ export default function Paradigms() {
               <Chevrons heading='Approach shots' points={points} />
 
               <Text style={[styles.normalText, styles.marginTop, { padding: 10 }]}>
-                * Your shot shape might be different with different clubs; for example, draw your wedges & fade your mid-irons
+                * Your dispersion changes with different clubs and swing types — know your tendencies for full and partial shots
               </Text>
               <Text style={[styles.normalText, styles.marginTop, { padding: 10 }]}>
-                Know your tendencies including when hitting full & partial shots
+                Know your shot pattern and make decisions that allow for your natural spread, not perfect strikes
               </Text>
             </View>
           </View>

@@ -49,16 +49,16 @@ describe('Paradigms page ', () => {
             const { getByText } = render(<View />);
 
             expect(getByText('Approach shots')).toBeTruthy();
-            expect(getByText('Target: centre of the green')).toBeTruthy();
-            expect(getByText('Aim: play for your shot shape *')).toBeTruthy();
-            expect(getByText('Yardage: closer to the back edge')).toBeTruthy();
+            expect(getByText('Target: centre of the green — play for your shot dispersion')).toBeTruthy();
+            expect(getByText('Strategy: favour the side with the most room and the safest miss')).toBeTruthy();
+            expect(getByText('Avoid: eliminate big numbers by staying away from water and severe hazards')).toBeTruthy();
         });
 
         it('renders approach tendencies', () => {
             const { getByText } = render(<View />);
 
-            expect(getByText('* Your shot shape might be different with different clubs; for example, draw your wedges & fade your mid-irons')).toBeTruthy();
-            expect(getByText('Know your tendencies including when hitting full & partial shots')).toBeTruthy();
+            expect(getByText('* Your dispersion changes with different clubs and swing types — know your tendencies for full and partial shots')).toBeTruthy();
+            expect(getByText('Know your shot pattern and make decisions that allow for your natural spread, not perfect strikes')).toBeTruthy();
         });
     });
 

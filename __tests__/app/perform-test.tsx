@@ -41,24 +41,26 @@ describe('Perform page ', () => {
         it('renders correctly with the default text', () => {
             const { getByText } = render(<View />);
 
-            expect(getByText('Perform')).toBeTruthy();
+            expect(getByText('Approach shots')).toBeTruthy();
             expect(getByText('Make better on course decisions & choose better targets')).toBeTruthy();
         });
 
         it('renders approach as the default section', () => {
             const { getByText } = render(<View />);
 
-            expect(getByText('Approach shots')).toBeTruthy();
-            expect(getByText('Target: centre of the green — play for your shot dispersion')).toBeTruthy();
-            expect(getByText('Strategy: favour the side with the most room and the safest miss')).toBeTruthy();
-            expect(getByText('Avoid: eliminate big numbers by staying away from water and severe hazards')).toBeTruthy();
+            expect(getByText('Concepts')).toBeTruthy();
+            expect(getByText('Target: play for your shot dispersion *')).toBeTruthy();
+            expect(getByText('Aim: think shotgun pattern')).toBeTruthy();
+            expect(getByText('Strategy: favour the "fat" side')).toBeTruthy();
+            expect(getByText('Eliminate: big numbers by staying away from water & severe hazards')).toBeTruthy();
         });
 
         it('renders approach tendencies', () => {
             const { getByText } = render(<View />);
 
             expect(getByText('* Your dispersion changes with different clubs and swing types — know your tendencies for full and partial shots')).toBeTruthy();
-            expect(getByText('Know your shot pattern and make decisions that allow for your natural spread, not perfect strikes')).toBeTruthy();
+            expect(getByText('Key')).toBeTruthy();
+            expect(getByText('Know your shot pattern & carry numbers, then make informed decisions that allow for your natural spread, not perfection')).toBeTruthy();
         });
     });
 

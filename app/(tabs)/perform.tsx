@@ -16,7 +16,7 @@ export default function Perform() {
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef(null);
 
-  const points = ['Target: centre of the green — play for your shot dispersion', 'Aim: think shotgun pattern, not rifle precision', 'Strategy: favour the side with the most room and the safest miss', 'Avoid: eliminate big numbers by staying away from water and severe hazards'];
+  const points = ['Target: play for your shot dispersion *', 'Aim: think shotgun pattern', 'Strategy: favour the "fat" side', 'Eliminate:  big numbers by staying away from water & severe hazards'];
 
   const { width } = Dimensions.get('window');
 
@@ -133,21 +133,26 @@ export default function Perform() {
           <View style={styles.container}>
             <View style={styles.headerContainer}>
               <Text style={[styles.headerText, styles.marginTop]}>
-                Perform
-              </Text>
-              <Text style={[styles.normalText, styles.marginBottom]}>
-                Make better on course decisions & choose better targets
-              </Text>
-
-              <Chevrons heading='Approach shots' points={points} />
-
-              <Text style={[styles.normalText, styles.marginTop, { padding: 10 }]}>
-                * Your dispersion changes with different clubs and swing types — know your tendencies for full and partial shots
-              </Text>
-              <Text style={[styles.normalText, styles.marginTop, { padding: 10 }]}>
-                Know your shot pattern and make decisions that allow for your natural spread, not perfect strikes
+                Approach shots
               </Text>
             </View>
+            <Text style={[styles.normalText, styles.marginBottom]}>
+              Make better on course decisions & choose better targets
+            </Text>
+
+            <Chevrons heading='Concepts' points={points} />
+
+            <Text style={[styles.normalText, styles.marginTop, { padding: 10 }]}>
+              * Your dispersion changes with different clubs and swing types — know your tendencies for full and partial shots
+            </Text>
+
+            <Text style={styles.subHeaderText}>
+              Key
+            </Text>
+
+            <Text style={[styles.normalText, styles.marginBottom, { padding: 10 }]}>
+              Know your shot pattern & carry numbers, then make informed decisions that allow for your natural spread, not perfection
+            </Text>
           </View>
         )}
 

@@ -4,7 +4,7 @@ import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
-    showSubMenu: 'practice' | 'play' | 'paradigms' | 'putting' | 'chipping' | 'bunker' | 'pitching';
+    showSubMenu: 'practice' | 'play' | 'perform' | 'putting' | 'chipping' | 'bunker' | 'pitching';
     selectedItem: string;
     handleSubMenu: (arg: string) => void;
 }
@@ -16,8 +16,8 @@ const allSubMenuItems = [
     { testId: 'practice-sub-menu-short-game', name: 'short-game', title: 'Short game' },
     { testId: 'practice-sub-menu-tools', name: 'tools', title: 'Tools' },
     { testId: 'practice-sub-menu-history', name: 'history', title: 'History' },
-    { testId: 'paradigms-sub-menu-approach', name: 'approach', title: 'Approach' },
-    { testId: 'paradigms-sub-menu-pro-stats', name: 'pros', title: 'Pros' },
+    { testId: 'perform-sub-menu-approach', name: 'approach', title: 'Approach' },
+    { testId: 'perform-sub-menu-pro-stats', name: 'pros', title: 'Pros' },
     { testId: 'putting-sub-menu-putting-drills', name: 'putting-drills', title: 'Drills' },
     { testId: 'putting-sub-menu-putting-games', name: 'putting-games', title: 'Games' },
     { testId: 'chipping-sub-menu-chipping-drills', name: 'chipping-drills', title: 'Drills' },

@@ -42,7 +42,7 @@ export default function HomeScreen() {
             No caddy needed!
           </Text>
           <Text style={[styles.normalText, styles.marginBottom]}>
-            Smarter play, practice & course expectations
+            Smarter play, practice & performance
           </Text>
 
           <View style={[styles.iconsContainer, styles.marginTop]}>
@@ -56,9 +56,9 @@ export default function HomeScreen() {
                 <IconButton iconName='golf-course' label='Practice' size='medium' />
               </View>
             </Link>
-            <Link testID="home-paradigms-link" href='/paradigms'>
+            <Link testID="home-perform-link" href='/perform'>
               <View style={styles.iconContainer}>
-                <IconButton iconName='lightbulb' label='Paradigms' size='medium' />
+                <IconButton iconName='lightbulb' label='Perform' size='medium' />
               </View>
             </Link>
           </View>

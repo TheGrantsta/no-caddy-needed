@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import View from '../../app/(tabs)/paradigms';
+import View from '../../app/(tabs)/perform';
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -32,7 +32,7 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
-describe('Paradigms page ', () => {
+describe('Perform page ', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
@@ -41,7 +41,7 @@ describe('Paradigms page ', () => {
         it('renders correctly with the default text', () => {
             const { getByText } = render(<View />);
 
-            expect(getByText('Paradigms')).toBeTruthy();
+            expect(getByText('Perform')).toBeTruthy();
             expect(getByText('Make better on course decisions & choose better targets')).toBeTruthy();
         });
 
@@ -65,7 +65,7 @@ describe('Paradigms page ', () => {
     it('renders correctly with stats heading', () => {
         const { getByTestId, getByText } = render(<View />);
 
-        const subMenuItem = getByTestId('paradigms-sub-menu-pro-stats');
+        const subMenuItem = getByTestId('perform-sub-menu-pro-stats');
 
         fireEvent.press(subMenuItem);
 
@@ -75,7 +75,7 @@ describe('Paradigms page ', () => {
     it('renders correctly with stats approach shots headings', () => {
         const { getByTestId, getByText } = render(<View />);
 
-        const subMenuItem = getByTestId('paradigms-sub-menu-pro-stats');
+        const subMenuItem = getByTestId('perform-sub-menu-pro-stats');
 
         fireEvent.press(subMenuItem);
 
@@ -86,7 +86,7 @@ describe('Paradigms page ', () => {
     it('renders correctly with stats approach shot proximity', () => {
         const { getByTestId, getByText } = render(<View />);
 
-        const subMenuItem = getByTestId('paradigms-sub-menu-pro-stats');
+        const subMenuItem = getByTestId('perform-sub-menu-pro-stats');
 
         fireEvent.press(subMenuItem);
 
@@ -98,11 +98,11 @@ describe('Paradigms page ', () => {
     it('renders correctly with stats putting make rates', async () => {
         const { getByTestId, getByText } = render(<View />);
 
-        const subMenuItem = getByTestId('paradigms-sub-menu-pro-stats');
+        const subMenuItem = getByTestId('perform-sub-menu-pro-stats');
 
         fireEvent.press(subMenuItem);
 
-        const flatList = getByTestId('paradigms-flat-list');
+        const flatList = getByTestId('perform-flat-list');
 
         fireEvent.scroll(flatList, {
             nativeEvent: {

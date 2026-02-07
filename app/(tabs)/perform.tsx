@@ -7,7 +7,7 @@ import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 
-export default function Paradigms() {
+export default function Perform() {
   const styles = useStyles();
   const colours = useThemeColours();
   const { landscapePadding } = useOrientation();
@@ -111,7 +111,7 @@ export default function Paradigms() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SubMenu showSubMenu='paradigms' selectedItem={section} handleSubMenu={handleSubMenu} />
+      <SubMenu showSubMenu='perform' selectedItem={section} handleSubMenu={handleSubMenu} />
 
       {refreshing && (
         <View style={styles.updateOverlay}>
@@ -133,7 +133,7 @@ export default function Paradigms() {
           <View style={styles.container}>
             <View style={styles.headerContainer}>
               <Text style={[styles.headerText, styles.marginTop]}>
-                Paradigms
+                Perform
               </Text>
               <Text style={[styles.normalText, styles.marginBottom]}>
                 Make better on course decisions & choose better targets
@@ -157,7 +157,7 @@ export default function Paradigms() {
             <View style={styles.container}>
               <View style={styles.headerContainer}>
                 <Text style={[styles.headerText, { marginTop: 10 }]}>
-                  Paradigms
+                  Perform
                 </Text>
                 <Text style={[styles.normalText, { marginBottom: 10 }]}>
                   Manage your expectations, better!
@@ -188,7 +188,7 @@ export default function Paradigms() {
 
               <View style={styles.horizontalScrollContainer}>
                 <FlatList
-                  testID='paradigms-flat-list'
+                  testID='perform-flat-list'
                   ref={flatListRef}
                   data={proStats}
                   horizontal

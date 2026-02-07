@@ -36,7 +36,7 @@ describe('renders homepage', () => {
     it('shows sub title', () => {
         const { getByText } = render(<Homepage />);
 
-        expect(getByText('Smarter play, practice & course expectations')).toBeTruthy();
+        expect(getByText('Smarter play, practice & performance')).toBeTruthy();
     });
 
     it('shows sub, sub title', () => {
@@ -50,7 +50,7 @@ describe('renders homepage', () => {
 
         expect(getByText('Play')).toBeTruthy();
         expect(getByText('Practice')).toBeTruthy();
-        expect(getByText('Paradigms')).toBeTruthy();
+        expect(getByText('Perform')).toBeTruthy();
     });
 
     it('shows footer text on homepage', () => {

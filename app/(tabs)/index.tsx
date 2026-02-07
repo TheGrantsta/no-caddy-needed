@@ -6,7 +6,9 @@ import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
 import IconButton from '@/components/IconButton';
+import Chevrons from '@/components/Chevrons';
 
+const points = ['In a nutshell: hit it, find it and hit it again', 'Point: get the ball in the hole with the fewest shots', 'Have fun: golf is a game, so for goodness sake enjoy it!'];
 
 export default function HomeScreen() {
   const styles = useStyles();
@@ -63,13 +65,17 @@ export default function HomeScreen() {
             </Link>
           </View>
 
-          <Text style={styles.subHeaderText}>
+          <Chevrons heading='Golf simplified' points={points} />
+
+          <Text style={[styles.subHeaderText, styles.marginTop]}>
             Be your own best caddy
           </Text>
 
-          <Text style={[styles.normalText, styles.marginTop]}>
+          <Text style={[styles.normalText, styles.marginTop, styles.marginBottom]}>
             Golf is not a game of perfect, or having a perfect swing
           </Text>
+
+
         </View>
       </ScrollView>
     </GestureHandlerRootView>

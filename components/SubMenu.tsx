@@ -45,11 +45,9 @@ const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {
         subMenuItemContainer: {
             flex: 1,
             alignItems: 'center',
-            borderColor: colours.yellow,
-            borderBottomWidth: 4,
-            borderBottomColor: colours.background
         },
         subMenuItemContainerSelected: {
+            borderBottomWidth: 4,
             borderBottomColor: colours.yellow,
         },
         subMenuItem: {

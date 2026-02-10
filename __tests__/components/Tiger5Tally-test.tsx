@@ -296,6 +296,74 @@ describe('Tiger5Tally component', () => {
         });
     });
 
+    describe('userScore conditional for double bogeys', () => {
+        it('hides Double bogeys when userScore is less than 2 over par', () => {
+            const { getByTestId, queryByText, queryByTestId } = render(
+                <Tiger5Tally onEndRound={mockOnEndRound} holePar={4} userScore={5} />
+            );
+
+            fireEvent.press(getByTestId('tiger5-start-round'));
+
+            expect(queryByText('Double bogeys')).toBeNull();
+            expect(queryByTestId('tiger5-count-double-bogeys')).toBeNull();
+        });
+
+        it('hides Double bogeys when userScore equals par', () => {
+            const { getByTestId, queryByText, queryByTestId } = render(
+                <Tiger5Tally onEndRound={mockOnEndRound} holePar={4} userScore={4} />
+            );
+
+            fireEvent.press(getByTestId('tiger5-start-round'));
+
+            expect(queryByText('Double bogeys')).toBeNull();
+            expect(queryByTestId('tiger5-count-double-bogeys')).toBeNull();
+        });
+
+        it('shows Double bogeys when userScore is exactly 2 over par', () => {
+            const { getByTestId, getByText } = render(
+                <Tiger5Tally onEndRound={mockOnEndRound} holePar={4} userScore={6} />
+            );
+
+            fireEvent.press(getByTestId('tiger5-start-round'));
+
+            expect(getByText('Double bogeys')).toBeTruthy();
+            expect(getByTestId('tiger5-count-double-bogeys')).toBeTruthy();
+        });
+
+        it('shows Double bogeys when userScore is more than 2 over par', () => {
+            const { getByTestId, getByText } = render(
+                <Tiger5Tally onEndRound={mockOnEndRound} holePar={3} userScore={6} />
+            );
+
+            fireEvent.press(getByTestId('tiger5-start-round'));
+
+            expect(getByText('Double bogeys')).toBeTruthy();
+            expect(getByTestId('tiger5-count-double-bogeys')).toBeTruthy();
+        });
+
+        it('shows Double bogeys when userScore is not provided (default behavior)', () => {
+            const { getByTestId, getByText } = render(
+                <Tiger5Tally onEndRound={mockOnEndRound} holePar={4} />
+            );
+
+            fireEvent.press(getByTestId('tiger5-start-round'));
+
+            expect(getByText('Double bogeys')).toBeTruthy();
+            expect(getByTestId('tiger5-count-double-bogeys')).toBeTruthy();
+        });
+
+        it('shows Double bogeys when holePar is not provided but userScore is', () => {
+            const { getByTestId, getByText } = render(
+                <Tiger5Tally onEndRound={mockOnEndRound} userScore={6} />
+            );
+
+            fireEvent.press(getByTestId('tiger5-start-round'));
+
+            expect(getByText('Double bogeys')).toBeTruthy();
+            expect(getByTestId('tiger5-count-double-bogeys')).toBeTruthy();
+        });
+    });
+
     describe('roundControlled mode', () => {
         const mockOnValuesChange = jest.fn();
 

@@ -9,6 +9,7 @@ type Props = {
     roundControlled?: boolean;
     onValuesChange?: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => void;
     holePar?: number;
+    userScore?: number;
 };
 
 const counters = [
@@ -19,7 +20,7 @@ const counters = [
     { slug: 'double-chips', label: 'Double chips' },
 ];
 
-const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar }: Props) => {
+const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore }: Props) => {
     const colours = useThemeColours();
     const [roundActive, setRoundActive] = useState(roundControlled === true);
     const [threePutts, setThreePutts] = useState(0);
@@ -135,6 +136,7 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
         <View style={localStyles.container}>
             {counters.map((counter, index) => {
                 if (counter.slug === 'bogeys-par5' && holePar !== 5) return null;
+                if (counter.slug === 'double-bogeys' && holePar !== undefined && userScore !== undefined && userScore < holePar + 2) return null;
                 return (
                     <View key={counter.slug} style={localStyles.row}>
                         <Text style={localStyles.label}>{counter.label}</Text>

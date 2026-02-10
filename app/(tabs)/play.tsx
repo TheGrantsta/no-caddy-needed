@@ -382,6 +382,10 @@ export default function Play() {
                                         roundControlled={true}
                                         onValuesChange={handleTiger5ValuesChange}
                                         holePar={currentHoleData?.holePar}
+                                        userScore={currentHoleData?.scores.find(s => {
+                                            const player = players.find(p => p.Id === s.playerId);
+                                            return player && player.IsUser === 1;
+                                        })?.score}
                                     />
                                 }
                             />

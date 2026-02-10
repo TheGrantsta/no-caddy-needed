@@ -9,7 +9,9 @@ import { StatusBar } from 'expo-status-bar';
 import { initialize } from '@/database/db';
 import { ToastProvider } from 'react-native-toast-notifications';
 import NetworkStatus from '@/components/NetworkStatus';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { AppThemeProvider, useTheme } from '@/context/ThemeContext';
+import { initializeAnalytics } from '@/service/AnalyticsService';
 
 let Notifications: typeof import('expo-notifications') | null = null;
 try {
@@ -193,6 +195,9 @@ export default function RootLayout() {
         // Initialize database first
         await initialize();
 
+        // Initialize analytics and crashlytics
+        await initializeAnalytics();
+
         // Request notification permissions if available
         if (Notifications) {
           Notifications.requestPermissionsAsync();
@@ -215,16 +220,18 @@ export default function RootLayout() {
   }
 
   return (
-    <ToastProvider
-      placement="bottom"
-      offset={80}
-      style={{
-        maxWidth: "100%",
-      }}
-    >
-      <AppThemeProvider>
-        <ThemedApp />
-      </AppThemeProvider>
-    </ToastProvider>
+    <ErrorBoundary>
+      <ToastProvider
+        placement="bottom"
+        offset={80}
+        style={{
+          maxWidth: "100%",
+        }}
+      >
+        <AppThemeProvider>
+          <ThemedApp />
+        </AppThemeProvider>
+      </ToastProvider>
+    </ErrorBoundary>
   );
 };

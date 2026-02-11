@@ -204,6 +204,19 @@ describe('PlayerSetup', () => {
             expect(mockOnStartRound).toHaveBeenCalledWith([], 'St Andrews');
         });
 
+        it('clears error when recent course name is tapped', () => {
+            const { getByTestId, getByText, queryByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews']} />
+            );
+
+            fireEvent.press(getByTestId('start-button'));
+            expect(getByTestId('course-name-error')).toBeTruthy();
+
+            fireEvent.press(getByText('St Andrews'));
+
+            expect(queryByTestId('course-name-error')).toBeNull();
+        });
+
         it('does not show recent section when prop is not provided', () => {
             const { queryByText } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
 

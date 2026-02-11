@@ -41,12 +41,13 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
     };
 
     const handleStart = () => {
-        if (courseName.trim().length === 0) {
+        const trimmedCourseName = courseName.trim();
+        if (trimmedCourseName.length === 0) {
             setCourseNameError('Course name is required');
             return;
         }
         const names = additionalPlayers.filter(name => name.trim().length > 0);
-        onStartRound(names, courseName.trim());
+        onStartRound(names, trimmedCourseName);
     };
 
     const localStyles = useMemo(() => StyleSheet.create({
@@ -154,7 +155,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
                 onChangeText={handleCourseNameChange}
             />
 
-            {courseNameError !== '' && (
+            {courseNameError && (
                 <Text testID="course-name-error" style={localStyles.errorText}>
                     {courseNameError}
                 </Text>
@@ -167,7 +168,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
                         <TouchableOpacity
                             key={name}
                             testID={`recent-course-${name}`}
-                            onPress={() => setCourseName(name)}
+                            onPress={() => handleCourseNameChange(name)}
                             style={localStyles.recentItem}
                         >
                             <Text style={localStyles.recentItemText}>{name}</Text>

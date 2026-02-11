@@ -143,6 +143,7 @@ describe('getSettingsService', () => {
             notificationsEnabled: true,
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: false,
+            playOnboardingSeen: false,
         });
     });
 
@@ -153,6 +154,7 @@ describe('getSettingsService', () => {
             NotificationsEnabled: 1,
             WedgeChartOnboardingSeen: 0,
             DistancesOnboardingSeen: 0,
+            PlayOnboardingSeen: 0,
         });
 
         const result = getSettingsService();
@@ -162,6 +164,7 @@ describe('getSettingsService', () => {
             notificationsEnabled: true,
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: false,
+            playOnboardingSeen: false,
         });
     });
 
@@ -172,6 +175,7 @@ describe('getSettingsService', () => {
             NotificationsEnabled: 0,
             WedgeChartOnboardingSeen: 1,
             DistancesOnboardingSeen: 0,
+            PlayOnboardingSeen: 0,
         });
 
         const result = getSettingsService();
@@ -181,6 +185,7 @@ describe('getSettingsService', () => {
             notificationsEnabled: false,
             wedgeChartOnboardingSeen: true,
             distancesOnboardingSeen: false,
+            playOnboardingSeen: false,
         });
     });
 
@@ -191,6 +196,7 @@ describe('getSettingsService', () => {
             NotificationsEnabled: 1,
             WedgeChartOnboardingSeen: 0,
             DistancesOnboardingSeen: 1,
+            PlayOnboardingSeen: 0,
         });
 
         const result = getSettingsService();
@@ -200,6 +206,28 @@ describe('getSettingsService', () => {
             notificationsEnabled: true,
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: true,
+            playOnboardingSeen: false,
+        });
+    });
+
+    it('returns settings with playOnboardingSeen true', () => {
+        mockGetSettings.mockReturnValue({
+            Id: 1,
+            Theme: 'dark',
+            NotificationsEnabled: 1,
+            WedgeChartOnboardingSeen: 0,
+            DistancesOnboardingSeen: 0,
+            PlayOnboardingSeen: 1,
+        });
+
+        const result = getSettingsService();
+
+        expect(result).toEqual({
+            theme: 'dark',
+            notificationsEnabled: true,
+            wedgeChartOnboardingSeen: false,
+            distancesOnboardingSeen: false,
+            playOnboardingSeen: true,
         });
     });
 });
@@ -217,12 +245,13 @@ describe('saveSettingsService', () => {
             notificationsEnabled: true,
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: false,
+            playOnboardingSeen: false,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 0, 0, 0);
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
@@ -233,12 +262,13 @@ describe('saveSettingsService', () => {
             notificationsEnabled: false,
             wedgeChartOnboardingSeen: true,
             distancesOnboardingSeen: false,
+            playOnboardingSeen: false,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('light', 0, 1, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith('light', 0, 1, 0, 0);
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
@@ -249,11 +279,12 @@ describe('saveSettingsService', () => {
             notificationsEnabled: true,
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: true,
+            playOnboardingSeen: false,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 0, 1, 0);
     });
 });

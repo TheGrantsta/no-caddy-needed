@@ -369,13 +369,14 @@ export type AppSettings = {
     notificationsEnabled: boolean;
     wedgeChartOnboardingSeen: boolean;
     distancesOnboardingSeen: boolean;
+    playOnboardingSeen: boolean;
 };
 
 export const getSettingsService = (): AppSettings => {
-    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number } | null;
+    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number } | null;
 
     if (!row) {
-        return { theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false };
+        return { theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false };
     }
 
     return {
@@ -383,11 +384,12 @@ export const getSettingsService = (): AppSettings => {
         notificationsEnabled: row.NotificationsEnabled === 1,
         wedgeChartOnboardingSeen: row.WedgeChartOnboardingSeen === 1,
         distancesOnboardingSeen: row.DistancesOnboardingSeen === 1,
+        playOnboardingSeen: row.PlayOnboardingSeen === 1,
     };
 };
 
 export const saveSettingsService = async (settings: AppSettings): Promise<boolean> => {
-    return saveSettings(settings.theme, settings.notificationsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0);
+    return saveSettings(settings.theme, settings.notificationsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0);
 };
 
 export const updateScorecardService = async (roundId: number, updatedScores: { id: number; score: number }[]): Promise<boolean> => {

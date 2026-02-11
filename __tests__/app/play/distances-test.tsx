@@ -25,6 +25,7 @@ jest.mock('../../../service/DbService', () => ({
         notificationsEnabled: true,
         wedgeChartOnboardingSeen: true,
         distancesOnboardingSeen: true,
+        playOnboardingSeen: true,
     }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
 }));

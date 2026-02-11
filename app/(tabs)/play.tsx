@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 import MultiplayerHoleScoreInput from '../../components/MultiplayerHoleScoreInput';
 import Tiger5Tally from '../../components/Tiger5Tally';
 import Tiger5Chart from '../../components/Tiger5Chart';
 import SubMenu from '../../components/SubMenu';
+import OnboardingOverlay from '../../components/OnboardingOverlay';
 import WedgeChartScreen from '../play/wedge-chart';
 import PlayerSetup from '../../components/PlayerSetup';
 import MultiplayerScorecard from '../../components/MultiplayerScorecard';
@@ -21,6 +23,8 @@ import {
     getRoundPlayersService,
     getMultiplayerScorecardService,
     getRecentCourseNamesService,
+    getSettingsService,
+    saveSettingsService,
     Round,
     RoundPlayer,
     Tiger5Round,
@@ -34,6 +38,12 @@ import { useAppToast } from '../../hooks/useAppToast';
 import fontSizes from '../../assets/font-sizes';
 import { StyleSheet } from 'react-native';
 import DistancesScreen from '../play/distances';
+
+const ONBOARDING_STEPS = [
+    { text: 'Start a round to track your scores hole by hole and see your running total.' },
+    { text: 'Add playing partners, set the par for each hole, and record everyone\'s scores.' },
+    { text: 'After your round, review your scorecard and track your Tiger 5 stats over time.' },
+];
 
 const formatScore = (score: number): string => {
     if (score === 0) return 'E';
@@ -62,6 +72,8 @@ export default function Play() {
     const [recentCourseNames, setRecentCourseNames] = useState<string[]>([]);
     const { showError, showResult } = useAppToast();
     const router = useRouter();
+    const [settings, setSettings] = useState(getSettingsService());
+    const [showOnboarding, setShowOnboarding] = useState(false);
 
     const localStyles = useMemo(() => StyleSheet.create({
         startRoundContainer: {
@@ -140,9 +152,16 @@ export default function Play() {
                 setPlayers(roundPlayers);
             }
         }
-        setRoundHistory(getAllRoundHistoryService());
+        const history = getAllRoundHistoryService();
+        setRoundHistory(history);
         setTiger5Rounds(getAllTiger5RoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
+
+        const currentSettings = getSettingsService();
+        setSettings(currentSettings);
+        if (!currentSettings.playOnboardingSeen && history.length === 0 && !activeRound) {
+            setShowOnboarding(true);
+        }
     }, []);
 
     const onRefresh = () => {
@@ -152,6 +171,17 @@ export default function Play() {
             setTiger5Rounds(getAllTiger5RoundsService());
             setRefreshing(false);
         }, 750);
+    };
+
+    const handleDismissOnboarding = async () => {
+        setShowOnboarding(false);
+        const updatedSettings = { ...settings, playOnboardingSeen: true };
+        setSettings(updatedSettings);
+        await saveSettingsService(updatedSettings);
+    };
+
+    const handleShowOnboarding = () => {
+        setShowOnboarding(true);
     };
 
     const handleShowPlayerSetup = () => {
@@ -311,6 +341,15 @@ export default function Play() {
                 {!isRoundActive && !showPlayerSetup && !scorecardData && displaySection('play-score') && (
                     <View style={styles.container}>
                         <View style={localStyles.startRoundContainer}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', width: '100%' }}>
+                                <TouchableOpacity
+                                    testID="play-onboarding-info-button"
+                                    onPress={handleShowOnboarding}
+                                    style={{ padding: 4 }}
+                                >
+                                    <MaterialIcons name="info-outline" size={24} color={colours.text} />
+                                </TouchableOpacity>
+                            </View>
                             <TouchableOpacity
                                 testID="start-round-button"
                                 onPress={handleShowPlayerSetup}
@@ -460,6 +499,13 @@ export default function Play() {
                     </View>
                 )}
             </ScrollView>
+
+            <OnboardingOverlay
+                visible={showOnboarding}
+                onDismiss={handleDismissOnboarding}
+                title="Play"
+                steps={ONBOARDING_STEPS}
+            />
         </GestureHandlerRootView>
     );
 }

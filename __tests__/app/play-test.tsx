@@ -15,6 +15,8 @@ import {
     getRoundPlayersService,
     getMultiplayerScorecardService,
     getRecentCourseNamesService,
+    getSettingsService,
+    saveSettingsService,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
 
@@ -51,6 +53,8 @@ jest.mock('../../service/DbService', () => ({
         theme: 'dark',
         notificationsEnabled: true,
         wedgeChartOnboardingSeen: true,
+        distancesOnboardingSeen: true,
+        playOnboardingSeen: true,
     }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
 }));
@@ -110,6 +114,8 @@ const mockAddRoundPlayers = addRoundPlayersService as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayersService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
 const mockGetRecentCourseNames = getRecentCourseNamesService as jest.Mock;
+const mockGetSettingsService = getSettingsService as jest.Mock;
+const mockSaveSettingsService = saveSettingsService as jest.Mock;
 
 describe('Play screen', () => {
     beforeEach(() => {
@@ -1063,6 +1069,115 @@ describe('Play screen', () => {
             await waitFor(() => {
                 expect(mockGetMultiplayerScorecard).toHaveBeenCalledWith(42);
             });
+        });
+    });
+
+    describe('Onboarding', () => {
+        it('shows onboarding when playOnboardingSeen is false and no round history', () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true,
+                playOnboardingSeen: false,
+            });
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('onboarding-overlay')).toBeTruthy();
+        });
+
+        it('does not show onboarding when playOnboardingSeen is true', () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true,
+                playOnboardingSeen: true,
+            });
+
+            const { queryByTestId } = render(<Play />);
+
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+        });
+
+        it('does not show onboarding when round history exists', () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true,
+                playOnboardingSeen: false,
+            });
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+
+            const { queryByTestId } = render(<Play />);
+
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+        });
+
+        it('dismisses onboarding and saves settings when Skip pressed', async () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true,
+                playOnboardingSeen: false,
+            });
+            mockSaveSettingsService.mockResolvedValue(true);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+
+            expect(getByTestId('onboarding-overlay')).toBeTruthy();
+
+            await act(async () => {
+                fireEvent.press(getByTestId('skip-button'));
+            });
+
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({
+                playOnboardingSeen: true,
+            }));
+        });
+
+        it('shows onboarding when info button pressed', async () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true,
+                playOnboardingSeen: true,
+            });
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('play-onboarding-info-button'));
+
+            expect(getByTestId('onboarding-overlay')).toBeTruthy();
+        });
+
+        it('does not show onboarding during active round', () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true,
+                playOnboardingSeen: false,
+            });
+            mockGetActiveRound.mockReturnValue({
+                Id: 5, CoursePar: 72, TotalScore: 0, IsCompleted: 0,
+                StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
+                Created_At: '2025-06-15T10:00:00.000Z',
+            });
+            mockGetRoundPlayers.mockReturnValue([
+                { Id: 1, RoundId: 5, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+            ]);
+
+            const { queryByTestId } = render(<Play />);
+
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
         });
     });
 

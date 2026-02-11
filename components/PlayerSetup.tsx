@@ -15,6 +15,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
     const colours = useThemeColours();
     const [additionalPlayers, setAdditionalPlayers] = useState<string[]>([]);
     const [courseName, setCourseName] = useState('');
+    const [courseNameError, setCourseNameError] = useState('');
 
     const handleAddPlayer = () => {
         if (additionalPlayers.length < MAX_ADDITIONAL_PLAYERS) {
@@ -32,9 +33,20 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
         setAdditionalPlayers(updated);
     };
 
+    const handleCourseNameChange = (text: string) => {
+        setCourseName(text);
+        if (courseNameError) {
+            setCourseNameError('');
+        }
+    };
+
     const handleStart = () => {
+        if (courseName.trim().length === 0) {
+            setCourseNameError('Course name is required');
+            return;
+        }
         const names = additionalPlayers.filter(name => name.trim().length > 0);
-        onStartRound(names, courseName);
+        onStartRound(names, courseName.trim());
     };
 
     const localStyles = useMemo(() => StyleSheet.create({
@@ -124,6 +136,11 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
         recentContainer: {
             marginBottom: 10,
         },
+        errorText: {
+            color: colours.errorText,
+            fontSize: fontSizes.small,
+            marginBottom: 10,
+        },
     }), [colours]);
 
     return (
@@ -134,8 +151,14 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
                 placeholder="Course name"
                 placeholderTextColor={colours.backgroundAlternate}
                 value={courseName}
-                onChangeText={setCourseName}
+                onChangeText={handleCourseNameChange}
             />
+
+            {courseNameError !== '' && (
+                <Text testID="course-name-error" style={localStyles.errorText}>
+                    {courseNameError}
+                </Text>
+            )}
 
             {recentCourseNames && recentCourseNames.length > 0 && (
                 <View style={localStyles.recentContainer}>

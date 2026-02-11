@@ -297,10 +297,11 @@ describe('Play screen', () => {
             const { getByTestId, getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(mockStartRound).toHaveBeenCalledWith(72, '');
+                expect(mockStartRound).toHaveBeenCalledWith(72, 'Test Course');
                 expect(mockAddRoundPlayers).toHaveBeenCalledWith(1, []);
             });
         });
@@ -328,6 +329,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('add-player-button'));
             fireEvent.changeText(getByTestId('player-name-input-0'), 'Alice');
             fireEvent.press(getByTestId('start-button'));
@@ -346,6 +348,7 @@ describe('Play screen', () => {
             const { getByTestId, getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -380,6 +383,7 @@ describe('Play screen', () => {
             const { getByTestId, getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -403,6 +407,7 @@ describe('Play screen', () => {
             const { getByTestId, getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -427,6 +432,7 @@ describe('Play screen', () => {
             const { getByTestId, queryByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -445,6 +451,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -463,6 +470,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -483,6 +491,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -508,6 +517,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -531,6 +541,7 @@ describe('Play screen', () => {
             const { getByTestId, queryByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -563,6 +574,7 @@ describe('Play screen', () => {
             const { getByTestId, getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -578,6 +590,7 @@ describe('Play screen', () => {
             const { getByTestId, getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -596,6 +609,7 @@ describe('Play screen', () => {
             const { getByTestId, getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -615,6 +629,7 @@ describe('Play screen', () => {
             const { getByTestId, getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -679,6 +694,7 @@ describe('Play screen', () => {
             const { getByTestId, getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -698,6 +714,7 @@ describe('Play screen', () => {
             const { getByTestId, queryByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -719,6 +736,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -754,6 +772,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -780,6 +799,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -797,6 +817,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -823,6 +844,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('add-player-button'));
             fireEvent.changeText(getByTestId('player-name-input-0'), 'Alice');
             fireEvent.press(getByTestId('start-button'));
@@ -897,6 +919,7 @@ describe('Play screen', () => {
     describe('18-hole limit', () => {
         const startRoundAndAdvanceToHole = async (getByTestId: any, getByText: any, targetHole: number) => {
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -957,6 +980,7 @@ describe('Play screen', () => {
     describe('Post-round scorecard', () => {
         const startAndEndRound = async (getByTestId: any) => {
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -1205,6 +1229,7 @@ describe('Play screen', () => {
             const { getByTestId, queryByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
@@ -1224,6 +1249,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {

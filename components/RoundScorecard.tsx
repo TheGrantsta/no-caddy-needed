@@ -28,18 +28,12 @@ const formatHoleScore = (score: number): string => {
     return `${score}`;
 };
 
-const RoundScorecard = ({ totalScore, coursePar, holes }: Props) => {
+const RoundScorecard = ({ totalScore, holes }: Props) => {
     const colours = useThemeColours();
 
     const localStyles = useMemo(() => StyleSheet.create({
         container: {
             padding: 15,
-        },
-        parText: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
-            textAlign: 'center',
-            marginBottom: 5,
         },
         totalScore: {
             color: colours.yellow,
@@ -99,7 +93,6 @@ const RoundScorecard = ({ totalScore, coursePar, holes }: Props) => {
 
     return (
         <View style={localStyles.container}>
-            <Text style={localStyles.parText}>Par {coursePar}</Text>
             <Text testID="scorecard-total" style={localStyles.totalScore}>
                 {formatScore(totalScore)}
             </Text>

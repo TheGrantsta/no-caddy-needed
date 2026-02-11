@@ -169,7 +169,6 @@ export const getAllTiger5RoundsService = (): Tiger5Round[] => {
 // Round types
 export type Round = {
     Id: number;
-    CoursePar: number;
     TotalScore: number;
     StartTime: string;
     EndTime: string | null;
@@ -222,8 +221,8 @@ export type ClubDistance = {
 };
 
 // Round services
-export const startRoundService = async (coursePar: number, courseName: string): Promise<number | null> => {
-    return insertRound(coursePar, courseName);
+export const startRoundService = async (courseName: string): Promise<number | null> => {
+    return insertRound(courseName);
 };
 
 export const endRoundService = async (roundId: number): Promise<boolean> => {

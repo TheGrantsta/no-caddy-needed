@@ -62,16 +62,16 @@ describe('startRoundService', () => {
     it('creates a new round and returns the round ID', async () => {
         mockInsertRound.mockResolvedValue(42);
 
-        const result = await startRoundService(72, 'St Andrews');
+        const result = await startRoundService('St Andrews');
 
-        expect(mockInsertRound).toHaveBeenCalledWith(72, 'St Andrews');
+        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews');
         expect(result).toBe(42);
     });
 
     it('returns null when insert fails', async () => {
         mockInsertRound.mockResolvedValue(null);
 
-        const result = await startRoundService(72, '');
+        const result = await startRoundService('');
 
         expect(result).toBeNull();
     });
@@ -79,9 +79,9 @@ describe('startRoundService', () => {
     it('passes empty string when no course name provided', async () => {
         mockInsertRound.mockResolvedValue(1);
 
-        const result = await startRoundService(72, '');
+        const result = await startRoundService('');
 
-        expect(mockInsertRound).toHaveBeenCalledWith(72, '');
+        expect(mockInsertRound).toHaveBeenCalledWith('');
         expect(result).toBe(1);
     });
 });
@@ -177,7 +177,7 @@ describe('getRoundScorecardService', () => {
 
     it('returns round with holes', () => {
         mockGetRoundById.mockReturnValue({
-            Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1,
+            Id: 1, TotalScore: 3, IsCompleted: 1,
             StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z',
             Created_At: '2025-06-15T10:00:00.000Z',
         });
@@ -211,7 +211,7 @@ describe('getActiveRoundService', () => {
 
     it('returns active round when one exists', () => {
         mockGetActiveRound.mockReturnValue({
-            Id: 5, CoursePar: 72, TotalScore: 0, IsCompleted: 0,
+            Id: 5, TotalScore: 0, IsCompleted: 0,
             StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
             Created_At: '2025-06-15T10:00:00.000Z',
         });
@@ -247,7 +247,7 @@ describe('getAllRoundHistoryService', () => {
 
     it('returns formatted rounds with dd/mm dates', () => {
         mockGetAllRounds.mockReturnValue([
-            { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: 'St Andrews' },
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: 'St Andrews' },
         ]);
 
         const result = getAllRoundHistoryService();
@@ -259,8 +259,8 @@ describe('getAllRoundHistoryService', () => {
 
     it('returns multiple rounds sorted by most recent', () => {
         mockGetAllRounds.mockReturnValue([
-            { Id: 2, CoursePar: 72, TotalScore: -1, IsCompleted: 1, StartTime: '2025-07-01T10:00:00.000Z', EndTime: '2025-07-01T14:00:00.000Z', Created_At: '2025-07-01T10:00:00.000Z', CourseName: 'Pebble Beach' },
-            { Id: 1, CoursePar: 72, TotalScore: 5, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
+            { Id: 2, TotalScore: -1, IsCompleted: 1, StartTime: '2025-07-01T10:00:00.000Z', EndTime: '2025-07-01T14:00:00.000Z', Created_At: '2025-07-01T10:00:00.000Z', CourseName: 'Pebble Beach' },
+            { Id: 1, TotalScore: 5, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
         ]);
 
         const result = getAllRoundHistoryService();
@@ -272,7 +272,7 @@ describe('getAllRoundHistoryService', () => {
 
     it('includes CourseName in returned rounds', () => {
         mockGetAllRounds.mockReturnValue([
-            { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: 'St Andrews' },
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: 'St Andrews' },
         ]);
 
         const result = getAllRoundHistoryService();
@@ -282,7 +282,7 @@ describe('getAllRoundHistoryService', () => {
 
     it('returns null CourseName when not set', () => {
         mockGetAllRounds.mockReturnValue([
-            { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
         ]);
 
         const result = getAllRoundHistoryService();
@@ -408,7 +408,7 @@ describe('getMultiplayerScorecardService', () => {
 
     it('returns multiplayer scorecard with round, players and scores', () => {
         mockGetRoundById.mockReturnValue({
-            Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1,
+            Id: 1, TotalScore: 3, IsCompleted: 1,
             StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z',
             Created_At: '2025-06-15T10:00:00.000Z',
         });
@@ -439,7 +439,7 @@ describe('getMultiplayerScorecardService', () => {
 
     it('returns null when no players exist for round', () => {
         mockGetRoundById.mockReturnValue({
-            Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1,
+            Id: 1, TotalScore: 3, IsCompleted: 1,
             StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z',
             Created_At: '2025-06-15T10:00:00.000Z',
         });

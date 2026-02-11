@@ -189,7 +189,7 @@ export default function Play() {
     };
 
     const handleStartRound = async (playerNames: string[], courseName: string) => {
-        const roundId = await startRoundService(72, courseName);
+        const roundId = await startRoundService(courseName);
 
         if (roundId) {
             const playerIds = await addRoundPlayersService(roundId, playerNames);

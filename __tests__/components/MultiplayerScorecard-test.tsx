@@ -15,11 +15,11 @@ jest.mock('../../context/ThemeContext', () => ({
 
 const mockRound: Round = {
     Id: 1,
-    CoursePar: 72,
     TotalScore: 2,
     StartTime: '2025-06-15T10:00:00.000Z',
     EndTime: '2025-06-15T14:00:00.000Z',
     IsCompleted: 1,
+    CourseName: 'St Andrews',
     Created_At: '2025-06-15T10:00:00.000Z',
 };
 

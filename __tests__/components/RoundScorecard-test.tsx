@@ -21,7 +21,7 @@ describe('RoundScorecard component', () => {
         ];
 
         const { getByTestId } = render(
-            <RoundScorecard totalScore={0} coursePar={72} holes={holes} />
+            <RoundScorecard totalScore={0} holes={holes} />
         );
 
         expect(getByTestId('scorecard-total')).toBeTruthy();
@@ -29,7 +29,7 @@ describe('RoundScorecard component', () => {
 
     it('displays even par as E', () => {
         const { getByText } = render(
-            <RoundScorecard totalScore={0} coursePar={72} holes={[]} />
+            <RoundScorecard totalScore={0} holes={[]} />
         );
 
         expect(getByText('E')).toBeTruthy();
@@ -37,7 +37,7 @@ describe('RoundScorecard component', () => {
 
     it('displays positive score with plus sign', () => {
         const { getByText } = render(
-            <RoundScorecard totalScore={5} coursePar={72} holes={[]} />
+            <RoundScorecard totalScore={5} holes={[]} />
         );
 
         expect(getByText('+5')).toBeTruthy();
@@ -45,7 +45,7 @@ describe('RoundScorecard component', () => {
 
     it('displays negative score', () => {
         const { getByText } = render(
-            <RoundScorecard totalScore={-3} coursePar={72} holes={[]} />
+            <RoundScorecard totalScore={-3} holes={[]} />
         );
 
         expect(getByText('-3')).toBeTruthy();
@@ -59,7 +59,7 @@ describe('RoundScorecard component', () => {
         ];
 
         const { getByTestId } = render(
-            <RoundScorecard totalScore={0} coursePar={72} holes={holes} />
+            <RoundScorecard totalScore={0} holes={holes} />
         );
 
         expect(getByTestId('hole-1-score')).toBeTruthy();
@@ -73,7 +73,7 @@ describe('RoundScorecard component', () => {
         }));
 
         const { getByTestId } = render(
-            <RoundScorecard totalScore={9} coursePar={72} holes={holes} />
+            <RoundScorecard totalScore={9} holes={holes} />
         );
 
         expect(getByTestId('front-9-total')).toBeTruthy();
@@ -85,17 +85,9 @@ describe('RoundScorecard component', () => {
         }));
 
         const { getByTestId } = render(
-            <RoundScorecard totalScore={0} coursePar={72} holes={holes} />
+            <RoundScorecard totalScore={0} holes={holes} />
         );
 
         expect(getByTestId('back-9-total')).toBeTruthy();
-    });
-
-    it('displays course par', () => {
-        const { getByText } = render(
-            <RoundScorecard totalScore={0} coursePar={72} holes={[]} />
-        );
-
-        expect(getByText(/Par 72/)).toBeTruthy();
     });
 });

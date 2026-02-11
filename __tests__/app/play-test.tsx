@@ -144,7 +144,7 @@ describe('Play screen', () => {
 
         it('shows round history when rounds exist', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
 
             const { getByText } = render(<Play />);
@@ -156,7 +156,7 @@ describe('Play screen', () => {
 
         it('shows even par as E in round history', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
 
             const { getByText } = render(<Play />);
@@ -166,7 +166,7 @@ describe('Play screen', () => {
 
         it('shows negative score in round history', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: -2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, TotalScore: -2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
 
             const { getByText } = render(<Play />);
@@ -176,7 +176,7 @@ describe('Play screen', () => {
 
         it('limits round history to 30 items', () => {
             const rounds = Array.from({ length: 35 }, (_, i) => ({
-                Id: i + 1, CoursePar: 72, TotalScore: i, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
+                Id: i + 1, TotalScore: i, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
             }));
             mockGetAllRoundHistory.mockReturnValue(rounds);
 
@@ -188,7 +188,7 @@ describe('Play screen', () => {
 
         it('renders round history in a scrollable container', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
 
             const { getByTestId } = render(<Play />);
@@ -198,7 +198,7 @@ describe('Play screen', () => {
 
         it('renders date column at 70% width and score and t5 columns at 15% width', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
+                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
             ]);
 
             const { getByTestId } = render(<Play />);
@@ -214,7 +214,7 @@ describe('Play screen', () => {
 
         it('renders round history rows as tappable', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
 
             const { getByTestId } = render(<Play />);
@@ -224,7 +224,7 @@ describe('Play screen', () => {
 
         it('navigates to scorecard when round history row is pressed', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
+                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
             ]);
 
             const { getByTestId } = render(<Play />);
@@ -236,7 +236,7 @@ describe('Play screen', () => {
 
         it('shows course name in round history when set', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: 'St Andrews' },
+                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: 'St Andrews' },
             ]);
 
             const { getByText } = render(<Play />);
@@ -246,7 +246,7 @@ describe('Play screen', () => {
 
         it('does not show course name text when CourseName is null', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
+                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
             ]);
 
             const { queryByTestId } = render(<Play />);
@@ -294,14 +294,14 @@ describe('Play screen', () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
-            const { getByTestId, getByText } = render(<Play />);
+            const { getByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(mockStartRound).toHaveBeenCalledWith(72, 'Test Course');
+                expect(mockStartRound).toHaveBeenCalledWith('Test Course');
                 expect(mockAddRoundPlayers).toHaveBeenCalledWith(1, []);
             });
         });
@@ -317,7 +317,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(mockStartRound).toHaveBeenCalledWith(72, 'St Andrews');
+                expect(mockStartRound).toHaveBeenCalledWith('St Andrews');
                 expect(getByText('Hole 1')).toBeTruthy();
             });
         });
@@ -361,7 +361,7 @@ describe('Play screen', () => {
     describe('Active round', () => {
         it('resumes active round on mount', () => {
             mockGetActiveRound.mockReturnValue({
-                Id: 5, CoursePar: 72, TotalScore: 0, IsCompleted: 0,
+                Id: 5, TotalScore: 0, IsCompleted: 0,
                 StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
                 Created_At: '2025-06-15T10:00:00.000Z',
             });
@@ -864,7 +864,7 @@ describe('Play screen', () => {
 
         it('resumes active round with players on mount', () => {
             mockGetActiveRound.mockReturnValue({
-                Id: 5, CoursePar: 72, TotalScore: 0, IsCompleted: 0,
+                Id: 5, TotalScore: 0, IsCompleted: 0,
                 StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
                 Created_At: '2025-06-15T10:00:00.000Z',
             });
@@ -883,7 +883,7 @@ describe('Play screen', () => {
     describe('Tiger 5 total in round history', () => {
         it('shows T5 column header when round history exists', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
 
             const { getByText } = render(<Play />);
@@ -893,7 +893,7 @@ describe('Play screen', () => {
 
         it('shows Tiger5 total next to matching round', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
             mockGetAllTiger5Rounds.mockReturnValue([
                 { Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 1, Total: 5, Created_At: '15/06' },
@@ -906,7 +906,7 @@ describe('Play screen', () => {
 
         it('shows dash when no Tiger5 data for a round', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
             mockGetAllTiger5Rounds.mockReturnValue([]);
 
@@ -994,7 +994,7 @@ describe('Play screen', () => {
         };
 
         const mockScorecardData = {
-            round: { Id: 1, CoursePar: 72, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            round: { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             players: [
                 { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
                 { Id: 2, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 1 },
@@ -1128,7 +1128,7 @@ describe('Play screen', () => {
                 playOnboardingSeen: false,
             });
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, CoursePar: 72, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
 
             const { queryByTestId } = render(<Play />);
@@ -1185,7 +1185,7 @@ describe('Play screen', () => {
                 playOnboardingSeen: false,
             });
             mockGetActiveRound.mockReturnValue({
-                Id: 5, CoursePar: 72, TotalScore: 0, IsCompleted: 0,
+                Id: 5, TotalScore: 0, IsCompleted: 0,
                 StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
                 Created_At: '2025-06-15T10:00:00.000Z',
             });

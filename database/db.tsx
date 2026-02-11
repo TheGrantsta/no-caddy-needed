@@ -144,17 +144,17 @@ export const getAllDrillHistory = () => {
     return get(sqlStatement);
 }
 
-export const insertRound = async (coursePar: number, courseName: string): Promise<number | null> => {
+export const insertRound = async (courseName: string): Promise<number | null> => {
     try {
         const db = await SQLite.openDatabaseAsync(dbName);
         const now = new Date().toISOString();
 
         const statement = await db.prepareAsync(
-            'INSERT INTO Rounds (CoursePar, TotalScore, StartTime, IsCompleted, CourseName, Created_At) VALUES ($CoursePar, 0, $StartTime, 0, $CourseName, $Created_At);'
+            'INSERT INTO Rounds (TotalScore, StartTime, IsCompleted, CourseName, Created_At) VALUES (0, $StartTime, 0, $CourseName, $Created_At);'
         );
 
         try {
-            const result = await statement.executeAsync({ $CoursePar: coursePar, $StartTime: now, $CourseName: courseName || null, $Created_At: now });
+            const result = await statement.executeAsync({ $StartTime: now, $CourseName: courseName || null, $Created_At: now });
             return result.lastInsertRowId;
         } finally {
             await statement.finalizeAsync();

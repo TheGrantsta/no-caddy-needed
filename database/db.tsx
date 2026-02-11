@@ -18,6 +18,23 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
         CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0);
     `);
+
+    const settingsColumns = [
+        'WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0',
+        'DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0',
+        'PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0',
+    ];
+
+    const syncDb = SQLite.openDatabaseSync(dbName);
+    const tableInfo: { name: string }[] = syncDb.getAllSync('PRAGMA table_info(Settings)');
+    const existingColumns = new Set(tableInfo.map(col => col.name));
+
+    for (const columnDef of settingsColumns) {
+        const columnName = columnDef.split(' ')[0];
+        if (!existingColumns.has(columnName)) {
+            syncDb.execSync(`ALTER TABLE Settings ADD COLUMN ${columnDef}`);
+        }
+    }
 };
 
 export const insertDrillResult = async (name: string, result: boolean) => {

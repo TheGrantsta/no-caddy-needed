@@ -340,15 +340,16 @@ export default function Play() {
 
                 {!isRoundActive && !showPlayerSetup && !scorecardData && displaySection('play-score') && (
                     <View style={styles.container}>
-                        <View style={localStyles.startRoundContainer}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', width: '100%' }}>
+                        <View style={styles.headerContainer}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                 <TouchableOpacity
                                     testID="play-onboarding-info-button"
                                     onPress={handleShowOnboarding}
                                     style={{ padding: 4 }}
                                 >
-                                    <MaterialIcons name="info-outline" size={24} color={colours.text} />
+                                    <MaterialIcons name="info-outline" size={24} color={colours.yellow} />
                                 </TouchableOpacity>
+                                <Text style={[styles.headerText, styles.marginTop]}>Play</Text>
                             </View>
                             <TouchableOpacity
                                 testID="start-round-button"

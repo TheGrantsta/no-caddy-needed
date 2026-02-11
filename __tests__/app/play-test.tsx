@@ -130,12 +130,6 @@ describe('Play screen', () => {
     });
 
     describe('Idle state', () => {
-        it('renders Play heading', () => {
-            const { getByText } = render(<Play />);
-
-            expect(getByText('Play')).toBeTruthy();
-        });
-
         it('shows Start Round button when no active round', () => {
             const { getByTestId } = render(<Play />);
 

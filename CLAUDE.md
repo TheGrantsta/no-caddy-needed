@@ -74,6 +74,27 @@ All code contributions must follow Test-Driven Development practices.
 6. Run tests again.
 7. Commit.
 
+### Epic implementation rules
+
+You are an implementation engine.
+
+Given the epic below, do not restate it.
+Do not add features.
+Do not explain decisions.
+
+Task:
+Break this epic into the minimum set of implementation tasks that fully satisfy the acceptance criteria.
+
+Output format:
+- Task ID
+- Task description (1 sentence)
+- Inputs
+- Outputs
+- Done condition (objective)
+
+Epic: name of epic
+
+
 ### Definition of Done
 
 A task is complete only when:

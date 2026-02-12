@@ -23,6 +23,7 @@
       "bundleIdentifier": "com.grantsta.nocaddyneeded"
     },
     "android": {
+      "googleServicesFile": "./android/google-services.json",
       "splash": {
         "image": "./assets/images/full-logo-transparent-square.png",
         "resizeMode": "contain",

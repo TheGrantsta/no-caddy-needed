@@ -46,7 +46,7 @@
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@testing-library/react-native": "^13.0.1",
-    "expo": "~52.0.42",
+    "expo": "~52.0.49",
     "expo-av": "^15.0.2",
     "expo-blur": "~14.0.3",
     "expo-constants": "~17.0.7",
@@ -54,8 +54,8 @@
     "expo-haptics": "~14.0.1",
     "expo-linking": "~7.0.5",
     "expo-notifications": "~0.29.14",
-    "expo-router": "~4.0.20",
-    "expo-splash-screen": "~0.29.22",
+    "expo-router": "~4.0.22",
+    "expo-splash-screen": "~0.29.24",
     "expo-sqlite": "~15.1.4",
     "expo-status-bar": "~2.0.1",
     "expo-symbols": "~0.2.2",
@@ -63,7 +63,7 @@
     "expo-web-browser": "~14.0.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-native": "0.76.8",
+    "react-native": "0.76.9",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.12.0",
@@ -91,7 +91,8 @@
     "doctor": {
       "reactNativeDirectoryCheck": {
         "exclude": [
-          "react-native-toast-notifications"
+          "react-native-toast-notifications",
+          "expo-av"
         ]
       }
     }

@@ -141,3 +141,25 @@ Repomix can create a prompt-friendly version of your repo that can be uploaded a
       Epic:
       <PASTE EPIC>
    ```
+
+## Resources
+
+Icons are from the below
+
+### Icons
+
+```
+https://fonts.google.com/icons?icon.size=24&icon.color=%23ffd33d&selected=Material+Symbols+Outlined:lists:FILL@0;wght@400;GRAD@0;opsz@24
+```
+
+### Firebase
+
+```
+https://console.firebase.google.com/u/0/?pli=1
+```
+
+### Beta testing
+
+```
+https://console.firebase.google.com/u/0/?pli=1
+```

@@ -1,4 +1,4 @@
-# Add course name including from recent list when starting a round
+# Ensure all text in the UI use locatisations
 
 ## Concept
 

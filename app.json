@@ -20,7 +20,10 @@
         "resizeMode": "contain",
         "backgroundColor": "#ffd33d"
       },
-      "bundleIdentifier": "com.grantsta.nocaddyneeded"
+      "bundleIdentifier": "com.grantsta.nocaddyneeded",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "googleServicesFile": "./google-services.json",

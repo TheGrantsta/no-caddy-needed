@@ -20,7 +20,7 @@
         "resizeMode": "contain",
         "backgroundColor": "#ffd33d"
       },
-      "bundleIdentifier": "com.grantsta.nocaddyneeded",
+      "bundleIdentifier": "com.grantsta.golf.nocaddyneeded",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -36,7 +36,7 @@
         "foregroundImage": "./assets/images/full-logo-transparent-square.png",
         "backgroundColor": "#ffd33d"
       },
-      "package": "com.grantsta.nocaddyneeded"
+      "package": "com.grantsta.golf.nocaddyneeded"
     },
     "web": {
       "bundler": "metro",
@@ -63,7 +63,12 @@
       "expo-router",
       "expo-notifications",
       "@react-native-firebase/app",
-      "@react-native-firebase/crashlytics"
+      "@react-native-firebase/crashlytics",
+      ["expo-build-properties", {
+        "android": {
+          "targetSdkVersion": 35
+        }
+      }]
     ],
     "experiments": {
       "typedRoutes": true

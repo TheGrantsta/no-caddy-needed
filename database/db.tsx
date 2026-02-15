@@ -2,6 +2,30 @@ import * as SQLite from 'expo-sqlite';
 
 const dbName = 'NoCaddyNeeded.db';
 
+export type TableAmendment = {
+    table: string;
+    columnsToAdd: string[];
+    columnsToRemove: string[];
+};
+
+export const amendTable = (syncDb: SQLite.SQLiteDatabase, amendment: TableAmendment): void => {
+    const tableInfo: { name: string }[] = syncDb.getAllSync(`PRAGMA table_info(${amendment.table})`);
+    const existingColumns = new Set(tableInfo.map(col => col.name));
+
+    for (const columnDef of amendment.columnsToAdd) {
+        const columnName = columnDef.split(' ')[0];
+        if (!existingColumns.has(columnName)) {
+            syncDb.execSync(`ALTER TABLE ${amendment.table} ADD COLUMN ${columnDef}`);
+        }
+    }
+
+    for (const columnName of amendment.columnsToRemove) {
+        if (existingColumns.has(columnName)) {
+            syncDb.execSync(`ALTER TABLE ${amendment.table} DROP COLUMN ${columnName}`);
+        }
+    }
+};
+
 export const initialize = async () => {
     const db = await SQLite.openDatabaseAsync(dbName);
 
@@ -11,7 +35,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS WedgeChartEntries (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL, DistanceName TEXT NOT NULL, Distance INTEGER NOT NULL, ClubSortOrder INTEGER NOT NULL, DistanceSortOrder INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS Drills (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, Result BOOLEAN NOT NULL, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS Tiger5Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, ThreePutts INTEGER NOT NULL DEFAULT 0, DoubleBogeys INTEGER NOT NULL DEFAULT 0, BogeysPar5 INTEGER NOT NULL DEFAULT 0, BogeysInside9Iron INTEGER NOT NULL DEFAULT 0, DoubleChips INTEGER NOT NULL DEFAULT 0, Total INTEGER NOT NULL DEFAULT 0, RoundId INTEGER, Created_At TEXT NOT NULL);
-        CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, CoursePar INTEGER NOT NULL, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, CourseName TEXT, Created_At TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, CoursePar INTEGER NOT NULL DEFAULT 0, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, CourseName TEXT, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundHoles (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, ScoreRelativeToPar INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
@@ -19,21 +43,29 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0);
     `);
 
-    const settingsColumns = [
-        'WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0',
-        'DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0',
-        'PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0',
+    const syncDb = SQLite.openDatabaseSync(dbName);
+
+    const migrations: TableAmendment[] = [
+        {
+            table: 'Settings',
+            columnsToAdd: [
+                'WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0',
+                'DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0',
+                'PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0',
+            ],
+            columnsToRemove: [],
+        },
+        {
+            table: 'Rounds',
+            columnsToAdd: [
+                'CoursePar INTEGER NOT NULL DEFAULT 0',
+            ],
+            columnsToRemove: [],
+        },
     ];
 
-    const syncDb = SQLite.openDatabaseSync(dbName);
-    const tableInfo: { name: string }[] = syncDb.getAllSync('PRAGMA table_info(Settings)');
-    const existingColumns = new Set(tableInfo.map(col => col.name));
-
-    for (const columnDef of settingsColumns) {
-        const columnName = columnDef.split(' ')[0];
-        if (!existingColumns.has(columnName)) {
-            syncDb.execSync(`ALTER TABLE Settings ADD COLUMN ${columnDef}`);
-        }
+    for (const migration of migrations) {
+        amendTable(syncDb, migration);
     }
 };
 

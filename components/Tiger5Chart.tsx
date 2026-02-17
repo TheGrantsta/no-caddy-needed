@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
+import { t } from '@/assets/i18n/i18n';
 import { Tiger5Round } from '@/service/DbService';
 
 type CategoryTotal = {
@@ -13,12 +14,12 @@ type Props = {
     rounds: Tiger5Round[];
 };
 
-const CATEGORY_LABELS: { key: keyof Tiger5Round; label: string }[] = [
-    { key: 'ThreePutts', label: '3-putts' },
-    { key: 'DoubleBogeys', label: 'Double bogeys' },
-    { key: 'BogeysPar5', label: 'Bogeys on par 5' },
-    { key: 'BogeysInside9Iron', label: 'Inside 9-iron' },
-    { key: 'DoubleChips', label: 'Double chips' },
+const CATEGORY_LABELS: { key: keyof Tiger5Round; labelKey: string }[] = [
+    { key: 'ThreePutts', labelKey: 'tiger5.threePutts' },
+    { key: 'DoubleBogeys', labelKey: 'tiger5.doubleBogeys' },
+    { key: 'BogeysPar5', labelKey: 'tiger5.bogeysPar5Chart' },
+    { key: 'BogeysInside9Iron', labelKey: 'tiger5.bogeysInside9IronChart' },
+    { key: 'DoubleChips', labelKey: 'tiger5.doubleChips' },
 ];
 
 export default function Tiger5Chart({ rounds }: Props) {
@@ -102,8 +103,8 @@ export default function Tiger5Chart({ rounds }: Props) {
         return null;
     }
 
-    const categories: CategoryTotal[] = CATEGORY_LABELS.map(({ key, label }) => ({
-        label,
+    const categories: CategoryTotal[] = CATEGORY_LABELS.map(({ key, labelKey }) => ({
+        label: t(labelKey),
         count: rounds.reduce((sum, round) => sum + (round[key] as number), 0),
     }));
 
@@ -124,7 +125,7 @@ export default function Tiger5Chart({ rounds }: Props) {
 
     return (
         <View style={localStyles.container}>
-            <Text style={localStyles.title}>Tiger 5</Text>
+            <Text style={localStyles.title}>{t('tiger5.title')}</Text>
 
             {categories.map((category, index) => (
                 <View key={index} style={localStyles.barContainer}>
@@ -164,7 +165,7 @@ export default function Tiger5Chart({ rounds }: Props) {
             <View style={localStyles.legend}>
                 <View style={localStyles.legendItem}>
                     <View style={[localStyles.legendDot, { backgroundColor: colours.errorText }]} />
-                    <Text style={localStyles.legendText}>Biggest problem</Text>
+                    <Text style={localStyles.legendText}>{t('tiger5.biggestProblem')}</Text>
                 </View>
             </View>
         </View>

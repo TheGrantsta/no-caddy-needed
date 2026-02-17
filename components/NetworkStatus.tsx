@@ -3,6 +3,7 @@ import { Text, StyleSheet, Animated } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
+import { t } from '@/assets/i18n/i18n';
 
 let NetInfo: typeof import('@react-native-community/netinfo').default | null = null;
 try {
@@ -80,7 +81,7 @@ export default function NetworkStatus() {
             testID="offline-banner"
         >
             <MaterialIcons name="wifi-off" size={18} color={colours.white} />
-            <Text style={styles.text}>You're offline - data is saved locally</Text>
+            <Text style={styles.text}>{t('networkStatus.offline')}</Text>
         </Animated.View>
     );
 }

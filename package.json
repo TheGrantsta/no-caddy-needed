@@ -17,6 +17,7 @@
   },
   "jest": {
     "preset": "jest-expo",
+    "setupFiles": ["./jest.setup.js"],
     "collectCoverageFrom": [
       "app/**/*.{ts,tsx}",
       "components/**/*.{ts,tsx}",
@@ -54,6 +55,7 @@
     "expo-font": "~13.0.4",
     "expo-haptics": "~14.0.1",
     "expo-linking": "~7.0.5",
+    "expo-localization": "^17.0.8",
     "expo-notifications": "~0.29.14",
     "expo-router": "~4.0.22",
     "expo-splash-screen": "~0.29.24",
@@ -62,6 +64,7 @@
     "expo-symbols": "~0.2.2",
     "expo-system-ui": "~4.0.9",
     "expo-web-browser": "~14.0.2",
+    "i18n-js": "^4.5.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.9",

@@ -23,6 +23,7 @@ import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
 import fontSizes from '@/assets/font-sizes';
+import { t } from '@/assets/i18n/i18n';
 
 export default function ScorecardScreen() {
     const styles = useStyles();
@@ -131,14 +132,14 @@ export default function ScorecardScreen() {
         const success = await updateScorecardService(Number(roundId), changes);
 
         if (success) {
-            toast.show('Scorecard updated', { type: 'success' });
+            toast.show(t('scorecardScreen.scorecardUpdated'), { type: 'success' });
             loadData();
             setIsEditing(false);
             setEditedScores([]);
             setSelectedScore(null);
             setShowSaveConfirm(false);
         } else {
-            toast.show('Failed to update scorecard', { type: 'danger' });
+            toast.show(t('scorecardScreen.updateFailed'), { type: 'danger' });
             setShowSaveConfirm(false);
         }
     };
@@ -153,7 +154,7 @@ export default function ScorecardScreen() {
 
     const handleConfirmDelete = async () => {
         const success = await deleteRoundService(Number(roundId));
-        showResult(success, 'Round deleted', 'Failed to delete round');
+        showResult(success, t('scorecardScreen.roundDeleted'), t('scorecardScreen.deleteFailed'));
         if (success) {
             router.back();
         } else {
@@ -172,7 +173,7 @@ export default function ScorecardScreen() {
         return (
             <GestureHandlerRootView style={styles.flexOne}>
                 <View style={styles.headerContainer}>
-                    <Text style={[styles.headerText, styles.marginTop]}>Round not found</Text>
+                    <Text style={[styles.headerText, styles.marginTop]}>{t('scorecardScreen.roundNotFound')}</Text>
                 </View>
             </GestureHandlerRootView>
         );
@@ -184,7 +185,7 @@ export default function ScorecardScreen() {
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
                 <View style={styles.headerContainer}>
-                    <Text style={[styles.headerText, styles.marginTop]}>Scorecard</Text>
+                    <Text style={[styles.headerText, styles.marginTop]}>{t('scorecardScreen.title')}</Text>
                     {courseName && (
                         <Text testID="scorecard-course-name" style={styles.subHeaderText}>{courseName}</Text>
                     )}
@@ -217,7 +218,7 @@ export default function ScorecardScreen() {
                                     style={styles.largeButton}
                                     onPress={handleEdit}
                                 >
-                                    <Text style={styles.buttonText}>Edit</Text>
+                                    <Text style={styles.buttonText}>{t('common.edit')}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -229,7 +230,7 @@ export default function ScorecardScreen() {
                                     style={[styles.largeButton, { backgroundColor: '#fd0303' }]}
                                     onPress={handleDelete}
                                 >
-                                    <Text style={styles.buttonText}>Delete round</Text>
+                                    <Text style={styles.buttonText}>{t('scorecardScreen.deleteRound')}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -245,14 +246,14 @@ export default function ScorecardScreen() {
                                     onPress={handleCancelDelete}
                                     style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, borderWidth: 1, borderColor: colours.backgroundAlternate }}
                                 >
-                                    <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
+                                    <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>{t('common.cancel')}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     testID="confirm-delete-button"
                                     onPress={handleConfirmDelete}
                                     style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.errorText }}
                                 >
-                                    <Text style={{ color: colours.text, fontSize: fontSizes.normal }}>Confirm delete</Text>
+                                    <Text style={{ color: colours.text, fontSize: fontSizes.normal }}>{t('scorecardScreen.confirmDelete')}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -264,14 +265,14 @@ export default function ScorecardScreen() {
                                     style={[styles.button, { backgroundColor: '#fd0303' }]}
                                     onPress={handleCancelEdit}
                                 >
-                                    <Text style={styles.buttonText}>Cancel</Text>
+                                    <Text style={styles.buttonText}>{t('common.cancel')}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     testID="save-scorecard-button"
                                     style={styles.button}
                                     onPress={handleSave}
                                 >
-                                    <Text style={styles.buttonText}>Save</Text>
+                                    <Text style={styles.buttonText}>{t('common.save')}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -283,14 +284,14 @@ export default function ScorecardScreen() {
                                     style={[styles.button, { backgroundColor: '#fd0303' }]}
                                     onPress={handleCancelSave}
                                 >
-                                    <Text style={styles.buttonText}>Cancel</Text>
+                                    <Text style={styles.buttonText}>{t('common.cancel')}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     testID="confirm-save-button"
                                     style={styles.button}
                                     onPress={handleConfirmSave}
                                 >
-                                    <Text style={styles.buttonText}>Confirm</Text>
+                                    <Text style={styles.buttonText}>{t('common.confirm')}</Text>
                                 </TouchableOpacity>
                             </View>
                         )}

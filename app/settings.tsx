@@ -6,6 +6,7 @@ import { useStyles } from '../hooks/useStyles';
 import { useTheme } from '../context/ThemeContext';
 import { useOrientation } from '../hooks/useOrientation';
 import { useAppToast } from '../hooks/useAppToast';
+import { t } from '../assets/i18n/i18n';
 
 export default function Settings() {
   const { colours, setTheme } = useTheme();
@@ -20,7 +21,7 @@ export default function Settings() {
     setSettings(updated);
     setTheme(newTheme);
 
-    showSuccess('Settings saved');
+    showSuccess(t('settings.saved'));
   };
 
   const handleToggleNotifications = async (value: boolean) => {
@@ -29,22 +30,22 @@ export default function Settings() {
 
     const success = await saveSettingsService(updated);
 
-    showResult(success, 'Settings saved', 'Failed to save settings');
+    showResult(success, t('settings.saved'), t('settings.saveFailed'));
   };
 
   return (
     <GestureHandlerRootView style={styles.flexOne}>
       <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
         <View style={styles.headerContainer}>
-          <Text style={[styles.headerText, styles.marginTop]}>Settings</Text>
+          <Text style={[styles.headerText, styles.marginTop]}>{t('settings.title')}</Text>
         </View>
 
         <View style={styles.headerContainer}>
-          <Text style={[styles.subHeaderText, styles.marginTop]}>Theme</Text>
+          <Text style={[styles.subHeaderText, styles.marginTop]}>{t('settings.theme')}</Text>
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
-          <Text style={styles.normalText}>{settings.theme === 'dark' ? 'Dark' : 'Light'}</Text>
+          <Text style={styles.normalText}>{settings.theme === 'dark' ? t('settings.dark') : t('settings.light')}</Text>
           <Switch
             testID="theme-toggle"
             value={settings.theme === 'light'}
@@ -55,11 +56,11 @@ export default function Settings() {
         </View>
 
         <View style={styles.headerContainer}>
-          <Text style={[styles.subHeaderText, styles.marginTop]}>Notifications</Text>
+          <Text style={[styles.subHeaderText, styles.marginTop]}>{t('settings.notifications')}</Text>
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
-          <Text style={styles.normalText}>{settings.notificationsEnabled ? 'On' : 'Off'}</Text>
+          <Text style={styles.normalText}>{settings.notificationsEnabled ? t('settings.on') : t('settings.off')}</Text>
           <Switch
             testID="notifications-toggle"
             value={settings.notificationsEnabled}

@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RoundPlayer } from '../service/DbService';
 import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
+import { t } from '../assets/i18n/i18n';
 
 type Props = {
     holeNumber: number;
@@ -128,7 +129,7 @@ const MultiplayerHoleScoreInput = ({ holeNumber, players, onScoresChange, render
 
     return (
         <View style={localStyles.container}>
-            <Text style={localStyles.holeText}>Hole {holeNumber}</Text>
+            <Text style={localStyles.holeText}>{t('holeScore.hole', { number: holeNumber })}</Text>
 
             <View style={localStyles.parRow}>
                 {parOptions.map(p => (
@@ -139,7 +140,7 @@ const MultiplayerHoleScoreInput = ({ holeNumber, players, onScoresChange, render
                         style={[localStyles.parButton, par === p && localStyles.parButtonActive]}
                     >
                         <Text style={[localStyles.parButtonText, par === p && localStyles.parButtonTextActive]}>
-                            Par {p}
+                            {t('holeScore.par', { number: p })}
                         </Text>
                     </TouchableOpacity>
                 ))}

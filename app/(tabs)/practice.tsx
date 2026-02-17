@@ -13,11 +13,12 @@ import { getAllDrillHistoryService, getDrillStatsByTypeService, getSettingsServi
 import DrillStatsChart from "@/components/DrillStatsChart";
 import Chevrons from "@/components/Chevrons";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
+import { t } from "@/assets/i18n/i18n";
 
 const ONBOARDING_STEPS = [
-    { text: 'Practice with purpose — use short game drills to sharpen your putting, chipping, pitching and bunker play.' },
-    { text: 'Try the tools section for tempo training and random shot selection to keep your practice varied.' },
-    { text: 'Check your history to track drill results over time and spot areas for improvement.' },
+    { text: t('practice.onboardingStep1') },
+    { text: t('practice.onboardingStep2') },
+    { text: t('practice.onboardingStep3') },
 ];
 
 export default function Practice() {
@@ -34,7 +35,7 @@ export default function Practice() {
   const [drillStats, setDrillStats] = useState<DrillStats[]>([]);
   const flatListRef = useRef(null);
 
-  const points = ['Honesty: be honest with yourself and identify the shots you avoid, or can\'t play, and give yourself time', 'Data: use your Tiger 5 stats as a guide; focus your practice on what will make the biggest difference'];
+  const points = [t('practice.intentionPoint1'), t('practice.intentionPoint2')];
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -98,7 +99,7 @@ export default function Practice() {
       {refreshing && (
         <View style={styles.updateOverlay}>
           <Text style={styles.updateText}>
-            Release to update
+            {t('common.releaseToUpdate')}
           </Text>
         </View>
       )}
@@ -120,11 +121,11 @@ export default function Practice() {
                 <MaterialIcons name="info-outline" size={24} color={colours.yellow} />
               </TouchableOpacity>
               <Text style={[styles.headerText, styles.marginTop]}>
-                Practice
+                {t('practice.title')}
               </Text>
             </View>
             <Text style={[styles.normalText, styles.marginBottom]}>
-              Make your practice time more effective
+              {t('practice.subtitle')}
             </Text>
           </View>
         </View>
@@ -134,37 +135,37 @@ export default function Practice() {
           <View>
             <View style={styles.viewContainer}>
               <Text style={[styles.subHeaderText, styles.marginTop]}>
-                Short game practice
+                {t('practice.shortGamePractice')}
               </Text>
 
               <View style={styles.iconsContainer}>
                 <Link href='../short-game/putting'>
                   <View style={styles.iconContainer}>
-                    <IconButton iconName='adjust' label='Putting' size='medium' />
+                    <IconButton iconName='adjust' label={t('practice.putting')} size='medium' />
                   </View>
                 </Link>
 
                 <Link href='../short-game/chipping'>
                   <View style={styles.iconContainer}>
-                    <IconButton iconName='filter-tilt-shift' label='Chipping' size='medium' />
+                    <IconButton iconName='filter-tilt-shift' label={t('practice.chipping')} size='medium' />
                   </View>
                 </Link>
 
                 <Link href='../short-game/pitching'>
                   <View style={styles.iconContainer}>
-                    <IconButton iconName='golf-course' label='Pitching' size='medium' />
+                    <IconButton iconName='golf-course' label={t('practice.pitching')} size='medium' />
                   </View>
                 </Link>
 
                 <Link href='../short-game/bunker'>
                   <View style={styles.iconContainer}>
-                    <IconButton iconName='beach-access' label='Bunker play' size='medium' />
+                    <IconButton iconName='beach-access' label={t('practice.bunkerPlay')} size='medium' />
                   </View>
                 </Link>
               </View>
             </View>
 
-            <Chevrons heading='Intention' points={points} />
+            <Chevrons heading={t('practice.intentionHeading')} points={points} />
           </View>
         )}
 
@@ -173,19 +174,19 @@ export default function Practice() {
           <View>
             <View style={styles.viewContainer}>
               <Text style={[styles.subHeaderText, styles.marginTop]}>
-                Practice tools
+                {t('practice.practiceTools')}
               </Text>
 
               <View style={styles.iconsContainer}>
                 <Link href='../tools/tempo'>
                   <View style={styles.iconContainer}>
-                    <IconButton iconName='music-note' label='Tempo' size='medium' />
+                    <IconButton iconName='music-note' label={t('practice.tempo')} size='medium' />
                   </View>
                 </Link>
 
                 <Link href='../tools/random'>
                   <View style={styles.iconContainer}>
-                    <IconButton iconName='shuffle-on' label='Random' size='medium' />
+                    <IconButton iconName='shuffle-on' label={t('practice.random')} size='medium' />
                   </View>
                 </Link>
               </View>
@@ -213,7 +214,7 @@ export default function Practice() {
                   padding: 6,
                   marginTop: 10
                 }}>
-                  {drillHistory.length > 0 ? "Drill History" : "No drill history yet"}
+                  {drillHistory.length > 0 ? t('practice.drillHistory') : t('practice.noDrillHistory')}
                 </Text>
 
                 <View style={styles.horizontalScrollContainer}>
@@ -229,13 +230,13 @@ export default function Practice() {
                       <View style={[localStyles.page, styles.scrollWrapper, { margin: 10 }]}>
                         <View style={{ flexDirection: 'row' }}>
                           <Text style={[styles.subHeaderText, { flex: 9 / 12 }]}>
-                            Drill
+                            {t('practice.drillHeader')}
                           </Text>
                           <Text style={[styles.subHeaderText, { flex: 1 / 12 }]}>
-                            Met
+                            {t('practice.metHeader')}
                           </Text>
                           <Text style={[styles.subHeaderText, { flex: 2 / 12 }]}>
-                            Date
+                            {t('practice.dateHeader')}
                           </Text>
                         </View>
                         <FlatList
@@ -286,7 +287,7 @@ export default function Practice() {
       <OnboardingOverlay
         visible={showOnboarding}
         onDismiss={handleDismissOnboarding}
-        title="Practice"
+        title={t('practice.onboardingTitle')}
         steps={ONBOARDING_STEPS}
       />
     </GestureHandlerRootView >

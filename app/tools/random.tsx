@@ -7,6 +7,7 @@ import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
 import fontSizes from '@/assets/font-sizes';
+import { t } from '@/assets/i18n/i18n';
 
 export default function Random() {
     const styles = useStyles();
@@ -21,10 +22,10 @@ export default function Random() {
 
     const handleGenerate = () => {
         if (rangeText.length < 1) {
-            setRangeError('Range cannot be empty');
+            setRangeError(t('random.rangeEmpty'));
         }
         if (incrementText.length < 1) {
-            setIncrementError('Increment cannot be empty');
+            setIncrementError(t('random.incrementEmpty'));
         }
         if (rangeText.length > 0 && incrementText.length > 0) {
             setRandomNumber(getRandomNumber(rangeText, incrementText, randomNumber));
@@ -54,7 +55,7 @@ export default function Random() {
         }, 750);
     };
 
-    const points = ['Randomise practice to mimic play', 'Use your pre-shot routine', 'Use your post-shot routine'];
+    const points = [t('random.purposePoint1'), t('random.purposePoint2'), t('random.purposePoint3')];
 
     const localStyles = useMemo(() => StyleSheet.create({
         randomNumberContainer: {
@@ -82,7 +83,7 @@ export default function Random() {
             {refreshing && (
                 <View style={styles.updateOverlay}>
                     <Text style={styles.updateText}>
-                        Release to update
+                        {t('common.releaseToUpdate')}
                     </Text>
                 </View>
             )}
@@ -96,18 +97,18 @@ export default function Random() {
                 <View>
                     <View style={styles.headerContainer}>
                         <Text style={[styles.headerText, styles.marginTop]}>
-                            Random number generator
+                            {t('random.title')}
                         </Text>
                     </View>
 
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={[styles.textLabel, { width: 80 }]}>
-                            Range
+                            {t('random.rangeLabel')}
                         </Text>
                         <TextInput
                             style={[styles.textInput, rangeError ? styles.textInputError : null, { width: 150 }]}
                             value={rangeText}
-                            placeholder='Lower and upper limits'
+                            placeholder={t('random.rangePlaceholder')}
                             onChangeText={(value) => {
                                 handleRangeInput(value)
                                 if (rangeError) setRangeError('');
@@ -119,18 +120,18 @@ export default function Random() {
 
                     <View>
                         <Text style={styles.smallestText}>
-                            Range: the lower and upper bound of numbers (inclusive) between which the random number will be generated
+                            {t('random.rangeDescription')}
                         </Text>
                     </View>
 
                     <View style={[{ flexDirection: 'row' }, styles.marginTop]}>
                         <Text style={[styles.textLabel, { width: 80 }]}>
-                            Increment
+                            {t('random.incrementLabel')}
                         </Text>
                         <TextInput
                             style={[styles.textInput, incrementError ? styles.textInputError : null, { width: 100 }]}
                             value={incrementText}
-                            placeholder='Increment'
+                            placeholder={t('random.incrementPlaceholder')}
                             onChangeText={(value) => {
                                 handleIncrementInput(value)
                                 if (incrementError) setIncrementError('');
@@ -142,7 +143,7 @@ export default function Random() {
 
                     <View>
                         <Text style={styles.smallestText}>
-                            Increment: specifies the "step" between the random numbers; for example, an increment of 5 would mean the random number is divisible by 5
+                            {t('random.incrementDescription')}
                         </Text>
                     </View>
 
@@ -157,7 +158,7 @@ export default function Random() {
                     <View style={styles.marginTop}>
                         <TouchableOpacity testID='save-button' style={styles.button} onPress={handleGenerate}>
                             <Text style={styles.buttonText}>
-                                Run
+                                {t('common.run')}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -170,7 +171,7 @@ export default function Random() {
                         </View>
                     )}
 
-                    <Chevrons heading='Purpose' points={points} />
+                    <Chevrons heading={t('random.purposeHeading')} points={points} />
                 </View>
             </ScrollView>
         </GestureHandlerRootView>

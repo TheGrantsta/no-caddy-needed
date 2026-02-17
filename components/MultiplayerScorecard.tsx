@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Round, RoundPlayer, RoundHoleScore } from '../service/DbService';
 import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
+import { t } from '../assets/i18n/i18n';
 
 type Props = {
     round: Round;
@@ -14,8 +15,8 @@ type Props = {
 };
 
 const formatScore = (score: number): string => {
-    if (score === 0) return 'E';
-    if (score > 0) return `+${score}`;
+    if (score === 0) return t('common.evenPar');
+    if (score > 0) return `${t('common.overParPrefix')}${score}`;
     return `${score}`;
 };
 
@@ -154,13 +155,13 @@ const MultiplayerScorecard = ({ round, players, holeScores, editable, selectedSc
                         </View>
                     ))}
                     <View style={localStyles.holeCell}>
-                        <Text style={localStyles.holeNumberText}>Tot</Text>
+                        <Text style={localStyles.holeNumberText}>{t('multiplayerScorecard.tot')}</Text>
                     </View>
                 </View>
 
                 <View style={localStyles.gridRow}>
                     <View style={localStyles.labelCell}>
-                        <Text style={localStyles.labelText}>Par</Text>
+                        <Text style={localStyles.labelText}>{t('multiplayerScorecard.par')}</Text>
                     </View>
                     {holes.map(h => (
                         <View key={h} style={localStyles.holeCell}>
@@ -230,14 +231,14 @@ const MultiplayerScorecard = ({ round, players, holeScores, editable, selectedSc
         <View style={localStyles.container}>
             {front9Holes.length > 0 && (
                 <View style={localStyles.nineSection}>
-                    <Text style={localStyles.nineHeader}>Front 9</Text>
+                    <Text style={localStyles.nineHeader}>{t('multiplayerScorecard.front9')}</Text>
                     {renderHoleGrid(front9Holes, 'front9')}
                 </View>
             )}
 
             {back9Holes.length > 0 && (
                 <View style={localStyles.nineSection}>
-                    <Text style={localStyles.nineHeader}>Back 9</Text>
+                    <Text style={localStyles.nineHeader}>{t('multiplayerScorecard.back9')}</Text>
                     {renderHoleGrid(back9Holes, 'back9')}
                 </View>
             )}

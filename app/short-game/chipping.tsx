@@ -1,6 +1,6 @@
 import ShortGameScreen from "@/components/ShortGameScreen";
-import { chippingConfig } from "@/data/shortGameData";
+import { getChippingConfig } from "@/data/shortGameData";
 
 export default function Chipping() {
-    return <ShortGameScreen config={chippingConfig} />;
+    return <ShortGameScreen config={getChippingConfig()} />;
 }

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
+import { t } from '../assets/i18n/i18n';
 
 type Props = {
     holeNumber: number;
@@ -54,7 +55,7 @@ const ScoreEditor = ({ holeNumber, playerName, score, onIncrement, onDecrement }
 
     return (
         <View style={localStyles.container}>
-            <Text style={localStyles.headerText}>Hole {holeNumber} - {playerName}</Text>
+            <Text style={localStyles.headerText}>{t('scoreEditor.header', { holeNumber, playerName })}</Text>
             <View style={localStyles.stepperRow}>
                 <TouchableOpacity
                     testID="score-editor-decrement"

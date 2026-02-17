@@ -5,6 +5,7 @@ import Instructions from "./Instructions";
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from "@/assets/font-sizes";
+import { t } from '@/assets/i18n/i18n';
 
 type Props = {
     label: string;
@@ -69,7 +70,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                 </View>
                 <View style={{ flex: 1 / 3 }}>
                     <Text style={localStyles.contentText}>
-                        <Text style={styles.yellowText}>Target:</Text> {target}
+                        <Text style={styles.yellowText}>{t('drill.target')}</Text> {target}
                     </Text>
                     <View style={[localStyles.toggleWrapper, { paddingTop: 10 }]}>
                         <TouchableOpacity
@@ -79,7 +80,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                         </TouchableOpacity>
 
                         <Text style={[styles.normalText, { paddingLeft: 10 }]}>
-                            {isAchieved ? 'Met' : 'Not met'}
+                            {isAchieved ? t('common.met') : t('common.notMet')}
                         </Text>
                     </View>
                 </View>
@@ -89,7 +90,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                             saveDrillResult(label, isAchieved);
                         }}>
                         <Text style={styles.buttonText}>
-                            Save
+                            {t('common.save')}
                         </Text>
                     </TouchableOpacity>
                 </View>

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
+import { t } from '../assets/i18n/i18n';
 
 type OnboardingStep = {
     text: string;
@@ -153,7 +154,7 @@ const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
                                 onPress={handleBack}
                                 style={localStyles.secondaryButton}
                             >
-                                <Text style={localStyles.secondaryButtonText}>Back</Text>
+                                <Text style={localStyles.secondaryButtonText}>{t('common.back')}</Text>
                             </TouchableOpacity>
                         ) : !isSingleStep ? (
                             <TouchableOpacity
@@ -161,7 +162,7 @@ const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
                                 onPress={onDismiss}
                                 style={localStyles.secondaryButton}
                             >
-                                <Text style={localStyles.secondaryButtonText}>Skip</Text>
+                                <Text style={localStyles.secondaryButtonText}>{t('common.skip')}</Text>
                             </TouchableOpacity>
                         ) : (
                             <View style={localStyles.spacer} />
@@ -173,7 +174,7 @@ const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
                                 onPress={onDismiss}
                                 style={localStyles.primaryButton}
                             >
-                                <Text style={localStyles.primaryButtonText}>Done</Text>
+                                <Text style={localStyles.primaryButtonText}>{t('common.done')}</Text>
                             </TouchableOpacity>
                         ) : (
                             <TouchableOpacity
@@ -181,7 +182,7 @@ const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
                                 onPress={handleNext}
                                 style={localStyles.primaryButton}
                             >
-                                <Text style={localStyles.primaryButtonText}>Next</Text>
+                                <Text style={localStyles.primaryButtonText}>{t('common.next')}</Text>
                             </TouchableOpacity>
                         )}
                     </View>

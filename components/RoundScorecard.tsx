@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
+import { t } from '../assets/i18n/i18n';
 
 type RoundHole = {
     Id: number;
@@ -17,14 +18,14 @@ type Props = {
 };
 
 const formatScore = (score: number): string => {
-    if (score === 0) return 'E';
-    if (score > 0) return `+${score}`;
+    if (score === 0) return t('common.evenPar');
+    if (score > 0) return `${t('common.overParPrefix')}${score}`;
     return `${score}`;
 };
 
 const formatHoleScore = (score: number): string => {
-    if (score === 0) return 'E';
-    if (score > 0) return `+${score}`;
+    if (score === 0) return t('common.evenPar');
+    if (score > 0) return `${t('common.overParPrefix')}${score}`;
     return `${score}`;
 };
 
@@ -99,7 +100,7 @@ const RoundScorecard = ({ totalScore, holes }: Props) => {
 
             {front9.length > 0 && (
                 <View style={localStyles.nineSection}>
-                    <Text style={localStyles.nineHeader}>Front 9</Text>
+                    <Text style={localStyles.nineHeader}>{t('roundScorecard.front9')}</Text>
                     <View style={localStyles.holesGrid}>
                         {front9.map((hole) => (
                             <View key={hole.HoleNumber} style={localStyles.holeCell}>
@@ -118,14 +119,14 @@ const RoundScorecard = ({ totalScore, holes }: Props) => {
                         ))}
                     </View>
                     <Text testID="front-9-total" style={localStyles.nineTotal}>
-                        Front 9: {formatScore(front9Total)}
+                        {t('roundScorecard.front9Total', { score: formatScore(front9Total) })}
                     </Text>
                 </View>
             )}
 
             {back9.length > 0 && (
                 <View style={localStyles.nineSection}>
-                    <Text style={localStyles.nineHeader}>Back 9</Text>
+                    <Text style={localStyles.nineHeader}>{t('roundScorecard.back9')}</Text>
                     <View style={localStyles.holesGrid}>
                         {back9.map((hole) => (
                             <View key={hole.HoleNumber} style={localStyles.holeCell}>
@@ -144,7 +145,7 @@ const RoundScorecard = ({ totalScore, holes }: Props) => {
                         ))}
                     </View>
                     <Text testID="back-9-total" style={localStyles.nineTotal}>
-                        Back 9: {formatScore(back9Total)}
+                        {t('roundScorecard.back9Total', { score: formatScore(back9Total) })}
                     </Text>
                 </View>
             )}

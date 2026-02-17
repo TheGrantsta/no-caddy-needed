@@ -10,13 +10,14 @@ import { getSettingsService, saveSettingsService } from '@/service/DbService';
 import IconButton from '@/components/IconButton';
 import Chevrons from '@/components/Chevrons';
 import OnboardingOverlay from '@/components/OnboardingOverlay';
+import { t } from '@/assets/i18n/i18n';
 
-const points = ['In a nutshell: hit it, find it and hit it again', 'Point: get the ball in the hole with the fewest shots', 'Have fun: golf is a game, so for goodness sake enjoy it!'];
+const points = [t('home.point1'), t('home.point2'), t('home.point3')];
 
 const ONBOARDING_STEPS = [
-    { text: 'Welcome to No Caddy Needed — your personal golf companion for smarter play, practice and performance.' },
-    { text: 'Use the Play, Practice and Perform sections to track rounds, sharpen your short game and review your stats.' },
-    { text: 'Pull down to refresh at any time. Tap the info icon to see this guide again.' },
+    { text: t('home.onboardingStep1') },
+    { text: t('home.onboardingStep2') },
+    { text: t('home.onboardingStep3') },
 ];
 
 export default function HomeScreen() {
@@ -50,7 +51,7 @@ export default function HomeScreen() {
       {refreshing && (
         <View style={styles.updateOverlay}>
           <Text style={styles.updateText}>
-            Release to update
+            {t('common.releaseToUpdate')}
           </Text>
         </View>
       )}
@@ -69,39 +70,39 @@ export default function HomeScreen() {
               <MaterialIcons name="info-outline" size={24} color={colours.yellow} />
             </TouchableOpacity>
             <Text style={[styles.headerText, styles.marginTop]}>
-              No caddy needed!
+              {t('home.title')}
             </Text>
           </View>
           <Text style={[styles.normalText, styles.marginBottom]}>
-            Smarter play, practice & performance
+            {t('home.subtitle')}
           </Text>
 
           <View style={[styles.iconsContainer, styles.marginTop]}>
             <Link testID="home-play-link" href='/play'>
               <View style={styles.iconContainer}>
-                <IconButton iconName='sports-golf' label='Play' size='medium' />
+                <IconButton iconName='sports-golf' label={t('home.playLabel')} size='medium' />
               </View>
             </Link>
             <Link testID="home-practice-link" href='/practice'>
               <View style={styles.iconContainer}>
-                <IconButton iconName='golf-course' label='Practice' size='medium' />
+                <IconButton iconName='golf-course' label={t('home.practiceLabel')} size='medium' />
               </View>
             </Link>
             <Link testID="home-perform-link" href='/perform'>
               <View style={styles.iconContainer}>
-                <IconButton iconName='lightbulb' label='Perform' size='medium' />
+                <IconButton iconName='lightbulb' label={t('home.performLabel')} size='medium' />
               </View>
             </Link>
           </View>
 
-          <Chevrons heading='Golf simplified' points={points} />
+          <Chevrons heading={t('home.golfSimplified')} points={points} />
 
           <Text style={[styles.subHeaderText, styles.marginTop]}>
-            Be your own best caddy
+            {t('home.beYourOwnCaddy')}
           </Text>
 
           <Text style={[styles.normalText, styles.marginTop, styles.marginBottom]}>
-            Golf is not a game of perfect, or having a perfect swing
+            {t('home.notPerfect')}
           </Text>
 
 
@@ -111,7 +112,7 @@ export default function HomeScreen() {
       <OnboardingOverlay
         visible={showOnboarding}
         onDismiss={handleDismissOnboarding}
-        title="No Caddy Needed"
+        title={t('home.onboardingTitle')}
         steps={ONBOARDING_STEPS}
       />
     </GestureHandlerRootView>

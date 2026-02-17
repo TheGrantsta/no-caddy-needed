@@ -1,209 +1,210 @@
 import { ShortGameConfig } from '../types/ShortGame';
+import { t } from '../assets/i18n/i18n';
 
-export const puttingConfig: ShortGameConfig = {
+export const getPuttingConfig = (): ShortGameConfig => ({
     category: 'putting',
     drills: [
         {
-            label: 'Gate',
+            label: t('putting.drills.gate.label'),
             iconName: 'data-array',
-            target: '8 / 10',
-            objective: 'improve accuracy and stroke path',
-            setup: 'place two tees just wider than your putter head & practice putting from 3\' through the "gate" without hitting the tees',
-            howToPlay: 'ten putts in total. Repeat until you hit the target'
+            target: t('putting.drills.gate.target'),
+            objective: t('putting.drills.gate.objective'),
+            setup: t('putting.drills.gate.setup'),
+            howToPlay: t('putting.drills.gate.howToPlay'),
         },
         {
-            label: 'Clock',
+            label: t('putting.drills.clock.label'),
             iconName: 'schedule',
-            target: '8 / 10',
-            objective: 'work your putting stroke and get better at 4\' putts',
-            setup: '5 tees & 1 golf ball. Create a 4\' circle around the hole',
-            howToPlay: 'go around twice. Ten putts in total. Repeat until you hit the target'
+            target: t('putting.drills.clock.target'),
+            objective: t('putting.drills.clock.objective'),
+            setup: t('putting.drills.clock.setup'),
+            howToPlay: t('putting.drills.clock.howToPlay'),
         },
         {
-            label: 'Ladder',
+            label: t('putting.drills.ladder.label'),
             iconName: 'sort',
-            target: '10 / 12',
-            objective: 'improve lag putting distance control',
-            setup: '5 tees & 3 golf balls. Place one tee at start, and then at 20\', 25\', 30\' & 40\'',
-            howToPlay: 'putt to finish within 10% of distance. Repeat until you hit the target'
+            target: t('putting.drills.ladder.target'),
+            objective: t('putting.drills.ladder.objective'),
+            setup: t('putting.drills.ladder.setup'),
+            howToPlay: t('putting.drills.ladder.howToPlay'),
         },
     ],
     games: [
         {
-            header: 'Around the world!',
-            objective: 'make putts from various distances from the hole',
-            setup: 'place tees in a circle around the hole, at distances of 3, 5, 7 & 9 feet',
-            howToPlay: 'start at one tee and move to the next when the putt is made; if you miss, restart at 3 feet. Play until you complete the challenge'
+            header: t('putting.games.aroundTheWorld.header'),
+            objective: t('putting.games.aroundTheWorld.objective'),
+            setup: t('putting.games.aroundTheWorld.setup'),
+            howToPlay: t('putting.games.aroundTheWorld.howToPlay'),
         },
         {
-            header: 'Ladder challenge!',
-            objective: 'make 9 consecutive putts from a fixed distances',
-            setup: 'place tees at 3, 5 & 7 feet and 3 balls',
-            howToPlay: 'make 3 putts from each tee; if you miss, restart at 3 feet. Play until you complete the challenge'
+            header: t('putting.games.ladder.header'),
+            objective: t('putting.games.ladder.objective'),
+            setup: t('putting.games.ladder.setup'),
+            howToPlay: t('putting.games.ladder.howToPlay'),
         },
         {
-            header: 'Par 18!',
-            objective: 'treat each hole as a par-2 and aim to finish below par',
-            setup: 'create 9 different putting "holes" on the practice green, with different slopes and breaks',
-            howToPlay: 'complete the "course" by holing out on each hole. Play until you break "par"'
+            header: t('putting.games.par18.header'),
+            objective: t('putting.games.par18.objective'),
+            setup: t('putting.games.par18.setup'),
+            howToPlay: t('putting.games.par18.howToPlay'),
         },
     ],
-    drillsFooter: 'Practicing different techniques & improving your feel will increase your confidence & reduce missed opportunities',
-    gamesFooter: 'The games are designed to replicate the pressure of game situations, so only use ONE ball',
-};
+    drillsFooter: t('putting.drillsFooter'),
+    gamesFooter: t('putting.gamesFooter'),
+});
 
-export const chippingConfig: ShortGameConfig = {
+export const getChippingConfig = (): ShortGameConfig => ({
     category: 'chipping',
     drills: [
         {
-            label: 'Gate',
+            label: t('chipping.drills.gate.label'),
             iconName: 'horizontal-distribute',
-            target: '10 / 10',
-            objective: 'improve accuracy and stroke path',
-            setup: '2 alignment sticks & balls. Two sticks in the ground just wider than your clubhead about 2\' away',
-            howToPlay: 'ten chip through the gate. Repeat until you hit the target'
+            target: t('chipping.drills.gate.target'),
+            objective: t('chipping.drills.gate.objective'),
+            setup: t('chipping.drills.gate.setup'),
+            howToPlay: t('chipping.drills.gate.howToPlay'),
         },
         {
-            label: 'Hoop',
+            label: t('chipping.drills.hoop.label'),
             iconName: 'adjust',
-            target: '8 / 10',
-            objective: 'improve ability to control landing spot',
-            setup: '8 tees & 2 golf balls. Create a circle with tees about 5 yards away',
-            howToPlay: 'aim to land inside the circle. Repeat until you hit the target'
+            target: t('chipping.drills.hoop.target'),
+            objective: t('chipping.drills.hoop.objective'),
+            setup: t('chipping.drills.hoop.setup'),
+            howToPlay: t('chipping.drills.hoop.howToPlay'),
         },
         {
-            label: 'One hand',
+            label: t('chipping.drills.oneHand.label'),
             iconName: 'back-hand',
-            target: '8 / 10',
-            objective: 'improve touch and feel around the greens',
-            setup: '1 tee & 3 golf balls. Place tee at a reasonable distance',
-            howToPlay: 'chip one-handed. Repeat until you hit the target'
+            target: t('chipping.drills.oneHand.target'),
+            objective: t('chipping.drills.oneHand.objective'),
+            setup: t('chipping.drills.oneHand.setup'),
+            howToPlay: t('chipping.drills.oneHand.howToPlay'),
         },
     ],
     games: [
         {
-            header: 'Up & down challenge!',
-            objective: 'simulate real on-course pressure situations',
-            setup: 'select a variety of chipping spots around the green (easy, moderate, difficult)',
-            howToPlay: 'try to hole out in 2 shots or fewer. Track your personal best and aim to beat it'
+            header: t('chipping.games.upAndDown.header'),
+            objective: t('chipping.games.upAndDown.objective'),
+            setup: t('chipping.games.upAndDown.setup'),
+            howToPlay: t('chipping.games.upAndDown.howToPlay'),
         },
         {
-            header: 'Ladder challenge!',
-            objective: 'make 9 consecutive chips from a fixed distances',
-            setup: 'place tees at 6, 9 & 12 feet',
-            howToPlay: 'make 3 chips to each tee; if you miss, restart at 6 feet. Play until you complete the challenge'
+            header: t('chipping.games.ladder.header'),
+            objective: t('chipping.games.ladder.objective'),
+            setup: t('chipping.games.ladder.setup'),
+            howToPlay: t('chipping.games.ladder.howToPlay'),
         },
         {
-            header: 'Par 18!',
-            objective: 'treat each hole as a par-2 and aim to finish below par',
-            setup: 'create 9 different putting "holes" on the practice green, with different slopes and breaks',
-            howToPlay: 'complete the "course" by holing out on each hole. Play until you break "par"'
+            header: t('chipping.games.par18.header'),
+            objective: t('chipping.games.par18.objective'),
+            setup: t('chipping.games.par18.setup'),
+            howToPlay: t('chipping.games.par18.howToPlay'),
         },
     ],
-    drillsFooter: 'Practicing different techniques & improving your feel will increase your confidence & reduce missed opportunities',
-    gamesFooter: 'The games are designed to replicate the pressure of game situations, so only use ONE ball',
-};
+    drillsFooter: t('chipping.drillsFooter'),
+    gamesFooter: t('chipping.gamesFooter'),
+});
 
-export const pitchingConfig: ShortGameConfig = {
+export const getPitchingConfig = (): ShortGameConfig => ({
     category: 'pitching',
     drills: [
         {
-            label: 'Three ball',
+            label: t('pitching.drills.threeBall.label'),
             iconName: 'track-changes',
-            target: '3 / 3',
-            objective: 'improve accuracy and distance control',
-            setup: 'select a target between 50 - 100 yards away',
-            howToPlay: 'hit 3 shots at the same target. Success is +/- 5 yards'
+            target: t('pitching.drills.threeBall.target'),
+            objective: t('pitching.drills.threeBall.objective'),
+            setup: t('pitching.drills.threeBall.setup'),
+            howToPlay: t('pitching.drills.threeBall.howToPlay'),
         },
         {
-            label: 'Wedge',
+            label: t('pitching.drills.wedge.label'),
             iconName: 'av-timer',
-            target: '3 / 3',
-            objective: 'improve ability to control landing spot',
-            setup: 'hit 3 balls swinging to 9 o\'clock, 10 o\'clock & full',
-            howToPlay: 'monitor landing spot. Success is +/- 5 yards'
+            target: t('pitching.drills.wedge.target'),
+            objective: t('pitching.drills.wedge.objective'),
+            setup: t('pitching.drills.wedge.setup'),
+            howToPlay: t('pitching.drills.wedge.howToPlay'),
         },
         {
-            label: 'Ladder',
+            label: t('pitching.drills.ladder.label'),
             iconName: 'sort',
-            target: '10 / 12',
-            objective: 'improve touch and feel',
-            setup: 'place markers at 20, 30, 40, and 50 yards',
-            howToPlay: 'hit 3 balls to each target, focusing on consistent carry distance. Repeat until you hit the target'
+            target: t('pitching.drills.ladder.target'),
+            objective: t('pitching.drills.ladder.objective'),
+            setup: t('pitching.drills.ladder.setup'),
+            howToPlay: t('pitching.drills.ladder.howToPlay'),
         },
     ],
     games: [
         {
-            header: 'Three club!',
-            objective: 'develop feel and understand how each club performs',
-            setup: 'choose three different wedges (e.g., lob wedge, sand wedge, and gap wedge)',
-            howToPlay: 'hit to the same target with each club and compare results'
+            header: t('pitching.games.threeClub.header'),
+            objective: t('pitching.games.threeClub.objective'),
+            setup: t('pitching.games.threeClub.setup'),
+            howToPlay: t('pitching.games.threeClub.howToPlay'),
         },
         {
-            header: 'Target challenge!',
-            objective: 'control distance',
-            setup: 'create a circle with tees at 3\' feet from the pin',
-            howToPlay: 'hit 10 pitches to finish inside the target area. 2 points for inside, 1 point outside but on the green'
+            header: t('pitching.games.targetChallenge.header'),
+            objective: t('pitching.games.targetChallenge.objective'),
+            setup: t('pitching.games.targetChallenge.setup'),
+            howToPlay: t('pitching.games.targetChallenge.howToPlay'),
         },
         {
-            header: '5-ball game!',
-            objective: 'goal is to land all 5 on the green in a row, adding pressure',
-            setup: 'hit 5 balls to a target from 30 - 50 yards',
-            howToPlay: 'if you miss the green with one, restart the game'
+            header: t('pitching.games.fiveBall.header'),
+            objective: t('pitching.games.fiveBall.objective'),
+            setup: t('pitching.games.fiveBall.setup'),
+            howToPlay: t('pitching.games.fiveBall.howToPlay'),
         },
     ],
-    drillsFooter: 'Practicing different techniques & improving your feel will increase your confidence & reduce missed opportunities',
-    gamesFooter: 'The games are designed to replicate the pressure of game situations',
-};
+    drillsFooter: t('pitching.drillsFooter'),
+    gamesFooter: t('pitching.gamesFooter'),
+});
 
-export const bunkerConfig: ShortGameConfig = {
+export const getBunkerConfig = (): ShortGameConfig => ({
     category: 'bunker',
     drills: [
         {
-            label: 'Line',
+            label: t('bunker.drills.line.label'),
             iconName: 'linear-scale',
-            target: '8 / 10',
-            objective: 'improve low-point control',
-            setup: 'draw straight line in sand',
-            howToPlay: 'make 10 swings and hit the sand from the line forward'
+            target: t('bunker.drills.line.target'),
+            objective: t('bunker.drills.line.objective'),
+            setup: t('bunker.drills.line.setup'),
+            howToPlay: t('bunker.drills.line.howToPlay'),
         },
         {
-            label: 'Dollar bill',
+            label: t('bunker.drills.dollarBill.label'),
             iconName: 'money',
-            target: '8 / 10',
-            objective: 'proper sand entry and clubface control',
-            setup: 'imagine ball sitting on a dollar bill',
-            howToPlay: 'goal is to splash the entire "bill" out of the bunker, not just the ball'
+            target: t('bunker.drills.dollarBill.target'),
+            objective: t('bunker.drills.dollarBill.objective'),
+            setup: t('bunker.drills.dollarBill.setup'),
+            howToPlay: t('bunker.drills.dollarBill.howToPlay'),
         },
         {
-            label: 'No ball',
+            label: t('bunker.drills.noBall.label'),
             iconName: 'sports-golf',
-            target: '10 / 12',
-            objective: 'improve your understanding of bunker play',
-            setup: 'hit the sand without a ball, focusing on splashing the sand onto the green',
-            howToPlay: 'splash sand onto the green. Repeat until you hit the target'
+            target: t('bunker.drills.noBall.target'),
+            objective: t('bunker.drills.noBall.objective'),
+            setup: t('bunker.drills.noBall.setup'),
+            howToPlay: t('bunker.drills.noBall.howToPlay'),
         },
     ],
     games: [
         {
-            header: 'Up and down challenge!',
-            objective: 'get up and down in 2 shots or fewer',
-            setup: 'drop ball in bunker and choose target hole',
-            howToPlay: 'try to get up and down 50% time of the time'
+            header: t('bunker.games.upAndDown.header'),
+            objective: t('bunker.games.upAndDown.objective'),
+            setup: t('bunker.games.upAndDown.setup'),
+            howToPlay: t('bunker.games.upAndDown.howToPlay'),
         },
         {
-            header: 'Worst lie challenge!',
-            objective: 'deal with adversity away from the course',
-            setup: 'drop balls in difficult spots: buried, plugged, on a slope, or with an awkward stance',
-            howToPlay: 'get the ball on the green. Close is better, but on is the minimum'
+            header: t('bunker.games.worstLie.header'),
+            objective: t('bunker.games.worstLie.objective'),
+            setup: t('bunker.games.worstLie.setup'),
+            howToPlay: t('bunker.games.worstLie.howToPlay'),
         },
         {
-            header: '10-Point game!',
-            objective: 'improve distance control and have fun',
-            setup: 'place markers at 10\' (1 point), 6\' (3 points) & 3\' (5 points)',
-            howToPlay: 'hit 10 bunker shots & count your score. Try to beat your best score'
+            header: t('bunker.games.tenPoint.header'),
+            objective: t('bunker.games.tenPoint.objective'),
+            setup: t('bunker.games.tenPoint.setup'),
+            howToPlay: t('bunker.games.tenPoint.howToPlay'),
         },
     ],
-    drillsFooter: 'Practicing different techniques & improving your feel will increase your confidence & reduce missed opportunities',
-    gamesFooter: 'The games are designed to replicate the pressure of game situations',
-};
+    drillsFooter: t('bunker.drillsFooter'),
+    gamesFooter: t('bunker.gamesFooter'),
+});

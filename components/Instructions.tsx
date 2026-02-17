@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
+import { t } from '@/assets/i18n/i18n';
 
 type Props = {
     objective: string;
@@ -13,13 +14,13 @@ export default function Instructions({ objective, setUp, howToPlay }: Props) {
     return (
         <View>
             <Text style={[styles.normalText, localStyles.contentText]}>
-                <Text style={styles.yellowText}>Objective:</Text> {objective}
+                <Text style={styles.yellowText}>{t('instructions.objective')}</Text> {objective}
             </Text>
             <Text style={[styles.normalText, localStyles.contentText]}>
-                <Text style={styles.yellowText}>Setup:</Text> {setUp}
+                <Text style={styles.yellowText}>{t('instructions.setup')}</Text> {setUp}
             </Text>
             <Text style={[styles.normalText, localStyles.contentText]}>
-                <Text style={styles.yellowText}>How to play:</Text> {howToPlay}
+                <Text style={styles.yellowText}>{t('instructions.howToPlay')}</Text> {howToPlay}
             </Text>
         </View>
     )

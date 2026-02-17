@@ -1,6 +1,6 @@
 import ShortGameScreen from "@/components/ShortGameScreen";
-import { bunkerConfig } from "@/data/shortGameData";
+import { getBunkerConfig } from "@/data/shortGameData";
 
 export default function Bunker() {
-    return <ShortGameScreen config={bunkerConfig} />;
+    return <ShortGameScreen config={getBunkerConfig()} />;
 }

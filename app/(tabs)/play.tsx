@@ -38,16 +38,17 @@ import { useAppToast } from '../../hooks/useAppToast';
 import fontSizes from '../../assets/font-sizes';
 import { StyleSheet } from 'react-native';
 import DistancesScreen from '../play/distances';
+import { t } from '../../assets/i18n/i18n';
 
 const ONBOARDING_STEPS = [
-    { text: 'Start a round to track your scores hole by hole and see your running total.' },
-    { text: 'Add playing partners, set the par for each hole, and record everyone\'s scores.' },
-    { text: 'After your round, review your scorecard and track your Tiger 5 stats over time.' },
+    { text: t('play.onboardingStep1') },
+    { text: t('play.onboardingStep2') },
+    { text: t('play.onboardingStep3') },
 ];
 
 const formatScore = (score: number): string => {
-    if (score === 0) return 'E';
-    if (score > 0) return `+${score}`;
+    if (score === 0) return t('common.evenPar');
+    if (score > 0) return `${t('common.overParPrefix')}${score}`;
     return `${score}`;
 };
 
@@ -196,7 +197,7 @@ export default function Play() {
             const roundPlayers = playerIds.map((id, index) => ({
                 Id: id,
                 RoundId: roundId,
-                PlayerName: index === 0 ? 'You' : playerNames[index - 1],
+                PlayerName: index === 0 ? t('common.you') : playerNames[index - 1],
                 IsUser: index === 0 ? 1 : 0,
                 SortOrder: index,
             }));
@@ -209,7 +210,7 @@ export default function Play() {
             const nId = await scheduleRoundReminder();
             setNotificationId(nId);
         } else {
-            showError('Failed to start round');
+            showError(t('play.failedToStart'));
         }
     };
 
@@ -299,7 +300,7 @@ export default function Play() {
             );
         }
 
-        showResult(success, 'Round saved', 'Round not saved');
+        showResult(success, t('play.roundSaved'), t('play.roundNotSaved'));
 
         const scorecard = getMultiplayerScorecardService(activeRoundId);
         if (scorecard) {
@@ -320,7 +321,7 @@ export default function Play() {
         <GestureHandlerRootView style={styles.flexOne}>
             {refreshing && (
                 <View style={styles.updateOverlay}>
-                    <Text style={styles.updateText}>Release to update</Text>
+                    <Text style={styles.updateText}>{t('common.releaseToUpdate')}</Text>
                 </View>
             )}
 
@@ -349,14 +350,14 @@ export default function Play() {
                                 >
                                     <MaterialIcons name="info-outline" size={24} color={colours.yellow} />
                                 </TouchableOpacity>
-                                <Text style={[styles.headerText, styles.marginTop]}>Play</Text>
+                                <Text style={[styles.headerText, styles.marginTop]}>{t('play.title')}</Text>
                             </View>
                             <TouchableOpacity
                                 testID="start-round-button"
                                 onPress={handleShowPlayerSetup}
                                 style={localStyles.actionButton}
                             >
-                                <Text style={localStyles.actionButtonText}>Start round</Text>
+                                <Text style={localStyles.actionButtonText}>{t('play.startRound')}</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -365,22 +366,22 @@ export default function Play() {
                         {roundHistory.length === 0 && (
                             <View style={styles.headerContainer}>
                                 <Text style={[styles.normalText, styles.marginTop]}>
-                                    No round history yet
+                                    {t('play.noRoundHistory')}
                                 </Text>
                             </View>
                         )}
 
                         {roundHistory.length > 0 && (() => {
-                            const tiger5Map = new Map(tiger5Rounds.map(t => [t.Created_At, t.Total]));
+                            const tiger5Map = new Map(tiger5Rounds.map(r => [r.Created_At, r.Total]));
                             return (
                                 <View style={{ padding: 15 }}>
                                     <Text style={[styles.subHeaderText, { textAlign: 'center' }]}>
-                                        Round history
+                                        {t('play.roundHistory')}
                                     </Text>
                                     <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.yellow }]}>
-                                        <Text testID="round-history-header-date" style={[styles.normalText, localStyles.historyDateColumn]}>Date</Text>
-                                        <Text testID="round-history-header-score" style={[styles.normalText, localStyles.historyNarrowColumn]}>Score</Text>
-                                        <Text testID="round-history-header-t5" style={[styles.normalText, localStyles.historyNarrowColumn]}>T5</Text>
+                                        <Text testID="round-history-header-date" style={[styles.normalText, localStyles.historyDateColumn]}>{t('play.dateHeader')}</Text>
+                                        <Text testID="round-history-header-score" style={[styles.normalText, localStyles.historyNarrowColumn]}>{t('play.scoreHeader')}</Text>
+                                        <Text testID="round-history-header-t5" style={[styles.normalText, localStyles.historyNarrowColumn]}>{t('play.t5Header')}</Text>
                                     </View>
                                     <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
                                         {roundHistory.slice(0, 30).map((round) => (
@@ -435,7 +436,7 @@ export default function Play() {
                                 onPress={handleNextHole}
                                 style={localStyles.nextHoleButton}
                             >
-                                <Text style={localStyles.nextHoleButtonText}>Next hole</Text>
+                                <Text style={localStyles.nextHoleButtonText}>{t('play.nextHole')}</Text>
                             </TouchableOpacity>
 
                             {!showEndRoundConfirm && (
@@ -444,7 +445,7 @@ export default function Play() {
                                     onPress={handleEndRoundPress}
                                     style={{ padding: 12, alignItems: 'center', marginTop: 20 }}
                                 >
-                                    <Text style={{ color: colours.errorText, fontSize: fontSizes.normal }}>End round</Text>
+                                    <Text style={{ color: colours.errorText, fontSize: fontSizes.normal }}>{t('play.endRound')}</Text>
                                 </TouchableOpacity>
                             )}
 
@@ -455,14 +456,14 @@ export default function Play() {
                                         onPress={handleCancelEndRound}
                                         style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, borderWidth: 1, borderColor: colours.backgroundAlternate }}
                                     >
-                                        <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
+                                        <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>{t('common.cancel')}</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         testID="confirm-end-round-button"
                                         onPress={handleConfirmEndRound}
                                         style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.errorText }}
                                     >
-                                        <Text style={{ color: colours.text, fontSize: fontSizes.normal }}>Confirm end round</Text>
+                                        <Text style={{ color: colours.text, fontSize: fontSizes.normal }}>{t('play.confirmEndRound')}</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}
@@ -472,7 +473,7 @@ export default function Play() {
 
                 {scorecardData && displaySection('play-score') && (
                     <View style={styles.container}>
-                        <Text style={localStyles.scorecardHeader}>Scorecard</Text>
+                        <Text style={localStyles.scorecardHeader}>{t('play.scorecard')}</Text>
                         <MultiplayerScorecard
                             round={scorecardData.round}
                             players={scorecardData.players}
@@ -483,7 +484,7 @@ export default function Play() {
                             onPress={handleScorecardDone}
                             style={localStyles.actionButton}
                         >
-                            <Text style={localStyles.actionButtonText}>Done</Text>
+                            <Text style={localStyles.actionButtonText}>{t('common.done')}</Text>
                         </TouchableOpacity>
                     </View>
                 )}
@@ -504,7 +505,7 @@ export default function Play() {
             <OnboardingOverlay
                 visible={showOnboarding}
                 onDismiss={handleDismissOnboarding}
-                title="Play"
+                title={t('play.onboardingTitle')}
                 steps={ONBOARDING_STEPS}
             />
         </GestureHandlerRootView>

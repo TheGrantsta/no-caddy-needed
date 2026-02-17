@@ -1,6 +1,6 @@
 import ShortGameScreen from "@/components/ShortGameScreen";
-import { pitchingConfig } from "@/data/shortGameData";
+import { getPitchingConfig } from "@/data/shortGameData";
 
 export default function Pitching() {
-    return <ShortGameScreen config={pitchingConfig} />;
+    return <ShortGameScreen config={getPitchingConfig()} />;
 }

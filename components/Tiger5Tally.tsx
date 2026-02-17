@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
+import { t } from '../assets/i18n/i18n';
 
 type Props = {
     onEndRound: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => void;
@@ -13,11 +14,11 @@ type Props = {
 };
 
 const counters = [
-    { slug: 'three-putts', label: '3-putts' },
-    { slug: 'double-bogeys', label: 'Double bogeys' },
-    { slug: 'bogeys-par5', label: 'Bogeys on par 5s' },
-    { slug: 'bogeys-inside-9iron', label: 'Bogeys inside 9-iron' },
-    { slug: 'double-chips', label: 'Double chips' },
+    { slug: 'three-putts', labelKey: 'tiger5.threePutts' },
+    { slug: 'double-bogeys', labelKey: 'tiger5.doubleBogeys' },
+    { slug: 'bogeys-par5', labelKey: 'tiger5.bogeysPar5' },
+    { slug: 'bogeys-inside-9iron', labelKey: 'tiger5.bogeysInside9Iron' },
+    { slug: 'double-chips', labelKey: 'tiger5.doubleChips' },
 ];
 
 const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore }: Props) => {
@@ -126,7 +127,7 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
         return (
             <View style={localStyles.container}>
                 <TouchableOpacity testID="tiger5-start-round" onPress={handleStartRound} style={localStyles.saveButton}>
-                    <Text style={localStyles.saveButtonText}>Start round</Text>
+                    <Text style={localStyles.saveButtonText}>{t('play.startRound')}</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -139,7 +140,7 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
                 if (counter.slug === 'double-bogeys' && holePar !== undefined && userScore !== undefined && userScore < holePar + 2) return null;
                 return (
                     <View key={counter.slug} style={localStyles.row}>
-                        <Text style={localStyles.label}>{counter.label}</Text>
+                        <Text style={localStyles.label}>{t(counter.labelKey)}</Text>
                         <View style={localStyles.controls}>
                             <TouchableOpacity
                                 testID={`tiger5-decrement-${counter.slug}`}
@@ -165,7 +166,7 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
 
             {!roundControlled && (
                 <TouchableOpacity testID="tiger5-end-round" onPress={handleEndRound} style={localStyles.saveButton}>
-                    <Text style={localStyles.saveButtonText}>End round</Text>
+                    <Text style={localStyles.saveButtonText}>{t('play.endRound')}</Text>
                 </TouchableOpacity>
             )}
         </View>

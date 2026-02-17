@@ -9,6 +9,7 @@ import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 import { useStyles } from '@/hooks/useStyles';
 import { useOrientation } from '@/hooks/useOrientation';
+import { t } from '@/assets/i18n/i18n';
 
 export default function Tempo() {
     const colours = useThemeColours();
@@ -116,7 +117,7 @@ export default function Tempo() {
         }, 750);
     };
 
-    const points = ['Focus on tempo, and not mechanics - start slow', 'Common fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Common misconception: amateurs believe they swing "too fast" even though they swing slower than professionals']
+    const points = [t('tempo.whyPoint1'), t('tempo.whyPoint2'), t('tempo.whyPoint3')]
 
     const localStyles = useMemo(() => StyleSheet.create({
         container: {
@@ -154,7 +155,7 @@ export default function Tempo() {
             {refreshing && (
                 <View style={styles.updateOverlay}>
                     <Text style={styles.updateText}>
-                        Release to update
+                        {t('common.releaseToUpdate')}
                     </Text>
                 </View>
             )}
@@ -169,15 +170,15 @@ export default function Tempo() {
                 <View style={styles.container}>
                     <View style={styles.headerContainer}>
                         <Text style={[styles.headerText, styles.marginTop]}>
-                            Tempo training
+                            {t('tempo.title')}
                         </Text>
                         <Text style={[styles.normalText, { margin: 5 }]}>
-                            Swing with tempo to self organise
+                            {t('tempo.subtitle')}
                         </Text>
                     </View>
 
                     <View style={localStyles.container}>
-                        <Text style={[localStyles.title]}>Tempo:</Text>
+                        <Text style={[localStyles.title]}>{t('tempo.tempoLabel')}</Text>
 
                         <Slider
                             style={[localStyles.slider]}
@@ -195,14 +196,14 @@ export default function Tempo() {
                         <View style={localStyles.labelsContainer}>
                             {[1, 2, 3, 4, 5, 6].map((num) => (
                                 <Text key={num} style={[localStyles.label]}>
-                                    {num === 1 ? 'slow' : num === 6 ? 'fast' : '|'}
+                                    {num === 1 ? t('tempo.slow') : num === 6 ? t('tempo.fast') : t('tempo.separator')}
                                 </Text>
                             ))}
                         </View>
 
                         <View style={{ flexDirection: 'row', flexWrap: 'nowrap', flex: 1, alignContent: 'space-evenly' }}>
                             <Text style={[localStyles.valueText, styles.normalText, { color: colours.yellow, padding: 5 }]}>
-                                Beats per minute: {tempo}
+                                {t('tempo.bpm', { tempo })}
                             </Text>
 
                             <TouchableOpacity style={{ padding: 5 }} onPress={toggleStartStop}>
@@ -211,11 +212,11 @@ export default function Tempo() {
                         </View>
                         <View>
                             <Text style={styles.smallestText}>
-                                Based on John Garrity's work, long game tempo (start, take away, top & impact) is 3:1 & short game tempo is 2:1
+                                {t('tempo.garrity')}
                             </Text>
                         </View>
 
-                        <Chevrons heading='Why tempo training is important' points={points} />
+                        <Chevrons heading={t('tempo.whyHeading')} points={points} />
                     </View>
                 </View>
             </ScrollView>

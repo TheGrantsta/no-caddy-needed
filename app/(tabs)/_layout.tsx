@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
 import ScreenWrapper from '../screen-wrapper';
+import { t } from '@/assets/i18n/i18n';
 
 export default function TabLayout() {
   const colours = useThemeColours();
@@ -27,7 +28,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Home',
+            title: t('tabs.home'),
             tabBarIcon: ({ color }) => (
               <MaterialIcons name='home' color={color} size={30} />
             )
@@ -36,7 +37,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="play"
           options={{
-            title: 'Play',
+            title: t('tabs.play'),
             tabBarIcon: ({ color }) => (
               <MaterialIcons name='sports-golf' color={color} size={30} />
             )
@@ -45,7 +46,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="practice"
           options={{
-            title: 'Practice',
+            title: t('tabs.practice'),
             tabBarIcon: ({ color }) => (
               <MaterialIcons name='golf-course' color={color} size={30} />
             )
@@ -54,7 +55,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="perform"
           options={{
-            title: 'Perform',
+            title: t('tabs.perform'),
             tabBarIcon: ({ color }) => (
               <MaterialIcons name='lightbulb' color={color} size={30} />
             )

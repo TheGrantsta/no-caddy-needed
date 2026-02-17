@@ -1,6 +1,6 @@
 import ShortGameScreen from "@/components/ShortGameScreen";
-import { puttingConfig } from "@/data/shortGameData";
+import { getPuttingConfig } from "@/data/shortGameData";
 
 export default function Putting() {
-    return <ShortGameScreen config={puttingConfig} />;
+    return <ShortGameScreen config={getPuttingConfig()} />;
 }

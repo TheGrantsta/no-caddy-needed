@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
+import { t } from '../assets/i18n/i18n';
 
 type Props = {
     onStartRound: (playerNames: string[], courseName: string) => void;
@@ -43,7 +44,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
     const handleStart = () => {
         const trimmedCourseName = courseName.trim();
         if (trimmedCourseName.length === 0) {
-            setCourseNameError('Course name is required');
+            setCourseNameError(t('playerSetup.courseNameRequired'));
             return;
         }
         const names = additionalPlayers.filter(name => name.trim().length > 0);
@@ -149,7 +150,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
             <TextInput
                 testID="course-name-input"
                 style={localStyles.courseNameInput}
-                placeholder="Course name"
+                placeholder={t('playerSetup.courseNamePlaceholder')}
                 placeholderTextColor={colours.backgroundAlternate}
                 value={courseName}
                 onChangeText={handleCourseNameChange}
@@ -163,7 +164,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
 
             {recentCourseNames && recentCourseNames.length > 0 && (
                 <View style={localStyles.recentContainer}>
-                    <Text style={localStyles.recentLabel}>Recent</Text>
+                    <Text style={localStyles.recentLabel}>{t('playerSetup.recent')}</Text>
                     {recentCourseNames.map((name) => (
                         <TouchableOpacity
                             key={name}
@@ -178,7 +179,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
             )}
 
             <View style={localStyles.playerRow}>
-                <Text style={localStyles.playerName}>You</Text>
+                <Text style={localStyles.playerName}>{t('common.you')}</Text>
             </View>
 
             {additionalPlayers.map((name, index) => (
@@ -186,7 +187,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
                     <TextInput
                         testID={`player-name-input-${index}`}
                         style={localStyles.input}
-                        placeholder="Player name"
+                        placeholder={t('playerSetup.playerNamePlaceholder')}
                         placeholderTextColor={colours.backgroundAlternate}
                         value={name}
                         onChangeText={(text) => handleNameChange(index, text)}
@@ -196,7 +197,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
                         onPress={() => handleRemovePlayer(index)}
                         style={localStyles.removeButton}
                     >
-                        <Text style={localStyles.removeButtonText}>X</Text>
+                        <Text style={localStyles.removeButtonText}>{t('playerSetup.removePlayer')}</Text>
                     </TouchableOpacity>
                 </View>
             ))}
@@ -207,7 +208,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
                     onPress={handleAddPlayer}
                     style={localStyles.addButton}
                 >
-                    <Text style={localStyles.addButtonText}>+ Add player</Text>
+                    <Text style={localStyles.addButtonText}>{t('common.addPlayer')}</Text>
                 </TouchableOpacity>
             )}
 
@@ -216,7 +217,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
                 onPress={handleStart}
                 style={localStyles.startButton}
             >
-                <Text style={localStyles.startButtonText}>Start</Text>
+                <Text style={localStyles.startButtonText}>{t('common.start')}</Text>
             </TouchableOpacity>
 
             {onCancel && (
@@ -225,7 +226,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
                     onPress={onCancel}
                     style={localStyles.cancelButton}
                 >
-                    <Text style={localStyles.cancelButtonText}>Cancel</Text>
+                    <Text style={localStyles.cancelButtonText}>{t('common.cancel')}</Text>
                 </TouchableOpacity>
             )}
         </View>

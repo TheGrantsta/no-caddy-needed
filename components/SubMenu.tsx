@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
+import { t } from '../assets/i18n/i18n';
 
 type Props = {
     showSubMenu: 'practice' | 'play' | 'perform' | 'putting' | 'chipping' | 'bunker' | 'pitching';
@@ -10,22 +11,22 @@ type Props = {
 }
 
 const allSubMenuItems = [
-    { testId: 'play-sub-menu-score', name: 'play-score', title: 'Play' },
-    { testId: 'play-sub-menu-distances', name: 'play-distances', title: 'Distances' },
-    { testId: 'play-sub-menu-wedge-chart', name: 'play-wedge-chart', title: 'Wedge chart' },
-    { testId: 'practice-sub-menu-short-game', name: 'short-game', title: 'Short game' },
-    { testId: 'practice-sub-menu-tools', name: 'tools', title: 'Tools' },
-    { testId: 'practice-sub-menu-history', name: 'history', title: 'History' },
-    { testId: 'perform-sub-menu-approach', name: 'approach', title: 'Approach' },
-    { testId: 'perform-sub-menu-pro-stats', name: 'pros', title: 'Pros' },
-    { testId: 'putting-sub-menu-putting-drills', name: 'putting-drills', title: 'Drills' },
-    { testId: 'putting-sub-menu-putting-games', name: 'putting-games', title: 'Games' },
-    { testId: 'chipping-sub-menu-chipping-drills', name: 'chipping-drills', title: 'Drills' },
-    { testId: 'chipping-sub-menu-chipping-games', name: 'chipping-games', title: 'Games' },
-    { testId: 'pitching-sub-menu-pitching-drills', name: 'pitching-drills', title: 'Drills' },
-    { testId: 'pitching-sub-menu-pitching-games', name: 'pitching-games', title: 'Games' },
-    { testId: 'bunker-sub-menu-bunker-drills', name: 'bunker-drills', title: 'Drills' },
-    { testId: 'bunker-sub-menu-bunker-games', name: 'bunker-games', title: 'Games' },
+    { testId: 'play-sub-menu-score', name: 'play-score', titleKey: 'subMenu.playScore' },
+    { testId: 'play-sub-menu-distances', name: 'play-distances', titleKey: 'subMenu.playDistances' },
+    { testId: 'play-sub-menu-wedge-chart', name: 'play-wedge-chart', titleKey: 'subMenu.playWedgeChart' },
+    { testId: 'practice-sub-menu-short-game', name: 'short-game', titleKey: 'subMenu.shortGame' },
+    { testId: 'practice-sub-menu-tools', name: 'tools', titleKey: 'subMenu.tools' },
+    { testId: 'practice-sub-menu-history', name: 'history', titleKey: 'subMenu.history' },
+    { testId: 'perform-sub-menu-approach', name: 'approach', titleKey: 'subMenu.approach' },
+    { testId: 'perform-sub-menu-pro-stats', name: 'pros', titleKey: 'subMenu.pros' },
+    { testId: 'putting-sub-menu-putting-drills', name: 'putting-drills', titleKey: 'subMenu.drills' },
+    { testId: 'putting-sub-menu-putting-games', name: 'putting-games', titleKey: 'subMenu.games' },
+    { testId: 'chipping-sub-menu-chipping-drills', name: 'chipping-drills', titleKey: 'subMenu.drills' },
+    { testId: 'chipping-sub-menu-chipping-games', name: 'chipping-games', titleKey: 'subMenu.games' },
+    { testId: 'pitching-sub-menu-pitching-drills', name: 'pitching-drills', titleKey: 'subMenu.drills' },
+    { testId: 'pitching-sub-menu-pitching-games', name: 'pitching-games', titleKey: 'subMenu.games' },
+    { testId: 'bunker-sub-menu-bunker-drills', name: 'bunker-drills', titleKey: 'subMenu.drills' },
+    { testId: 'bunker-sub-menu-bunker-games', name: 'bunker-games', titleKey: 'subMenu.games' },
 ]
 
 const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {
@@ -68,7 +69,7 @@ const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {
                 <View key={item.testId} style={[localStyles.subMenuItemContainer, selectedItem === item.name ? localStyles.subMenuItemContainerSelected : null]}>
                     <TouchableOpacity testID={item.testId} onPress={() => handleSubMenu(item.name)}>
                         <Text style={[localStyles.subMenuItem, selectedItem === item.name ? localStyles.subMenuItemSelected : null]}>
-                            {item.title}
+                            {t(item.titleKey)}
                         </Text>
                     </TouchableOpacity>
                 </View>

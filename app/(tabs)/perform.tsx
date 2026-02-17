@@ -6,6 +6,7 @@ import SubMenu from '../../components/SubMenu';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
+import { t } from '../../assets/i18n/i18n';
 
 export default function Perform() {
   const styles = useStyles();
@@ -16,14 +17,14 @@ export default function Perform() {
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef(null);
 
-  const points = ['Target: play for your shot dispersion *', 'Aim: think shotgun pattern', 'Strategy: favour the "fat" side', 'Eliminate:  big numbers by staying away from water & severe hazards'];
+  const points = [t('perform.conceptPoint1'), t('perform.conceptPoint2'), t('perform.conceptPoint3'), t('perform.conceptPoint4')];
 
   const { width } = Dimensions.get('window');
 
   const getApproachShotStats = () => {
     const approachStats: any[] = [];
 
-    approachStats.push(['Distance', 'Fairway', 'Rough']);
+    approachStats.push([t('perform.distanceHeader'), t('perform.fairwayHeader'), t('perform.roughHeader')]);
     approachStats.push(['225-250', '44\'10"', '56\'2"']);
     approachStats.push(['200-225', '42\'5"', '54\'6"']);
     approachStats.push(['175-200', '34\'1"', '44\'8"']);
@@ -39,7 +40,7 @@ export default function Perform() {
   const getPuttingStats = () => {
     const puttingStats: any[] = [];
 
-    puttingStats.push(['Distance (feet)', 'Make rate']);
+    puttingStats.push([t('perform.distanceFeetHeader'), t('perform.makeRateHeader')]);
     puttingStats.push(['1', '100%']);
     puttingStats.push(['2', '99%']);
     puttingStats.push(['3', '95%']);
@@ -55,7 +56,7 @@ export default function Perform() {
     puttingStats.push(['25', '10%']);
     puttingStats.push(['30', '7%']);
     puttingStats.push(['35', '5%']);
-    puttingStats.push(['Inflection point: more likely to 3 putt'])
+    puttingStats.push([t('perform.inflectionPoint')])
     puttingStats.push(['40', '3%']);
     puttingStats.push(['45', '2%']);
     puttingStats.push(['50', '1%']);
@@ -116,7 +117,7 @@ export default function Perform() {
       {refreshing && (
         <View style={styles.updateOverlay}>
           <Text style={styles.updateText}>
-            Release to update
+            {t('common.releaseToUpdate')}
           </Text>
         </View>
       )}
@@ -133,25 +134,25 @@ export default function Perform() {
           <View style={styles.container}>
             <View style={styles.headerContainer}>
               <Text style={[styles.headerText, styles.marginTop]}>
-                Approach shots
+                {t('perform.approachShots')}
               </Text>
             </View>
             <Text style={[styles.normalText, styles.marginBottom]}>
-              Make better on course decisions & choose better targets
+              {t('perform.approachSubtitle')}
             </Text>
 
-            <Chevrons heading='Concepts' points={points} />
+            <Chevrons heading={t('perform.conceptsHeading')} points={points} />
 
             <Text style={[styles.normalText, styles.marginTop, { padding: 10 }]}>
-              * Your dispersion changes with different clubs and swing types — know your tendencies for full and partial shots
+              {t('perform.dispersionNote')}
             </Text>
 
             <Text style={styles.subHeaderText}>
-              Key
+              {t('perform.keyHeading')}
             </Text>
 
             <Text style={[styles.normalText, styles.marginBottom, { padding: 10 }]}>
-              Know your shot pattern & carry numbers, then make informed decisions that allow for your natural spread, not perfection
+              {t('perform.keyText')}
             </Text>
           </View>
         )}
@@ -162,20 +163,20 @@ export default function Perform() {
             <View style={styles.container}>
               <View style={styles.headerContainer}>
                 <Text style={[styles.headerText, { marginTop: 10 }]}>
-                  Perform
+                  {t('perform.title')}
                 </Text>
                 <Text style={[styles.normalText, { marginBottom: 10 }]}>
-                  Manage your expectations, better!
+                  {t('perform.subtitle')}
                 </Text>
               </View>
 
               {activeIndex === 0 && (
                 <View>
                   <Text style={[styles.headerText, styles.marginTop]}>
-                    Approach shots
+                    {t('perform.approachShotsTitle')}
                   </Text>
                   <Text style={[styles.normalText, styles.marginBottom]}>
-                    Average proximity to the hole
+                    {t('perform.approachShotsSubtitle')}
                   </Text>
                 </View>
               )}
@@ -183,10 +184,10 @@ export default function Perform() {
               {activeIndex === 1 && (
                 <View>
                   <Text style={[styles.headerText, styles.marginTop]}>
-                    Putts
+                    {t('perform.puttsTitle')}
                   </Text>
                   <Text style={[styles.normalText, styles.marginBottom]}>
-                    Professional male golfer make percentages
+                    {t('perform.puttsSubtitle')}
                   </Text>
                 </View>
               )}
@@ -221,7 +222,7 @@ export default function Perform() {
             {activeIndex === 0 && (
               <View>
                 <Text style={[styles.smallestText, styles.marginBottom]}>
-                  Source: PGA tour online statistics website
+                  {t('perform.approachSource')}
                 </Text>
               </View>
             )}
@@ -229,10 +230,10 @@ export default function Perform() {
             {activeIndex === 1 && (
               <View>
                 <Text style={[styles.smallestText, styles.marginBottom]}>
-                  Source:
+                  {t('perform.puttsSourcePrefix')}
                   <Text style={{ fontStyle: 'italic' }}>
-                    The Lost Art of Putting: Introducing the Six Putting Performance Principles
-                  </Text> by Gary Nicol & Karl Morris
+                    {t('perform.puttsSourceBook')}
+                  </Text>{t('perform.puttsSourceAuthor')}
                 </Text>
               </View>
             )}

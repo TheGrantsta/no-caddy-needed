@@ -10,6 +10,7 @@ import { useThemeColours } from "@/context/ThemeContext";
 import { useOrientation } from "@/hooks/useOrientation";
 import { useAppToast } from "@/hooks/useAppToast";
 import { ShortGameConfig, DrillData, GameData } from "@/types/ShortGame";
+import { t } from "@/assets/i18n/i18n";
 
 type Props = {
     config: ShortGameConfig;
@@ -41,7 +42,7 @@ const ShortGameScreen = ({ config }: Props) => {
 
     const saveDrillResultHandle = (label: string, result: boolean) => {
         insertDrillResultService(`${categoryCapitalized} - ${label}`, result).then((success) => {
-            showResult(success, "Drill result saved", "Drill result not saved");
+            showResult(success, t('shortGame.drillResultSaved'), t('shortGame.drillResultNotSaved'));
         });
     };
 
@@ -91,7 +92,7 @@ const ShortGameScreen = ({ config }: Props) => {
             {refreshing && (
                 <View style={styles.updateOverlay}>
                     <Text style={styles.updateText}>
-                        Release to update
+                        {t('common.releaseToUpdate')}
                     </Text>
                 </View>
             )}
@@ -109,10 +110,10 @@ const ShortGameScreen = ({ config }: Props) => {
                         <View style={styles.container}>
                             <View style={styles.headerContainer}>
                                 <Text style={[styles.headerText, styles.marginTop]}>
-                                    {categoryCapitalized} drills
+                                    {t('shortGame.drillsSuffix', { category: categoryCapitalized })}
                                 </Text>
                                 <Text style={[styles.normalText, { margin: 5 }]}>
-                                    Improve your mechanics and accuracy through focused, repetitive actions.
+                                    {t('shortGame.drillsDescription')}
                                 </Text>
                             </View>
                             <View>
@@ -157,12 +158,12 @@ const ShortGameScreen = ({ config }: Props) => {
                             <View style={styles.container}>
                                 <View style={styles.headerContainer}>
                                     <Text style={[styles.headerText, styles.marginTop]}>
-                                        {categoryCapitalized} games
+                                        {t('shortGame.gamesSuffix', { category: categoryCapitalized })}
                                     </Text>
                                 </View>
                                 <View>
                                     <Text style={[styles.normalText, { margin: 5 }]}>
-                                        Improve your accuracy, touch, consistency, and mental focus while keeping practice engaging
+                                        {t('shortGame.gamesDescription')}
                                     </Text>
                                 </View>
 

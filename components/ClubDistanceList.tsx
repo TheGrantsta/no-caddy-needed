@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
+import { t } from '../assets/i18n/i18n';
 
 type ClubDistance = {
     Id: number;
@@ -122,8 +123,8 @@ const ClubDistanceList = ({ distances, onSave }: Props) => {
     return (
         <View style={localStyles.container}>
             <View style={localStyles.headerRow}>
-                <Text style={[localStyles.headerCell, localStyles.clubCell]}>Club</Text>
-                <Text style={[localStyles.headerCell, localStyles.distanceCell]}>Distance</Text>
+                <Text style={[localStyles.headerCell, localStyles.clubCell]}>{t('clubDistanceList.clubHeader')}</Text>
+                <Text style={[localStyles.headerCell, localStyles.distanceCell]}>{t('clubDistanceList.distanceHeader')}</Text>
             </View>
             {rows.map((row, index) => (
                 <View key={index} style={localStyles.row}>
@@ -132,7 +133,7 @@ const ClubDistanceList = ({ distances, onSave }: Props) => {
                         style={[localStyles.input, localStyles.clubCell]}
                         value={row.club}
                         onChangeText={(v) => handleUpdateRow(index, 'club', v)}
-                        placeholder="Club name"
+                        placeholder={t('clubDistanceList.clubNamePlaceholder')}
                         placeholderTextColor={colours.backgroundAlternate}
                     />
                     <TextInput
@@ -153,7 +154,7 @@ const ClubDistanceList = ({ distances, onSave }: Props) => {
                 style={localStyles.addButton}
             >
                 {distances.length !== 14 && (
-                    <Text style={localStyles.addButtonText}>+ Add club</Text>
+                    <Text style={localStyles.addButtonText}>{t('common.addClub')}</Text>
                 )}
             </TouchableOpacity>
 
@@ -162,7 +163,7 @@ const ClubDistanceList = ({ distances, onSave }: Props) => {
                 onPress={handleSave}
                 style={localStyles.saveButton}
             >
-                <Text style={localStyles.saveButtonText}>Save</Text>
+                <Text style={localStyles.saveButtonText}>{t('common.save')}</Text>
             </TouchableOpacity>
         </View>
     );

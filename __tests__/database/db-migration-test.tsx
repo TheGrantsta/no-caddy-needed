@@ -183,6 +183,48 @@ describe('Settings table column migration', () => {
         );
     });
 
+    it('should add HomeOnboardingSeen column when missing', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Settings)') return [
+                { name: 'Id' },
+                { name: 'Theme' },
+                { name: 'NotificationsEnabled' },
+            ];
+            if (sql === 'PRAGMA table_info(Rounds)') return [
+                { name: 'Id' },
+                { name: 'CoursePar' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE Settings ADD COLUMN HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0'
+        );
+    });
+
+    it('should add PracticeOnboardingSeen column when missing', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Settings)') return [
+                { name: 'Id' },
+                { name: 'Theme' },
+                { name: 'NotificationsEnabled' },
+            ];
+            if (sql === 'PRAGMA table_info(Rounds)') return [
+                { name: 'Id' },
+                { name: 'CoursePar' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE Settings ADD COLUMN PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0'
+        );
+    });
+
     it('should not alter Settings table when all columns already exist', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
@@ -192,6 +234,8 @@ describe('Settings table column migration', () => {
                 { name: 'WedgeChartOnboardingSeen' },
                 { name: 'DistancesOnboardingSeen' },
                 { name: 'PlayOnboardingSeen' },
+                { name: 'HomeOnboardingSeen' },
+                { name: 'PracticeOnboardingSeen' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },
@@ -224,6 +268,8 @@ describe('Rounds table column migration', () => {
                 { name: 'WedgeChartOnboardingSeen' },
                 { name: 'DistancesOnboardingSeen' },
                 { name: 'PlayOnboardingSeen' },
+                { name: 'HomeOnboardingSeen' },
+                { name: 'PracticeOnboardingSeen' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },
@@ -249,6 +295,8 @@ describe('Rounds table column migration', () => {
                 { name: 'WedgeChartOnboardingSeen' },
                 { name: 'DistancesOnboardingSeen' },
                 { name: 'PlayOnboardingSeen' },
+                { name: 'HomeOnboardingSeen' },
+                { name: 'PracticeOnboardingSeen' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },

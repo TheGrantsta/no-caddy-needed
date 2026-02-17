@@ -38,6 +38,31 @@ const MockPressable = ({ children, testID, onPress }: any) => (
     </TouchableOpacity>
 );
 
+jest.mock('../../hooks/useStyles', () => ({
+    useStyles: () => require('../../assets/stlyes').default,
+}));
+
+jest.mock('../../hooks/useOrientation', () => ({
+    useOrientation: () => ({
+        isLandscape: false,
+        isPortrait: true,
+        landscapePadding: {},
+    }),
+}));
+
+jest.mock('../../service/DbService', () => ({
+    getSettingsService: jest.fn().mockReturnValue({
+        theme: 'dark',
+        notificationsEnabled: true,
+        wedgeChartOnboardingSeen: true,
+        distancesOnboardingSeen: true,
+        playOnboardingSeen: true,
+        homeOnboardingSeen: true,
+        practiceOnboardingSeen: true,
+    }),
+    saveSettingsService: jest.fn().mockResolvedValue(true),
+}));
+
 jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
     return {

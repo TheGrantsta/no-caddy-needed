@@ -40,7 +40,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
-        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0);
+        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0);
     `);
 
     const syncDb = SQLite.openDatabaseSync(dbName);
@@ -52,6 +52,8 @@ export const initialize = async () => {
                 'WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0',
                 'DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0',
                 'PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0',
+                'HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0',
+                'PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0',
             ],
             columnsToRemove: [],
         },
@@ -420,18 +422,18 @@ export const getSettings = () => {
     return rows.length > 0 ? rows[0] : null;
 };
 
-export const saveSettings = async (theme: string, notificationsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number): Promise<boolean> => {
+export const saveSettings = async (theme: string, notificationsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number, homeOnboardingSeen: number, practiceOnboardingSeen: number): Promise<boolean> => {
     let success = true;
     try {
         const db = SQLite.openDatabaseSync(dbName);
         db.execSync('DELETE FROM Settings');
 
         const statement = db.prepareSync(
-            'INSERT INTO Settings (Theme, NotificationsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen) VALUES ($Theme, $NotificationsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen)'
+            'INSERT INTO Settings (Theme, NotificationsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen, HomeOnboardingSeen, PracticeOnboardingSeen) VALUES ($Theme, $NotificationsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen, $HomeOnboardingSeen, $PracticeOnboardingSeen)'
         );
 
         try {
-            await statement.executeAsync({ $Theme: theme, $NotificationsEnabled: notificationsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen });
+            await statement.executeAsync({ $Theme: theme, $NotificationsEnabled: notificationsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen });
         } finally {
             await statement.finalizeAsync();
         }

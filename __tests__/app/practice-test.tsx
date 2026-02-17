@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import View from '../../app/(tabs)/practice';
-import { getAllDrillHistoryService, getDrillStatsByTypeService } from '@/service/DbService';
+import { getAllDrillHistoryService, getDrillStatsByTypeService, getSettingsService, saveSettingsService } from '@/service/DbService';
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -17,14 +17,33 @@ jest.mock('../../hooks/useStyles', () => ({
     useStyles: () => require('../../assets/stlyes').default,
 }));
 
+jest.mock('../../hooks/useOrientation', () => ({
+    useOrientation: () => ({
+        isLandscape: false,
+        isPortrait: true,
+        landscapePadding: {},
+    }),
+}));
+
 jest.mock('../../service/DbService', () => ({
     getAllDrillHistoryService: jest.fn(),
-    getDrillStatsByTypeService: jest.fn()
+    getDrillStatsByTypeService: jest.fn(),
+    getSettingsService: jest.fn().mockReturnValue({
+        theme: 'dark',
+        notificationsEnabled: true,
+        wedgeChartOnboardingSeen: true,
+        distancesOnboardingSeen: true,
+        playOnboardingSeen: true,
+        homeOnboardingSeen: true,
+        practiceOnboardingSeen: true,
+    }),
+    saveSettingsService: jest.fn().mockResolvedValue(true),
 }));
 
 // Explicitly cast as Jest mock functions
 const mockedGetAllDrillHistoryService = getAllDrillHistoryService as jest.Mock;
 const mockedGetDrillStatsByTypeService = getDrillStatsByTypeService as jest.Mock;
+const mockGetSettingsService = getSettingsService as jest.Mock;
 
 jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
@@ -38,8 +57,18 @@ jest.mock('react-native-gesture-handler', () => {
 
 describe('Practice page ', () => {
     beforeEach(() => {
+        jest.clearAllMocks();
         mockedGetAllDrillHistoryService.mockReturnValue([{ Id: 1, Name: 'Fake', Result: 1, Created_At: '' }]);
         mockedGetDrillStatsByTypeService.mockReturnValue([]);
+        mockGetSettingsService.mockReturnValue({
+            theme: 'dark',
+            notificationsEnabled: true,
+            wedgeChartOnboardingSeen: true,
+            distancesOnboardingSeen: true,
+            playOnboardingSeen: true,
+            homeOnboardingSeen: true,
+            practiceOnboardingSeen: true,
+        });
     });
 
     it('renders correctly with the default text', () => {
@@ -162,5 +191,66 @@ describe('Practice page ', () => {
         expect(getByText('Fake - 8')).toBeTruthy();
         expect(getByText('Fake - 9')).toBeTruthy();
         expect(getByText('Fake - 10')).toBeTruthy();
+    });
+
+    it('shows info button', () => {
+        const { getByTestId } = render(<View />);
+
+        expect(getByTestId('info-button')).toBeTruthy();
+    });
+
+    it('shows onboarding overlay when practiceOnboardingSeen is false', () => {
+        mockGetSettingsService.mockReturnValue({
+            theme: 'dark',
+            notificationsEnabled: true,
+            wedgeChartOnboardingSeen: true,
+            distancesOnboardingSeen: true,
+            playOnboardingSeen: true,
+            homeOnboardingSeen: true,
+            practiceOnboardingSeen: false,
+        });
+
+        const { getByTestId } = render(<View />);
+
+        expect(getByTestId('onboarding-overlay')).toBeTruthy();
+    });
+
+    it('does not show onboarding overlay when practiceOnboardingSeen is true', () => {
+        const { queryByTestId } = render(<View />);
+
+        expect(queryByTestId('onboarding-overlay')).toBeNull();
+    });
+
+    it('shows onboarding overlay when info button is pressed', () => {
+        const { getByTestId } = render(<View />);
+
+        fireEvent.press(getByTestId('info-button'));
+
+        expect(getByTestId('onboarding-overlay')).toBeTruthy();
+    });
+
+    it('dismisses onboarding and saves settings when done is pressed', async () => {
+        mockGetSettingsService.mockReturnValue({
+            theme: 'dark',
+            notificationsEnabled: true,
+            wedgeChartOnboardingSeen: true,
+            distancesOnboardingSeen: true,
+            playOnboardingSeen: true,
+            homeOnboardingSeen: true,
+            practiceOnboardingSeen: false,
+        });
+
+        const { getByTestId, queryByTestId } = render(<View />);
+
+        expect(getByTestId('onboarding-overlay')).toBeTruthy();
+
+        fireEvent.press(getByTestId('next-button'));
+        fireEvent.press(getByTestId('next-button'));
+        fireEvent.press(getByTestId('done-button'));
+
+        expect(queryByTestId('onboarding-overlay')).toBeNull();
+        expect(saveSettingsService).toHaveBeenCalledWith(
+            expect.objectContaining({ practiceOnboardingSeen: true })
+        );
     });
 });

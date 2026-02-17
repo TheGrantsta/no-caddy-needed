@@ -144,6 +144,8 @@ describe('getSettingsService', () => {
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: false,
             playOnboardingSeen: false,
+            homeOnboardingSeen: false,
+            practiceOnboardingSeen: false,
         });
     });
 
@@ -155,6 +157,8 @@ describe('getSettingsService', () => {
             WedgeChartOnboardingSeen: 0,
             DistancesOnboardingSeen: 0,
             PlayOnboardingSeen: 0,
+            HomeOnboardingSeen: 0,
+            PracticeOnboardingSeen: 0,
         });
 
         const result = getSettingsService();
@@ -165,6 +169,8 @@ describe('getSettingsService', () => {
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: false,
             playOnboardingSeen: false,
+            homeOnboardingSeen: false,
+            practiceOnboardingSeen: false,
         });
     });
 
@@ -176,6 +182,8 @@ describe('getSettingsService', () => {
             WedgeChartOnboardingSeen: 1,
             DistancesOnboardingSeen: 0,
             PlayOnboardingSeen: 0,
+            HomeOnboardingSeen: 0,
+            PracticeOnboardingSeen: 0,
         });
 
         const result = getSettingsService();
@@ -186,6 +194,8 @@ describe('getSettingsService', () => {
             wedgeChartOnboardingSeen: true,
             distancesOnboardingSeen: false,
             playOnboardingSeen: false,
+            homeOnboardingSeen: false,
+            practiceOnboardingSeen: false,
         });
     });
 
@@ -197,6 +207,8 @@ describe('getSettingsService', () => {
             WedgeChartOnboardingSeen: 0,
             DistancesOnboardingSeen: 1,
             PlayOnboardingSeen: 0,
+            HomeOnboardingSeen: 0,
+            PracticeOnboardingSeen: 0,
         });
 
         const result = getSettingsService();
@@ -207,6 +219,8 @@ describe('getSettingsService', () => {
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: true,
             playOnboardingSeen: false,
+            homeOnboardingSeen: false,
+            practiceOnboardingSeen: false,
         });
     });
 
@@ -218,6 +232,8 @@ describe('getSettingsService', () => {
             WedgeChartOnboardingSeen: 0,
             DistancesOnboardingSeen: 0,
             PlayOnboardingSeen: 1,
+            HomeOnboardingSeen: 0,
+            PracticeOnboardingSeen: 0,
         });
 
         const result = getSettingsService();
@@ -228,6 +244,8 @@ describe('getSettingsService', () => {
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: false,
             playOnboardingSeen: true,
+            homeOnboardingSeen: false,
+            practiceOnboardingSeen: false,
         });
     });
 });
@@ -246,12 +264,14 @@ describe('saveSettingsService', () => {
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: false,
             playOnboardingSeen: false,
+            homeOnboardingSeen: false,
+            practiceOnboardingSeen: false,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 0, 0, 0, 0, 0);
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
@@ -263,12 +283,14 @@ describe('saveSettingsService', () => {
             wedgeChartOnboardingSeen: true,
             distancesOnboardingSeen: false,
             playOnboardingSeen: false,
+            homeOnboardingSeen: false,
+            practiceOnboardingSeen: false,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('light', 0, 1, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith('light', 0, 1, 0, 0, 0, 0);
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
@@ -280,11 +302,13 @@ describe('saveSettingsService', () => {
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: true,
             playOnboardingSeen: false,
+            homeOnboardingSeen: false,
+            practiceOnboardingSeen: false,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 0, 1, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 0, 1, 0, 0, 0);
     });
 });

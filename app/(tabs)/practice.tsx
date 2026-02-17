@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Dimensions, FlatList, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
@@ -9,14 +9,23 @@ import { Link } from "expo-router";
 import IconButton from "@/components/IconButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import fontSizes from "@/assets/font-sizes";
-import { getAllDrillHistoryService, getDrillStatsByTypeService, DrillStats } from "@/service/DbService";
+import { getAllDrillHistoryService, getDrillStatsByTypeService, getSettingsService, saveSettingsService, DrillStats } from "@/service/DbService";
 import DrillStatsChart from "@/components/DrillStatsChart";
 import Chevrons from "@/components/Chevrons";
+import OnboardingOverlay from "@/components/OnboardingOverlay";
+
+const ONBOARDING_STEPS = [
+    { text: 'Practice with purpose — use short game drills to sharpen your putting, chipping, pitching and bunker play.' },
+    { text: 'Try the tools section for tempo training and random shot selection to keep your practice varied.' },
+    { text: 'Check your history to track drill results over time and spot areas for improvement.' },
+];
 
 export default function Practice() {
   const styles = useStyles();
   const colours = useThemeColours();
   const { landscapePadding } = useOrientation();
+  const settings = getSettingsService();
+  const [showOnboarding, setShowOnboarding] = useState(!settings.practiceOnboardingSeen);
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('short-game');
   const [loading, setLoading] = useState(true);
@@ -25,7 +34,17 @@ export default function Practice() {
   const [drillStats, setDrillStats] = useState<DrillStats[]>([]);
   const flatListRef = useRef(null);
 
-  const points = ['Honesty: be honest with yourself and identify the shots you avoid, or can’t play, and give yourself time', 'Data: use your Tiger 5 stats as a guide; focus your practice on what will make the biggest difference'];
+  const points = ['Honesty: be honest with yourself and identify the shots you avoid, or can\'t play, and give yourself time', 'Data: use your Tiger 5 stats as a guide; focus your practice on what will make the biggest difference'];
+
+  const handleDismissOnboarding = async () => {
+    setShowOnboarding(false);
+    const currentSettings = getSettingsService();
+    await saveSettingsService({ ...currentSettings, practiceOnboardingSeen: true });
+  };
+
+  const handleShowOnboarding = () => {
+    setShowOnboarding(true);
+  };
 
   const handleSubMenu = (sectionName: string) => {
     setSection(sectionName);
@@ -93,9 +112,17 @@ export default function Practice() {
 
         <View style={styles.container}>
           <View style={styles.headerContainer}>
-            <Text style={[styles.headerText, styles.marginTop]}>
-              Practice
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+              <TouchableOpacity
+                testID="info-button"
+                onPress={handleShowOnboarding}
+              >
+                <MaterialIcons name="info-outline" size={24} color={colours.yellow} />
+              </TouchableOpacity>
+              <Text style={[styles.headerText, styles.marginTop]}>
+                Practice
+              </Text>
+            </View>
             <Text style={[styles.normalText, styles.marginBottom]}>
               Make your practice time more effective
             </Text>
@@ -255,6 +282,13 @@ export default function Practice() {
           </View>
         )}
       </ScrollView>
+
+      <OnboardingOverlay
+        visible={showOnboarding}
+        onDismiss={handleDismissOnboarding}
+        title="Practice"
+        steps={ONBOARDING_STEPS}
+      />
     </GestureHandlerRootView >
   )
 };

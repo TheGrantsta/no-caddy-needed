@@ -1,7 +1,92 @@
-const config = require('./app.json');
-
-if (process.env.GOOGLE_SERVICES_JSON) {
-  config.expo.android.googleServicesFile = process.env.GOOGLE_SERVICES_JSON;
-}
+const config = {
+  expo: {
+    name: "No caddy needed",
+    slug: "no-caddy-needed",
+    version: "1.0.0",
+    orientation: "default",
+    icon: "./assets/images/icon.png",
+    scheme: "myapp",
+    userInterfaceStyle: "automatic",
+    newArchEnabled: true,
+    splash: {
+      image: "./assets/images/full-logo-transparent-square.png",
+      resizeMode: "contain",
+      backgroundColor: "#ffd33d",
+    },
+    ios: {
+      supportsTablet: true,
+      splash: {
+        image: "./assets/images/full-logo-transparent-square.png",
+        resizeMode: "contain",
+        backgroundColor: "#ffd33d",
+      },
+      bundleIdentifier: "com.grantsta.golf.nocaddyneeded",
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
+    },
+    android: {
+      googleServicesFile: process.env.GOOGLE_SERVICES_JSON || "./google-services.json",
+      splash: {
+        image: "./assets/images/full-logo-transparent-square.png",
+        resizeMode: "contain",
+        backgroundColor: "#ffd33d",
+      },
+      adaptiveIcon: {
+        foregroundImage: "./assets/images/full-logo-transparent-square.png",
+        backgroundColor: "#ffd33d",
+      },
+      package: "com.grantsta.golf.nocaddyneeded",
+    },
+    web: {
+      bundler: "metro",
+      output: "static",
+      favicon: "./assets/images/favicon.png",
+    },
+    plugins: [
+      [
+        "expo-sqlite",
+        {
+          enableFTS: true,
+          useSQLCipher: true,
+          android: {
+            enableFTS: false,
+            useSQLCipher: true,
+          },
+          ios: {
+            customBuildFlags: [
+              "-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1",
+            ],
+          },
+        },
+      ],
+      "expo-router",
+      "expo-notifications",
+      "expo-localization",
+      "@react-native-firebase/app",
+      "@react-native-firebase/crashlytics",
+      [
+        "expo-build-properties",
+        {
+          android: {
+            targetSdkVersion: 35,
+            enableProguardInReleaseBuilds: true,
+          },
+        },
+      ],
+    ],
+    experiments: {
+      typedRoutes: true,
+    },
+    extra: {
+      router: {
+        origin: false,
+      },
+      eas: {
+        projectId: "d7975635-84fc-4539-9990-1260133b1e87",
+      },
+    },
+  },
+};
 
 module.exports = config;

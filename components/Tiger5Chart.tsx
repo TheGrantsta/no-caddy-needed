@@ -15,10 +15,10 @@ type Props = {
 
 const CATEGORY_LABELS: { key: keyof Tiger5Round; label: string }[] = [
     { key: 'ThreePutts', label: '3-putts' },
-    { key: 'DoubleBogeys', label: 'Double bogeys' },
-    { key: 'BogeysPar5', label: 'Bogeys on par 5' },
     { key: 'BogeysInside9Iron', label: 'Inside 9-iron' },
     { key: 'DoubleChips', label: 'Double chips' },
+    { key: 'DoubleBogeys', label: 'Double bogeys' },
+    { key: 'BogeysPar5', label: 'Bogeys on par 5' },
 ];
 
 export default function Tiger5Chart({ rounds }: Props) {

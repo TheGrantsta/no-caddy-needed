@@ -263,7 +263,7 @@ export const getAllRoundHistoryService = (): Round[] => {
     getAllRounds().forEach((round: any) => {
         rounds.push({
             Id: round.Id,
-            CoursePar: round.CoursePar,
+
             TotalScore: round.TotalScore,
             StartTime: round.StartTime,
             EndTime: round.EndTime,

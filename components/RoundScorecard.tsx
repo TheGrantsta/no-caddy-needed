@@ -12,7 +12,6 @@ type RoundHole = {
 
 type Props = {
     totalScore: number;
-    coursePar: number;
     holes: RoundHole[];
 };
 

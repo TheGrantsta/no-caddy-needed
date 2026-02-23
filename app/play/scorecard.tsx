@@ -299,7 +299,6 @@ export default function ScorecardScreen() {
                 {scorecard && (
                     <RoundScorecard
                         totalScore={scorecard.round.TotalScore}
-                        coursePar={scorecard.round.CoursePar}
                         holes={scorecard.holes}
                     />
                 )}

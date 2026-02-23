@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import MultiplayerScorecard from '../../components/MultiplayerScorecard';
+import Scorecard from '../../components/Scorecard';
 import { Round, RoundPlayer, RoundHoleScore } from '../../service/DbService';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -46,7 +46,7 @@ const makeScores = (holes: { holeNumber: number; holePar: number; scores: number
     return result;
 };
 
-describe('MultiplayerScorecard', () => {
+describe('Scorecard', () => {
     it('shows player totals relative to par', () => {
         const holeScores = makeScores([
             { holeNumber: 1, holePar: 4, scores: [5, 3] },
@@ -54,7 +54,7 @@ describe('MultiplayerScorecard', () => {
         ]);
 
         const { getByTestId } = render(
-            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
         // You: (5-4)+(4-4) = +1
@@ -69,7 +69,7 @@ describe('MultiplayerScorecard', () => {
         ]);
 
         const { getByTestId } = render(
-            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
         expect(getByTestId('player-total-1')).toHaveTextContent('(-1)');
@@ -82,7 +82,7 @@ describe('MultiplayerScorecard', () => {
         ]);
 
         const { getByText } = render(
-            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
         expect(getByText('Front 9')).toBeTruthy();
@@ -94,7 +94,7 @@ describe('MultiplayerScorecard', () => {
         ]);
 
         const { getByText } = render(
-            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
         expect(getByText('Back 9')).toBeTruthy();
@@ -107,7 +107,7 @@ describe('MultiplayerScorecard', () => {
         ]);
 
         const { getByTestId } = render(
-            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
         expect(getByTestId('hole-number-1')).toHaveTextContent('1');
@@ -137,7 +137,7 @@ describe('MultiplayerScorecard', () => {
         ]);
 
         const { getByTestId } = render(
-            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
         expect(getByTestId('hole-number-1')).toBeTruthy();
@@ -170,7 +170,7 @@ describe('MultiplayerScorecard', () => {
         ]);
 
         const { getByTestId } = render(
-            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
         expect(getByTestId('hole-par-1')).toHaveTextContent('4');
@@ -183,7 +183,7 @@ describe('MultiplayerScorecard', () => {
         ]);
 
         const { getByTestId } = render(
-            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
         expect(getByTestId('hole-1-player-1-score')).toHaveTextContent('5');
@@ -196,7 +196,7 @@ describe('MultiplayerScorecard', () => {
         ]);
 
         const { getAllByText } = render(
-            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
         expect(getAllByText('You').length).toBeGreaterThanOrEqual(1);
@@ -205,7 +205,7 @@ describe('MultiplayerScorecard', () => {
 
     it('handles empty hole scores', () => {
         const { queryByText } = render(
-            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={[]} />
+            <Scorecard round={mockRound} players={mockPlayers} holeScores={[]} />
         );
 
         expect(queryByText('Front 9')).toBeNull();
@@ -218,7 +218,7 @@ describe('MultiplayerScorecard', () => {
         ]);
 
         const { getByTestId } = render(
-            <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+            <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
         expect(getByTestId('player-total-1')).toHaveTextContent('(E)');
@@ -232,7 +232,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('hole-number-1')).toHaveStyle({ fontSize: 18 });
@@ -244,7 +244,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('hole-par-1')).toHaveStyle({ fontSize: 18 });
@@ -258,7 +258,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('player-total-1')).toHaveTextContent('(+1)');
@@ -271,7 +271,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('round-player-1-total')).toHaveTextContent('5');
@@ -286,7 +286,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#ffd33d' });
@@ -298,7 +298,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#00C851' });
@@ -310,7 +310,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#fd0303' });
@@ -324,7 +324,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('player-total-1')).toHaveStyle({ color: '#ffd33d' });
@@ -336,7 +336,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('player-total-1')).toHaveStyle({ color: '#00C851' });
@@ -348,7 +348,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('player-total-1')).toHaveStyle({ color: '#fd0303' });
@@ -363,7 +363,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('front9-par-total')).toHaveTextContent('7');
@@ -376,7 +376,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('front9-player-1-total')).toHaveTextContent('8');
@@ -390,7 +390,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('back9-par-total')).toHaveTextContent('9');
@@ -403,7 +403,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('back9-player-1-total')).toHaveTextContent('9');
@@ -416,7 +416,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#ffd33d' });
@@ -428,7 +428,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#00C851' });
@@ -440,7 +440,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#fd0303' });
@@ -453,7 +453,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             expect(getByTestId('round-player-1-total')).toHaveTextContent('8');
@@ -467,7 +467,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
             // You: 10 strokes, par 8 -> over par -> red
@@ -485,7 +485,7 @@ describe('MultiplayerScorecard', () => {
             const onScoreSelect = jest.fn();
 
             const { getByTestId } = render(
-                <MultiplayerScorecard round={mockRound} players={mockPlayers} holeScores={holeScores} onScoreSelect={onScoreSelect} />
+                <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} onScoreSelect={onScoreSelect} />
             );
 
             fireEvent.press(getByTestId('hole-1-player-1-score'));
@@ -500,7 +500,7 @@ describe('MultiplayerScorecard', () => {
             const onScoreSelect = jest.fn();
 
             const { getByTestId } = render(
-                <MultiplayerScorecard
+                <Scorecard
                     round={mockRound}
                     players={mockPlayers}
                     holeScores={holeScores}
@@ -520,7 +520,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard
+                <Scorecard
                     round={mockRound}
                     players={mockPlayers}
                     holeScores={holeScores}
@@ -539,7 +539,7 @@ describe('MultiplayerScorecard', () => {
             ]);
 
             const { getByTestId } = render(
-                <MultiplayerScorecard
+                <Scorecard
                     round={mockRound}
                     players={mockPlayers}
                     holeScores={holeScores}

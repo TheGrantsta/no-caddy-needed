@@ -19,7 +19,7 @@ const formatScore = (score: number): string => {
     return `${score}`;
 };
 
-const MultiplayerScorecard = ({ round, players, holeScores, editable, selectedScore, onScoreSelect }: Props) => {
+const Scorecard = ({ round, players, holeScores, editable, selectedScore, onScoreSelect }: Props) => {
     const colours = useThemeColours();
 
     const localStyles = useMemo(() => StyleSheet.create({
@@ -273,4 +273,4 @@ const MultiplayerScorecard = ({ round, players, holeScores, editable, selectedSc
     );
 };
 
-export default MultiplayerScorecard;
+export default Scorecard;

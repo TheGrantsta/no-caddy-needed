@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useToast } from 'react-native-toast-notifications';
 import RoundScorecard from '../../components/RoundScorecard';
-import MultiplayerScorecard from '../../components/MultiplayerScorecard';
+import Scorecard from '../../components/Scorecard';
 import ScoreEditor from '../../components/ScoreEditor';
 import Tiger5Chart from '../../components/Tiger5Chart';
 import {
@@ -191,7 +191,7 @@ export default function ScorecardScreen() {
                 </View>
                 {multiplayerScorecard && (
                     <>
-                        <MultiplayerScorecard
+                        <Scorecard
                             round={multiplayerScorecard.round}
                             players={multiplayerScorecard.players}
                             holeScores={displayScores}

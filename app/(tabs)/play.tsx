@@ -10,7 +10,7 @@ import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import WedgeChartScreen from '../play/wedge-chart';
 import PlayerSetup from '../../components/PlayerSetup';
-import MultiplayerScorecard from '../../components/MultiplayerScorecard';
+import Scorecard from '../../components/Scorecard';
 import {
     startRoundService,
     endRoundService,
@@ -473,7 +473,7 @@ export default function Play() {
                 {scorecardData && displaySection('play-score') && (
                     <View style={styles.container}>
                         <Text style={localStyles.scorecardHeader}>Scorecard</Text>
-                        <MultiplayerScorecard
+                        <Scorecard
                             round={scorecardData.round}
                             players={scorecardData.players}
                             holeScores={scorecardData.holeScores}

@@ -1,11 +1,10 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Round, RoundPlayer, RoundHoleScore } from '../service/DbService';
+import { RoundPlayer, RoundHoleScore } from '../service/DbService';
 import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
-    round: Round;
     players: RoundPlayer[];
     holeScores: RoundHoleScore[];
     editable?: boolean;
@@ -19,7 +18,7 @@ const formatScore = (score: number): string => {
     return `${score}`;
 };
 
-const Scorecard = ({ round, players, holeScores, editable, selectedScore, onScoreSelect }: Props) => {
+const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect }: Props) => {
     const colours = useThemeColours();
 
     const localStyles = useMemo(() => StyleSheet.create({

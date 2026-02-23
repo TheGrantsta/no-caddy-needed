@@ -43,7 +43,7 @@ describe('Tiger5Tally component', () => {
             expect(queryByTestId('tiger5-end-round')).toBeNull();
         });
 
-});
+    });
 
     describe('active state (round in progress)', () => {
         it('does not show total', () => {
@@ -178,7 +178,7 @@ describe('Tiger5Tally component', () => {
             expect(getByTestId('tiger5-count-double-bogeys').props.children).toBe(3);
         });
 
-});
+    });
 
     describe('ending a round', () => {
         it('End round calls callback with correct values', () => {
@@ -186,17 +186,17 @@ describe('Tiger5Tally component', () => {
 
             fireEvent.press(getByTestId('tiger5-start-round'));
             fireEvent.press(getByTestId('tiger5-increment-three-putts'));
-            fireEvent.press(getByTestId('tiger5-increment-double-bogeys'));
-            fireEvent.press(getByTestId('tiger5-increment-double-bogeys'));
-            fireEvent.press(getByTestId('tiger5-increment-bogeys-par5'));
             fireEvent.press(getByTestId('tiger5-increment-bogeys-inside-9iron'));
             fireEvent.press(getByTestId('tiger5-increment-double-chips'));
             fireEvent.press(getByTestId('tiger5-increment-double-chips'));
             fireEvent.press(getByTestId('tiger5-increment-double-chips'));
+            fireEvent.press(getByTestId('tiger5-increment-double-bogeys'));
+            fireEvent.press(getByTestId('tiger5-increment-double-bogeys'));
+            fireEvent.press(getByTestId('tiger5-increment-bogeys-par5'));
 
             fireEvent.press(getByTestId('tiger5-end-round'));
 
-            expect(mockOnEndRound).toHaveBeenCalledWith(1, 2, 1, 1, 3);
+            expect(mockOnEndRound).toHaveBeenCalledWith(1, 1, 3, 2, 1);
         });
 
         it('End round with all zeros works', () => {
@@ -407,7 +407,7 @@ describe('Tiger5Tally component', () => {
             fireEvent.press(getByTestId('tiger5-increment-three-putts'));
             fireEvent.press(getByTestId('tiger5-increment-double-bogeys'));
 
-            expect(mockOnValuesChange).toHaveBeenLastCalledWith(1, 1, 0, 0, 0);
+            expect(mockOnValuesChange).toHaveBeenLastCalledWith(1, 0, 0, 1, 0);
         });
 
         it('increments and decrements work in roundControlled mode', () => {

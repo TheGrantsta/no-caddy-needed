@@ -14,10 +14,10 @@ type Props = {
 
 const counters = [
     { slug: 'three-putts', label: '3-putts' },
-    { slug: 'double-bogeys', label: 'Double bogeys' },
-    { slug: 'bogeys-par5', label: 'Bogeys on par 5s' },
     { slug: 'bogeys-inside-9iron', label: 'Bogeys inside 9-iron' },
     { slug: 'double-chips', label: 'Double chips' },
+    { slug: 'double-bogeys', label: 'Double bogeys' },
+    { slug: 'bogeys-par5', label: 'Bogeys on par 5s' },
 ];
 
 const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore }: Props) => {

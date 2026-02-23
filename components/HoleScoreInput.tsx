@@ -21,7 +21,7 @@ const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>
     }));
 };
 
-const MultiplayerHoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser }: Props) => {
+const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser }: Props) => {
     const colours = useThemeColours();
     const [state, setState] = useState<{ par: number; scores: Record<number, number> }>({ par: 4, scores: {} });
 
@@ -178,4 +178,4 @@ const MultiplayerHoleScoreInput = ({ holeNumber, players, onScoresChange, render
     );
 };
 
-export default MultiplayerHoleScoreInput;
+export default HoleScoreInput;

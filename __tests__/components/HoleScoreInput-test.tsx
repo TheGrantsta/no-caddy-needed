@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
-import MultiplayerHoleScoreInput from '../../components/MultiplayerHoleScoreInput';
+import HoleScoreInput from '../../components/HoleScoreInput';
 import { RoundPlayer } from '../../service/DbService';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -19,7 +19,7 @@ const mockPlayers: RoundPlayer[] = [
     { Id: 2, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 1 },
 ];
 
-describe('MultiplayerHoleScoreInput', () => {
+describe('HoleScoreInput', () => {
     const mockOnScoresChange = jest.fn();
 
     beforeEach(() => {
@@ -28,7 +28,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('shows hole number header', () => {
         const { getByText } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(getByText('Hole 1')).toBeTruthy();
@@ -36,7 +36,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('shows par selector with 3, 4, 5 options', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(getByTestId('par-3-button')).toBeTruthy();
@@ -46,7 +46,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('defaults to par 4', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(getByTestId('par-4-button')).toBeTruthy();
@@ -56,7 +56,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('shows player names', () => {
         const { getByText } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(getByText('You')).toBeTruthy();
@@ -65,7 +65,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('shows increment and decrement buttons for each player', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(getByTestId('increment-1')).toBeTruthy();
@@ -76,7 +76,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('increments player score when + is pressed', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         fireEvent.press(getByTestId('increment-1'));
@@ -86,7 +86,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('decrements player score when - is pressed', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         fireEvent.press(getByTestId('decrement-1'));
@@ -96,7 +96,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('does not decrement below 1', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         fireEvent.press(getByTestId('decrement-1'));
@@ -109,7 +109,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('does not render Next hole button', () => {
         const { queryByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(queryByTestId('next-hole-button')).toBeNull();
@@ -117,7 +117,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('calls onScoresChange when a score is incremented', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={3} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={3} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         mockOnScoresChange.mockClear();
@@ -131,7 +131,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('calls onScoresChange when a score is decremented', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         mockOnScoresChange.mockClear();
@@ -145,7 +145,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('calls onScoresChange when par changes', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         mockOnScoresChange.mockClear();
@@ -159,7 +159,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('resets scores to new par when par changes', () => {
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         fireEvent.press(getByTestId('increment-1'));
@@ -173,14 +173,14 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('resets scores when hole number changes', () => {
         const { getByTestId, rerender } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         fireEvent.press(getByTestId('increment-1'));
         expect(getByTestId('player-score-1')).toHaveTextContent('5');
 
         rerender(
-            <MultiplayerHoleScoreInput holeNumber={2} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={2} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(getByTestId('player-score-1')).toHaveTextContent('4');
@@ -192,7 +192,7 @@ describe('MultiplayerHoleScoreInput', () => {
         ];
 
         const { getByTestId } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={singlePlayer} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={singlePlayer} onScoresChange={mockOnScoresChange} />
         );
 
         mockOnScoresChange.mockClear();
@@ -205,7 +205,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('renders renderAfterUser content after user player row', () => {
         const { getByText } = render(
-            <MultiplayerHoleScoreInput
+            <HoleScoreInput
                 holeNumber={1}
                 players={mockPlayers}
                 onScoresChange={mockOnScoresChange}
@@ -218,7 +218,7 @@ describe('MultiplayerHoleScoreInput', () => {
 
     it('does not render renderAfterUser when not provided', () => {
         const { queryByText } = render(
-            <MultiplayerHoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         expect(queryByText('Tiger 5 content')).toBeNull();

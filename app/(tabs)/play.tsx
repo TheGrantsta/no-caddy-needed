@@ -3,7 +3,7 @@ import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import MultiplayerHoleScoreInput from '../../components/MultiplayerHoleScoreInput';
+import HoleScoreInput from '../../components/HoleScoreInput';
 import Tiger5Tally from '../../components/Tiger5Tally';
 import Tiger5Chart from '../../components/Tiger5Chart';
 import SubMenu from '../../components/SubMenu';
@@ -412,7 +412,7 @@ export default function Play() {
                 {isRoundActive && !scorecardData && displaySection('play-score') && (
                     <View style={styles.container}>
                         <View>
-                            <MultiplayerHoleScoreInput
+                            <HoleScoreInput
                                 holeNumber={currentHole}
                                 players={players}
                                 onScoresChange={handleScoresChange}

@@ -59,10 +59,10 @@ export const initialize = async () => {
         },
         {
             table: 'Rounds',
-            columnsToAdd: [
-                'CoursePar INTEGER NOT NULL DEFAULT 0',
+            columnsToAdd: [],
+            columnsToRemove: [
+                'CoursePar'
             ],
-            columnsToRemove: [],
         },
     ];
 

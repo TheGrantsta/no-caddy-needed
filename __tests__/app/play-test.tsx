@@ -806,7 +806,7 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
-                expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(0, 0, 0, 0, 0, 1, 1);
+                expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(1, 1, 0, 0, 0, 0, 0);
             });
         });
 

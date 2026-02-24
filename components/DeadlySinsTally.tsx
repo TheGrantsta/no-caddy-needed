@@ -13,13 +13,13 @@ type Props = {
 };
 
 const counters = [
+    { slug: 'trouble-off-tee', label: 'Trouble off tee' },
+    { slug: 'penalties', label: 'Penalties' },
     { slug: 'three-putts', label: '3-putts' },
     { slug: 'bogeys-inside-9iron', label: 'Bogeys inside 9-iron' },
     { slug: 'double-chips', label: 'Double chips' },
     { slug: 'double-bogeys', label: 'Double bogeys' },
     { slug: 'bogeys-par5', label: 'Bogeys on par 5s' },
-    { slug: 'trouble-off-tee', label: 'Trouble off tee' },
-    { slug: 'penalties', label: 'Penalties' },
 ];
 
 const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore }: Props) => {

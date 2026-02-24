@@ -225,7 +225,7 @@ describe('DeadlySinsTally component', () => {
 
             fireEvent.press(getByTestId('tiger5-end-round'));
 
-            expect(mockOnEndRound).toHaveBeenCalledWith(1, 1, 3, 2, 1, 1, 2);
+            expect(mockOnEndRound).toHaveBeenCalledWith(1, 2, 1, 1, 3, 2, 1);
         });
 
         it('End round with all zeros works', () => {
@@ -433,7 +433,7 @@ describe('DeadlySinsTally component', () => {
 
             fireEvent.press(getByTestId('tiger5-increment-three-putts'));
 
-            expect(mockOnValuesChange).toHaveBeenCalledWith(1, 0, 0, 0, 0, 0, 0);
+            expect(mockOnValuesChange).toHaveBeenCalledWith(0, 0, 1, 0, 0, 0, 0);
         });
 
         it('calls onValuesChange with all updated values', () => {
@@ -444,7 +444,7 @@ describe('DeadlySinsTally component', () => {
             fireEvent.press(getByTestId('tiger5-increment-three-putts'));
             fireEvent.press(getByTestId('tiger5-increment-double-bogeys'));
 
-            expect(mockOnValuesChange).toHaveBeenLastCalledWith(1, 0, 0, 1, 0, 0, 0);
+            expect(mockOnValuesChange).toHaveBeenLastCalledWith(0, 0, 1, 0, 0, 1, 0);
         });
 
         it('increments and decrements work in roundControlled mode', () => {
@@ -466,7 +466,7 @@ describe('DeadlySinsTally component', () => {
 
             fireEvent.press(getByTestId('tiger5-increment-trouble-off-tee'));
 
-            expect(mockOnValuesChange).toHaveBeenCalledWith(0, 0, 0, 0, 0, 1, 0);
+            expect(mockOnValuesChange).toHaveBeenCalledWith(1, 0, 0, 0, 0, 0, 0);
         });
 
         it('calls onValuesChange with penalties updated', () => {
@@ -476,7 +476,7 @@ describe('DeadlySinsTally component', () => {
 
             fireEvent.press(getByTestId('tiger5-increment-penalties'));
 
-            expect(mockOnValuesChange).toHaveBeenCalledWith(0, 0, 0, 0, 0, 0, 1);
+            expect(mockOnValuesChange).toHaveBeenCalledWith(0, 1, 0, 0, 0, 0, 0);
         });
     });
 });

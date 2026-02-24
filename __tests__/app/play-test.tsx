@@ -8,8 +8,8 @@ import {
     addMultiplayerHoleScoresService,
     getActiveRoundService,
     getAllRoundHistoryService,
-    insertTiger5RoundService,
-    getAllTiger5RoundsService,
+    insertDeadlySinsRoundService,
+    getAllDeadlySinsRoundsService,
     getClubDistancesService,
     addRoundPlayersService,
     getRoundPlayersService,
@@ -40,8 +40,8 @@ jest.mock('../../service/DbService', () => ({
     addMultiplayerHoleScoresService: jest.fn(),
     getActiveRoundService: jest.fn(),
     getAllRoundHistoryService: jest.fn(),
-    insertTiger5RoundService: jest.fn(),
-    getAllTiger5RoundsService: jest.fn(),
+    insertDeadlySinsRoundService: jest.fn(),
+    getAllDeadlySinsRoundsService: jest.fn(),
     getClubDistancesService: jest.fn(),
     getWedgeChartService: jest.fn().mockReturnValue({ distanceNames: [], clubs: [] }),
     saveWedgeChartService: jest.fn(),
@@ -107,8 +107,8 @@ const mockEndRound = endRoundService as jest.Mock;
 const mockAddMultiplayerHoleScores = addMultiplayerHoleScoresService as jest.Mock;
 const mockGetActiveRound = getActiveRoundService as jest.Mock;
 const mockGetAllRoundHistory = getAllRoundHistoryService as jest.Mock;
-const mockInsertTiger5Round = insertTiger5RoundService as jest.Mock;
-const mockGetAllTiger5Rounds = getAllTiger5RoundsService as jest.Mock;
+const mockInsertDeadlySinsRound = insertDeadlySinsRoundService as jest.Mock;
+const mockGetAllDeadlySinsRounds = getAllDeadlySinsRoundsService as jest.Mock;
 const mockGetClubDistances = getClubDistancesService as jest.Mock;
 const mockScheduleReminder = scheduleRoundReminder as jest.Mock;
 const mockCancelReminder = cancelRoundReminder as jest.Mock;
@@ -124,7 +124,7 @@ describe('Play screen', () => {
         jest.clearAllMocks();
         mockGetActiveRound.mockReturnValue(null);
         mockGetAllRoundHistory.mockReturnValue([]);
-        mockGetAllTiger5Rounds.mockReturnValue([]);
+        mockGetAllDeadlySinsRounds.mockReturnValue([]);
         mockGetClubDistances.mockReturnValue([]);
         mockGetRoundPlayers.mockReturnValue([]);
         mockGetMultiplayerScorecard.mockReturnValue(null);
@@ -706,6 +706,8 @@ describe('Play screen', () => {
             expect(getByText('3-putts')).toBeTruthy();
             expect(getByText('Bogeys inside 9-iron')).toBeTruthy();
             expect(getByText('Double chips')).toBeTruthy();
+            expect(getByText('Trouble off tee')).toBeTruthy();
+            expect(getByText('Penalties')).toBeTruthy();
             expect(queryByText('Double bogeys')).toBeNull();
             expect(queryByText('Bogeys on par 5s')).toBeNull();
         });
@@ -728,12 +730,12 @@ describe('Play screen', () => {
             expect(queryByTestId('toggle-tiger5')).toBeNull();
         });
 
-        it('saves Tiger 5 when round ends above par', async () => {
+        it('saves Deadly Sins when round ends above par', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
             mockEndRound.mockResolvedValue(true);
-            mockInsertTiger5Round.mockResolvedValue(true);
+            mockInsertDeadlySinsRound.mockResolvedValue(true);
             mockGetAllRoundHistory.mockReturnValue([]);
 
             const { getByTestId } = render(<Play />);
@@ -762,11 +764,53 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
-                expect(mockInsertTiger5Round).toHaveBeenCalled();
+                expect(mockInsertDeadlySinsRound).toHaveBeenCalled();
             });
         });
 
-        it('does not save Tiger 5 when round is at or under par', async () => {
+        it('saves troubleOffTee and penalties values when round ends above par', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+            mockEndRound.mockResolvedValue(true);
+            mockInsertDeadlySinsRound.mockResolvedValue(true);
+            mockGetAllRoundHistory.mockReturnValue([]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('next-hole-button')).toBeTruthy();
+            });
+
+            // Increment trouble-off-tee and penalties
+            fireEvent.press(getByTestId('tiger5-increment-trouble-off-tee'));
+            fireEvent.press(getByTestId('tiger5-increment-penalties'));
+
+            // Increment score to be above par, then submit
+            fireEvent.press(getByTestId('increment-1'));
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            await waitFor(() => {
+                expect(getByTestId('end-round-button')).toBeTruthy();
+            });
+
+            fireEvent.press(getByTestId('end-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('confirm-end-round-button'));
+            });
+
+            await waitFor(() => {
+                expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(0, 0, 0, 0, 0, 1, 1);
+            });
+        });
+
+        it('does not save Deadly Sins when round is at or under par', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockEndRound.mockResolvedValue(true);
@@ -788,7 +832,7 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
-                expect(mockInsertTiger5Round).not.toHaveBeenCalled();
+                expect(mockInsertDeadlySinsRound).not.toHaveBeenCalled();
             });
         });
     });
@@ -898,8 +942,8 @@ describe('Play screen', () => {
             mockGetAllRoundHistory.mockReturnValue([
                 { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
-            mockGetAllTiger5Rounds.mockReturnValue([
-                { Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 1, Total: 5, Created_At: '15/06' },
+            mockGetAllDeadlySinsRounds.mockReturnValue([
+                { Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 1, TroubleOffTee: 0, Penalties: 0, Total: 5, Created_At: '15/06' },
             ]);
 
             const { getByText } = render(<Play />);
@@ -911,7 +955,7 @@ describe('Play screen', () => {
             mockGetAllRoundHistory.mockReturnValue([
                 { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
-            mockGetAllTiger5Rounds.mockReturnValue([]);
+            mockGetAllDeadlySinsRounds.mockReturnValue([]);
 
             const { getByText } = render(<Play />);
 
@@ -1204,28 +1248,28 @@ describe('Play screen', () => {
 
     describe('Tiger 5 chart', () => {
         const mockTiger5Data = [
-            { Id: 1, ThreePutts: 3, DoubleBogeys: 1, BogeysPar5: 2, BogeysInside9Iron: 4, DoubleChips: 0, Total: 10, Created_At: '15/06' },
-            { Id: 2, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 2, Total: 9, Created_At: '16/06' },
+            { Id: 1, ThreePutts: 3, DoubleBogeys: 1, BogeysPar5: 2, BogeysInside9Iron: 4, DoubleChips: 0, TroubleOffTee: 1, Penalties: 2, Total: 13, Created_At: '15/06' },
+            { Id: 2, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 2, TroubleOffTee: 3, Penalties: 1, Total: 13, Created_At: '16/06' },
         ];
 
         it('does not render chart when no Tiger 5 data', () => {
-            mockGetAllTiger5Rounds.mockReturnValue([]);
+            mockGetAllDeadlySinsRounds.mockReturnValue([]);
 
             const { queryByText } = render(<Play />);
 
-            expect(queryByText('Tiger 5')).toBeNull();
+            expect(queryByText('7 Deadly Sins')).toBeNull();
         });
 
         it('renders chart in idle state when data exists', () => {
-            mockGetAllTiger5Rounds.mockReturnValue(mockTiger5Data);
+            mockGetAllDeadlySinsRounds.mockReturnValue(mockTiger5Data);
 
             const { getByText } = render(<Play />);
 
-            expect(getByText('Tiger 5')).toBeTruthy();
+            expect(getByText('7 Deadly Sins')).toBeTruthy();
         });
 
         it('does not render chart during active round', async () => {
-            mockGetAllTiger5Rounds.mockReturnValue(mockTiger5Data);
+            mockGetAllDeadlySinsRounds.mockReturnValue(mockTiger5Data);
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
@@ -1239,11 +1283,11 @@ describe('Play screen', () => {
                 expect(getByTestId('end-round-button')).toBeTruthy();
             });
 
-            expect(queryByText('Tiger 5')).toBeNull();
+            expect(queryByText('7 Deadly Sins')).toBeNull();
         });
 
         it('refreshes chart after ending a round', async () => {
-            mockGetAllTiger5Rounds.mockReturnValue([]);
+            mockGetAllDeadlySinsRounds.mockReturnValue([]);
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockEndRound.mockResolvedValue(true);
@@ -1268,8 +1312,8 @@ describe('Play screen', () => {
                 expect(getByTestId('start-round-button')).toBeTruthy();
             });
 
-            // getAllTiger5RoundsService called on mount + after ending round
-            expect(mockGetAllTiger5Rounds).toHaveBeenCalledTimes(2);
+            // getAllDeadlySinsRoundsService called on mount + after ending round
+            expect(mockGetAllDeadlySinsRounds).toHaveBeenCalledTimes(2);
         });
     });
 

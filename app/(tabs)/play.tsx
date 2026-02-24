@@ -4,8 +4,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import HoleScoreInput from '../../components/HoleScoreInput';
-import Tiger5Tally from '../../components/Tiger5Tally';
-import Tiger5Chart from '../../components/Tiger5Chart';
+import DeadlySinsTally from '../../components/DeadlySinsTally';
+import DeadlySinsChart from '../../components/DeadlySinsChart';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import WedgeChartScreen from '../play/wedge-chart';
@@ -17,8 +17,8 @@ import {
     addMultiplayerHoleScoresService,
     getActiveRoundService,
     getAllRoundHistoryService,
-    insertTiger5RoundService,
-    getAllTiger5RoundsService,
+    insertDeadlySinsRoundService,
+    getAllDeadlySinsRoundsService,
     addRoundPlayersService,
     getRoundPlayersService,
     getMultiplayerScorecardService,
@@ -27,7 +27,7 @@ import {
     saveSettingsService,
     Round,
     RoundPlayer,
-    Tiger5Round,
+    DeadlySinsRound,
     MultiplayerRoundScorecard,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
@@ -42,7 +42,7 @@ import DistancesScreen from '../play/distances';
 const ONBOARDING_STEPS = [
     { text: 'Start a round to track your scores hole by hole and see your running total.' },
     { text: 'Add playing partners, set the par for each hole, and record everyone\'s scores.' },
-    { text: 'After your round, review your scorecard and track your Tiger 5 stats over time.' },
+    { text: 'After your round, review your scorecard and track your 7 Deadly Sins stats over time.' },
 ];
 
 const formatScore = (score: number): string => {
@@ -60,9 +60,9 @@ export default function Play() {
     const [currentHole, setCurrentHole] = useState(1);
     const [runningTotal, setRunningTotal] = useState(0);
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
-    const [tiger5Rounds, setTiger5Rounds] = useState<Tiger5Round[]>([]);
+    const [tiger5Rounds, setTiger5Rounds] = useState<DeadlySinsRound[]>([]);
     const [section, setSection] = useState('play-score');
-    const [tiger5Values, setTiger5Values] = useState({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
+    const [tiger5Values, setTiger5Values] = useState({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0, troubleOffTee: 0, penalties: 0 });
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
@@ -154,7 +154,7 @@ export default function Play() {
         }
         const history = getAllRoundHistoryService();
         setRoundHistory(history);
-        setTiger5Rounds(getAllTiger5RoundsService());
+        setTiger5Rounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
 
         const currentSettings = getSettingsService();
@@ -168,7 +168,7 @@ export default function Play() {
         setRefreshing(true);
         setTimeout(() => {
             setRoundHistory(getAllRoundHistoryService());
-            setTiger5Rounds(getAllTiger5RoundsService());
+            setTiger5Rounds(getAllDeadlySinsRoundsService());
             setRefreshing(false);
         }, 750);
     };
@@ -253,8 +253,8 @@ export default function Play() {
         return section === sectionName;
     };
 
-    const handleTiger5ValuesChange = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => {
-        setTiger5Values({ threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips });
+    const handleTiger5ValuesChange = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => {
+        setTiger5Values({ threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties });
     };
 
     const handleEndRoundPress = () => {
@@ -270,14 +270,14 @@ export default function Play() {
         setCurrentHole(1);
         setRunningTotal(0);
         setSection('play-score');
-        setTiger5Values({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0 });
+        setTiger5Values({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0, troubleOffTee: 0, penalties: 0 });
         setPlayers([]);
         setShowPlayerSetup(false);
         setCurrentHoleData(null);
         setShowEndRoundConfirm(false);
         setScorecardData(null);
         setRoundHistory(getAllRoundHistoryService());
-        setTiger5Rounds(getAllTiger5RoundsService());
+        setTiger5Rounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
     };
 
@@ -290,12 +290,14 @@ export default function Play() {
         const success = await endRoundService(activeRoundId);
 
         if (runningTotal > 0) {
-            await insertTiger5RoundService(
+            await insertDeadlySinsRoundService(
                 tiger5Values.threePutts,
                 tiger5Values.doubleBogeys,
                 tiger5Values.bogeysPar5,
                 tiger5Values.bogeysInside9Iron,
                 tiger5Values.doubleChips,
+                tiger5Values.troubleOffTee,
+                tiger5Values.penalties,
             );
         }
 
@@ -360,7 +362,7 @@ export default function Play() {
                             </TouchableOpacity>
                         </View>
 
-                        <Tiger5Chart rounds={tiger5Rounds} />
+                        <DeadlySinsChart rounds={tiger5Rounds} />
 
                         {roundHistory.length === 0 && (
                             <View style={styles.headerContainer}>
@@ -417,7 +419,7 @@ export default function Play() {
                                 players={players}
                                 onScoresChange={handleScoresChange}
                                 renderAfterUser={
-                                    <Tiger5Tally
+                                    <DeadlySinsTally
                                         onEndRound={() => { }}
                                         roundControlled={true}
                                         onValuesChange={handleTiger5ValuesChange}

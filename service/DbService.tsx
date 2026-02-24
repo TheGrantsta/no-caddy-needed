@@ -5,8 +5,8 @@ import {
     insertWedgeChart,
     insertDrillResult,
     getAllDrillHistory,
-    insertTiger5Round,
-    getAllTiger5Rounds,
+    insertDeadlySinsRound,
+    getAllDeadlySinsRounds,
     insertRound,
     updateRound,
     insertRoundHole,
@@ -131,26 +131,28 @@ export const getDrillStatsByTypeService = (): DrillStats[] => {
     return stats.sort((a, b) => b.total - a.total);
 }
 
-export type Tiger5Round = {
+export type DeadlySinsRound = {
     Id: number;
     ThreePutts: number;
     DoubleBogeys: number;
     BogeysPar5: number;
     BogeysInside9Iron: number;
     DoubleChips: number;
+    TroubleOffTee: number;
+    Penalties: number;
     Total: number;
     Created_At: string;
 };
 
-export const insertTiger5RoundService = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => {
-    const total = threePutts + doubleBogeys + bogeysPar5 + bogeysInside9Iron + doubleChips;
-    return insertTiger5Round(threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, total);
+export const insertDeadlySinsRoundService = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => {
+    const total = threePutts + doubleBogeys + bogeysPar5 + bogeysInside9Iron + doubleChips + troubleOffTee + penalties;
+    return insertDeadlySinsRound(threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties, total);
 };
 
-export const getAllTiger5RoundsService = (): Tiger5Round[] => {
-    const rounds: Tiger5Round[] = [];
+export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {
+    const rounds: DeadlySinsRound[] = [];
 
-    getAllTiger5Rounds().forEach((round: any) => {
+    getAllDeadlySinsRounds().forEach((round: any) => {
         rounds.push({
             Id: round.Id,
             ThreePutts: round.ThreePutts,
@@ -158,13 +160,16 @@ export const getAllTiger5RoundsService = (): Tiger5Round[] => {
             BogeysPar5: round.BogeysPar5,
             BogeysInside9Iron: round.BogeysInside9Iron,
             DoubleChips: round.DoubleChips,
+            TroubleOffTee: round.TroubleOffTee,
+            Penalties: round.Penalties,
             Total: round.Total,
             Created_At: getTwoDigitDayAndMonth(round.Created_At),
         });
     });
 
     return rounds;
-}
+};
+
 
 // Round types
 export type Round = {
@@ -340,21 +345,23 @@ export const saveClubDistancesService = async (distances: { Club: string; CarryD
     return insertClubDistances(distances);
 };
 
-export const getTiger5ForRoundService = (roundCreatedAt: string): Tiger5Round | null => {
+export const getDeadlySinsForRoundService = (roundCreatedAt: string): DeadlySinsRound | null => {
     const roundDate = getTwoDigitDayAndMonth(roundCreatedAt);
-    const tiger5Rounds = getAllTiger5Rounds();
+    const rounds = getAllDeadlySinsRounds();
 
-    for (const t5 of tiger5Rounds) {
-        if (getTwoDigitDayAndMonth(t5.Created_At) === roundDate) {
+    for (const r of rounds) {
+        if (getTwoDigitDayAndMonth(r.Created_At) === roundDate) {
             return {
-                Id: t5.Id,
-                ThreePutts: t5.ThreePutts,
-                DoubleBogeys: t5.DoubleBogeys,
-                BogeysPar5: t5.BogeysPar5,
-                BogeysInside9Iron: t5.BogeysInside9Iron,
-                DoubleChips: t5.DoubleChips,
-                Total: t5.Total,
-                Created_At: getTwoDigitDayAndMonth(t5.Created_At),
+                Id: r.Id,
+                ThreePutts: r.ThreePutts,
+                DoubleBogeys: r.DoubleBogeys,
+                BogeysPar5: r.BogeysPar5,
+                BogeysInside9Iron: r.BogeysInside9Iron,
+                DoubleChips: r.DoubleChips,
+                TroubleOffTee: r.TroubleOffTee,
+                Penalties: r.Penalties,
+                Total: r.Total,
+                Created_At: getTwoDigitDayAndMonth(r.Created_At),
             };
         }
     }

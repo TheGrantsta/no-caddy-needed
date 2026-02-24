@@ -6,17 +6,17 @@ import { useToast } from 'react-native-toast-notifications';
 import RoundScorecard from '../../components/RoundScorecard';
 import Scorecard from '../../components/Scorecard';
 import ScoreEditor from '../../components/ScoreEditor';
-import Tiger5Chart from '../../components/Tiger5Chart';
+import DeadlySinsChart from '../../components/DeadlySinsChart';
 import {
     getRoundScorecardService,
     getMultiplayerScorecardService,
     updateScorecardService,
-    getTiger5ForRoundService,
+    getDeadlySinsForRoundService,
     deleteRoundService,
     RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
-    Tiger5Round,
+    DeadlySinsRound,
 } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
@@ -39,7 +39,7 @@ export default function ScorecardScreen() {
     const [editedScores, setEditedScores] = useState<RoundHoleScore[]>([]);
     const [selectedScore, setSelectedScore] = useState<{ holeNumber: number; playerId: number } | null>(null);
     const [showSaveConfirm, setShowSaveConfirm] = useState(false);
-    const [tiger5Round, setTiger5Round] = useState<Tiger5Round | null>(null);
+    const [tiger5Round, setTiger5Round] = useState<DeadlySinsRound | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     useEffect(() => {
@@ -53,7 +53,7 @@ export default function ScorecardScreen() {
         setScorecard(sc);
         const round = mp?.round || sc?.round;
         if (round) {
-            setTiger5Round(getTiger5ForRoundService(round.Created_At));
+            setTiger5Round(getDeadlySinsForRoundService(round.Created_At));
         }
     };
 
@@ -235,7 +235,7 @@ export default function ScorecardScreen() {
                         )}
 
                         {!isEditing && !showDeleteConfirm && tiger5Round && (
-                            <Tiger5Chart rounds={[tiger5Round]} />
+                            <DeadlySinsChart rounds={[tiger5Round]} />
                         )}
 
                         {!isEditing && showDeleteConfirm && (

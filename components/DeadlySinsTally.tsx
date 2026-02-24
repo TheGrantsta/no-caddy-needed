@@ -4,10 +4,10 @@ import { useThemeColours } from '../context/ThemeContext';
 import fontSizes from '../assets/font-sizes';
 
 type Props = {
-    onEndRound: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => void;
+    onEndRound: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => void;
     onRoundStateChange?: (active: boolean) => void;
     roundControlled?: boolean;
-    onValuesChange?: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number) => void;
+    onValuesChange?: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => void;
     holePar?: number;
     userScore?: number;
 };
@@ -18,9 +18,11 @@ const counters = [
     { slug: 'double-chips', label: 'Double chips' },
     { slug: 'double-bogeys', label: 'Double bogeys' },
     { slug: 'bogeys-par5', label: 'Bogeys on par 5s' },
+    { slug: 'trouble-off-tee', label: 'Trouble off tee' },
+    { slug: 'penalties', label: 'Penalties' },
 ];
 
-const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore }: Props) => {
+const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore }: Props) => {
     const colours = useThemeColours();
     const [roundActive, setRoundActive] = useState(roundControlled === true);
     const [threePutts, setThreePutts] = useState(0);
@@ -28,9 +30,11 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
     const [bogeysPar5, setBogeysPar5] = useState(0);
     const [bogeysInside9Iron, setBogeysInside9Iron] = useState(0);
     const [doubleChips, setDoubleChips] = useState(0);
+    const [troubleOffTee, setTroubleOffTee] = useState(0);
+    const [penalties, setPenalties] = useState(0);
 
-    const values = [threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips];
-    const setters = [setThreePutts, setDoubleBogeys, setBogeysPar5, setBogeysInside9Iron, setDoubleChips];
+    const values = [threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties];
+    const setters = [setThreePutts, setDoubleBogeys, setBogeysPar5, setBogeysInside9Iron, setDoubleChips, setTroubleOffTee, setPenalties];
 
     const localStyles = useMemo(() => StyleSheet.create({
         container: {
@@ -92,7 +96,7 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
         if (onValuesChange) {
             const newValues = [...values];
             newValues[index] = newValue;
-            onValuesChange(newValues[0], newValues[1], newValues[2], newValues[3], newValues[4]);
+            onValuesChange(newValues[0], newValues[1], newValues[2], newValues[3], newValues[4], newValues[5], newValues[6]);
         }
     };
 
@@ -102,7 +106,7 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
         if (onValuesChange) {
             const newValues = [...values];
             newValues[index] = newValue;
-            onValuesChange(newValues[0], newValues[1], newValues[2], newValues[3], newValues[4]);
+            onValuesChange(newValues[0], newValues[1], newValues[2], newValues[3], newValues[4], newValues[5], newValues[6]);
         }
     };
 
@@ -112,12 +116,14 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
     };
 
     const handleEndRound = () => {
-        onEndRound(threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips);
+        onEndRound(threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties);
         setThreePutts(0);
         setDoubleBogeys(0);
         setBogeysPar5(0);
         setBogeysInside9Iron(0);
         setDoubleChips(0);
+        setTroubleOffTee(0);
+        setPenalties(0);
         setRoundActive(false);
         onRoundStateChange?.(false);
     };
@@ -172,4 +178,4 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
     );
 };
 
-export default Tiger5Tally;
+export default DeadlySinsTally;

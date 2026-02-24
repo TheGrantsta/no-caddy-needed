@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
-import { Tiger5Round } from '@/service/DbService';
+import { DeadlySinsRound } from '@/service/DbService';
 
 type CategoryTotal = {
     label: string;
@@ -10,18 +10,20 @@ type CategoryTotal = {
 };
 
 type Props = {
-    rounds: Tiger5Round[];
+    rounds: DeadlySinsRound[];
 };
 
-const CATEGORY_LABELS: { key: keyof Tiger5Round; label: string }[] = [
+const CATEGORY_LABELS: { key: keyof DeadlySinsRound; label: string }[] = [
     { key: 'ThreePutts', label: '3-putts' },
     { key: 'BogeysInside9Iron', label: 'Inside 9-iron' },
     { key: 'DoubleChips', label: 'Double chips' },
     { key: 'DoubleBogeys', label: 'Double bogeys' },
     { key: 'BogeysPar5', label: 'Bogeys on par 5' },
+    { key: 'TroubleOffTee', label: 'Trouble off tee' },
+    { key: 'Penalties', label: 'Penalties' },
 ];
 
-export default function Tiger5Chart({ rounds }: Props) {
+export default function DeadlySinsChart({ rounds }: Props) {
     const colours = useThemeColours();
 
     const localStyles = useMemo(() => StyleSheet.create({
@@ -113,7 +115,7 @@ export default function Tiger5Chart({ rounds }: Props) {
 
     const getBarColor = (index: number) => {
         if (index === 0) return colours.errorText;
-        if (index === 4) return colours.green;
+        if (index === 6) return colours.green;
         return colours.yellow;
     };
 
@@ -124,7 +126,7 @@ export default function Tiger5Chart({ rounds }: Props) {
 
     return (
         <View style={localStyles.container}>
-            <Text style={localStyles.title}>Tiger 5</Text>
+            <Text style={localStyles.title}>7 Deadly Sins</Text>
 
             {categories.map((category, index) => (
                 <View key={index} style={localStyles.barContainer}>

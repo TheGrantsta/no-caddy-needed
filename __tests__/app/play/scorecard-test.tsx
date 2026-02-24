@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, getTiger5ForRoundService, deleteRoundService } from '../../../service/DbService';
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, getDeadlySinsForRoundService, deleteRoundService } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -24,7 +24,7 @@ jest.mock('../../../service/DbService', () => ({
     getRoundScorecardService: jest.fn(),
     getMultiplayerScorecardService: jest.fn(),
     updateScorecardService: jest.fn(),
-    getTiger5ForRoundService: jest.fn(),
+    getDeadlySinsForRoundService: jest.fn(),
     deleteRoundService: jest.fn(),
 }));
 
@@ -54,7 +54,7 @@ jest.mock('react-native-toast-notifications', () => ({
 const mockGetRoundScorecard = getRoundScorecardService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
 const mockUpdateScorecard = updateScorecardService as jest.Mock;
-const mockGetTiger5ForRound = getTiger5ForRoundService as jest.Mock;
+const mockGetDeadlySinsForRound = getDeadlySinsForRoundService as jest.Mock;
 const mockDeleteRound = deleteRoundService as jest.Mock;
 
 const multiplayerData = {
@@ -365,35 +365,35 @@ describe('Scorecard screen', () => {
     describe('Tiger 5 chart', () => {
         it('shows tiger 5 chart when tiger 5 data exists for the round', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-            mockGetTiger5ForRound.mockReturnValue({
-                Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 0, Total: 4, Created_At: '15/06',
+            mockGetDeadlySinsForRound.mockReturnValue({
+                Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 4, Created_At: '15/06',
             });
 
             const { getByText } = render(<ScorecardScreen />);
 
-            expect(getByText('Tiger 5')).toBeTruthy();
+            expect(getByText('7 Deadly Sins')).toBeTruthy();
         });
 
         it('does not show tiger 5 chart when no tiger 5 data for the round', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-            mockGetTiger5ForRound.mockReturnValue(null);
+            mockGetDeadlySinsForRound.mockReturnValue(null);
 
             const { queryByText } = render(<ScorecardScreen />);
 
-            expect(queryByText('Tiger 5')).toBeNull();
+            expect(queryByText('7 Deadly Sins')).toBeNull();
         });
 
         it('does not show tiger 5 chart in edit mode', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-            mockGetTiger5ForRound.mockReturnValue({
-                Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 0, Total: 4, Created_At: '15/06',
+            mockGetDeadlySinsForRound.mockReturnValue({
+                Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 4, Created_At: '15/06',
             });
 
             const { getByTestId, queryByText } = render(<ScorecardScreen />);
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
 
-            expect(queryByText('Tiger 5')).toBeNull();
+            expect(queryByText('7 Deadly Sins')).toBeNull();
         });
     });
 

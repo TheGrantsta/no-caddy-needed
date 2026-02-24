@@ -9,8 +9,9 @@ Things to do
 - [X] Change the order of the Tiger 5 chart to match the input screen
 - [X] Only show Tiger 5 Tally double bogey when score is par + 2 - and not onload
 - [X] Amend size of the 7 Deadly Sins tally
-- [ ] Don't show 7DS chart on edit scorecard screen
-- [ ] Enable option to run screenshots without onboarding screens
+- [X] Don't show 7DS chart on edit scorecard screen
+- [X] Enable option to run screenshots without onboarding screens
+- [ ] Fix issue where 7DS does not show the correct answer
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project
 - [ ] Add test coverage tool and include in pre-hook push

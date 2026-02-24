@@ -39,7 +39,7 @@ export default function ScorecardScreen() {
     const [editedScores, setEditedScores] = useState<RoundHoleScore[]>([]);
     const [selectedScore, setSelectedScore] = useState<{ holeNumber: number; playerId: number } | null>(null);
     const [showSaveConfirm, setShowSaveConfirm] = useState(false);
-    const [tiger5Round, setTiger5Round] = useState<DeadlySinsRound | null>(null);
+    const [deadlySinsRound, setDeadlySinsRound] = useState<DeadlySinsRound | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     useEffect(() => {
@@ -53,7 +53,7 @@ export default function ScorecardScreen() {
         setScorecard(sc);
         const round = mp?.round || sc?.round;
         if (round) {
-            setTiger5Round(getDeadlySinsForRoundService(round.Created_At));
+            setDeadlySinsRound(getDeadlySinsForRoundService(round.Created_At));
         }
     };
 
@@ -192,7 +192,6 @@ export default function ScorecardScreen() {
                 {multiplayerScorecard && (
                     <>
                         <Scorecard
-                            round={multiplayerScorecard.round}
                             players={multiplayerScorecard.players}
                             holeScores={displayScores}
                             editable={isEditing}
@@ -232,10 +231,6 @@ export default function ScorecardScreen() {
                                     <Text style={styles.buttonText}>Delete round</Text>
                                 </TouchableOpacity>
                             </View>
-                        )}
-
-                        {!isEditing && !showDeleteConfirm && tiger5Round && (
-                            <DeadlySinsChart rounds={[tiger5Round]} />
                         )}
 
                         {!isEditing && showDeleteConfirm && (

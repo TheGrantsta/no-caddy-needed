@@ -363,15 +363,15 @@ describe('Scorecard screen', () => {
     });
 
     describe('7 Deadly Sins chart', () => {
-        it('shows 7 Deadly Sins chart when 7 Deadly Sins data exists for the round', () => {
+        it('does not show 7 Deadly Sins chart when scorecard is displayed', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
             mockGetDeadlySinsForRound.mockReturnValue({
                 Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 4, Created_At: '15/06',
             });
 
-            const { getByText } = render(<ScorecardScreen />);
+            const { queryByText } = render(<ScorecardScreen />);
 
-            expect(getByText('7 Deadly Sins')).toBeTruthy();
+            expect(queryByText('7 Deadly Sins')).toBeNull();
         });
 
         it('does not show 7 Deadly Sins chart when no 7 Deadly Sins data for the round', () => {

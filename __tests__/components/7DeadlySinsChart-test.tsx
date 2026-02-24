@@ -20,11 +20,6 @@ describe('DeadlySinsChart component', () => {
         { Id: 2, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 2, TroubleOffTee: 3, Penalties: 1, Total: 13, Created_At: '16/06' },
     ];
 
-    // CATEGORY_LABELS order: ThreePutts, BogeysInside9Iron, DoubleChips, DoubleBogeys, BogeysPar5, TroubleOffTee, Penalties
-    // Aggregated:            5,           5,                  2,           4,            3,           4,             3
-    // Sorted desc:           5, 5, 4, 4, 3, 3, 2
-    // Labels sorted:         3-putts, Inside 9-iron, Double bogeys, Trouble off tee, Bogeys on par 5, Penalties, Double chips
-
     it('returns null when rounds array is empty', () => {
         const { queryByText } = render(<DeadlySinsChart rounds={[]} />);
 

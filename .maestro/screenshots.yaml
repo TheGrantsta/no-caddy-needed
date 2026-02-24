@@ -7,6 +7,21 @@ appId: com.grantsta.nocaddyneeded
 - launchApp:
     clearState: true
 
+# Complete the onboarding flow - step 1
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+
+# Complete the onboarding flow - step 2
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+
+# Complete the onboarding flow - step 3
+- tapOn:
+    text: ".*Done.*"
+    index: 0
+
 # Wait for app to load (splash screen then home)
 - extendedWaitUntil:
     visible: "No caddy needed!"
@@ -24,6 +39,24 @@ appId: com.grantsta.nocaddyneeded
 # Screenshot 2: Play screen (tap Play link)
 - tapOn:
     id: "home-play-link"
+    index: 0
+
+# Complete the onboarding flow - step 1
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+
+# Complete the onboarding flow - step 2
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+
+# Complete the onboarding flow - step 3
+- tapOn:
+    text: ".*Done.*"
+    index: 0
+
+# Screenshot 2: Play screen (tap Play link)
 - extendedWaitUntil:
     visible: "Start round"
     timeout: 5000
@@ -39,14 +72,52 @@ appId: com.grantsta.nocaddyneeded
 - takeScreenshot: .maestro/screenshots/02A-play-start-round
 
 # Screenshot 4: Distances
-- tapOn: "Distances"
+- tapOn: 
+    text: "Distances"
+    index: 0
+
+# Complete the onboarding flow - step 1
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+
+# Complete the onboarding flow - step 2
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+
+# Complete the onboarding flow - step 3
+- tapOn:
+    text: ".*Done.*"
+    index: 0
+
+# Screenshot 4: Play screen (tap Play link)
 - extendedWaitUntil:
     visible: "Distances"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/02B-play-distances
 
 # Screenshot 5: Wedge Chart
-- tapOn: "Wedge chart"
+- tapOn:
+    text: "Wedge chart"
+    index: 0
+
+# Complete the onboarding flow - step 1
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+
+# Complete the onboarding flow - step 2
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+
+# Complete the onboarding flow - step 3
+- tapOn:
+    text: ".*Done.*"
+    index: 0
+
+# Screenshot 5: Wedge Chart
 - extendedWaitUntil:
     visible: "Your wedge carry distances"
     timeout: 5000
@@ -63,6 +134,23 @@ appId: com.grantsta.nocaddyneeded
 # Screenshot 5: Practice
 - tapOn:
     id: "home-practice-link"
+
+# Complete the onboarding flow - step 1
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+
+# Complete the onboarding flow - step 2
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+
+# Complete the onboarding flow - step 3
+- tapOn:
+    text: ".*Done.*"
+    index: 0
+
+# Screenshot 5: Practice
 - extendedWaitUntil:
     visible: "Make your practice time more effective"
     timeout: 5000

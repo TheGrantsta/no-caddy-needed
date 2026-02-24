@@ -95,8 +95,8 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser }
             paddingVertical: 5,
         },
         playerName: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
+            color: colours.yellow,
+            fontSize: fontSizes.subHeader,
             flex: 1,
         },
         stepperRow: {

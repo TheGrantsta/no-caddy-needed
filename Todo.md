@@ -7,7 +7,9 @@ Things to do
 - [X] Remove unused Prop 'round' from scorecard (scorecard.tsx)
 - [X] Remove course par from database and codebase
 - [X] Change the order of the Tiger 5 chart to match the input screen
-- [ ] Only show Tiger 5 Tally double bogey when score is par + 2 - and not onload
+- [X] Only show Tiger 5 Tally double bogey when score is par + 2 - and not onload
+- [X] Amend size of the 7 Deadly Sins tally
+- [ ] Don't show 7DS chart on edit scorecard screen
 - [ ] Enable option to run screenshots without onboarding screens
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project

@@ -38,19 +38,22 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
 
     const localStyles = useMemo(() => StyleSheet.create({
         container: {
-            padding: 15,
+            paddingTop: 5,
+            paddingLeft: 20,
+            paddingRight: 20,
+            paddingBottom: 20,
         },
         row: {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            paddingVertical: 8,
+            paddingVertical: 6,
             borderBottomWidth: 0.5,
-            borderBottomColor: colours.yellow,
+            borderColor: colours.yellow,
         },
         label: {
             color: colours.text,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.smallText,
             flex: 1,
         },
         controls: {
@@ -59,9 +62,9 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
         },
         button: {
             backgroundColor: colours.yellow,
-            width: 36,
-            height: 36,
-            borderRadius: 18,
+            width: 24,
+            height: 24,
+            borderRadius: 12,
             justifyContent: 'center',
             alignItems: 'center',
         },

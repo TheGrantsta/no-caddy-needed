@@ -209,11 +209,11 @@ describe('HoleScoreInput', () => {
                 holeNumber={1}
                 players={mockPlayers}
                 onScoresChange={mockOnScoresChange}
-                renderAfterUser={<Text>Tiger 5 content</Text>}
+                renderAfterUser={<Text>7 Deadly Sins content</Text>}
             />
         );
 
-        expect(getByText('Tiger 5 content')).toBeTruthy();
+        expect(getByText('7 Deadly Sins content')).toBeTruthy();
     });
 
     it('does not render renderAfterUser when not provided', () => {
@@ -221,6 +221,6 @@ describe('HoleScoreInput', () => {
             <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
-        expect(queryByText('Tiger 5 content')).toBeNull();
+        expect(queryByText('7 Deadly Sins content')).toBeNull();
     });
 });

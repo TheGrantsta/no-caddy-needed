@@ -198,7 +198,7 @@ describe('Play screen', () => {
             expect(getByTestId('round-history-scroll')).toBeTruthy();
         });
 
-        it('renders date column at 70% width and score and t5 columns at 15% width', () => {
+        it('renders date column at 70% width and score and 7 Deadly Sins columns at 15% width', () => {
             mockGetAllRoundHistory.mockReturnValue([
                 { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
             ]);
@@ -207,7 +207,7 @@ describe('Play screen', () => {
 
             const dateHeader = getByTestId('round-history-header-date');
             const scoreHeader = getByTestId('round-history-header-score');
-            const t5Header = getByTestId('round-history-header-t5');
+            const t5Header = getByTestId('round-history-header-7DS');
 
             expect(dateHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '70%' })]));
             expect(scoreHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '15%' })]));
@@ -688,8 +688,8 @@ describe('Play screen', () => {
         });
     });
 
-    describe('Tiger 5 integration', () => {
-        it('shows Tiger 5 tally when round starts', async () => {
+    describe('7 Deadly Sins integration', () => {
+        it('shows 7 Deadly Sins tally when round starts', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
@@ -712,7 +712,7 @@ describe('Play screen', () => {
             expect(queryByText('Bogeys on par 5s')).toBeNull();
         });
 
-        it('does not show Score/Tiger 5 toggle buttons', async () => {
+        it('does not show Score/7 Deadly Sins toggle buttons', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
@@ -927,18 +927,18 @@ describe('Play screen', () => {
         });
     });
 
-    describe('Tiger 5 total in round history', () => {
-        it('shows T5 column header when round history exists', () => {
+    describe('7 Deadly Sins total in round history', () => {
+        it('shows 7DS column header when round history exists', () => {
             mockGetAllRoundHistory.mockReturnValue([
                 { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
 
             const { getByText } = render(<Play />);
 
-            expect(getByText('T5')).toBeTruthy();
+            expect(getByText('7DS')).toBeTruthy();
         });
 
-        it('shows Tiger5 total next to matching round', () => {
+        it('shows 7 Deadly Sins total next to matching round', () => {
             mockGetAllRoundHistory.mockReturnValue([
                 { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
@@ -951,7 +951,7 @@ describe('Play screen', () => {
             expect(getByText('5')).toBeTruthy();
         });
 
-        it('shows dash when no Tiger5 data for a round', () => {
+        it('shows dash when no 7 Deadly Sins data for a round', () => {
             mockGetAllRoundHistory.mockReturnValue([
                 { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
@@ -1246,13 +1246,13 @@ describe('Play screen', () => {
         });
     });
 
-    describe('Tiger 5 chart', () => {
+    describe('7 Deadly Sins chart', () => {
         const mockTiger5Data = [
             { Id: 1, ThreePutts: 3, DoubleBogeys: 1, BogeysPar5: 2, BogeysInside9Iron: 4, DoubleChips: 0, TroubleOffTee: 1, Penalties: 2, Total: 13, Created_At: '15/06' },
             { Id: 2, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 2, TroubleOffTee: 3, Penalties: 1, Total: 13, Created_At: '16/06' },
         ];
 
-        it('does not render chart when no Tiger 5 data', () => {
+        it('does not render chart when no 7 Deadly Sins data', () => {
             mockGetAllDeadlySinsRounds.mockReturnValue([]);
 
             const { queryByText } = render(<Play />);

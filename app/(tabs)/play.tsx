@@ -382,7 +382,7 @@ export default function Play() {
                                     <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.yellow }]}>
                                         <Text testID="round-history-header-date" style={[styles.normalText, localStyles.historyDateColumn]}>Date</Text>
                                         <Text testID="round-history-header-score" style={[styles.normalText, localStyles.historyNarrowColumn]}>Score</Text>
-                                        <Text testID="round-history-header-t5" style={[styles.normalText, localStyles.historyNarrowColumn]}>T5</Text>
+                                        <Text testID="round-history-header-7DS" style={[styles.normalText, localStyles.historyNarrowColumn]}>7DS</Text>
                                     </View>
                                     <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
                                         {roundHistory.slice(0, 30).map((round) => (

@@ -362,8 +362,8 @@ describe('Scorecard screen', () => {
         });
     });
 
-    describe('Tiger 5 chart', () => {
-        it('shows tiger 5 chart when tiger 5 data exists for the round', () => {
+    describe('7 Deadly Sins chart', () => {
+        it('shows 7 Deadly Sins chart when 7 Deadly Sins data exists for the round', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
             mockGetDeadlySinsForRound.mockReturnValue({
                 Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 4, Created_At: '15/06',
@@ -374,7 +374,7 @@ describe('Scorecard screen', () => {
             expect(getByText('7 Deadly Sins')).toBeTruthy();
         });
 
-        it('does not show tiger 5 chart when no tiger 5 data for the round', () => {
+        it('does not show 7 Deadly Sins chart when no 7 Deadly Sins data for the round', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
             mockGetDeadlySinsForRound.mockReturnValue(null);
 
@@ -383,7 +383,7 @@ describe('Scorecard screen', () => {
             expect(queryByText('7 Deadly Sins')).toBeNull();
         });
 
-        it('does not show tiger 5 chart in edit mode', () => {
+        it('does not show 7 Deadly Sins chart in edit mode', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
             mockGetDeadlySinsForRound.mockReturnValue({
                 Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 4, Created_At: '15/06',

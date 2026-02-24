@@ -15,9 +15,9 @@ import Chevrons from "@/components/Chevrons";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
 
 const ONBOARDING_STEPS = [
-    { text: 'Practice with purpose — use short game drills to sharpen your putting, chipping, pitching and bunker play.' },
-    { text: 'Try the tools section for tempo training and random shot selection to keep your practice varied.' },
-    { text: 'Check your history to track drill results over time and spot areas for improvement.' },
+  { text: 'Practice with purpose — use short game drills to sharpen your putting, chipping, pitching and bunker play.' },
+  { text: 'Try the tools section for tempo training and random shot selection to keep your practice varied.' },
+  { text: 'Check your history to track drill results over time and spot areas for improvement.' },
 ];
 
 export default function Practice() {
@@ -34,7 +34,7 @@ export default function Practice() {
   const [drillStats, setDrillStats] = useState<DrillStats[]>([]);
   const flatListRef = useRef(null);
 
-  const points = ['Honesty: be honest with yourself and identify the shots you avoid, or can\'t play, and give yourself time', 'Data: use your Tiger 5 stats as a guide; focus your practice on what will make the biggest difference'];
+  const points = ['Honesty: be honest with yourself and identify the shots you avoid, or can\'t play, and give yourself time', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);

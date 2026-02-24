@@ -14,13 +14,13 @@ type Props = {
 };
 
 const CATEGORY_LABELS: { key: keyof DeadlySinsRound; label: string }[] = [
+    { key: 'TroubleOffTee', label: 'Trouble off tee' },
+    { key: 'Penalties', label: 'Penalties' },
     { key: 'ThreePutts', label: '3-putts' },
     { key: 'BogeysInside9Iron', label: 'Inside 9-iron' },
     { key: 'DoubleChips', label: 'Double chips' },
     { key: 'DoubleBogeys', label: 'Double bogeys' },
     { key: 'BogeysPar5', label: 'Bogeys on par 5' },
-    { key: 'TroubleOffTee', label: 'Trouble off tee' },
-    { key: 'Penalties', label: 'Penalties' },
 ];
 
 export default function DeadlySinsChart({ rounds }: Props) {

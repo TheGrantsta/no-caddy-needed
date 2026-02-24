@@ -693,7 +693,7 @@ describe('Play screen', () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
-            const { getByTestId, getByText } = render(<Play />);
+            const { getByTestId, getByText, queryByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
@@ -704,9 +704,10 @@ describe('Play screen', () => {
             });
 
             expect(getByText('3-putts')).toBeTruthy();
-            expect(getByText('Double bogeys')).toBeTruthy();
             expect(getByText('Bogeys inside 9-iron')).toBeTruthy();
             expect(getByText('Double chips')).toBeTruthy();
+            expect(queryByText('Double bogeys')).toBeNull();
+            expect(queryByText('Bogeys on par 5s')).toBeNull();
         });
 
         it('does not show Score/Tiger 5 toggle buttons', async () => {

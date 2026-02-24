@@ -136,7 +136,7 @@ const Tiger5Tally = ({ onEndRound, onRoundStateChange, roundControlled, onValues
         <View style={localStyles.container}>
             {counters.map((counter, index) => {
                 if (counter.slug === 'bogeys-par5' && holePar !== 5) return null;
-                if (counter.slug === 'double-bogeys' && holePar !== undefined && userScore !== undefined && userScore < holePar + 2) return null;
+                if (counter.slug === 'double-bogeys' && (holePar === undefined || userScore === undefined || userScore < holePar + 2)) return null;
                 return (
                     <View key={counter.slug} style={localStyles.row}>
                         <Text style={localStyles.label}>{counter.label}</Text>

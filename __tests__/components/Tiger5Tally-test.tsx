@@ -55,12 +55,12 @@ describe('Tiger5Tally component', () => {
         });
 
         it('shows counters and End round after pressing Start round', () => {
-            const { getByTestId } = render(<Tiger5Tally onEndRound={mockOnEndRound} />);
+            const { getByTestId, queryByTestId } = render(<Tiger5Tally onEndRound={mockOnEndRound} />);
 
             fireEvent.press(getByTestId('tiger5-start-round'));
 
             expect(getByTestId('tiger5-count-three-putts')).toBeTruthy();
-            expect(getByTestId('tiger5-count-double-bogeys')).toBeTruthy();
+            expect(queryByTestId('tiger5-count-double-bogeys')).toBeNull();
             expect(getByTestId('tiger5-count-bogeys-inside-9iron')).toBeTruthy();
             expect(getByTestId('tiger5-count-double-chips')).toBeTruthy();
             expect(getByTestId('tiger5-end-round')).toBeTruthy();
@@ -85,7 +85,7 @@ describe('Tiger5Tally component', () => {
         });
 
         it('renders all five labels and counters at 0 when round starts', () => {
-            const { getByTestId, getByText } = render(<Tiger5Tally onEndRound={mockOnEndRound} holePar={5} />);
+            const { getByTestId, getByText } = render(<Tiger5Tally onEndRound={mockOnEndRound} holePar={5} userScore={7} />);
 
             fireEvent.press(getByTestId('tiger5-start-round'));
 
@@ -112,7 +112,7 @@ describe('Tiger5Tally component', () => {
         });
 
         it('increments double-bogeys counter', () => {
-            const { getByTestId } = render(<Tiger5Tally onEndRound={mockOnEndRound} />);
+            const { getByTestId } = render(<Tiger5Tally onEndRound={mockOnEndRound} holePar={4} userScore={6} />);
 
             fireEvent.press(getByTestId('tiger5-start-round'));
             fireEvent.press(getByTestId('tiger5-increment-double-bogeys'));
@@ -168,7 +168,7 @@ describe('Tiger5Tally component', () => {
         });
 
         it('multiple increments on same counter', () => {
-            const { getByTestId } = render(<Tiger5Tally onEndRound={mockOnEndRound} />);
+            const { getByTestId } = render(<Tiger5Tally onEndRound={mockOnEndRound} holePar={4} userScore={6} />);
 
             fireEvent.press(getByTestId('tiger5-start-round'));
             fireEvent.press(getByTestId('tiger5-increment-double-bogeys'));
@@ -182,7 +182,7 @@ describe('Tiger5Tally component', () => {
 
     describe('ending a round', () => {
         it('End round calls callback with correct values', () => {
-            const { getByTestId } = render(<Tiger5Tally onEndRound={mockOnEndRound} holePar={5} />);
+            const { getByTestId } = render(<Tiger5Tally onEndRound={mockOnEndRound} holePar={5} userScore={7} />);
 
             fireEvent.press(getByTestId('tiger5-start-round'));
             fireEvent.press(getByTestId('tiger5-increment-three-putts'));
@@ -209,7 +209,7 @@ describe('Tiger5Tally component', () => {
         });
 
         it('counters reset to 0 after ending round', () => {
-            const { getByTestId } = render(<Tiger5Tally onEndRound={mockOnEndRound} holePar={5} />);
+            const { getByTestId } = render(<Tiger5Tally onEndRound={mockOnEndRound} holePar={5} userScore={7} />);
 
             fireEvent.press(getByTestId('tiger5-start-round'));
             fireEvent.press(getByTestId('tiger5-increment-three-putts'));
@@ -282,17 +282,17 @@ describe('Tiger5Tally component', () => {
             expect(getByTestId('tiger5-count-bogeys-par5')).toBeTruthy();
         });
 
-        it('still shows other 4 categories when holePar is not 5', () => {
-            const { getByTestId, getByText } = render(
+        it('still shows other categories when holePar is not 5', () => {
+            const { getByTestId, getByText, queryByText } = render(
                 <Tiger5Tally onEndRound={mockOnEndRound} holePar={4} />
             );
 
             fireEvent.press(getByTestId('tiger5-start-round'));
 
             expect(getByText('3-putts')).toBeTruthy();
-            expect(getByText('Double bogeys')).toBeTruthy();
             expect(getByText('Bogeys inside 9-iron')).toBeTruthy();
             expect(getByText('Double chips')).toBeTruthy();
+            expect(queryByText('Double bogeys')).toBeNull();
         });
     });
 
@@ -341,26 +341,26 @@ describe('Tiger5Tally component', () => {
             expect(getByTestId('tiger5-count-double-bogeys')).toBeTruthy();
         });
 
-        it('shows Double bogeys when userScore is not provided (default behavior)', () => {
-            const { getByTestId, getByText } = render(
+        it('hides Double bogeys when userScore is not provided', () => {
+            const { getByTestId, queryByText, queryByTestId } = render(
                 <Tiger5Tally onEndRound={mockOnEndRound} holePar={4} />
             );
 
             fireEvent.press(getByTestId('tiger5-start-round'));
 
-            expect(getByText('Double bogeys')).toBeTruthy();
-            expect(getByTestId('tiger5-count-double-bogeys')).toBeTruthy();
+            expect(queryByText('Double bogeys')).toBeNull();
+            expect(queryByTestId('tiger5-count-double-bogeys')).toBeNull();
         });
 
-        it('shows Double bogeys when holePar is not provided but userScore is', () => {
-            const { getByTestId, getByText } = render(
+        it('hides Double bogeys when holePar is not provided but userScore is', () => {
+            const { getByTestId, queryByText, queryByTestId } = render(
                 <Tiger5Tally onEndRound={mockOnEndRound} userScore={6} />
             );
 
             fireEvent.press(getByTestId('tiger5-start-round'));
 
-            expect(getByText('Double bogeys')).toBeTruthy();
-            expect(getByTestId('tiger5-count-double-bogeys')).toBeTruthy();
+            expect(queryByText('Double bogeys')).toBeNull();
+            expect(queryByTestId('tiger5-count-double-bogeys')).toBeNull();
         });
     });
 
@@ -377,7 +377,7 @@ describe('Tiger5Tally component', () => {
             );
 
             expect(getByTestId('tiger5-count-three-putts')).toBeTruthy();
-            expect(getByTestId('tiger5-count-double-bogeys')).toBeTruthy();
+            expect(queryByTestId('tiger5-count-double-bogeys')).toBeNull();
             expect(queryByTestId('tiger5-start-round')).toBeNull();
         });
 
@@ -401,7 +401,7 @@ describe('Tiger5Tally component', () => {
 
         it('calls onValuesChange with all updated values', () => {
             const { getByTestId } = render(
-                <Tiger5Tally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
+                <Tiger5Tally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={4} userScore={6} />
             );
 
             fireEvent.press(getByTestId('tiger5-increment-three-putts'));

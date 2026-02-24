@@ -134,7 +134,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     if (!roundActive) {
         return (
             <View style={localStyles.container}>
-                <TouchableOpacity testID="tiger5-start-round" onPress={handleStartRound} style={localStyles.saveButton}>
+                <TouchableOpacity testID="7deadly-sins-start-round" onPress={handleStartRound} style={localStyles.saveButton}>
                     <Text style={localStyles.saveButtonText}>Start round</Text>
                 </TouchableOpacity>
             </View>
@@ -151,17 +151,17 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                         <Text style={localStyles.label}>{counter.label}</Text>
                         <View style={localStyles.controls}>
                             <TouchableOpacity
-                                testID={`tiger5-decrement-${counter.slug}`}
+                                testID={`7deadly-sins-decrement-${counter.slug}`}
                                 onPress={() => handleDecrement(index)}
                                 style={localStyles.button}
                             >
                                 <Text style={localStyles.buttonText}>-</Text>
                             </TouchableOpacity>
-                            <Text testID={`tiger5-count-${counter.slug}`} style={localStyles.count}>
+                            <Text testID={`7deadly-sins-count-${counter.slug}`} style={localStyles.count}>
                                 {values[index]}
                             </Text>
                             <TouchableOpacity
-                                testID={`tiger5-increment-${counter.slug}`}
+                                testID={`7deadly-sins-increment-${counter.slug}`}
                                 onPress={() => handleIncrement(index)}
                                 style={localStyles.button}
                             >
@@ -173,7 +173,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
             })}
 
             {!roundControlled && (
-                <TouchableOpacity testID="tiger5-end-round" onPress={handleEndRound} style={localStyles.saveButton}>
+                <TouchableOpacity testID="7deadly-sins-end-round" onPress={handleEndRound} style={localStyles.saveButton}>
                     <Text style={localStyles.saveButtonText}>End round</Text>
                 </TouchableOpacity>
             )}

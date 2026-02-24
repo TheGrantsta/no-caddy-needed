@@ -44,7 +44,7 @@ describe('DeadlySinsChart component', () => {
     it('renders all 7 category labels', () => {
         const { getAllByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
 
-        const labels = getAllByTestId('tiger5-chart-label');
+        const labels = getAllByTestId('7deadly-sins-chart-label');
         expect(labels).toHaveLength(7);
     });
 
@@ -52,13 +52,13 @@ describe('DeadlySinsChart component', () => {
         const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
 
         const counts = [
-            getByTestId('tiger5-chart-count-0'),
-            getByTestId('tiger5-chart-count-1'),
-            getByTestId('tiger5-chart-count-2'),
-            getByTestId('tiger5-chart-count-3'),
-            getByTestId('tiger5-chart-count-4'),
-            getByTestId('tiger5-chart-count-5'),
-            getByTestId('tiger5-chart-count-6'),
+            getByTestId('7deadly-sins-chart-count-0'),
+            getByTestId('7deadly-sins-chart-count-1'),
+            getByTestId('7deadly-sins-chart-count-2'),
+            getByTestId('7deadly-sins-chart-count-3'),
+            getByTestId('7deadly-sins-chart-count-4'),
+            getByTestId('7deadly-sins-chart-count-5'),
+            getByTestId('7deadly-sins-chart-count-6'),
         ];
 
         const countValues = counts.map(c => c.props.children);
@@ -68,7 +68,7 @@ describe('DeadlySinsChart component', () => {
     it('sorts categories by count descending', () => {
         const { getAllByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
 
-        const labels = getAllByTestId('tiger5-chart-label');
+        const labels = getAllByTestId('7deadly-sins-chart-label');
         const labelTexts = labels.map(l => l.props.children);
 
         // Both ThreePutts and BogeysInside9Iron are 5, stable sort preserves original order
@@ -84,14 +84,14 @@ describe('DeadlySinsChart component', () => {
 
         const { getAllByTestId } = render(<DeadlySinsChart rounds={singleRound} />);
 
-        const labels = getAllByTestId('tiger5-chart-label');
+        const labels = getAllByTestId('7deadly-sins-chart-label');
         expect(labels).toHaveLength(7);
     });
 
     it('colors highest category bar red', () => {
         const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
 
-        const bar = getByTestId('tiger5-chart-bar-0');
+        const bar = getByTestId('7deadly-sins-chart-bar-0');
         const barStyle = Array.isArray(bar.props.style) ? Object.assign({}, ...bar.props.style) : bar.props.style;
         expect(barStyle.backgroundColor).toBe(colours.errorText);
     });
@@ -99,7 +99,7 @@ describe('DeadlySinsChart component', () => {
     it('colors lowest category bar green', () => {
         const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
 
-        const bar = getByTestId('tiger5-chart-bar-6');
+        const bar = getByTestId('7deadly-sins-chart-bar-6');
         const barStyle = Array.isArray(bar.props.style) ? Object.assign({}, ...bar.props.style) : bar.props.style;
         expect(barStyle.backgroundColor).toBe(colours.green);
     });
@@ -108,7 +108,7 @@ describe('DeadlySinsChart component', () => {
         const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
 
         for (const i of [1, 2, 3, 4, 5]) {
-            const bar = getByTestId(`tiger5-chart-bar-${i}`);
+            const bar = getByTestId(`7deadly-sins-chart-bar-${i}`);
             const barStyle = Array.isArray(bar.props.style) ? Object.assign({}, ...bar.props.style) : bar.props.style;
             expect(barStyle.backgroundColor).toBe(colours.yellow);
         }
@@ -118,12 +118,12 @@ describe('DeadlySinsChart component', () => {
         const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
 
         // Max count is 5, so index 0 should be 100%
-        const bar0 = getByTestId('tiger5-chart-bar-0');
+        const bar0 = getByTestId('7deadly-sins-chart-bar-0');
         const bar0Style = Array.isArray(bar0.props.style) ? Object.assign({}, ...bar0.props.style) : bar0.props.style;
         expect(bar0Style.width).toBe('100%');
 
         // DoubleChips = 2, so 2/5 * 100 = 40%
-        const bar6 = getByTestId('tiger5-chart-bar-6');
+        const bar6 = getByTestId('7deadly-sins-chart-bar-6');
         const bar6Style = Array.isArray(bar6.props.style) ? Object.assign({}, ...bar6.props.style) : bar6.props.style;
         expect(bar6Style.width).toBe('40%');
     });

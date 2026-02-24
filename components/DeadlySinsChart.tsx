@@ -131,14 +131,14 @@ export default function DeadlySinsChart({ rounds }: Props) {
             {categories.map((category, index) => (
                 <View key={index} style={localStyles.barContainer}>
                     <View style={localStyles.labelContainer}>
-                        <Text testID="tiger5-chart-label" style={localStyles.label} numberOfLines={1}>
+                        <Text testID="7deadly-sins-chart-label" style={localStyles.label} numberOfLines={1}>
                             {category.label}
                         </Text>
                     </View>
 
                     <View style={localStyles.barWrapper}>
                         <View
-                            testID={`tiger5-chart-bar-${index}`}
+                            testID={`7deadly-sins-chart-bar-${index}`}
                             style={[
                                 localStyles.bar,
                                 {
@@ -156,7 +156,7 @@ export default function DeadlySinsChart({ rounds }: Props) {
                     </View>
 
                     <View style={localStyles.countContainer}>
-                        <Text testID={`tiger5-chart-count-${index}`} style={localStyles.countText}>
+                        <Text testID={`7deadly-sins-chart-count-${index}`} style={localStyles.countText}>
                             {category.count}
                         </Text>
                     </View>

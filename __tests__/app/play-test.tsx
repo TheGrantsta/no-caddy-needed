@@ -727,7 +727,7 @@ describe('Play screen', () => {
             });
 
             expect(queryByTestId('toggle-score')).toBeNull();
-            expect(queryByTestId('toggle-tiger5')).toBeNull();
+            expect(queryByTestId('toggle-7deadly-sins')).toBeNull();
         });
 
         it('saves Deadly Sins when round ends above par', async () => {
@@ -787,8 +787,8 @@ describe('Play screen', () => {
             });
 
             // Increment trouble-off-tee and penalties
-            fireEvent.press(getByTestId('tiger5-increment-trouble-off-tee'));
-            fireEvent.press(getByTestId('tiger5-increment-penalties'));
+            fireEvent.press(getByTestId('7deadly-sins-increment-trouble-off-tee'));
+            fireEvent.press(getByTestId('7deadly-sins-increment-penalties'));
 
             // Increment score to be above par, then submit
             fireEvent.press(getByTestId('increment-1'));

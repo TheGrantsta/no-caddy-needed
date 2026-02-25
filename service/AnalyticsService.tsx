@@ -34,6 +34,8 @@ const getCrashlytics = () => {
 
 export const initializeAnalytics = async (): Promise<void> => {
     try {
+        const analytics = getAnalytics();
+        await analytics?.setAnalyticsCollectionEnabled(true);
         const crashlytics = getCrashlytics();
         await crashlytics?.setCrashlyticsCollectionEnabled(true);
     } catch {

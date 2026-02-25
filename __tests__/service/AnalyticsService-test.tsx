@@ -22,6 +22,7 @@ const mockCrashlytics = crashlytics as jest.Mock;
 describe('AnalyticsService', () => {
     let mockLogEvent: jest.Mock;
     let mockLogScreenView: jest.Mock;
+    let mockSetAnalyticsCollectionEnabled: jest.Mock;
     let mockSetCrashlyticsCollectionEnabled: jest.Mock;
     let mockCrashlyticsLog: jest.Mock;
     let mockRecordError: jest.Mock;
@@ -33,6 +34,7 @@ describe('AnalyticsService', () => {
 
         mockLogEvent = jest.fn();
         mockLogScreenView = jest.fn();
+        mockSetAnalyticsCollectionEnabled = jest.fn();
         mockSetCrashlyticsCollectionEnabled = jest.fn();
         mockCrashlyticsLog = jest.fn();
         mockRecordError = jest.fn();
@@ -42,6 +44,7 @@ describe('AnalyticsService', () => {
         mockAnalytics.mockReturnValue({
             logEvent: mockLogEvent,
             logScreenView: mockLogScreenView,
+            setAnalyticsCollectionEnabled: mockSetAnalyticsCollectionEnabled,
         });
 
         mockCrashlytics.mockReturnValue({
@@ -58,6 +61,12 @@ describe('AnalyticsService', () => {
             await initializeAnalytics();
 
             expect(mockSetCrashlyticsCollectionEnabled).toHaveBeenCalledWith(true);
+        });
+
+        it('enables analytics collection', async () => {
+            await initializeAnalytics();
+
+            expect(mockSetAnalyticsCollectionEnabled).toHaveBeenCalledWith(true);
         });
     });
 

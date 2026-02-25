@@ -12,6 +12,8 @@ Things to do
 - [X] Don't show 7DS chart on edit scorecard screen
 - [X] Enable option to run screenshots without onboarding screens
 - [ ] Fix issue where 7DS does not show the correct answer
+- [ ] Fix issue where 7DS does not appear to be saved
+- [ ] Fix issue where 7DS is not deleted when the round is deleted
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project
 - [ ] Add test coverage tool and include in pre-hook push

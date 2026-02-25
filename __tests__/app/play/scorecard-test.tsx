@@ -363,6 +363,15 @@ describe('Scorecard screen', () => {
     });
 
     describe('7 Deadly Sins chart', () => {
+        it('calls getDeadlySinsForRoundService with numeric roundId from URL params', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetDeadlySinsForRound.mockReturnValue(null);
+
+            render(<ScorecardScreen />);
+
+            expect(mockGetDeadlySinsForRound).toHaveBeenCalledWith(1);
+        });
+
         it('does not show 7 Deadly Sins chart when scorecard is displayed', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
             mockGetDeadlySinsForRound.mockReturnValue({

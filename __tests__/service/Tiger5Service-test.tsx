@@ -1,9 +1,10 @@
 import { insertDeadlySinsRoundService, getAllDeadlySinsRoundsService } from '../../service/DbService';
-import { insertDeadlySinsRound, getAllDeadlySinsRounds } from '../../database/db';
+import { insertDeadlySinsRound, getAllDeadlySinsRounds, getDeadlySinsRoundByRoundId } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
     insertDeadlySinsRound: jest.fn(),
     getAllDeadlySinsRounds: jest.fn(),
+    getDeadlySinsRoundByRoundId: jest.fn(),
 }));
 
 const mockInsertDeadlySinsRound = insertDeadlySinsRound as jest.Mock;
@@ -17,16 +18,16 @@ describe('insertDeadlySinsRoundService', () => {
     it('computes total as sum of all seven stats and delegates to DB', async () => {
         mockInsertDeadlySinsRound.mockResolvedValue(true);
 
-        const result = await insertDeadlySinsRoundService(1, 2, 3, 4, 5, 6, 7);
+        const result = await insertDeadlySinsRoundService(1, 1, 2, 3, 4, 5, 6, 7);
 
-        expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(1, 2, 3, 4, 5, 6, 7, 28);
+        expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(1, 1, 2, 3, 4, 5, 6, 7, 28);
         expect(result).toBe(true);
     });
 
     it('returns false when DB insert fails', async () => {
         mockInsertDeadlySinsRound.mockResolvedValue(false);
 
-        const result = await insertDeadlySinsRoundService(1, 0, 0, 0, 0, 0, 0);
+        const result = await insertDeadlySinsRoundService(1, 1, 0, 0, 0, 0, 0, 0);
 
         expect(result).toBe(false);
     });
@@ -34,9 +35,9 @@ describe('insertDeadlySinsRoundService', () => {
     it('computes total of zero when all stats are zero', async () => {
         mockInsertDeadlySinsRound.mockResolvedValue(true);
 
-        await insertDeadlySinsRoundService(0, 0, 0, 0, 0, 0, 0);
+        await insertDeadlySinsRoundService(null, 0, 0, 0, 0, 0, 0, 0);
 
-        expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(0, 0, 0, 0, 0, 0, 0, 0);
+        expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(null, 0, 0, 0, 0, 0, 0, 0, 0);
     });
 });
 
@@ -66,7 +67,7 @@ describe('getAllDeadlySinsRoundsService', () => {
 
     it('preserves all seven stat fields', () => {
         mockGetAllDeadlySinsRounds.mockReturnValue([
-            { Id: 1, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 4, DoubleChips: 0, TroubleOffTee: 5, Penalties: 2, Total: 17, Created_At: '2025-01-10T12:00:00.000Z' },
+            { Id: 1, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 4, DoubleChips: 0, TroubleOffTee: 5, Penalties: 2, Total: 17, RoundId: 7, Created_At: '2025-01-10T12:00:00.000Z' },
         ]);
 
         const result = getAllDeadlySinsRoundsService();
@@ -81,8 +82,29 @@ describe('getAllDeadlySinsRoundsService', () => {
             TroubleOffTee: 5,
             Penalties: 2,
             Total: 17,
+            RoundId: 7,
             Created_At: '10/01',
         });
+    });
+
+    it('maps RoundId through to returned object when present', () => {
+        mockGetAllDeadlySinsRounds.mockReturnValue([
+            { Id: 3, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 0, RoundId: 42, Created_At: '2025-03-01T12:00:00.000Z' },
+        ]);
+
+        const result = getAllDeadlySinsRoundsService();
+
+        expect(result[0].RoundId).toBe(42);
+    });
+
+    it('maps RoundId as null when not present on row', () => {
+        mockGetAllDeadlySinsRounds.mockReturnValue([
+            { Id: 4, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 0, RoundId: null, Created_At: '2025-04-01T12:00:00.000Z' },
+        ]);
+
+        const result = getAllDeadlySinsRoundsService();
+
+        expect(result[0].RoundId).toBeNull();
     });
 
     it('returns multiple rounds', () => {

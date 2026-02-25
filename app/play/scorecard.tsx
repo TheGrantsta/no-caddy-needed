@@ -51,10 +51,7 @@ export default function ScorecardScreen() {
         setMultiplayerScorecard(mp);
         const sc = mp ? null : getRoundScorecardService(Number(roundId));
         setScorecard(sc);
-        const round = mp?.round || sc?.round;
-        if (round) {
-            setDeadlySinsRound(getDeadlySinsForRoundService(round.Created_At));
-        }
+        setDeadlySinsRound(getDeadlySinsForRoundService(Number(roundId)));
     };
 
     const handleEdit = () => {

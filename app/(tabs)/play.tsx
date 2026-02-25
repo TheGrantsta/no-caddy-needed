@@ -291,6 +291,7 @@ export default function Play() {
 
         if (runningTotal > 0) {
             await insertDeadlySinsRoundService(
+                activeRoundId,
                 tiger5Values.threePutts,
                 tiger5Values.doubleBogeys,
                 tiger5Values.bogeysPar5,
@@ -373,7 +374,11 @@ export default function Play() {
                         )}
 
                         {roundHistory.length > 0 && (() => {
-                            const tiger5Map = new Map(tiger5Rounds.map(t => [t.Created_At, t.Total]));
+                            const tiger5Map = new Map<number, number>(
+                                tiger5Rounds
+                                    .filter(t => t.RoundId != null)
+                                    .map(t => [t.RoundId as number, t.Total])
+                            );
                             return (
                                 <View style={{ padding: 15 }}>
                                     <Text style={[styles.subHeaderText, { textAlign: 'center' }]}>
@@ -394,7 +399,7 @@ export default function Play() {
                                                 <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
                                                     <Text style={[styles.normalText, localStyles.historyDateColumn]}>{round.CourseName ? `${round.Created_At} - ${round.CourseName}` : round.Created_At}</Text>
                                                     <Text style={[styles.normalText, localStyles.historyNarrowColumn]}>{formatScore(round.TotalScore)}</Text>
-                                                    <Text style={[styles.normalText, localStyles.historyNarrowColumn]}>{tiger5Map.has(round.Created_At) ? tiger5Map.get(round.Created_At) : '-'}</Text>
+                                                    <Text style={[styles.normalText, localStyles.historyNarrowColumn]}>{tiger5Map.has(round.Id) ? tiger5Map.get(round.Id) : '-'}</Text>
                                                 </View>
                                             </TouchableOpacity>
                                         ))}

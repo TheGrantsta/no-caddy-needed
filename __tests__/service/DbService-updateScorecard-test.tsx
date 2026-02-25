@@ -4,7 +4,7 @@ import {
     updateRoundTotalScore,
     getRoundHoleScores,
     getRoundPlayers,
-    getAllDeadlySinsRounds,
+    getDeadlySinsRoundByRoundId,
 } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
@@ -12,14 +12,14 @@ jest.mock('../../database/db', () => ({
     updateRoundTotalScore: jest.fn(),
     getRoundHoleScores: jest.fn(),
     getRoundPlayers: jest.fn(),
-    getAllDeadlySinsRounds: jest.fn(),
+    getDeadlySinsRoundByRoundId: jest.fn(),
 }));
 
 const mockUpdateRoundHoleScore = updateRoundHoleScore as jest.Mock;
 const mockUpdateRoundTotalScore = updateRoundTotalScore as jest.Mock;
 const mockGetRoundHoleScores = getRoundHoleScores as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayers as jest.Mock;
-const mockGetAllDeadlySinsRounds = getAllDeadlySinsRounds as jest.Mock;
+const mockGetDeadlySinsRoundByRoundId = getDeadlySinsRoundByRoundId as jest.Mock;
 
 describe('updateScorecardService', () => {
     beforeEach(() => {
@@ -111,32 +111,32 @@ describe('getDeadlySinsForRoundService', () => {
         jest.clearAllMocks();
     });
 
-    it('returns matching deadly sins round by date', () => {
-        mockGetAllDeadlySinsRounds.mockReturnValue([
-            { Id: 1, ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 1, Created_At: '2025-06-15T14:00:00.000Z' },
-            { Id: 2, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 1, Penalties: 0, Total: 4, Created_At: '2025-06-16T14:00:00.000Z' },
-        ]);
+    it('calls getDeadlySinsRoundByRoundId with the given numeric roundId', () => {
+        mockGetDeadlySinsRoundByRoundId.mockReturnValue(null);
 
-        const result = getDeadlySinsForRoundService('2025-06-15T10:00:00.000Z');
+        getDeadlySinsForRoundService(5);
+
+        expect(mockGetDeadlySinsRoundByRoundId).toHaveBeenCalledWith(5);
+    });
+
+    it('returns mapped DeadlySinsRound when db returns a row', () => {
+        mockGetDeadlySinsRoundByRoundId.mockReturnValue({
+            Id: 1, ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0,
+            DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 1,
+            RoundId: 5, Created_At: '2025-06-15T14:00:00.000Z',
+        });
+
+        const result = getDeadlySinsForRoundService(5);
 
         expect(result).not.toBeNull();
         expect(result!.Id).toBe(1);
+        expect(result!.Total).toBe(1);
     });
 
-    it('returns null when no matching deadly sins round', () => {
-        mockGetAllDeadlySinsRounds.mockReturnValue([
-            { Id: 1, ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 1, Created_At: '2025-06-15T14:00:00.000Z' },
-        ]);
+    it('returns null when db returns null', () => {
+        mockGetDeadlySinsRoundByRoundId.mockReturnValue(null);
 
-        const result = getDeadlySinsForRoundService('2025-07-01T10:00:00.000Z');
-
-        expect(result).toBeNull();
-    });
-
-    it('returns null when no deadly sins rounds exist', () => {
-        mockGetAllDeadlySinsRounds.mockReturnValue([]);
-
-        const result = getDeadlySinsForRoundService('2025-06-15T10:00:00.000Z');
+        const result = getDeadlySinsForRoundService(5);
 
         expect(result).toBeNull();
     });

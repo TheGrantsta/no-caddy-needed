@@ -154,16 +154,16 @@ export const insertWedgeChart = async (
     return success;
 };
 
-export const insertDeadlySinsRound = async (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number, total: number) => {
+export const insertDeadlySinsRound = async (roundId: number | null, threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number, total: number) => {
     let success = true;
     const db = await SQLite.openDatabaseAsync(dbName);
 
     const statement = await db.prepareAsync(
-        'INSERT INTO DeadlySinsRounds (ThreePutts, DoubleBogeys, BogeysPar5, BogeysInside9Iron, DoubleChips, TroubleOffTee, Penalties, Total, Created_At) VALUES ($ThreePutts, $DoubleBogeys, $BogeysPar5, $BogeysInside9Iron, $DoubleChips, $TroubleOffTee, $Penalties, $Total, $Created_At);'
+        'INSERT INTO DeadlySinsRounds (RoundId, ThreePutts, DoubleBogeys, BogeysPar5, BogeysInside9Iron, DoubleChips, TroubleOffTee, Penalties, Total, Created_At) VALUES ($RoundId, $ThreePutts, $DoubleBogeys, $BogeysPar5, $BogeysInside9Iron, $DoubleChips, $TroubleOffTee, $Penalties, $Total, $Created_At);'
     );
 
     try {
-        await statement.executeAsync({ $ThreePutts: threePutts, $DoubleBogeys: doubleBogeys, $BogeysPar5: bogeysPar5, $BogeysInside9Iron: bogeysInside9Iron, $DoubleChips: doubleChips, $TroubleOffTee: troubleOffTee, $Penalties: penalties, $Total: total, $Created_At: new Date().toISOString() });
+        await statement.executeAsync({ $RoundId: roundId, $ThreePutts: threePutts, $DoubleBogeys: doubleBogeys, $BogeysPar5: bogeysPar5, $BogeysInside9Iron: bogeysInside9Iron, $DoubleChips: doubleChips, $TroubleOffTee: troubleOffTee, $Penalties: penalties, $Total: total, $Created_At: new Date().toISOString() });
     } catch (e) {
         console.log(e);
         success = false;
@@ -178,6 +178,12 @@ export const getAllDeadlySinsRounds = () => {
     const sqlStatement = 'SELECT * FROM DeadlySinsRounds ORDER BY Id DESC;';
 
     return get(sqlStatement);
+};
+
+export const getDeadlySinsRoundByRoundId = (roundId: number) => {
+    const db = SQLite.openDatabaseSync(dbName);
+    const rows = db.getAllSync('SELECT * FROM DeadlySinsRounds WHERE RoundId = ?;', [roundId]);
+    return rows.length > 0 ? rows[0] : null;
 };
 
 export const getAllDrillHistory = () => {
@@ -411,6 +417,7 @@ export const deleteRound = async (roundId: number): Promise<boolean> => {
         const db = await SQLite.openDatabaseAsync(dbName);
 
         await db.execAsync(`
+            DELETE FROM DeadlySinsRounds WHERE RoundId = ${roundId};
             DELETE FROM RoundHoleScores WHERE RoundId = ${roundId};
             DELETE FROM RoundPlayers WHERE RoundId = ${roundId};
             DELETE FROM RoundHoles WHERE RoundId = ${roundId};

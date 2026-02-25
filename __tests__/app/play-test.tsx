@@ -764,7 +764,10 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
-                expect(mockInsertDeadlySinsRound).toHaveBeenCalled();
+                expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(
+                    1, expect.any(Number), expect.any(Number), expect.any(Number),
+                    expect.any(Number), expect.any(Number), expect.any(Number), expect.any(Number)
+                );
             });
         });
 
@@ -806,7 +809,7 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
-                expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(1, 1, 0, 0, 0, 0, 0);
+                expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(1, 1, 1, 0, 0, 0, 0, 0);
             });
         });
 
@@ -943,12 +946,25 @@ describe('Play screen', () => {
                 { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
             mockGetAllDeadlySinsRounds.mockReturnValue([
-                { Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 1, TroubleOffTee: 0, Penalties: 0, Total: 5, Created_At: '15/06' },
+                { Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 1, TroubleOffTee: 0, Penalties: 0, Total: 5, RoundId: 1, Created_At: '15/06' },
             ]);
 
             const { getByText } = render(<Play />);
 
             expect(getByText('5')).toBeTruthy();
+        });
+
+        it('shows dash when deadly sins row has RoundId null', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            ]);
+            mockGetAllDeadlySinsRounds.mockReturnValue([
+                { Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 1, TroubleOffTee: 0, Penalties: 0, Total: 5, RoundId: null, Created_At: '15/06' },
+            ]);
+
+            const { getByText } = render(<Play />);
+
+            expect(getByText('-')).toBeTruthy();
         });
 
         it('shows dash when no 7 Deadly Sins data for a round', () => {

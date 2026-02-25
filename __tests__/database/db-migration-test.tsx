@@ -1,13 +1,17 @@
-import { initialize, amendTable } from '../../database/db';
+import { initialize, amendTable, insertDeadlySinsRound, getDeadlySinsRoundByRoundId, deleteRound } from '../../database/db';
 import * as SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
 const mockGetAllSync = jest.fn();
 const mockExecSync = jest.fn();
+const mockStatementExecuteAsync = jest.fn();
+const mockStatementFinalizeAsync = jest.fn().mockResolvedValue(undefined);
+const mockPrepareAsync = jest.fn();
 
 jest.mock('expo-sqlite', () => ({
     openDatabaseAsync: jest.fn(() => Promise.resolve({
         execAsync: mockExecAsync,
+        prepareAsync: mockPrepareAsync,
     })),
     openDatabaseSync: jest.fn(() => ({
         getAllSync: mockGetAllSync,
@@ -350,5 +354,88 @@ describe('Settings table column migration', () => {
             (call: string[]) => call[0].includes('Settings')
         );
         expect(settingsAlterCalls).toHaveLength(0);
+    });
+});
+
+describe('insertDeadlySinsRound with RoundId', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockPrepareAsync.mockResolvedValue({
+            executeAsync: mockStatementExecuteAsync,
+            finalizeAsync: mockStatementFinalizeAsync,
+        });
+        mockStatementExecuteAsync.mockResolvedValue(undefined);
+    });
+
+    it('includes RoundId column and $RoundId binding in INSERT SQL', async () => {
+        await insertDeadlySinsRound(1, 1, 2, 3, 4, 5, 6, 7, 28);
+
+        const sql = mockPrepareAsync.mock.calls[0][0];
+        expect(sql).toContain('RoundId');
+        expect(sql).toContain('$RoundId');
+    });
+
+    it('binds $RoundId value in executeAsync', async () => {
+        await insertDeadlySinsRound(1, 1, 2, 3, 4, 5, 6, 7, 28);
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $RoundId: 1 })
+        );
+    });
+
+    it('binds null $RoundId when roundId is null', async () => {
+        await insertDeadlySinsRound(null, 1, 2, 3, 4, 5, 6, 7, 28);
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $RoundId: null })
+        );
+    });
+});
+
+describe('getDeadlySinsRoundByRoundId', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('calls getAllSync with SELECT on DeadlySinsRounds WHERE RoundId = ?', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        getDeadlySinsRoundByRoundId(5);
+
+        const [sql, params] = mockGetAllSync.mock.calls[0];
+        expect(sql).toContain('DeadlySinsRounds');
+        expect(sql).toContain('RoundId');
+        expect(params).toEqual([5]);
+    });
+
+    it('returns first row when found', () => {
+        const row = { Id: 1, RoundId: 5, Total: 7 };
+        mockGetAllSync.mockReturnValue([row]);
+
+        const result = getDeadlySinsRoundByRoundId(5);
+
+        expect(result).toEqual(row);
+    });
+
+    it('returns null when no row found', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        const result = getDeadlySinsRoundByRoundId(5);
+
+        expect(result).toBeNull();
+    });
+});
+
+describe('deleteRound cascade to DeadlySinsRounds', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockExecAsync.mockResolvedValue(undefined);
+    });
+
+    it('deletes DeadlySinsRounds for the round before deleting the round', async () => {
+        await deleteRound(99);
+
+        const sql = mockExecAsync.mock.calls[0][0];
+        expect(sql).toContain('DELETE FROM DeadlySinsRounds WHERE RoundId = 99');
     });
 });

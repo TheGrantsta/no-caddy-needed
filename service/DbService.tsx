@@ -7,6 +7,7 @@ import {
     getAllDrillHistory,
     insertDeadlySinsRound,
     getAllDeadlySinsRounds,
+    getDeadlySinsRoundByRoundId,
     insertRound,
     updateRound,
     insertRoundHole,
@@ -141,12 +142,13 @@ export type DeadlySinsRound = {
     TroubleOffTee: number;
     Penalties: number;
     Total: number;
+    RoundId: number | null;
     Created_At: string;
 };
 
-export const insertDeadlySinsRoundService = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => {
+export const insertDeadlySinsRoundService = (roundId: number | null, threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => {
     const total = threePutts + doubleBogeys + bogeysPar5 + bogeysInside9Iron + doubleChips + troubleOffTee + penalties;
-    return insertDeadlySinsRound(threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties, total);
+    return insertDeadlySinsRound(roundId, threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties, total);
 };
 
 export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {
@@ -163,6 +165,7 @@ export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {
             TroubleOffTee: round.TroubleOffTee,
             Penalties: round.Penalties,
             Total: round.Total,
+            RoundId: round.RoundId ?? null,
             Created_At: getTwoDigitDayAndMonth(round.Created_At),
         });
     });
@@ -345,28 +348,22 @@ export const saveClubDistancesService = async (distances: { Club: string; CarryD
     return insertClubDistances(distances);
 };
 
-export const getDeadlySinsForRoundService = (roundCreatedAt: string): DeadlySinsRound | null => {
-    const roundDate = getTwoDigitDayAndMonth(roundCreatedAt);
-    const rounds = getAllDeadlySinsRounds();
-
-    for (const r of rounds) {
-        if (getTwoDigitDayAndMonth(r.Created_At) === roundDate) {
-            return {
-                Id: r.Id,
-                ThreePutts: r.ThreePutts,
-                DoubleBogeys: r.DoubleBogeys,
-                BogeysPar5: r.BogeysPar5,
-                BogeysInside9Iron: r.BogeysInside9Iron,
-                DoubleChips: r.DoubleChips,
-                TroubleOffTee: r.TroubleOffTee,
-                Penalties: r.Penalties,
-                Total: r.Total,
-                Created_At: getTwoDigitDayAndMonth(r.Created_At),
-            };
-        }
-    }
-
-    return null;
+export const getDeadlySinsForRoundService = (roundId: number): DeadlySinsRound | null => {
+    const r = getDeadlySinsRoundByRoundId(roundId) as any;
+    if (!r) return null;
+    return {
+        Id: r.Id,
+        ThreePutts: r.ThreePutts,
+        DoubleBogeys: r.DoubleBogeys,
+        BogeysPar5: r.BogeysPar5,
+        BogeysInside9Iron: r.BogeysInside9Iron,
+        DoubleChips: r.DoubleChips,
+        TroubleOffTee: r.TroubleOffTee,
+        Penalties: r.Penalties,
+        Total: r.Total,
+        RoundId: r.RoundId ?? null,
+        Created_At: getTwoDigitDayAndMonth(r.Created_At),
+    };
 };
 
 // Settings services

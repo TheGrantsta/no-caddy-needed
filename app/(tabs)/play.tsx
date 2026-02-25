@@ -60,9 +60,9 @@ export default function Play() {
     const [currentHole, setCurrentHole] = useState(1);
     const [runningTotal, setRunningTotal] = useState(0);
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
-    const [tiger5Rounds, setTiger5Rounds] = useState<DeadlySinsRound[]>([]);
+    const [deadlySinsRounds, setDeadlySinsRounds] = useState<DeadlySinsRound[]>([]);
     const [section, setSection] = useState('play-score');
-    const [tiger5Values, setTiger5Values] = useState({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0, troubleOffTee: 0, penalties: 0 });
+    const [deadlySinsValues, setDeadlySinsValues] = useState({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0, troubleOffTee: 0, penalties: 0 });
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
@@ -154,7 +154,7 @@ export default function Play() {
         }
         const history = getAllRoundHistoryService();
         setRoundHistory(history);
-        setTiger5Rounds(getAllDeadlySinsRoundsService());
+        setDeadlySinsRounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
 
         const currentSettings = getSettingsService();
@@ -168,7 +168,7 @@ export default function Play() {
         setRefreshing(true);
         setTimeout(() => {
             setRoundHistory(getAllRoundHistoryService());
-            setTiger5Rounds(getAllDeadlySinsRoundsService());
+            setDeadlySinsRounds(getAllDeadlySinsRoundsService());
             setRefreshing(false);
         }, 750);
     };
@@ -253,8 +253,8 @@ export default function Play() {
         return section === sectionName;
     };
 
-    const handleTiger5ValuesChange = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => {
-        setTiger5Values({ threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties });
+    const handledeadlySinsValuesChange = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => {
+        setDeadlySinsValues({ threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties });
     };
 
     const handleEndRoundPress = () => {
@@ -270,14 +270,14 @@ export default function Play() {
         setCurrentHole(1);
         setRunningTotal(0);
         setSection('play-score');
-        setTiger5Values({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0, troubleOffTee: 0, penalties: 0 });
+        setDeadlySinsValues({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0, troubleOffTee: 0, penalties: 0 });
         setPlayers([]);
         setShowPlayerSetup(false);
         setCurrentHoleData(null);
         setShowEndRoundConfirm(false);
         setScorecardData(null);
         setRoundHistory(getAllRoundHistoryService());
-        setTiger5Rounds(getAllDeadlySinsRoundsService());
+        setDeadlySinsRounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
     };
 
@@ -292,13 +292,13 @@ export default function Play() {
         if (runningTotal > 0) {
             await insertDeadlySinsRoundService(
                 activeRoundId,
-                tiger5Values.threePutts,
-                tiger5Values.doubleBogeys,
-                tiger5Values.bogeysPar5,
-                tiger5Values.bogeysInside9Iron,
-                tiger5Values.doubleChips,
-                tiger5Values.troubleOffTee,
-                tiger5Values.penalties,
+                deadlySinsValues.threePutts,
+                deadlySinsValues.doubleBogeys,
+                deadlySinsValues.bogeysPar5,
+                deadlySinsValues.bogeysInside9Iron,
+                deadlySinsValues.doubleChips,
+                deadlySinsValues.troubleOffTee,
+                deadlySinsValues.penalties,
             );
         }
 
@@ -363,7 +363,7 @@ export default function Play() {
                             </TouchableOpacity>
                         </View>
 
-                        <DeadlySinsChart rounds={tiger5Rounds} />
+                        <DeadlySinsChart rounds={deadlySinsRounds} />
 
                         {roundHistory.length === 0 && (
                             <View style={styles.headerContainer}>
@@ -374,8 +374,8 @@ export default function Play() {
                         )}
 
                         {roundHistory.length > 0 && (() => {
-                            const tiger5Map = new Map<number, number>(
-                                tiger5Rounds
+                            const deadlySinsMap = new Map<number, number>(
+                                deadlySinsRounds
                                     .filter(t => t.RoundId != null)
                                     .map(t => [t.RoundId as number, t.Total])
                             );
@@ -399,7 +399,7 @@ export default function Play() {
                                                 <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
                                                     <Text style={[styles.normalText, localStyles.historyDateColumn]}>{round.CourseName ? `${round.Created_At} - ${round.CourseName}` : round.Created_At}</Text>
                                                     <Text style={[styles.normalText, localStyles.historyNarrowColumn]}>{formatScore(round.TotalScore)}</Text>
-                                                    <Text style={[styles.normalText, localStyles.historyNarrowColumn]}>{tiger5Map.has(round.Id) ? tiger5Map.get(round.Id) : '-'}</Text>
+                                                    <Text style={[styles.normalText, localStyles.historyNarrowColumn]}>{deadlySinsMap.has(round.Id) ? deadlySinsMap.get(round.Id) : '-'}</Text>
                                                 </View>
                                             </TouchableOpacity>
                                         ))}
@@ -427,7 +427,7 @@ export default function Play() {
                                     <DeadlySinsTally
                                         onEndRound={() => { }}
                                         roundControlled={true}
-                                        onValuesChange={handleTiger5ValuesChange}
+                                        onValuesChange={handledeadlySinsValuesChange}
                                         holePar={currentHoleData?.holePar}
                                         userScore={currentHoleData?.scores.find(s => {
                                             const player = players.find(p => p.Id === s.playerId);
@@ -481,7 +481,6 @@ export default function Play() {
                     <View style={styles.container}>
                         <Text style={localStyles.scorecardHeader}>Scorecard</Text>
                         <Scorecard
-                            round={scorecardData.round}
                             players={scorecardData.players}
                             holeScores={scorecardData.holeScores}
                         />

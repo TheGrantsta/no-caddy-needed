@@ -11,8 +11,10 @@ Things to do
 - [X] Amend size of the 7 Deadly Sins tally
 - [X] Don't show 7DS chart on edit scorecard screen
 - [X] Enable option to run screenshots without onboarding screens
-- [ ] Fix issue where 7DS does not show the correct answer
-- [ ] Fix issue where 7DS does not appear to be saved
+- [X] Fix issue where 7DS does not show the correct answer
+- [X] Fix issue where 7DS does not appear to be saved
+- [X] Remove references and names relating to Tiger5
+- [ ] Generate App Store compliant screen shots
 - [ ] Fix issue where 7DS is not deleted when the round is deleted
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project

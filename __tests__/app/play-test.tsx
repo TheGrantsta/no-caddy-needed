@@ -1263,7 +1263,7 @@ describe('Play screen', () => {
     });
 
     describe('7 Deadly Sins chart', () => {
-        const mockTiger5Data = [
+        const mock7DeadlySinsData = [
             { Id: 1, ThreePutts: 3, DoubleBogeys: 1, BogeysPar5: 2, BogeysInside9Iron: 4, DoubleChips: 0, TroubleOffTee: 1, Penalties: 2, Total: 13, Created_At: '15/06' },
             { Id: 2, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 2, TroubleOffTee: 3, Penalties: 1, Total: 13, Created_At: '16/06' },
         ];
@@ -1277,7 +1277,7 @@ describe('Play screen', () => {
         });
 
         it('renders chart in idle state when data exists', () => {
-            mockGetAllDeadlySinsRounds.mockReturnValue(mockTiger5Data);
+            mockGetAllDeadlySinsRounds.mockReturnValue(mock7DeadlySinsData);
 
             const { getByText } = render(<Play />);
 
@@ -1285,7 +1285,7 @@ describe('Play screen', () => {
         });
 
         it('does not render chart during active round', async () => {
-            mockGetAllDeadlySinsRounds.mockReturnValue(mockTiger5Data);
+            mockGetAllDeadlySinsRounds.mockReturnValue(mock7DeadlySinsData);
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 

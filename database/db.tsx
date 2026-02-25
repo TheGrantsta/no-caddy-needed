@@ -45,6 +45,11 @@ export const initialize = async () => {
 
     const syncDb = SQLite.openDatabaseSync(dbName);
 
+    const tiger5Columns = syncDb.getAllSync('PRAGMA table_info(Tiger5Rounds)');
+    if (tiger5Columns.length > 0) {
+        syncDb.execSync('ALTER TABLE Tiger5Rounds RENAME TO DeadlySinsRounds');
+    }
+
     const migrations: TableAmendment[] = [
         {
             table: 'Settings',
@@ -69,6 +74,7 @@ export const initialize = async () => {
             columnsToAdd: [
                 'TroubleOffTee INTEGER NOT NULL DEFAULT 0',
                 'Penalties INTEGER NOT NULL DEFAULT 0',
+                'RoundId INTEGER',
             ],
             columnsToRemove: [],
         },

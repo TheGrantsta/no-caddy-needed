@@ -56,7 +56,7 @@ describe('getAllDeadlySinsRoundsService', () => {
 
     it('formats Created_At dates correctly', () => {
         mockGetAllDeadlySinsRounds.mockReturnValue([
-            { Id: 1, ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 1, Created_At: '2025-06-15T12:00:00.000Z' },
+            { Id: 1, ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 1, RoundId: 1, Created_At: '2025-06-15T12:00:00.000Z' },
         ]);
 
         const result = getAllDeadlySinsRoundsService();
@@ -97,20 +97,22 @@ describe('getAllDeadlySinsRoundsService', () => {
         expect(result[0].RoundId).toBe(42);
     });
 
-    it('maps RoundId as null when not present on row', () => {
+    it('excludes rows where RoundId is null', () => {
         mockGetAllDeadlySinsRounds.mockReturnValue([
-            { Id: 4, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 0, RoundId: null, Created_At: '2025-04-01T12:00:00.000Z' },
+            { Id: 1, ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 1, RoundId: 5, Created_At: '2025-06-15T12:00:00.000Z' },
+            { Id: 2, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 0, RoundId: null, Created_At: '2025-06-14T12:00:00.000Z' },
         ]);
 
         const result = getAllDeadlySinsRoundsService();
 
-        expect(result[0].RoundId).toBeNull();
+        expect(result).toHaveLength(1);
+        expect(result[0].Id).toBe(1);
     });
 
     it('returns multiple rounds', () => {
         mockGetAllDeadlySinsRounds.mockReturnValue([
-            { Id: 2, ThreePutts: 1, DoubleBogeys: 1, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 1, TroubleOffTee: 1, Penalties: 1, Total: 7, Created_At: '2025-02-20T12:00:00.000Z' },
-            { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 0, Created_At: '2025-02-19T12:00:00.000Z' },
+            { Id: 2, ThreePutts: 1, DoubleBogeys: 1, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 1, TroubleOffTee: 1, Penalties: 1, Total: 7, RoundId: 2, Created_At: '2025-02-20T12:00:00.000Z' },
+            { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 0, RoundId: 1, Created_At: '2025-02-19T12:00:00.000Z' },
         ]);
 
         const result = getAllDeadlySinsRoundsService();

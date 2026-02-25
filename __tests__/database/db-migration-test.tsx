@@ -201,6 +201,25 @@ describe('DeadlySinsRounds migration', () => {
         );
     });
 
+    it('adds RoundId column when missing from DeadlySinsRounds', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Settings)') return allSettingsColumns;
+            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
+            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return [
+                { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
+                { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
+                { name: 'TroubleOffTee' }, { name: 'Penalties' }, { name: 'Total' }, { name: 'Created_At' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE DeadlySinsRounds ADD COLUMN RoundId INTEGER'
+        );
+    });
+
     it('does not alter DeadlySinsRounds when TroubleOffTee and Penalties already exist', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return allSettingsColumns;
@@ -437,5 +456,38 @@ describe('deleteRound cascade to DeadlySinsRounds', () => {
 
         const sql = mockExecAsync.mock.calls[0][0];
         expect(sql).toContain('DELETE FROM DeadlySinsRounds WHERE RoundId = 99');
+    });
+});
+
+describe('Tiger5Rounds to DeadlySinsRounds rename migration', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockExecAsync.mockResolvedValue(undefined);
+    });
+
+    it('renames Tiger5Rounds to DeadlySinsRounds when Tiger5Rounds exists', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [
+                { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
+                { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
+                { name: 'Total' }, { name: 'Created_At' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE Tiger5Rounds RENAME TO DeadlySinsRounds');
+    });
+
+    it('does not rename when Tiger5Rounds does not exist', async () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        await initialize();
+
+        const renameCalls = mockExecSync.mock.calls.filter(
+            (call: string[]) => call[0].includes('RENAME')
+        );
+        expect(renameCalls).toHaveLength(0);
     });
 });

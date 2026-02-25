@@ -154,7 +154,7 @@ export const insertDeadlySinsRoundService = (roundId: number | null, threePutts:
 export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {
     const rounds: DeadlySinsRound[] = [];
 
-    getAllDeadlySinsRounds().forEach((round: any) => {
+    getAllDeadlySinsRounds().filter((round: any) => round.RoundId != null).forEach((round: any) => {
         rounds.push({
             Id: round.Id,
             ThreePutts: round.ThreePutts,

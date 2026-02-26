@@ -4,7 +4,7 @@
     "slug": "no-caddy-needed",
     "version": "1.0.0",
     "orientation": "default",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -23,7 +23,8 @@
       "bundleIdentifier": "com.grantsta.golf.nocaddyneeded",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "icon": "./assets/images/logo.png"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -62,14 +63,15 @@
       ],
       "expo-router",
       "expo-notifications",
-      "@react-native-firebase/app",
-      "@react-native-firebase/crashlytics",
-      ["expo-build-properties", {
-        "android": {
-          "targetSdkVersion": 35,
-          "enableProguardInReleaseBuilds": true
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "targetSdkVersion": 35,
+            "enableProguardInReleaseBuilds": true
+          }
         }
-      }]
+      ]
     ],
     "experiments": {
       "typedRoutes": true

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import DeadlySinsChart from '../../components/DeadlySinsChart';
 import { DeadlySinsRound } from '@/service/DbService';
 import colours from '../../assets/colours';
@@ -16,8 +16,8 @@ jest.mock('../../context/ThemeContext', () => ({
 
 describe('DeadlySinsChart component', () => {
     const mockRounds: DeadlySinsRound[] = [
-        { Id: 1, ThreePutts: 3, DoubleBogeys: 1, BogeysPar5: 2, BogeysInside9Iron: 4, DoubleChips: 0, TroubleOffTee: 1, Penalties: 2, Total: 13, Created_At: '15/06' },
-        { Id: 2, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 2, TroubleOffTee: 3, Penalties: 1, Total: 13, Created_At: '16/06' },
+        { Id: 1, ThreePutts: 3, DoubleBogeys: 1, BogeysPar5: 2, BogeysInside9Iron: 4, DoubleChips: 0, TroubleOffTee: 1, Penalties: 2, Total: 13, RoundId: 1, Created_At: '15/06' },
+        { Id: 2, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 2, TroubleOffTee: 3, Penalties: 1, Total: 13, RoundId: 1, Created_At: '16/06' },
     ];
 
     it('returns null when rounds array is empty', () => {
@@ -28,7 +28,7 @@ describe('DeadlySinsChart component', () => {
 
     it('returns null when rounds total score is zero', () => {
         const emptyRound: DeadlySinsRound[] = [
-            { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 0, Created_At: '15/06' },
+            { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 0, RoundId: 1, Created_At: '15/06' },
         ];
         const { queryByText } = render(<DeadlySinsChart rounds={emptyRound} />);
 
@@ -73,13 +73,13 @@ describe('DeadlySinsChart component', () => {
 
         // Both ThreePutts and BogeysInside9Iron are 5, stable sort preserves original order
         expect(labelTexts[0]).toBe('3-putts');
-        expect(labelTexts[1]).toBe('Inside 9-iron');
+        expect(labelTexts[1]).toBe('Bogeys inside 9-iron');
         expect(labelTexts[6]).toBe('Double chips');
     });
 
     it('handles a single round', () => {
         const singleRound: DeadlySinsRound[] = [
-            { Id: 1, ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 2, BogeysInside9Iron: 0, DoubleChips: 3, TroubleOffTee: 1, Penalties: 0, Total: 7, Created_At: '15/06' },
+            { Id: 1, ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 2, BogeysInside9Iron: 0, DoubleChips: 3, TroubleOffTee: 1, Penalties: 0, Total: 7, RoundId: 1, Created_At: '15/06' },
         ];
 
         const { getAllByTestId } = render(<DeadlySinsChart rounds={singleRound} />);
@@ -132,5 +132,42 @@ describe('DeadlySinsChart component', () => {
         const { getByText } = render(<DeadlySinsChart rounds={mockRounds} />);
 
         expect(getByText('Biggest problem')).toBeTruthy();
+    });
+
+    describe('open/close toggle', () => {
+        it('shows toggle header when rounds are provided', () => {
+            const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
+
+            expect(getByTestId('7deadly-sins-chart-toggle')).toBeTruthy();
+        });
+
+        it('does not show toggle when component returns null', () => {
+            const { queryByTestId } = render(<DeadlySinsChart rounds={[]} />);
+
+            expect(queryByTestId('7deadly-sins-chart-toggle')).toBeNull();
+        });
+
+        it('chart content is open by default', () => {
+            const { getAllByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
+
+            expect(getAllByTestId('7deadly-sins-chart-label')).toHaveLength(7);
+        });
+
+        it('pressing toggle hides chart content', () => {
+            const { getByTestId, queryByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-chart-toggle'));
+
+            expect(queryByTestId('7deadly-sins-chart-label')).toBeNull();
+        });
+
+        it('pressing toggle again shows chart content', () => {
+            const { getByTestId, getAllByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-chart-toggle'));
+            fireEvent.press(getByTestId('7deadly-sins-chart-toggle'));
+
+            expect(getAllByTestId('7deadly-sins-chart-label')).toHaveLength(7);
+        });
     });
 });

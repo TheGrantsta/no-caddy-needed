@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 import { DeadlySinsRound } from '@/service/DbService';
@@ -17,7 +17,7 @@ const CATEGORY_LABELS: { key: keyof DeadlySinsRound; label: string }[] = [
     { key: 'TroubleOffTee', label: 'Trouble off tee' },
     { key: 'Penalties', label: 'Penalties' },
     { key: 'ThreePutts', label: '3-putts' },
-    { key: 'BogeysInside9Iron', label: 'Inside 9-iron' },
+    { key: 'BogeysInside9Iron', label: 'Bogeys inside 9-iron' },
     { key: 'DoubleChips', label: 'Double chips' },
     { key: 'DoubleBogeys', label: 'Double bogeys' },
     { key: 'BogeysPar5', label: 'Bogeys on par 5' },
@@ -25,16 +25,16 @@ const CATEGORY_LABELS: { key: keyof DeadlySinsRound; label: string }[] = [
 
 export default function DeadlySinsChart({ rounds }: Props) {
     const colours = useThemeColours();
+    const [isOpen, setIsOpen] = useState(true);
 
     const localStyles = useMemo(() => StyleSheet.create({
         container: {
             padding: 10,
-            marginBottom: 10,
+            paddingBottom: 0,
         },
         title: {
             color: colours.yellow,
             fontSize: fontSizes.subHeader,
-            marginBottom: 15,
             textAlign: 'center',
         },
         barContainer: {
@@ -98,6 +98,18 @@ export default function DeadlySinsChart({ rounds }: Props) {
             color: colours.white,
             fontSize: fontSizes.smallestText,
         },
+        toggleHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 8,
+            borderBottomWidth: 0.5,
+            borderColor: colours.yellow,
+        },
+        chevron: {
+            color: colours.yellow,
+            fontSize: fontSizes.header,
+        },
     }), [colours]);
 
     if (rounds.length === 0 || rounds.every(r => r.Total === 0)) {
@@ -126,49 +138,60 @@ export default function DeadlySinsChart({ rounds }: Props) {
 
     return (
         <View style={localStyles.container}>
-            <Text style={localStyles.title}>7 Deadly Sins</Text>
+            <TouchableOpacity
+                testID="7deadly-sins-chart-toggle"
+                onPress={() => setIsOpen(prev => !prev)}
+                style={localStyles.toggleHeader}
+            >
+                <Text style={localStyles.title}>7 Deadly Sins</Text>
+                <Text style={localStyles.chevron}>{isOpen ? '▾' : '▴'}</Text>
+            </TouchableOpacity>
 
-            {categories.map((category, index) => (
-                <View key={index} style={localStyles.barContainer}>
-                    <View style={localStyles.labelContainer}>
-                        <Text testID="7deadly-sins-chart-label" style={localStyles.label} numberOfLines={1}>
-                            {category.label}
-                        </Text>
+            {isOpen && (
+                <>
+                    {categories.map((category, index) => (
+                        <View key={index} style={localStyles.barContainer}>
+                            <View style={localStyles.labelContainer}>
+                                <Text testID="7deadly-sins-chart-label" style={localStyles.label} numberOfLines={1}>
+                                    {category.label}
+                                </Text>
+                            </View>
+
+                            <View style={localStyles.barWrapper}>
+                                <View
+                                    testID={`7deadly-sins-chart-bar-${index}`}
+                                    style={[
+                                        localStyles.bar,
+                                        {
+                                            width: getBarWidth(category.count),
+                                            backgroundColor: getBarColor(index),
+                                        }
+                                    ]}
+                                />
+                                <View
+                                    style={[
+                                        localStyles.barBackground,
+                                        { width: `${maxCount === 0 ? 100 : 100 - (category.count / maxCount) * 100}%` }
+                                    ]}
+                                />
+                            </View>
+
+                            <View style={localStyles.countContainer}>
+                                <Text testID={`7deadly-sins-chart-count-${index}`} style={localStyles.countText}>
+                                    {category.count}
+                                </Text>
+                            </View>
+                        </View>
+                    ))}
+
+                    <View style={localStyles.legend}>
+                        <View style={localStyles.legendItem}>
+                            <View style={[localStyles.legendDot, { backgroundColor: colours.errorText }]} />
+                            <Text style={localStyles.legendText}>Biggest problem</Text>
+                        </View>
                     </View>
-
-                    <View style={localStyles.barWrapper}>
-                        <View
-                            testID={`7deadly-sins-chart-bar-${index}`}
-                            style={[
-                                localStyles.bar,
-                                {
-                                    width: getBarWidth(category.count),
-                                    backgroundColor: getBarColor(index),
-                                }
-                            ]}
-                        />
-                        <View
-                            style={[
-                                localStyles.barBackground,
-                                { width: `${maxCount === 0 ? 100 : 100 - (category.count / maxCount) * 100}%` }
-                            ]}
-                        />
-                    </View>
-
-                    <View style={localStyles.countContainer}>
-                        <Text testID={`7deadly-sins-chart-count-${index}`} style={localStyles.countText}>
-                            {category.count}
-                        </Text>
-                    </View>
-                </View>
-            ))}
-
-            <View style={localStyles.legend}>
-                <View style={localStyles.legendItem}>
-                    <View style={[localStyles.legendDot, { backgroundColor: colours.errorText }]} />
-                    <Text style={localStyles.legendText}>Biggest problem</Text>
-                </View>
-            </View>
+                </>
+            )}
         </View>
     );
 }

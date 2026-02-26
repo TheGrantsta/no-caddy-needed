@@ -4,7 +4,7 @@
     "slug": "no-caddy-needed",
     "version": "1.0.0",
     "orientation": "default",
-    "icon": "./assets/images/logo.png",
+    "icon": "./assets/images/adaptive-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -24,7 +24,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
-      "icon": "./assets/images/logo.png"
+      "icon": "./assets/images/adaptive-icon.png"
     },
     "android": {
       "googleServicesFile": "./google-services.json",

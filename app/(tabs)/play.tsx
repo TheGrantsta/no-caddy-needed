@@ -261,6 +261,7 @@ export default function Play() {
     });
 
     const handlePreviousHole = () => {
+        if (currentHole <= 1) return;
         const holeGoingBackTo = currentHole - 1;
         setHoleContributions(prev => {
             const next = { ...prev };
@@ -508,22 +509,24 @@ export default function Play() {
                                 }
                             />
 
-                            <TouchableOpacity
-                                testID="next-hole-button"
-                                onPress={handleNextHole}
-                                style={localStyles.nextHoleButton}
-                            >
-                                <Text style={localStyles.nextHoleButtonText}>Next hole</Text>
-                            </TouchableOpacity>
+                            {!showEndRoundConfirm && (
+                                <View>
+                                    <TouchableOpacity
+                                        testID="next-hole-button"
+                                        onPress={handleNextHole}
+                                        style={localStyles.nextHoleButton}
+                                    >
+                                        <Text style={localStyles.nextHoleButtonText}>Next hole</Text>
+                                    </TouchableOpacity>
 
-                            {currentHole > 1 && !showEndRoundConfirm && (
-                                <TouchableOpacity
-                                    testID="previous-hole-button"
-                                    onPress={handlePreviousHole}
-                                    style={{ padding: 12, alignItems: 'center', marginTop: 4 }}
-                                >
-                                    <Text style={{ color: colours.yellow, fontSize: fontSizes.normal }}>Previous hole</Text>
-                                </TouchableOpacity>
+                                    <TouchableOpacity
+                                        testID="previous-hole-button"
+                                        onPress={handlePreviousHole}
+                                        style={{ padding: 12, alignItems: 'center', marginTop: 4 }}
+                                    >
+                                        <Text style={{ color: colours.yellow, fontSize: fontSizes.normal }}>Previous hole</Text>
+                                    </TouchableOpacity>
+                                </View>
                             )}
 
                             {!showEndRoundConfirm && (

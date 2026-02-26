@@ -543,21 +543,23 @@ describe('Play screen', () => {
             expect(queryByText('Round in progress')).toBeNull();
         });
 
-        it('does not show previous hole button on hole 1', async () => {
+        it('pressing previous hole button on hole 1 does not navigate below hole 1', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
-            const { getByTestId, queryByTestId } = render(<Play />);
+            const { getByTestId, getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByTestId('next-hole-button')).toBeTruthy();
+                expect(getByText('Hole 1')).toBeTruthy();
             });
 
-            expect(queryByTestId('previous-hole-button')).toBeNull();
+            fireEvent.press(getByTestId('previous-hole-button'));
+
+            expect(getByText('Hole 1')).toBeTruthy();
         });
 
         it('shows previous hole button from hole 2 onwards', async () => {

@@ -14,8 +14,9 @@ Things to do
 - [X] Fix issue where 7DS does not show the correct answer
 - [X] Fix issue where 7DS does not appear to be saved
 - [X] Remove references and names relating to Tiger5
-- [ ] Generate App Store compliant screen shots
-- [ ] Fix issue where 7DS is not deleted when the round is deleted
+- [X] Generate App Store compliant screen shots
+- [X] Fix issue where 7DS is not deleted when the round is deleted
+- [ ] Add filters for 7DS & Round history
 - [ ] Deprecation warning in debugger
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project

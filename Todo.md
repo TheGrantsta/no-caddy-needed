@@ -17,7 +17,7 @@ Things to do
 - [X] Generate App Store compliant screen shots
 - [X] Fix issue where 7DS is not deleted when the round is deleted
 - [X] Add filters for 7DS & Round history
-- [ ] Save button does not follow the same format when saving scorecard
+- [X] Save button does not follow the same format when saving scorecard
 - [ ] Deprecation warning in debugger
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project

@@ -6,7 +6,7 @@ import { useToast } from 'react-native-toast-notifications';
 import RoundScorecard from '../../components/RoundScorecard';
 import Scorecard from '../../components/Scorecard';
 import ScoreEditor from '../../components/ScoreEditor';
-import DeadlySinsChart from '../../components/DeadlySinsChart';
+import { useAppToast } from '../../hooks/useAppToast';
 import {
     getRoundScorecardService,
     getMultiplayerScorecardService,
@@ -16,12 +16,10 @@ import {
     RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
-    DeadlySinsRound,
 } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
-import { useAppToast } from '../../hooks/useAppToast';
 import fontSizes from '@/assets/font-sizes';
 
 export default function ScorecardScreen() {
@@ -128,14 +126,16 @@ export default function ScorecardScreen() {
         const success = await updateScorecardService(Number(roundId), changes);
 
         if (success) {
-            toast.show('Scorecard updated', { type: 'success' });
+            showResult(success, 'Scorecard updated', 'Failed to update scorecard');
+
             loadData();
             setIsEditing(false);
             setEditedScores([]);
             setSelectedScore(null);
             setShowSaveConfirm(false);
         } else {
-            toast.show('Failed to update scorecard', { type: 'danger' });
+            showResult(success, 'Scorecard updated', 'Failed to update scorecard');
+
             setShowSaveConfirm(false);
         }
     };

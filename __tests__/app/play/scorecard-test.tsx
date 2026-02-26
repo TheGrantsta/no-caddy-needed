@@ -319,7 +319,7 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('confirm-save-button'));
 
             await waitFor(() => {
-                expect(mockShow).toHaveBeenCalledWith('Scorecard updated', { type: 'success' });
+                expect(mockShow).toHaveBeenCalledWith('Scorecard updated', expect.objectContaining({ type: 'success' }));
             });
         });
 
@@ -334,7 +334,7 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('confirm-save-button'));
 
             await waitFor(() => {
-                expect(mockShow).toHaveBeenCalledWith('Failed to update scorecard', { type: 'danger' });
+                expect(mockShow).toHaveBeenCalledWith('Failed to update scorecard', expect.objectContaining({ type: 'danger' }));
             });
         });
 

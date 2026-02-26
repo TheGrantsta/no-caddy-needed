@@ -74,6 +74,12 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
    iOS requires Apple developer account
 
+4. Submit for iOS
+
+   ```bash
+   eas submit --platform ios
+   ```
+
 ## Capturing screenshots
 
 1. Install maestro

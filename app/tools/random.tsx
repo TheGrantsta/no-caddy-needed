@@ -57,6 +57,18 @@ export default function Random() {
     const points = ['Randomise practice to mimic play', 'Use your pre-shot routine', 'Use your post-shot routine'];
 
     const localStyles = useMemo(() => StyleSheet.create({
+        actionButton: {
+            backgroundColor: colours.yellow,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            width: '100%',
+        },
+        actionButtonText: {
+            color: colours.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
         randomNumberContainer: {
             backgroundColor: colours.background,
             borderColor: colours.yellow,
@@ -146,22 +158,6 @@ export default function Random() {
                         </Text>
                     </View>
 
-                    {/* {randomNumber > 0 && (
-                        <View style={localStyles.randomNumberContainer}>
-                            <Text style={localStyles.randomNumberText}>
-                                {randomNumber}
-                            </Text>
-                        </View>
-                    )} */}
-
-                    <View style={styles.marginTop}>
-                        <TouchableOpacity testID='save-button' style={styles.button} onPress={handleGenerate}>
-                            <Text style={styles.buttonText}>
-                                Run
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
                     {randomNumber > 0 && (
                         <View style={localStyles.randomNumberContainer}>
                             <Text style={localStyles.randomNumberText}>
@@ -170,7 +166,16 @@ export default function Random() {
                         </View>
                     )}
 
-                    <Chevrons heading='Purpose' points={points} />
+                    <View style={[styles.marginTop, styles.container]}>
+                        <TouchableOpacity testID='save-button' style={localStyles.actionButton} onPress={handleGenerate}>
+                            <Text style={localStyles.actionButtonText}>Run</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.marginTop}>
+                        <Chevrons heading='Purpose' points={points} />
+                    </View>
+
                 </View>
             </ScrollView>
         </GestureHandlerRootView>

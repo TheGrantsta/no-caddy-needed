@@ -15,7 +15,6 @@
     },
     "ios": {
       "supportsTablet": true,
-      "googleServicesFile": "./GoogleService-Info.plist",
       "splash": {
         "image": "./assets/images/full-logo-transparent-square.png",
         "resizeMode": "contain",

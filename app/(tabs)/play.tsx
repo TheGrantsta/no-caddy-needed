@@ -74,6 +74,7 @@ export default function Play() {
     const router = useRouter();
     const [settings, setSettings] = useState(getSettingsService());
     const [showOnboarding, setShowOnboarding] = useState(false);
+    const [historyFilter, setHistoryFilter] = useState<1 | 10 | 'all'>('all');
 
     const localStyles = useMemo(() => StyleSheet.create({
         startRoundContainer: {
@@ -125,6 +126,37 @@ export default function Play() {
         },
         roundHistoryScroll: {
             maxHeight: 300,
+        },
+        filterContainer: {
+            flexDirection: 'row' as const,
+            justifyContent: 'flex-end' as const,
+            paddingHorizontal: 15,
+            paddingTop: 20,
+            gap: 8,
+        },
+        filterLabel: {
+            color: colours.yellow,
+            fontSize: fontSizes.normal,
+            alignSelf: 'center' as const,
+            marginRight: 4,
+        },
+        filterButton: {
+            paddingVertical: 4,
+            width: 68,
+            alignItems: 'center' as const,
+            borderRadius: 6,
+            borderWidth: 1,
+            borderColor: colours.yellow,
+        },
+        filterButtonSelected: {
+            backgroundColor: colours.yellow,
+        },
+        filterButtonText: {
+            color: colours.yellow,
+            fontSize: fontSizes.normal,
+        },
+        filterButtonTextSelected: {
+            color: colours.background,
         },
         historyDateColumn: {
             width: '70%' as const,
@@ -319,6 +351,12 @@ export default function Play() {
 
     const isRoundActive = activeRoundId !== null;
 
+    const filteredRoundHistory = historyFilter === 'all' ? roundHistory : roundHistory.slice(0, historyFilter);
+    const filteredRoundIds = new Set(filteredRoundHistory.map(r => r.Id));
+    const filteredDeadlySinsRounds = historyFilter === 'all'
+        ? deadlySinsRounds
+        : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
+
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             {refreshing && (
@@ -363,7 +401,25 @@ export default function Play() {
                             </TouchableOpacity>
                         </View>
 
-                        <DeadlySinsChart rounds={deadlySinsRounds} />
+                        {roundHistory.length > 0 && (
+                            <View style={localStyles.filterContainer}>
+                                <Text testID="filter-label" style={localStyles.filterLabel}>Show</Text>
+                                {([1, 10, 'all'] as const).map(f => (
+                                    <TouchableOpacity
+                                        key={String(f)}
+                                        testID={`filter-button-${f}`}
+                                        onPress={() => setHistoryFilter(f)}
+                                        style={[localStyles.filterButton, historyFilter === f && localStyles.filterButtonSelected]}
+                                    >
+                                        <Text style={[localStyles.filterButtonText, historyFilter === f && localStyles.filterButtonTextSelected]}>
+                                            {f === 'all' ? 'All' : String(f)}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        )}
+
+                        <DeadlySinsChart key={String(historyFilter)} rounds={filteredDeadlySinsRounds} />
 
                         {roundHistory.length === 0 && (
                             <View style={styles.headerContainer}>
@@ -375,7 +431,7 @@ export default function Play() {
 
                         {roundHistory.length > 0 && (() => {
                             const deadlySinsMap = new Map<number, number>(
-                                deadlySinsRounds
+                                filteredDeadlySinsRounds
                                     .filter(t => t.RoundId != null)
                                     .map(t => [t.RoundId as number, t.Total])
                             );
@@ -390,7 +446,7 @@ export default function Play() {
                                         <Text testID="round-history-header-7DS" style={[styles.normalText, localStyles.historyNarrowColumn]}>7DS</Text>
                                     </View>
                                     <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
-                                        {roundHistory.slice(0, 30).map((round) => (
+                                        {filteredRoundHistory.map((round) => (
                                             <TouchableOpacity
                                                 key={round.Id}
                                                 testID={`round-history-row-${round.Id}`}

@@ -176,16 +176,15 @@ describe('Play screen', () => {
             expect(getByText('-2')).toBeTruthy();
         });
 
-        it('limits round history to 30 items', () => {
+        it('All filter shows all rounds', () => {
             const rounds = Array.from({ length: 35 }, (_, i) => ({
                 Id: i + 1, TotalScore: i, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
             }));
             mockGetAllRoundHistory.mockReturnValue(rounds);
 
-            const { getByText, queryByText } = render(<Play />);
+            const { getByTestId } = render(<Play />);
 
-            expect(getByText('30/01')).toBeTruthy();
-            expect(queryByText('31/01')).toBeNull();
+            expect(getByTestId('round-history-row-35')).toBeTruthy();
         });
 
         it('renders round history in a scrollable container', () => {
@@ -254,6 +253,106 @@ describe('Play screen', () => {
             const { queryByTestId } = render(<Play />);
 
             expect(queryByTestId('round-history-course-1')).toBeNull();
+        });
+    });
+
+    describe('History filter', () => {
+        it('renders filter buttons 1, 10, and All when round history exists', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01' },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('filter-button-1')).toBeTruthy();
+            expect(getByTestId('filter-button-10')).toBeTruthy();
+            expect(getByTestId('filter-button-all')).toBeTruthy();
+        });
+
+        it('renders Filter label next to the filter buttons', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01' },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('filter-label')).toBeTruthy();
+        });
+
+        it('all filter buttons have the same fixed width', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01' },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            const btn1 = getByTestId('filter-button-1');
+            const btn10 = getByTestId('filter-button-10');
+            const btnAll = getByTestId('filter-button-all');
+
+            const getWidth = (el: any) => {
+                const styles = Array.isArray(el.props.style) ? el.props.style : [el.props.style];
+                return styles.find((s: any) => s && s.width !== undefined)?.width;
+            };
+
+            expect(getWidth(btn1)).toBeDefined();
+            expect(getWidth(btn1)).toEqual(getWidth(btn10));
+            expect(getWidth(btn1)).toEqual(getWidth(btnAll));
+        });
+
+        it('shows all rounds by default', () => {
+            const rounds = Array.from({ length: 5 }, (_, i) => ({
+                Id: i + 1, TotalScore: i, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
+            }));
+            mockGetAllRoundHistory.mockReturnValue(rounds);
+
+            const { getByTestId } = render(<Play />);
+
+            rounds.forEach(r => expect(getByTestId(`round-history-row-${r.Id}`)).toBeTruthy());
+        });
+
+        it('limits round history to 1 when filter 1 is pressed', () => {
+            const rounds = Array.from({ length: 3 }, (_, i) => ({
+                Id: i + 1, TotalScore: i, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
+            }));
+            mockGetAllRoundHistory.mockReturnValue(rounds);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('filter-button-1'));
+
+            expect(getByTestId('round-history-row-1')).toBeTruthy();
+            expect(queryByTestId('round-history-row-2')).toBeNull();
+            expect(queryByTestId('round-history-row-3')).toBeNull();
+        });
+
+        it('limits round history to 10 when filter 10 is pressed', () => {
+            const rounds = Array.from({ length: 12 }, (_, i) => ({
+                Id: i + 1, TotalScore: i, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
+            }));
+            mockGetAllRoundHistory.mockReturnValue(rounds);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('filter-button-10'));
+
+            expect(getByTestId('round-history-row-10')).toBeTruthy();
+            expect(queryByTestId('round-history-row-11')).toBeNull();
+            expect(queryByTestId('round-history-row-12')).toBeNull();
+        });
+
+        it('shows all rounds again when All pressed after filtering', () => {
+            const rounds = Array.from({ length: 3 }, (_, i) => ({
+                Id: i + 1, TotalScore: i, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
+            }));
+            mockGetAllRoundHistory.mockReturnValue(rounds);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('filter-button-1'));
+            fireEvent.press(getByTestId('filter-button-all'));
+
+            rounds.forEach(r => expect(getByTestId(`round-history-row-${r.Id}`)).toBeTruthy());
         });
     });
 
@@ -1267,6 +1366,53 @@ describe('Play screen', () => {
             { Id: 1, ThreePutts: 3, DoubleBogeys: 1, BogeysPar5: 2, BogeysInside9Iron: 4, DoubleChips: 0, TroubleOffTee: 1, Penalties: 2, Total: 13, Created_At: '15/06' },
             { Id: 2, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 2, TroubleOffTee: 3, Penalties: 1, Total: 13, Created_At: '16/06' },
         ];
+
+        it('chart data changes when filter is changed', () => {
+            // Round history: Id:1 first in array → selected by slice(0,1) when filter=1
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01', CourseName: null },
+                { Id: 2, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '02/01', CourseName: null },
+            ]);
+            // 7DS in Id DESC order; RoundId links each 7DS entry to its round
+            mockGetAllDeadlySinsRounds.mockReturnValue([
+                { Id: 2, RoundId: 2, ThreePutts: 10, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 10, Created_At: '02/01' },
+                { Id: 1, RoundId: 1, ThreePutts: 2, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 2, Created_At: '01/01' },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            // All filter: ThreePutts = 10 + 2 = 12
+            expect(getByTestId('7deadly-sins-chart-count-0')).toHaveTextContent('12');
+
+            // Filter 1: round Id:1 selected → 7DS RoundId:1, ThreePutts = 2
+            fireEvent.press(getByTestId('filter-button-1'));
+
+            expect(getByTestId('7deadly-sins-chart-count-0')).toHaveTextContent('2');
+        });
+
+        it('filters chart by RoundId matching round history, not by independent slice', () => {
+            // 3 rounds newest first; only rounds 1 and 3 have 7DS data
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 3, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '03/01', CourseName: null },
+                { Id: 2, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '02/01', CourseName: null },
+                { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01', CourseName: null },
+            ]);
+            // 7DS Id DESC order: 7DS for round 1 has higher Id than 7DS for round 3
+            mockGetAllDeadlySinsRounds.mockReturnValue([
+                { Id: 2, RoundId: 1, ThreePutts: 10, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 10, Created_At: '01/01' },
+                { Id: 1, RoundId: 3, ThreePutts: 2, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 2, Created_At: '03/01' },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            // All filter: ThreePutts = 10 + 2 = 12
+            expect(getByTestId('7deadly-sins-chart-count-0')).toHaveTextContent('12');
+
+            // Filter 1: most recent round (Id:3) has ThreePutts=2; independent slice would wrongly show 10
+            fireEvent.press(getByTestId('filter-button-1'));
+
+            expect(getByTestId('7deadly-sins-chart-count-0')).toHaveTextContent('2');
+        });
 
         it('does not render chart when no 7 Deadly Sins data', () => {
             mockGetAllDeadlySinsRounds.mockReturnValue([]);

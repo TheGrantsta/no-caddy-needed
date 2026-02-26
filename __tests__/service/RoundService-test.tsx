@@ -202,6 +202,19 @@ describe('getRoundScorecardService', () => {
 
         expect(result).toBeNull();
     });
+
+    it('formats Created_At as DD/MM', () => {
+        mockGetRoundById.mockReturnValue({
+            Id: 1, TotalScore: 3, IsCompleted: 1,
+            StartTime: '2025-06-15T10:00:00.000Z', EndTime: '',
+            Created_At: '2025-06-15T10:00:00.000Z',
+        });
+        mockGetRoundHoles.mockReturnValue([]);
+
+        const result = getRoundScorecardService(1);
+
+        expect(result!.round.Created_At).toBe('15/06');
+    });
 });
 
 describe('getActiveRoundService', () => {
@@ -448,6 +461,22 @@ describe('getMultiplayerScorecardService', () => {
         const result = getMultiplayerScorecardService(1);
 
         expect(result).toBeNull();
+    });
+
+    it('formats Created_At as DD/MM', () => {
+        mockGetRoundById.mockReturnValue({
+            Id: 1, TotalScore: 3, IsCompleted: 1,
+            StartTime: '2025-06-15T10:00:00.000Z', EndTime: '',
+            Created_At: '2025-06-15T10:00:00.000Z',
+        });
+        mockGetRoundPlayers.mockReturnValue([
+            { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+        ]);
+        mockGetRoundHoleScores.mockReturnValue([]);
+
+        const result = getMultiplayerScorecardService(1);
+
+        expect(result!.round.Created_At).toBe('15/06');
     });
 });
 

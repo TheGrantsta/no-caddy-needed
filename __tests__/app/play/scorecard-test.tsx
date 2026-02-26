@@ -121,6 +121,29 @@ describe('Scorecard screen', () => {
         expect(getByText('Pebble Beach')).toBeTruthy();
     });
 
+    it('shows date in brackets after course name on multiplayer scorecard', () => {
+        const data = {
+            ...multiplayerData,
+            round: { ...multiplayerData.round, CourseName: 'St Andrews', Created_At: '26/02' },
+        };
+        mockGetMultiplayerScorecard.mockReturnValue(data);
+
+        const { getByText } = render(<ScorecardScreen />);
+
+        expect(getByText('St Andrews (26/02)')).toBeTruthy();
+    });
+
+    it('shows date in brackets after course name on legacy scorecard', () => {
+        mockGetRoundScorecard.mockReturnValue({
+            round: { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: 'Pebble Beach', Created_At: '15/06' },
+            holes: [{ Id: 1, RoundId: 1, HoleNumber: 1, ScoreRelativeToPar: 3 }],
+        });
+
+        const { getByText } = render(<ScorecardScreen />);
+
+        expect(getByText('Pebble Beach (15/06)')).toBeTruthy();
+    });
+
     it('renders RoundScorecard component with correct props', () => {
         mockGetRoundScorecard.mockReturnValue({
             round: { Id: 1, TotalScore: 5, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '' },

@@ -258,7 +258,7 @@ export const getRoundScorecardService = (roundId: number): RoundScorecard | null
     if (!round) return null;
 
     const holes = getRoundHoles(roundId) as RoundHole[];
-    return { round, holes };
+    return { round: { ...round, Created_At: getTwoDigitDayAndMonth(round.Created_At) }, holes };
 };
 
 export const getActiveRoundService = (): Round | null => {
@@ -336,7 +336,7 @@ export const getMultiplayerScorecardService = (roundId: number): MultiplayerRoun
     if (players.length === 0) return null;
 
     const holeScores = getRoundHoleScores(roundId) as RoundHoleScore[];
-    return { round, players, holeScores };
+    return { round: { ...round, Created_At: getTwoDigitDayAndMonth(round.Created_At) }, players, holeScores };
 };
 
 // Club distance services

@@ -183,7 +183,9 @@ export default function ScorecardScreen() {
                 <View style={styles.headerContainer}>
                     <Text style={[styles.headerText, styles.marginTop]}>Scorecard</Text>
                     {courseName && (
-                        <Text testID="scorecard-course-name" style={styles.subHeaderText}>{courseName}</Text>
+                        <Text testID="scorecard-course-name" style={styles.subHeaderText}>
+                            {round?.Created_At ? `${courseName} (${round.Created_At})` : courseName}
+                        </Text>
                     )}
                 </View>
                 {multiplayerScorecard && (

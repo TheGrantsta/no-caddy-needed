@@ -20,3 +20,4 @@ Things to do
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project
 - [ ] Add test coverage tool and include in pre-hook push
+- [ ] Complete Google Play setup

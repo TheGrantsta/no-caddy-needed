@@ -23,6 +23,7 @@ import {
     insertRoundHoleScore,
     getRoundHoleScores,
     updateRoundHoleScore,
+    deleteRoundHoleScoresByHole,
     updateRoundTotalScore,
     deleteRound,
     getSettings,
@@ -317,6 +318,7 @@ export const addMultiplayerHoleScoresService = async (
     holePar: number,
     scores: { playerId: number; playerName: string; score: number }[]
 ): Promise<boolean> => {
+    await deleteRoundHoleScoresByHole(roundId, holeNumber);
     for (const s of scores) {
         const success = await insertRoundHoleScore(roundId, s.playerId, holeNumber, holePar, s.score);
         if (!success) return false;

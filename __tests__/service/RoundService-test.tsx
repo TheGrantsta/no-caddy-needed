@@ -24,6 +24,7 @@ import {
     insertRoundHoleScore,
     getRoundHoleScores,
     getDistinctCourseNames,
+    deleteRoundHoleScoresByHole,
 } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
@@ -39,6 +40,7 @@ jest.mock('../../database/db', () => ({
     insertRoundHoleScore: jest.fn(),
     getRoundHoleScores: jest.fn(),
     getDistinctCourseNames: jest.fn(),
+    deleteRoundHoleScoresByHole: jest.fn(),
 }));
 
 const mockInsertRound = insertRound as jest.Mock;
@@ -53,6 +55,7 @@ const mockGetRoundPlayers = getRoundPlayers as jest.Mock;
 const mockInsertRoundHoleScore = insertRoundHoleScore as jest.Mock;
 const mockGetRoundHoleScores = getRoundHoleScores as jest.Mock;
 const mockGetDistinctCourseNames = getDistinctCourseNames as jest.Mock;
+const mockDeleteRoundHoleScoresByHole = deleteRoundHoleScoresByHole as jest.Mock;
 
 describe('startRoundService', () => {
     beforeEach(() => {
@@ -376,6 +379,7 @@ describe('addMultiplayerHoleScoresService', () => {
 
     it('handles single player score', async () => {
         mockInsertRoundHoleScore.mockResolvedValue(true);
+        mockDeleteRoundHoleScoresByHole.mockResolvedValue(true);
 
         const scores = [{ playerId: 1, playerName: 'You', score: 3 }];
 
@@ -383,6 +387,18 @@ describe('addMultiplayerHoleScoresService', () => {
 
         expect(mockInsertRoundHoleScore).toHaveBeenCalledWith(42, 1, 5, 3, 3);
         expect(result).toBe(true);
+    });
+
+    it('deletes existing hole scores before inserting to prevent duplicates', async () => {
+        mockDeleteRoundHoleScoresByHole.mockResolvedValue(true);
+        mockInsertRoundHoleScore.mockResolvedValue(true);
+
+        const scores = [{ playerId: 1, playerName: 'You', score: 4 }];
+
+        await addMultiplayerHoleScoresService(42, 3, 4, scores);
+
+        expect(mockDeleteRoundHoleScoresByHole).toHaveBeenCalledWith(42, 3);
+        expect(mockInsertRoundHoleScore).toHaveBeenCalledWith(42, 1, 3, 4, 4);
     });
 });
 

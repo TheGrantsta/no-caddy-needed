@@ -58,7 +58,7 @@ export default function Play() {
     const [refreshing, setRefreshing] = useState(false);
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
     const [currentHole, setCurrentHole] = useState(1);
-    const [runningTotal, setRunningTotal] = useState(0);
+    const [holeContributions, setHoleContributions] = useState<Record<number, number>>({});
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
     const [deadlySinsRounds, setDeadlySinsRounds] = useState<DeadlySinsRound[]>([]);
     const [section, setSection] = useState('play-score');
@@ -75,6 +75,11 @@ export default function Play() {
     const [settings, setSettings] = useState(getSettingsService());
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [historyFilter, setHistoryFilter] = useState<1 | 10 | 'all'>('all');
+
+    const runningTotal = useMemo(
+        () => Object.values(holeContributions).reduce((sum, c) => sum + c, 0),
+        [holeContributions]
+    );
 
     const localStyles = useMemo(() => StyleSheet.create({
         startRoundContainer: {
@@ -236,7 +241,7 @@ export default function Play() {
             setActiveRoundId(roundId);
             setPlayers(roundPlayers);
             setCurrentHole(1);
-            setRunningTotal(0);
+            setHoleContributions({});
             setShowPlayerSetup(false);
             const nId = await scheduleRoundReminder();
             setNotificationId(nId);
@@ -255,6 +260,17 @@ export default function Play() {
         scores: players.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: 4 })),
     });
 
+    const handlePreviousHole = () => {
+        const holeGoingBackTo = currentHole - 1;
+        setHoleContributions(prev => {
+            const next = { ...prev };
+            delete next[holeGoingBackTo];
+            return next;
+        });
+        setCurrentHole(prev => prev - 1);
+        setCurrentHoleData(null);
+    };
+
     const handleNextHole = async () => {
         if (!activeRoundId) return;
 
@@ -265,9 +281,8 @@ export default function Play() {
                 const player = players.find(p => p.Id === s.playerId);
                 return player && player.IsUser === 1;
             });
-            if (userScore) {
-                setRunningTotal(prev => prev + (userScore.score - holePar));
-            }
+            const contribution = userScore ? userScore.score - holePar : 0;
+            setHoleContributions(prev => ({ ...prev, [holeNumber]: contribution }));
             setCurrentHoleData(null);
             if (currentHole >= 18) {
                 setShowEndRoundConfirm(true);
@@ -300,7 +315,7 @@ export default function Play() {
     const resetToIdle = () => {
         setActiveRoundId(null);
         setCurrentHole(1);
-        setRunningTotal(0);
+        setHoleContributions({});
         setSection('play-score');
         setDeadlySinsValues({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0, troubleOffTee: 0, penalties: 0 });
         setPlayers([]);
@@ -500,6 +515,16 @@ export default function Play() {
                             >
                                 <Text style={localStyles.nextHoleButtonText}>Next hole</Text>
                             </TouchableOpacity>
+
+                            {currentHole > 1 && !showEndRoundConfirm && (
+                                <TouchableOpacity
+                                    testID="previous-hole-button"
+                                    onPress={handlePreviousHole}
+                                    style={{ padding: 12, alignItems: 'center', marginTop: 4 }}
+                                >
+                                    <Text style={{ color: colours.yellow, fontSize: fontSizes.normal }}>Previous hole</Text>
+                                </TouchableOpacity>
+                            )}
 
                             {!showEndRoundConfirm && (
                                 <TouchableOpacity

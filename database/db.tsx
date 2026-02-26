@@ -368,6 +368,25 @@ export const insertRoundHoleScore = async (roundId: number, roundPlayerId: numbe
     return success;
 };
 
+export const deleteRoundHoleScoresByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync(
+            'DELETE FROM RoundHoleScores WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
+        );
+        try {
+            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        console.log(e);
+        success = false;
+    }
+    return success;
+};
+
 export const getRoundHoleScores = (roundId: number) => {
     const db = SQLite.openDatabaseSync(dbName);
     return db.getAllSync('SELECT * FROM RoundHoleScores WHERE RoundId = ? ORDER BY HoleNumber ASC, RoundPlayerId ASC;', [roundId]);

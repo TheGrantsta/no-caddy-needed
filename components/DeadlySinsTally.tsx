@@ -32,6 +32,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     const [doubleChips, setDoubleChips] = useState(0);
     const [troubleOffTee, setTroubleOffTee] = useState(0);
     const [penalties, setPenalties] = useState(0);
+    const [isOpen, setIsOpen] = useState(true);
 
     const values = [threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties];
     const setters = [setThreePutts, setDoubleBogeys, setBogeysPar5, setBogeysInside9Iron, setDoubleChips, setTroubleOffTee, setPenalties];
@@ -91,6 +92,23 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
             fontSize: fontSizes.tableHeader,
             fontWeight: 'bold',
         },
+        toggleHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingVertical: 8,
+            borderBottomWidth: 0.5,
+            borderColor: colours.yellow,
+        },
+        toggleLabel: {
+            color: colours.text,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+        },
+        chevron: {
+            color: colours.yellow,
+            fontSize: fontSizes.subHeader,
+        },
     }), [colours]);
 
     const handleIncrement = (index: number) => {
@@ -115,6 +133,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
 
     const handleStartRound = () => {
         setRoundActive(true);
+        setIsOpen(true);
         onRoundStateChange?.(true);
     };
 
@@ -143,7 +162,16 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
 
     return (
         <View style={localStyles.container}>
-            {counters.map((counter, index) => {
+            <TouchableOpacity
+                testID="7deadly-sins-toggle"
+                onPress={() => setIsOpen(prev => !prev)}
+                style={localStyles.toggleHeader}
+            >
+                <Text style={localStyles.toggleLabel}>7 Deadly Sins</Text>
+                <Text style={localStyles.chevron}>{isOpen ? '▾' : '▴'}</Text>
+            </TouchableOpacity>
+
+            {isOpen && counters.map((counter, index) => {
                 if (counter.slug === 'bogeys-par5' && holePar !== 5) return null;
                 if (counter.slug === 'double-bogeys' && (holePar === undefined || userScore === undefined || userScore < holePar + 2)) return null;
                 return (

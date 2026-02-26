@@ -399,6 +399,67 @@ describe('DeadlySinsTally component', () => {
         });
     });
 
+    describe('open/close toggle', () => {
+        it('shows toggle header when round is active', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-start-round'));
+
+            expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
+        });
+
+        it('does not show toggle when round is not active', () => {
+            const { queryByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
+
+            expect(queryByTestId('7deadly-sins-toggle')).toBeNull();
+        });
+
+        it('counters are open by default when round is active', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-start-round'));
+
+            expect(getByTestId('7deadly-sins-count-three-putts')).toBeTruthy();
+        });
+
+        it('pressing toggle hides counter rows', () => {
+            const { getByTestId, queryByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-start-round'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle'));
+
+            expect(queryByTestId('7deadly-sins-count-three-putts')).toBeNull();
+        });
+
+        it('pressing toggle again shows counter rows', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-start-round'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle'));
+
+            expect(getByTestId('7deadly-sins-count-three-putts')).toBeTruthy();
+        });
+
+        it('shows toggle header in roundControlled mode', () => {
+            const { getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} />
+            );
+
+            expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
+        });
+
+        it('pressing toggle hides counters in roundControlled mode', () => {
+            const { getByTestId, queryByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} />
+            );
+
+            fireEvent.press(getByTestId('7deadly-sins-toggle'));
+
+            expect(queryByTestId('7deadly-sins-count-three-putts')).toBeNull();
+        });
+    });
+
     describe('roundControlled mode', () => {
         const mockOnValuesChange = jest.fn();
 

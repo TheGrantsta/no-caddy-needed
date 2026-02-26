@@ -1289,7 +1289,7 @@ describe('Play screen', () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
-            const { getByTestId, queryByText } = render(<Play />);
+            const { getByTestId, queryByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
@@ -1299,7 +1299,7 @@ describe('Play screen', () => {
                 expect(getByTestId('end-round-button')).toBeTruthy();
             });
 
-            expect(queryByText('7 Deadly Sins')).toBeNull();
+            expect(queryByTestId('7deadly-sins-chart-label')).toBeNull();
         });
 
         it('refreshes chart after ending a round', async () => {

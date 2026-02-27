@@ -1,7 +1,8 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import Random from '../../../app/tools/random';
 import * as Speech from 'expo-speech';
+import { getSettingsService } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -33,13 +34,28 @@ jest.mock('../../../assets/random-number', () => ({
 
 jest.mock('expo-speech', () => ({
     speak: jest.fn(),
+    getAvailableVoicesAsync: jest.fn(),
 }));
 
 jest.mock('../../../service/DbService', () => ({
-    getSettingsService: jest.fn(() => ({ voice: 'female', theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false })),
+    getSettingsService: jest.fn(),
 }));
 
+const mockGetSettingsService = getSettingsService as jest.Mock;
+const mockGetAvailableVoicesAsync = Speech.getAvailableVoicesAsync as jest.Mock;
+
+const defaultSettings = { voice: 'female', theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
+
+const samanthaVoice = { identifier: 'com.apple.ttsbundle.Samantha-compact', name: 'Samantha', language: 'en-US', quality: 'Default' };
+const tomVoice = { identifier: 'com.apple.ttsbundle.Tom-compact', name: 'Tom', language: 'en-US', quality: 'Default' };
+
 describe('Random number generator page', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockGetSettingsService.mockReturnValue(defaultSettings);
+        mockGetAvailableVoicesAsync.mockResolvedValue([samanthaVoice, tomVoice]);
+    });
+
     it('renders correctly with the header', () => {
         const { getByText } = render(<Random />);
 
@@ -61,7 +77,7 @@ describe('Random number generator page', () => {
     it('renders the Run button', () => {
         const { getByText } = render(<Random />);
 
-        expect(getByText('Run')).toBeTruthy();
+        expect(getByText('Generate')).toBeTruthy();
     });
 
     it('renders purpose section with chevrons', () => {
@@ -106,10 +122,58 @@ describe('Random number generator page', () => {
         expect(getByText('50')).toBeTruthy();
     });
 
-    it('speaks the random number after pressing Run with valid inputs', () => {
+    it('speaks with female voice identifier when Samantha is available', async () => {
         const { getByTestId } = render(<Random />);
         fireEvent.press(getByTestId('save-button'));
-        expect(Speech.speak).toHaveBeenCalledWith('50', { pitch: 1.2 });
+
+        await waitFor(() => {
+            expect(Speech.speak).toHaveBeenCalledWith('50', { voice: samanthaVoice.identifier });
+        });
+    });
+
+    it('speaks with male voice identifier when voice is male and Tom is available', async () => {
+        mockGetSettingsService.mockReturnValue({ ...defaultSettings, voice: 'male' });
+
+        const { getByTestId } = render(<Random />);
+        fireEvent.press(getByTestId('save-button'));
+
+        await waitFor(() => {
+            expect(Speech.speak).toHaveBeenCalledWith('50', { voice: tomVoice.identifier });
+        });
+    });
+
+    it('speaks with no voice options when voice is neutral', async () => {
+        mockGetSettingsService.mockReturnValue({ ...defaultSettings, voice: 'neutral' });
+
+        const { getByTestId } = render(<Random />);
+        fireEvent.press(getByTestId('save-button'));
+
+        await waitFor(() => {
+            expect(Speech.speak).toHaveBeenCalledWith('50', {});
+        });
+    });
+
+    it('falls back to higher pitch when voice is female and no female voice available', async () => {
+        mockGetAvailableVoicesAsync.mockResolvedValue([tomVoice]);
+
+        const { getByTestId } = render(<Random />);
+        fireEvent.press(getByTestId('save-button'));
+
+        await waitFor(() => {
+            expect(Speech.speak).toHaveBeenCalledWith('50', { pitch: 1.5 });
+        });
+    });
+
+    it('falls back to lower pitch when voice is male and no male voice available', async () => {
+        mockGetSettingsService.mockReturnValue({ ...defaultSettings, voice: 'male' });
+        mockGetAvailableVoicesAsync.mockResolvedValue([samanthaVoice]);
+
+        const { getByTestId } = render(<Random />);
+        fireEvent.press(getByTestId('save-button'));
+
+        await waitFor(() => {
+            expect(Speech.speak).toHaveBeenCalledWith('50', { pitch: 0.5 });
+        });
     });
 
     it('filters non-numeric characters from range input except hyphen', () => {

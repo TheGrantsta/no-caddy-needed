@@ -10,10 +10,24 @@ import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
 import fontSizes from '@/assets/font-sizes';
 
-const VOICE_PITCH: Record<string, number> = {
-    female: 1.2,
-    male: 0.8,
-    neutral: 1.0,
+const FEMALE_VOICE_NAMES = ['samantha', 'ava', 'allison', 'susan', 'noelle', 'karen', 'moira', 'tessa', 'fiona'];
+const MALE_VOICE_NAMES = ['tom', 'alex', 'fred', 'daniel', 'lee', 'ralph', 'rishi'];
+
+const getVoiceOptions = async (voice: string): Promise<Record<string, unknown>> => {
+    if (voice === 'neutral') return {};
+
+    const names = voice === 'female' ? FEMALE_VOICE_NAMES : MALE_VOICE_NAMES;
+    const fallbackPitch = voice === 'female' ? 1.5 : 0.5;
+
+    try {
+        const available = await Speech.getAvailableVoicesAsync();
+        const match = available.find(v =>
+            v.language.startsWith('en') && names.some(n => v.name.toLowerCase().includes(n))
+        );
+        if (match) return { voice: match.identifier };
+    } catch {}
+
+    return { pitch: fallbackPitch };
 };
 
 export default function Random() {
@@ -26,9 +40,8 @@ export default function Random() {
     const [incrementText, setIncrementText] = useState('10');
     const [incrementError, setIncrementError] = useState('');
     const [randomNumber, setRandomNumber] = useState(0);
-    const [settings] = useState(() => getSettingsService());
 
-    const handleGenerate = () => {
+    const handleGenerate = async () => {
         if (rangeText.length < 1) {
             setRangeError('Range cannot be empty');
         }
@@ -39,8 +52,8 @@ export default function Random() {
             const number = getRandomNumber(rangeText, incrementText, randomNumber);
             setRandomNumber(number);
             if (number > 0) {
-                const pitch = VOICE_PITCH[settings.voice] ?? 1.0;
-                Speech.speak(String(number), { pitch });
+                const options = await getVoiceOptions(getSettingsService().voice);
+                Speech.speak(String(number), options);
             }
         }
     };
@@ -185,7 +198,9 @@ export default function Random() {
 
                         <View style={[styles.marginTop, styles.container]}>
                             <TouchableOpacity testID='save-button' style={localStyles.actionButton} onPress={handleGenerate}>
-                                <Text style={localStyles.actionButtonText}>Run</Text>
+                                <Text style={localStyles.actionButtonText}>
+                                    Generate
+                                </Text>
                             </TouchableOpacity>
                         </View>
 

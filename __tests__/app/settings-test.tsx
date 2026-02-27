@@ -20,7 +20,7 @@ jest.mock('../../hooks/useStyles', () => ({
 }));
 
 jest.mock('../../service/DbService', () => ({
-    getSettingsService: jest.fn(() => ({ theme: 'dark', notificationsEnabled: true })),
+    getSettingsService: jest.fn(() => ({ theme: 'dark', notificationsEnabled: true, voice: 'female', wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false })),
     saveSettingsService: jest.fn(() => Promise.resolve(true)),
 }));
 
@@ -46,7 +46,7 @@ jest.mock('react-native-gesture-handler', () => {
 describe('Settings page', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: true });
+        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: true, voice: 'female', wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
         mockSaveSettingsService.mockResolvedValue(true);
     });
 
@@ -87,7 +87,7 @@ describe('Settings page', () => {
     });
 
     it('shows light theme label when theme is light', () => {
-        mockGetSettingsService.mockReturnValue({ theme: 'light', notificationsEnabled: true });
+        mockGetSettingsService.mockReturnValue({ theme: 'light', notificationsEnabled: true, voice: 'female', wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
 
         const { getByText } = render(<Settings />);
 
@@ -101,7 +101,7 @@ describe('Settings page', () => {
     });
 
     it('shows off label when notifications disabled', () => {
-        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: false });
+        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: false, voice: 'female', wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
 
         const { getByText } = render(<Settings />);
 
@@ -127,6 +127,117 @@ describe('Settings page', () => {
             expect(mockSaveSettingsService).toHaveBeenCalledWith({
                 theme: 'dark',
                 notificationsEnabled: false,
+                voice: 'female',
+                wedgeChartOnboardingSeen: false,
+                distancesOnboardingSeen: false,
+                playOnboardingSeen: false,
+                homeOnboardingSeen: false,
+                practiceOnboardingSeen: false,
+            });
+        });
+    });
+
+    it('renders Voice heading', () => {
+        const { getByText } = render(<Settings />);
+
+        expect(getByText('Voice')).toBeTruthy();
+    });
+
+    it('renders Female voice option', () => {
+        const { getByTestId } = render(<Settings />);
+
+        expect(getByTestId('voice-female')).toBeTruthy();
+    });
+
+    it('renders Male voice option', () => {
+        const { getByTestId } = render(<Settings />);
+
+        expect(getByTestId('voice-male')).toBeTruthy();
+    });
+
+    it('renders Neutral voice option', () => {
+        const { getByTestId } = render(<Settings />);
+
+        expect(getByTestId('voice-neutral')).toBeTruthy();
+    });
+
+    it('shows Female as selected by default', () => {
+        const { getByTestId } = render(<Settings />);
+
+        expect(getByTestId('voice-female-selected')).toBeTruthy();
+    });
+
+    it('shows Male as selected when settings voice is male', () => {
+        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: true, voice: 'male', wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+
+        const { getByTestId } = render(<Settings />);
+
+        expect(getByTestId('voice-male-selected')).toBeTruthy();
+    });
+
+    it('shows Neutral as selected when settings voice is neutral', () => {
+        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: true, voice: 'neutral', wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+
+        const { getByTestId } = render(<Settings />);
+
+        expect(getByTestId('voice-neutral-selected')).toBeTruthy();
+    });
+
+    it('calls saveSettingsService with voice male when Male is pressed', async () => {
+        const { getByTestId } = render(<Settings />);
+
+        fireEvent.press(getByTestId('voice-male'));
+
+        await waitFor(() => {
+            expect(mockSaveSettingsService).toHaveBeenCalledWith({
+                theme: 'dark',
+                notificationsEnabled: true,
+                voice: 'male',
+                wedgeChartOnboardingSeen: false,
+                distancesOnboardingSeen: false,
+                playOnboardingSeen: false,
+                homeOnboardingSeen: false,
+                practiceOnboardingSeen: false,
+            });
+        });
+    });
+
+    it('calls saveSettingsService with voice neutral when Neutral is pressed', async () => {
+        const { getByTestId } = render(<Settings />);
+
+        fireEvent.press(getByTestId('voice-neutral'));
+
+        await waitFor(() => {
+            expect(mockSaveSettingsService).toHaveBeenCalledWith({
+                theme: 'dark',
+                notificationsEnabled: true,
+                voice: 'neutral',
+                wedgeChartOnboardingSeen: false,
+                distancesOnboardingSeen: false,
+                playOnboardingSeen: false,
+                homeOnboardingSeen: false,
+                practiceOnboardingSeen: false,
+            });
+        });
+    });
+
+    it('calls saveSettingsService with voice female when Female is pressed', async () => {
+        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: true, voice: 'male', wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+
+        const { getByTestId } = render(<Settings />);
+
+        fireEvent.press(getByTestId('voice-female'));
+
+        await waitFor(() => {
+            expect(mockSaveSettingsService).toHaveBeenCalledWith({
+                theme: 'dark',
+                notificationsEnabled: true,
+                voice: 'female',
+                wedgeChartOnboardingSeen: false,
+                distancesOnboardingSeen: false,
+                playOnboardingSeen: false,
+                homeOnboardingSeen: false,
+                practiceOnboardingSeen: false,
             });
         });
     });

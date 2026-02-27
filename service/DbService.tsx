@@ -372,6 +372,7 @@ export const getDeadlySinsForRoundService = (roundId: number): DeadlySinsRound |
 export type AppSettings = {
     theme: 'dark' | 'light';
     notificationsEnabled: boolean;
+    voice: 'female' | 'male' | 'neutral';
     wedgeChartOnboardingSeen: boolean;
     distancesOnboardingSeen: boolean;
     playOnboardingSeen: boolean;
@@ -380,15 +381,16 @@ export type AppSettings = {
 };
 
 export const getSettingsService = (): AppSettings => {
-    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number } | null;
+    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number } | null;
 
     if (!row) {
-        return { theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
+        return { theme: 'dark', notificationsEnabled: true, voice: 'female', wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
     }
 
     return {
         theme: row.Theme as 'dark' | 'light',
         notificationsEnabled: row.NotificationsEnabled === 1,
+        voice: (row.Voice ?? 'female') as 'female' | 'male' | 'neutral',
         wedgeChartOnboardingSeen: row.WedgeChartOnboardingSeen === 1,
         distancesOnboardingSeen: row.DistancesOnboardingSeen === 1,
         playOnboardingSeen: row.PlayOnboardingSeen === 1,
@@ -398,7 +400,7 @@ export const getSettingsService = (): AppSettings => {
 };
 
 export const saveSettingsService = async (settings: AppSettings): Promise<boolean> => {
-    return saveSettings(settings.theme, settings.notificationsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0);
+    return saveSettings(settings.theme, settings.notificationsEnabled ? 1 : 0, settings.voice, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0);
 };
 
 export const updateScorecardService = async (roundId: number, updatedScores: { id: number; score: number }[]): Promise<boolean> => {

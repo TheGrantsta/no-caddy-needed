@@ -3,11 +3,18 @@ import { ScrollView, View, Text, TextInput, StyleSheet, RefreshControl, Touchabl
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getRandomNumber } from '../../assets/random-number';
 import * as Speech from 'expo-speech';
+import { getSettingsService } from '../../service/DbService';
 import Chevrons from '@/components/Chevrons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
 import fontSizes from '@/assets/font-sizes';
+
+const VOICE_PITCH: Record<string, number> = {
+    female: 1.2,
+    male: 0.8,
+    neutral: 1.0,
+};
 
 export default function Random() {
     const styles = useStyles();
@@ -19,6 +26,7 @@ export default function Random() {
     const [incrementText, setIncrementText] = useState('10');
     const [incrementError, setIncrementError] = useState('');
     const [randomNumber, setRandomNumber] = useState(0);
+    const [settings] = useState(() => getSettingsService());
 
     const handleGenerate = () => {
         if (rangeText.length < 1) {
@@ -31,7 +39,8 @@ export default function Random() {
             const number = getRandomNumber(rangeText, incrementText, randomNumber);
             setRandomNumber(number);
             if (number > 0) {
-                Speech.speak(String(number));
+                const pitch = VOICE_PITCH[settings.voice] ?? 1.0;
+                Speech.speak(String(number), { pitch });
             }
         }
     };

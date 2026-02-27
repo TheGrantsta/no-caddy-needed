@@ -354,6 +354,7 @@ describe('Settings table column migration', () => {
                 { name: 'Id' },
                 { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
+                { name: 'Voice' },
                 { name: 'WedgeChartOnboardingSeen' },
                 { name: 'DistancesOnboardingSeen' },
                 { name: 'PlayOnboardingSeen' },

@@ -35,6 +35,10 @@ jest.mock('expo-speech', () => ({
     speak: jest.fn(),
 }));
 
+jest.mock('../../../service/DbService', () => ({
+    getSettingsService: jest.fn(() => ({ voice: 'female', theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false })),
+}));
+
 describe('Random number generator page', () => {
     it('renders correctly with the header', () => {
         const { getByText } = render(<Random />);
@@ -105,7 +109,7 @@ describe('Random number generator page', () => {
     it('speaks the random number after pressing Run with valid inputs', () => {
         const { getByTestId } = render(<Random />);
         fireEvent.press(getByTestId('save-button'));
-        expect(Speech.speak).toHaveBeenCalledWith('50');
+        expect(Speech.speak).toHaveBeenCalledWith('50', { pitch: 1.2 });
     });
 
     it('filters non-numeric characters from range input except hyphen', () => {

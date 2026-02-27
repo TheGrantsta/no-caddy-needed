@@ -27,4 +27,5 @@ Things to do
 - [ ] Random number out loud and support voice command ('caddy: next')
 - [ ] Remove Expo warning in CLI
 - [ ] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
-
+- [ ] Expo-notifications warning message
+- [ ] SafeAreaView has been deprecation warning message

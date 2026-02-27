@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { StyleSheet, ScrollView, View, Text, TouchableOpacity, RefreshControl } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Audio } from 'expo-av';
+import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import Chevrons from '@/components/Chevrons';
 import Slider from '@react-native-community/slider';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -16,57 +16,38 @@ export default function Tempo() {
     const [refreshing, setRefreshing] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [tempo, setTempo] = useState(60);
-    const [sound, setSound] = useState<Audio.Sound>();
+    const player = useAudioPlayer(require('../../assets/single-beep.wav'));
     const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
     useEffect(() => {
-        loadSound();
+        setAudioModeAsync({
+            allowsRecording: false,
+            shouldPlayInBackground: false,
+            playsInSilentMode: true,
+            interruptionMode: 'mixWithOthers',
+        }).catch((error) => {
+            console.error('Error loading sound:', error);
+        });
 
         return () => {
-            if (sound) {
-                sound.unloadAsync();
-            };
-
             if (timeoutRef.current) {
                 clearInterval(timeoutRef.current);
             };
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    const loadSound = async () => {
-        try {
-            await Audio.setAudioModeAsync({
-                allowsRecordingIOS: false,
-                staysActiveInBackground: false,
-                playsInSilentModeIOS: true,
-            });
-
-            const { sound } = await Audio.Sound.createAsync(
-                require('../../assets/single-beep.wav')
-            );
-
-            setSound(sound);
-        } catch (error) {
-            console.error('Error loading sound:', error);
-        }
-    }
 
     const playSound = async () => {
         try {
-            if (sound) {
-                await sound.playAsync();
-                await sound.replayAsync();
-            }
+            await player.seekTo(0);
+            player.play();
         } catch (error) {
             console.error('Error playing sound:', error);
         }
     };
 
     const stopSound = async () => {
-        if (sound) {
-            await sound.stopAsync();
-        }
+        player.pause();
+        await player.seekTo(0);
     };
 
     const stopLoop = async () => {

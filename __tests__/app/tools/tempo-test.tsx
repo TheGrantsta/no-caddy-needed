@@ -26,13 +26,13 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
-jest.mock('expo-av', () => ({
-    Audio: {
-        setAudioModeAsync: jest.fn().mockReturnValue(new Promise(() => { })),
-        Sound: {
-            createAsync: jest.fn().mockReturnValue(new Promise(() => { })),
-        },
-    },
+jest.mock('expo-audio', () => ({
+    useAudioPlayer: jest.fn().mockReturnValue({
+        play: jest.fn(),
+        pause: jest.fn(),
+        seekTo: jest.fn().mockResolvedValue(undefined),
+    }),
+    setAudioModeAsync: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('@react-native-community/slider', () => {

@@ -61,6 +61,7 @@
         }
       ],
       "expo-router",
+      "expo-audio",
       "expo-notifications",
       [
         "expo-build-properties",

@@ -1,6 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import Random from '../../../app/tools/random';
+import * as Speech from 'expo-speech';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -28,6 +29,10 @@ jest.mock('react-native-gesture-handler', () => {
 
 jest.mock('../../../assets/random-number', () => ({
     getRandomNumber: jest.fn().mockReturnValue(50),
+}));
+
+jest.mock('expo-speech', () => ({
+    speak: jest.fn(),
 }));
 
 describe('Random number generator page', () => {
@@ -95,6 +100,12 @@ describe('Random number generator page', () => {
         fireEvent.press(runButton);
 
         expect(getByText('50')).toBeTruthy();
+    });
+
+    it('speaks the random number after pressing Run with valid inputs', () => {
+        const { getByTestId } = render(<Random />);
+        fireEvent.press(getByTestId('save-button'));
+        expect(Speech.speak).toHaveBeenCalledWith('50');
     });
 
     it('filters non-numeric characters from range input except hyphen', () => {

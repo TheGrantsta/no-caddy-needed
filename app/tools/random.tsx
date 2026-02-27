@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { ScrollView, View, Text, TextInput, StyleSheet, RefreshControl, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getRandomNumber } from '../../assets/random-number';
+import * as Speech from 'expo-speech';
 import Chevrons from '@/components/Chevrons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -27,7 +28,11 @@ export default function Random() {
             setIncrementError('Increment cannot be empty');
         }
         if (rangeText.length > 0 && incrementText.length > 0) {
-            setRandomNumber(getRandomNumber(rangeText, incrementText, randomNumber));
+            const number = getRandomNumber(rangeText, incrementText, randomNumber);
+            setRandomNumber(number);
+            if (number > 0) {
+                Speech.speak(String(number));
+            }
         }
     };
 

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 import { DeadlySinsRound } from '@/service/DbService';
+import { useStyles } from '@/hooks/useStyles';
 
 type CategoryTotal = {
     label: string;
@@ -24,6 +25,7 @@ const CATEGORY_LABELS: { key: keyof DeadlySinsRound; label: string }[] = [
 ];
 
 export default function DeadlySinsChart({ rounds }: Props) {
+    const styles = useStyles();
     const colours = useThemeColours();
     const [isOpen, setIsOpen] = useState(true);
 
@@ -143,7 +145,7 @@ export default function DeadlySinsChart({ rounds }: Props) {
                 onPress={() => setIsOpen(prev => !prev)}
                 style={localStyles.toggleHeader}
             >
-                <Text style={localStyles.title}>7 Deadly Sins</Text>
+                <Text style={styles.subHeaderText}>7 Deadly Sins</Text>
                 <Text style={localStyles.chevron}>{isOpen ? '▾' : '▴'}</Text>
             </TouchableOpacity>
 

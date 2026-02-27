@@ -23,3 +23,8 @@ Things to do
 - [ ] Integrate Firebase iOS into project
 - [ ] Add test coverage tool and include in pre-hook push
 - [ ] Complete Google Play setup
+- [X] Upgrade iOS SDK from 18.2 to 26
+- [ ] Random number out loud and support voice command ('caddy: next')
+- [ ] Remove Expo warning in CLI
+- [ ] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
+

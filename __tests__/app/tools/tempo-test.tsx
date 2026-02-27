@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import Tempo from '../../../app/tools/tempo';
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -28,9 +28,9 @@ jest.mock('react-native-gesture-handler', () => {
 
 jest.mock('expo-av', () => ({
     Audio: {
-        setAudioModeAsync: jest.fn().mockReturnValue(new Promise(() => {})),
+        setAudioModeAsync: jest.fn().mockReturnValue(new Promise(() => { })),
         Sound: {
-            createAsync: jest.fn().mockReturnValue(new Promise(() => {})),
+            createAsync: jest.fn().mockReturnValue(new Promise(() => { })),
         },
     },
 }));
@@ -53,12 +53,6 @@ describe('Tempo training page', () => {
         const { getByText } = render(<Tempo />);
 
         expect(getByText('Swing with tempo to self organise')).toBeTruthy();
-    });
-
-    it('renders tempo label', () => {
-        const { getByText } = render(<Tempo />);
-
-        expect(getByText('Tempo:')).toBeTruthy();
     });
 
     it('renders default beats per minute', () => {
@@ -95,6 +89,29 @@ describe('Tempo training page', () => {
     it('renders tempo training tips', () => {
         const { getByText } = render(<Tempo />);
 
-        expect(getByText(/Focus on tempo, and not mechanics/)).toBeTruthy();
+        expect(getByText(/Tempo: focus on flow, and not mechanics/)).toBeTruthy();
+    });
+
+    it('renders a Play button initially', () => {
+        const { getByText } = render(<Tempo />);
+
+        expect(getByText('Play')).toBeTruthy();
+    });
+
+    it('toggles to Stop when Play button is pressed', () => {
+        const { getByText } = render(<Tempo />);
+
+        fireEvent.press(getByText('Play'));
+
+        expect(getByText('Stop')).toBeTruthy();
+    });
+
+    it('toggles back to Play when Stop button is pressed', () => {
+        const { getByText } = render(<Tempo />);
+
+        fireEvent.press(getByText('Play'));
+        fireEvent.press(getByText('Stop'));
+
+        expect(getByText('Play')).toBeTruthy();
     });
 });

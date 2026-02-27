@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { StyleSheet, ScrollView, View, Text, TouchableOpacity, RefreshControl } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Audio } from 'expo-av';
-import { MaterialIcons } from '@expo/vector-icons';
 import Chevrons from '@/components/Chevrons';
 import Slider from '@react-native-community/slider';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -32,7 +31,7 @@ export default function Tempo() {
                 clearInterval(timeoutRef.current);
             };
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadSound = async () => {
@@ -116,7 +115,7 @@ export default function Tempo() {
         }, 750);
     };
 
-    const points = ['Focus on tempo, and not mechanics - start slow', 'Common fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Common misconception: amateurs believe they swing "too fast" even though they swing slower than professionals']
+    const points = ['Tempo: focus on flow, and not mechanics', 'Fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Misconception: amateurs believe they swing "too fast" even though they swing slower than professionals - sequence over speed']
 
     const localStyles = useMemo(() => StyleSheet.create({
         container: {
@@ -177,8 +176,6 @@ export default function Tempo() {
                     </View>
 
                     <View style={localStyles.container}>
-                        <Text style={[localStyles.title]}>Tempo:</Text>
-
                         <Slider
                             style={[localStyles.slider]}
                             minimumValue={60}
@@ -204,13 +201,13 @@ export default function Tempo() {
                             <Text style={[localStyles.valueText, styles.normalText, { color: colours.yellow, padding: 5 }]}>
                                 Beats per minute: {tempo}
                             </Text>
-
-                            <TouchableOpacity style={{ padding: 5 }} onPress={toggleStartStop}>
-                                <MaterialIcons name={isPlaying ? "stop-circle" : "play-circle-fill"} color={colours.yellow} size={36} />
-                            </TouchableOpacity>
                         </View>
+
+                        <TouchableOpacity style={styles.largeButton} onPress={toggleStartStop}>
+                            <Text style={styles.buttonText}>{isPlaying ? 'Stop' : 'Play'}</Text>
+                        </TouchableOpacity>
                         <View>
-                            <Text style={styles.smallestText}>
+                            <Text style={[styles.smallestText, styles.marginTop, styles.marginBottom]}>
                                 Based on John Garrity's work, long game tempo (start, take away, top & impact) is 3:1 & short game tempo is 2:1
                             </Text>
                         </View>

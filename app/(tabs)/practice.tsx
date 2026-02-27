@@ -34,7 +34,7 @@ export default function Practice() {
   const [drillStats, setDrillStats] = useState<DrillStats[]>([]);
   const flatListRef = useRef(null);
 
-  const points = ['Honesty: be honest with yourself and identify the shots you avoid, or can\'t play, and give yourself time', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
+  const points = ['Intention: practice with a purpose!', 'Evaluate: be honest with yourself - identify the shots you avoid (or can\'t play) and give yourself time to improve', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -164,7 +164,7 @@ export default function Practice() {
               </View>
             </View>
 
-            <Chevrons heading='Intention' points={points} />
+            <Chevrons heading='Principles' points={points} />
           </View>
         )}
 

@@ -23,6 +23,7 @@ import {
     getRoundPlayersService,
     getMultiplayerScorecardService,
     getRecentCourseNamesService,
+    getRecentPlayerNamesService,
     getSettingsService,
     saveSettingsService,
     Round,
@@ -70,6 +71,7 @@ export default function Play() {
     const [showEndRoundConfirm, setShowEndRoundConfirm] = useState(false);
     const [scorecardData, setScorecardData] = useState<MultiplayerRoundScorecard | null>(null);
     const [recentCourseNames, setRecentCourseNames] = useState<string[]>([]);
+    const [recentPlayerNames, setRecentPlayerNames] = useState<string[]>([]);
     const { showError, showResult } = useAppToast();
     const router = useRouter();
     const [settings, setSettings] = useState(getSettingsService());
@@ -193,6 +195,7 @@ export default function Play() {
         setRoundHistory(history);
         setDeadlySinsRounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
+        setRecentPlayerNames(getRecentPlayerNamesService());
 
         const currentSettings = getSettingsService();
         setSettings(currentSettings);
@@ -327,6 +330,7 @@ export default function Play() {
         setRoundHistory(getAllRoundHistoryService());
         setDeadlySinsRounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
+        setRecentPlayerNames(getRecentPlayerNamesService());
     };
 
     const handleConfirmEndRound = async () => {
@@ -484,7 +488,7 @@ export default function Play() {
 
                 {!isRoundActive && showPlayerSetup && displaySection('play-score') && (
                     <View style={styles.container}>
-                        <PlayerSetup onStartRound={handleStartRound} onCancel={() => setShowPlayerSetup(false)} recentCourseNames={recentCourseNames} />
+                        <PlayerSetup onStartRound={handleStartRound} onCancel={() => setShowPlayerSetup(false)} recentCourseNames={recentCourseNames} recentPlayerNames={recentPlayerNames} />
                     </View>
                 )}
 

@@ -293,6 +293,11 @@ export const getDistinctCourseNames = () => {
     return db.getAllSync("SELECT DISTINCT CourseName FROM Rounds WHERE CourseName IS NOT NULL AND CourseName != '' ORDER BY Id DESC;");
 };
 
+export const getDistinctPlayerNames = () => {
+    const db = SQLite.openDatabaseSync(dbName);
+    return db.getAllSync("SELECT DISTINCT PlayerName FROM RoundPlayers WHERE IsUser = 0 AND PlayerName IS NOT NULL AND PlayerName != '' ORDER BY Id DESC;");
+};
+
 export const getClubDistances = () => {
     const db = SQLite.openDatabaseSync(dbName);
     return db.getAllSync('SELECT * FROM ClubDistances ORDER BY CarryDistance DESC;');

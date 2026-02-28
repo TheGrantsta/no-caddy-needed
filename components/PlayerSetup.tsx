@@ -7,11 +7,12 @@ type Props = {
     onStartRound: (playerNames: string[], courseName: string) => void;
     onCancel?: () => void;
     recentCourseNames?: string[];
+    recentPlayerNames?: string[];
 };
 
 const MAX_ADDITIONAL_PLAYERS = 3;
 
-const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
+const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNames }: Props) => {
     const colours = useThemeColours();
     const [additionalPlayers, setAdditionalPlayers] = useState<string[]>([]);
     const [courseName, setCourseName] = useState('');
@@ -37,6 +38,12 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
         setCourseName(text);
         if (courseNameError) {
             setCourseNameError('');
+        }
+    };
+
+    const handleRecentPlayerTap = (name: string) => {
+        if (additionalPlayers.length < MAX_ADDITIONAL_PLAYERS) {
+            setAdditionalPlayers([...additionalPlayers, name]);
         }
     };
 
@@ -200,6 +207,22 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames }: Props) => {
                     </TouchableOpacity>
                 </View>
             ))}
+
+            {recentPlayerNames && recentPlayerNames.length > 0 && additionalPlayers.length < MAX_ADDITIONAL_PLAYERS && (
+                <View style={localStyles.recentContainer}>
+                    <Text style={localStyles.recentLabel}>Recent players</Text>
+                    {recentPlayerNames.map((name) => (
+                        <TouchableOpacity
+                            key={name}
+                            testID={`recent-player-${name}`}
+                            onPress={() => handleRecentPlayerTap(name)}
+                            style={localStyles.recentItem}
+                        >
+                            <Text style={localStyles.recentItemText}>{name}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            )}
 
             {additionalPlayers.length < MAX_ADDITIONAL_PLAYERS && (
                 <TouchableOpacity

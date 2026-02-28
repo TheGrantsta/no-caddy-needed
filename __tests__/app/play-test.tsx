@@ -15,6 +15,7 @@ import {
     getRoundPlayersService,
     getMultiplayerScorecardService,
     getRecentCourseNamesService,
+    getRecentPlayerNamesService,
     getSettingsService,
     saveSettingsService,
 } from '../../service/DbService';
@@ -49,6 +50,7 @@ jest.mock('../../service/DbService', () => ({
     getRoundPlayersService: jest.fn(),
     getMultiplayerScorecardService: jest.fn(),
     getRecentCourseNamesService: jest.fn(),
+    getRecentPlayerNamesService: jest.fn(),
     getSettingsService: jest.fn().mockReturnValue({
         theme: 'dark',
         notificationsEnabled: true,
@@ -116,6 +118,7 @@ const mockAddRoundPlayers = addRoundPlayersService as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayersService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
 const mockGetRecentCourseNames = getRecentCourseNamesService as jest.Mock;
+const mockGetRecentPlayerNames = getRecentPlayerNamesService as jest.Mock;
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
 
@@ -129,6 +132,7 @@ describe('Play screen', () => {
         mockGetRoundPlayers.mockReturnValue([]);
         mockGetMultiplayerScorecard.mockReturnValue(null);
         mockGetRecentCourseNames.mockReturnValue([]);
+        mockGetRecentPlayerNames.mockReturnValue([]);
     });
 
     describe('Idle state', () => {
@@ -375,6 +379,17 @@ describe('Play screen', () => {
 
             expect(getByText('St Andrews')).toBeTruthy();
             expect(getByText('Pebble Beach')).toBeTruthy();
+        });
+
+        it('shows recent player names in player setup', () => {
+            mockGetRecentPlayerNames.mockReturnValue(['Alice', 'Bob']);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+
+            expect(getByTestId('recent-player-Alice')).toBeTruthy();
+            expect(getByTestId('recent-player-Bob')).toBeTruthy();
         });
 
         it('returns to idle state when cancel is pressed in player setup', () => {

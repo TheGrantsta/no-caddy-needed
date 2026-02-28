@@ -224,6 +224,53 @@ describe('PlayerSetup', () => {
         });
     });
 
+    describe('Recent player names', () => {
+        it('shows recent player names when provided', () => {
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={['Alice', 'Bob']} />
+            );
+
+            expect(getByTestId('recent-player-Alice')).toBeTruthy();
+            expect(getByTestId('recent-player-Bob')).toBeTruthy();
+        });
+
+        it('does not show recent players section when list is empty', () => {
+            const { queryByText } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={[]} />
+            );
+
+            expect(queryByText('Recent players')).toBeNull();
+        });
+
+        it('does not show recent players section when prop is not provided', () => {
+            const { queryByText } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            expect(queryByText('Recent players')).toBeNull();
+        });
+
+        it('adds player to the list when recent player name is tapped', () => {
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={['Alice']} />
+            );
+
+            fireEvent.press(getByTestId('recent-player-Alice'));
+
+            expect(getByTestId('player-name-input-0').props.value).toBe('Alice');
+        });
+
+        it('does not show recent players section when at max players', () => {
+            const { getByTestId, queryByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={['Alice']} />
+            );
+
+            fireEvent.press(getByTestId('add-player-button'));
+            fireEvent.press(getByTestId('add-player-button'));
+            fireEvent.press(getByTestId('add-player-button'));
+
+            expect(queryByTestId('recent-player-Alice')).toBeNull();
+        });
+    });
+
     describe('Cancel button', () => {
         it('shows cancel button when onCancel is provided', () => {
             const mockOnCancel = jest.fn();

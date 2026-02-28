@@ -18,6 +18,7 @@ import {
     getClubDistances,
     insertClubDistances,
     getDistinctCourseNames,
+    getDistinctPlayerNames,
     insertRoundPlayer,
     getRoundPlayers,
     insertRoundHoleScore,
@@ -292,6 +293,11 @@ export const deleteRoundService = async (roundId: number): Promise<boolean> => {
 export const getRecentCourseNamesService = (): string[] => {
     const rows = getDistinctCourseNames() as { CourseName: string }[];
     return rows.map(r => r.CourseName);
+};
+
+export const getRecentPlayerNamesService = (): string[] => {
+    const rows = getDistinctPlayerNames() as { PlayerName: string }[];
+    return rows.map(r => r.PlayerName);
 };
 
 // Multiplayer round services

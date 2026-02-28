@@ -74,10 +74,16 @@ describe('Settings page', () => {
         expect(getByTestId('theme-toggle')).toBeTruthy();
     });
 
-    it('renders notifications toggle', () => {
+    it('renders notifications On button', () => {
         const { getByTestId } = render(<Settings />);
 
-        expect(getByTestId('notifications-toggle')).toBeTruthy();
+        expect(getByTestId('notifications-on')).toBeTruthy();
+    });
+
+    it('renders notifications Off button', () => {
+        const { getByTestId } = render(<Settings />);
+
+        expect(getByTestId('notifications-off')).toBeTruthy();
     });
 
     it('shows dark theme label when theme is dark', () => {
@@ -94,18 +100,18 @@ describe('Settings page', () => {
         expect(getByText('Light')).toBeTruthy();
     });
 
-    it('shows on label when notifications enabled', () => {
-        const { getByText } = render(<Settings />);
+    it('shows On as selected when notifications enabled', () => {
+        const { getByTestId } = render(<Settings />);
 
-        expect(getByText('On')).toBeTruthy();
+        expect(getByTestId('notifications-on-selected')).toBeTruthy();
     });
 
-    it('shows off label when notifications disabled', () => {
+    it('shows Off as selected when notifications disabled', () => {
         mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: false, voice: 'female', wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
 
-        const { getByText } = render(<Settings />);
+        const { getByTestId } = render(<Settings />);
 
-        expect(getByText('Off')).toBeTruthy();
+        expect(getByTestId('notifications-off-selected')).toBeTruthy();
     });
 
     it('calls setTheme when theme toggle is pressed', async () => {
@@ -118,15 +124,36 @@ describe('Settings page', () => {
         });
     });
 
-    it('calls saveSettingsService when notifications toggle is pressed', async () => {
+    it('calls saveSettingsService with notificationsEnabled false when Off is pressed', async () => {
         const { getByTestId } = render(<Settings />);
 
-        fireEvent(getByTestId('notifications-toggle'), 'valueChange', false);
+        fireEvent.press(getByTestId('notifications-off'));
 
         await waitFor(() => {
             expect(mockSaveSettingsService).toHaveBeenCalledWith({
                 theme: 'dark',
                 notificationsEnabled: false,
+                voice: 'female',
+                wedgeChartOnboardingSeen: false,
+                distancesOnboardingSeen: false,
+                playOnboardingSeen: false,
+                homeOnboardingSeen: false,
+                practiceOnboardingSeen: false,
+            });
+        });
+    });
+
+    it('calls saveSettingsService with notificationsEnabled true when On is pressed', async () => {
+        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: false, voice: 'female', wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+
+        const { getByTestId } = render(<Settings />);
+
+        fireEvent.press(getByTestId('notifications-on'));
+
+        await waitFor(() => {
+            expect(mockSaveSettingsService).toHaveBeenCalledWith({
+                theme: 'dark',
+                notificationsEnabled: true,
                 voice: 'female',
                 wedgeChartOnboardingSeen: false,
                 distancesOnboardingSeen: false,

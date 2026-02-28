@@ -13,6 +13,11 @@ const VOICES: { key: AppSettings['voice']; label: string }[] = [
   { key: 'neutral', label: 'Neutral' },
 ];
 
+const NOTIFICATIONS: { key: 'on' | 'off'; label: string; value: boolean }[] = [
+  { key: 'on', label: 'On', value: true },
+  { key: 'off', label: 'Off', value: false },
+];
+
 export default function Settings() {
   const { colours, setTheme } = useTheme();
   const styles = useStyles();
@@ -29,7 +34,7 @@ export default function Settings() {
     showSuccess('Settings saved');
   };
 
-  const handleToggleNotifications = async (value: boolean) => {
+  const handleNotificationsChange = async (value: boolean) => {
     const updated: AppSettings = { ...settings, notificationsEnabled: value };
     setSettings(updated);
 
@@ -99,15 +104,21 @@ export default function Settings() {
           <Text style={[styles.subHeaderText, styles.marginTop]}>Notifications</Text>
         </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
-          <Text style={styles.normalText}>{settings.notificationsEnabled ? 'On' : 'Off'}</Text>
-          <Switch
-            testID="notifications-toggle"
-            value={settings.notificationsEnabled}
-            onValueChange={handleToggleNotifications}
-            trackColor={{ false: colours.backgroundAlternate, true: colours.green }}
-            thumbColor={colours.yellow}
-          />
+        <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
+          {NOTIFICATIONS.map(({ key, label, value }) => {
+            const isSelected = settings.notificationsEnabled === value;
+            return (
+              <TouchableOpacity
+                key={key}
+                testID={`notifications-${key}`}
+                onPress={() => handleNotificationsChange(value)}
+                style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
+              >
+                {isSelected && <Text testID={`notifications-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
+                {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         <View style={styles.headerContainer}>

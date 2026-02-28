@@ -1,11 +1,16 @@
 import { useMemo, useState } from 'react';
-import { ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getSettingsService, saveSettingsService, AppSettings } from '../service/DbService';
 import { useStyles } from '../hooks/useStyles';
 import { useTheme } from '../context/ThemeContext';
 import { useOrientation } from '../hooks/useOrientation';
 import { useAppToast } from '../hooks/useAppToast';
+
+const THEMES: { key: AppSettings['theme']; label: string }[] = [
+  { key: 'light', label: 'Light' },
+  { key: 'dark', label: 'Dark' },
+];
 
 const VOICES: { key: AppSettings['voice']; label: string }[] = [
   { key: 'female', label: 'Female' },
@@ -25,11 +30,10 @@ export default function Settings() {
   const { showSuccess, showResult } = useAppToast();
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
 
-  const handleToggleTheme = async (value: boolean) => {
-    const newTheme = value ? 'light' : 'dark';
-    const updated: AppSettings = { ...settings, theme: newTheme };
+  const handleThemeChange = async (theme: AppSettings['theme']) => {
+    const updated: AppSettings = { ...settings, theme };
     setSettings(updated);
-    setTheme(newTheme);
+    setTheme(theme);
 
     showSuccess('Settings saved');
   };
@@ -89,15 +93,21 @@ export default function Settings() {
           <Text style={[styles.subHeaderText, styles.marginTop]}>Theme</Text>
         </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
-          <Text style={styles.normalText}>{settings.theme === 'dark' ? 'Dark' : 'Light'}</Text>
-          <Switch
-            testID="theme-toggle"
-            value={settings.theme === 'light'}
-            onValueChange={handleToggleTheme}
-            trackColor={{ false: colours.backgroundAlternate, true: colours.green }}
-            thumbColor={colours.yellow}
-          />
+        <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
+          {THEMES.map(({ key, label }) => {
+            const isSelected = settings.theme === key;
+            return (
+              <TouchableOpacity
+                key={key}
+                testID={`theme-${key}`}
+                onPress={() => handleThemeChange(key)}
+                style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
+              >
+                {isSelected && <Text testID={`theme-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
+                {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         <View style={styles.headerContainer}>

@@ -68,10 +68,16 @@ describe('Settings page', () => {
         expect(getByText('Notifications')).toBeTruthy();
     });
 
-    it('renders theme toggle', () => {
+    it('renders theme Light button', () => {
         const { getByTestId } = render(<Settings />);
 
-        expect(getByTestId('theme-toggle')).toBeTruthy();
+        expect(getByTestId('theme-light')).toBeTruthy();
+    });
+
+    it('renders theme Dark button', () => {
+        const { getByTestId } = render(<Settings />);
+
+        expect(getByTestId('theme-dark')).toBeTruthy();
     });
 
     it('renders notifications On button', () => {
@@ -86,18 +92,18 @@ describe('Settings page', () => {
         expect(getByTestId('notifications-off')).toBeTruthy();
     });
 
-    it('shows dark theme label when theme is dark', () => {
-        const { getByText } = render(<Settings />);
+    it('shows Dark as selected by default', () => {
+        const { getByTestId } = render(<Settings />);
 
-        expect(getByText('Dark')).toBeTruthy();
+        expect(getByTestId('theme-dark-selected')).toBeTruthy();
     });
 
-    it('shows light theme label when theme is light', () => {
+    it('shows Light as selected when theme is light', () => {
         mockGetSettingsService.mockReturnValue({ theme: 'light', notificationsEnabled: true, voice: 'female', wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
 
-        const { getByText } = render(<Settings />);
+        const { getByTestId } = render(<Settings />);
 
-        expect(getByText('Light')).toBeTruthy();
+        expect(getByTestId('theme-light-selected')).toBeTruthy();
     });
 
     it('shows On as selected when notifications enabled', () => {
@@ -114,13 +120,25 @@ describe('Settings page', () => {
         expect(getByTestId('notifications-off-selected')).toBeTruthy();
     });
 
-    it('calls setTheme when theme toggle is pressed', async () => {
+    it('calls setTheme with light when Light button is pressed', async () => {
         const { getByTestId } = render(<Settings />);
 
-        fireEvent(getByTestId('theme-toggle'), 'valueChange', true);
+        fireEvent.press(getByTestId('theme-light'));
 
         await waitFor(() => {
             expect(mockSetTheme).toHaveBeenCalledWith('light');
+        });
+    });
+
+    it('calls setTheme with dark when Dark button is pressed', async () => {
+        mockGetSettingsService.mockReturnValue({ theme: 'light', notificationsEnabled: true, voice: 'female', wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+
+        const { getByTestId } = render(<Settings />);
+
+        fireEvent.press(getByTestId('theme-dark'));
+
+        await waitFor(() => {
+            expect(mockSetTheme).toHaveBeenCalledWith('dark');
         });
     });
 

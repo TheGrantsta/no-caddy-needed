@@ -30,4 +30,7 @@ Things to do
 - [ ] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
 - [ ] Expo-notifications warning message
 - [ ] SafeAreaView has been deprecation warning message
-- [ ] Amend settings page to replace toggle with buttons
+- [X] Amend settings page to replace toggle with buttons
+- [ ] Show holes played if not a full round on scorecard summary
+- [ ] Create list of recent players like recent golf courses
+- [ ] Add ability for players to add their own practice drills

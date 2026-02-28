@@ -51,8 +51,9 @@ export default function Random() {
         if (rangeText.length > 0 && incrementText.length > 0) {
             const number = getRandomNumber(rangeText, incrementText, randomNumber);
             setRandomNumber(number);
-            if (number > 0) {
-                const options = await getVoiceOptions(getSettingsService().voice);
+            const settings = getSettingsService();
+            if (number > 0 && settings.soundsEnabled) {
+                const options = await getVoiceOptions(settings.voice);
                 Speech.speak(String(number), options);
             }
         }

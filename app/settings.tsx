@@ -23,6 +23,11 @@ const NOTIFICATIONS: { key: 'on' | 'off'; label: string; value: boolean }[] = [
   { key: 'off', label: 'Off', value: false },
 ];
 
+const SOUNDS: { key: 'on' | 'off'; label: string; value: boolean }[] = [
+  { key: 'on', label: 'On', value: true },
+  { key: 'off', label: 'Off', value: false },
+];
+
 export default function Settings() {
   const { colours, setTheme } = useTheme();
   const styles = useStyles();
@@ -40,6 +45,15 @@ export default function Settings() {
 
   const handleNotificationsChange = async (value: boolean) => {
     const updated: AppSettings = { ...settings, notificationsEnabled: value };
+    setSettings(updated);
+
+    const success = await saveSettingsService(updated);
+
+    showResult(success, 'Settings saved', 'Failed to save settings');
+  };
+
+  const handleSoundsChange = async (value: boolean) => {
+    const updated: AppSettings = { ...settings, soundsEnabled: value };
     setSettings(updated);
 
     const success = await saveSettingsService(updated);
@@ -125,6 +139,27 @@ export default function Settings() {
                 style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
               >
                 {isSelected && <Text testID={`notifications-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
+                {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        <View style={styles.headerContainer}>
+          <Text style={[styles.subHeaderText, styles.marginTop]}>Sounds</Text>
+        </View>
+
+        <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
+          {SOUNDS.map(({ key, label, value }) => {
+            const isSelected = settings.soundsEnabled === value;
+            return (
+              <TouchableOpacity
+                key={key}
+                testID={`sounds-${key}`}
+                onPress={() => handleSoundsChange(value)}
+                style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
+              >
+                {isSelected && <Text testID={`sounds-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
                 {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
               </TouchableOpacity>
             );

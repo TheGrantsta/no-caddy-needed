@@ -142,6 +142,7 @@ describe('getSettingsService', () => {
             theme: 'dark',
             notificationsEnabled: true,
             voice: 'female',
+            soundsEnabled: true,
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: false,
             playOnboardingSeen: false,
@@ -156,6 +157,7 @@ describe('getSettingsService', () => {
             Theme: 'light',
             NotificationsEnabled: 1,
             Voice: 'female',
+            SoundsEnabled: 1,
             WedgeChartOnboardingSeen: 0,
             DistancesOnboardingSeen: 0,
             PlayOnboardingSeen: 0,
@@ -169,6 +171,7 @@ describe('getSettingsService', () => {
             theme: 'light',
             notificationsEnabled: true,
             voice: 'female',
+            soundsEnabled: true,
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: false,
             playOnboardingSeen: false,
@@ -183,6 +186,7 @@ describe('getSettingsService', () => {
             Theme: 'dark',
             NotificationsEnabled: 0,
             Voice: 'female',
+            SoundsEnabled: 1,
             WedgeChartOnboardingSeen: 1,
             DistancesOnboardingSeen: 0,
             PlayOnboardingSeen: 0,
@@ -196,6 +200,7 @@ describe('getSettingsService', () => {
             theme: 'dark',
             notificationsEnabled: false,
             voice: 'female',
+            soundsEnabled: true,
             wedgeChartOnboardingSeen: true,
             distancesOnboardingSeen: false,
             playOnboardingSeen: false,
@@ -210,6 +215,7 @@ describe('getSettingsService', () => {
             Theme: 'dark',
             NotificationsEnabled: 1,
             Voice: 'female',
+            SoundsEnabled: 1,
             WedgeChartOnboardingSeen: 0,
             DistancesOnboardingSeen: 1,
             PlayOnboardingSeen: 0,
@@ -223,6 +229,7 @@ describe('getSettingsService', () => {
             theme: 'dark',
             notificationsEnabled: true,
             voice: 'female',
+            soundsEnabled: true,
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: true,
             playOnboardingSeen: false,
@@ -237,6 +244,7 @@ describe('getSettingsService', () => {
             Theme: 'dark',
             NotificationsEnabled: 1,
             Voice: 'female',
+            SoundsEnabled: 1,
             WedgeChartOnboardingSeen: 0,
             DistancesOnboardingSeen: 0,
             PlayOnboardingSeen: 1,
@@ -250,6 +258,7 @@ describe('getSettingsService', () => {
             theme: 'dark',
             notificationsEnabled: true,
             voice: 'female',
+            soundsEnabled: true,
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: false,
             playOnboardingSeen: true,
@@ -271,6 +280,7 @@ describe('saveSettingsService', () => {
             theme: 'dark',
             notificationsEnabled: true,
             voice: 'female',
+            soundsEnabled: true,
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: false,
             playOnboardingSeen: false,
@@ -281,7 +291,7 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 'female', 0, 0, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 'female', 1, 0, 0, 0, 0, 0);
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
@@ -291,6 +301,7 @@ describe('saveSettingsService', () => {
             theme: 'light',
             notificationsEnabled: false,
             voice: 'female',
+            soundsEnabled: true,
             wedgeChartOnboardingSeen: true,
             distancesOnboardingSeen: false,
             playOnboardingSeen: false,
@@ -301,7 +312,7 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('light', 0, 'female', 1, 0, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith('light', 0, 'female', 1, 1, 0, 0, 0, 0);
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
@@ -311,6 +322,7 @@ describe('saveSettingsService', () => {
             theme: 'dark',
             notificationsEnabled: true,
             voice: 'female',
+            soundsEnabled: true,
             wedgeChartOnboardingSeen: false,
             distancesOnboardingSeen: true,
             playOnboardingSeen: false,
@@ -321,6 +333,6 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 'female', 0, 1, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 'female', 1, 0, 1, 0, 0, 0);
     });
 });

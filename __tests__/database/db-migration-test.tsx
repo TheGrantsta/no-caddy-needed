@@ -348,6 +348,33 @@ describe('Settings table column migration', () => {
         );
     });
 
+    it('should add SoundsEnabled column when missing', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Settings)') return [
+                { name: 'Id' },
+                { name: 'Theme' },
+                { name: 'NotificationsEnabled' },
+                { name: 'Voice' },
+                { name: 'WedgeChartOnboardingSeen' },
+                { name: 'DistancesOnboardingSeen' },
+                { name: 'PlayOnboardingSeen' },
+                { name: 'HomeOnboardingSeen' },
+                { name: 'PracticeOnboardingSeen' },
+            ];
+            if (sql === 'PRAGMA table_info(Rounds)') return [
+                { name: 'Id' },
+                { name: 'CoursePar' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE Settings ADD COLUMN SoundsEnabled INTEGER NOT NULL DEFAULT 1'
+        );
+    });
+
     it('should not alter Settings table when all columns already exist', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
@@ -355,6 +382,7 @@ describe('Settings table column migration', () => {
                 { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
                 { name: 'Voice' },
+                { name: 'SoundsEnabled' },
                 { name: 'WedgeChartOnboardingSeen' },
                 { name: 'DistancesOnboardingSeen' },
                 { name: 'PlayOnboardingSeen' },

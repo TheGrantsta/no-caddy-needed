@@ -44,7 +44,7 @@ jest.mock('../../../service/DbService', () => ({
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockGetAvailableVoicesAsync = Speech.getAvailableVoicesAsync as jest.Mock;
 
-const defaultSettings = { voice: 'female', theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
+const defaultSettings = { voice: 'female', theme: 'dark', notificationsEnabled: true, soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
 
 const samanthaVoice = { identifier: 'com.apple.ttsbundle.Samantha-compact', name: 'Samantha', language: 'en-US', quality: 'Default' };
 const tomVoice = { identifier: 'com.apple.ttsbundle.Tom-compact', name: 'Tom', language: 'en-US', quality: 'Default' };
@@ -173,6 +173,17 @@ describe('Random number generator page', () => {
 
         await waitFor(() => {
             expect(Speech.speak).toHaveBeenCalledWith('50', { pitch: 0.5 });
+        });
+    });
+
+    it('does not speak when soundsEnabled is false', async () => {
+        mockGetSettingsService.mockReturnValue({ ...defaultSettings, soundsEnabled: false });
+
+        const { getByTestId } = render(<Random />);
+        fireEvent.press(getByTestId('save-button'));
+
+        await waitFor(() => {
+            expect(Speech.speak).not.toHaveBeenCalled();
         });
     });
 

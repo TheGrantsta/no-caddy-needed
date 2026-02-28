@@ -32,5 +32,5 @@ Things to do
 - [ ] SafeAreaView has been deprecation warning message
 - [X] Amend settings page to replace toggle with buttons
 - [ ] Show holes played if not a full round on scorecard summary
-- [ ] Create list of recent players like recent golf courses
+- [X] Create list of recent players like recent golf courses
 - [ ] Add ability for players to add their own practice drills

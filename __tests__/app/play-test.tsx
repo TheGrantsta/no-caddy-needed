@@ -258,6 +258,36 @@ describe('Play screen', () => {
 
             expect(queryByTestId('round-history-course-1')).toBeNull();
         });
+
+        it('shows holes played in history row when less than 18', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null, HolesPlayed: 9 },
+            ]);
+
+            const { queryByText } = render(<Play />);
+
+            expect(queryByText(/9/)).toBeTruthy();
+        });
+
+        it('does not show holes played in history row when 18 holes', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null, HolesPlayed: 18 },
+            ]);
+
+            const { queryByText } = render(<Play />);
+
+            expect(queryByText(/18 holes/)).toBeNull();
+        });
+
+        it('shows holes played alongside course name when less than 18', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: 'St Andrews', HolesPlayed: 9 },
+            ]);
+
+            const { queryByText } = render(<Play />);
+
+            expect(queryByText(/St Andrews.*9/)).toBeTruthy();
+        });
     });
 
     describe('History filter', () => {

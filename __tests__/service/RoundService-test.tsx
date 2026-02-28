@@ -26,6 +26,7 @@ import {
     getRoundHoleScores,
     getDistinctCourseNames,
     getDistinctPlayerNames,
+    getHolesPlayedForRound,
     deleteRoundHoleScoresByHole,
 } from '../../database/db';
 
@@ -43,6 +44,7 @@ jest.mock('../../database/db', () => ({
     getRoundHoleScores: jest.fn(),
     getDistinctCourseNames: jest.fn(),
     getDistinctPlayerNames: jest.fn(),
+    getHolesPlayedForRound: jest.fn(),
     deleteRoundHoleScoresByHole: jest.fn(),
 }));
 
@@ -59,6 +61,7 @@ const mockInsertRoundHoleScore = insertRoundHoleScore as jest.Mock;
 const mockGetRoundHoleScores = getRoundHoleScores as jest.Mock;
 const mockGetDistinctCourseNames = getDistinctCourseNames as jest.Mock;
 const mockGetDistinctPlayerNames = getDistinctPlayerNames as jest.Mock;
+const mockGetHolesPlayedForRound = getHolesPlayedForRound as jest.Mock;
 const mockDeleteRoundHoleScoresByHole = deleteRoundHoleScoresByHole as jest.Mock;
 
 describe('startRoundService', () => {
@@ -255,6 +258,7 @@ describe('getActiveRoundService', () => {
 describe('getAllRoundHistoryService', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        mockGetHolesPlayedForRound.mockReturnValue(18);
     });
 
     it('returns empty array when no rounds exist', () => {
@@ -263,6 +267,17 @@ describe('getAllRoundHistoryService', () => {
         const result = getAllRoundHistoryService();
 
         expect(result).toEqual([]);
+    });
+
+    it('includes HolesPlayed in returned rounds', () => {
+        mockGetAllRounds.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
+        ]);
+        mockGetHolesPlayedForRound.mockReturnValue(9);
+
+        const result = getAllRoundHistoryService();
+
+        expect(result[0].HolesPlayed).toBe(9);
     });
 
     it('returns formatted rounds with dd/mm dates', () => {

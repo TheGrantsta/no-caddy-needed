@@ -19,6 +19,7 @@ import {
     insertClubDistances,
     getDistinctCourseNames,
     getDistinctPlayerNames,
+    getHolesPlayedForRound,
     insertRoundPlayer,
     getRoundPlayers,
     insertRoundHoleScore,
@@ -185,6 +186,7 @@ export type Round = {
     IsCompleted: number;
     CourseName: string | null;
     Created_At: string;
+    HolesPlayed: number;
 };
 
 export type RoundHole = {
@@ -273,13 +275,13 @@ export const getAllRoundHistoryService = (): Round[] => {
     getAllRounds().forEach((round: any) => {
         rounds.push({
             Id: round.Id,
-
             TotalScore: round.TotalScore,
             StartTime: round.StartTime,
             EndTime: round.EndTime,
             IsCompleted: round.IsCompleted,
             CourseName: round.CourseName ?? null,
             Created_At: getTwoDigitDayAndMonth(round.Created_At),
+            HolesPlayed: getHolesPlayedForRound(round.Id),
         });
     });
 

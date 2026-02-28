@@ -298,6 +298,14 @@ export const getDistinctPlayerNames = () => {
     return db.getAllSync("SELECT DISTINCT PlayerName FROM RoundPlayers WHERE IsUser = 0 AND PlayerName IS NOT NULL AND PlayerName != '' ORDER BY Id DESC;");
 };
 
+export const getHolesPlayedForRound = (roundId: number): number => {
+    const db = SQLite.openDatabaseSync(dbName);
+    const multiRows = db.getAllSync('SELECT COUNT(DISTINCT HoleNumber) as count FROM RoundHoleScores WHERE RoundId = ?;', [roundId]) as { count: number }[];
+    if (multiRows[0]?.count > 0) return multiRows[0].count;
+    const legacyRows = db.getAllSync('SELECT COUNT(*) as count FROM RoundHoles WHERE RoundId = ?;', [roundId]) as { count: number }[];
+    return legacyRows[0]?.count ?? 0;
+};
+
 export const getClubDistances = () => {
     const db = SQLite.openDatabaseSync(dbName);
     return db.getAllSync('SELECT * FROM ClubDistances ORDER BY CarryDistance DESC;');

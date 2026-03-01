@@ -31,6 +31,11 @@ Things to do
 - [ ] Expo-notifications warning message
 - [ ] SafeAreaView has been deprecation warning message
 - [X] Amend settings page to replace toggle with buttons
-- [ ] Show holes played if not a full round on scorecard summary
+- [X] Show holes played if not a full round on scorecard summary
 - [X] Create list of recent players like recent golf courses
 - [ ] Add ability for players to add their own practice drills
+
+
+Release notes
+* Show selectable list of recent players when starting a round
+* Show number of holes played in 'Round history' for incomplete rounds

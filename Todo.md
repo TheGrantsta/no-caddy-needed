@@ -34,6 +34,7 @@ Things to do
 - [X] Show holes played if not a full round on scorecard summary
 - [X] Create list of recent players like recent golf courses
 - [ ] Add ability for players to add their own practice drills
+- [ ] Fix vulnerabilities in the npm packages - npm audit / npm audit fix
 
 
 Release notes

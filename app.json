@@ -62,6 +62,13 @@
       ],
       "expo-router",
       "expo-audio",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Allow No Caddy Needed to use the microphone for hands-free number generation.",
+          "speechRecognitionPermission": "Allow No Caddy Needed to recognise your voice to generate numbers hands-free."
+        }
+      ],
       "expo-notifications",
       [
         "expo-build-properties",

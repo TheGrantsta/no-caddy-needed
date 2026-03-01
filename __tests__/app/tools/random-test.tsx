@@ -1,8 +1,9 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Random from '../../../app/tools/random';
 import * as Speech from 'expo-speech';
 import { getSettingsService } from '../../../service/DbService';
+import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -37,12 +38,25 @@ jest.mock('expo-speech', () => ({
     getAvailableVoicesAsync: jest.fn(),
 }));
 
+jest.mock('expo-speech-recognition', () => ({
+    ExpoSpeechRecognitionModule: {
+        requestPermissionsAsync: jest.fn(),
+        start: jest.fn(),
+        stop: jest.fn(),
+    },
+    useSpeechRecognitionEvent: jest.fn(),
+}));
+
 jest.mock('../../../service/DbService', () => ({
     getSettingsService: jest.fn(),
 }));
 
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockGetAvailableVoicesAsync = Speech.getAvailableVoicesAsync as jest.Mock;
+const mockRequestPermissions = ExpoSpeechRecognitionModule.requestPermissionsAsync as jest.Mock;
+const mockStart = ExpoSpeechRecognitionModule.start as jest.Mock;
+const mockStop = ExpoSpeechRecognitionModule.stop as jest.Mock;
+const mockUseSpeechRecognitionEvent = useSpeechRecognitionEvent as jest.Mock;
 
 const defaultSettings = { voice: 'female', theme: 'dark', notificationsEnabled: true, soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
 
@@ -54,6 +68,8 @@ describe('Random number generator page', () => {
         jest.clearAllMocks();
         mockGetSettingsService.mockReturnValue(defaultSettings);
         mockGetAvailableVoicesAsync.mockResolvedValue([samanthaVoice, tomVoice]);
+        mockRequestPermissions.mockResolvedValue({ granted: true });
+        mockUseSpeechRecognitionEvent.mockImplementation(() => {});
     });
 
     it('renders correctly with the header', () => {
@@ -203,5 +219,93 @@ describe('Random number generator page', () => {
         fireEvent.changeText(incrementInput, '5abc');
 
         expect(getByDisplayValue('5')).toBeTruthy();
+    });
+
+    it('renders mic button in off state by default', () => {
+        const { getByTestId } = render(<Random />);
+
+        expect(getByTestId('mic-button')).toBeTruthy();
+    });
+
+    it('pressing mic button requests permissions and starts recognition', async () => {
+        const { getByTestId } = render(<Random />);
+
+        await act(async () => {
+            fireEvent.press(getByTestId('mic-button'));
+        });
+
+        expect(mockRequestPermissions).toHaveBeenCalled();
+        expect(mockStart).toHaveBeenCalledWith({ lang: 'en-US', continuous: true, interimResults: true });
+    });
+
+    it('pressing mic button again stops recognition', async () => {
+        const { getByTestId } = render(<Random />);
+
+        await act(async () => {
+            fireEvent.press(getByTestId('mic-button'));
+        });
+        await act(async () => {
+            fireEvent.press(getByTestId('mic-button'));
+        });
+
+        expect(mockStop).toHaveBeenCalled();
+    });
+
+    it('does not start recognition when permission is denied', async () => {
+        mockRequestPermissions.mockResolvedValue({ granted: false });
+        const { getByTestId } = render(<Random />);
+
+        await act(async () => {
+            fireEvent.press(getByTestId('mic-button'));
+        });
+
+        expect(mockStart).not.toHaveBeenCalled();
+    });
+
+    it('transcript "caddy next" triggers handleGenerate', async () => {
+        let capturedResultHandler: ((event: any) => void) | null = null;
+        mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+            if (eventName === 'result') capturedResultHandler = handler;
+        });
+
+        const { getByText } = render(<Random />);
+
+        act(() => capturedResultHandler!({ results: [{ transcript: 'caddy next' }] }));
+
+        expect(getByText('50')).toBeTruthy();
+    });
+
+    it('transcript "caddy: next" triggers handleGenerate', async () => {
+        let capturedResultHandler: ((event: any) => void) | null = null;
+        mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+            if (eventName === 'result') capturedResultHandler = handler;
+        });
+
+        const { getByText } = render(<Random />);
+
+        act(() => capturedResultHandler!({ results: [{ transcript: 'caddy: next' }] }));
+
+        expect(getByText('50')).toBeTruthy();
+    });
+
+    it('transcript without trigger phrase does not trigger handleGenerate', () => {
+        let capturedResultHandler: ((event: any) => void) | null = null;
+        mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+            if (eventName === 'result') capturedResultHandler = handler;
+        });
+
+        const { queryByText } = render(<Random />);
+
+        act(() => capturedResultHandler!({ results: [{ transcript: 'hello world' }] }));
+
+        expect(queryByText('50')).toBeNull();
+    });
+
+    it('stops recognition on unmount', () => {
+        const { unmount } = render(<Random />);
+
+        unmount();
+
+        expect(mockStop).toHaveBeenCalled();
     });
 });

@@ -1,8 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, View, Text, TextInput, StyleSheet, RefreshControl, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getRandomNumber } from '../../assets/random-number';
 import * as Speech from 'expo-speech';
+import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
+import { MaterialIcons } from '@expo/vector-icons';
 import { getSettingsService } from '../../service/DbService';
 import Chevrons from '@/components/Chevrons';
 import { useStyles } from '@/hooks/useStyles';
@@ -40,6 +42,33 @@ export default function Random() {
     const [incrementText, setIncrementText] = useState('10');
     const [incrementError, setIncrementError] = useState('');
     const [randomNumber, setRandomNumber] = useState(0);
+    const [micActive, setMicActive] = useState(false);
+
+    useSpeechRecognitionEvent('result', (event) => {
+        const transcript = (event.results[0]?.transcript ?? '').toLowerCase();
+        if (transcript.includes('caddy') && transcript.includes('next')) {
+            handleGenerate();
+        }
+    });
+
+    useEffect(() => {
+        return () => {
+            ExpoSpeechRecognitionModule.stop();
+        };
+    }, []);
+
+    const handleMicToggle = async () => {
+        if (!micActive) {
+            const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+            if (granted) {
+                ExpoSpeechRecognitionModule.start({ lang: 'en-US', continuous: true, interimResults: true });
+                setMicActive(true);
+            }
+        } else {
+            ExpoSpeechRecognitionModule.stop();
+            setMicActive(false);
+        }
+    };
 
     const handleGenerate = async () => {
         if (rangeText.length < 1) {
@@ -117,6 +146,16 @@ export default function Random() {
             fontWeight: 'bold',
             textAlign: 'center',
             fontFamily: 'Arial',
+        },
+        micButton: {
+            marginTop: 12,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            backgroundColor: colours.backgroundAlternate,
+        },
+        micButtonActive: {
+            backgroundColor: colours.yellow,
         },
     }), [colours]);
 
@@ -202,6 +241,17 @@ export default function Random() {
                                 <Text style={localStyles.actionButtonText}>
                                     Generate
                                 </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                testID="mic-button"
+                                style={[localStyles.micButton, micActive && localStyles.micButtonActive]}
+                                onPress={handleMicToggle}
+                            >
+                                <MaterialIcons
+                                    name={micActive ? 'mic' : 'mic-off'}
+                                    size={28}
+                                    color={micActive ? colours.background : colours.text}
+                                />
                             </TouchableOpacity>
                         </View>
 

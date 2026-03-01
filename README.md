@@ -42,6 +42,14 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
    fix any issues
 
+6. Native modules required
+
+   ```bash
+      no-caddy-needed % npx expo prebuild --clean; npx expo run:ios
+   ```
+
+   Voice recognition is part of the random number generator page so requires expo-speech-recognition installed with native modules
+
 ## Building project
 
 1. Login into EAS (free tier)

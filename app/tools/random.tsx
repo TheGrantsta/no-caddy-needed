@@ -27,7 +27,7 @@ const getVoiceOptions = async (voice: string): Promise<Record<string, unknown>> 
             v.language.startsWith('en') && names.some(n => v.name.toLowerCase().includes(n))
         );
         if (match) return { voice: match.identifier };
-    } catch {}
+    } catch { }
 
     return { pitch: fallbackPitch };
 };
@@ -242,6 +242,7 @@ export default function Random() {
                                     Generate
                                 </Text>
                             </TouchableOpacity>
+
                             <TouchableOpacity
                                 testID="mic-button"
                                 style={[localStyles.micButton, micActive && localStyles.micButtonActive]}
@@ -253,6 +254,10 @@ export default function Random() {
                                     color={micActive ? colours.background : colours.text}
                                 />
                             </TouchableOpacity>
+
+                            <Text style={styles.smallestText}>
+                                Say: "caddy next" to generate a number hands-free (make sure to allow microphone permissions when prompted and have sounds enabled in Settings)
+                            </Text>
                         </View>
 
                         <View style={styles.marginTop}>

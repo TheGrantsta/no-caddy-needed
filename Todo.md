@@ -1,5 +1,13 @@
-Things to do
+# To do
+- [ ] Deprecation warning in debugger
+- [ ] Create 'skill' to run screen shots on remote push
+- [ ] Integrate Firebase iOS into project
+- [ ] Add test coverage tool and include in pre-hook push
+- [ ] Complete Google Play setup
+- [ ] Expo-notifications warning message
+- [ ] Add ability for players to add their own practice drills
 
+# Done
 - [X] Reorder Tiger 5 so that dynamic options are last in the order
 - [X] Fix scorecard entry to remove duplication
 - [X] Fix component name from MultiplayerHoleScoreInput to HoleScoreInput (MultiplayerHoleScoreInput.tsx)
@@ -18,27 +26,21 @@ Things to do
 - [X] Fix issue where 7DS is not deleted when the round is deleted
 - [X] Add filters for 7DS & Round history
 - [X] Save button does not follow the same format when saving scorecard
-- [ ] Deprecation warning in debugger
-- [ ] Create 'skill' to run screen shots on remote push
-- [ ] Integrate Firebase iOS into project
-- [ ] Add test coverage tool and include in pre-hook push
-- [ ] Complete Google Play setup
 - [X] Upgrade iOS SDK from 18.2 to 26
 - [X] Random number out loud 
 - [X] Support voice command ('caddy: next')
-- [ ] Remove Expo warning in CLI
+- [X] Remove Expo warning in CLI
 - [X] Save tempo speed between sessions
-- [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
-- [ ] Expo-notifications warning message
-- [-] SafeAreaView has been deprecation warning message
 - [X] Amend settings page to replace toggle with buttons
 - [X] Show holes played if not a full round on scorecard summary
 - [X] Create list of recent players like recent golf courses
-- [ ] Add ability for players to add their own practice drills
-- [ ] Fix vulnerabilities in the npm packages - npm audit / npm audit fix
+- [X] Fix vulnerabilities in the npm packages - npm audit / npm audit fix
 
+# Ignored
+- [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
+- [-] SafeAreaView has been deprecation warning message
 
-Release notes
+# Release notes
 * Show selectable list of recent players when starting a round
 * Show number of holes played in 'Round history' for incomplete rounds
 * Add voice control commands for 'Random number generator' screen

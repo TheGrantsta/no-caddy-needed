@@ -46,7 +46,8 @@ export default function Random() {
 
     useSpeechRecognitionEvent('result', (event) => {
         const transcript = (event.results[0]?.transcript ?? '').toLowerCase();
-        if (transcript.includes('caddy') && transcript.includes('next')) {
+
+        if (transcript.trim().split(" ").pop() === 'next') {
             handleGenerate();
         }
     });
@@ -256,7 +257,7 @@ export default function Random() {
                             </TouchableOpacity>
 
                             <Text style={styles.smallestText}>
-                                Say: "caddy next" to generate a number hands-free (make sure to allow microphone permissions when prompted and have sounds enabled in Settings)
+                                Say: "next" to generate a number hands-free (make sure to allow microphone permissions when prompted and have sounds enabled in Settings)
                             </Text>
                         </View>
 

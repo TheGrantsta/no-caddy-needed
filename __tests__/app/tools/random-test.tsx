@@ -4,6 +4,7 @@ import Random from '../../../app/tools/random';
 import * as Speech from 'expo-speech';
 import { getSettingsService } from '../../../service/DbService';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
+import { getRandomNumber } from '../../../assets/random-number';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -53,6 +54,7 @@ jest.mock('../../../service/DbService', () => ({
 
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockGetAvailableVoicesAsync = Speech.getAvailableVoicesAsync as jest.Mock;
+const mockGetRandomNumber = getRandomNumber as jest.Mock;
 const mockRequestPermissions = ExpoSpeechRecognitionModule.requestPermissionsAsync as jest.Mock;
 const mockStart = ExpoSpeechRecognitionModule.start as jest.Mock;
 const mockStop = ExpoSpeechRecognitionModule.stop as jest.Mock;
@@ -69,7 +71,7 @@ describe('Random number generator page', () => {
         mockGetSettingsService.mockReturnValue(defaultSettings);
         mockGetAvailableVoicesAsync.mockResolvedValue([samanthaVoice, tomVoice]);
         mockRequestPermissions.mockResolvedValue({ granted: true });
-        mockUseSpeechRecognitionEvent.mockImplementation(() => {});
+        mockUseSpeechRecognitionEvent.mockImplementation(() => { });
     });
 
     it('renders correctly with the header', () => {
@@ -262,7 +264,7 @@ describe('Random number generator page', () => {
         expect(mockStart).not.toHaveBeenCalled();
     });
 
-    it('transcript "caddy next" triggers handleGenerate', async () => {
+    it('transcript "next" triggers handleGenerate', async () => {
         let capturedResultHandler: ((event: any) => void) | null = null;
         mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
             if (eventName === 'result') capturedResultHandler = handler;
@@ -270,12 +272,12 @@ describe('Random number generator page', () => {
 
         const { getByText } = render(<Random />);
 
-        act(() => capturedResultHandler!({ results: [{ transcript: 'caddy next' }] }));
+        act(() => capturedResultHandler!({ results: [{ transcript: 'next' }] }));
 
         expect(getByText('50')).toBeTruthy();
     });
 
-    it('transcript "caddy: next" triggers handleGenerate', async () => {
+    it('transcript "next" triggers handleGenerate', async () => {
         let capturedResultHandler: ((event: any) => void) | null = null;
         mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
             if (eventName === 'result') capturedResultHandler = handler;
@@ -283,7 +285,7 @@ describe('Random number generator page', () => {
 
         const { getByText } = render(<Random />);
 
-        act(() => capturedResultHandler!({ results: [{ transcript: 'caddy: next' }] }));
+        act(() => capturedResultHandler!({ results: [{ transcript: 'next' }] }));
 
         expect(getByText('50')).toBeTruthy();
     });
@@ -307,5 +309,34 @@ describe('Random number generator page', () => {
         unmount();
 
         expect(mockStop).toHaveBeenCalled();
+    });
+
+    it('repeated "next" interim results only trigger generate once per utterance', () => {
+        let capturedResultHandler: ((event: any) => void) | null = null;
+        mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+            if (eventName === 'result') capturedResultHandler = handler;
+        });
+
+        render(<Random />);
+
+        act(() => capturedResultHandler!({ results: [{ transcript: 'next' }] }));
+        act(() => capturedResultHandler!({ results: [{ transcript: 'something else' }] }));
+
+        expect(mockGetRandomNumber).toHaveBeenCalledTimes(1);
+    });
+
+    it('non-matching transcript resets guard so next "next" triggers again', () => {
+        let capturedResultHandler: ((event: any) => void) | null = null;
+        mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+            if (eventName === 'result') capturedResultHandler = handler;
+        });
+
+        render(<Random />);
+
+        act(() => capturedResultHandler!({ results: [{ transcript: 'next' }] }));
+        act(() => capturedResultHandler!({ results: [{ transcript: 'okay' }] }));
+        act(() => capturedResultHandler!({ results: [{ transcript: 'next' }] }));
+
+        expect(mockGetRandomNumber).toHaveBeenCalledTimes(2);
     });
 });

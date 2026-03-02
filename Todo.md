@@ -30,7 +30,7 @@ Things to do
 - [X] Save tempo speed between sessions
 - [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
 - [ ] Expo-notifications warning message
-- [ ] SafeAreaView has been deprecation warning message
+- [-] SafeAreaView has been deprecation warning message
 - [X] Amend settings page to replace toggle with buttons
 - [X] Show holes played if not a full round on scorecard summary
 - [X] Create list of recent players like recent golf courses

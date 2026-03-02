@@ -237,7 +237,7 @@ describe('Random number generator page', () => {
         });
 
         expect(mockRequestPermissions).toHaveBeenCalled();
-        expect(mockStart).toHaveBeenCalledWith({ lang: 'en-GB', continuous: true, interimResults: false });
+        expect(mockStart).toHaveBeenCalledWith({ lang: 'en-GB', continuous: true, interimResults: true });
     });
 
     it('pressing mic button again stops recognition', async () => {

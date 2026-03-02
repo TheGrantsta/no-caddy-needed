@@ -46,8 +46,11 @@ export default function Random() {
 
     useSpeechRecognitionEvent('result', (event) => {
         const transcript = (event.results[0]?.transcript ?? '').toLowerCase();
+        const lastWord = transcript.trim().split(" ").pop();
 
-        if (transcript.trim().split(" ").pop() === 'next') {
+        console.log('Heard:', transcript, 'Last word:', lastWord);
+
+        if (lastWord === 'next') {
             handleGenerate();
         }
     });

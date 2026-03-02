@@ -41,3 +41,6 @@ Things to do
 Release notes
 * Show selectable list of recent players when starting a round
 * Show number of holes played in 'Round history' for incomplete rounds
+* Add voice control commands for 'Random number generator' and 'Tempo' screens
+* Persist user settings between sessions
+

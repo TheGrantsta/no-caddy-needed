@@ -237,7 +237,7 @@ describe('Random number generator page', () => {
         });
 
         expect(mockRequestPermissions).toHaveBeenCalled();
-        expect(mockStart).toHaveBeenCalledWith({ lang: 'en-US', continuous: true, interimResults: true });
+        expect(mockStart).toHaveBeenCalledWith({ lang: 'en-GB', continuous: true, interimResults: false });
     });
 
     it('pressing mic button again stops recognition', async () => {
@@ -277,19 +277,6 @@ describe('Random number generator page', () => {
         expect(getByText('50')).toBeTruthy();
     });
 
-    it('transcript "next" triggers handleGenerate', async () => {
-        let capturedResultHandler: ((event: any) => void) | null = null;
-        mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
-            if (eventName === 'result') capturedResultHandler = handler;
-        });
-
-        const { getByText } = render(<Random />);
-
-        act(() => capturedResultHandler!({ results: [{ transcript: 'next' }] }));
-
-        expect(getByText('50')).toBeTruthy();
-    });
-
     it('transcript without trigger phrase does not trigger handleGenerate', () => {
         let capturedResultHandler: ((event: any) => void) | null = null;
         mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
@@ -311,21 +298,7 @@ describe('Random number generator page', () => {
         expect(mockStop).toHaveBeenCalled();
     });
 
-    it('repeated "next" interim results only trigger generate once per utterance', () => {
-        let capturedResultHandler: ((event: any) => void) | null = null;
-        mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
-            if (eventName === 'result') capturedResultHandler = handler;
-        });
-
-        render(<Random />);
-
-        act(() => capturedResultHandler!({ results: [{ transcript: 'next' }] }));
-        act(() => capturedResultHandler!({ results: [{ transcript: 'something else' }] }));
-
-        expect(mockGetRandomNumber).toHaveBeenCalledTimes(1);
-    });
-
-    it('non-matching transcript resets guard so next "next" triggers again', () => {
+    it('two separate "next" utterances each trigger handleGenerate', () => {
         let capturedResultHandler: ((event: any) => void) | null = null;
         mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
             if (eventName === 'result') capturedResultHandler = handler;

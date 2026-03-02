@@ -62,7 +62,7 @@ export default function Random() {
         if (!micActive) {
             const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
             if (granted) {
-                ExpoSpeechRecognitionModule.start({ lang: 'en-US', continuous: true, interimResults: true });
+                ExpoSpeechRecognitionModule.start({ lang: 'en-GB', continuous: true, interimResults: false });
                 setMicActive(true);
             }
         } else {

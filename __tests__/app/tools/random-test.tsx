@@ -298,6 +298,29 @@ describe('Random number generator page', () => {
         expect(mockStop).toHaveBeenCalled();
     });
 
+    it('result event after mic is toggled off does not trigger handleGenerate', async () => {
+        let capturedResultHandler: ((event: any) => void) | null = null;
+        mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+            if (eventName === 'result') capturedResultHandler = handler;
+        });
+
+        const { getByTestId } = render(<Random />);
+
+        await act(async () => {
+            fireEvent.press(getByTestId('mic-button'));
+        });
+
+        act(() => capturedResultHandler!({ results: [{ transcript: 'next' }] }));
+
+        await act(async () => {
+            fireEvent.press(getByTestId('mic-button'));
+        });
+
+        act(() => capturedResultHandler!({ results: [{ transcript: 'next' }] }));
+
+        expect(mockGetRandomNumber).toHaveBeenCalledTimes(1);
+    });
+
     it('two separate "next" utterances each trigger handleGenerate', () => {
         let capturedResultHandler: ((event: any) => void) | null = null;
         mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {

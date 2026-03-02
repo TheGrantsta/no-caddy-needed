@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, View, Text, TextInput, StyleSheet, RefreshControl, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getRandomNumber } from '../../assets/random-number';
@@ -43,8 +43,10 @@ export default function Random() {
     const [incrementError, setIncrementError] = useState('');
     const [randomNumber, setRandomNumber] = useState(0);
     const [micActive, setMicActive] = useState(false);
+    const isStoppingRef = useRef(false);
 
     useSpeechRecognitionEvent('result', (event) => {
+        if (isStoppingRef.current) return;
         const transcript = (event.results[0]?.transcript ?? '').toLowerCase();
         const lastWord = transcript.trim().split(" ").pop();
 
@@ -63,12 +65,14 @@ export default function Random() {
 
     const handleMicToggle = async () => {
         if (!micActive) {
+            isStoppingRef.current = false;
             const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
             if (granted) {
                 ExpoSpeechRecognitionModule.start({ lang: 'en-GB', continuous: true, interimResults: true });
                 setMicActive(true);
             }
         } else {
+            isStoppingRef.current = true;
             ExpoSpeechRecognitionModule.stop();
             setMicActive(false);
         }
@@ -260,7 +264,7 @@ export default function Random() {
                             </TouchableOpacity>
 
                             <Text style={styles.smallestText}>
-                                Say: "next" to generate a number hands-free (make sure to allow microphone permissions when prompted and have sounds enabled in Settings)
+                                Say "next" to generate a number hands-free (make sure to allow microphone permissions when prompted and have sounds enabled in Settings)
                             </Text>
                         </View>
 

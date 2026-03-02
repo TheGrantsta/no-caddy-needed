@@ -27,8 +27,8 @@ Things to do
 - [X] Random number out loud 
 - [X] Support voice command ('caddy: next')
 - [ ] Remove Expo warning in CLI
-- [ ] Save tempo speed between sessions
-- [ ] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
+- [X] Save tempo speed between sessions
+- [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
 - [ ] Expo-notifications warning message
 - [ ] SafeAreaView has been deprecation warning message
 - [X] Amend settings page to replace toggle with buttons
@@ -41,6 +41,6 @@ Things to do
 Release notes
 * Show selectable list of recent players when starting a round
 * Show number of holes played in 'Round history' for incomplete rounds
-* Add voice control commands for 'Random number generator' and 'Tempo' screens
-* Persist user settings between sessions
+* Add voice control commands for 'Random number generator' screen
+* Persist tempo user settings between sessions
 

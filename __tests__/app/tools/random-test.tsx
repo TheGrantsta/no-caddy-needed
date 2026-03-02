@@ -63,7 +63,7 @@ const mockUseSpeechRecognitionEvent = useSpeechRecognitionEvent as jest.Mock;
 const defaultSettings = { voice: 'female', theme: 'dark', notificationsEnabled: true, soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
 
 const samanthaVoice = { identifier: 'com.apple.ttsbundle.Samantha-compact', name: 'Samantha', language: 'en-US', quality: 'Default' };
-const tomVoice = { identifier: 'com.apple.ttsbundle.Tom-compact', name: 'Tom', language: 'en-US', quality: 'Default' };
+const tomVoice = { identifier: 'com.apple.ttsbundle.Tom-compact', name: 'Tom', language: 'en-GB', quality: 'Default' };
 
 describe('Random number generator page', () => {
     beforeEach(() => {

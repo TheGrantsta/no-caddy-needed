@@ -25,8 +25,9 @@ Things to do
 - [ ] Complete Google Play setup
 - [X] Upgrade iOS SDK from 18.2 to 26
 - [X] Random number out loud 
-- [ ] Support voice command ('caddy: next')
+- [X] Support voice command ('caddy: next')
 - [ ] Remove Expo warning in CLI
+- [ ] Save tempo speed between sessions
 - [ ] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
 - [ ] Expo-notifications warning message
 - [ ] SafeAreaView has been deprecation warning message

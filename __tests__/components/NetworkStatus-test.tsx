@@ -1,4 +1,5 @@
 import React from 'react';
+import { Animated } from 'react-native';
 import { render, act } from '@testing-library/react-native';
 import NetworkStatus from '../../components/NetworkStatus';
 import NetInfo from '@react-native-community/netinfo';
@@ -100,5 +101,28 @@ describe('NetworkStatus component', () => {
         unmount();
 
         expect(mockUnsubscribe).toHaveBeenCalledTimes(1);
+    });
+
+    it('hidesBannerAfterConnectionRestoredAndAnimationCompletes', async () => {
+        const startMock = jest.fn((callback?: () => void) => {
+            if (callback) callback();
+        });
+        const timingSpy = jest.spyOn(Animated, 'timing').mockReturnValue({ start: startMock } as any);
+
+        const { queryByTestId } = render(<NetworkStatus />);
+
+        await act(async () => {
+            mockCallback({ isConnected: false });
+            jest.advanceTimersByTime(350);
+        });
+
+        await act(async () => {
+            mockCallback({ isConnected: true });
+            jest.advanceTimersByTime(350);
+        });
+
+        timingSpy.mockRestore();
+
+        expect(queryByTestId('offline-banner')).toBeNull();
     });
 });

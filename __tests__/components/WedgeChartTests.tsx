@@ -134,4 +134,112 @@ describe('WedgeChart component', () => {
 
         expect(mockOnSave).toHaveBeenCalledWith(populatedData);
     });
+
+    it('doesNotThrowWhenSavePressedWithoutOnSaveProp', () => {
+        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+
+        expect(() => fireEvent.press(getByTestId('save-wedge-chart-button'))).not.toThrow();
+    });
+
+    it('updatesClubNameWhenInputChanges', () => {
+        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+
+        fireEvent.changeText(getByTestId('wedge-club-input-0'), 'LW');
+
+        expect(getByTestId('wedge-club-input-0').props.value).toBe('LW');
+    });
+
+    it('updatesDistanceValueWhenInputChanges', () => {
+        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+
+        fireEvent.changeText(getByTestId('wedge-distance-input-0-0'), '95');
+
+        expect(getByTestId('wedge-distance-input-0-0').props.value).toBe('95');
+    });
+
+    it('updatesDistanceNameWhenHeaderInputChanges', () => {
+        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+
+        fireEvent.changeText(getByTestId('distance-name-input-0'), 'Half');
+
+        expect(getByTestId('distance-name-input-0').props.value).toBe('Half');
+    });
+
+    it('savesUpdatedClubNameAfterEditing', () => {
+        const mockOnSave = jest.fn();
+        const { getByTestId } = render(<WedgeChart data={populatedData} onSave={mockOnSave} />);
+
+        fireEvent.changeText(getByTestId('wedge-club-input-0'), 'LW');
+        fireEvent.press(getByTestId('save-wedge-chart-button'));
+
+        expect(mockOnSave).toHaveBeenCalledWith(
+            expect.objectContaining({
+                clubs: expect.arrayContaining([
+                    expect.objectContaining({ club: 'LW' }),
+                ]),
+            })
+        );
+    });
+
+    it('filtersOutClubsWithEmptyNameOnSave', () => {
+        const mockOnSave = jest.fn();
+        const dataWithBlankClub: WedgeChartData = {
+            distanceNames: ['Full'],
+            clubs: [
+                { club: 'PW', distances: [{ name: 'Full', distance: 130 }] },
+                { club: '  ', distances: [{ name: 'Full', distance: 0 }] },
+            ],
+        };
+
+        const { getByTestId } = render(<WedgeChart data={dataWithBlankClub} onSave={mockOnSave} />);
+        fireEvent.press(getByTestId('save-wedge-chart-button'));
+
+        const saved: WedgeChartData = mockOnSave.mock.calls[0][0];
+        expect(saved.clubs).toHaveLength(1);
+        expect(saved.clubs[0].club).toBe('PW');
+    });
+
+    it('filtersOutBlankDistanceNamesOnSave', () => {
+        const mockOnSave = jest.fn();
+        const dataWithBlankDistance: WedgeChartData = {
+            distanceNames: ['Full', ''],
+            clubs: [{ club: 'PW', distances: [{ name: 'Full', distance: 130 }, { name: '', distance: 0 }] }],
+        };
+
+        const { getByTestId } = render(<WedgeChart data={dataWithBlankDistance} onSave={mockOnSave} />);
+        fireEvent.press(getByTestId('save-wedge-chart-button'));
+
+        const saved: WedgeChartData = mockOnSave.mock.calls[0][0];
+        expect(saved.distanceNames).toEqual(['Full']);
+        expect(saved.clubs[0].distances).toHaveLength(1);
+    });
+
+    it('savesNonNumericDistanceAsZero', () => {
+        const mockOnSave = jest.fn();
+        const { getByTestId } = render(<WedgeChart data={populatedData} onSave={mockOnSave} />);
+
+        fireEvent.changeText(getByTestId('wedge-distance-input-0-0'), 'abc');
+        fireEvent.press(getByTestId('save-wedge-chart-button'));
+
+        const saved: WedgeChartData = mockOnSave.mock.calls[0][0];
+        expect(saved.clubs[0].distances[0].distance).toBe(0);
+    });
+
+    it('distanceInputUsesNumberPadKeyboard', () => {
+        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+
+        expect(getByTestId('wedge-distance-input-0-0').props.keyboardType).toBe('number-pad');
+    });
+
+    it('rendersNoDistanceHeaderInputsForEmptyData', () => {
+        const { queryByTestId } = render(<WedgeChart data={emptyData} />);
+
+        expect(queryByTestId('distance-name-input-0')).toBeNull();
+    });
+
+    it('rendersNoClubRowsForEmptyData', () => {
+        const { queryByTestId } = render(<WedgeChart data={emptyData} />);
+
+        expect(queryByTestId('wedge-club-input-0')).toBeNull();
+    });
 });

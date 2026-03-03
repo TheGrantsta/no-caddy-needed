@@ -1,5 +1,4 @@
 # To do
-- [X] Add build version to bottom of Settings page
 - [ ] Deprecation warning in debugger
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project
@@ -36,6 +35,7 @@
 - [X] Show holes played if not a full round on scorecard summary
 - [X] Create list of recent players like recent golf courses
 - [X] Fix vulnerabilities in the npm packages - npm audit / npm audit fix
+- [X] Add build version to bottom of Settings page
 
 # Ignored
 - [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')

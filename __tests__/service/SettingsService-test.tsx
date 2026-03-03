@@ -108,6 +108,14 @@ describe('getSettingsService', () => {
 
         expect(result.voice).toBe('neutral');
     });
+
+    it('defaultsVoiceToFemaleWhenVoiceColumnIsNull', () => {
+        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: null, SoundsEnabled: 1, WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0 });
+
+        const result = getSettingsService();
+
+        expect(result.voice).toBe('female');
+    });
 });
 
 describe('saveSettingsService', () => {

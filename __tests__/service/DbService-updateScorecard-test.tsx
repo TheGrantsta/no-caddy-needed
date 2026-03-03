@@ -104,6 +104,21 @@ describe('updateScorecardService', () => {
 
         expect(result).toBe(false);
     });
+
+    it('usesTotalScoreOfZeroWhenNoUserPlayerFound', async () => {
+        mockUpdateRoundHoleScore.mockResolvedValue(true);
+        mockGetRoundPlayers.mockReturnValue([
+            { Id: 1, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 1 },
+        ]);
+        mockGetRoundHoleScores.mockReturnValue([
+            { Id: 10, RoundId: 1, RoundPlayerId: 1, HoleNumber: 1, HolePar: 4, Score: 5 },
+        ]);
+        mockUpdateRoundTotalScore.mockResolvedValue(true);
+
+        await updateScorecardService(1, [{ id: 10, score: 5 }]);
+
+        expect(mockUpdateRoundTotalScore).toHaveBeenCalledWith(1, 0);
+    });
 });
 
 describe('getDeadlySinsForRoundService', () => {
@@ -139,5 +154,17 @@ describe('getDeadlySinsForRoundService', () => {
         const result = getDeadlySinsForRoundService(5);
 
         expect(result).toBeNull();
+    });
+
+    it('returnsNullRoundIdWhenDbRowHasNullRoundId', () => {
+        mockGetDeadlySinsRoundByRoundId.mockReturnValue({
+            Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0,
+            DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 0,
+            RoundId: null, Created_At: '2025-06-15T14:00:00.000Z',
+        });
+
+        const result = getDeadlySinsForRoundService(5);
+
+        expect(result!.RoundId).toBeNull();
     });
 });

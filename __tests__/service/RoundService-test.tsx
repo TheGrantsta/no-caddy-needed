@@ -360,6 +360,17 @@ describe('addRoundPlayersService', () => {
 
         expect(result).toEqual([]);
     });
+
+    it('skipsAdditionalPlayerWhenTheirInsertReturnsNull', async () => {
+        mockInsertRoundPlayer
+            .mockResolvedValueOnce(1)    // user player succeeds
+            .mockResolvedValueOnce(null) // Alice fails
+            .mockResolvedValueOnce(3);   // Bob succeeds
+
+        const result = await addRoundPlayersService(42, ['Alice', 'Bob']);
+
+        expect(result).toEqual([1, 3]);
+    });
 });
 
 describe('addMultiplayerHoleScoresService', () => {
@@ -567,6 +578,21 @@ describe('endRoundService multiplayer path', () => {
 
         expect(mockGetRoundHoles).toHaveBeenCalledWith(1);
         expect(mockUpdateRound).toHaveBeenCalledWith(1, 1);
+    });
+
+    it('usesTotalScoreOfZeroWhenNoUserPlayerFound', async () => {
+        mockGetRoundPlayers.mockReturnValue([
+            { Id: 1, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 1 },
+            { Id: 2, RoundId: 1, PlayerName: 'Bob', IsUser: 0, SortOrder: 2 },
+        ]);
+        mockGetRoundHoleScores.mockReturnValue([
+            { Id: 1, RoundId: 1, RoundPlayerId: 1, HoleNumber: 1, HolePar: 4, Score: 5 },
+        ]);
+        mockUpdateRound.mockResolvedValue(true);
+
+        await endRoundService(1);
+
+        expect(mockUpdateRound).toHaveBeenCalledWith(1, 0);
     });
 });
 

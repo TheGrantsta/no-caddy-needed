@@ -1,4 +1,5 @@
 import React from 'react';
+import { ScrollView } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Random from '../../../app/tools/random';
 import * as Speech from 'expo-speech';
@@ -334,5 +335,128 @@ describe('Random number generator page', () => {
         act(() => capturedResultHandler!({ results: [{ transcript: 'next' }] }));
 
         expect(mockGetRandomNumber).toHaveBeenCalledTimes(2);
+    });
+
+    it('clearsRangeErrorWhenUserTypesAfterError', () => {
+        const { getByDisplayValue, getByTestId, queryByText } = render(<Random />);
+
+        fireEvent.changeText(getByDisplayValue('30-100'), '');
+        fireEvent.press(getByTestId('save-button'));
+
+        fireEvent.changeText(getByDisplayValue(''), '20-80');
+
+        expect(queryByText('Range cannot be empty')).toBeNull();
+    });
+
+    it('clearsIncrementErrorWhenUserTypesAfterError', () => {
+        const { getByDisplayValue, getByTestId, queryByText } = render(<Random />);
+
+        fireEvent.changeText(getByDisplayValue('10'), '');
+        fireEvent.press(getByTestId('save-button'));
+
+        fireEvent.changeText(getByDisplayValue(''), '5');
+
+        expect(queryByText('Increment cannot be empty')).toBeNull();
+    });
+
+    it('speechRecognitionHandlesNullTranscript', () => {
+        let capturedResultHandler: ((event: any) => void) | null = null;
+        mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+            if (eventName === 'result') capturedResultHandler = handler;
+        });
+
+        render(<Random />);
+
+        expect(() => act(() => capturedResultHandler!({ results: [{ transcript: null }] }))).not.toThrow();
+    });
+
+    describe('onRefresh', () => {
+        beforeEach(() => {
+            jest.useFakeTimers();
+        });
+
+        afterEach(() => {
+            jest.clearAllTimers();
+            jest.useRealTimers();
+        });
+
+        it('onRefreshShowsRefreshingOverlay', () => {
+            const { UNSAFE_getByType, getByText } = render(<Random />);
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            act(() => {
+                scrollView.props.refreshControl.props.onRefresh();
+            });
+
+            expect(getByText('Release to update')).toBeTruthy();
+        });
+
+        it('onRefreshHidesOverlayAfterTimeout', () => {
+            const { UNSAFE_getByType, queryByText } = render(<Random />);
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            act(() => {
+                scrollView.props.refreshControl.props.onRefresh();
+            });
+            act(() => {
+                jest.advanceTimersByTime(750);
+            });
+
+            expect(queryByText('Release to update')).toBeNull();
+        });
+
+        it('onRefreshResetsRangeAndIncrementToDefaults', () => {
+            const { UNSAFE_getByType, getByDisplayValue } = render(<Random />);
+
+            fireEvent.changeText(getByDisplayValue('30-100'), '50-150');
+            fireEvent.changeText(getByDisplayValue('10'), '5');
+
+            const scrollView = UNSAFE_getByType(ScrollView);
+            act(() => {
+                scrollView.props.refreshControl.props.onRefresh();
+            });
+            act(() => {
+                jest.advanceTimersByTime(750);
+            });
+
+            expect(getByDisplayValue('30-100')).toBeTruthy();
+            expect(getByDisplayValue('10')).toBeTruthy();
+        });
+
+        it('onRefreshClearsErrorMessages', () => {
+            const { UNSAFE_getByType, getByDisplayValue, getByTestId, queryByText } = render(<Random />);
+
+            fireEvent.changeText(getByDisplayValue('30-100'), '');
+            fireEvent.changeText(getByDisplayValue('10'), '');
+            fireEvent.press(getByTestId('save-button'));
+
+            const scrollView = UNSAFE_getByType(ScrollView);
+            act(() => {
+                scrollView.props.refreshControl.props.onRefresh();
+            });
+            act(() => {
+                jest.advanceTimersByTime(750);
+            });
+
+            expect(queryByText('Range cannot be empty')).toBeNull();
+            expect(queryByText('Increment cannot be empty')).toBeNull();
+        });
+
+        it('onRefreshResetsRandomNumber', () => {
+            const { UNSAFE_getByType, getByTestId, queryByText } = render(<Random />);
+
+            fireEvent.press(getByTestId('save-button'));
+            expect(queryByText('50')).toBeTruthy();
+
+            const scrollView = UNSAFE_getByType(ScrollView);
+            act(() => {
+                scrollView.props.refreshControl.props.onRefresh();
+            });
+            act(() => {
+                jest.advanceTimersByTime(750);
+            });
+
+            expect(queryByText('50')).toBeNull();
+        });
     });
 });

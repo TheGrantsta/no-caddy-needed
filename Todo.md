@@ -2,7 +2,6 @@
 - [ ] Deprecation warning in debugger
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project
-- [ ] Add test coverage tool and include in pre-hook push
 - [ ] Complete Google Play setup
 - [ ] Expo-notifications warning message
 - [ ] Add ability for players to add their own practice drills
@@ -36,6 +35,7 @@
 - [X] Create list of recent players like recent golf courses
 - [X] Fix vulnerabilities in the npm packages - npm audit / npm audit fix
 - [X] Add build version to bottom of Settings page
+- [X] Add test coverage tool and include in pre-hook push
 
 # Ignored
 - [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')

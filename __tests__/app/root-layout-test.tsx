@@ -1,0 +1,163 @@
+import React from 'react';
+import { render, act } from '@testing-library/react-native';
+import * as SplashScreen from 'expo-splash-screen';
+import { initialize } from '../../database/db';
+import { initializeAnalytics } from '../../service/AnalyticsService';
+
+import RootLayout from '../../app/_layout';
+
+jest.mock('expo-font', () => ({
+    useFonts: jest.fn().mockReturnValue([true, null]),
+}));
+
+jest.mock('expo-splash-screen', () => ({
+    preventAutoHideAsync: jest.fn().mockResolvedValue(undefined),
+    hideAsync: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../../database/db', () => ({
+    initialize: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../../service/AnalyticsService', () => ({
+    initializeAnalytics: jest.fn().mockResolvedValue(undefined),
+    recordError: jest.fn(),
+    logBreadcrumb: jest.fn(),
+}));
+
+jest.mock('react-native-toast-notifications', () => ({
+    ToastProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+jest.mock('../../context/ThemeContext', () => ({
+    AppThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: { yellow: '#ffd33d', background: '#25292e' },
+    }),
+}));
+
+jest.mock('../../components/NetworkStatus', () => {
+    const { View } = require('react-native');
+    return function MockNetworkStatus() {
+        return <View testID="network-status" />;
+    };
+});
+
+jest.mock('../../components/ErrorBoundary', () => {
+    const ErrorBoundaryMock = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+    return ErrorBoundaryMock;
+});
+
+jest.mock('expo-router', () => {
+    const React = require('react');
+    const { View } = require('react-native');
+    const StackScreen = jest.fn(() => null);
+    const Stack = ({ children }: { children: React.ReactNode }) => (
+        <View testID="stack">{children}</View>
+    );
+    Stack.Screen = StackScreen;
+    return {
+        Stack,
+        Link: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    };
+});
+
+jest.mock('@expo/vector-icons', () => ({
+    MaterialIcons: () => null,
+}));
+
+jest.mock('expo-status-bar', () => ({
+    StatusBar: () => null,
+}));
+
+jest.mock('@react-navigation/native', () => ({
+    DarkTheme: {},
+    DefaultTheme: {},
+    ThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+jest.mock('expo-notifications', () => ({
+    setNotificationHandler: jest.fn(),
+    requestPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
+}));
+
+const mockInitialize = initialize as jest.Mock;
+const mockInitializeAnalytics = initializeAnalytics as jest.Mock;
+const mockHideAsync = SplashScreen.hideAsync as jest.Mock;
+
+describe('RootLayout', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    async function renderReady() {
+        const result = render(<RootLayout />);
+        // Flush microtasks up to the setTimeout registration
+        await act(async () => {});
+        // Fire the timer, then flush the remaining promise chain
+        await act(async () => {
+            jest.runAllTimers();
+        });
+        return result;
+    }
+
+    it('returnsNullWhileAppIsInitialising', () => {
+        const { toJSON } = render(<RootLayout />);
+        expect(toJSON()).toBeNull();
+    });
+
+    it('callsInitializeOnMount', async () => {
+        await renderReady();
+        expect(mockInitialize).toHaveBeenCalledTimes(1);
+    });
+
+    it('callsInitializeAnalyticsOnMount', async () => {
+        await renderReady();
+        expect(mockInitializeAnalytics).toHaveBeenCalledTimes(1);
+    });
+
+    it('hidesSplashScreenAfterSetup', async () => {
+        await renderReady();
+        expect(mockHideAsync).toHaveBeenCalledTimes(1);
+    });
+
+    it('rendersNetworkStatusWhenReady', async () => {
+        const { getByTestId } = await renderReady();
+        expect(getByTestId('network-status')).toBeTruthy();
+    });
+
+    it('rendersStackNavigatorWhenReady', async () => {
+        const { getByTestId } = await renderReady();
+        expect(getByTestId('stack')).toBeTruthy();
+    });
+
+    it('configuresAllNamedRoutesInStack', async () => {
+        const { Stack } = require('expo-router');
+        await renderReady();
+        const names = Stack.Screen.mock.calls.map((call: any[]) => call[0].name);
+        expect(names).toContain('(tabs)');
+        expect(names).toContain('+not-found');
+        expect(names).toContain('settings');
+        expect(names).toContain('play/scorecard');
+        expect(names).toContain('short-game/putting');
+        expect(names).toContain('short-game/chipping');
+        expect(names).toContain('short-game/pitching');
+        expect(names).toContain('short-game/bunker');
+        expect(names).toContain('tools/random');
+        expect(names).toContain('tools/tempo');
+        expect(names).toContain('play/distances');
+        expect(names).toContain('play/wedge-chart');
+    });
+
+    it('doesNotRenderAppContentBeforeInitialisation', () => {
+        const { queryByTestId } = render(<RootLayout />);
+        expect(queryByTestId('network-status')).toBeNull();
+        expect(queryByTestId('stack')).toBeNull();
+    });
+});

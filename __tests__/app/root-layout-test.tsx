@@ -1,8 +1,10 @@
 import React from 'react';
+import { Image } from 'react-native';
 import { render, act } from '@testing-library/react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { initialize } from '../../database/db';
 import { initializeAnalytics } from '../../service/AnalyticsService';
+import { useTheme } from '../../context/ThemeContext';
 
 import RootLayout from '../../app/_layout';
 
@@ -31,7 +33,7 @@ jest.mock('react-native-toast-notifications', () => ({
 
 jest.mock('../../context/ThemeContext', () => ({
     AppThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    useTheme: () => ({
+    useTheme: jest.fn().mockReturnValue({
         theme: 'dark',
         colours: { yellow: '#ffd33d', background: '#25292e' },
     }),
@@ -85,11 +87,26 @@ jest.mock('expo-notifications', () => ({
 const mockInitialize = initialize as jest.Mock;
 const mockInitializeAnalytics = initializeAnalytics as jest.Mock;
 const mockHideAsync = SplashScreen.hideAsync as jest.Mock;
+const mockUseTheme = useTheme as jest.Mock;
 
 describe('RootLayout', () => {
+    // Capture the notification handler registered at module-load time before
+    // beforeEach clears mock call history.
+    let notificationHandlerConfig: any;
+
+    beforeAll(() => {
+        const notifications = require('expo-notifications');
+        notificationHandlerConfig = (notifications.setNotificationHandler as jest.Mock).mock.calls[0]?.[0];
+    });
+
     beforeEach(() => {
         jest.clearAllMocks();
         jest.useFakeTimers();
+        // Restore the default dark theme after clearAllMocks wipes the impl.
+        mockUseTheme.mockReturnValue({
+            theme: 'dark',
+            colours: { yellow: '#ffd33d', background: '#25292e' },
+        });
     });
 
     afterEach(() => {
@@ -159,5 +176,63 @@ describe('RootLayout', () => {
         const { queryByTestId } = render(<RootLayout />);
         expect(queryByTestId('network-status')).toBeNull();
         expect(queryByTestId('stack')).toBeNull();
+    });
+
+    it('handleNotificationReturnsCorrectAlertConfig', async () => {
+        expect(notificationHandlerConfig).toBeDefined();
+        const result = await notificationHandlerConfig.handleNotification();
+        expect(result).toEqual({
+            shouldShowAlert: true,
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+        });
+    });
+
+    it('logoTitleRendersAnImage', async () => {
+        const { Stack } = require('expo-router');
+        await renderReady();
+
+        const firstScreen = Stack.Screen.mock.calls[0][0];
+        const { UNSAFE_getAllByType } = render(firstScreen.options.headerTitle());
+        expect(UNSAFE_getAllByType(Image).length).toBeGreaterThan(0);
+    });
+
+    it('allRouteHeaderTitleCallbacksReturnElement', async () => {
+        const { Stack } = require('expo-router');
+        await renderReady();
+
+        for (const call of Stack.Screen.mock.calls) {
+            const result = call[0].options.headerTitle();
+            expect(result).toBeTruthy();
+        }
+    });
+
+    it('tabsHeaderRightCallbackRendersElement', async () => {
+        const { Stack } = require('expo-router');
+        await renderReady();
+
+        const tabsCall = Stack.Screen.mock.calls.find((call: any[]) => call[0].name === '(tabs)');
+        const result = tabsCall[0].options.headerRight();
+        expect(result).toBeTruthy();
+    });
+
+    it('logsWarningWhenPrepareAppFails', async () => {
+        mockInitialize.mockRejectedValueOnce(new Error('init failed'));
+        const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+        await renderReady();
+
+        expect(consoleSpy).toHaveBeenCalled();
+        consoleSpy.mockRestore();
+    });
+
+    it('rendersWithLightTheme', async () => {
+        mockUseTheme.mockReturnValueOnce({
+            theme: 'light',
+            colours: { yellow: '#ffd33d', background: '#25292e' },
+        });
+
+        const { getByTestId } = await renderReady();
+        expect(getByTestId('stack')).toBeTruthy();
     });
 });

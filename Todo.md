@@ -1,4 +1,5 @@
 # To do
+- [X] Add build version to bottom of Settings page
 - [ ] Deprecation warning in debugger
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project

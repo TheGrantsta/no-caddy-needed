@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { useMemo, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -98,7 +99,7 @@ export default function Settings() {
 
   return (
     <GestureHandlerRootView style={styles.flexOne}>
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding, { flexGrow: 1 }]}>
         <View style={styles.headerContainer}>
           <Text style={[styles.headerText, styles.marginTop]}>Settings</Text>
         </View>
@@ -185,6 +186,11 @@ export default function Settings() {
               </TouchableOpacity>
             );
           })}
+        </View>
+        <View style={{ alignItems: 'center', paddingVertical: 20, marginTop: 'auto' }}>
+          <Text style={styles.normalText}>
+            Version {Constants.expoConfig?.version}
+          </Text>
         </View>
       </ScrollView>
     </GestureHandlerRootView>

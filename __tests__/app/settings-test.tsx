@@ -33,6 +33,11 @@ jest.mock('react-native-toast-notifications', () => ({
     }),
 }));
 
+jest.mock('expo-constants', () => ({
+    __esModule: true,
+    default: { expoConfig: { version: '1.2.3' } },
+}));
+
 jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
     return {
@@ -326,6 +331,11 @@ describe('Settings page', () => {
                 practiceOnboardingSeen: false,
             });
         });
+    });
+
+    it('displays the app version number', () => {
+        const { getByText } = render(<Settings />);
+        expect(getByText('Version 1.2.3')).toBeTruthy();
     });
 
     it('calls saveSettingsService with voice female when Female is pressed', async () => {

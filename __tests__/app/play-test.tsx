@@ -1,4 +1,5 @@
 import React from 'react';
+import { ScrollView } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Play from '../../app/(tabs)/play';
 
@@ -1192,6 +1193,63 @@ describe('Play screen', () => {
             expect(getByText('You')).toBeTruthy();
             expect(getByText('Alice')).toBeTruthy();
         });
+
+        it('shows active round section when active round has no players', () => {
+            mockGetActiveRound.mockReturnValue({
+                Id: 5, TotalScore: 0, IsCompleted: 0,
+                StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
+                Created_At: '2025-06-15T10:00:00.000Z',
+            });
+            mockGetRoundPlayers.mockReturnValue([]);
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('end-round-button')).toBeTruthy();
+        });
+
+        it('does not advance hole when addMultiplayerHoleScoresService returns false', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(false);
+
+            const { getByTestId, getByText } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(getByText('Hole 1')).toBeTruthy();
+            });
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            expect(getByText('Hole 1')).toBeTruthy();
+        });
+
+        it('advances hole with zero contribution when no user player found in scores', async () => {
+            mockGetActiveRound.mockReturnValue({
+                Id: 5, TotalScore: 0, IsCompleted: 0,
+                StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
+                Created_At: '2025-06-15T10:00:00.000Z',
+            });
+            mockGetRoundPlayers.mockReturnValue([
+                { Id: 2, RoundId: 5, PlayerName: 'Alice', IsUser: 0, SortOrder: 0 },
+            ]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+            const { getByTestId, getByText } = render(<Play />);
+
+            expect(getByText('Hole 1')).toBeTruthy();
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            expect(getByText('Hole 2')).toBeTruthy();
+        });
     });
 
     describe('7 Deadly Sins total in round history', () => {
@@ -1641,6 +1699,94 @@ describe('Play screen', () => {
 
             // getAllDeadlySinsRoundsService called on mount + after ending round
             expect(mockGetAllDeadlySinsRounds).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe('start round failure', () => {
+        it('shows error toast when startRoundService returns null', async () => {
+            mockStartRound.mockResolvedValue(null);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+
+            await act(async () => {
+                fireEvent.press(getByTestId('start-button'));
+            });
+
+            expect(mockToastShow).toHaveBeenCalledWith(
+                'Failed to start round',
+                expect.objectContaining({ type: 'danger' })
+            );
+        });
+    });
+
+    describe('onRefresh', () => {
+        beforeEach(() => {
+            jest.useFakeTimers();
+        });
+
+        afterEach(() => {
+            jest.clearAllTimers();
+            jest.useRealTimers();
+        });
+
+        it('onRefreshShowsRefreshingOverlay', () => {
+            const { UNSAFE_getByType, getByText } = render(<Play />);
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            act(() => {
+                scrollView.props.refreshControl.props.onRefresh();
+            });
+
+            expect(getByText('Release to update')).toBeTruthy();
+        });
+
+        it('onRefreshHidesOverlayAfterTimeout', () => {
+            const { UNSAFE_getByType, queryByText } = render(<Play />);
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            act(() => {
+                scrollView.props.refreshControl.props.onRefresh();
+            });
+            act(() => {
+                jest.advanceTimersByTime(750);
+            });
+
+            expect(queryByText('Release to update')).toBeNull();
+        });
+
+        it('onRefreshCallsGetAllRoundHistoryService', () => {
+            const { UNSAFE_getByType } = render(<Play />);
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            const initialCount = mockGetAllRoundHistory.mock.calls.length;
+
+            act(() => {
+                scrollView.props.refreshControl.props.onRefresh();
+            });
+            act(() => {
+                jest.advanceTimersByTime(750);
+            });
+
+            expect(mockGetAllRoundHistory.mock.calls.length).toBeGreaterThan(initialCount);
+        });
+
+        it('onRefreshCallsGetAllDeadlySinsRoundsService', () => {
+            const { UNSAFE_getByType } = render(<Play />);
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            const initialCount = mockGetAllDeadlySinsRounds.mock.calls.length;
+
+            act(() => {
+                scrollView.props.refreshControl.props.onRefresh();
+            });
+            act(() => {
+                jest.advanceTimersByTime(750);
+            });
+
+            expect(mockGetAllDeadlySinsRounds.mock.calls.length).toBeGreaterThan(initialCount);
         });
     });
 

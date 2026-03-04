@@ -1,13 +1,14 @@
 # To do
+- [ ] Start Google Play closed group - alpha
 - [ ] Deprecation warning in debugger
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project
-- [ ] Complete Google Play setup
+- [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
 - [ ] Add ability for players to add their own practice drills
-- [ ] Integrate Firebase Android into project
 
 # Done
+- [X] Complete Google Play setup
 - [X] Enable submission from EAS to Google Play
 - [X] Fix failing Android build
 - [X] Reorder Tiger 5 so that dynamic options are last in the order

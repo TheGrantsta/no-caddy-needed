@@ -1,4 +1,5 @@
 # To do
+- [ ] Fix failing Android build
 - [ ] Deprecation warning in debugger
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project

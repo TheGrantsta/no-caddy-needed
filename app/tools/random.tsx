@@ -50,7 +50,7 @@ export default function Random() {
         const transcript = (event.results[0]?.transcript ?? '').toLowerCase();
         const lastWord = transcript.trim().split(" ").pop();
 
-        console.log('Heard:', transcript, 'Last word:', lastWord);
+        console.debug('Heard:', transcript, 'Last word:', lastWord);
 
         if (lastWord === 'next') {
             handleGenerate();

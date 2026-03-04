@@ -73,6 +73,7 @@ describe('Random number generator page', () => {
         mockGetAvailableVoicesAsync.mockResolvedValue([samanthaVoice, tomVoice]);
         mockRequestPermissions.mockResolvedValue({ granted: true });
         mockUseSpeechRecognitionEvent.mockImplementation(() => { });
+        jest.spyOn(console, 'debug').mockImplementation(() => { });
     });
 
     it('renders correctly with the header', () => {

@@ -7,20 +7,35 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "ios": { "image": "macos-sequoia-15.6-xcode-26.2" }
+      "ios": {
+        "image": "macos-sequoia-15.6-xcode-26.2"
+      }
     },
     "preview": {
       "distribution": "internal",
-      "env": { "EAS_BUILD_NO_EXPO_GO_WARNING": "true" },
-      "ios": { "image": "macos-sequoia-15.6-xcode-26.2" }
+      "env": {
+        "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
+      },
+      "ios": {
+        "image": "macos-sequoia-15.6-xcode-26.2"
+      }
     },
     "production": {
       "autoIncrement": true,
-      "env": { "EAS_BUILD_NO_EXPO_GO_WARNING": "true" },
-      "ios": { "image": "macos-sequoia-15.6-xcode-26.2" }
+      "env": {
+        "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
+      },
+      "ios": {
+        "image": "macos-sequoia-15.6-xcode-26.2"
+      }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft"
+      }
+    }
   }
 }

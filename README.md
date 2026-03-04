@@ -93,7 +93,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 5. Single CLI command
 
    ```bash
-   eas build --platform android; eas submit --platform android
+   eas build --platform android; eas submit --platform android --profile production --latest
 
    eas build --platform ios; eas submit --platform ios
    ```

@@ -2,7 +2,7 @@
   "expo": {
     "name": "No caddy needed",
     "slug": "no-caddy-needed",
-    "version": "1.0.19",
+    "version": "1.0.21",
     "orientation": "default",
     "icon": "./assets/images/adaptive-icon.png",
     "scheme": "myapp",
@@ -21,7 +21,8 @@
       },
       "bundleIdentifier": "com.grantsta.golf.nocaddyneeded",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "This app does not access your photo library unless you choose to select a photo."
       },
       "icon": "./assets/images/adaptive-icon.png"
     },

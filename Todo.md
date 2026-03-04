@@ -6,9 +6,9 @@
 - [ ] Expo-notifications warning message
 - [ ] Add ability for players to add their own practice drills
 - [ ] Integrate Firebase Android into project
-- [ ] Enable submission from EAS to Google Play
 
 # Done
+- [X] Enable submission from EAS to Google Play
 - [X] Fix failing Android build
 - [X] Reorder Tiger 5 so that dynamic options are last in the order
 - [X] Fix scorecard entry to remove duplication

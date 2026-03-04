@@ -82,10 +82,20 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
    iOS requires Apple developer account
 
-4. Submit for iOS
+4. Submit for Android and iOS
 
    ```bash
+   eas submit --platform android
+
    eas submit --platform ios
+   ```
+
+5. Single CLI command
+
+   ```bash
+   eas build --platform android; eas submit --platform android
+
+   eas build --platform ios; eas submit --platform ios
    ```
 
 ## Capturing screenshots

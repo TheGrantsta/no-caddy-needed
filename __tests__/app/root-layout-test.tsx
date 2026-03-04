@@ -3,7 +3,6 @@ import { Image } from 'react-native';
 import { render, act } from '@testing-library/react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { initialize } from '../../database/db';
-import { initializeAnalytics } from '../../service/AnalyticsService';
 import { useTheme } from '../../context/ThemeContext';
 
 import RootLayout from '../../app/_layout';
@@ -19,12 +18,6 @@ jest.mock('expo-splash-screen', () => ({
 
 jest.mock('../../database/db', () => ({
     initialize: jest.fn().mockResolvedValue(undefined),
-}));
-
-jest.mock('../../service/AnalyticsService', () => ({
-    initializeAnalytics: jest.fn().mockResolvedValue(undefined),
-    recordError: jest.fn(),
-    logBreadcrumb: jest.fn(),
 }));
 
 jest.mock('react-native-toast-notifications', () => ({
@@ -85,7 +78,6 @@ jest.mock('expo-notifications', () => ({
 }));
 
 const mockInitialize = initialize as jest.Mock;
-const mockInitializeAnalytics = initializeAnalytics as jest.Mock;
 const mockHideAsync = SplashScreen.hideAsync as jest.Mock;
 const mockUseTheme = useTheme as jest.Mock;
 
@@ -132,11 +124,6 @@ describe('RootLayout', () => {
     it('callsInitializeOnMount', async () => {
         await renderReady();
         expect(mockInitialize).toHaveBeenCalledTimes(1);
-    });
-
-    it('callsInitializeAnalyticsOnMount', async () => {
-        await renderReady();
-        expect(mockInitializeAnalytics).toHaveBeenCalledTimes(1);
     });
 
     it('hidesSplashScreenAfterSetup', async () => {

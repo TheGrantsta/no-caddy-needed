@@ -2,7 +2,7 @@
   "expo": {
     "name": "No caddy needed",
     "slug": "no-caddy-needed",
-    "version": "1.0.18",
+    "version": "1.0.19",
     "orientation": "default",
     "icon": "./assets/images/adaptive-icon.png",
     "scheme": "myapp",
@@ -26,7 +26,6 @@
       "icon": "./assets/images/adaptive-icon.png"
     },
     "android": {
-      "googleServicesFile": "./google-services.json",
       "splash": {
         "image": "./assets/images/full-logo-transparent-square.png",
         "resizeMode": "contain",
@@ -44,8 +43,6 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "@react-native-firebase/app",
-      "@react-native-firebase/crashlytics",
       [
         "expo-sqlite",
         {

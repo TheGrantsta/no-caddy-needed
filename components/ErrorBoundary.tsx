@@ -1,6 +1,5 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component, ReactNode } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { recordError, logBreadcrumb } from '../service/AnalyticsService';
 import { darkColours } from '../assets/colours';
 
 interface Props {
@@ -19,11 +18,6 @@ class ErrorBoundary extends Component<Props, State> {
 
     static getDerivedStateFromError(): State {
         return { hasError: true };
-    }
-
-    componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-        recordError(error, 'ErrorBoundary caught error');
-        logBreadcrumb(`Component stack: ${errorInfo.componentStack}`);
     }
 
     handleRetry = (): void => {

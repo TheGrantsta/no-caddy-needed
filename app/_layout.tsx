@@ -11,7 +11,6 @@ import { ToastProvider } from 'react-native-toast-notifications';
 import NetworkStatus from '@/components/NetworkStatus';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { AppThemeProvider, useTheme } from '@/context/ThemeContext';
-import { initializeAnalytics } from '@/service/AnalyticsService';
 
 let Notifications: typeof import('expo-notifications') | null = null;
 try {
@@ -194,9 +193,6 @@ export default function RootLayout() {
       try {
         // Initialize database first
         await initialize();
-
-        // Initialize analytics and crashlytics
-        await initializeAnalytics();
 
         // Request notification permissions if available
         if (Notifications) {

@@ -2,12 +2,6 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Text } from 'react-native';
 import ErrorBoundary from '../../components/ErrorBoundary';
-import { recordError, logBreadcrumb } from '../../service/AnalyticsService';
-
-jest.mock('../../service/AnalyticsService', () => ({
-    recordError: jest.fn(),
-    logBreadcrumb: jest.fn(),
-}));
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -18,9 +12,6 @@ jest.mock('../../context/ThemeContext', () => ({
         setTheme: jest.fn(),
     }),
 }));
-
-const mockRecordError = recordError as jest.Mock;
-const mockLogBreadcrumb = logBreadcrumb as jest.Mock;
 
 const ThrowingComponent = ({ shouldThrow }: { shouldThrow: boolean }) => {
     if (shouldThrow) {
@@ -70,31 +61,6 @@ describe('ErrorBoundary', () => {
         );
 
         expect(getByTestId('error-boundary-retry-button')).toBeTruthy();
-    });
-
-    it('reports error to Crashlytics when error occurs', () => {
-        render(
-            <ErrorBoundary>
-                <ThrowingComponent shouldThrow={true} />
-            </ErrorBoundary>
-        );
-
-        expect(mockRecordError).toHaveBeenCalledWith(
-            expect.any(Error),
-            'ErrorBoundary caught error'
-        );
-    });
-
-    it('logs component stack as breadcrumb', () => {
-        render(
-            <ErrorBoundary>
-                <ThrowingComponent shouldThrow={true} />
-            </ErrorBoundary>
-        );
-
-        expect(mockLogBreadcrumb).toHaveBeenCalledWith(
-            expect.stringContaining('Component stack:')
-        );
     });
 
     it('resets error state when try again is pressed', () => {

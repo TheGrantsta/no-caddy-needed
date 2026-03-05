@@ -5,9 +5,9 @@
 - [ ] Integrate Firebase iOS into project
 - [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
-- [ ] Add ability for players to add their own practice drills
 
 # Done
+- [X] Add ability for players to add their own practice drills
 - [X] Complete Google Play setup
 - [X] Enable submission from EAS to Google Play
 - [X] Fix failing Android build
@@ -46,8 +46,4 @@
 - [-] SafeAreaView has been deprecation warning message
 
 # Release notes
-* Show selectable list of recent players when starting a round
-* Show number of holes played in 'Round history' for incomplete rounds
-* Add voice control commands for 'Random number generator' screen
-* Persist tempo user settings between sessions
-
+* Golfers can add their own drills and mark as 'inactive' default drills if unwanted

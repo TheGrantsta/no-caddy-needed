@@ -39,7 +39,7 @@ Practice drills are currently held in the database and all drills are active by 
 
 ## Status
 
-- To be implemented - after epic: allow-golfers-make-drills-inactive
+- Complete
 
 ## Priority
 

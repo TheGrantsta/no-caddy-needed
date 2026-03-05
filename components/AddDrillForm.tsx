@@ -5,7 +5,7 @@ import { useThemeColours } from '@/context/ThemeContext';
 import { useAppToast } from '@/hooks/useAppToast';
 import { insertDrillService } from '@/service/DbService';
 
-const FIXED_ICON = 'sports-golf';
+const FIXED_ICON = 'handyman';
 const MULTILINE_MAX_LENGTH = 100;
 
 type Props = {

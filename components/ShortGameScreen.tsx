@@ -77,10 +77,10 @@ const ShortGameScreen = ({ config }: Props) => {
 
     const renderDrillItem = ({ item }: { item: DrillData }) => (
         <View style={styles.scrollItemContainer}>
-            <View style={[styles.container, styles.scrollWrapper]}>
+            <View style={[styles.container, styles.scrollWrapper, { alignSelf: 'stretch' }]}>
                 <Drill
                     label={item.label}
-                    iconName={item.iconName}
+                    iconName={"handyman"}
                     target={item.target}
                     objective={item.objective}
                     setUp={item.setup}

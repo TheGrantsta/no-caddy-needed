@@ -191,7 +191,7 @@ describe('AddDrillForm', () => {
         });
 
         expect(mockInsertDrillService).toHaveBeenCalledWith(
-            'putting', 'My Drill', 'sports-golf', '8/10', 'Improve accuracy', 'Place markers', 'Hit 10 balls'
+            'putting', 'My Drill', 'handyman', '8/10', 'Improve accuracy', 'Place markers', 'Hit 10 balls'
         );
     });
 

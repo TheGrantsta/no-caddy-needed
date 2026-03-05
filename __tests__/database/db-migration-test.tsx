@@ -691,6 +691,106 @@ describe('DrillHistory DrillId column migration', () => {
     });
 });
 
+describe('Drills table seeding', () => {
+    const allSettingsCols = [
+        { name: 'Id' }, { name: 'Theme' }, { name: 'NotificationsEnabled' },
+        { name: 'Voice' }, { name: 'SoundsEnabled' },
+        { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
+        { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
+        { name: 'PracticeOnboardingSeen' },
+    ];
+    const allDeadlySinsCols = [
+        { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
+        { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
+        { name: 'TroubleOffTee' }, { name: 'Penalties' }, { name: 'Total' },
+        { name: 'RoundId' }, { name: 'Created_At' },
+    ];
+    const newDrillsCols = [
+        { name: 'Id' }, { name: 'Category' }, { name: 'Label' }, { name: 'IconName' },
+        { name: 'Target' }, { name: 'Objective' }, { name: 'SetUp' }, { name: 'HowToPlay' }, { name: 'IsActive' },
+    ];
+    const allDrillHistoryCols = [
+        { name: 'Id' }, { name: 'Name' }, { name: 'Result' }, { name: 'DrillId' }, { name: 'Created_At' },
+    ];
+
+    const baseGetAllSync = (sql: string) => {
+        if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
+        if (sql === 'PRAGMA table_info(Drills)') return newDrillsCols;
+        if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
+        if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
+        if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
+        if (sql === 'PRAGMA table_info(DrillHistory)') return allDrillHistoryCols;
+        return [];
+    };
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockExecAsync.mockResolvedValue(undefined);
+    });
+
+    it('seeds Drills table when count is 0', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'SELECT COUNT(*) as count FROM Drills') return [{ count: 0 }];
+            return baseGetAllSync(sql);
+        });
+
+        await initialize();
+
+        const seedCall = mockExecAsync.mock.calls.find(
+            (call: string[]) => call[0].includes('INSERT INTO Drills')
+        );
+        expect(seedCall).toBeDefined();
+    });
+
+    it('inserts 12 drills (3 per category)', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'SELECT COUNT(*) as count FROM Drills') return [{ count: 0 }];
+            return baseGetAllSync(sql);
+        });
+
+        await initialize();
+
+        const seedCall = mockExecAsync.mock.calls.find(
+            (call: string[]) => call[0].includes('INSERT INTO Drills')
+        );
+        const sql = seedCall![0] as string;
+        expect((sql.match(/'putting'/g) || []).length).toBe(3);
+        expect((sql.match(/'chipping'/g) || []).length).toBe(3);
+        expect((sql.match(/'pitching'/g) || []).length).toBe(3);
+        expect((sql.match(/'bunker'/g) || []).length).toBe(3);
+    });
+
+    it('seeds all drills with IsActive set to 1', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'SELECT COUNT(*) as count FROM Drills') return [{ count: 0 }];
+            return baseGetAllSync(sql);
+        });
+
+        await initialize();
+
+        const seedCall = mockExecAsync.mock.calls.find(
+            (call: string[]) => call[0].includes('INSERT INTO Drills')
+        );
+        const sql = seedCall![0] as string;
+        const rowSeparators = (sql.match(/\), \(/g) || []).length;
+        expect(rowSeparators).toBe(11);
+    });
+
+    it('does not seed when Drills table already has rows', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'SELECT COUNT(*) as count FROM Drills') return [{ count: 12 }];
+            return baseGetAllSync(sql);
+        });
+
+        await initialize();
+
+        const seedCalls = mockExecAsync.mock.calls.filter(
+            (call: string[]) => call[0].includes('INSERT INTO Drills')
+        );
+        expect(seedCalls).toHaveLength(0);
+    });
+});
+
 describe('Tiger5Rounds to DeadlySinsRounds rename migration', () => {
     beforeEach(() => {
         jest.clearAllMocks();

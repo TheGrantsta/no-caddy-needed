@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import { drillSeedData } from '../data/drillSeedData';
 
 const dbName = 'NoCaddyNeeded.db';
 
@@ -96,6 +97,15 @@ export const initialize = async () => {
 
     for (const migration of migrations) {
         amendTable(syncDb, migration);
+    }
+
+    const drillCount = syncDb.getAllSync('SELECT COUNT(*) as count FROM Drills') as { count: number }[];
+    if (drillCount.length > 0 && drillCount[0].count === 0) {
+        const escape = (s: string) => s.replace(/'/g, "''");
+        const values = drillSeedData.map(d =>
+            `('${escape(d.category)}', '${escape(d.label)}', '${escape(d.iconName)}', '${escape(d.target)}', '${escape(d.objective)}', '${escape(d.setUp)}', '${escape(d.howToPlay)}', 1)`
+        ).join(', ');
+        await db.execAsync(`INSERT INTO Drills (Category, Label, IconName, Target, Objective, SetUp, HowToPlay, IsActive) VALUES ${values};`);
     }
 };
 

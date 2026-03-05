@@ -36,7 +36,19 @@ jest.mock('../../service/DbService', () => ({
         { id: 2, label: 'Hoop', iconName: 'sports-golf', target: '4/5', objective: 'Land in hoop', setup: 'Place a hoop', howToPlay: 'Chip into the hoop', isActive: true },
     ]),
     toggleDrillIsActiveService: jest.fn().mockResolvedValue(true),
+    insertDrillService: jest.fn().mockResolvedValue(true),
 }));
+
+jest.mock('../../components/AddDrillForm', () => {
+    const { TouchableOpacity, Text, View } = require('react-native');
+    return ({ category, onSaved }: { category: string; onSaved: () => void }) => (
+        <View testID='add-drill-form' accessibilityLabel={category}>
+            <TouchableOpacity testID='mock-on-saved' onPress={onSaved}>
+                <Text>Save</Text>
+            </TouchableOpacity>
+        </View>
+    );
+});
 
 jest.useFakeTimers();
 
@@ -199,6 +211,38 @@ describe('ShortGameScreen', () => {
         });
 
         expect(getByText('Release to update')).toBeTruthy();
+    });
+
+    it('showsAddDrillButtonInDrillsSection', () => {
+        const { getByTestId } = render(<ShortGameScreen config={config} />);
+        expect(getByTestId('add-drill-button')).toBeTruthy();
+    });
+
+    it('showsAddDrillFormWhenAddDrillButtonPressed', () => {
+        const { getByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('add-drill-button'));
+        expect(getByTestId('add-drill-form')).toBeTruthy();
+    });
+
+    it('passesCorrectCategoryToAddDrillForm', () => {
+        const { getByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('add-drill-button'));
+        expect(getByTestId('add-drill-form').props.accessibilityLabel).toBe('chipping');
+    });
+
+    it('hidesAddDrillFormAfterSaved', () => {
+        const { getByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('add-drill-button'));
+        fireEvent.press(getByTestId('mock-on-saved'));
+        expect(queryByTestId('add-drill-form')).toBeNull();
+    });
+
+    it('reloadsDrillsAfterDrillSaved', () => {
+        const { getByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('add-drill-button'));
+        mockGetDrillsByCategoryService.mockClear();
+        fireEvent.press(getByTestId('mock-on-saved'));
+        expect(mockGetDrillsByCategoryService).toHaveBeenCalledWith('chipping');
     });
 
     it('onRefreshHidesOverlayAfterTimeout', () => {

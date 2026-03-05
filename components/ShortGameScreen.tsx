@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Dimensions, FlatList, RefreshControl, ScrollView, Text, View } from "react-native";
+import { Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService } from "@/service/DbService";
 import SubMenu from "@/components/SubMenu";
 import Drill from "@/components/Drill";
+import AddDrillForm from "@/components/AddDrillForm";
 import Instructions from "@/components/Instructions";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
@@ -26,6 +27,7 @@ const ShortGameScreen = ({ config }: Props) => {
     const [gameActiveIndex, setGameActiveIndex] = useState(0);
     const [drillActiveIndex, setDrillActiveIndex] = useState(0);
     const [drills, setDrills] = useState<DrillData[]>([]);
+    const [showAddDrillForm, setShowAddDrillForm] = useState(false);
     const flatListRef = useRef(null);
 
     useEffect(() => {
@@ -167,6 +169,22 @@ const ShortGameScreen = ({ config }: Props) => {
                                         {drillsFooter}
                                     </Text>
                                 </View>
+                                {showAddDrillForm ? (
+                                    <AddDrillForm
+                                        category={category}
+                                        onSaved={() => {
+                                            setShowAddDrillForm(false);
+                                            setDrills(getDrillsByCategoryService(category));
+                                        }}
+                                    />
+                                ) : (
+                                    <TouchableOpacity
+                                        testID='add-drill-button'
+                                        style={styles.button}
+                                        onPress={() => setShowAddDrillForm(true)}>
+                                        <Text style={styles.buttonText}>Add drill</Text>
+                                    </TouchableOpacity>
+                                )}
                             </View>
                         </View>
                     )

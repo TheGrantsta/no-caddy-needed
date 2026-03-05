@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import Drill from '../../components/Drill';
 
@@ -104,6 +105,54 @@ describe('Drill component', () => {
         fireEvent.press(getByTestId('drill-active-toggle'));
 
         expect(mockToggle).toHaveBeenCalledWith(false);
+    });
+
+    it('saveButtonAppearsDisabledWhenInactive', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} isActive={false} />);
+
+        const saveButton = getByTestId('save-drill-result-button');
+        const flatStyle = StyleSheet.flatten(saveButton.props.style);
+        expect(flatStyle.opacity).toBe(0.4);
+    });
+
+    it('metToggleAppearsDisabledWhenInactive', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} isActive={false} />);
+
+        const metToggle = getByTestId('drill-met-toggle');
+        const flatStyle = StyleSheet.flatten(metToggle.props.style);
+        expect(flatStyle.opacity).toBe(0.4);
+    });
+
+    it('saveButtonAppearsEnabledWhenActive', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} isActive={true} />);
+
+        const saveButton = getByTestId('save-drill-result-button');
+        const flatStyle = StyleSheet.flatten(saveButton.props.style);
+        expect(flatStyle.opacity).not.toBe(0.4);
+    });
+
+    it('saveButtonIsDisabledWhenDrillIsInactive', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} isActive={false} />);
+
+        expect(getByTestId('save-drill-result-button').props.accessibilityState?.disabled).toBe(true);
+    });
+
+    it('metToggleIsDisabledWhenDrillIsInactive', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} isActive={false} />);
+
+        expect(getByTestId('drill-met-toggle').props.accessibilityState?.disabled).toBe(true);
+    });
+
+    it('saveButtonIsEnabledWhenDrillIsActive', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} isActive={true} />);
+
+        expect(getByTestId('save-drill-result-button').props.accessibilityState?.disabled).toBeFalsy();
+    });
+
+    it('metToggleIsEnabledWhenDrillIsActive', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} isActive={true} />);
+
+        expect(getByTestId('drill-met-toggle').props.accessibilityState?.disabled).toBeFalsy();
     });
 
     it('renders Instructions component with correct props', () => {

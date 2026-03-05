@@ -75,7 +75,9 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     </Text>
                     <View style={[localStyles.toggleWrapper, { paddingTop: 10 }]}>
                         <TouchableOpacity
-                            style={[localStyles.toggleContainer, isAchieved && localStyles.toggleOn]}
+                            testID='drill-met-toggle'
+                            style={[localStyles.toggleContainer, isAchieved && localStyles.toggleOn, !(isActive ?? true) && { opacity: 0.4 }]}
+                            disabled={!(isActive ?? true)}
                             onPress={toggleSwitch}>
                             <View style={[localStyles.toggleCircle, isAchieved && localStyles.circleOn]} />
                         </TouchableOpacity>
@@ -86,7 +88,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     </View>
                 </View>
                 <View style={{ flex: 1 / 3, alignItems: 'center', alignSelf: 'center' }}>
-                    <TouchableOpacity testID='save-drill-result-button' style={styles.button} onPress={
+                    <TouchableOpacity testID='save-drill-result-button' style={[styles.button, !(isActive ?? true) && { opacity: 0.4 }]} disabled={!(isActive ?? true)} onPress={
                         () => {
                             saveDrillResult(label, isAchieved);
                         }}>

@@ -1,17 +1,19 @@
-import { insertDrillResultService, getAllDrillHistoryService, getDrillsByCategoryService, toggleDrillIsActiveService } from '../../service/DbService';
-import { insertDrillResult, getAllDrillHistory, getDrillsByCategory, updateDrillIsActive } from '../../database/db';
+import { insertDrillResultService, getAllDrillHistoryService, getDrillsByCategoryService, toggleDrillIsActiveService, insertDrillService } from '../../service/DbService';
+import { insertDrillResult, getAllDrillHistory, getDrillsByCategory, updateDrillIsActive, insertDrill } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
     insertDrillResult: jest.fn(),
     getAllDrillHistory: jest.fn(),
     getDrillsByCategory: jest.fn(),
     updateDrillIsActive: jest.fn(),
+    insertDrill: jest.fn(),
 }));
 
 const mockInsertDrillResult = insertDrillResult as jest.Mock;
 const mockGetAllDrillHistory = getAllDrillHistory as jest.Mock;
 const mockGetDrillsByCategory = getDrillsByCategory as jest.Mock;
 const mockUpdateDrillIsActive = updateDrillIsActive as jest.Mock;
+const mockInsertDrill = insertDrill as jest.Mock;
 
 describe('insertDrillResultService', () => {
     beforeEach(() => {
@@ -184,6 +186,36 @@ describe('getDrillsByCategoryService', () => {
         expect(result).toHaveLength(2);
         expect(result[1].id).toBe(2);
         expect(result[1].isActive).toBe(false);
+    });
+});
+
+describe('insertDrillService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('delegatesToInsertDrillWithAllFields', async () => {
+        mockInsertDrill.mockResolvedValue(true);
+
+        await insertDrillService('putting', 'Gate', 'golf-course', '8/10', 'Obj', 'Setup', 'HowToPlay');
+
+        expect(mockInsertDrill).toHaveBeenCalledWith('putting', 'Gate', 'golf-course', '8/10', 'Obj', 'Setup', 'HowToPlay');
+    });
+
+    it('returnsTrueOnSuccess', async () => {
+        mockInsertDrill.mockResolvedValue(true);
+
+        const result = await insertDrillService('putting', 'Gate', 'golf-course', '8/10', 'Obj', 'Setup', 'HowToPlay');
+
+        expect(result).toBe(true);
+    });
+
+    it('returnsFalseOnFailure', async () => {
+        mockInsertDrill.mockResolvedValue(false);
+
+        const result = await insertDrillService('putting', 'Gate', 'golf-course', '8/10', 'Obj', 'Setup', 'HowToPlay');
+
+        expect(result).toBe(false);
     });
 });
 

@@ -8,6 +8,7 @@ import {
     getAllDrillHistory,
     getDrillsByCategory,
     updateDrillIsActive,
+    insertDrill,
     insertDeadlySinsRound,
     getAllDeadlySinsRounds,
     getDeadlySinsRoundByRoundId,
@@ -112,6 +113,10 @@ export const getDrillsByCategoryService = (category: string): DrillData[] => {
         howToPlay: row.HowToPlay,
         isActive: row.IsActive === 1,
     }));
+};
+
+export const insertDrillService = (category: string, label: string, iconName: string, target: string, objective: string, setUp: string, howToPlay: string): Promise<boolean> => {
+    return insertDrill(category, label, iconName, target, objective, setUp, howToPlay);
 };
 
 export const toggleDrillIsActiveService = (id: number, isActive: boolean): Promise<boolean> => {

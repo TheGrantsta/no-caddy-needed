@@ -488,6 +488,209 @@ describe('deleteRound cascade to DeadlySinsRounds', () => {
     });
 });
 
+describe('DrillHistory and Drills table schema', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockExecAsync.mockResolvedValue(undefined);
+        mockGetAllSync.mockReturnValue([]);
+    });
+
+    it('creates DrillHistory table in initialize SQL', async () => {
+        await initialize();
+
+        const sql = mockExecAsync.mock.calls[0][0];
+        expect(sql).toContain('CREATE TABLE IF NOT EXISTS DrillHistory');
+    });
+
+    it('DrillHistory DDL includes DrillId column', async () => {
+        await initialize();
+
+        const sql = mockExecAsync.mock.calls[0][0];
+        const drillHistoryBlock = sql.substring(sql.indexOf('DrillHistory'));
+        expect(drillHistoryBlock).toContain('DrillId');
+    });
+
+    it('creates new Drills table with Category column in initialize SQL', async () => {
+        await initialize();
+
+        const sql = mockExecAsync.mock.calls[0][0];
+        expect(sql).toContain('CREATE TABLE IF NOT EXISTS Drills');
+        expect(sql).toContain('Category');
+    });
+
+    it('new Drills DDL includes Label, IconName, Target, Objective, SetUp, HowToPlay, IsActive', async () => {
+        await initialize();
+
+        const sql = mockExecAsync.mock.calls[0][0];
+        const drillsBlock = sql.substring(sql.lastIndexOf('CREATE TABLE IF NOT EXISTS Drills'));
+        expect(drillsBlock).toContain('Label');
+        expect(drillsBlock).toContain('IconName');
+        expect(drillsBlock).toContain('Target');
+        expect(drillsBlock).toContain('Objective');
+        expect(drillsBlock).toContain('SetUp');
+        expect(drillsBlock).toContain('HowToPlay');
+        expect(drillsBlock).toContain('IsActive');
+    });
+
+    it('IsActive defaults to 1 in new Drills DDL', async () => {
+        await initialize();
+
+        const sql = mockExecAsync.mock.calls[0][0];
+        expect(sql).toContain('IsActive INTEGER NOT NULL DEFAULT 1');
+    });
+});
+
+describe('old Drills to DrillHistory rename migration', () => {
+    const allSettingsCols = [
+        { name: 'Id' }, { name: 'Theme' }, { name: 'NotificationsEnabled' },
+        { name: 'Voice' }, { name: 'SoundsEnabled' },
+        { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
+        { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
+        { name: 'PracticeOnboardingSeen' },
+    ];
+    const allDeadlySinsCols = [
+        { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
+        { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
+        { name: 'TroubleOffTee' }, { name: 'Penalties' }, { name: 'Total' },
+        { name: 'RoundId' }, { name: 'Created_At' },
+    ];
+    const allDrillHistoryCols = [
+        { name: 'Id' }, { name: 'Name' }, { name: 'Result' }, { name: 'DrillId' }, { name: 'Created_At' },
+    ];
+    const oldDrillsCols = [
+        { name: 'Id' }, { name: 'Name' }, { name: 'Result' }, { name: 'Created_At' },
+    ];
+    const newDrillsCols = [
+        { name: 'Id' }, { name: 'Category' }, { name: 'Label' }, { name: 'IconName' },
+        { name: 'Target' }, { name: 'Objective' }, { name: 'SetUp' }, { name: 'HowToPlay' }, { name: 'IsActive' },
+    ];
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockExecAsync.mockResolvedValue(undefined);
+    });
+
+    it('renames old Drills table to DrillHistory when Name column exists in Drills', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
+            if (sql === 'PRAGMA table_info(Drills)') return oldDrillsCols;
+            if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
+            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
+            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
+            if (sql === 'PRAGMA table_info(DrillHistory)') return allDrillHistoryCols;
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE Drills RENAME TO DrillHistory');
+    });
+
+    it('does not rename when Drills table has Category column (new schema)', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
+            if (sql === 'PRAGMA table_info(Drills)') return newDrillsCols;
+            if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
+            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
+            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
+            if (sql === 'PRAGMA table_info(DrillHistory)') return allDrillHistoryCols;
+            return [];
+        });
+
+        await initialize();
+
+        const renameCalls = mockExecSync.mock.calls.filter(
+            (call: string[]) => call[0].includes('Drills') && call[0].includes('RENAME')
+        );
+        expect(renameCalls).toHaveLength(0);
+    });
+
+    it('does not rename when Drills PRAGMA returns empty (table does not exist)', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
+            if (sql === 'PRAGMA table_info(Drills)') return [];
+            if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
+            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
+            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
+            if (sql === 'PRAGMA table_info(DrillHistory)') return allDrillHistoryCols;
+            return [];
+        });
+
+        await initialize();
+
+        const renameCalls = mockExecSync.mock.calls.filter(
+            (call: string[]) => call[0].includes('Drills') && call[0].includes('RENAME')
+        );
+        expect(renameCalls).toHaveLength(0);
+    });
+});
+
+describe('DrillHistory DrillId column migration', () => {
+    const allSettingsCols = [
+        { name: 'Id' }, { name: 'Theme' }, { name: 'NotificationsEnabled' },
+        { name: 'Voice' }, { name: 'SoundsEnabled' },
+        { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
+        { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
+        { name: 'PracticeOnboardingSeen' },
+    ];
+    const allDeadlySinsCols = [
+        { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
+        { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
+        { name: 'TroubleOffTee' }, { name: 'Penalties' }, { name: 'Total' },
+        { name: 'RoundId' }, { name: 'Created_At' },
+    ];
+    const newDrillsCols = [
+        { name: 'Id' }, { name: 'Category' }, { name: 'Label' }, { name: 'IconName' },
+        { name: 'Target' }, { name: 'Objective' }, { name: 'SetUp' }, { name: 'HowToPlay' }, { name: 'IsActive' },
+    ];
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockExecAsync.mockResolvedValue(undefined);
+    });
+
+    it('adds DrillId column to DrillHistory when missing', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
+            if (sql === 'PRAGMA table_info(Drills)') return newDrillsCols;
+            if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
+            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
+            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
+            if (sql === 'PRAGMA table_info(DrillHistory)') return [
+                { name: 'Id' }, { name: 'Name' }, { name: 'Result' }, { name: 'Created_At' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE DrillHistory ADD COLUMN DrillId INTEGER'
+        );
+    });
+
+    it('does not add DrillId when already present in DrillHistory', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
+            if (sql === 'PRAGMA table_info(Drills)') return newDrillsCols;
+            if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
+            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
+            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
+            if (sql === 'PRAGMA table_info(DrillHistory)') return [
+                { name: 'Id' }, { name: 'Name' }, { name: 'Result' }, { name: 'DrillId' }, { name: 'Created_At' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        const drillHistoryAlterCalls = mockExecSync.mock.calls.filter(
+            (call: string[]) => call[0].includes('DrillHistory')
+        );
+        expect(drillHistoryAlterCalls).toHaveLength(0);
+    });
+});
+
 describe('Tiger5Rounds to DeadlySinsRounds rename migration', () => {
     beforeEach(() => {
         jest.clearAllMocks();

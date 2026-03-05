@@ -31,6 +31,7 @@ Practice drills are currently held in code within the application and all drills
 
 - Lives within the **Practive** tab.
 - Drill screens will remain largely unchanged except for the addition of the active/inactive toggle - placement to be confirmed
+- Drill history screen remains unchanged - the only change relates to the retrieval of the drill history from new amended table via the service layer (the service layer already exists)
 
 ## Open Questions
 

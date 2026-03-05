@@ -31,7 +31,7 @@ When starting a new round, add the ability to add course name either free text o
 
 ## Status
 
-- Complete
+- Incomplete
 
 ## Priority
 

@@ -116,7 +116,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    ```bash
    maestro test .maestro/screenshots.yaml
    ```
-
+   
 ## Integrating with AI
 
 Repomix can create a prompt-friendly version of your repo that can be uploaded along with a prompt into an AI-assistant

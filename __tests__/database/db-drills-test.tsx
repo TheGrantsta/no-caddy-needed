@@ -1,4 +1,4 @@
-import { insertDrillResult, getAllDrillHistory, getDrillsByCategory, updateDrillIsActive } from '../../database/db';
+import { insertDrillResult, getAllDrillHistory, getDrillsByCategory, updateDrillIsActive, insertDrill } from '../../database/db';
 import * as SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
@@ -165,6 +165,67 @@ describe('getDrillsByCategory', () => {
 
         expect(result).toHaveLength(2);
         expect(result[0].Label).toBe('Gate');
+    });
+});
+
+describe('insertDrill', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockPrepareAsync.mockResolvedValue({
+            executeAsync: mockStatementExecuteAsync,
+            finalizeAsync: mockStatementFinalizeAsync,
+        });
+        mockStatementExecuteAsync.mockResolvedValue(undefined);
+    });
+
+    it('inserts into Drills table', async () => {
+        await insertDrill('putting', 'Gate', 'golf-course', '8/10', 'Obj', 'Setup', 'HowToPlay');
+
+        const sql = mockPrepareAsync.mock.calls[0][0];
+        expect(sql).toContain('INSERT INTO Drills');
+    });
+
+    it('includes all columns in SQL', async () => {
+        await insertDrill('putting', 'Gate', 'golf-course', '8/10', 'Obj', 'Setup', 'HowToPlay');
+
+        const sql = mockPrepareAsync.mock.calls[0][0];
+        expect(sql).toContain('Category');
+        expect(sql).toContain('Label');
+        expect(sql).toContain('IconName');
+        expect(sql).toContain('Target');
+        expect(sql).toContain('Objective');
+        expect(sql).toContain('SetUp');
+        expect(sql).toContain('HowToPlay');
+        expect(sql).toContain('IsActive');
+    });
+
+    it('binds all values in executeAsync', async () => {
+        await insertDrill('putting', 'Gate', 'golf-course', '8/10', 'Obj', 'Setup', 'HowToPlay');
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(expect.objectContaining({
+            $Category: 'putting',
+            $Label: 'Gate',
+            $IconName: 'golf-course',
+            $Target: '8/10',
+            $Objective: 'Obj',
+            $SetUp: 'Setup',
+            $HowToPlay: 'HowToPlay',
+            $IsActive: 1,
+        }));
+    });
+
+    it('returns true on success', async () => {
+        const result = await insertDrill('putting', 'Gate', 'golf-course', '8/10', 'Obj', 'Setup', 'HowToPlay');
+
+        expect(result).toBe(true);
+    });
+
+    it('returns false on error', async () => {
+        mockStatementExecuteAsync.mockRejectedValue(new Error('DB error'));
+
+        const result = await insertDrill('putting', 'Gate', 'golf-course', '8/10', 'Obj', 'Setup', 'HowToPlay');
+
+        expect(result).toBe(false);
     });
 });
 

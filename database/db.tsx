@@ -252,6 +252,28 @@ export const updateDrillIsActive = async (id: number, isActive: boolean): Promis
     return success;
 };
 
+export const insertDrill = async (category: string, label: string, iconName: string, target: string, objective: string, setUp: string, howToPlay: string): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        const statement = await db.prepareAsync(
+            'INSERT INTO Drills (Category, Label, IconName, Target, Objective, SetUp, HowToPlay, IsActive) VALUES ($Category, $Label, $IconName, $Target, $Objective, $SetUp, $HowToPlay, $IsActive);'
+        );
+
+        try {
+            await statement.executeAsync({ $Category: category, $Label: label, $IconName: iconName, $Target: target, $Objective: objective, $SetUp: setUp, $HowToPlay: howToPlay, $IsActive: 1 });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        console.log(e);
+        success = false;
+    }
+
+    return success;
+};
+
 export const insertRound = async (courseName: string): Promise<number | null> => {
     try {
         const db = await SQLite.openDatabaseAsync(dbName);

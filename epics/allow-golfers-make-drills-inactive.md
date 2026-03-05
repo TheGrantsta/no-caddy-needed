@@ -39,7 +39,7 @@ Practice drills are currently held in code within the application and all drills
 
 ## Status
 
-- To be implemented
+- Complete
 
 ## Priority
 

@@ -258,7 +258,6 @@ export const createStyles = (c: ThemeColours) => StyleSheet.create({
     },
     scrollItemContainer: {
         width: Dimensions.get('window').width,
-        height: 300,
         justifyContent: 'center',
         alignItems: 'center',
     },

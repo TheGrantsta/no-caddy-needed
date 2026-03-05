@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import Instructions from "./Instructions";
 import { useStyles } from '@/hooks/useStyles';
@@ -14,9 +14,11 @@ type Props = {
     setUp: string;
     howToPlay: string;
     saveDrillResult: (label: string, result: boolean) => void;
+    isActive?: boolean;
+    onToggleActive?: (isActive: boolean) => void;
 };
 
-export default function Drill({ label, iconName, target, objective, setUp, howToPlay, saveDrillResult }: Props) {
+export default function Drill({ label, iconName, target, objective, setUp, howToPlay, saveDrillResult, isActive, onToggleActive }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
     const [isAchieved, setIsAchieved] = useState(true);
@@ -92,6 +94,11 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                             Save
                         </Text>
                     </TouchableOpacity>
+                    <Switch
+                        testID='drill-active-toggle'
+                        value={isActive ?? true}
+                        onValueChange={(newValue) => onToggleActive?.(newValue)}
+                    />
                 </View>
             </View>
             <View>

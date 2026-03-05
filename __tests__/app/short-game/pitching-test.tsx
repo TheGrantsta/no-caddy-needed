@@ -36,6 +36,12 @@ jest.mock('react-native-toast-notifications', () => ({
 
 jest.mock('@/service/DbService', () => ({
     insertDrillResultService: jest.fn().mockResolvedValue(true),
+    getDrillsByCategoryService: jest.fn().mockReturnValue([
+        { id: 7, label: 'Three ball', iconName: 'track-changes', target: '3 / 3', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
+        { id: 8, label: 'Wedge', iconName: 'av-timer', target: '3 / 3', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
+        { id: 9, label: 'Ladder', iconName: 'sort', target: '10 / 12', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
+    ]),
+    toggleDrillIsActiveService: jest.fn().mockResolvedValue(true),
 }));
 
 const mockInsertDrillResultService = insertDrillResultService as jest.Mock;

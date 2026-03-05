@@ -1,7 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dimensions, FlatList, RefreshControl, ScrollView, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { insertDrillResultService } from "@/service/DbService";
+import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService } from "@/service/DbService";
 import SubMenu from "@/components/SubMenu";
 import Drill from "@/components/Drill";
 import Instructions from "@/components/Instructions";
@@ -16,7 +16,7 @@ type Props = {
 };
 
 const ShortGameScreen = ({ config }: Props) => {
-    const { category, drills, games, drillsFooter, gamesFooter } = config;
+    const { category, games, drillsFooter, gamesFooter } = config;
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
@@ -25,7 +25,12 @@ const ShortGameScreen = ({ config }: Props) => {
     const [section, setSection] = useState(`${category}-drills`);
     const [gameActiveIndex, setGameActiveIndex] = useState(0);
     const [drillActiveIndex, setDrillActiveIndex] = useState(0);
+    const [drills, setDrills] = useState<DrillData[]>([]);
     const flatListRef = useRef(null);
+
+    useEffect(() => {
+        setDrills(getDrillsByCategoryService(category));
+    }, [category]);
 
     const { width } = Dimensions.get('window');
 
@@ -39,8 +44,8 @@ const ShortGameScreen = ({ config }: Props) => {
         return section === sectionName;
     };
 
-    const saveDrillResultHandle = (label: string, result: boolean) => {
-        insertDrillResultService(`${categoryCapitalized} - ${label}`, result).then((success) => {
+    const saveDrillResultHandle = (label: string, result: boolean, drillId: number | null) => {
+        insertDrillResultService(`${categoryCapitalized} - ${label}`, result, drillId).then((success) => {
             showResult(success, "Drill result saved", "Drill result not saved");
         });
     };
@@ -71,13 +76,30 @@ const ShortGameScreen = ({ config }: Props) => {
     const renderDrillItem = ({ item }: { item: DrillData }) => (
         <View style={styles.scrollItemContainer}>
             <View style={[styles.container, styles.scrollWrapper]}>
-                <Drill label={item.label} iconName={item.iconName} target={item.target} objective={item.objective} setUp={item.setup} howToPlay={item.howToPlay} saveDrillResult={saveDrillResultHandle} />
+                <Drill
+                    label={item.label}
+                    iconName={item.iconName}
+                    target={item.target}
+                    objective={item.objective}
+                    setUp={item.setup}
+                    howToPlay={item.howToPlay}
+                    isActive={item.isActive}
+                    saveDrillResult={(label, result) => saveDrillResultHandle(label, result, item.id ?? null)}
+                    onToggleActive={(newIsActive) => {
+                        if (item.id !== undefined) {
+                            toggleDrillIsActiveService(item.id, newIsActive).then(() => {
+                                setDrills(getDrillsByCategoryService(category));
+                            });
+                        }
+                    }}
+                />
             </View>
         </View>
     );
 
     const onRefresh = () => {
         setRefreshing(true);
+        setDrills(getDrillsByCategoryService(category));
 
         setTimeout(() => {
             setRefreshing(false);

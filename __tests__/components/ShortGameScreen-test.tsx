@@ -2,7 +2,7 @@ import React, { act } from 'react';
 import { FlatList, ScrollView } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import ShortGameScreen from '../../components/ShortGameScreen';
-import { insertDrillResultService } from '../../service/DbService';
+import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService } from '../../service/DbService';
 import type { ShortGameConfig } from '../../types/ShortGame';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -31,11 +31,18 @@ jest.mock('react-native-gesture-handler', () => {
 
 jest.mock('../../service/DbService', () => ({
     insertDrillResultService: jest.fn().mockResolvedValue(true),
+    getDrillsByCategoryService: jest.fn().mockReturnValue([
+        { id: 1, label: 'Gate', iconName: 'sports-golf', target: '3/5', objective: 'Improve accuracy', setup: 'Set a gate', howToPlay: 'Chip through the gate', isActive: true },
+        { id: 2, label: 'Hoop', iconName: 'sports-golf', target: '4/5', objective: 'Land in hoop', setup: 'Place a hoop', howToPlay: 'Chip into the hoop', isActive: true },
+    ]),
+    toggleDrillIsActiveService: jest.fn().mockResolvedValue(true),
 }));
 
 jest.useFakeTimers();
 
 const mockInsertDrillResultService = insertDrillResultService as jest.Mock;
+const mockGetDrillsByCategoryService = getDrillsByCategoryService as jest.Mock;
+const mockToggleDrillIsActiveService = toggleDrillIsActiveService as jest.Mock;
 
 const config: ShortGameConfig = {
     category: 'chipping',
@@ -115,7 +122,7 @@ describe('ShortGameScreen', () => {
             fireEvent.press(saveButtons[0]);
         });
 
-        expect(mockInsertDrillResultService).toHaveBeenCalledWith('Chipping - Gate', true);
+        expect(mockInsertDrillResultService).toHaveBeenCalledWith('Chipping - Gate', true, 1);
     });
 
     it('saveDrillResultUsesDrillLabelForEachDrill', async () => {
@@ -126,7 +133,36 @@ describe('ShortGameScreen', () => {
             fireEvent.press(saveButtons[1]);
         });
 
-        expect(mockInsertDrillResultService).toHaveBeenCalledWith('Chipping - Hoop', true);
+        expect(mockInsertDrillResultService).toHaveBeenCalledWith('Chipping - Hoop', true, 2);
+    });
+
+    it('loadsDrillsFromServiceOnMount', () => {
+        render(<ShortGameScreen config={config} />);
+
+        expect(mockGetDrillsByCategoryService).toHaveBeenCalledWith('chipping');
+    });
+
+    it('reloadsDrillsFromServiceOnRefresh', () => {
+        const { UNSAFE_getByType } = render(<ShortGameScreen config={config} />);
+        const scrollView = UNSAFE_getByType(ScrollView);
+        mockGetDrillsByCategoryService.mockClear();
+
+        act(() => {
+            scrollView.props.refreshControl.props.onRefresh();
+        });
+
+        expect(mockGetDrillsByCategoryService).toHaveBeenCalledWith('chipping');
+    });
+
+    it('callsToggleServiceWhenDrillToggled', async () => {
+        const { getAllByTestId } = render(<ShortGameScreen config={config} />);
+        const toggles = getAllByTestId('drill-active-toggle');
+
+        await act(async () => {
+            fireEvent(toggles[0], 'valueChange', false);
+        });
+
+        expect(mockToggleDrillIsActiveService).toHaveBeenCalledWith(1, false);
     });
 
     it('handleDrillScrollUpdatesActiveIndex', () => {

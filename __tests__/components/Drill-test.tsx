@@ -25,6 +25,8 @@ describe('Drill component', () => {
         setUp: 'Test setup',
         howToPlay: 'Test how to play',
         saveDrillResult: jest.fn(),
+        isActive: true,
+        onToggleActive: jest.fn(),
     };
 
     beforeEach(() => {
@@ -75,6 +77,28 @@ describe('Drill component', () => {
 
         expect(mockSave).toHaveBeenCalledTimes(1);
         expect(mockSave).toHaveBeenCalledWith('Test Drill', expect.any(Boolean));
+    });
+
+    it('rendersActiveToggleSwitch', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} isActive={true} />);
+
+        expect(getByTestId('drill-active-toggle')).toBeTruthy();
+    });
+
+    it('activeToggleReflectsIsActiveProp', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} isActive={false} />);
+
+        const toggle = getByTestId('drill-active-toggle');
+        expect(toggle.props.value).toBe(false);
+    });
+
+    it('callsOnToggleActiveWhenSwitchValueChanges', () => {
+        const mockToggle = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} onToggleActive={mockToggle} />);
+
+        fireEvent(getByTestId('drill-active-toggle'), 'valueChange', false);
+
+        expect(mockToggle).toHaveBeenCalledWith(false);
     });
 
     it('renders Instructions component with correct props', () => {

@@ -1,10 +1,13 @@
 import getTwoDigitDayAndMonth from '@/app/DateFormatter';
+import { DrillData } from '@/types/ShortGame';
 import {
     getWedgeChartDistanceNames,
     getWedgeChartEntries,
     insertWedgeChart,
     insertDrillResult,
     getAllDrillHistory,
+    getDrillsByCategory,
+    updateDrillIsActive,
     insertDeadlySinsRound,
     getAllDeadlySinsRounds,
     getDeadlySinsRoundByRoundId,
@@ -82,9 +85,38 @@ export const saveWedgeChartService = async (data: WedgeChartData): Promise<boole
     return insertWedgeChart(distanceNames, entries);
 };
 
-export const insertDrillResultService = (name: any, result: boolean) => {
-    return insertDrillResult(name, result);
+export const insertDrillResultService = (name: string, result: boolean, drillId: number | null = null) => {
+    return insertDrillResult(name, result, drillId);
 }
+
+export const getDrillsByCategoryService = (category: string): DrillData[] => {
+    const rows = getDrillsByCategory(category) as {
+        Id: number;
+        Category: string;
+        Label: string;
+        IconName: string;
+        Target: string;
+        Objective: string;
+        SetUp: string;
+        HowToPlay: string;
+        IsActive: number;
+    }[];
+
+    return rows.map(row => ({
+        id: row.Id,
+        label: row.Label,
+        iconName: row.IconName as DrillData['iconName'],
+        target: row.Target,
+        objective: row.Objective,
+        setup: row.SetUp,
+        howToPlay: row.HowToPlay,
+        isActive: row.IsActive === 1,
+    }));
+};
+
+export const toggleDrillIsActiveService = (id: number, isActive: boolean): Promise<boolean> => {
+    return updateDrillIsActive(id, isActive);
+};
 
 export const getAllDrillHistoryService = () => {
     let history: any[] = [];

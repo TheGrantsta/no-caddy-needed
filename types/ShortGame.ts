@@ -1,12 +1,14 @@
 import { MaterialIcons } from "@expo/vector-icons";
 
 export type DrillData = {
+    id?: number;
     label: string;
     iconName: keyof typeof MaterialIcons.glyphMap;
     target: string;
     objective: string;
     setup: string;
     howToPlay: string;
+    isActive?: boolean;
 };
 
 export type GameData = {

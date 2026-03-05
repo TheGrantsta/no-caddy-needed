@@ -135,7 +135,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                 <Text style={[styles.headerText, styles.marginTop]}>
                                     {categoryCapitalized} drills
                                 </Text>
-                                <Text style={[styles.normalText, { margin: 5 }]}>
+                                <Text style={[styles.normalText, { margin: 10 }]}>
                                     Improve your mechanics and accuracy through focused, repetitive actions.
                                 </Text>
                             </View>
@@ -176,7 +176,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                             ))}
                                         </View>
                                         <View>
-                                            <Text style={[styles.normalText, styles.marginTop, { margin: 5 }]}>
+                                            <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
                                                 {drillsFooter}
                                             </Text>
                                         </View>
@@ -204,7 +204,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                     </Text>
                                 </View>
                                 <View>
-                                    <Text style={[styles.normalText, { margin: 5 }]}>
+                                    <Text style={[styles.normalText, { margin: 10 }]}>
                                         Improve your accuracy, touch, consistency, and mental focus while keeping practice engaging
                                     </Text>
                                 </View>
@@ -235,7 +235,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                 ))}
                             </View>
                             <View>
-                                <Text style={[styles.normalText, styles.marginTop, { margin: 5 }]}>
+                                <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
                                     {gamesFooter}
                                 </Text>
                             </View>

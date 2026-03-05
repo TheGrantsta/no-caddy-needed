@@ -56,7 +56,7 @@ export default function AddDrillForm({ category, onSaved, onCancel }: Props) {
     const multilineStyle = { minHeight: 55, textAlignVertical: 'top' as const };
 
     return (
-        <View>
+        <View style={{ paddingHorizontal: 16 }}>
             <Text style={styles.textLabel}>Name</Text>
             <TextInput
                 testID='add-drill-label'
@@ -120,12 +120,14 @@ export default function AddDrillForm({ category, onSaved, onCancel }: Props) {
 
             {saveError ? <Text style={styles.errorText}>{saveError}</Text> : null}
 
-            <TouchableOpacity testID='add-drill-save' style={styles.button} onPress={handleSave}>
-                <Text style={styles.buttonText}>Save</Text>
-            </TouchableOpacity>
-            <TouchableOpacity testID='add-drill-cancel' style={styles.button} onPress={onCancel}>
-                <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity testID='add-drill-cancel' style={styles.button} onPress={onCancel}>
+                    <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity testID='add-drill-save' style={styles.button} onPress={handleSave}>
+                    <Text style={styles.buttonText}>Save</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }

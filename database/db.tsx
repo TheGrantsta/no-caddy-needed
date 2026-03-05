@@ -120,7 +120,6 @@ export const insertDrillResult = async (name: string, result: boolean, drillId: 
     try {
         await statement.executeAsync({ $Name: name, $Result: result, $DrillId: drillId, $Created_At: new Date().toISOString() });
     } catch (e) {
-        console.log(e);
         success = false;
     } finally {
         await statement.finalizeAsync();
@@ -177,7 +176,6 @@ export const insertWedgeChart = async (
             }
         }
     } catch (e) {
-        console.log(e);
         success = false;
     }
 
@@ -195,7 +193,6 @@ export const insertDeadlySinsRound = async (roundId: number | null, threePutts: 
     try {
         await statement.executeAsync({ $RoundId: roundId, $ThreePutts: threePutts, $DoubleBogeys: doubleBogeys, $BogeysPar5: bogeysPar5, $BogeysInside9Iron: bogeysInside9Iron, $DoubleChips: doubleChips, $TroubleOffTee: troubleOffTee, $Penalties: penalties, $Total: total, $Created_At: new Date().toISOString() });
     } catch (e) {
-        console.log(e);
         success = false;
     } finally {
         await statement.finalizeAsync();
@@ -245,7 +242,6 @@ export const updateDrillIsActive = async (id: number, isActive: boolean): Promis
             await statement.finalizeAsync();
         }
     } catch (e) {
-        console.log(e);
         success = false;
     }
 
@@ -267,7 +263,6 @@ export const insertDrill = async (category: string, label: string, iconName: str
             await statement.finalizeAsync();
         }
     } catch (e) {
-        console.log(e);
         success = false;
     }
 
@@ -290,7 +285,6 @@ export const insertRound = async (courseName: string): Promise<number | null> =>
             await statement.finalizeAsync();
         }
     } catch (e) {
-        console.log(e);
         return null;
     }
 };
@@ -311,7 +305,6 @@ export const updateRound = async (roundId: number, totalScore: number): Promise<
             await statement.finalizeAsync();
         }
     } catch (e) {
-        console.log(e);
         success = false;
     }
 
@@ -333,7 +326,6 @@ export const insertRoundHole = async (roundId: number, holeNumber: number, score
             await statement.finalizeAsync();
         }
     } catch (e) {
-        console.log(e);
         success = false;
     }
 
@@ -403,7 +395,6 @@ export const insertClubDistances = async (distances: { Club: string; CarryDistan
             }
         }
     } catch (e) {
-        console.log(e);
         success = false;
     }
 
@@ -425,7 +416,6 @@ export const insertRoundPlayer = async (roundId: number, playerName: string, isU
             await statement.finalizeAsync();
         }
     } catch (e) {
-        console.log(e);
         return null;
     }
 };
@@ -450,7 +440,6 @@ export const insertRoundHoleScore = async (roundId: number, roundPlayerId: numbe
             await statement.finalizeAsync();
         }
     } catch (e) {
-        console.log(e);
         success = false;
     }
 
@@ -470,7 +459,6 @@ export const deleteRoundHoleScoresByHole = async (roundId: number, holeNumber: n
             await statement.finalizeAsync();
         }
     } catch (e) {
-        console.log(e);
         success = false;
     }
     return success;
@@ -496,7 +484,6 @@ export const updateRoundHoleScore = async (id: number, score: number): Promise<b
             await statement.finalizeAsync();
         }
     } catch (e) {
-        console.log(e);
         success = false;
     }
 
@@ -518,7 +505,6 @@ export const updateRoundTotalScore = async (roundId: number, totalScore: number)
             await statement.finalizeAsync();
         }
     } catch (e) {
-        console.log(e);
         success = false;
     }
 
@@ -538,7 +524,6 @@ export const deleteRound = async (roundId: number): Promise<boolean> => {
             DELETE FROM Rounds WHERE Id = ${roundId};
         `);
     } catch (e) {
-        console.log(e);
         success = false;
     }
 
@@ -567,7 +552,6 @@ export const saveSettings = async (theme: string, notificationsEnabled: number, 
             await statement.finalizeAsync();
         }
     } catch (e) {
-        console.log(e);
         success = false;
     }
 

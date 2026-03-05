@@ -109,16 +109,16 @@ export const initialize = async () => {
     }
 };
 
-export const insertDrillResult = async (name: string, result: boolean) => {
+export const insertDrillResult = async (name: string, result: boolean, drillId: number | null = null) => {
     let success = true;
     const db = await SQLite.openDatabaseAsync(dbName);
 
     const statement = await db.prepareAsync(
-        'INSERT INTO Drills (Name, Result, Created_At) VALUES ($Name, $Result, $Created_At);'
+        'INSERT INTO DrillHistory (Name, Result, DrillId, Created_At) VALUES ($Name, $Result, $DrillId, $Created_At);'
     );
 
     try {
-        await statement.executeAsync({ $Name: name, $Result: result, $Created_At: new Date().toISOString() });
+        await statement.executeAsync({ $Name: name, $Result: result, $DrillId: drillId, $Created_At: new Date().toISOString() });
     } catch (e) {
         console.log(e);
         success = false;
@@ -217,10 +217,40 @@ export const getDeadlySinsRoundByRoundId = (roundId: number) => {
 };
 
 export const getAllDrillHistory = () => {
-    const sqlStatement = `SELECT * FROM Drills ORDER BY Id DESC;`
+    const sqlStatement = `SELECT * FROM DrillHistory ORDER BY Id DESC;`
 
     return get(sqlStatement);
 }
+
+export const getDrillsByCategory = (category: string) => {
+    const db = SQLite.openDatabaseSync(dbName);
+    return db.getAllSync(
+        'SELECT * FROM Drills WHERE Category = ? ORDER BY IsActive DESC, Label ASC;',
+        [category]
+    );
+};
+
+export const updateDrillIsActive = async (id: number, isActive: boolean): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        const statement = await db.prepareAsync(
+            'UPDATE Drills SET IsActive = $IsActive WHERE Id = $Id;'
+        );
+
+        try {
+            await statement.executeAsync({ $IsActive: isActive ? 1 : 0, $Id: id });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        console.log(e);
+        success = false;
+    }
+
+    return success;
+};
 
 export const insertRound = async (courseName: string): Promise<number | null> => {
     try {

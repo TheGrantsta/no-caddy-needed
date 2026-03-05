@@ -17,11 +17,21 @@ jest.mock('@/service/DbService', () => ({
     insertDrillService: jest.fn(),
 }));
 
+const mockShowSuccess = jest.fn();
+jest.mock('@/hooks/useAppToast', () => ({
+    useAppToast: () => ({
+        showSuccess: mockShowSuccess,
+        showError: jest.fn(),
+        showResult: jest.fn(),
+    }),
+}));
+
 const mockInsertDrillService = insertDrillService as jest.Mock;
 
 const defaultProps = {
     category: 'putting',
     onSaved: jest.fn(),
+    onCancel: jest.fn(),
 };
 
 const fillForm = (getByTestId: (id: string) => any) => {
@@ -40,6 +50,11 @@ describe('AddDrillForm', () => {
     it('rendersLabelInput', () => {
         const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
         expect(getByTestId('add-drill-label')).toBeTruthy();
+    });
+
+    it('rendersNameLabelText', () => {
+        const { getByText } = render(<AddDrillForm {...defaultProps} />);
+        expect(getByText('Name')).toBeTruthy();
     });
 
     it('rendersTargetInput', () => {
@@ -67,6 +82,48 @@ describe('AddDrillForm', () => {
         expect(getByTestId('add-drill-save')).toBeTruthy();
     });
 
+    it('rendersCancelButton', () => {
+        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
+        expect(getByTestId('add-drill-cancel')).toBeTruthy();
+    });
+
+    it('callsOnCancelWhenCancelPressed', () => {
+        const mockOnCancel = jest.fn();
+        const { getByTestId } = render(<AddDrillForm {...defaultProps} onCancel={mockOnCancel} />);
+        fireEvent.press(getByTestId('add-drill-cancel'));
+        expect(mockOnCancel).toHaveBeenCalledTimes(1);
+    });
+
+    it('objectiveInputIsMultiline', () => {
+        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
+        expect(getByTestId('add-drill-objective').props.multiline).toBe(true);
+    });
+
+    it('setupInputIsMultiline', () => {
+        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
+        expect(getByTestId('add-drill-setup').props.multiline).toBe(true);
+    });
+
+    it('howToPlayInputIsMultiline', () => {
+        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
+        expect(getByTestId('add-drill-how-to-play').props.multiline).toBe(true);
+    });
+
+    it('objectiveHasCharacterLimit', () => {
+        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
+        expect(getByTestId('add-drill-objective').props.maxLength).toBeTruthy();
+    });
+
+    it('setupHasCharacterLimit', () => {
+        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
+        expect(getByTestId('add-drill-setup').props.maxLength).toBeTruthy();
+    });
+
+    it('howToPlayHasCharacterLimit', () => {
+        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
+        expect(getByTestId('add-drill-how-to-play').props.maxLength).toBeTruthy();
+    });
+
     it('showsErrorWhenLabelIsEmpty', () => {
         const { getByTestId, getByText } = render(<AddDrillForm {...defaultProps} />);
         fireEvent.changeText(getByTestId('add-drill-target'), '8/10');
@@ -74,7 +131,7 @@ describe('AddDrillForm', () => {
         fireEvent.changeText(getByTestId('add-drill-setup'), 'Setup');
         fireEvent.changeText(getByTestId('add-drill-how-to-play'), 'Play');
         fireEvent.press(getByTestId('add-drill-save'));
-        expect(getByText('Label is required')).toBeTruthy();
+        expect(getByText('Name is required')).toBeTruthy();
     });
 
     it('showsErrorWhenTargetIsEmpty', () => {
@@ -136,6 +193,19 @@ describe('AddDrillForm', () => {
         expect(mockInsertDrillService).toHaveBeenCalledWith(
             'putting', 'My Drill', 'sports-golf', '8/10', 'Improve accuracy', 'Place markers', 'Hit 10 balls'
         );
+    });
+
+    it('showsDrillSavedToastOnSuccess', async () => {
+        mockInsertDrillService.mockResolvedValue(true);
+        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
+
+        fillForm(getByTestId);
+
+        await act(async () => {
+            fireEvent.press(getByTestId('add-drill-save'));
+        });
+
+        expect(mockShowSuccess).toHaveBeenCalledWith('Drill saved');
     });
 
     it('callsOnSavedAfterSuccessfulSubmit', async () => {

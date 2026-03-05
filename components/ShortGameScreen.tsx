@@ -140,35 +140,6 @@ const ShortGameScreen = ({ config }: Props) => {
                                 </Text>
                             </View>
                             <View>
-                                <View style={styles.horizontalScrollContainer}>
-                                    <FlatList
-                                        ref={flatListRef}
-                                        data={drills}
-                                        horizontal
-                                        pagingEnabled
-                                        showsHorizontalScrollIndicator={false}
-                                        onScroll={handleDrillScroll}
-                                        renderItem={renderDrillItem}
-                                        keyExtractor={(_, index) => index.toString()}
-                                    />
-                                </View>
-
-                                <View style={styles.scrollIndicatorContainer}>
-                                    {drills.map((_, index) => (
-                                        <View
-                                            key={index}
-                                            style={[
-                                                styles.scrollIndicatorDot,
-                                                drillActiveIndex === index && styles.scrollActiveDot,
-                                            ]}
-                                        />
-                                    ))}
-                                </View>
-                                <View>
-                                    <Text style={[styles.normalText, styles.marginTop, { margin: 5 }]}>
-                                        {drillsFooter}
-                                    </Text>
-                                </View>
                                 {showAddDrillForm ? (
                                     <AddDrillForm
                                         category={category}
@@ -176,14 +147,46 @@ const ShortGameScreen = ({ config }: Props) => {
                                             setShowAddDrillForm(false);
                                             setDrills(getDrillsByCategoryService(category));
                                         }}
+                                        onCancel={() => setShowAddDrillForm(false)}
                                     />
                                 ) : (
-                                    <TouchableOpacity
-                                        testID='add-drill-button'
-                                        style={[styles.largeButton, { padding: 12, alignItems: 'center', alignSelf: 'center', marginTop: 20 }]}
-                                        onPress={() => setShowAddDrillForm(true)}>
-                                        <Text style={styles.buttonText}>Add your own drill</Text>
-                                    </TouchableOpacity>
+                                    <>
+                                        <View style={styles.horizontalScrollContainer}>
+                                            <FlatList
+                                                ref={flatListRef}
+                                                data={drills}
+                                                horizontal
+                                                pagingEnabled
+                                                showsHorizontalScrollIndicator={false}
+                                                onScroll={handleDrillScroll}
+                                                renderItem={renderDrillItem}
+                                                keyExtractor={(_, index) => index.toString()}
+                                            />
+                                        </View>
+
+                                        <View style={styles.scrollIndicatorContainer}>
+                                            {drills.map((_, index) => (
+                                                <View
+                                                    key={index}
+                                                    style={[
+                                                        styles.scrollIndicatorDot,
+                                                        drillActiveIndex === index && styles.scrollActiveDot,
+                                                    ]}
+                                                />
+                                            ))}
+                                        </View>
+                                        <View>
+                                            <Text style={[styles.normalText, styles.marginTop, { margin: 5 }]}>
+                                                {drillsFooter}
+                                            </Text>
+                                        </View>
+                                        <TouchableOpacity
+                                            testID='add-drill-button'
+                                            style={[styles.largeButton, { padding: 12, alignItems: 'center', alignSelf: 'center', marginTop: 20 }]}
+                                            onPress={() => setShowAddDrillForm(true)}>
+                                            <Text style={styles.buttonText}>Add your own drill</Text>
+                                        </TouchableOpacity>
+                                    </>
                                 )}
                             </View>
                         </View>

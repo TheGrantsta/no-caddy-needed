@@ -41,10 +41,13 @@ jest.mock('../../service/DbService', () => ({
 
 jest.mock('../../components/AddDrillForm', () => {
     const { TouchableOpacity, Text, View } = require('react-native');
-    return ({ category, onSaved }: { category: string; onSaved: () => void }) => (
+    return ({ category, onSaved, onCancel }: { category: string; onSaved: () => void; onCancel: () => void }) => (
         <View testID='add-drill-form' accessibilityLabel={category}>
             <TouchableOpacity testID='mock-on-saved' onPress={onSaved}>
                 <Text>Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity testID='mock-on-cancel' onPress={onCancel}>
+                <Text>Cancel</Text>
             </TouchableOpacity>
         </View>
     );
@@ -234,6 +237,25 @@ describe('ShortGameScreen', () => {
         const { getByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
         fireEvent.press(getByTestId('add-drill-button'));
         fireEvent.press(getByTestId('mock-on-saved'));
+        expect(queryByTestId('add-drill-form')).toBeNull();
+    });
+
+    it('hidesDrillsListWhenFormIsShown', () => {
+        const { getByTestId, queryByText } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('add-drill-button'));
+        expect(queryByText('Gate')).toBeNull();
+    });
+
+    it('hidesAddDrillButtonWhenFormIsShown', () => {
+        const { getByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('add-drill-button'));
+        expect(queryByTestId('add-drill-button')).toBeNull();
+    });
+
+    it('hidesFormWhenCancelPressed', () => {
+        const { getByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('add-drill-button'));
+        fireEvent.press(getByTestId('mock-on-cancel'));
         expect(queryByTestId('add-drill-form')).toBeNull();
     });
 

@@ -2,18 +2,22 @@ import { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
+import { useAppToast } from '@/hooks/useAppToast';
 import { insertDrillService } from '@/service/DbService';
 
 const FIXED_ICON = 'sports-golf';
+const MULTILINE_MAX_LENGTH = 100;
 
 type Props = {
     category: string;
     onSaved: () => void;
+    onCancel: () => void;
 };
 
-export default function AddDrillForm({ category, onSaved }: Props) {
+export default function AddDrillForm({ category, onSaved, onCancel }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
+    const { showSuccess } = useAppToast();
     const [label, setLabel] = useState('');
     const [target, setTarget] = useState('');
     const [objective, setObjective] = useState('');
@@ -24,7 +28,7 @@ export default function AddDrillForm({ category, onSaved }: Props) {
 
     const validate = () => {
         const newErrors: Record<string, string> = {};
-        if (!label.trim()) newErrors.label = 'Label is required';
+        if (!label.trim()) newErrors.label = 'Name is required';
         if (!target.trim()) newErrors.target = 'Target is required';
         if (!objective.trim()) newErrors.objective = 'Objective is required';
         if (!setUp.trim()) newErrors.setUp = 'Set up is required';
@@ -42,22 +46,25 @@ export default function AddDrillForm({ category, onSaved }: Props) {
         const success = await insertDrillService(category, label.trim(), FIXED_ICON, target.trim(), objective.trim(), setUp.trim(), howToPlay.trim());
 
         if (success) {
+            showSuccess('Drill saved');
             onSaved();
         } else {
             setSaveError('Failed to save drill');
         }
     };
 
+    const multilineStyle = { minHeight: 55, textAlignVertical: 'top' as const };
+
     return (
         <View>
-            <Text style={styles.textLabel}>Label</Text>
+            <Text style={styles.textLabel}>Name</Text>
             <TextInput
                 testID='add-drill-label'
                 style={[styles.textInput, errors.label ? styles.textInputError : undefined]}
                 value={label}
                 onChangeText={(text) => { setLabel(text); setErrors(e => ({ ...e, label: '' })); }}
                 placeholderTextColor={colours.backgroundAlternate}
-                placeholder='Label'
+                placeholder='Name'
             />
             {errors.label ? <Text style={styles.errorText}>{errors.label}</Text> : null}
 
@@ -75,33 +82,39 @@ export default function AddDrillForm({ category, onSaved }: Props) {
             <Text style={styles.textLabel}>Objective</Text>
             <TextInput
                 testID='add-drill-objective'
-                style={[styles.textInput, errors.objective ? styles.textInputError : undefined]}
+                style={[styles.textInput, multilineStyle, errors.objective ? styles.textInputError : undefined]}
                 value={objective}
                 onChangeText={(text) => { setObjective(text); setErrors(e => ({ ...e, objective: '' })); }}
                 placeholderTextColor={colours.backgroundAlternate}
                 placeholder='Objective'
+                multiline
+                maxLength={MULTILINE_MAX_LENGTH}
             />
             {errors.objective ? <Text style={styles.errorText}>{errors.objective}</Text> : null}
 
             <Text style={styles.textLabel}>Set up</Text>
             <TextInput
                 testID='add-drill-setup'
-                style={[styles.textInput, errors.setUp ? styles.textInputError : undefined]}
+                style={[styles.textInput, multilineStyle, errors.setUp ? styles.textInputError : undefined]}
                 value={setUp}
                 onChangeText={(text) => { setSetUp(text); setErrors(e => ({ ...e, setUp: '' })); }}
                 placeholderTextColor={colours.backgroundAlternate}
                 placeholder='Set up'
+                multiline
+                maxLength={MULTILINE_MAX_LENGTH}
             />
             {errors.setUp ? <Text style={styles.errorText}>{errors.setUp}</Text> : null}
 
             <Text style={styles.textLabel}>How to play</Text>
             <TextInput
                 testID='add-drill-how-to-play'
-                style={[styles.textInput, errors.howToPlay ? styles.textInputError : undefined]}
+                style={[styles.textInput, multilineStyle, errors.howToPlay ? styles.textInputError : undefined]}
                 value={howToPlay}
                 onChangeText={(text) => { setHowToPlay(text); setErrors(e => ({ ...e, howToPlay: '' })); }}
                 placeholderTextColor={colours.backgroundAlternate}
                 placeholder='How to play'
+                multiline
+                maxLength={MULTILINE_MAX_LENGTH}
             />
             {errors.howToPlay ? <Text style={styles.errorText}>{errors.howToPlay}</Text> : null}
 
@@ -109,6 +122,9 @@ export default function AddDrillForm({ category, onSaved }: Props) {
 
             <TouchableOpacity testID='add-drill-save' style={styles.button} onPress={handleSave}>
                 <Text style={styles.buttonText}>Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity testID='add-drill-cancel' style={styles.button} onPress={onCancel}>
+                <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
         </View>
     );

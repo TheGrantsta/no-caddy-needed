@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import Instructions from "./Instructions";
 import { useStyles } from '@/hooks/useStyles';
@@ -94,16 +94,24 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                             Save
                         </Text>
                     </TouchableOpacity>
-                    <Switch
-                        testID='drill-active-toggle'
-                        value={isActive ?? true}
-                        onValueChange={(newValue) => onToggleActive?.(newValue)}
-                    />
                 </View>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingTop: 8, paddingBottom: 4 }}>
+                <Text style={[styles.normalText, { paddingRight: 10 }]}>
+                    {(isActive ?? true) ? 'Active:' : 'Inactive:'}
+                </Text>
+
+                <TouchableOpacity
+                    testID='drill-active-toggle'
+                    style={[localStyles.toggleContainer, (isActive ?? true) && localStyles.toggleOn, { marginRight: 10 }]}
+                    onPress={() => onToggleActive?.(!(isActive ?? true))}>
+                    <View style={[localStyles.toggleCircle, (isActive ?? true) && localStyles.circleOn]} />
+                </TouchableOpacity>
             </View>
             <View>
                 <Instructions objective={objective} setUp={setUp} howToPlay={howToPlay} />
             </View>
+
         </View>
     )
 };

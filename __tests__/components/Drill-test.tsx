@@ -79,6 +79,12 @@ describe('Drill component', () => {
         expect(mockSave).toHaveBeenCalledWith('Test Drill', expect.any(Boolean));
     });
 
+    it('renders Active label when isActive is true', () => {
+        const { getByText } = render(<Drill {...defaultProps} isActive={true} />);
+
+        expect(getByText('Active:')).toBeTruthy();
+    });
+
     it('rendersActiveToggleSwitch', () => {
         const { getByTestId } = render(<Drill {...defaultProps} isActive={true} />);
 
@@ -86,17 +92,16 @@ describe('Drill component', () => {
     });
 
     it('activeToggleReflectsIsActiveProp', () => {
-        const { getByTestId } = render(<Drill {...defaultProps} isActive={false} />);
+        const { getByText } = render(<Drill {...defaultProps} isActive={false} />);
 
-        const toggle = getByTestId('drill-active-toggle');
-        expect(toggle.props.value).toBe(false);
+        expect(getByText('Inactive:')).toBeTruthy();
     });
 
     it('callsOnToggleActiveWhenSwitchValueChanges', () => {
         const mockToggle = jest.fn();
-        const { getByTestId } = render(<Drill {...defaultProps} onToggleActive={mockToggle} />);
+        const { getByTestId } = render(<Drill {...defaultProps} isActive={true} onToggleActive={mockToggle} />);
 
-        fireEvent(getByTestId('drill-active-toggle'), 'valueChange', false);
+        fireEvent.press(getByTestId('drill-active-toggle'));
 
         expect(mockToggle).toHaveBeenCalledWith(false);
     });

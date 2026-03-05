@@ -159,7 +159,7 @@ describe('ShortGameScreen', () => {
         const toggles = getAllByTestId('drill-active-toggle');
 
         await act(async () => {
-            fireEvent(toggles[0], 'valueChange', false);
+            fireEvent.press(toggles[0]);
         });
 
         expect(mockToggleDrillIsActiveService).toHaveBeenCalledWith(1, false);

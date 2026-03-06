@@ -157,9 +157,12 @@ export default function Random() {
         },
         micButton: {
             marginTop: 12,
-            padding: 12,
+            padding: 10,
             borderRadius: 8,
+            flexDirection: 'row',
             alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
             backgroundColor: colours.backgroundAlternate,
         },
         micButtonActive: {
@@ -256,6 +259,9 @@ export default function Random() {
                                 style={[localStyles.micButton, micActive && localStyles.micButtonActive]}
                                 onPress={handleMicToggle}
                             >
+                                <Text style={[localStyles.actionButtonText, micActive ? { color: colours.background } : { color: colours.text }]}>
+                                    Say "next"
+                                </Text>
                                 <MaterialIcons
                                     name={micActive ? 'mic' : 'mic-off'}
                                     size={28}

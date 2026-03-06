@@ -1,12 +1,17 @@
 # To do
+- [ ] SafeAreaView has been deprecation warning message
 - [ ] Start Google Play closed group - alpha
 - [ ] Deprecation warning in debugger
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project
 - [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
+- [ ] App crash - [TCC] This app has crashed because it attempted to access privacy-sensitive data without a usage description.  The app's Info.plist must contain an NSSpeechRecognitionUsageDescription key with a string value
+explaining to the user how the app uses this data.
+- [ ] Fix build errors in Android - Error: [android.dangerous]: withAndroidDangerousBaseMod: Cannot copy google-services.json from /Users/grantmckenna/Documents/dev/no-caddy-needed/google-services.json to /Users/grantmckenna/Documents/dev/no-caddy-needed/android/app/google-services.json. Ensure the source and destination paths exist.
 
 # Done
+- [X] Amend microphone button
 - [X] Add ability for players to add their own practice drills
 - [X] Complete Google Play setup
 - [X] Enable submission from EAS to Google Play
@@ -43,7 +48,7 @@
 
 # Ignored
 - [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
-- [-] SafeAreaView has been deprecation warning message
 
 # Release notes
 * Golfers can add their own drills and mark as 'inactive' default drills if unwanted
+* Amended microphone button text for clearer instructions

@@ -29,6 +29,25 @@ export const amendTable = (syncDb: SQLite.SQLiteDatabase, amendment: TableAmendm
 
 export const initialize = async () => {
     const db = await SQLite.openDatabaseAsync(dbName);
+    const syncDb = SQLite.openDatabaseSync(dbName);
+
+    // Rename migrations must run BEFORE CREATE TABLE IF NOT EXISTS to avoid name conflicts
+    const tiger5Columns = syncDb.getAllSync('PRAGMA table_info(Tiger5Rounds)');
+    if (tiger5Columns.length > 0) {
+        syncDb.execSync('ALTER TABLE Tiger5Rounds RENAME TO DeadlySinsRounds');
+    }
+
+    const oldDrillsColumns = syncDb.getAllSync('PRAGMA table_info(Drills)') as { name: string }[];
+    const isOldDrillsTable = oldDrillsColumns.some(col => col.name === 'Name');
+    if (isOldDrillsTable) {
+        const drillHistoryColumns = syncDb.getAllSync('PRAGMA table_info(DrillHistory)');
+        if (drillHistoryColumns.length === 0) {
+            syncDb.execSync('ALTER TABLE Drills RENAME TO DrillHistory');
+        } else {
+            syncDb.execSync('INSERT INTO DrillHistory (Name, Result, Created_At) SELECT Name, Result, Created_At FROM Drills');
+            syncDb.execSync('DROP TABLE Drills');
+        }
+    }
 
     await db.execAsync(`
         PRAGMA journal_mode = WAL;
@@ -44,19 +63,6 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
         CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0);
     `);
-
-    const syncDb = SQLite.openDatabaseSync(dbName);
-
-    const tiger5Columns = syncDb.getAllSync('PRAGMA table_info(Tiger5Rounds)');
-    if (tiger5Columns.length > 0) {
-        syncDb.execSync('ALTER TABLE Tiger5Rounds RENAME TO DeadlySinsRounds');
-    }
-
-    const oldDrillsColumns = syncDb.getAllSync('PRAGMA table_info(Drills)') as { name: string }[];
-    const isOldDrillsTable = oldDrillsColumns.some(col => col.name === 'Name');
-    if (isOldDrillsTable) {
-        syncDb.execSync('ALTER TABLE Drills RENAME TO DrillHistory');
-    }
 
     const migrations: TableAmendment[] = [
         {

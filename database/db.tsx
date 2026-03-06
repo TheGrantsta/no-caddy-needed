@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { drillSeedData } from '../data/drillSeedData';
+import { gameSeedData } from '../data/gameSeedData';
 
 const dbName = 'NoCaddyNeeded.db';
 
@@ -29,6 +30,25 @@ export const amendTable = (syncDb: SQLite.SQLiteDatabase, amendment: TableAmendm
 
 export const initialize = async () => {
     const db = await SQLite.openDatabaseAsync(dbName);
+    const syncDb = SQLite.openDatabaseSync(dbName);
+
+    // Rename migrations must run BEFORE CREATE TABLE IF NOT EXISTS to avoid name conflicts
+    const tiger5Columns = syncDb.getAllSync('PRAGMA table_info(Tiger5Rounds)');
+    if (tiger5Columns.length > 0) {
+        syncDb.execSync('ALTER TABLE Tiger5Rounds RENAME TO DeadlySinsRounds');
+    }
+
+    const oldDrillsColumns = syncDb.getAllSync('PRAGMA table_info(Drills)') as { name: string }[];
+    const isOldDrillsTable = oldDrillsColumns.some(col => col.name === 'Name');
+    if (isOldDrillsTable) {
+        const drillHistoryColumns = syncDb.getAllSync('PRAGMA table_info(DrillHistory)');
+        if (drillHistoryColumns.length === 0) {
+            syncDb.execSync('ALTER TABLE Drills RENAME TO DrillHistory');
+        } else {
+            syncDb.execSync('INSERT INTO DrillHistory (Name, Result, Created_At) SELECT Name, Result, Created_At FROM Drills');
+            syncDb.execSync('DROP TABLE Drills');
+        }
+    }
 
     await db.execAsync(`
         PRAGMA journal_mode = WAL;
@@ -43,20 +63,8 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
         CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0);
+        CREATE TABLE IF NOT EXISTS Games (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Header TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsActive INTEGER NOT NULL DEFAULT 1);
     `);
-
-    const syncDb = SQLite.openDatabaseSync(dbName);
-
-    const tiger5Columns = syncDb.getAllSync('PRAGMA table_info(Tiger5Rounds)');
-    if (tiger5Columns.length > 0) {
-        syncDb.execSync('ALTER TABLE Tiger5Rounds RENAME TO DeadlySinsRounds');
-    }
-
-    const oldDrillsColumns = syncDb.getAllSync('PRAGMA table_info(Drills)') as { name: string }[];
-    const isOldDrillsTable = oldDrillsColumns.some(col => col.name === 'Name');
-    if (isOldDrillsTable) {
-        syncDb.execSync('ALTER TABLE Drills RENAME TO DrillHistory');
-    }
 
     const migrations: TableAmendment[] = [
         {
@@ -106,6 +114,15 @@ export const initialize = async () => {
             `('${escape(d.category)}', '${escape(d.label)}', '${escape(d.iconName)}', '${escape(d.target)}', '${escape(d.objective)}', '${escape(d.setUp)}', '${escape(d.howToPlay)}', 1)`
         ).join(', ');
         await db.execAsync(`INSERT INTO Drills (Category, Label, IconName, Target, Objective, SetUp, HowToPlay, IsActive) VALUES ${values};`);
+    }
+
+    const gameCount = syncDb.getAllSync('SELECT COUNT(*) as count FROM Games') as { count: number }[];
+    if (gameCount.length > 0 && gameCount[0].count === 0) {
+        const escape = (s: string) => s.replace(/'/g, "''");
+        const values = gameSeedData.map(g =>
+            `('${escape(g.category)}', '${escape(g.header)}', '${escape(g.objective)}', '${escape(g.setUp)}', '${escape(g.howToPlay)}', 1)`
+        ).join(', ');
+        await db.execAsync(`INSERT INTO Games (Category, Header, Objective, SetUp, HowToPlay, IsActive) VALUES ${values};`);
     }
 };
 
@@ -548,6 +565,56 @@ export const saveSettings = async (theme: string, notificationsEnabled: number, 
 
         try {
             await statement.executeAsync({ $Theme: theme, $NotificationsEnabled: notificationsEnabled, $Voice: voice, $SoundsEnabled: soundsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+
+    return success;
+};
+
+export const getGamesByCategory = (category: string) => {
+    const db = SQLite.openDatabaseSync(dbName);
+    return db.getAllSync(
+        'SELECT * FROM Games WHERE Category = ? ORDER BY IsActive DESC, Header ASC;',
+        [category]
+    );
+};
+
+export const insertGame = async (category: string, header: string, objective: string, setUp: string, howToPlay: string): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        const statement = await db.prepareAsync(
+            'INSERT INTO Games (Category, Header, Objective, SetUp, HowToPlay, IsActive) VALUES ($Category, $Header, $Objective, $SetUp, $HowToPlay, $IsActive);'
+        );
+
+        try {
+            await statement.executeAsync({ $Category: category, $Header: header, $Objective: objective, $SetUp: setUp, $HowToPlay: howToPlay, $IsActive: 1 });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+
+    return success;
+};
+
+export const updateGameIsActive = async (id: number, isActive: boolean): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        const statement = await db.prepareAsync(
+            'UPDATE Games SET IsActive = $IsActive WHERE Id = $Id;'
+        );
+
+        try {
+            await statement.executeAsync({ $IsActive: isActive ? 1 : 0, $Id: id });
         } finally {
             await statement.finalizeAsync();
         }

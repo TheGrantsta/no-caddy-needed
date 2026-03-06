@@ -1,8 +1,8 @@
 import React, { act } from 'react';
-import { FlatList, ScrollView } from 'react-native';
+import { FlatList } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import ShortGameScreen from '../../components/ShortGameScreen';
-import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService } from '../../service/DbService';
+import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService, getGamesByCategoryService, toggleGameIsActiveService } from '../../service/DbService';
 import type { ShortGameConfig } from '../../types/ShortGame';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -36,7 +36,12 @@ jest.mock('../../service/DbService', () => ({
         { id: 2, label: 'Hoop', iconName: 'sports-golf', target: '4/5', objective: 'Land in hoop', setup: 'Place a hoop', howToPlay: 'Chip into the hoop', isActive: true },
     ]),
     toggleDrillIsActiveService: jest.fn().mockResolvedValue(true),
-    insertDrillService: jest.fn().mockResolvedValue(true),
+    getGamesByCategoryService: jest.fn().mockReturnValue([
+        { id: 1, header: 'Up & down!', objective: 'Get up and down', setup: 'Drop a ball', howToPlay: 'Chip and putt', isActive: true },
+        { id: 2, header: 'Par 18!', objective: 'Score under 18', setup: 'Play 9 holes', howToPlay: 'Chip and putt each hole', isActive: true },
+    ]),
+    insertGameService: jest.fn().mockResolvedValue(true),
+    toggleGameIsActiveService: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock('../../components/AddDrillForm', () => {
@@ -53,22 +58,30 @@ jest.mock('../../components/AddDrillForm', () => {
     );
 });
 
+jest.mock('../../components/AddGameForm', () => {
+    const { TouchableOpacity, Text, View } = require('react-native');
+    return ({ category, onSaved, onCancel }: { category: string; onSaved: () => void; onCancel: () => void }) => (
+        <View testID='add-game-form' accessibilityLabel={category}>
+            <TouchableOpacity testID='mock-game-on-saved' onPress={onSaved}>
+                <Text>Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity testID='mock-game-on-cancel' onPress={onCancel}>
+                <Text>Cancel</Text>
+            </TouchableOpacity>
+        </View>
+    );
+});
+
 jest.useFakeTimers();
 
 const mockInsertDrillResultService = insertDrillResultService as jest.Mock;
 const mockGetDrillsByCategoryService = getDrillsByCategoryService as jest.Mock;
 const mockToggleDrillIsActiveService = toggleDrillIsActiveService as jest.Mock;
+const mockGetGamesByCategoryService = getGamesByCategoryService as jest.Mock;
+const mockToggleGameIsActiveService = toggleGameIsActiveService as jest.Mock;
 
 const config: ShortGameConfig = {
     category: 'chipping',
-    drills: [
-        { label: 'Gate', iconName: 'sports-golf', target: '3/5', objective: 'Improve accuracy', setup: 'Set a gate', howToPlay: 'Chip through the gate' },
-        { label: 'Hoop', iconName: 'sports-golf', target: '4/5', objective: 'Land in hoop', setup: 'Place a hoop', howToPlay: 'Chip into the hoop' },
-    ],
-    games: [
-        { header: 'Up & down!', objective: 'Get up and down', setup: 'Drop a ball', howToPlay: 'Chip and putt' },
-        { header: 'Par 18!', objective: 'Score under 18', setup: 'Play 9 holes', howToPlay: 'Chip and putt each hole' },
-    ],
     drillsFooter: 'Practice drills regularly',
     gamesFooter: 'Play these games to improve',
 };
@@ -158,8 +171,8 @@ describe('ShortGameScreen', () => {
     });
 
     it('reloadsDrillsFromServiceOnRefresh', () => {
-        const { UNSAFE_getByType } = render(<ShortGameScreen config={config} />);
-        const scrollView = UNSAFE_getByType(ScrollView);
+        const { getByTestId } = render(<ShortGameScreen config={config} />);
+        const scrollView = getByTestId('main-scroll-view');
         mockGetDrillsByCategoryService.mockClear();
 
         act(() => {
@@ -188,7 +201,6 @@ describe('ShortGameScreen', () => {
             flatLists[0].props.onScroll({ nativeEvent: { contentOffset: { x: 375 } } });
         });
 
-        // If it doesn't throw, the handler ran; the dot indicator rerenders
         expect(flatLists[0].props.onScroll).toBeDefined();
     });
 
@@ -206,8 +218,8 @@ describe('ShortGameScreen', () => {
     });
 
     it('onRefreshShowsRefreshingOverlay', () => {
-        const { UNSAFE_getByType, getByText } = render(<ShortGameScreen config={config} />);
-        const scrollView = UNSAFE_getByType(ScrollView);
+        const { getByTestId, getByText } = render(<ShortGameScreen config={config} />);
+        const scrollView = getByTestId('main-scroll-view');
 
         act(() => {
             scrollView.props.refreshControl.props.onRefresh();
@@ -268,8 +280,8 @@ describe('ShortGameScreen', () => {
     });
 
     it('onRefreshHidesOverlayAfterTimeout', () => {
-        const { UNSAFE_getByType, queryByText } = render(<ShortGameScreen config={config} />);
-        const scrollView = UNSAFE_getByType(ScrollView);
+        const { getByTestId, queryByText } = render(<ShortGameScreen config={config} />);
+        const scrollView = getByTestId('main-scroll-view');
 
         act(() => {
             scrollView.props.refreshControl.props.onRefresh();
@@ -280,5 +292,108 @@ describe('ShortGameScreen', () => {
         });
 
         expect(queryByText('Release to update')).toBeNull();
+    });
+
+    it('drillItemIsVerticallyScrollable', () => {
+        const { getAllByTestId } = render(<ShortGameScreen config={config} />);
+        const drillScrolls = getAllByTestId('drill-item-scroll');
+        expect(drillScrolls.length).toBeGreaterThan(0);
+        expect(drillScrolls[0].props.nestedScrollEnabled).toBe(true);
+    });
+
+    it('loadsGamesFromServiceOnMount', () => {
+        render(<ShortGameScreen config={config} />);
+        expect(mockGetGamesByCategoryService).toHaveBeenCalledWith('chipping');
+    });
+
+    it('showsAddGameButtonInGamesSection', () => {
+        const { getByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        expect(getByTestId('add-game-button')).toBeTruthy();
+    });
+
+    it('showsAddGameFormWhenAddGameButtonPressed', () => {
+        const { getByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        fireEvent.press(getByTestId('add-game-button'));
+        expect(getByTestId('add-game-form')).toBeTruthy();
+    });
+
+    it('passesCorrectCategoryToAddGameForm', () => {
+        const { getByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        fireEvent.press(getByTestId('add-game-button'));
+        expect(getByTestId('add-game-form').props.accessibilityLabel).toBe('chipping');
+    });
+
+    it('hidesAddGameFormAfterSaved', () => {
+        const { getByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        fireEvent.press(getByTestId('add-game-button'));
+        fireEvent.press(getByTestId('mock-game-on-saved'));
+        expect(queryByTestId('add-game-form')).toBeNull();
+    });
+
+    it('hidesGamesListWhenFormIsShown', () => {
+        const { getByTestId, queryByText } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        fireEvent.press(getByTestId('add-game-button'));
+        expect(queryByText('Up & down!')).toBeNull();
+    });
+
+    it('hidesAddGameButtonWhenFormIsShown', () => {
+        const { getByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        fireEvent.press(getByTestId('add-game-button'));
+        expect(queryByTestId('add-game-button')).toBeNull();
+    });
+
+    it('hidesGameFormWhenCancelPressed', () => {
+        const { getByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        fireEvent.press(getByTestId('add-game-button'));
+        fireEvent.press(getByTestId('mock-game-on-cancel'));
+        expect(queryByTestId('add-game-form')).toBeNull();
+    });
+
+    it('reloadsGamesAfterGameSaved', () => {
+        const { getByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        fireEvent.press(getByTestId('add-game-button'));
+        mockGetGamesByCategoryService.mockClear();
+        fireEvent.press(getByTestId('mock-game-on-saved'));
+        expect(mockGetGamesByCategoryService).toHaveBeenCalledWith('chipping');
+    });
+
+    it('callsToggleGameServiceWhenGameToggled', async () => {
+        const { getByTestId, getAllByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        const toggles = getAllByTestId('game-active-toggle');
+
+        await act(async () => {
+            fireEvent.press(toggles[0]);
+        });
+
+        expect(mockToggleGameIsActiveService).toHaveBeenCalledWith(1, false);
+    });
+
+    it('reloadsGamesFromServiceOnRefresh', () => {
+        const { getByTestId } = render(<ShortGameScreen config={config} />);
+        const scrollView = getByTestId('main-scroll-view');
+        mockGetGamesByCategoryService.mockClear();
+
+        act(() => {
+            scrollView.props.refreshControl.props.onRefresh();
+        });
+
+        expect(mockGetGamesByCategoryService).toHaveBeenCalledWith('chipping');
+    });
+
+    it('gameItemIsVerticallyScrollable', () => {
+        const { getByTestId, getAllByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        const gameScrolls = getAllByTestId('game-item-scroll');
+        expect(gameScrolls.length).toBeGreaterThan(0);
+        expect(gameScrolls[0].props.nestedScrollEnabled).toBe(true);
     });
 });

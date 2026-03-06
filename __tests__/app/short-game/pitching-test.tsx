@@ -42,6 +42,13 @@ jest.mock('@/service/DbService', () => ({
         { id: 9, label: 'Ladder', iconName: 'sort', target: '10 / 12', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
     ]),
     toggleDrillIsActiveService: jest.fn().mockResolvedValue(true),
+    getGamesByCategoryService: jest.fn().mockReturnValue([
+        { id: 7, header: 'Three club!', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
+        { id: 8, header: 'Target challenge!', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
+        { id: 9, header: '5-ball game!', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
+    ]),
+    insertGameService: jest.fn().mockResolvedValue(true),
+    toggleGameIsActiveService: jest.fn().mockResolvedValue(true),
 }));
 
 const mockInsertDrillResultService = insertDrillResultService as jest.Mock;

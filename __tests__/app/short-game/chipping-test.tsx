@@ -41,6 +41,13 @@ jest.mock('@/service/DbService', () => ({
         { id: 6, label: 'One hand', iconName: 'back-hand', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
     ]),
     toggleDrillIsActiveService: jest.fn().mockResolvedValue(true),
+    getGamesByCategoryService: jest.fn().mockReturnValue([
+        { id: 4, header: 'Up & down challenge!', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
+        { id: 5, header: 'Ladder challenge!', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
+        { id: 6, header: 'Par 18!', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
+    ]),
+    insertGameService: jest.fn().mockResolvedValue(true),
+    toggleGameIsActiveService: jest.fn().mockResolvedValue(true),
 }));
 
 jest.useFakeTimers();

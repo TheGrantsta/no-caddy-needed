@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import Game from '../../components/Game';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -17,67 +17,55 @@ jest.mock('../../hooks/useStyles', () => ({
 }));
 
 describe('Game component', () => {
-    const mockGames = [
-        {
-            header: 'Game One',
-            objective: 'First objective',
-            setup: 'First setup',
-            howToPlay: 'First how to play',
-        },
-        {
-            header: 'Game Two',
-            objective: 'Second objective',
-            setup: 'Second setup',
-            howToPlay: 'Second how to play',
-        },
-    ];
+    const defaultProps = {
+        header: 'Up & down challenge!',
+        objective: 'Simulate on-course pressure',
+        setUp: 'Select chipping spots',
+        howToPlay: 'Hole out in 2 shots',
+        isActive: true,
+    };
 
-    it('renders the subheading', () => {
-        const { getByText } = render(<Game subHeading="Test Games" games={mockGames} />);
-
-        expect(getByText('Test Games')).toBeTruthy();
+    it('rendersTheGameHeader', () => {
+        const { getByText } = render(<Game {...defaultProps} />);
+        expect(getByText('Up & down challenge!')).toBeTruthy();
     });
 
-    it('renders all game headers', () => {
-        const { getByText } = render(<Game subHeading="Test Games" games={mockGames} />);
-
-        expect(getByText('Game One')).toBeTruthy();
-        expect(getByText('Game Two')).toBeTruthy();
+    it('rendersInstructions', () => {
+        const { getByText } = render(<Game {...defaultProps} />);
+        expect(getByText(/Simulate on-course pressure/)).toBeTruthy();
     });
 
-    it('renders instructions for each game', () => {
-        const { getByText } = render(<Game subHeading="Test Games" games={mockGames} />);
-
-        expect(getByText(/First objective/)).toBeTruthy();
-        expect(getByText(/Second objective/)).toBeTruthy();
+    it('rendersActiveToggle', () => {
+        const { getByTestId } = render(<Game {...defaultProps} />);
+        expect(getByTestId('game-active-toggle')).toBeTruthy();
     });
 
-    it('renders setup for each game', () => {
-        const { getByText } = render(<Game subHeading="Test Games" games={mockGames} />);
-
-        expect(getByText(/First setup/)).toBeTruthy();
-        expect(getByText(/Second setup/)).toBeTruthy();
+    it('callsOnToggleActiveWithFalseWhenActiveAndTogglePressed', () => {
+        const mockToggle = jest.fn();
+        const { getByTestId } = render(<Game {...defaultProps} isActive={true} onToggleActive={mockToggle} />);
+        fireEvent.press(getByTestId('game-active-toggle'));
+        expect(mockToggle).toHaveBeenCalledWith(false);
     });
 
-    it('renders how to play for each game', () => {
-        const { getByText } = render(<Game subHeading="Test Games" games={mockGames} />);
-
-        expect(getByText(/First how to play/)).toBeTruthy();
-        expect(getByText(/Second how to play/)).toBeTruthy();
+    it('callsOnToggleActiveWithTrueWhenInactiveAndTogglePressed', () => {
+        const mockToggle = jest.fn();
+        const { getByTestId } = render(<Game {...defaultProps} isActive={false} onToggleActive={mockToggle} />);
+        fireEvent.press(getByTestId('game-active-toggle'));
+        expect(mockToggle).toHaveBeenCalledWith(true);
     });
 
-    it('renders empty when no games provided', () => {
-        const { getByText, queryByText } = render(<Game subHeading="Empty Games" games={[]} />);
-
-        expect(getByText('Empty Games')).toBeTruthy();
-        expect(queryByText('Objective:')).toBeNull();
+    it('doesNotThrowIfOnToggleActiveNotProvided', () => {
+        const { getByTestId } = render(<Game {...defaultProps} />);
+        expect(() => fireEvent.press(getByTestId('game-active-toggle'))).not.toThrow();
     });
 
-    it('renders single game correctly', () => {
-        const singleGame = [mockGames[0]];
-        const { getByText, queryByText } = render(<Game subHeading="Single Game" games={singleGame} />);
+    it('showsActiveTextWhenActive', () => {
+        const { getByText } = render(<Game {...defaultProps} isActive={true} />);
+        expect(getByText('Active:')).toBeTruthy();
+    });
 
-        expect(getByText('Game One')).toBeTruthy();
-        expect(queryByText('Game Two')).toBeNull();
+    it('showsInactiveTextWhenInactive', () => {
+        const { getByText } = render(<Game {...defaultProps} isActive={false} />);
+        expect(getByText('Inactive:')).toBeTruthy();
     });
 });

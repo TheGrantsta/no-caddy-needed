@@ -570,20 +570,58 @@ describe('old Drills to DrillHistory rename migration', () => {
         mockExecAsync.mockResolvedValue(undefined);
     });
 
-    it('renames old Drills table to DrillHistory when Name column exists in Drills', async () => {
+    it('renames old Drills table to DrillHistory when Name column exists in Drills and DrillHistory does not exist', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
             if (sql === 'PRAGMA table_info(Drills)') return oldDrillsCols;
+            if (sql === 'PRAGMA table_info(DrillHistory)') return [];
             if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
             if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
             if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
-            if (sql === 'PRAGMA table_info(DrillHistory)') return allDrillHistoryCols;
             return [];
         });
 
         await initialize();
 
         expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE Drills RENAME TO DrillHistory');
+    });
+
+    it('does not rename when DrillHistory already exists (prevents crash on re-launch after failed migration)', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
+            if (sql === 'PRAGMA table_info(Drills)') return oldDrillsCols;
+            if (sql === 'PRAGMA table_info(DrillHistory)') return allDrillHistoryCols;
+            if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
+            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
+            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
+            return [];
+        });
+
+        await initialize();
+
+        const renameCalls = mockExecSync.mock.calls.filter(
+            (call: string[]) => call[0].includes('Drills') && call[0].includes('RENAME')
+        );
+        expect(renameCalls).toHaveLength(0);
+    });
+
+    it('copies old Drills data into DrillHistory and drops old Drills when both tables exist', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
+            if (sql === 'PRAGMA table_info(Drills)') return oldDrillsCols;
+            if (sql === 'PRAGMA table_info(DrillHistory)') return allDrillHistoryCols;
+            if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
+            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
+            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'INSERT INTO DrillHistory (Name, Result, Created_At) SELECT Name, Result, Created_At FROM Drills'
+        );
+        expect(mockExecSync).toHaveBeenCalledWith('DROP TABLE Drills');
     });
 
     it('does not rename when Drills table has Category column (new schema)', async () => {
@@ -622,6 +660,34 @@ describe('old Drills to DrillHistory rename migration', () => {
             (call: string[]) => call[0].includes('Drills') && call[0].includes('RENAME')
         );
         expect(renameCalls).toHaveLength(0);
+    });
+
+    it('renames old Drills to DrillHistory before executing CREATE TABLE statements', async () => {
+        const callLog: string[] = [];
+        mockExecSync.mockImplementation((sql: string) => {
+            callLog.push(`sync:${sql}`);
+        });
+        mockExecAsync.mockImplementation(async (sql: string) => {
+            callLog.push(`async:${sql.trim().substring(0, 50)}`);
+            return undefined;
+        });
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
+            if (sql === 'PRAGMA table_info(Drills)') return oldDrillsCols;
+            if (sql === 'PRAGMA table_info(DrillHistory)') return [];
+            if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
+            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
+            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
+            return [];
+        });
+
+        await initialize();
+
+        const renameIdx = callLog.findIndex(e => e.includes('RENAME TO DrillHistory'));
+        const createIdx = callLog.findIndex(e => e.includes('CREATE TABLE'));
+        expect(renameIdx).toBeGreaterThan(-1);
+        expect(createIdx).toBeGreaterThan(-1);
+        expect(renameIdx).toBeLessThan(createIdx);
     });
 });
 

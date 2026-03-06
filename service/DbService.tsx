@@ -1,5 +1,5 @@
 import getTwoDigitDayAndMonth from '@/app/DateFormatter';
-import { DrillData } from '@/types/ShortGame';
+import { DrillData, GameData } from '@/types/ShortGame';
 import {
     getWedgeChartDistanceNames,
     getWedgeChartEntries,
@@ -34,6 +34,9 @@ import {
     deleteRound,
     getSettings,
     saveSettings,
+    getGamesByCategory,
+    insertGame,
+    updateGameIsActive,
 } from '../database/db';
 
 export type WedgeChartClub = {
@@ -121,6 +124,35 @@ export const insertDrillService = (category: string, label: string, iconName: st
 
 export const toggleDrillIsActiveService = (id: number, isActive: boolean): Promise<boolean> => {
     return updateDrillIsActive(id, isActive);
+};
+
+export const getGamesByCategoryService = (category: string): GameData[] => {
+    const rows = getGamesByCategory(category) as {
+        Id: number;
+        Category: string;
+        Header: string;
+        Objective: string;
+        SetUp: string;
+        HowToPlay: string;
+        IsActive: number;
+    }[];
+
+    return rows.map(row => ({
+        id: row.Id,
+        header: row.Header,
+        objective: row.Objective,
+        setup: row.SetUp,
+        howToPlay: row.HowToPlay,
+        isActive: row.IsActive === 1,
+    }));
+};
+
+export const insertGameService = (category: string, header: string, objective: string, setUp: string, howToPlay: string): Promise<boolean> => {
+    return insertGame(category, header, objective, setUp, howToPlay);
+};
+
+export const toggleGameIsActiveService = (id: number, isActive: boolean): Promise<boolean> => {
+    return updateGameIsActive(id, isActive);
 };
 
 export const getAllDrillHistoryService = () => {

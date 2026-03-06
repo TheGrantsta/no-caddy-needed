@@ -12,18 +12,18 @@ export type DrillData = {
 };
 
 export type GameData = {
+    id?: number;
     header: string;
     objective: string;
     setup: string;
     howToPlay: string;
+    isActive?: boolean;
 };
 
 export type ShortGameCategory = 'putting' | 'chipping' | 'pitching' | 'bunker';
 
 export type ShortGameConfig = {
     category: ShortGameCategory;
-    drills: DrillData[];
-    games: GameData[];
     drillsFooter: string;
     gamesFooter: string;
 };

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService } from "@/service/DbService";
+import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService, getGamesByCategoryService, toggleGameIsActiveService } from "@/service/DbService";
 import SubMenu from "@/components/SubMenu";
 import Drill from "@/components/Drill";
+import Game from "@/components/Game";
 import AddDrillForm from "@/components/AddDrillForm";
-import Instructions from "@/components/Instructions";
+import AddGameForm from "@/components/AddGameForm";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
 import { useOrientation } from "@/hooks/useOrientation";
@@ -17,7 +18,7 @@ type Props = {
 };
 
 const ShortGameScreen = ({ config }: Props) => {
-    const { category, games, drillsFooter, gamesFooter } = config;
+    const { category, drillsFooter, gamesFooter } = config;
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
@@ -27,11 +28,14 @@ const ShortGameScreen = ({ config }: Props) => {
     const [gameActiveIndex, setGameActiveIndex] = useState(0);
     const [drillActiveIndex, setDrillActiveIndex] = useState(0);
     const [drills, setDrills] = useState<DrillData[]>([]);
+    const [games, setGames] = useState<GameData[]>([]);
     const [showAddDrillForm, setShowAddDrillForm] = useState(false);
+    const [showAddGameForm, setShowAddGameForm] = useState(false);
     const flatListRef = useRef(null);
 
     useEffect(() => {
         setDrills(getDrillsByCategoryService(category));
+        setGames(getGamesByCategoryService(category));
     }, [category]);
 
     const { width } = Dimensions.get('window');
@@ -66,11 +70,23 @@ const ShortGameScreen = ({ config }: Props) => {
 
     const renderGameItem = ({ item }: { item: GameData }) => (
         <View style={styles.scrollItemContainer}>
-            <View style={[styles.container, styles.scrollWrapper]}>
-                <Text style={styles.subHeaderText}>
-                    {item.header}
-                </Text>
-                <Instructions objective={item.objective} setUp={item.setup} howToPlay={item.howToPlay} />
+            <View style={[styles.container, styles.scrollWrapper, { alignSelf: 'stretch' }]}>
+                <ScrollView testID='game-item-scroll' nestedScrollEnabled>
+                    <Game
+                        header={item.header}
+                        objective={item.objective}
+                        setUp={item.setup}
+                        howToPlay={item.howToPlay}
+                        isActive={item.isActive}
+                        onToggleActive={(newIsActive) => {
+                            if (item.id !== undefined) {
+                                toggleGameIsActiveService(item.id, newIsActive).then(() => {
+                                    setGames(getGamesByCategoryService(category));
+                                });
+                            }
+                        }}
+                    />
+                </ScrollView>
             </View>
         </View>
     );
@@ -78,23 +94,25 @@ const ShortGameScreen = ({ config }: Props) => {
     const renderDrillItem = ({ item }: { item: DrillData }) => (
         <View style={styles.scrollItemContainer}>
             <View style={[styles.container, styles.scrollWrapper, { alignSelf: 'stretch' }]}>
-                <Drill
-                    label={item.label}
-                    iconName={item.iconName}
-                    target={item.target}
-                    objective={item.objective}
-                    setUp={item.setup}
-                    howToPlay={item.howToPlay}
-                    isActive={item.isActive}
-                    saveDrillResult={(label, result) => saveDrillResultHandle(label, result, item.id ?? null)}
-                    onToggleActive={(newIsActive) => {
-                        if (item.id !== undefined) {
-                            toggleDrillIsActiveService(item.id, newIsActive).then(() => {
-                                setDrills(getDrillsByCategoryService(category));
-                            });
-                        }
-                    }}
-                />
+                <ScrollView testID='drill-item-scroll' nestedScrollEnabled>
+                    <Drill
+                        label={item.label}
+                        iconName={item.iconName}
+                        target={item.target}
+                        objective={item.objective}
+                        setUp={item.setup}
+                        howToPlay={item.howToPlay}
+                        isActive={item.isActive}
+                        saveDrillResult={(label, result) => saveDrillResultHandle(label, result, item.id ?? null)}
+                        onToggleActive={(newIsActive) => {
+                            if (item.id !== undefined) {
+                                toggleDrillIsActiveService(item.id, newIsActive).then(() => {
+                                    setDrills(getDrillsByCategoryService(category));
+                                });
+                            }
+                        }}
+                    />
+                </ScrollView>
             </View>
         </View>
     );
@@ -102,6 +120,7 @@ const ShortGameScreen = ({ config }: Props) => {
     const onRefresh = () => {
         setRefreshing(true);
         setDrills(getDrillsByCategoryService(category));
+        setGames(getGamesByCategoryService(category));
 
         setTimeout(() => {
             setRefreshing(false);
@@ -120,7 +139,7 @@ const ShortGameScreen = ({ config }: Props) => {
                 </View>
             )}
 
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
+            <ScrollView testID='main-scroll-view' style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
@@ -209,41 +228,60 @@ const ShortGameScreen = ({ config }: Props) => {
                                     </Text>
                                 </View>
 
-                                <View style={styles.horizontalScrollContainer}>
-                                    <FlatList
-                                        ref={flatListRef}
-                                        data={games}
-                                        horizontal
-                                        pagingEnabled
-                                        showsHorizontalScrollIndicator={false}
-                                        onScroll={handleGameScroll}
-                                        renderItem={renderGameItem}
-                                        keyExtractor={(_, index) => index.toString()}
+                                {showAddGameForm ? (
+                                    <AddGameForm
+                                        category={category}
+                                        onSaved={() => {
+                                            setShowAddGameForm(false);
+                                            setGames(getGamesByCategoryService(category));
+                                        }}
+                                        onCancel={() => setShowAddGameForm(false)}
                                     />
-                                </View>
-                            </View>
+                                ) : (
+                                    <>
+                                        <View style={styles.horizontalScrollContainer}>
+                                            <FlatList
+                                                ref={flatListRef}
+                                                data={games}
+                                                horizontal
+                                                pagingEnabled
+                                                showsHorizontalScrollIndicator={false}
+                                                onScroll={handleGameScroll}
+                                                renderItem={renderGameItem}
+                                                keyExtractor={(_, index) => index.toString()}
+                                            />
+                                        </View>
 
-                            <View style={styles.scrollIndicatorContainer}>
-                                {games.map((_, index) => (
-                                    <View
-                                        key={index}
-                                        style={[
-                                            styles.scrollIndicatorDot,
-                                            gameActiveIndex === index && styles.scrollActiveDot,
-                                        ]}
-                                    />
-                                ))}
-                            </View>
-                            <View>
-                                <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
-                                    {gamesFooter}
-                                </Text>
+                                        <View style={styles.scrollIndicatorContainer}>
+                                            {games.map((_, index) => (
+                                                <View
+                                                    key={index}
+                                                    style={[
+                                                        styles.scrollIndicatorDot,
+                                                        gameActiveIndex === index && styles.scrollActiveDot,
+                                                    ]}
+                                                />
+                                            ))}
+                                        </View>
+                                        <View>
+                                            <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
+                                                {gamesFooter}
+                                            </Text>
+                                        </View>
+                                        <TouchableOpacity
+                                            testID='add-game-button'
+                                            style={[styles.largeButton, { padding: 12, alignItems: 'center', alignSelf: 'center', marginTop: 20 }]}
+                                            onPress={() => setShowAddGameForm(true)}>
+                                            <Text style={styles.buttonText}>Add your own game</Text>
+                                        </TouchableOpacity>
+                                    </>
+                                )}
                             </View>
                         </View>
                     )
                 }
-            </ScrollView >
-        </GestureHandlerRootView >
+            </ScrollView>
+        </GestureHandlerRootView>
     );
 };
 

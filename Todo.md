@@ -6,11 +6,9 @@
 - [ ] Integrate Firebase iOS into project
 - [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
-- [ ] App crash - [TCC] This app has crashed because it attempted to access privacy-sensitive data without a usage description.  The app's Info.plist must contain an NSSpeechRecognitionUsageDescription key with a string value
-explaining to the user how the app uses this data.
-- [ ] Fix build errors in Android - Error: [android.dangerous]: withAndroidDangerousBaseMod: Cannot copy google-services.json from /Users/grantmckenna/Documents/dev/no-caddy-needed/google-services.json to /Users/grantmckenna/Documents/dev/no-caddy-needed/android/app/google-services.json. Ensure the source and destination paths exist.
 
 # Done
+- [X] Add ability to add new games in Short Game
 - [X] Amend microphone button
 - [X] Add ability for players to add their own practice drills
 - [X] Complete Google Play setup
@@ -51,4 +49,5 @@ explaining to the user how the app uses this data.
 
 # Release notes
 * Golfers can add their own drills and mark as 'inactive' default drills if unwanted
+* Golfers can add their own games and delete default games if unwanted
 * Amended microphone button text for clearer instructions

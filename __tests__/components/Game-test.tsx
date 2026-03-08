@@ -22,7 +22,6 @@ describe('Game component', () => {
         objective: 'Simulate on-course pressure',
         setUp: 'Select chipping spots',
         howToPlay: 'Hole out in 2 shots',
-        isActive: true,
     };
 
     it('rendersTheGameHeader', () => {
@@ -35,37 +34,78 @@ describe('Game component', () => {
         expect(getByText(/Simulate on-course pressure/)).toBeTruthy();
     });
 
-    it('rendersActiveToggle', () => {
+    it('rendersDeleteButtonInitially', () => {
         const { getByTestId } = render(<Game {...defaultProps} />);
-        expect(getByTestId('game-active-toggle')).toBeTruthy();
+        expect(getByTestId('delete-game-button')).toBeTruthy();
     });
 
-    it('callsOnToggleActiveWithFalseWhenActiveAndTogglePressed', () => {
-        const mockToggle = jest.fn();
-        const { getByTestId } = render(<Game {...defaultProps} isActive={true} onToggleActive={mockToggle} />);
-        fireEvent.press(getByTestId('game-active-toggle'));
-        expect(mockToggle).toHaveBeenCalledWith(false);
+    it('doesNotCallOnDeleteWhenDeleteButtonFirstPressed', () => {
+        const mockOnDelete = jest.fn();
+        const { getByTestId } = render(<Game {...defaultProps} onDelete={mockOnDelete} />);
+        fireEvent.press(getByTestId('delete-game-button'));
+        expect(mockOnDelete).not.toHaveBeenCalled();
     });
 
-    it('callsOnToggleActiveWithTrueWhenInactiveAndTogglePressed', () => {
-        const mockToggle = jest.fn();
-        const { getByTestId } = render(<Game {...defaultProps} isActive={false} onToggleActive={mockToggle} />);
-        fireEvent.press(getByTestId('game-active-toggle'));
-        expect(mockToggle).toHaveBeenCalledWith(true);
-    });
-
-    it('doesNotThrowIfOnToggleActiveNotProvided', () => {
+    it('showsConfirmationButtonsAfterDeletePressed', () => {
         const { getByTestId } = render(<Game {...defaultProps} />);
-        expect(() => fireEvent.press(getByTestId('game-active-toggle'))).not.toThrow();
+        fireEvent.press(getByTestId('delete-game-button'));
+        expect(getByTestId('confirm-game-delete')).toBeTruthy();
+        expect(getByTestId('cancel-game-delete')).toBeTruthy();
     });
 
-    it('showsActiveTextWhenActive', () => {
-        const { getByText } = render(<Game {...defaultProps} isActive={true} />);
-        expect(getByText('Active:')).toBeTruthy();
+    it('hidesDeleteButtonAfterDeletePressed', () => {
+        const { getByTestId, queryByTestId } = render(<Game {...defaultProps} />);
+        fireEvent.press(getByTestId('delete-game-button'));
+        expect(queryByTestId('delete-game-button')).toBeNull();
     });
 
-    it('showsInactiveTextWhenInactive', () => {
-        const { getByText } = render(<Game {...defaultProps} isActive={false} />);
-        expect(getByText('Inactive:')).toBeTruthy();
+    it('callsOnDeleteWhenConfirmPressed', () => {
+        const mockOnDelete = jest.fn();
+        const { getByTestId } = render(<Game {...defaultProps} onDelete={mockOnDelete} />);
+        fireEvent.press(getByTestId('delete-game-button'));
+        fireEvent.press(getByTestId('confirm-game-delete'));
+        expect(mockOnDelete).toHaveBeenCalledTimes(1);
+    });
+
+    it('doesNotCallOnDeleteWhenCancelPressed', () => {
+        const mockOnDelete = jest.fn();
+        const { getByTestId } = render(<Game {...defaultProps} onDelete={mockOnDelete} />);
+        fireEvent.press(getByTestId('delete-game-button'));
+        fireEvent.press(getByTestId('cancel-game-delete'));
+        expect(mockOnDelete).not.toHaveBeenCalled();
+    });
+
+    it('hidesConfirmationButtonsAfterCancelPressed', () => {
+        const { getByTestId, queryByTestId } = render(<Game {...defaultProps} />);
+        fireEvent.press(getByTestId('delete-game-button'));
+        fireEvent.press(getByTestId('cancel-game-delete'));
+        expect(queryByTestId('confirm-game-delete')).toBeNull();
+        expect(queryByTestId('cancel-game-delete')).toBeNull();
+    });
+
+    it('showsDeleteButtonAfterCancelPressed', () => {
+        const { getByTestId } = render(<Game {...defaultProps} />);
+        fireEvent.press(getByTestId('delete-game-button'));
+        fireEvent.press(getByTestId('cancel-game-delete'));
+        expect(getByTestId('delete-game-button')).toBeTruthy();
+    });
+
+    it('showsDeleteButtonAfterConfirmPressed', () => {
+        const mockOnDelete = jest.fn();
+        const { getByTestId } = render(<Game {...defaultProps} onDelete={mockOnDelete} />);
+        fireEvent.press(getByTestId('delete-game-button'));
+        fireEvent.press(getByTestId('confirm-game-delete'));
+        expect(getByTestId('delete-game-button')).toBeTruthy();
+    });
+
+    it('doesNotThrowIfOnDeleteNotProvided', () => {
+        const { getByTestId } = render(<Game {...defaultProps} />);
+        fireEvent.press(getByTestId('delete-game-button'));
+        expect(() => fireEvent.press(getByTestId('confirm-game-delete'))).not.toThrow();
+    });
+
+    it('doesNotRenderActiveToggle', () => {
+        const { queryByTestId } = render(<Game {...defaultProps} />);
+        expect(queryByTestId('game-active-toggle')).toBeNull();
     });
 });

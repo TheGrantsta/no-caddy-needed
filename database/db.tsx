@@ -63,7 +63,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
         CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0);
-        CREATE TABLE IF NOT EXISTS Games (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Header TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsActive INTEGER NOT NULL DEFAULT 1);
+        CREATE TABLE IF NOT EXISTS Games (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Header TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsDeleted INTEGER NOT NULL DEFAULT 0);
     `);
 
     const migrations: TableAmendment[] = [
@@ -101,6 +101,11 @@ export const initialize = async () => {
             columnsToAdd: ['DrillId INTEGER'],
             columnsToRemove: [],
         },
+        {
+            table: 'Games',
+            columnsToAdd: ['IsDeleted INTEGER NOT NULL DEFAULT 0'],
+            columnsToRemove: ['IsActive'],
+        },
     ];
 
     for (const migration of migrations) {
@@ -120,9 +125,9 @@ export const initialize = async () => {
     if (gameCount.length > 0 && gameCount[0].count === 0) {
         const escape = (s: string) => s.replace(/'/g, "''");
         const values = gameSeedData.map(g =>
-            `('${escape(g.category)}', '${escape(g.header)}', '${escape(g.objective)}', '${escape(g.setUp)}', '${escape(g.howToPlay)}', 1)`
+            `('${escape(g.category)}', '${escape(g.header)}', '${escape(g.objective)}', '${escape(g.setUp)}', '${escape(g.howToPlay)}')`
         ).join(', ');
-        await db.execAsync(`INSERT INTO Games (Category, Header, Objective, SetUp, HowToPlay, IsActive) VALUES ${values};`);
+        await db.execAsync(`INSERT INTO Games (Category, Header, Objective, SetUp, HowToPlay) VALUES ${values};`);
     }
 };
 
@@ -578,7 +583,7 @@ export const saveSettings = async (theme: string, notificationsEnabled: number, 
 export const getGamesByCategory = (category: string) => {
     const db = SQLite.openDatabaseSync(dbName);
     return db.getAllSync(
-        'SELECT * FROM Games WHERE Category = ? ORDER BY IsActive DESC, Header ASC;',
+        'SELECT * FROM Games WHERE Category = ? AND IsDeleted = 0 ORDER BY Header ASC;',
         [category]
     );
 };
@@ -604,17 +609,38 @@ export const insertGame = async (category: string, header: string, objective: st
     return success;
 };
 
-export const updateGameIsActive = async (id: number, isActive: boolean): Promise<boolean> => {
+export const restoreGame = async (id: number): Promise<boolean> => {
     let success = true;
     try {
         const db = await SQLite.openDatabaseAsync(dbName);
 
         const statement = await db.prepareAsync(
-            'UPDATE Games SET IsActive = $IsActive WHERE Id = $Id;'
+            'UPDATE Games SET IsDeleted = $IsDeleted WHERE Id = $Id;'
         );
 
         try {
-            await statement.executeAsync({ $IsActive: isActive ? 1 : 0, $Id: id });
+            await statement.executeAsync({ $IsDeleted: 0, $Id: id });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+
+    return success;
+};
+
+export const softDeleteGame = async (id: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        const statement = await db.prepareAsync(
+            'UPDATE Games SET IsDeleted = $IsDeleted WHERE Id = $Id;'
+        );
+
+        try {
+            await statement.executeAsync({ $IsDeleted: 1, $Id: id });
         } finally {
             await statement.finalizeAsync();
         }

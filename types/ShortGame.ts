@@ -17,7 +17,6 @@ export type GameData = {
     objective: string;
     setup: string;
     howToPlay: string;
-    isActive?: boolean;
 };
 
 export type ShortGameCategory = 'putting' | 'chipping' | 'pitching' | 'bunker';

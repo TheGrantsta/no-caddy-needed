@@ -1,15 +1,17 @@
-import { getGamesByCategoryService, insertGameService, toggleGameIsActiveService } from '../../service/DbService';
-import { getGamesByCategory, insertGame, updateGameIsActive } from '../../database/db';
+import { getGamesByCategoryService, insertGameService, deleteGameService, restoreGameService } from '../../service/DbService';
+import { getGamesByCategory, insertGame, softDeleteGame, restoreGame } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
     getGamesByCategory: jest.fn(),
     insertGame: jest.fn(),
-    updateGameIsActive: jest.fn(),
+    softDeleteGame: jest.fn(),
+    restoreGame: jest.fn(),
 }));
 
 const mockGetGamesByCategory = getGamesByCategory as jest.Mock;
 const mockInsertGame = insertGame as jest.Mock;
-const mockUpdateGameIsActive = updateGameIsActive as jest.Mock;
+const mockSoftDeleteGame = softDeleteGame as jest.Mock;
+const mockRestoreGame = restoreGame as jest.Mock;
 
 describe('getGamesByCategoryService', () => {
     beforeEach(() => {
@@ -26,7 +28,7 @@ describe('getGamesByCategoryService', () => {
 
     it('mapsRowFieldsToGameData', () => {
         mockGetGamesByCategory.mockReturnValue([
-            { Id: 1, Category: 'putting', Header: 'Around the world!', Objective: 'Obj', SetUp: 'Setup', HowToPlay: 'Play', IsActive: 1 },
+            { Id: 1, Category: 'putting', Header: 'Around the world!', Objective: 'Obj', SetUp: 'Setup', HowToPlay: 'Play' },
         ]);
 
         const result = getGamesByCategoryService('putting');
@@ -38,26 +40,6 @@ describe('getGamesByCategoryService', () => {
             setup: 'Setup',
             howToPlay: 'Play',
         });
-    });
-
-    it('mapsIsActive0ToFalse', () => {
-        mockGetGamesByCategory.mockReturnValue([
-            { Id: 1, Category: 'putting', Header: 'Game', Objective: 'Obj', SetUp: 'Setup', HowToPlay: 'Play', IsActive: 0 },
-        ]);
-
-        const result = getGamesByCategoryService('putting');
-
-        expect(result[0].isActive).toBe(false);
-    });
-
-    it('mapsIsActive1ToTrue', () => {
-        mockGetGamesByCategory.mockReturnValue([
-            { Id: 1, Category: 'putting', Header: 'Game', Objective: 'Obj', SetUp: 'Setup', HowToPlay: 'Play', IsActive: 1 },
-        ]);
-
-        const result = getGamesByCategoryService('putting');
-
-        expect(result[0].isActive).toBe(true);
     });
 });
 
@@ -83,23 +65,45 @@ describe('insertGameService', () => {
     });
 });
 
-describe('toggleGameIsActiveService', () => {
+describe('deleteGameService', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    it('delegatesToUpdateGameIsActive', async () => {
-        mockUpdateGameIsActive.mockResolvedValue(true);
+    it('delegatesToSoftDeleteGame', async () => {
+        mockSoftDeleteGame.mockResolvedValue(true);
 
-        await toggleGameIsActiveService(3, false);
+        await deleteGameService(3);
 
-        expect(mockUpdateGameIsActive).toHaveBeenCalledWith(3, false);
+        expect(mockSoftDeleteGame).toHaveBeenCalledWith(3);
     });
 
     it('returnsTrueOnSuccess', async () => {
-        mockUpdateGameIsActive.mockResolvedValue(true);
+        mockSoftDeleteGame.mockResolvedValue(true);
 
-        const result = await toggleGameIsActiveService(3, false);
+        const result = await deleteGameService(3);
+
+        expect(result).toBe(true);
+    });
+});
+
+describe('restoreGameService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('delegatesToRestoreGame', async () => {
+        mockRestoreGame.mockResolvedValue(true);
+
+        await restoreGameService(3);
+
+        expect(mockRestoreGame).toHaveBeenCalledWith(3);
+    });
+
+    it('returnsTrueOnSuccess', async () => {
+        mockRestoreGame.mockResolvedValue(true);
+
+        const result = await restoreGameService(3);
 
         expect(result).toBe(true);
     });

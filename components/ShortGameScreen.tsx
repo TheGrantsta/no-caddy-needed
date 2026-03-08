@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService, getGamesByCategoryService, toggleGameIsActiveService } from "@/service/DbService";
+import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService, getGamesByCategoryService, deleteGameService, restoreGameService } from "@/service/DbService";
 import SubMenu from "@/components/SubMenu";
 import Drill from "@/components/Drill";
 import Game from "@/components/Game";
@@ -10,8 +10,10 @@ import AddGameForm from "@/components/AddGameForm";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
 import { useOrientation } from "@/hooks/useOrientation";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAppToast } from "@/hooks/useAppToast";
 import { ShortGameConfig, DrillData, GameData } from "@/types/ShortGame";
+import fontSizes from "@/assets/font-sizes";
 
 type Props = {
     config: ShortGameConfig;
@@ -22,6 +24,7 @@ const ShortGameScreen = ({ config }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
+    const { bottom: bottomInset } = useSafeAreaInsets();
     const { showResult } = useAppToast();
     const [refreshing, setRefreshing] = useState(false);
     const [section, setSection] = useState(`${category}-drills`);
@@ -31,12 +34,21 @@ const ShortGameScreen = ({ config }: Props) => {
     const [games, setGames] = useState<GameData[]>([]);
     const [showAddDrillForm, setShowAddDrillForm] = useState(false);
     const [showAddGameForm, setShowAddGameForm] = useState(false);
+    const [lastDeletedGameId, setLastDeletedGameId] = useState<number | null>(null);
     const flatListRef = useRef(null);
 
     useEffect(() => {
         setDrills(getDrillsByCategoryService(category));
         setGames(getGamesByCategoryService(category));
     }, [category]);
+
+    useEffect(() => {
+        if (lastDeletedGameId === null) return;
+        const timer = setTimeout(() => {
+            setLastDeletedGameId(null);
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, [lastDeletedGameId]);
 
     const { width } = Dimensions.get('window');
 
@@ -77,10 +89,10 @@ const ShortGameScreen = ({ config }: Props) => {
                         objective={item.objective}
                         setUp={item.setup}
                         howToPlay={item.howToPlay}
-                        isActive={item.isActive}
-                        onToggleActive={(newIsActive) => {
+                        onDelete={() => {
                             if (item.id !== undefined) {
-                                toggleGameIsActiveService(item.id, newIsActive).then(() => {
+                                deleteGameService(item.id).then(() => {
+                                    setLastDeletedGameId(item.id!);
                                     setGames(getGamesByCategoryService(category));
                                 });
                             }
@@ -137,6 +149,23 @@ const ShortGameScreen = ({ config }: Props) => {
                         Release to update
                     </Text>
                 </View>
+            )}
+
+            {lastDeletedGameId !== null && (
+                <TouchableOpacity
+                    testID='undo-game-delete'
+                    style={[{
+                        backgroundColor: colours.yellow, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
+                        borderColor: colours.errorText, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
+                    }]}
+                    onPress={() => {
+                        restoreGameService(lastDeletedGameId).then(() => {
+                            setLastDeletedGameId(null);
+                            setGames(getGamesByCategoryService(category));
+                        });
+                    }}>
+                    <Text style={[styles.updateText, { color: colours.background, fontSize: fontSizes.normal, fontWeight: 'bold' }]}>Undo delete</Text>
+                </TouchableOpacity>
             )}
 
             <ScrollView testID='main-scroll-view' style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
@@ -239,30 +268,38 @@ const ShortGameScreen = ({ config }: Props) => {
                                     />
                                 ) : (
                                     <>
-                                        <View style={styles.horizontalScrollContainer}>
-                                            <FlatList
-                                                ref={flatListRef}
-                                                data={games}
-                                                horizontal
-                                                pagingEnabled
-                                                showsHorizontalScrollIndicator={false}
-                                                onScroll={handleGameScroll}
-                                                renderItem={renderGameItem}
-                                                keyExtractor={(_, index) => index.toString()}
-                                            />
-                                        </View>
+                                        {games.length === 0 ? (
+                                            <Text style={[styles.normalText, { margin: 10 }]}>
+                                                No games yet — add your own below!
+                                            </Text>
+                                        ) : (
+                                            <>
+                                                <View style={styles.horizontalScrollContainer}>
+                                                    <FlatList
+                                                        ref={flatListRef}
+                                                        data={games}
+                                                        horizontal
+                                                        pagingEnabled
+                                                        showsHorizontalScrollIndicator={false}
+                                                        onScroll={handleGameScroll}
+                                                        renderItem={renderGameItem}
+                                                        keyExtractor={(_, index) => index.toString()}
+                                                    />
+                                                </View>
 
-                                        <View style={styles.scrollIndicatorContainer}>
-                                            {games.map((_, index) => (
-                                                <View
-                                                    key={index}
-                                                    style={[
-                                                        styles.scrollIndicatorDot,
-                                                        gameActiveIndex === index && styles.scrollActiveDot,
-                                                    ]}
-                                                />
-                                            ))}
-                                        </View>
+                                                <View style={styles.scrollIndicatorContainer}>
+                                                    {games.map((_, index) => (
+                                                        <View
+                                                            key={index}
+                                                            style={[
+                                                                styles.scrollIndicatorDot,
+                                                                gameActiveIndex === index && styles.scrollActiveDot,
+                                                            ]}
+                                                        />
+                                                    ))}
+                                                </View>
+                                            </>
+                                        )}
                                         <View>
                                             <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
                                                 {gamesFooter}

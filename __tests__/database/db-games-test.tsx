@@ -1,4 +1,4 @@
-import { getGamesByCategory, insertGame, updateGameIsActive } from '../../database/db';
+import { getGamesByCategory, insertGame, softDeleteGame, restoreGame } from '../../database/db';
 import * as SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
@@ -24,7 +24,7 @@ describe('getGamesByCategory', () => {
         jest.clearAllMocks();
     });
 
-    it('queriesGamestableFilteredByCategory', () => {
+    it('queriesGamesTableFilteredByCategoryAndNotDeleted', () => {
         mockGetAllSync.mockReturnValue([]);
 
         getGamesByCategory('putting');
@@ -32,6 +32,7 @@ describe('getGamesByCategory', () => {
         const [sql] = mockGetAllSync.mock.calls[0];
         expect(sql).toContain('Games');
         expect(sql).toContain('Category');
+        expect(sql).toContain('IsDeleted');
     });
 
     it('passesCategoryAsAParameter', () => {
@@ -43,20 +44,19 @@ describe('getGamesByCategory', () => {
         expect(params).toContain('chipping');
     });
 
-    it('ordersResultsByIsActiveDESCThenHeaderASC', () => {
+    it('ordersResultsByHeaderASC', () => {
         mockGetAllSync.mockReturnValue([]);
 
         getGamesByCategory('putting');
 
         const [sql] = mockGetAllSync.mock.calls[0];
-        expect(sql).toContain('IsActive DESC');
         expect(sql).toContain('Header ASC');
     });
 
     it('returnsMatchingRows', () => {
         const rows = [
-            { Id: 1, Category: 'putting', Header: 'Around the world!', IsActive: 1 },
-            { Id: 2, Category: 'putting', Header: 'Par 18!', IsActive: 0 },
+            { Id: 1, Category: 'putting', Header: 'Around the world!', IsDeleted: 0 },
+            { Id: 2, Category: 'putting', Header: 'Par 18!', IsDeleted: 0 },
         ];
         mockGetAllSync.mockReturnValue(rows);
 
@@ -93,7 +93,6 @@ describe('insertGame', () => {
         expect(sql).toContain('Objective');
         expect(sql).toContain('SetUp');
         expect(sql).toContain('HowToPlay');
-        expect(sql).toContain('IsActive');
     });
 
     it('bindsAllValuesInExecuteAsync', async () => {
@@ -105,7 +104,6 @@ describe('insertGame', () => {
             $Objective: 'Obj',
             $SetUp: 'Setup',
             $HowToPlay: 'HowToPlay',
-            $IsActive: 1,
         }));
     });
 
@@ -124,7 +122,7 @@ describe('insertGame', () => {
     });
 });
 
-describe('updateGameIsActive', () => {
+describe('softDeleteGame', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockPrepareAsync.mockResolvedValue({
@@ -134,32 +132,32 @@ describe('updateGameIsActive', () => {
         mockStatementExecuteAsync.mockResolvedValue(undefined);
     });
 
-    it('updatesIsActiveOnGamesTable', async () => {
-        await updateGameIsActive(3, false);
+    it('updatesIsDeletedOnGamesTable', async () => {
+        await softDeleteGame(3);
 
         const sql = mockPrepareAsync.mock.calls[0][0];
         expect(sql).toContain('UPDATE Games');
-        expect(sql).toContain('IsActive');
+        expect(sql).toContain('IsDeleted');
     });
 
-    it('bindsIdAndIsActiveInExecuteAsync', async () => {
-        await updateGameIsActive(3, false);
+    it('bindsIdInExecuteAsync', async () => {
+        await softDeleteGame(3);
 
         expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
-            expect.objectContaining({ $Id: 3, $IsActive: 0 })
+            expect.objectContaining({ $Id: 3 })
         );
     });
 
-    it('bindsIsActiveAs1WhenSettingActive', async () => {
-        await updateGameIsActive(5, true);
+    it('setsIsDeletedTo1', async () => {
+        await softDeleteGame(5);
 
         expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
-            expect.objectContaining({ $IsActive: 1 })
+            expect.objectContaining({ $IsDeleted: 1 })
         );
     });
 
     it('returnsTrueOnSuccess', async () => {
-        const result = await updateGameIsActive(1, true);
+        const result = await softDeleteGame(1);
 
         expect(result).toBe(true);
     });
@@ -167,7 +165,56 @@ describe('updateGameIsActive', () => {
     it('returnsFalseOnError', async () => {
         mockStatementExecuteAsync.mockRejectedValue(new Error('DB error'));
 
-        const result = await updateGameIsActive(1, true);
+        const result = await softDeleteGame(1);
+
+        expect(result).toBe(false);
+    });
+});
+
+describe('restoreGame', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockPrepareAsync.mockResolvedValue({
+            executeAsync: mockStatementExecuteAsync,
+            finalizeAsync: mockStatementFinalizeAsync,
+        });
+        mockStatementExecuteAsync.mockResolvedValue(undefined);
+    });
+
+    it('updatesIsDeletedToZeroOnGamesTable', async () => {
+        await restoreGame(3);
+
+        const sql = mockPrepareAsync.mock.calls[0][0];
+        expect(sql).toContain('UPDATE Games');
+        expect(sql).toContain('IsDeleted');
+    });
+
+    it('bindsIdInExecuteAsync', async () => {
+        await restoreGame(3);
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $Id: 3 })
+        );
+    });
+
+    it('setsIsDeletedTo0', async () => {
+        await restoreGame(5);
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $IsDeleted: 0 })
+        );
+    });
+
+    it('returnsTrueOnSuccess', async () => {
+        const result = await restoreGame(1);
+
+        expect(result).toBe(true);
+    });
+
+    it('returnsFalseOnError', async () => {
+        mockStatementExecuteAsync.mockRejectedValue(new Error('DB error'));
+
+        const result = await restoreGame(1);
 
         expect(result).toBe(false);
     });

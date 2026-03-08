@@ -36,7 +36,8 @@ import {
     saveSettings,
     getGamesByCategory,
     insertGame,
-    updateGameIsActive,
+    softDeleteGame,
+    restoreGame,
 } from '../database/db';
 
 export type WedgeChartClub = {
@@ -134,7 +135,6 @@ export const getGamesByCategoryService = (category: string): GameData[] => {
         Objective: string;
         SetUp: string;
         HowToPlay: string;
-        IsActive: number;
     }[];
 
     return rows.map(row => ({
@@ -143,7 +143,6 @@ export const getGamesByCategoryService = (category: string): GameData[] => {
         objective: row.Objective,
         setup: row.SetUp,
         howToPlay: row.HowToPlay,
-        isActive: row.IsActive === 1,
     }));
 };
 
@@ -151,8 +150,12 @@ export const insertGameService = (category: string, header: string, objective: s
     return insertGame(category, header, objective, setUp, howToPlay);
 };
 
-export const toggleGameIsActiveService = (id: number, isActive: boolean): Promise<boolean> => {
-    return updateGameIsActive(id, isActive);
+export const deleteGameService = (id: number): Promise<boolean> => {
+    return softDeleteGame(id);
+};
+
+export const restoreGameService = (id: number): Promise<boolean> => {
+    return restoreGame(id);
 };
 
 export const getAllDrillHistoryService = () => {

@@ -34,6 +34,10 @@ jest.mock('react-native-toast-notifications', () => ({
     }),
 }));
 
+jest.mock('react-native-safe-area-context', () => ({
+    useSafeAreaInsets: () => ({ bottom: 0 }),
+}));
+
 jest.mock('@/service/DbService', () => ({
     insertDrillResultService: jest.fn().mockResolvedValue(true),
     getDrillsByCategoryService: jest.fn().mockReturnValue([
@@ -43,12 +47,12 @@ jest.mock('@/service/DbService', () => ({
     ]),
     toggleDrillIsActiveService: jest.fn().mockResolvedValue(true),
     getGamesByCategoryService: jest.fn().mockReturnValue([
-        { id: 7, header: 'Three club!', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
-        { id: 8, header: 'Target challenge!', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
-        { id: 9, header: '5-ball game!', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
+        { id: 7, header: 'Three club!', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 8, header: 'Target challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 9, header: '5-ball game!', objective: 'o', setup: 's', howToPlay: 'h' },
     ]),
     insertGameService: jest.fn().mockResolvedValue(true),
-    toggleGameIsActiveService: jest.fn().mockResolvedValue(true),
+    deleteGameService: jest.fn().mockResolvedValue(true),
 }));
 
 const mockInsertDrillResultService = insertDrillResultService as jest.Mock;

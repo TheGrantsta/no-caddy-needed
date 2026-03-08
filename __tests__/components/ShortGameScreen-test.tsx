@@ -2,7 +2,7 @@ import React, { act } from 'react';
 import { FlatList } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import ShortGameScreen from '../../components/ShortGameScreen';
-import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService, getGamesByCategoryService, toggleGameIsActiveService } from '../../service/DbService';
+import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService, getGamesByCategoryService, deleteGameService, restoreGameService } from '../../service/DbService';
 import type { ShortGameConfig } from '../../types/ShortGame';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -15,6 +15,10 @@ jest.mock('../../hooks/useStyles', () => ({
 
 jest.mock('../../hooks/useOrientation', () => ({
     useOrientation: () => ({ landscapePadding: {} }),
+}));
+
+jest.mock('react-native-safe-area-context', () => ({
+    useSafeAreaInsets: () => ({ bottom: 0 }),
 }));
 
 jest.mock('react-native-toast-notifications', () => ({
@@ -37,11 +41,12 @@ jest.mock('../../service/DbService', () => ({
     ]),
     toggleDrillIsActiveService: jest.fn().mockResolvedValue(true),
     getGamesByCategoryService: jest.fn().mockReturnValue([
-        { id: 1, header: 'Up & down!', objective: 'Get up and down', setup: 'Drop a ball', howToPlay: 'Chip and putt', isActive: true },
-        { id: 2, header: 'Par 18!', objective: 'Score under 18', setup: 'Play 9 holes', howToPlay: 'Chip and putt each hole', isActive: true },
+        { id: 1, header: 'Up & down!', objective: 'Get up and down', setup: 'Drop a ball', howToPlay: 'Chip and putt' },
+        { id: 2, header: 'Par 18!', objective: 'Score under 18', setup: 'Play 9 holes', howToPlay: 'Chip and putt each hole' },
     ]),
     insertGameService: jest.fn().mockResolvedValue(true),
-    toggleGameIsActiveService: jest.fn().mockResolvedValue(true),
+    deleteGameService: jest.fn().mockResolvedValue(true),
+    restoreGameService: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock('../../components/AddDrillForm', () => {
@@ -78,7 +83,8 @@ const mockInsertDrillResultService = insertDrillResultService as jest.Mock;
 const mockGetDrillsByCategoryService = getDrillsByCategoryService as jest.Mock;
 const mockToggleDrillIsActiveService = toggleDrillIsActiveService as jest.Mock;
 const mockGetGamesByCategoryService = getGamesByCategoryService as jest.Mock;
-const mockToggleGameIsActiveService = toggleGameIsActiveService as jest.Mock;
+const mockDeleteGameService = deleteGameService as jest.Mock;
+const mockRestoreGameService = restoreGameService as jest.Mock;
 
 const config: ShortGameConfig = {
     category: 'chipping',
@@ -365,16 +371,78 @@ describe('ShortGameScreen', () => {
         expect(mockGetGamesByCategoryService).toHaveBeenCalledWith('chipping');
     });
 
-    it('callsToggleGameServiceWhenGameToggled', async () => {
+    it('callsDeleteGameServiceWhenGameDeleted', async () => {
         const { getByTestId, getAllByTestId } = render(<ShortGameScreen config={config} />);
         fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
-        const toggles = getAllByTestId('game-active-toggle');
+        fireEvent.press(getAllByTestId('delete-game-button')[0]);
 
         await act(async () => {
-            fireEvent.press(toggles[0]);
+            fireEvent.press(getAllByTestId('confirm-game-delete')[0]);
         });
 
-        expect(mockToggleGameIsActiveService).toHaveBeenCalledWith(1, false);
+        expect(mockDeleteGameService).toHaveBeenCalledWith(1);
+    });
+
+    it('showsUndoOptionAfterGameDeleted', async () => {
+        const { getByTestId, getAllByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        fireEvent.press(getAllByTestId('delete-game-button')[0]);
+
+        await act(async () => {
+            fireEvent.press(getAllByTestId('confirm-game-delete')[0]);
+        });
+
+        expect(getByTestId('undo-game-delete')).toBeTruthy();
+    });
+
+    it('callsRestoreGameServiceWhenUndoPressed', async () => {
+        const { getByTestId, getAllByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        fireEvent.press(getAllByTestId('delete-game-button')[0]);
+
+        await act(async () => {
+            fireEvent.press(getAllByTestId('confirm-game-delete')[0]);
+        });
+
+        await act(async () => {
+            fireEvent.press(getByTestId('undo-game-delete'));
+        });
+
+        expect(mockRestoreGameService).toHaveBeenCalledWith(1);
+    });
+
+    it('hidesUndoAfterRestored', async () => {
+        const { getByTestId, getAllByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        fireEvent.press(getAllByTestId('delete-game-button')[0]);
+
+        await act(async () => {
+            fireEvent.press(getAllByTestId('confirm-game-delete')[0]);
+        });
+
+        await act(async () => {
+            fireEvent.press(getByTestId('undo-game-delete'));
+        });
+
+        expect(queryByTestId('undo-game-delete')).toBeNull();
+    });
+
+    it('reloadsGamesAfterUndo', async () => {
+        const { getByTestId, getAllByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        fireEvent.press(getAllByTestId('delete-game-button')[0]);
+
+        await act(async () => {
+            fireEvent.press(getAllByTestId('confirm-game-delete')[0]);
+        });
+
+        mockGetGamesByCategoryService.mockClear();
+
+        await act(async () => {
+            fireEvent.press(getByTestId('undo-game-delete'));
+        });
+
+        expect(mockGetGamesByCategoryService).toHaveBeenCalledWith('chipping');
     });
 
     it('reloadsGamesFromServiceOnRefresh', () => {
@@ -395,5 +463,28 @@ describe('ShortGameScreen', () => {
         const gameScrolls = getAllByTestId('game-item-scroll');
         expect(gameScrolls.length).toBeGreaterThan(0);
         expect(gameScrolls[0].props.nestedScrollEnabled).toBe(true);
+    });
+
+    it('showsEmptyStateWhenNoGames', () => {
+        mockGetGamesByCategoryService.mockReturnValueOnce([]);
+        const { getByTestId, getByText } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        expect(getByText(/No games yet/)).toBeTruthy();
+    });
+
+    it('undoOverlayAutoClosesAfterFiveSeconds', async () => {
+        const { getByTestId, getAllByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getByTestId('chipping-sub-menu-chipping-games'));
+        fireEvent.press(getAllByTestId('delete-game-button')[0]);
+
+        await act(async () => {
+            fireEvent.press(getAllByTestId('confirm-game-delete')[0]);
+        });
+
+        act(() => {
+            jest.advanceTimersByTime(5000);
+        });
+
+        expect(queryByTestId('undo-game-delete')).toBeNull();
     });
 });

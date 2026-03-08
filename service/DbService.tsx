@@ -7,8 +7,9 @@ import {
     insertDrillResult,
     getAllDrillHistory,
     getDrillsByCategory,
-    updateDrillIsActive,
     insertDrill,
+    softDeleteDrill,
+    restoreDrill,
     insertDeadlySinsRound,
     getAllDeadlySinsRounds,
     getDeadlySinsRoundByRoundId,
@@ -104,7 +105,6 @@ export const getDrillsByCategoryService = (category: string): DrillData[] => {
         Objective: string;
         SetUp: string;
         HowToPlay: string;
-        IsActive: number;
     }[];
 
     return rows.map(row => ({
@@ -115,7 +115,6 @@ export const getDrillsByCategoryService = (category: string): DrillData[] => {
         objective: row.Objective,
         setup: row.SetUp,
         howToPlay: row.HowToPlay,
-        isActive: row.IsActive === 1,
     }));
 };
 
@@ -123,8 +122,12 @@ export const insertDrillService = (category: string, label: string, iconName: st
     return insertDrill(category, label, iconName, target, objective, setUp, howToPlay);
 };
 
-export const toggleDrillIsActiveService = (id: number, isActive: boolean): Promise<boolean> => {
-    return updateDrillIsActive(id, isActive);
+export const deleteDrillService = (id: number): Promise<boolean> => {
+    return softDeleteDrill(id);
+};
+
+export const restoreDrillService = (id: number): Promise<boolean> => {
+    return restoreDrill(id);
 };
 
 export const getGamesByCategoryService = (category: string): GameData[] => {

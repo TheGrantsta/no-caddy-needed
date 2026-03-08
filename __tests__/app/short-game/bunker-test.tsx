@@ -40,11 +40,10 @@ jest.mock('react-native-safe-area-context', () => ({
 jest.mock('@/service/DbService', () => ({
     insertDrillResultService: jest.fn().mockResolvedValue(true),
     getDrillsByCategoryService: jest.fn().mockReturnValue([
-        { id: 10, label: 'Line', iconName: 'linear-scale', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
-        { id: 11, label: 'Dollar bill', iconName: 'money', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
-        { id: 12, label: 'No ball', iconName: 'sports-golf', target: '10 / 12', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
+        { id: 10, label: 'Line', iconName: 'linear-scale', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 11, label: 'Dollar bill', iconName: 'money', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 12, label: 'No ball', iconName: 'sports-golf', target: '10 / 12', objective: 'o', setup: 's', howToPlay: 'h' },
     ]),
-    toggleDrillIsActiveService: jest.fn().mockResolvedValue(true),
     getGamesByCategoryService: jest.fn().mockReturnValue([
         { id: 10, header: 'Up and down challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
         { id: 11, header: 'Worst lie challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
@@ -52,6 +51,9 @@ jest.mock('@/service/DbService', () => ({
     ]),
     insertGameService: jest.fn().mockResolvedValue(true),
     deleteGameService: jest.fn().mockResolvedValue(true),
+    restoreGameService: jest.fn().mockResolvedValue(true),
+    deleteDrillService: jest.fn().mockResolvedValue(true),
+    restoreDrillService: jest.fn().mockResolvedValue(true),
 }));
 
 jest.useFakeTimers();

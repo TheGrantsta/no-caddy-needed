@@ -518,7 +518,7 @@ describe('DrillHistory and Drills table schema', () => {
         expect(sql).toContain('Category');
     });
 
-    it('new Drills DDL includes Label, IconName, Target, Objective, SetUp, HowToPlay, IsActive', async () => {
+    it('new Drills DDL includes Label, IconName, Target, Objective, SetUp, HowToPlay, IsDeleted', async () => {
         await initialize();
 
         const sql = mockExecAsync.mock.calls[0][0];
@@ -529,14 +529,14 @@ describe('DrillHistory and Drills table schema', () => {
         expect(drillsBlock).toContain('Objective');
         expect(drillsBlock).toContain('SetUp');
         expect(drillsBlock).toContain('HowToPlay');
-        expect(drillsBlock).toContain('IsActive');
+        expect(drillsBlock).toContain('IsDeleted');
     });
 
-    it('IsActive defaults to 1 in new Drills DDL', async () => {
+    it('IsDeleted defaults to 0 in new Drills DDL', async () => {
         await initialize();
 
         const sql = mockExecAsync.mock.calls[0][0];
-        expect(sql).toContain('IsActive INTEGER NOT NULL DEFAULT 1');
+        expect(sql).toContain('IsDeleted INTEGER NOT NULL DEFAULT 0');
     });
 });
 
@@ -826,7 +826,7 @@ describe('Drills table seeding', () => {
         expect((sql.match(/'bunker'/g) || []).length).toBe(3);
     });
 
-    it('seeds all drills with IsActive set to 1', async () => {
+    it('seeds all 12 drills (3 per category)', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'SELECT COUNT(*) as count FROM Drills') return [{ count: 0 }];
             return baseGetAllSync(sql);

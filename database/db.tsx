@@ -55,7 +55,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS WedgeChartDistanceNames (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, SortOrder INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS WedgeChartEntries (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL, DistanceName TEXT NOT NULL, Distance INTEGER NOT NULL, ClubSortOrder INTEGER NOT NULL, DistanceSortOrder INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS DrillHistory (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, Result BOOLEAN NOT NULL, DrillId INTEGER, Created_At TEXT NOT NULL);
-        CREATE TABLE IF NOT EXISTS Drills (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Label TEXT NOT NULL, IconName TEXT NOT NULL, Target TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsActive INTEGER NOT NULL DEFAULT 1);
+        CREATE TABLE IF NOT EXISTS Drills (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Label TEXT NOT NULL, IconName TEXT NOT NULL, Target TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsDeleted INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS DeadlySinsRounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, ThreePutts INTEGER NOT NULL DEFAULT 0, DoubleBogeys INTEGER NOT NULL DEFAULT 0, BogeysPar5 INTEGER NOT NULL DEFAULT 0, BogeysInside9Iron INTEGER NOT NULL DEFAULT 0, DoubleChips INTEGER NOT NULL DEFAULT 0, TroubleOffTee INTEGER NOT NULL DEFAULT 0, Penalties INTEGER NOT NULL DEFAULT 0, Total INTEGER NOT NULL DEFAULT 0, RoundId INTEGER, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, CoursePar INTEGER NOT NULL DEFAULT 0, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, CourseName TEXT, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundHoles (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, ScoreRelativeToPar INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
@@ -106,6 +106,11 @@ export const initialize = async () => {
             columnsToAdd: ['IsDeleted INTEGER NOT NULL DEFAULT 0'],
             columnsToRemove: ['IsActive'],
         },
+        {
+            table: 'Drills',
+            columnsToAdd: ['IsDeleted INTEGER NOT NULL DEFAULT 0'],
+            columnsToRemove: ['IsActive'],
+        },
     ];
 
     for (const migration of migrations) {
@@ -116,9 +121,9 @@ export const initialize = async () => {
     if (drillCount.length > 0 && drillCount[0].count === 0) {
         const escape = (s: string) => s.replace(/'/g, "''");
         const values = drillSeedData.map(d =>
-            `('${escape(d.category)}', '${escape(d.label)}', '${escape(d.iconName)}', '${escape(d.target)}', '${escape(d.objective)}', '${escape(d.setUp)}', '${escape(d.howToPlay)}', 1)`
+            `('${escape(d.category)}', '${escape(d.label)}', '${escape(d.iconName)}', '${escape(d.target)}', '${escape(d.objective)}', '${escape(d.setUp)}', '${escape(d.howToPlay)}')`
         ).join(', ');
-        await db.execAsync(`INSERT INTO Drills (Category, Label, IconName, Target, Objective, SetUp, HowToPlay, IsActive) VALUES ${values};`);
+        await db.execAsync(`INSERT INTO Drills (Category, Label, IconName, Target, Objective, SetUp, HowToPlay) VALUES ${values};`);
     }
 
     const gameCount = syncDb.getAllSync('SELECT COUNT(*) as count FROM Games') as { count: number }[];
@@ -244,22 +249,22 @@ export const getAllDrillHistory = () => {
 export const getDrillsByCategory = (category: string) => {
     const db = SQLite.openDatabaseSync(dbName);
     return db.getAllSync(
-        'SELECT * FROM Drills WHERE Category = ? ORDER BY IsActive DESC, Label ASC;',
+        'SELECT * FROM Drills WHERE Category = ? AND IsDeleted = 0 ORDER BY Label ASC;',
         [category]
     );
 };
 
-export const updateDrillIsActive = async (id: number, isActive: boolean): Promise<boolean> => {
+export const insertDrill = async (category: string, label: string, iconName: string, target: string, objective: string, setUp: string, howToPlay: string): Promise<boolean> => {
     let success = true;
     try {
         const db = await SQLite.openDatabaseAsync(dbName);
 
         const statement = await db.prepareAsync(
-            'UPDATE Drills SET IsActive = $IsActive WHERE Id = $Id;'
+            'INSERT INTO Drills (Category, Label, IconName, Target, Objective, SetUp, HowToPlay) VALUES ($Category, $Label, $IconName, $Target, $Objective, $SetUp, $HowToPlay);'
         );
 
         try {
-            await statement.executeAsync({ $IsActive: isActive ? 1 : 0, $Id: id });
+            await statement.executeAsync({ $Category: category, $Label: label, $IconName: iconName, $Target: target, $Objective: objective, $SetUp: setUp, $HowToPlay: howToPlay });
         } finally {
             await statement.finalizeAsync();
         }
@@ -270,17 +275,38 @@ export const updateDrillIsActive = async (id: number, isActive: boolean): Promis
     return success;
 };
 
-export const insertDrill = async (category: string, label: string, iconName: string, target: string, objective: string, setUp: string, howToPlay: string): Promise<boolean> => {
+export const softDeleteDrill = async (id: number): Promise<boolean> => {
     let success = true;
     try {
         const db = await SQLite.openDatabaseAsync(dbName);
 
         const statement = await db.prepareAsync(
-            'INSERT INTO Drills (Category, Label, IconName, Target, Objective, SetUp, HowToPlay, IsActive) VALUES ($Category, $Label, $IconName, $Target, $Objective, $SetUp, $HowToPlay, $IsActive);'
+            'UPDATE Drills SET IsDeleted = $IsDeleted WHERE Id = $Id;'
         );
 
         try {
-            await statement.executeAsync({ $Category: category, $Label: label, $IconName: iconName, $Target: target, $Objective: objective, $SetUp: setUp, $HowToPlay: howToPlay, $IsActive: 1 });
+            await statement.executeAsync({ $IsDeleted: 1, $Id: id });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+
+    return success;
+};
+
+export const restoreDrill = async (id: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        const statement = await db.prepareAsync(
+            'UPDATE Drills SET IsDeleted = $IsDeleted WHERE Id = $Id;'
+        );
+
+        try {
+            await statement.executeAsync({ $IsDeleted: 0, $Id: id });
         } finally {
             await statement.finalizeAsync();
         }

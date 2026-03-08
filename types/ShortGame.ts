@@ -8,7 +8,6 @@ export type DrillData = {
     objective: string;
     setup: string;
     howToPlay: string;
-    isActive?: boolean;
 };
 
 export type GameData = {

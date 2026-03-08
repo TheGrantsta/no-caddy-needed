@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService, getGamesByCategoryService, deleteGameService, restoreGameService } from "@/service/DbService";
+import { insertDrillResultService, getDrillsByCategoryService, deleteDrillService, restoreDrillService, getGamesByCategoryService, deleteGameService, restoreGameService } from "@/service/DbService";
 import SubMenu from "@/components/SubMenu";
 import Drill from "@/components/Drill";
 import Game from "@/components/Game";
@@ -35,6 +35,7 @@ const ShortGameScreen = ({ config }: Props) => {
     const [showAddDrillForm, setShowAddDrillForm] = useState(false);
     const [showAddGameForm, setShowAddGameForm] = useState(false);
     const [lastDeletedGameId, setLastDeletedGameId] = useState<number | null>(null);
+    const [lastDeletedDrillId, setLastDeletedDrillId] = useState<number | null>(null);
     const flatListRef = useRef(null);
 
     useEffect(() => {
@@ -49,6 +50,14 @@ const ShortGameScreen = ({ config }: Props) => {
         }, 5000);
         return () => clearTimeout(timer);
     }, [lastDeletedGameId]);
+
+    useEffect(() => {
+        if (lastDeletedDrillId === null) return;
+        const timer = setTimeout(() => {
+            setLastDeletedDrillId(null);
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, [lastDeletedDrillId]);
 
     const { width } = Dimensions.get('window');
 
@@ -114,11 +123,11 @@ const ShortGameScreen = ({ config }: Props) => {
                         objective={item.objective}
                         setUp={item.setup}
                         howToPlay={item.howToPlay}
-                        isActive={item.isActive}
                         saveDrillResult={(label, result) => saveDrillResultHandle(label, result, item.id ?? null)}
-                        onToggleActive={(newIsActive) => {
+                        onDelete={() => {
                             if (item.id !== undefined) {
-                                toggleDrillIsActiveService(item.id, newIsActive).then(() => {
+                                deleteDrillService(item.id).then(() => {
+                                    setLastDeletedDrillId(item.id!);
                                     setDrills(getDrillsByCategoryService(category));
                                 });
                             }
@@ -162,6 +171,23 @@ const ShortGameScreen = ({ config }: Props) => {
                         restoreGameService(lastDeletedGameId).then(() => {
                             setLastDeletedGameId(null);
                             setGames(getGamesByCategoryService(category));
+                        });
+                    }}>
+                    <Text style={[styles.updateText, { color: colours.background, fontSize: fontSizes.normal, fontWeight: 'bold' }]}>Undo delete</Text>
+                </TouchableOpacity>
+            )}
+
+            {lastDeletedDrillId !== null && (
+                <TouchableOpacity
+                    testID='undo-drill-delete'
+                    style={[{
+                        backgroundColor: colours.yellow, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
+                        borderColor: colours.errorText, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
+                    }]}
+                    onPress={() => {
+                        restoreDrillService(lastDeletedDrillId).then(() => {
+                            setLastDeletedDrillId(null);
+                            setDrills(getDrillsByCategoryService(category));
                         });
                     }}>
                     <Text style={[styles.updateText, { color: colours.background, fontSize: fontSizes.normal, fontWeight: 'bold' }]}>Undo delete</Text>

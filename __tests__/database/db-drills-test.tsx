@@ -1,4 +1,4 @@
-import { insertDrillResult, getAllDrillHistory, getDrillsByCategory, updateDrillIsActive, insertDrill } from '../../database/db';
+import { insertDrillResult, getAllDrillHistory, getDrillsByCategory, insertDrill, softDeleteDrill, restoreDrill } from '../../database/db';
 import * as SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
@@ -144,20 +144,28 @@ describe('getDrillsByCategory', () => {
         expect(params).toContain('chipping');
     });
 
-    it('orders results by IsActive DESC then Label ASC', () => {
+    it('filters out deleted rows using IsDeleted = 0', () => {
         mockGetAllSync.mockReturnValue([]);
 
         getDrillsByCategory('putting');
 
         const [sql] = mockGetAllSync.mock.calls[0];
-        expect(sql).toContain('IsActive DESC');
+        expect(sql).toContain('IsDeleted = 0');
+    });
+
+    it('orders results by Label ASC', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        getDrillsByCategory('putting');
+
+        const [sql] = mockGetAllSync.mock.calls[0];
         expect(sql).toContain('Label ASC');
     });
 
     it('returns matching rows', () => {
         const rows = [
-            { Id: 1, Category: 'putting', Label: 'Gate', IsActive: 1 },
-            { Id: 2, Category: 'putting', Label: 'Ladder', IsActive: 0 },
+            { Id: 1, Category: 'putting', Label: 'Gate', IsDeleted: 0 },
+            { Id: 2, Category: 'putting', Label: 'Ladder', IsDeleted: 0 },
         ];
         mockGetAllSync.mockReturnValue(rows);
 
@@ -196,7 +204,6 @@ describe('insertDrill', () => {
         expect(sql).toContain('Objective');
         expect(sql).toContain('SetUp');
         expect(sql).toContain('HowToPlay');
-        expect(sql).toContain('IsActive');
     });
 
     it('binds all values in executeAsync', async () => {
@@ -210,7 +217,6 @@ describe('insertDrill', () => {
             $Objective: 'Obj',
             $SetUp: 'Setup',
             $HowToPlay: 'HowToPlay',
-            $IsActive: 1,
         }));
     });
 
@@ -229,7 +235,7 @@ describe('insertDrill', () => {
     });
 });
 
-describe('updateDrillIsActive', () => {
+describe('softDeleteDrill', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockPrepareAsync.mockResolvedValue({
@@ -239,32 +245,24 @@ describe('updateDrillIsActive', () => {
         mockStatementExecuteAsync.mockResolvedValue(undefined);
     });
 
-    it('updates IsActive on the Drills table', async () => {
-        await updateDrillIsActive(3, false);
+    it('updates IsDeleted on the Drills table', async () => {
+        await softDeleteDrill(3);
 
         const sql = mockPrepareAsync.mock.calls[0][0];
         expect(sql).toContain('UPDATE Drills');
-        expect(sql).toContain('IsActive');
+        expect(sql).toContain('IsDeleted');
     });
 
-    it('binds $Id and $IsActive in executeAsync', async () => {
-        await updateDrillIsActive(3, false);
+    it('binds $IsDeleted as 1 and $Id in executeAsync', async () => {
+        await softDeleteDrill(3);
 
         expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
-            expect.objectContaining({ $Id: 3, $IsActive: 0 })
-        );
-    });
-
-    it('binds $IsActive as 1 when setting active', async () => {
-        await updateDrillIsActive(5, true);
-
-        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
-            expect.objectContaining({ $IsActive: 1 })
+            expect.objectContaining({ $IsDeleted: 1, $Id: 3 })
         );
     });
 
     it('returns true on success', async () => {
-        const result = await updateDrillIsActive(1, true);
+        const result = await softDeleteDrill(1);
 
         expect(result).toBe(true);
     });
@@ -272,7 +270,48 @@ describe('updateDrillIsActive', () => {
     it('returns false on error', async () => {
         mockStatementExecuteAsync.mockRejectedValue(new Error('DB error'));
 
-        const result = await updateDrillIsActive(1, true);
+        const result = await softDeleteDrill(1);
+
+        expect(result).toBe(false);
+    });
+});
+
+describe('restoreDrill', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockPrepareAsync.mockResolvedValue({
+            executeAsync: mockStatementExecuteAsync,
+            finalizeAsync: mockStatementFinalizeAsync,
+        });
+        mockStatementExecuteAsync.mockResolvedValue(undefined);
+    });
+
+    it('updates IsDeleted on the Drills table', async () => {
+        await restoreDrill(5);
+
+        const sql = mockPrepareAsync.mock.calls[0][0];
+        expect(sql).toContain('UPDATE Drills');
+        expect(sql).toContain('IsDeleted');
+    });
+
+    it('binds $IsDeleted as 0 and $Id in executeAsync', async () => {
+        await restoreDrill(5);
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $IsDeleted: 0, $Id: 5 })
+        );
+    });
+
+    it('returns true on success', async () => {
+        const result = await restoreDrill(1);
+
+        expect(result).toBe(true);
+    });
+
+    it('returns false on error', async () => {
+        mockStatementExecuteAsync.mockRejectedValue(new Error('DB error'));
+
+        const result = await restoreDrill(1);
 
         expect(result).toBe(false);
     });

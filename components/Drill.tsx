@@ -14,14 +14,14 @@ type Props = {
     setUp: string;
     howToPlay: string;
     saveDrillResult: (label: string, result: boolean) => void;
-    isActive?: boolean;
-    onToggleActive?: (isActive: boolean) => void;
+    onDelete?: () => void;
 };
 
-export default function Drill({ label, iconName, target, objective, setUp, howToPlay, saveDrillResult, isActive, onToggleActive }: Props) {
+export default function Drill({ label, iconName, target, objective, setUp, howToPlay, saveDrillResult, onDelete }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
     const [isAchieved, setIsAchieved] = useState(true);
+    const [pendingDelete, setPendingDelete] = useState(false);
 
     const localStyles = useMemo(() => StyleSheet.create({
         contentText: {
@@ -76,8 +76,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     <View style={[localStyles.toggleWrapper, { paddingTop: 10 }]}>
                         <TouchableOpacity
                             testID='drill-met-toggle'
-                            style={[localStyles.toggleContainer, isAchieved && localStyles.toggleOn, !(isActive ?? true) && { opacity: 0.4 }]}
-                            disabled={!(isActive ?? true)}
+                            style={[localStyles.toggleContainer, isAchieved && localStyles.toggleOn]}
                             onPress={toggleSwitch}>
                             <View style={[localStyles.toggleCircle, isAchieved && localStyles.circleOn]} />
                         </TouchableOpacity>
@@ -88,7 +87,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     </View>
                 </View>
                 <View style={{ flex: 1 / 3, alignItems: 'center', alignSelf: 'center' }}>
-                    <TouchableOpacity testID='save-drill-result-button' style={[styles.button, !(isActive ?? true) && { opacity: 0.4 }]} disabled={!(isActive ?? true)} onPress={
+                    <TouchableOpacity testID='save-drill-result-button' style={styles.button} onPress={
                         () => {
                             saveDrillResult(label, isAchieved);
                         }}>
@@ -98,20 +97,35 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     </TouchableOpacity>
                 </View>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingTop: 8, paddingBottom: 4 }}>
-                <Text style={[styles.normalText, { paddingRight: 10 }]}>
-                    {(isActive ?? true) ? 'Active:' : 'Inactive:'}
-                </Text>
 
-                <TouchableOpacity
-                    testID='drill-active-toggle'
-                    style={[localStyles.toggleContainer, (isActive ?? true) && localStyles.toggleOn, { marginRight: 10 }]}
-                    onPress={() => onToggleActive?.(!(isActive ?? true))}>
-                    <View style={[localStyles.toggleCircle, (isActive ?? true) && localStyles.circleOn]} />
-                </TouchableOpacity>
-            </View>
             <View>
                 <Instructions objective={objective} setUp={setUp} howToPlay={howToPlay} />
+            </View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 8 }}>
+                {pendingDelete ? (
+                    <>
+                        <TouchableOpacity
+                            testID='cancel-drill-delete'
+                            style={styles.button}
+                            onPress={() => setPendingDelete(false)}>
+                            <Text style={styles.buttonText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            testID='confirm-drill-delete'
+                            style={styles.button}
+                            onPress={() => { onDelete?.(); setPendingDelete(false); }}>
+                            <Text style={styles.buttonText}>Confirm</Text>
+                        </TouchableOpacity>
+                    </>
+                ) : (
+                    <TouchableOpacity
+                        testID='delete-drill-button'
+                        style={styles.button}
+                        onPress={() => setPendingDelete(true)}>
+                        <Text style={styles.buttonText}>Delete</Text>
+                    </TouchableOpacity>
+                )}
             </View>
 
         </View>

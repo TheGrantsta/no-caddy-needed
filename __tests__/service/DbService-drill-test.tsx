@@ -1,19 +1,21 @@
-import { insertDrillResultService, getAllDrillHistoryService, getDrillsByCategoryService, toggleDrillIsActiveService, insertDrillService } from '../../service/DbService';
-import { insertDrillResult, getAllDrillHistory, getDrillsByCategory, updateDrillIsActive, insertDrill } from '../../database/db';
+import { insertDrillResultService, getAllDrillHistoryService, getDrillsByCategoryService, insertDrillService, deleteDrillService, restoreDrillService } from '../../service/DbService';
+import { insertDrillResult, getAllDrillHistory, getDrillsByCategory, insertDrill, softDeleteDrill, restoreDrill } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
     insertDrillResult: jest.fn(),
     getAllDrillHistory: jest.fn(),
     getDrillsByCategory: jest.fn(),
-    updateDrillIsActive: jest.fn(),
     insertDrill: jest.fn(),
+    softDeleteDrill: jest.fn(),
+    restoreDrill: jest.fn(),
 }));
 
 const mockInsertDrillResult = insertDrillResult as jest.Mock;
 const mockGetAllDrillHistory = getAllDrillHistory as jest.Mock;
 const mockGetDrillsByCategory = getDrillsByCategory as jest.Mock;
-const mockUpdateDrillIsActive = updateDrillIsActive as jest.Mock;
 const mockInsertDrill = insertDrill as jest.Mock;
+const mockSoftDeleteDrill = softDeleteDrill as jest.Mock;
+const mockRestoreDrill = restoreDrill as jest.Mock;
 
 describe('insertDrillResultService', () => {
     beforeEach(() => {
@@ -132,7 +134,7 @@ describe('getDrillsByCategoryService', () => {
         expect(result).toEqual([]);
     });
 
-    it('mapsDbRowTodrillDataWithIdAndIsActive', () => {
+    it('mapsDbRowToDrillData', () => {
         mockGetDrillsByCategory.mockReturnValue([{
             Id: 7,
             Category: 'putting',
@@ -142,7 +144,6 @@ describe('getDrillsByCategoryService', () => {
             Objective: 'improve accuracy',
             SetUp: 'place two tees',
             HowToPlay: 'ten putts',
-            IsActive: 1,
         }]);
 
         const result = getDrillsByCategoryService('putting');
@@ -154,38 +155,18 @@ describe('getDrillsByCategoryService', () => {
         expect(result[0].objective).toBe('improve accuracy');
         expect(result[0].setup).toBe('place two tees');
         expect(result[0].howToPlay).toBe('ten putts');
-        expect(result[0].isActive).toBe(true);
-    });
-
-    it('mapsIsActiveZeroToFalse', () => {
-        mockGetDrillsByCategory.mockReturnValue([{
-            Id: 3,
-            Category: 'chipping',
-            Label: 'Hoop',
-            IconName: 'adjust',
-            Target: '8 / 10',
-            Objective: 'accuracy',
-            SetUp: 'setup',
-            HowToPlay: 'play',
-            IsActive: 0,
-        }]);
-
-        const result = getDrillsByCategoryService('chipping');
-
-        expect(result[0].isActive).toBe(false);
     });
 
     it('returnsMultipleRows', () => {
         mockGetDrillsByCategory.mockReturnValue([
-            { Id: 1, Category: 'putting', Label: 'Gate', IconName: 'data-array', Target: '8 / 10', Objective: 'o', SetUp: 's', HowToPlay: 'h', IsActive: 1 },
-            { Id: 2, Category: 'putting', Label: 'Ladder', IconName: 'sort', Target: '10 / 12', Objective: 'o', SetUp: 's', HowToPlay: 'h', IsActive: 0 },
+            { Id: 1, Category: 'putting', Label: 'Gate', IconName: 'data-array', Target: '8 / 10', Objective: 'o', SetUp: 's', HowToPlay: 'h' },
+            { Id: 2, Category: 'putting', Label: 'Ladder', IconName: 'sort', Target: '10 / 12', Objective: 'o', SetUp: 's', HowToPlay: 'h' },
         ]);
 
         const result = getDrillsByCategoryService('putting');
 
         expect(result).toHaveLength(2);
         expect(result[1].id).toBe(2);
-        expect(result[1].isActive).toBe(false);
     });
 });
 
@@ -219,31 +200,61 @@ describe('insertDrillService', () => {
     });
 });
 
-describe('toggleDrillIsActiveService', () => {
+describe('deleteDrillService', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    it('callsUpdateDrillIsActiveWithIdAndIsActive', async () => {
-        mockUpdateDrillIsActive.mockResolvedValue(true);
+    it('callsSoftDeleteDrillWithId', async () => {
+        mockSoftDeleteDrill.mockResolvedValue(true);
 
-        await toggleDrillIsActiveService(3, false);
+        await deleteDrillService(7);
 
-        expect(mockUpdateDrillIsActive).toHaveBeenCalledWith(3, false);
+        expect(mockSoftDeleteDrill).toHaveBeenCalledWith(7);
     });
 
     it('returnsTrueOnSuccess', async () => {
-        mockUpdateDrillIsActive.mockResolvedValue(true);
+        mockSoftDeleteDrill.mockResolvedValue(true);
 
-        const result = await toggleDrillIsActiveService(1, true);
+        const result = await deleteDrillService(7);
 
         expect(result).toBe(true);
     });
 
     it('returnsFalseOnFailure', async () => {
-        mockUpdateDrillIsActive.mockResolvedValue(false);
+        mockSoftDeleteDrill.mockResolvedValue(false);
 
-        const result = await toggleDrillIsActiveService(1, true);
+        const result = await deleteDrillService(7);
+
+        expect(result).toBe(false);
+    });
+});
+
+describe('restoreDrillService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('callsRestoreDrillWithId', async () => {
+        mockRestoreDrill.mockResolvedValue(true);
+
+        await restoreDrillService(7);
+
+        expect(mockRestoreDrill).toHaveBeenCalledWith(7);
+    });
+
+    it('returnsTrueOnSuccess', async () => {
+        mockRestoreDrill.mockResolvedValue(true);
+
+        const result = await restoreDrillService(7);
+
+        expect(result).toBe(true);
+    });
+
+    it('returnsFalseOnFailure', async () => {
+        mockRestoreDrill.mockResolvedValue(false);
+
+        const result = await restoreDrillService(7);
 
         expect(result).toBe(false);
     });

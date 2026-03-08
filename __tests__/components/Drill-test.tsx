@@ -1,5 +1,4 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import Drill from '../../components/Drill';
 
@@ -26,8 +25,6 @@ describe('Drill component', () => {
         setUp: 'Test setup',
         howToPlay: 'Test how to play',
         saveDrillResult: jest.fn(),
-        isActive: true,
-        onToggleActive: jest.fn(),
     };
 
     beforeEach(() => {
@@ -80,81 +77,6 @@ describe('Drill component', () => {
         expect(mockSave).toHaveBeenCalledWith('Test Drill', expect.any(Boolean));
     });
 
-    it('renders Active label when isActive is true', () => {
-        const { getByText } = render(<Drill {...defaultProps} isActive={true} />);
-
-        expect(getByText('Active:')).toBeTruthy();
-    });
-
-    it('rendersActiveToggleSwitch', () => {
-        const { getByTestId } = render(<Drill {...defaultProps} isActive={true} />);
-
-        expect(getByTestId('drill-active-toggle')).toBeTruthy();
-    });
-
-    it('activeToggleReflectsIsActiveProp', () => {
-        const { getByText } = render(<Drill {...defaultProps} isActive={false} />);
-
-        expect(getByText('Inactive:')).toBeTruthy();
-    });
-
-    it('callsOnToggleActiveWhenSwitchValueChanges', () => {
-        const mockToggle = jest.fn();
-        const { getByTestId } = render(<Drill {...defaultProps} isActive={true} onToggleActive={mockToggle} />);
-
-        fireEvent.press(getByTestId('drill-active-toggle'));
-
-        expect(mockToggle).toHaveBeenCalledWith(false);
-    });
-
-    it('saveButtonAppearsDisabledWhenInactive', () => {
-        const { getByTestId } = render(<Drill {...defaultProps} isActive={false} />);
-
-        const saveButton = getByTestId('save-drill-result-button');
-        const flatStyle = StyleSheet.flatten(saveButton.props.style);
-        expect(flatStyle.opacity).toBe(0.4);
-    });
-
-    it('metToggleAppearsDisabledWhenInactive', () => {
-        const { getByTestId } = render(<Drill {...defaultProps} isActive={false} />);
-
-        const metToggle = getByTestId('drill-met-toggle');
-        const flatStyle = StyleSheet.flatten(metToggle.props.style);
-        expect(flatStyle.opacity).toBe(0.4);
-    });
-
-    it('saveButtonAppearsEnabledWhenActive', () => {
-        const { getByTestId } = render(<Drill {...defaultProps} isActive={true} />);
-
-        const saveButton = getByTestId('save-drill-result-button');
-        const flatStyle = StyleSheet.flatten(saveButton.props.style);
-        expect(flatStyle.opacity).not.toBe(0.4);
-    });
-
-    it('saveButtonIsDisabledWhenDrillIsInactive', () => {
-        const { getByTestId } = render(<Drill {...defaultProps} isActive={false} />);
-
-        expect(getByTestId('save-drill-result-button').props.accessibilityState?.disabled).toBe(true);
-    });
-
-    it('metToggleIsDisabledWhenDrillIsInactive', () => {
-        const { getByTestId } = render(<Drill {...defaultProps} isActive={false} />);
-
-        expect(getByTestId('drill-met-toggle').props.accessibilityState?.disabled).toBe(true);
-    });
-
-    it('saveButtonIsEnabledWhenDrillIsActive', () => {
-        const { getByTestId } = render(<Drill {...defaultProps} isActive={true} />);
-
-        expect(getByTestId('save-drill-result-button').props.accessibilityState?.disabled).toBeFalsy();
-    });
-
-    it('metToggleIsEnabledWhenDrillIsActive', () => {
-        const { getByTestId } = render(<Drill {...defaultProps} isActive={true} />);
-
-        expect(getByTestId('drill-met-toggle').props.accessibilityState?.disabled).toBeFalsy();
-    });
-
     it('renders Instructions component with correct props', () => {
         const { getByText } = render(<Drill {...defaultProps} />);
 
@@ -164,5 +86,75 @@ describe('Drill component', () => {
         expect(getByText(/Test setup/)).toBeTruthy();
         expect(getByText('How to play:')).toBeTruthy();
         expect(getByText(/Test how to play/)).toBeTruthy();
+    });
+
+    it('rendersDeleteButton', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} />);
+        expect(getByTestId('delete-drill-button')).toBeTruthy();
+    });
+
+    it('doesNotCallOnDeleteWhenDeleteButtonFirstPressed', () => {
+        const mockOnDelete = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} onDelete={mockOnDelete} />);
+        fireEvent.press(getByTestId('delete-drill-button'));
+        expect(mockOnDelete).not.toHaveBeenCalled();
+    });
+
+    it('showsConfirmationButtonsAfterDeletePressed', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} />);
+        fireEvent.press(getByTestId('delete-drill-button'));
+        expect(getByTestId('confirm-drill-delete')).toBeTruthy();
+        expect(getByTestId('cancel-drill-delete')).toBeTruthy();
+    });
+
+    it('hidesDeleteButtonAfterDeletePressed', () => {
+        const { getByTestId, queryByTestId } = render(<Drill {...defaultProps} />);
+        fireEvent.press(getByTestId('delete-drill-button'));
+        expect(queryByTestId('delete-drill-button')).toBeNull();
+    });
+
+    it('callsOnDeleteWhenConfirmPressed', () => {
+        const mockOnDelete = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} onDelete={mockOnDelete} />);
+        fireEvent.press(getByTestId('delete-drill-button'));
+        fireEvent.press(getByTestId('confirm-drill-delete'));
+        expect(mockOnDelete).toHaveBeenCalledTimes(1);
+    });
+
+    it('doesNotCallOnDeleteWhenCancelPressed', () => {
+        const mockOnDelete = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} onDelete={mockOnDelete} />);
+        fireEvent.press(getByTestId('delete-drill-button'));
+        fireEvent.press(getByTestId('cancel-drill-delete'));
+        expect(mockOnDelete).not.toHaveBeenCalled();
+    });
+
+    it('hidesConfirmationButtonsAfterCancelPressed', () => {
+        const { getByTestId, queryByTestId } = render(<Drill {...defaultProps} />);
+        fireEvent.press(getByTestId('delete-drill-button'));
+        fireEvent.press(getByTestId('cancel-drill-delete'));
+        expect(queryByTestId('confirm-drill-delete')).toBeNull();
+        expect(queryByTestId('cancel-drill-delete')).toBeNull();
+    });
+
+    it('showsDeleteButtonAfterCancelPressed', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} />);
+        fireEvent.press(getByTestId('delete-drill-button'));
+        fireEvent.press(getByTestId('cancel-drill-delete'));
+        expect(getByTestId('delete-drill-button')).toBeTruthy();
+    });
+
+    it('showsDeleteButtonAfterConfirmPressed', () => {
+        const mockOnDelete = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} onDelete={mockOnDelete} />);
+        fireEvent.press(getByTestId('delete-drill-button'));
+        fireEvent.press(getByTestId('confirm-drill-delete'));
+        expect(getByTestId('delete-drill-button')).toBeTruthy();
+    });
+
+    it('doesNotThrowIfOnDeleteNotProvided', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} />);
+        fireEvent.press(getByTestId('delete-drill-button'));
+        expect(() => fireEvent.press(getByTestId('confirm-drill-delete'))).not.toThrow();
     });
 });

@@ -41,11 +41,10 @@ jest.mock('react-native-safe-area-context', () => ({
 jest.mock('@/service/DbService', () => ({
     insertDrillResultService: jest.fn().mockResolvedValue(true),
     getDrillsByCategoryService: jest.fn().mockReturnValue([
-        { id: 7, label: 'Three ball', iconName: 'track-changes', target: '3 / 3', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
-        { id: 8, label: 'Wedge', iconName: 'av-timer', target: '3 / 3', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
-        { id: 9, label: 'Ladder', iconName: 'sort', target: '10 / 12', objective: 'o', setup: 's', howToPlay: 'h', isActive: true },
+        { id: 7, label: 'Three ball', iconName: 'track-changes', target: '3 / 3', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 8, label: 'Wedge', iconName: 'av-timer', target: '3 / 3', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 9, label: 'Ladder', iconName: 'sort', target: '10 / 12', objective: 'o', setup: 's', howToPlay: 'h' },
     ]),
-    toggleDrillIsActiveService: jest.fn().mockResolvedValue(true),
     getGamesByCategoryService: jest.fn().mockReturnValue([
         { id: 7, header: 'Three club!', objective: 'o', setup: 's', howToPlay: 'h' },
         { id: 8, header: 'Target challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
@@ -53,6 +52,9 @@ jest.mock('@/service/DbService', () => ({
     ]),
     insertGameService: jest.fn().mockResolvedValue(true),
     deleteGameService: jest.fn().mockResolvedValue(true),
+    restoreGameService: jest.fn().mockResolvedValue(true),
+    deleteDrillService: jest.fn().mockResolvedValue(true),
+    restoreDrillService: jest.fn().mockResolvedValue(true),
 }));
 
 const mockInsertDrillResultService = insertDrillResultService as jest.Mock;

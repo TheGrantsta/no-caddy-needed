@@ -1,15 +1,19 @@
-import { getDrillStatsByTypeService, getSettingsService, saveSettingsService, AppSettings } from '../../service/DbService';
-import { getAllDrillHistory, getSettings, saveSettings } from '../../database/db';
+import { getDrillStatsByTypeService, getSettingsService, saveSettingsService, AppSettings, deleteDrillService, restoreDrillService } from '../../service/DbService';
+import { getAllDrillHistory, getSettings, saveSettings, softDeleteDrill, restoreDrill } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
     getAllDrillHistory: jest.fn(),
     getSettings: jest.fn(),
     saveSettings: jest.fn(),
+    softDeleteDrill: jest.fn(),
+    restoreDrill: jest.fn(),
 }));
 
 const mockGetAllDrillHistory = getAllDrillHistory as jest.Mock;
 const mockGetSettings = getSettings as jest.Mock;
 const mockSaveSettings = saveSettings as jest.Mock;
+const mockSoftDeleteDrill = softDeleteDrill as jest.Mock;
+const mockRestoreDrill = restoreDrill as jest.Mock;
 
 describe('getDrillStatsByTypeService', () => {
     beforeEach(() => {
@@ -265,6 +269,66 @@ describe('getSettingsService', () => {
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
         });
+    });
+});
+
+describe('deleteDrillService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('calls softDeleteDrill with the given id', async () => {
+        mockSoftDeleteDrill.mockResolvedValue(true);
+
+        await deleteDrillService(7);
+
+        expect(mockSoftDeleteDrill).toHaveBeenCalledWith(7);
+    });
+
+    it('returns true on success', async () => {
+        mockSoftDeleteDrill.mockResolvedValue(true);
+
+        const result = await deleteDrillService(7);
+
+        expect(result).toBe(true);
+    });
+
+    it('returns false on failure', async () => {
+        mockSoftDeleteDrill.mockResolvedValue(false);
+
+        const result = await deleteDrillService(7);
+
+        expect(result).toBe(false);
+    });
+});
+
+describe('restoreDrillService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('calls restoreDrill with the given id', async () => {
+        mockRestoreDrill.mockResolvedValue(true);
+
+        await restoreDrillService(7);
+
+        expect(mockRestoreDrill).toHaveBeenCalledWith(7);
+    });
+
+    it('returns true on success', async () => {
+        mockRestoreDrill.mockResolvedValue(true);
+
+        const result = await restoreDrillService(7);
+
+        expect(result).toBe(true);
+    });
+
+    it('returns false on failure', async () => {
+        mockRestoreDrill.mockResolvedValue(false);
+
+        const result = await restoreDrillService(7);
+
+        expect(result).toBe(false);
     });
 });
 

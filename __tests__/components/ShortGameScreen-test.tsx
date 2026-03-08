@@ -2,7 +2,7 @@ import React, { act } from 'react';
 import { FlatList } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import ShortGameScreen from '../../components/ShortGameScreen';
-import { insertDrillResultService, getDrillsByCategoryService, toggleDrillIsActiveService, getGamesByCategoryService, deleteGameService, restoreGameService } from '../../service/DbService';
+import { insertDrillResultService, getDrillsByCategoryService, getGamesByCategoryService, deleteGameService, restoreGameService, deleteDrillService, restoreDrillService } from '../../service/DbService';
 import type { ShortGameConfig } from '../../types/ShortGame';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -36,10 +36,9 @@ jest.mock('react-native-gesture-handler', () => {
 jest.mock('../../service/DbService', () => ({
     insertDrillResultService: jest.fn().mockResolvedValue(true),
     getDrillsByCategoryService: jest.fn().mockReturnValue([
-        { id: 1, label: 'Gate', iconName: 'sports-golf', target: '3/5', objective: 'Improve accuracy', setup: 'Set a gate', howToPlay: 'Chip through the gate', isActive: true },
-        { id: 2, label: 'Hoop', iconName: 'sports-golf', target: '4/5', objective: 'Land in hoop', setup: 'Place a hoop', howToPlay: 'Chip into the hoop', isActive: true },
+        { id: 1, label: 'Gate', iconName: 'sports-golf', target: '3/5', objective: 'Improve accuracy', setup: 'Set a gate', howToPlay: 'Chip through the gate' },
+        { id: 2, label: 'Hoop', iconName: 'sports-golf', target: '4/5', objective: 'Land in hoop', setup: 'Place a hoop', howToPlay: 'Chip into the hoop' },
     ]),
-    toggleDrillIsActiveService: jest.fn().mockResolvedValue(true),
     getGamesByCategoryService: jest.fn().mockReturnValue([
         { id: 1, header: 'Up & down!', objective: 'Get up and down', setup: 'Drop a ball', howToPlay: 'Chip and putt' },
         { id: 2, header: 'Par 18!', objective: 'Score under 18', setup: 'Play 9 holes', howToPlay: 'Chip and putt each hole' },
@@ -47,6 +46,8 @@ jest.mock('../../service/DbService', () => ({
     insertGameService: jest.fn().mockResolvedValue(true),
     deleteGameService: jest.fn().mockResolvedValue(true),
     restoreGameService: jest.fn().mockResolvedValue(true),
+    deleteDrillService: jest.fn().mockResolvedValue(true),
+    restoreDrillService: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock('../../components/AddDrillForm', () => {
@@ -81,10 +82,11 @@ jest.useFakeTimers();
 
 const mockInsertDrillResultService = insertDrillResultService as jest.Mock;
 const mockGetDrillsByCategoryService = getDrillsByCategoryService as jest.Mock;
-const mockToggleDrillIsActiveService = toggleDrillIsActiveService as jest.Mock;
 const mockGetGamesByCategoryService = getGamesByCategoryService as jest.Mock;
 const mockDeleteGameService = deleteGameService as jest.Mock;
 const mockRestoreGameService = restoreGameService as jest.Mock;
+const mockDeleteDrillService = deleteDrillService as jest.Mock;
+const mockRestoreDrillService = restoreDrillService as jest.Mock;
 
 const config: ShortGameConfig = {
     category: 'chipping',
@@ -188,15 +190,88 @@ describe('ShortGameScreen', () => {
         expect(mockGetDrillsByCategoryService).toHaveBeenCalledWith('chipping');
     });
 
-    it('callsToggleServiceWhenDrillToggled', async () => {
+    it('callsDeleteDrillServiceWhenDrillDeleted', async () => {
         const { getAllByTestId } = render(<ShortGameScreen config={config} />);
-        const toggles = getAllByTestId('drill-active-toggle');
+        fireEvent.press(getAllByTestId('delete-drill-button')[0]);
 
         await act(async () => {
-            fireEvent.press(toggles[0]);
+            fireEvent.press(getAllByTestId('confirm-drill-delete')[0]);
         });
 
-        expect(mockToggleDrillIsActiveService).toHaveBeenCalledWith(1, false);
+        expect(mockDeleteDrillService).toHaveBeenCalledWith(1);
+    });
+
+    it('showsUndoDrillDeleteAfterDrillDeleted', async () => {
+        const { getAllByTestId, getByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getAllByTestId('delete-drill-button')[0]);
+
+        await act(async () => {
+            fireEvent.press(getAllByTestId('confirm-drill-delete')[0]);
+        });
+
+        expect(getByTestId('undo-drill-delete')).toBeTruthy();
+    });
+
+    it('callsRestoreDrillServiceWhenUndoDrillPressed', async () => {
+        const { getAllByTestId, getByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getAllByTestId('delete-drill-button')[0]);
+
+        await act(async () => {
+            fireEvent.press(getAllByTestId('confirm-drill-delete')[0]);
+        });
+
+        await act(async () => {
+            fireEvent.press(getByTestId('undo-drill-delete'));
+        });
+
+        expect(mockRestoreDrillService).toHaveBeenCalledWith(1);
+    });
+
+    it('hidesUndoDrillDeleteAfterRestored', async () => {
+        const { getAllByTestId, getByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getAllByTestId('delete-drill-button')[0]);
+
+        await act(async () => {
+            fireEvent.press(getAllByTestId('confirm-drill-delete')[0]);
+        });
+
+        await act(async () => {
+            fireEvent.press(getByTestId('undo-drill-delete'));
+        });
+
+        expect(queryByTestId('undo-drill-delete')).toBeNull();
+    });
+
+    it('reloadsDrillsAfterUndoDrill', async () => {
+        const { getAllByTestId, getByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getAllByTestId('delete-drill-button')[0]);
+
+        await act(async () => {
+            fireEvent.press(getAllByTestId('confirm-drill-delete')[0]);
+        });
+
+        mockGetDrillsByCategoryService.mockClear();
+
+        await act(async () => {
+            fireEvent.press(getByTestId('undo-drill-delete'));
+        });
+
+        expect(mockGetDrillsByCategoryService).toHaveBeenCalledWith('chipping');
+    });
+
+    it('undoDrillOverlayAutoClosesAfterFiveSeconds', async () => {
+        const { getAllByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
+        fireEvent.press(getAllByTestId('delete-drill-button')[0]);
+
+        await act(async () => {
+            fireEvent.press(getAllByTestId('confirm-drill-delete')[0]);
+        });
+
+        act(() => {
+            jest.advanceTimersByTime(5000);
+        });
+
+        expect(queryByTestId('undo-drill-delete')).toBeNull();
     });
 
     it('handleDrillScrollUpdatesActiveIndex', () => {

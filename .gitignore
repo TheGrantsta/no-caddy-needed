@@ -42,8 +42,10 @@ GoogleService-Info.plist
 
 app-example
 
-# Maestro screenshots
+# Maestro screenshots (current captures and diffs are transient; baselines are committed)
 .maestro/screenshots/
+.maestro/current/
+.maestro/diff-output/
 screenshots/
 
 # Native builds

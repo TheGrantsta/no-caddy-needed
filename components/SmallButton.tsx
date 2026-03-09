@@ -1,7 +1,5 @@
-import { useMemo } from 'react';
-import { StyleSheet, View, Pressable, Text } from 'react-native';
-import { useThemeColours } from '../context/ThemeContext';
-import fontSizes from '../assets/font-sizes';
+import { View, Pressable, Text } from 'react-native';
+import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
     testId: string;
@@ -11,48 +9,15 @@ type Props = {
 };
 
 export default function SmallButton({ testId, label, selected, onPress }: Props) {
-    const colours = useThemeColours();
-
-    const styles = useMemo(() => StyleSheet.create({
-        buttonContainer: {
-            width: 175,
-            height: 38,
-            margin: 5,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        button: {
-            borderRadius: 10,
-            borderColor: colours.yellow,
-            borderWidth: 1,
-            backgroundColor: colours.mutedYellow,
-            width: '100%',
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'row',
-        },
-        buttonIcon: {
-            paddingRight: 8,
-        },
-        buttonLabel: {
-            color: colours.text,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
-        selected: {
-            color: colours.background,
-            backgroundColor: colours.yellow,
-        },
-    }), [colours]);
+    const styles = useStyles();
 
     return (
-        <View style={styles.buttonContainer}>
+        <View style={styles.smallButton.buttonContainer}>
             <Pressable
                 testID={testId}
-                style={[styles.button, selected ? styles.selected : '']}
+                style={[styles.smallButton.button, selected ? styles.smallButton.selected : '']}
                 onPress={onPress}>
-                <Text style={[styles.buttonLabel, selected ? styles.selected : '']}>
+                <Text style={[styles.smallButton.buttonLabel, selected ? styles.smallButton.selected : '']}>
                     {label}
                 </Text>
             </Pressable>

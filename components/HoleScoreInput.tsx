@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState, ReactNode } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState, ReactNode } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { RoundPlayer } from '../service/DbService';
-import { useThemeColours } from '../context/ThemeContext';
-import fontSizes from '../assets/font-sizes';
+import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
     holeNumber: number;
@@ -22,7 +21,7 @@ const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>
 };
 
 const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser }: Props) => {
-    const colours = useThemeColours();
+    const styles = useStyles();
     const [state, setState] = useState<{ par: number; scores: Record<number, number> }>({ par: 4, scores: {} });
 
     useEffect(() => {
@@ -52,93 +51,19 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser }
         onScoresChange(holeNumber, par, buildScoresArray(players, updated, par));
     };
 
-    const localStyles = useMemo(() => StyleSheet.create({
-        container: {
-            padding: 15,
-        },
-        holeText: {
-            color: colours.yellow,
-            fontSize: fontSizes.header,
-            fontWeight: 'bold',
-            textAlign: 'center',
-            marginBottom: 15,
-        },
-        parRow: {
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginBottom: 20,
-        },
-        parButton: {
-            paddingVertical: 8,
-            paddingHorizontal: 16,
-            borderWidth: 1,
-            borderColor: colours.yellow,
-            marginHorizontal: 5,
-            borderRadius: 4,
-        },
-        parButtonActive: {
-            backgroundColor: colours.yellow,
-        },
-        parButtonText: {
-            color: colours.yellow,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-        },
-        parButtonTextActive: {
-            color: colours.background,
-        },
-        playerRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 15,
-            paddingVertical: 5,
-        },
-        playerName: {
-            color: colours.yellow,
-            fontSize: fontSizes.subHeader,
-            flex: 1,
-        },
-        stepperRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-        },
-        stepperButton: {
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: colours.yellow,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        stepperButtonText: {
-            color: colours.background,
-            fontSize: fontSizes.subHeader,
-            fontWeight: 'bold',
-        },
-        scoreText: {
-            color: colours.text,
-            fontSize: fontSizes.header,
-            fontWeight: 'bold',
-            marginHorizontal: 15,
-            minWidth: 30,
-            textAlign: 'center',
-        },
-    }), [colours]);
-
     return (
-        <View style={localStyles.container}>
-            <Text style={localStyles.holeText}>Hole {holeNumber}</Text>
+        <View style={styles.holeScoreInput.container}>
+            <Text style={styles.holeScoreInput.holeText}>Hole {holeNumber}</Text>
 
-            <View style={localStyles.parRow}>
+            <View style={styles.holeScoreInput.parRow}>
                 {parOptions.map(p => (
                     <TouchableOpacity
                         key={p}
                         testID={`par-${p}-button`}
                         onPress={() => handleParChange(p)}
-                        style={[localStyles.parButton, par === p && localStyles.parButtonActive]}
+                        style={[styles.holeScoreInput.parButton, par === p && styles.holeScoreInput.parButtonActive]}
                     >
-                        <Text style={[localStyles.parButtonText, par === p && localStyles.parButtonTextActive]}>
+                        <Text style={[styles.holeScoreInput.parButtonText, par === p && styles.holeScoreInput.parButtonTextActive]}>
                             Par {p}
                         </Text>
                     </TouchableOpacity>
@@ -146,27 +71,27 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser }
             </View>
 
             <View testID="players-container">
-                {players.map((player, index) => (
+                {players.map((player) => (
                     <View key={player.Id}>
-                        <View style={localStyles.playerRow}>
-                            <Text style={localStyles.playerName}>{player.PlayerName}</Text>
-                            <View style={localStyles.stepperRow}>
+                        <View style={styles.holeScoreInput.playerRow}>
+                            <Text style={styles.holeScoreInput.playerName}>{player.PlayerName}</Text>
+                            <View style={styles.holeScoreInput.stepperRow}>
                                 <TouchableOpacity
                                     testID={`decrement-${player.Id}`}
                                     onPress={() => handleDecrement(player.Id)}
-                                    style={localStyles.stepperButton}
+                                    style={styles.holeScoreInput.stepperButton}
                                 >
-                                    <Text style={localStyles.stepperButtonText}>-</Text>
+                                    <Text style={styles.holeScoreInput.stepperButtonText}>-</Text>
                                 </TouchableOpacity>
-                                <Text testID={`player-score-${player.Id}`} style={localStyles.scoreText}>
+                                <Text testID={`player-score-${player.Id}`} style={styles.holeScoreInput.scoreText}>
                                     {scores[player.Id] || par}
                                 </Text>
                                 <TouchableOpacity
                                     testID={`increment-${player.Id}`}
                                     onPress={() => handleIncrement(player.Id)}
-                                    style={localStyles.stepperButton}
+                                    style={styles.holeScoreInput.stepperButton}
                                 >
-                                    <Text style={localStyles.stepperButtonText}>+</Text>
+                                    <Text style={styles.holeScoreInput.stepperButtonText}>+</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

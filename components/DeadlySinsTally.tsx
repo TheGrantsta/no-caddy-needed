@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useThemeColours } from '../context/ThemeContext';
-import fontSizes from '../assets/font-sizes';
+import { useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
     onEndRound: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => void;
@@ -23,7 +22,8 @@ const counters = [
 ];
 
 const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore }: Props) => {
-    const colours = useThemeColours();
+    const styles = useStyles();
+    const s = styles.deadlySinsTally;
     const [roundActive, setRoundActive] = useState(roundControlled === true);
     const [threePutts, setThreePutts] = useState(0);
     const [doubleBogeys, setDoubleBogeys] = useState(0);
@@ -36,80 +36,6 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
 
     const values = [threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties];
     const setters = [setThreePutts, setDoubleBogeys, setBogeysPar5, setBogeysInside9Iron, setDoubleChips, setTroubleOffTee, setPenalties];
-
-    const localStyles = useMemo(() => StyleSheet.create({
-        container: {
-            paddingTop: 5,
-            paddingLeft: 20,
-            paddingRight: 20,
-            paddingBottom: 20,
-        },
-        row: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingVertical: 6,
-            borderBottomWidth: 0.5,
-            borderColor: colours.yellow,
-        },
-        label: {
-            color: colours.text,
-            fontSize: fontSizes.smallText,
-            flex: 1,
-        },
-        controls: {
-            flexDirection: 'row',
-            alignItems: 'center',
-        },
-        button: {
-            backgroundColor: colours.yellow,
-            width: 24,
-            height: 24,
-            borderRadius: 12,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        buttonText: {
-            color: colours.background,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
-        count: {
-            color: colours.text,
-            fontSize: fontSizes.subHeader,
-            minWidth: 40,
-            textAlign: 'center',
-        },
-        saveButton: {
-            backgroundColor: colours.yellow,
-            padding: 12,
-            borderRadius: 8,
-            alignItems: 'center',
-            marginTop: 5,
-        },
-        saveButtonText: {
-            color: colours.background,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
-        toggleHeader: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingVertical: 8,
-            borderBottomWidth: 0.5,
-            borderColor: colours.yellow,
-        },
-        toggleLabel: {
-            color: colours.text,
-            fontSize: fontSizes.smallText,
-            fontWeight: 'bold',
-        },
-        chevron: {
-            color: colours.yellow,
-            fontSize: fontSizes.subHeader,
-        },
-    }), [colours]);
 
     const handleIncrement = (index: number) => {
         const newValue = values[index] + 1;
@@ -152,48 +78,48 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
 
     if (!roundActive) {
         return (
-            <View style={localStyles.container}>
-                <TouchableOpacity testID="7deadly-sins-start-round" onPress={handleStartRound} style={localStyles.saveButton}>
-                    <Text style={localStyles.saveButtonText}>Start round</Text>
+            <View style={s.container}>
+                <TouchableOpacity testID="7deadly-sins-start-round" onPress={handleStartRound} style={s.saveButton}>
+                    <Text style={s.saveButtonText}>Start round</Text>
                 </TouchableOpacity>
             </View>
         );
     }
 
     return (
-        <View style={localStyles.container}>
+        <View style={s.container}>
             <TouchableOpacity
                 testID="7deadly-sins-toggle"
                 onPress={() => setIsOpen(prev => !prev)}
-                style={localStyles.toggleHeader}
+                style={s.toggleHeader}
             >
-                <Text style={localStyles.toggleLabel}>7 Deadly Sins</Text>
-                <Text style={localStyles.chevron}>{isOpen ? '▾' : '▴'}</Text>
+                <Text style={s.toggleLabel}>7 Deadly Sins</Text>
+                <Text style={s.chevron}>{isOpen ? '▾' : '▴'}</Text>
             </TouchableOpacity>
 
             {isOpen && counters.map((counter, index) => {
                 if (counter.slug === 'bogeys-par5' && holePar !== 5) return null;
                 if (counter.slug === 'double-bogeys' && (holePar === undefined || userScore === undefined || userScore < holePar + 2)) return null;
                 return (
-                    <View key={counter.slug} style={localStyles.row}>
-                        <Text style={localStyles.label}>{counter.label}</Text>
-                        <View style={localStyles.controls}>
+                    <View key={counter.slug} style={s.row}>
+                        <Text style={s.label}>{counter.label}</Text>
+                        <View style={s.controls}>
                             <TouchableOpacity
                                 testID={`7deadly-sins-decrement-${counter.slug}`}
                                 onPress={() => handleDecrement(index)}
-                                style={localStyles.button}
+                                style={s.button}
                             >
-                                <Text style={localStyles.buttonText}>-</Text>
+                                <Text style={s.buttonText}>-</Text>
                             </TouchableOpacity>
-                            <Text testID={`7deadly-sins-count-${counter.slug}`} style={localStyles.count}>
+                            <Text testID={`7deadly-sins-count-${counter.slug}`} style={s.count}>
                                 {values[index]}
                             </Text>
                             <TouchableOpacity
                                 testID={`7deadly-sins-increment-${counter.slug}`}
                                 onPress={() => handleIncrement(index)}
-                                style={localStyles.button}
+                                style={s.button}
                             >
-                                <Text style={localStyles.buttonText}>+</Text>
+                                <Text style={s.buttonText}>+</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -201,8 +127,8 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
             })}
 
             {!roundControlled && (
-                <TouchableOpacity testID="7deadly-sins-end-round" onPress={handleEndRound} style={localStyles.saveButton}>
-                    <Text style={localStyles.saveButtonText}>End round</Text>
+                <TouchableOpacity testID="7deadly-sins-end-round" onPress={handleEndRound} style={s.saveButton}>
+                    <Text style={s.saveButtonText}>End round</Text>
                 </TouchableOpacity>
             )}
         </View>

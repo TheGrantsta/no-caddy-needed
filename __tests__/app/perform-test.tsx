@@ -13,7 +13,7 @@ jest.mock('../../context/ThemeContext', () => ({
 }));
 
 jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/stlyes').default,
+    useStyles: () => require('../../assets/styles').default,
 }));
 
 jest.mock('react-native-toast-notifications', () => ({

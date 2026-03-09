@@ -14,7 +14,7 @@ jest.mock('../../../context/ThemeContext', () => ({
 }));
 
 jest.mock('../../../hooks/useStyles', () => ({
-    useStyles: () => require('../../../assets/stlyes').default,
+    useStyles: () => require('../../../assets/styles').default,
 }));
 
 const mockShow = jest.fn();

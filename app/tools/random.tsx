@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, View, Text, TextInput, StyleSheet, RefreshControl, TouchableOpacity } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { ScrollView, View, Text, TextInput, RefreshControl, TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getRandomNumber } from '../../assets/random-number';
 import * as Speech from 'expo-speech';
@@ -10,7 +10,6 @@ import Chevrons from '@/components/Chevrons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
-import fontSizes from '@/assets/font-sizes';
 
 const FEMALE_VOICE_NAMES = ['samantha', 'ava', 'allison', 'susan', 'noelle', 'karen', 'moira', 'tessa', 'fiona'];
 const MALE_VOICE_NAMES = ['tom', 'alex', 'fred', 'daniel', 'lee', 'ralph', 'rishi'];
@@ -121,54 +120,7 @@ export default function Random() {
 
     const points = ['Random: mimic play when practising', 'Focus: use your pre-shot routine', 'Evaluate: use your post-shot routine'];
 
-    const localStyles = useMemo(() => StyleSheet.create({
-        container: {
-            padding: 20,
-        },
-        actionButton: {
-            backgroundColor: colours.yellow,
-            padding: 12,
-            borderRadius: 8,
-            alignItems: 'center',
-            width: '100%',
-        },
-        actionButtonText: {
-            color: colours.background,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
-        randomNumberContainer: {
-            backgroundColor: colours.background,
-            borderColor: colours.yellow,
-            borderWidth: 2,
-            borderRadius: 12,
-            margin: 15,
-            padding: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'row',
-        },
-        randomNumberText: {
-            color: colours.yellow,
-            fontSize: fontSizes.massive,
-            fontWeight: 'bold',
-            textAlign: 'center',
-            fontFamily: 'Arial',
-        },
-        micButton: {
-            marginTop: 12,
-            padding: 10,
-            borderRadius: 8,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            backgroundColor: colours.backgroundAlternate,
-        },
-        micButtonActive: {
-            backgroundColor: colours.yellow,
-        },
-    }), [colours]);
+    const localStyles = styles.randomTool;
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>

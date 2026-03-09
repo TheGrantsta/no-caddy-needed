@@ -1,7 +1,5 @@
-import { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useThemeColours } from '../context/ThemeContext';
-import fontSizes from '../assets/font-sizes';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
     holeNumber: number;
@@ -12,66 +10,29 @@ type Props = {
 };
 
 const ScoreEditor = ({ holeNumber, playerName, score, onIncrement, onDecrement }: Props) => {
-    const colours = useThemeColours();
-
-    const localStyles = useMemo(() => StyleSheet.create({
-        container: {
-            padding: 15,
-            alignItems: 'center',
-        },
-        headerText: {
-            color: colours.yellow,
-            fontSize: fontSizes.subHeader,
-            fontWeight: 'bold',
-            marginBottom: 15,
-        },
-        stepperRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-        },
-        stepperButton: {
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: colours.yellow,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        stepperButtonText: {
-            color: colours.background,
-            fontSize: fontSizes.subHeader,
-            fontWeight: 'bold',
-        },
-        scoreText: {
-            color: colours.text,
-            fontSize: fontSizes.header,
-            fontWeight: 'bold',
-            marginHorizontal: 15,
-            minWidth: 30,
-            textAlign: 'center',
-        },
-    }), [colours]);
+    const styles = useStyles();
+    const s = styles.scoreEditor;
 
     return (
-        <View style={localStyles.container}>
-            <Text style={localStyles.headerText}>Hole {holeNumber} - {playerName}</Text>
-            <View style={localStyles.stepperRow}>
+        <View style={s.container}>
+            <Text style={s.headerText}>Hole {holeNumber} - {playerName}</Text>
+            <View style={s.stepperRow}>
                 <TouchableOpacity
                     testID="score-editor-decrement"
                     onPress={onDecrement}
-                    style={localStyles.stepperButton}
+                    style={s.stepperButton}
                 >
-                    <Text style={localStyles.stepperButtonText}>-</Text>
+                    <Text style={s.stepperButtonText}>-</Text>
                 </TouchableOpacity>
-                <Text testID="score-editor-value" style={localStyles.scoreText}>
+                <Text testID="score-editor-value" style={s.scoreText}>
                     {score}
                 </Text>
                 <TouchableOpacity
                     testID="score-editor-increment"
                     onPress={onIncrement}
-                    style={localStyles.stepperButton}
+                    style={s.stepperButton}
                 >
-                    <Text style={localStyles.stepperButtonText}>+</Text>
+                    <Text style={s.stepperButtonText}>+</Text>
                 </TouchableOpacity>
             </View>
         </View>

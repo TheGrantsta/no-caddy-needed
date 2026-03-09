@@ -1,101 +1,23 @@
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text } from 'react-native';
 import { useThemeColours } from '@/context/ThemeContext';
-import fontSizes from '@/assets/font-sizes';
 import { DrillStats } from '@/service/DbService';
+import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
     stats: DrillStats[];
 };
 
 export default function DrillStatsChart({ stats }: Props) {
+    const styles = useStyles();
     const colours = useThemeColours();
-
-    const localStyles = useMemo(() => StyleSheet.create({
-        container: {
-            padding: 10,
-            marginBottom: 10,
-        },
-        title: {
-            color: colours.yellow,
-            fontSize: fontSizes.subHeader,
-            marginBottom: 15,
-        },
-        barContainer: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: 8,
-        },
-        labelContainer: {
-            width: 100,
-            paddingRight: 5,
-        },
-        label: {
-            color: colours.white,
-            fontSize: fontSizes.small,
-        },
-        barWrapper: {
-            flex: 1,
-            flexDirection: 'row',
-            height: 20,
-            borderRadius: 4,
-            overflow: 'hidden',
-        },
-        bar: {
-            height: '100%',
-            borderTopLeftRadius: 4,
-            borderBottomLeftRadius: 4,
-        },
-        barBackground: {
-            height: '100%',
-            backgroundColor: colours.backgroundLight,
-        },
-        statsContainer: {
-            width: 70,
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-        },
-        statsText: {
-            color: colours.yellow,
-            fontSize: fontSizes.small,
-            fontWeight: 'bold',
-            marginRight: 2,
-        },
-        countText: {
-            color: colours.white,
-            fontSize: fontSizes.smallest,
-        },
-        legend: {
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginTop: 15,
-            paddingTop: 10,
-            borderTopWidth: 1,
-            borderTopColor: colours.border,
-        },
-        legendItem: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginHorizontal: 10,
-        },
-        legendDot: {
-            width: 10,
-            height: 10,
-            borderRadius: 5,
-            marginRight: 5,
-        },
-        legendText: {
-            color: colours.white,
-            fontSize: fontSizes.smallest,
-        },
-    }), [colours]);
+    const s = styles.drillStatsChart;
 
     if (stats.length === 0) {
         return null;
     }
 
-    const maxTotal = Math.max(...stats.map(s => s.total));
+    const maxTotal = Math.max(...stats.map(st => st.total));
 
     const getBarColor = (successRate: number) => {
         if (successRate >= 70) return colours.green;
@@ -109,21 +31,21 @@ export default function DrillStatsChart({ stats }: Props) {
     };
 
     return (
-        <View style={localStyles.container}>
-            <Text style={localStyles.title}>Success Rate by Drill</Text>
+        <View style={s.container}>
+            <Text style={s.title}>Success Rate by Drill</Text>
 
             {stats.slice(0, 8).map((stat, index) => (
-                <View key={index} style={localStyles.barContainer}>
-                    <View style={localStyles.labelContainer}>
-                        <Text style={localStyles.label} numberOfLines={1}>
+                <View key={index} style={s.barContainer}>
+                    <View style={s.labelContainer}>
+                        <Text style={s.label} numberOfLines={1}>
                             {truncateName(stat.name)}
                         </Text>
                     </View>
 
-                    <View style={localStyles.barWrapper}>
+                    <View style={s.barWrapper}>
                         <View
                             style={[
-                                localStyles.bar,
+                                s.bar,
                                 {
                                     width: `${(stat.total / maxTotal) * 100}%`,
                                     backgroundColor: getBarColor(stat.successRate)
@@ -132,35 +54,35 @@ export default function DrillStatsChart({ stats }: Props) {
                         />
                         <View
                             style={[
-                                localStyles.barBackground,
+                                s.barBackground,
                                 { width: `${100 - (stat.total / maxTotal) * 100}%` }
                             ]}
                         />
                     </View>
 
-                    <View style={localStyles.statsContainer}>
-                        <Text style={localStyles.statsText}>
+                    <View style={s.statsContainer}>
+                        <Text style={s.statsText}>
                             {stat.successRate}%
                         </Text>
-                        <Text style={localStyles.countText}>
+                        <Text style={s.countText}>
                             ({stat.met}/{stat.total})
                         </Text>
                     </View>
                 </View>
             ))}
 
-            <View style={localStyles.legend}>
-                <View style={localStyles.legendItem}>
-                    <View style={[localStyles.legendDot, { backgroundColor: colours.green }]} />
-                    <Text style={localStyles.legendText}>≥70%</Text>
+            <View style={s.legend}>
+                <View style={s.legendItem}>
+                    <View style={[s.legendDot, { backgroundColor: colours.green }]} />
+                    <Text style={s.legendText}>≥70%</Text>
                 </View>
-                <View style={localStyles.legendItem}>
-                    <View style={[localStyles.legendDot, { backgroundColor: colours.yellow }]} />
-                    <Text style={localStyles.legendText}>40-69%</Text>
+                <View style={s.legendItem}>
+                    <View style={[s.legendDot, { backgroundColor: colours.yellow }]} />
+                    <Text style={s.legendText}>40-69%</Text>
                 </View>
-                <View style={localStyles.legendItem}>
-                    <View style={[localStyles.legendDot, { backgroundColor: colours.errorText }]} />
-                    <Text style={localStyles.legendText}>&lt;40%</Text>
+                <View style={s.legendItem}>
+                    <View style={[s.legendDot, { backgroundColor: colours.errorText }]} />
+                    <Text style={s.legendText}>&lt;40%</Text>
                 </View>
             </View>
         </View>

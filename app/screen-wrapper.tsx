@@ -1,19 +1,11 @@
-import React, { useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { useThemeColours } from '../context/ThemeContext';
+import React from 'react';
+import { View } from 'react-native';
+import { useStyles } from '@/hooks/useStyles';
 
 const ScreenWrapper = ({ children }: any) => {
-    const colours = useThemeColours();
-    const localStyles = useMemo(() => StyleSheet.create({
-        container: {
-            flex: 1,
-            paddingLeft: 10,
-            paddingRight: 10,
-            backgroundColor: colours.background,
-        },
-    }), [colours]);
+    const styles = useStyles();
 
-    return <View style={localStyles.container}>{children}</View>;
+    return <View style={styles.screenWrapper.container}>{children}</View>;
 };
 
 export default ScreenWrapper;

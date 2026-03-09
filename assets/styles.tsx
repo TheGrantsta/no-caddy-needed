@@ -1,0 +1,1560 @@
+import { Dimensions, StyleSheet } from 'react-native';
+import colours, { ThemeColours } from './colours';
+import fontSizes from './font-sizes';
+
+export const createStyles = (c: ThemeColours) => ({
+    // Global flat styles — backward-compatible
+    ...StyleSheet.create({
+        flexOne: {
+            flex: 1,
+        },
+        marginTop: {
+            marginTop: 10,
+        },
+        marginBottom: {
+            marginBottom: 10,
+        },
+        scrollContainer: {
+            flex: 1,
+            backgroundColor: c.background,
+        },
+        scrollContentContainer: {
+            paddingBottom: 100,
+        },
+        viewContainer: {
+            alignItems: 'center',
+        },
+        principlesContainer: {
+            flexDirection: 'row',
+            marginTop: 10,
+            paddingBottom: 5,
+            paddingLeft: 30,
+            paddingRight: 5,
+            width: '95%',
+        },
+        container: {
+            flex: 1,
+            backgroundColor: c.background,
+        },
+        headerContainer: {
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        iconsContainer: {
+            backgroundColor: c.background,
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+            width: '100%',
+            paddingHorizontal: 2,
+        },
+        iconContainer: {
+            padding: 15,
+        },
+        wrapper: {
+            borderColor: c.border,
+            borderWidth: 2,
+            borderRadius: 10,
+            marginTop: 10
+        },
+        headerText: {
+            color: c.yellow,
+            fontSize: fontSizes.header,
+            alignItems: 'center',
+            padding: 8,
+        },
+        subHeaderText: {
+            color: c.yellow,
+            fontSize: fontSizes.subHeader,
+            alignItems: 'baseline',
+            padding: 6,
+        },
+        normalText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            alignItems: 'center',
+        },
+        smallestText: {
+            color: c.text,
+            fontSize: fontSizes.smallestText,
+            alignItems: 'center',
+            padding: 5,
+        },
+        overlay: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            zIndex: 1000,
+        },
+        overlayText: {
+            color: c.white,
+            fontSize: fontSizes.normal,
+            paddingBottom: 20,
+            paddingLeft: 10,
+            alignItems: 'center',
+        },
+        buttonContainer: {
+            margin: 8,
+            alignItems: 'center',
+            alignContent: 'center',
+            flexDirection: 'row',
+        },
+        largeButton: {
+            backgroundColor: c.yellow,
+            padding: 10,
+            borderRadius: 8,
+            width: '90%',
+            alignItems: 'center',
+            margin: 5,
+        },
+        button: {
+            backgroundColor: c.yellow,
+            padding: 10,
+            borderRadius: 8,
+            width: 100,
+            alignItems: 'center',
+            margin: 5,
+        },
+        buttonText: {
+            color: c.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        yellowText: {
+            color: c.yellow,
+        },
+        deleteBackground: {
+            backgroundColor: c.backgroundDelete,
+            position: 'absolute',
+            right: 0,
+            left: 0,
+            top: 0,
+            bottom: 0,
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+            width: '90%',
+        },
+        deleteText: {
+            color: c.white,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+            padding: 2,
+        },
+        cardRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 2,
+        },
+        card: {
+            backgroundColor: c.background,
+            paddingTop: 3,
+            width: '90%',
+        },
+        cardText: {
+            flex: 1,
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            paddingLeft: 2,
+        },
+        cardIcon: {
+            paddingBottom: 1,
+        },
+        textarea: {
+            height: 150,
+            borderColor: c.border,
+            borderWidth: 1,
+            padding: 10,
+            borderRadius: 5,
+            backgroundColor: c.backgroundLight,
+            fontSize: fontSizes.normal,
+        },
+        textareaError: {
+            borderColor: c.borderError,
+        },
+        errorText: {
+            color: c.errorText,
+            fontSize: fontSizes.normal,
+            marginTop: 5,
+        },
+        textLabel: {
+            fontSize: fontSizes.smallText,
+            color: c.white,
+            margin: 5,
+        },
+        textInput: {
+            height: 40,
+            borderColor: c.border,
+            borderWidth: 1,
+            borderRadius: 5,
+            paddingHorizontal: 10,
+            fontSize: fontSizes.smallText,
+            color: c.white,
+        },
+        textInputError: {
+            borderColor: c.borderError,
+        },
+        table: {
+            marginTop: 20,
+            marginLeft: 20,
+            marginRight: 20,
+            marginBottom: 5,
+            borderWidth: 1,
+            borderColor: c.border,
+        },
+        row: {
+            flexDirection: 'row',
+        },
+        alternateRow: {
+            backgroundColor: c.backgroundAlternate,
+            color: c.black,
+        },
+        cell: {
+            flex: 4,
+            borderWidth: 1,
+            borderColor: c.border,
+            padding: 10,
+            textAlign: 'center',
+            color: c.white,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+        },
+        header: {
+            color: c.yellow,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        bold: {
+            fontWeight: 'bold',
+        },
+        spinnerContainer: {
+            marginTop: 16,
+            alignItems: 'center',
+        },
+        updateOverlay: {
+            width: '100%',
+            backgroundColor: c.background,
+        },
+        updateText: {
+            color: c.yellow,
+            marginTop: 5,
+            fontSize: fontSizes.normal,
+            textAlign: 'center',
+        },
+        scrollWrapper: {
+            margin: 5,
+            borderRadius: 5,
+            borderColor: c.yellow,
+            borderWidth: 2,
+            borderLeftColor: c.yellow,
+            borderLeftWidth: 10,
+        },
+        horizontalScrollContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            marginTop: 10,
+        },
+        scrollItemContainer: {
+            width: Dimensions.get('window').width,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        scrollItemText: {
+            fontSize: 24,
+            fontWeight: 'bold',
+        },
+        scrollIndicatorContainer: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginTop: 20,
+            marginBottom: 10,
+        },
+        scrollIndicatorDot: {
+            width: 10,
+            height: 10,
+            borderRadius: 5,
+            backgroundColor: c.backgroundAlternate,
+            marginHorizontal: 5,
+            borderColor: c.backgroundAlternate,
+            borderWidth: 1,
+        },
+        scrollActiveDot: {
+            backgroundColor: c.yellow,
+            borderColor: c.yellow,
+        },
+    }),
+
+    // Component style groups
+    smallButton: StyleSheet.create({
+        buttonContainer: {
+            width: 175,
+            height: 38,
+            margin: 5,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        button: {
+            borderRadius: 10,
+            borderColor: c.yellow,
+            borderWidth: 1,
+            backgroundColor: c.mutedYellow,
+            width: '100%',
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+        },
+        buttonIcon: {
+            paddingRight: 8,
+        },
+        buttonLabel: {
+            color: c.text,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        selected: {
+            color: c.background,
+            backgroundColor: c.yellow,
+        },
+    }),
+
+    subMenu: StyleSheet.create({
+        subMenuContainer: {
+            padding: 7,
+            paddingBottom: 0,
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            backgroundColor: c.background,
+            borderBottomWidth: 0.5,
+            borderBottomColor: c.yellow,
+        },
+        subMenuItemContainer: {
+            flex: 1,
+            alignItems: 'center',
+        },
+        subMenuItemContainerSelected: {
+            borderBottomWidth: 4,
+            borderBottomColor: c.yellow,
+        },
+        subMenuItem: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+        },
+        subMenuItemSelected: {
+            textDecorationColor: c.yellow,
+            textDecorationStyle: 'solid',
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+        },
+    }),
+
+    iconButton: StyleSheet.create({
+        iconButton: {
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderColor: c.border,
+            borderWidth: 2,
+            padding: 10,
+            zIndex: 1,
+        },
+        small: {
+            borderRadius: 10,
+            width: 75,
+            height: 75,
+        },
+        medium: {
+            borderRadius: 20,
+            width: 125,
+            height: 125,
+        },
+        large: {
+            borderRadius: 40,
+            width: 175,
+            height: 175,
+        },
+        iconButtonLabel: {
+            fontSize: fontSizes.smallText,
+            color: c.white,
+            marginTop: 24,
+        },
+    }),
+
+    drill: StyleSheet.create({
+        contentText: {
+            marginTop: 5,
+            fontSize: fontSizes.normal,
+            color: c.white,
+        },
+        toggleWrapper: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            width: 150,
+        },
+        toggleContainer: {
+            width: 45,
+            height: 15,
+            borderRadius: 10,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+        },
+        toggleOn: {
+            backgroundColor: c.yellow,
+        },
+        toggleCircle: {
+            width: 20,
+            height: 20,
+            borderRadius: 10,
+            backgroundColor: c.backgroundLight,
+            alignSelf: 'flex-start',
+        },
+        circleOn: {
+            alignSelf: 'flex-end',
+        },
+    }),
+
+    holeScoreInput: StyleSheet.create({
+        container: {
+            padding: 15,
+        },
+        holeText: {
+            color: c.yellow,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: 15,
+        },
+        parRow: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginBottom: 20,
+        },
+        parButton: {
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            borderWidth: 1,
+            borderColor: c.yellow,
+            marginHorizontal: 5,
+            borderRadius: 4,
+        },
+        parButtonActive: {
+            backgroundColor: c.yellow,
+        },
+        parButtonText: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        parButtonTextActive: {
+            color: c.background,
+        },
+        playerRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 15,
+            paddingVertical: 5,
+        },
+        playerName: {
+            color: c.yellow,
+            fontSize: fontSizes.subHeader,
+            flex: 1,
+        },
+        stepperRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        stepperButton: {
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: c.yellow,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        stepperButtonText: {
+            color: c.background,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+        },
+        scoreText: {
+            color: c.text,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            marginHorizontal: 15,
+            minWidth: 30,
+            textAlign: 'center',
+        },
+    }),
+
+    scorecard: StyleSheet.create({
+        container: {
+            padding: 15,
+        },
+        totalRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingVertical: 4,
+        },
+        totalPlayerName: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        totalScore: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        nineSection: {
+            marginTop: 15,
+        },
+        nineHeader: {
+            color: c.yellow,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            marginBottom: 10,
+        },
+        gridRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        labelCell: {
+            width: 60,
+            paddingVertical: 4,
+        },
+        holeCell: {
+            flex: 1,
+            alignItems: 'center',
+            paddingVertical: 4,
+        },
+        holeNumberText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        parText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        labelText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        playerNameText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        scoreText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        underParText: {
+            color: c.green,
+        },
+        overParText: {
+            color: c.errorText,
+        },
+        atParText: {
+            color: c.yellow,
+        },
+        selectedCell: {
+            borderWidth: 2,
+            borderColor: c.yellow,
+            borderRadius: 4,
+        },
+        roundTotalSection: {
+            marginTop: 15,
+            borderTopWidth: 1,
+            borderTopColor: c.yellow,
+            paddingTop: 10,
+        },
+    }),
+
+    roundScorecard: StyleSheet.create({
+        container: {
+            padding: 15,
+        },
+        totalScore: {
+            color: c.yellow,
+            fontSize: fontSizes.massive,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: 20,
+        },
+        nineSection: {
+            marginBottom: 15,
+        },
+        nineHeader: {
+            color: c.yellow,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            marginBottom: 10,
+        },
+        holesGrid: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+        },
+        holeCell: {
+            width: '11.11%',
+            alignItems: 'center',
+            paddingVertical: 5,
+        },
+        holeNumber: {
+            color: c.text,
+            fontSize: fontSizes.smallestText,
+        },
+        holeScore: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        underParText: {
+            color: c.green,
+        },
+        overParText: {
+            color: c.errorText,
+        },
+        nineTotal: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            textAlign: 'right',
+            marginTop: 5,
+            borderTopWidth: 0.5,
+            borderTopColor: c.yellow,
+            paddingTop: 5,
+        },
+    }),
+
+    clubDistanceList: StyleSheet.create({
+        container: {
+            padding: 15,
+        },
+        headerRow: {
+            flexDirection: 'row',
+            borderBottomWidth: 1,
+            borderBottomColor: c.yellow,
+            paddingBottom: 8,
+            marginBottom: 5,
+        },
+        row: {
+            flexDirection: 'row',
+            paddingVertical: 6,
+            borderBottomWidth: 0.5,
+            borderBottomColor: c.yellow,
+        },
+        headerCell: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        cell: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        clubCell: {
+            flex: 2,
+        },
+        distanceCell: {
+            flex: 1,
+            textAlign: 'right',
+        },
+        emptyText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            textAlign: 'center',
+        },
+        input: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            paddingVertical: 4,
+        },
+        addButton: {
+            padding: 10,
+            alignItems: 'center',
+            marginTop: 10,
+        },
+        addButtonText: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+        },
+        saveButton: {
+            backgroundColor: c.yellow,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginTop: 10,
+        },
+        saveButtonText: {
+            color: c.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+    }),
+
+    wedgeChart: StyleSheet.create({
+        container: {
+            padding: 15,
+        },
+        headerRow: {
+            flexDirection: 'row',
+            borderBottomWidth: 1,
+            borderBottomColor: c.yellow,
+            paddingBottom: 8,
+            marginBottom: 5,
+        },
+        row: {
+            flexDirection: 'row',
+            paddingVertical: 6,
+            borderBottomWidth: 0.5,
+            borderBottomColor: c.yellow,
+        },
+        headerCell: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        headerInput: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+            paddingVertical: 4,
+        },
+        clubCell: {
+            flex: 2,
+        },
+        distanceCell: {
+            flex: 1,
+            textAlign: 'right',
+        },
+        input: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            paddingVertical: 4,
+        },
+        buttonRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            marginTop: 10,
+        },
+        addButton: {
+            padding: 10,
+            alignItems: 'center',
+        },
+        addButtonText: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+        },
+        saveButton: {
+            backgroundColor: c.yellow,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginTop: 10,
+        },
+        saveButtonText: {
+            color: c.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+    }),
+
+    scoreEditor: StyleSheet.create({
+        container: {
+            padding: 15,
+            alignItems: 'center',
+        },
+        headerText: {
+            color: c.yellow,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            marginBottom: 15,
+        },
+        stepperRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        stepperButton: {
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: c.yellow,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        stepperButtonText: {
+            color: c.background,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+        },
+        scoreText: {
+            color: c.text,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            marginHorizontal: 15,
+            minWidth: 30,
+            textAlign: 'center',
+        },
+    }),
+
+    playerSetup: StyleSheet.create({
+        container: {
+            padding: 15,
+        },
+        playerRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 10,
+        },
+        playerName: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        input: {
+            flex: 1,
+            color: c.text,
+            fontSize: fontSizes.normal,
+            borderBottomWidth: 1,
+            borderBottomColor: c.yellow,
+            paddingVertical: 5,
+        },
+        courseNameInput: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            borderBottomWidth: 1,
+            borderBottomColor: c.yellow,
+            paddingVertical: 5,
+            marginBottom: 15,
+        },
+        removeButton: {
+            marginLeft: 10,
+            padding: 5,
+        },
+        removeButtonText: {
+            color: c.errorText,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        addButton: {
+            paddingVertical: 10,
+            alignItems: 'center',
+        },
+        addButtonText: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+        },
+        startButton: {
+            backgroundColor: c.yellow,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginTop: 10,
+        },
+        startButtonText: {
+            color: c.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        cancelButton: {
+            backgroundColor: c.errorText,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginTop: 10,
+        },
+        cancelButtonText: {
+            color: c.white,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        recentLabel: {
+            color: c.text,
+            fontSize: fontSizes.small,
+            marginBottom: 5,
+        },
+        recentItem: {
+            paddingVertical: 6,
+            paddingHorizontal: 10,
+        },
+        recentItemText: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+        },
+        recentContainer: {
+            marginBottom: 10,
+        },
+        errorText: {
+            color: c.errorText,
+            fontSize: fontSizes.small,
+            marginBottom: 10,
+        },
+    }),
+
+    onboardingOverlay: StyleSheet.create({
+        overlay: {
+            flex: 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 20,
+        },
+        container: {
+            backgroundColor: c.background,
+            borderRadius: 16,
+            padding: 24,
+            width: '100%',
+            maxWidth: 400,
+            borderWidth: 2,
+            borderColor: c.yellow,
+        },
+        title: {
+            color: c.yellow,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: 20,
+        },
+        stepText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            textAlign: 'center',
+            marginBottom: 24,
+            lineHeight: 24,
+        },
+        indicatorContainer: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginBottom: 20,
+        },
+        indicator: {
+            width: 10,
+            height: 10,
+            borderRadius: 5,
+            marginHorizontal: 4,
+        },
+        indicatorActive: {
+            backgroundColor: c.yellow,
+        },
+        indicatorInactive: {
+            backgroundColor: c.backgroundAlternate,
+        },
+        buttonContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+        },
+        primaryButton: {
+            backgroundColor: c.yellow,
+            paddingVertical: 12,
+            paddingHorizontal: 24,
+            borderRadius: 8,
+        },
+        primaryButtonText: {
+            color: c.background,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        secondaryButton: {
+            paddingVertical: 12,
+            paddingHorizontal: 24,
+        },
+        secondaryButtonText: {
+            color: c.backgroundAlternate,
+            fontSize: fontSizes.normal,
+        },
+        spacer: {
+            width: 80,
+        },
+    }),
+
+    deadlySinsTally: StyleSheet.create({
+        container: {
+            paddingTop: 5,
+            paddingLeft: 20,
+            paddingRight: 20,
+            paddingBottom: 20,
+        },
+        row: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingVertical: 6,
+            borderBottomWidth: 0.5,
+            borderColor: c.yellow,
+        },
+        label: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            flex: 1,
+        },
+        controls: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        button: {
+            backgroundColor: c.yellow,
+            width: 24,
+            height: 24,
+            borderRadius: 12,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        buttonText: {
+            color: c.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        count: {
+            color: c.text,
+            fontSize: fontSizes.subHeader,
+            minWidth: 40,
+            textAlign: 'center',
+        },
+        saveButton: {
+            backgroundColor: c.yellow,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginTop: 5,
+        },
+        saveButtonText: {
+            color: c.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        toggleHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingVertical: 8,
+            borderBottomWidth: 0.5,
+            borderColor: c.yellow,
+        },
+        toggleLabel: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+        },
+        chevron: {
+            color: c.yellow,
+            fontSize: fontSizes.subHeader,
+        },
+    }),
+
+    deadlySinsChart: StyleSheet.create({
+        container: {
+            padding: 10,
+            paddingBottom: 0,
+        },
+        title: {
+            color: c.yellow,
+            fontSize: fontSizes.subHeader,
+            textAlign: 'center',
+        },
+        barContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 8,
+        },
+        labelContainer: {
+            width: 120,
+            paddingRight: 5,
+        },
+        label: {
+            color: c.white,
+            fontSize: fontSizes.smallestText,
+        },
+        barWrapper: {
+            flex: 1,
+            flexDirection: 'row',
+            height: 20,
+            borderRadius: 4,
+            overflow: 'hidden',
+        },
+        bar: {
+            height: '100%',
+            borderTopLeftRadius: 4,
+            borderBottomLeftRadius: 4,
+        },
+        barBackground: {
+            height: '100%',
+            backgroundColor: c.backgroundLight,
+        },
+        countContainer: {
+            width: 40,
+            alignItems: 'flex-end',
+        },
+        countText: {
+            color: c.yellow,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+        },
+        legend: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginTop: 15,
+            paddingTop: 10,
+            borderTopWidth: 1,
+            borderTopColor: c.border,
+        },
+        legendItem: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginHorizontal: 10,
+        },
+        legendDot: {
+            width: 10,
+            height: 10,
+            borderRadius: 5,
+            marginRight: 5,
+        },
+        legendText: {
+            color: c.white,
+            fontSize: fontSizes.smallestText,
+        },
+        toggleHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 8,
+            borderBottomWidth: 0.5,
+            borderColor: c.yellow,
+        },
+        chevron: {
+            color: c.yellow,
+            fontSize: fontSizes.header,
+        },
+    }),
+
+    drillStatsChart: StyleSheet.create({
+        container: {
+            padding: 10,
+            marginBottom: 10,
+        },
+        title: {
+            color: c.yellow,
+            fontSize: fontSizes.subHeader,
+            marginBottom: 15,
+        },
+        barContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 8,
+        },
+        labelContainer: {
+            width: 100,
+            paddingRight: 5,
+        },
+        label: {
+            color: c.white,
+            fontSize: fontSizes.small,
+        },
+        barWrapper: {
+            flex: 1,
+            flexDirection: 'row',
+            height: 20,
+            borderRadius: 4,
+            overflow: 'hidden',
+        },
+        bar: {
+            height: '100%',
+            borderTopLeftRadius: 4,
+            borderBottomLeftRadius: 4,
+        },
+        barBackground: {
+            height: '100%',
+            backgroundColor: c.backgroundLight,
+        },
+        statsContainer: {
+            width: 70,
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+        },
+        statsText: {
+            color: c.yellow,
+            fontSize: fontSizes.small,
+            fontWeight: 'bold',
+            marginRight: 2,
+        },
+        countText: {
+            color: c.white,
+            fontSize: fontSizes.smallest,
+        },
+        legend: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginTop: 15,
+            paddingTop: 10,
+            borderTopWidth: 1,
+            borderTopColor: c.border,
+        },
+        legendItem: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginHorizontal: 10,
+        },
+        legendDot: {
+            width: 10,
+            height: 10,
+            borderRadius: 5,
+            marginRight: 5,
+        },
+        legendText: {
+            color: c.white,
+            fontSize: fontSizes.smallest,
+        },
+    }),
+
+    networkStatus: StyleSheet.create({
+        container: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: c.backgroundAlternate,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            zIndex: 1000,
+        },
+        text: {
+            color: c.white,
+            fontSize: fontSizes.small,
+            marginLeft: 8,
+            fontWeight: '500',
+        },
+    }),
+
+    instructions: StyleSheet.create({
+        contentText: {
+            padding: 5,
+            margin: 5,
+        },
+    }),
+
+    themedText: StyleSheet.create({
+        default: {
+            fontSize: 16,
+            lineHeight: 24,
+        },
+        defaultSemiBold: {
+            fontSize: 16,
+            lineHeight: 24,
+            fontWeight: '600',
+        },
+        title: {
+            fontSize: 32,
+            fontWeight: 'bold',
+            lineHeight: 32,
+        },
+        subtitle: {
+            fontSize: 20,
+            fontWeight: 'bold',
+        },
+        link: {
+            lineHeight: 30,
+            fontSize: 16,
+            color: '#0a7ea4',
+        },
+    }),
+
+    parallaxScrollView: StyleSheet.create({
+        container: {
+            flex: 1,
+        },
+        header: {
+            height: 250,
+            overflow: 'hidden',
+        },
+        content: {
+            flex: 1,
+            padding: 32,
+            gap: 16,
+            overflow: 'hidden',
+        },
+    }),
+
+    collapsible: StyleSheet.create({
+        heading: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+        },
+        content: {
+            marginTop: 6,
+            marginLeft: 24,
+        },
+    }),
+
+    helloWave: StyleSheet.create({
+        text: {
+            fontSize: 28,
+            lineHeight: 32,
+            marginTop: -6,
+        },
+    }),
+
+    errorBoundary: StyleSheet.create({
+        container: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: c.background,
+            padding: 20,
+        },
+        title: {
+            fontSize: 24,
+            fontWeight: 'bold',
+            color: c.text,
+            marginBottom: 16,
+        },
+        message: {
+            fontSize: 16,
+            color: c.text,
+            textAlign: 'center',
+            marginBottom: 24,
+        },
+        button: {
+            backgroundColor: c.yellow,
+            paddingHorizontal: 24,
+            paddingVertical: 12,
+            borderRadius: 8,
+        },
+        buttonText: {
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: c.background,
+        },
+    }),
+
+    playScreen: StyleSheet.create({
+        startRoundContainer: {
+            padding: 15,
+            alignItems: 'center',
+        },
+        actionButton: {
+            backgroundColor: c.yellow,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            width: '100%',
+            marginTop: 5,
+        },
+        actionButtonText: {
+            color: c.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        nextHoleButton: {
+            backgroundColor: c.yellow,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginTop: 10,
+            marginHorizontal: 15,
+        },
+        nextHoleButtonText: {
+            color: c.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        confirmContainer: {
+            marginTop: 20,
+            marginHorizontal: 15,
+        },
+        endRoundButton: {
+            backgroundColor: c.errorText,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginTop: 20,
+            marginHorizontal: 15,
+        },
+        endRoundButtonText: {
+            color: c.white,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        roundHistoryScroll: {
+            maxHeight: 300,
+        },
+        filterContainer: {
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            paddingHorizontal: 15,
+            paddingTop: 20,
+            gap: 8,
+        },
+        filterLabel: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+            alignSelf: 'center',
+            marginRight: 4,
+        },
+        filterButton: {
+            paddingVertical: 4,
+            width: 68,
+            alignItems: 'center',
+            borderRadius: 6,
+            borderWidth: 1,
+            borderColor: c.yellow,
+        },
+        filterButtonSelected: {
+            backgroundColor: c.yellow,
+        },
+        filterButtonText: {
+            color: c.yellow,
+            fontSize: fontSizes.normal,
+        },
+        filterButtonTextSelected: {
+            color: c.background,
+        },
+        historyDateColumn: {
+            width: '70%',
+        },
+        historyNarrowColumn: {
+            width: '15%',
+            textAlign: 'center',
+        },
+        scorecardHeader: {
+            color: c.text,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginTop: 10,
+            marginBottom: 5,
+        },
+    }),
+
+    practiceScreen: StyleSheet.create({
+        page: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        item: {
+            width: 100,
+            height: 100,
+            backgroundColor: '#4A90E2',
+            margin: 5,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 10,
+        },
+        text: {
+            color: '#fff',
+            fontSize: 16,
+            fontWeight: 'bold',
+        },
+    }),
+
+    screenWrapper: StyleSheet.create({
+        container: {
+            flex: 1,
+            paddingLeft: 10,
+            paddingRight: 10,
+            backgroundColor: c.background,
+        },
+    }),
+
+    randomTool: StyleSheet.create({
+        container: {
+            padding: 20,
+        },
+        actionButton: {
+            backgroundColor: c.yellow,
+            padding: 12,
+            borderRadius: 8,
+            alignItems: 'center',
+            width: '100%',
+        },
+        actionButtonText: {
+            color: c.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        randomNumberContainer: {
+            backgroundColor: c.background,
+            borderColor: c.yellow,
+            borderWidth: 2,
+            borderRadius: 12,
+            margin: 15,
+            padding: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+        },
+        randomNumberText: {
+            color: c.yellow,
+            fontSize: fontSizes.massive,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            fontFamily: 'Arial',
+        },
+        micButton: {
+            marginTop: 12,
+            padding: 10,
+            borderRadius: 8,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            backgroundColor: c.backgroundAlternate,
+        },
+        micButtonActive: {
+            backgroundColor: c.yellow,
+        },
+    }),
+
+    tempoTool: StyleSheet.create({
+        container: {
+            padding: 20,
+            alignItems: 'center',
+        },
+        title: {
+            fontSize: fontSizes.subHeader,
+            color: c.yellow,
+            marginBottom: 10,
+        },
+        slider: {
+            width: '90%',
+            height: 40,
+        },
+        labelsContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '90%',
+            marginTop: 5,
+        },
+        label: {
+            fontSize: fontSizes.normal,
+            color: c.yellow,
+        },
+        valueText: {
+            marginTop: 10,
+            fontSize: 18,
+            fontWeight: 'bold',
+        },
+    }),
+
+    notFound: StyleSheet.create({
+        container: {
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+        },
+        link: {
+            marginTop: 15,
+            paddingVertical: 15,
+        },
+    }),
+});
+
+export default createStyles(colours);

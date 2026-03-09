@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { Text } from 'react-native';
-import { createStyles } from '../../assets/stlyes';
+import { createStyles } from '../../assets/styles';
 import { darkColours, lightColours } from '../../assets/colours';
 import { useStyles } from '../../hooks/useStyles';
 import { AppThemeProvider } from '../../context/ThemeContext';
@@ -28,7 +28,7 @@ describe('createStyles', () => {
     });
 
     it('default export uses dark colours', () => {
-        const defaultStyles = require('../../assets/stlyes').default;
+        const defaultStyles = require('../../assets/styles').default;
 
         expect(defaultStyles.scrollContainer.backgroundColor).toBe(darkColours.background);
     });

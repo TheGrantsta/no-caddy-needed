@@ -1,7 +1,5 @@
-import { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useThemeColours } from '../context/ThemeContext';
-import fontSizes from '../assets/font-sizes';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
     showSubMenu: 'practice' | 'play' | 'perform' | 'putting' | 'chipping' | 'bunker' | 'pitching';
@@ -29,45 +27,15 @@ const allSubMenuItems = [
 ]
 
 const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {
-    const colours = useThemeColours();
+    const styles = useStyles();
     const subMenuItems = allSubMenuItems.filter(item => item.testId.startsWith(showSubMenu));
 
-    const localStyles = useMemo(() => StyleSheet.create({
-        subMenuContainer: {
-            padding: 7,
-            paddingBottom: 0,
-            flexDirection: 'row',
-            justifyContent: 'space-evenly',
-            backgroundColor: colours.background,
-            borderBottomWidth: 0.5,
-            borderBottomColor: colours.yellow
-        },
-        subMenuItemContainer: {
-            flex: 1,
-            alignItems: 'center',
-        },
-        subMenuItemContainerSelected: {
-            borderBottomWidth: 4,
-            borderBottomColor: colours.yellow,
-        },
-        subMenuItem: {
-            color: colours.yellow,
-            fontSize: fontSizes.normal,
-        },
-        subMenuItemSelected: {
-            textDecorationColor: colours.yellow,
-            textDecorationStyle: 'solid',
-            color: colours.yellow,
-            fontSize: fontSizes.normal,
-        }
-    }), [colours]);
-
     return (
-        <View style={localStyles.subMenuContainer}>
+        <View style={styles.subMenu.subMenuContainer}>
             {subMenuItems.map((item) => (
-                <View key={item.testId} style={[localStyles.subMenuItemContainer, selectedItem === item.name ? localStyles.subMenuItemContainerSelected : null]}>
+                <View key={item.testId} style={[styles.subMenu.subMenuItemContainer, selectedItem === item.name ? styles.subMenu.subMenuItemContainerSelected : null]}>
                     <TouchableOpacity testID={item.testId} onPress={() => handleSubMenu(item.name)}>
-                        <Text style={[localStyles.subMenuItem, selectedItem === item.name ? localStyles.subMenuItemSelected : null]}>
+                        <Text style={[styles.subMenu.subMenuItem, selectedItem === item.name ? styles.subMenu.subMenuItemSelected : null]}>
                             {item.title}
                         </Text>
                     </TouchableOpacity>

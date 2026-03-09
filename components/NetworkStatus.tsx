@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Text, StyleSheet, Animated } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Text, Animated } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
-import fontSizes from '@/assets/font-sizes';
+import { useStyles } from '@/hooks/useStyles';
 
 let NetInfo: typeof import('@react-native-community/netinfo').default | null = null;
 try {
@@ -12,7 +12,9 @@ try {
 }
 
 export default function NetworkStatus() {
+    const styles = useStyles();
     const colours = useThemeColours();
+    const s = styles.networkStatus;
     const [isConnected, setIsConnected] = useState<boolean | null>(true);
     const [showBanner, setShowBanner] = useState(false);
     const slideAnim = useState(new Animated.Value(-50))[0];
@@ -45,28 +47,6 @@ export default function NetworkStatus() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isConnected, slideAnim]);
 
-    const styles = useMemo(() => StyleSheet.create({
-        container: {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            backgroundColor: colours.backgroundAlternate,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingVertical: 8,
-            paddingHorizontal: 16,
-            zIndex: 1000,
-        },
-        text: {
-            color: colours.white,
-            fontSize: fontSizes.small,
-            marginLeft: 8,
-            fontWeight: '500',
-        },
-    }), [colours]);
-
     if (!showBanner) {
         return null;
     }
@@ -74,13 +54,13 @@ export default function NetworkStatus() {
     return (
         <Animated.View
             style={[
-                styles.container,
+                s.container,
                 { transform: [{ translateY: slideAnim }] }
             ]}
             testID="offline-banner"
         >
             <MaterialIcons name="wifi-off" size={18} color={colours.white} />
-            <Text style={styles.text}>You're offline - data is saved locally</Text>
+            <Text style={s.text}>You're offline - data is saved locally</Text>
         </Animated.View>
     );
 }

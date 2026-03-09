@@ -1,8 +1,6 @@
-import { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { RoundPlayer, RoundHoleScore } from '../service/DbService';
-import { useThemeColours } from '../context/ThemeContext';
-import fontSizes from '../assets/font-sizes';
+import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
     players: RoundPlayer[];
@@ -19,121 +17,39 @@ const formatScore = (score: number): string => {
 };
 
 const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect }: Props) => {
-    const colours = useThemeColours();
+    const styles = useStyles();
+    const s = styles.scorecard;
 
-    const localStyles = useMemo(() => StyleSheet.create({
-        container: {
-            padding: 15,
-        },
-        totalRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingVertical: 4,
-        },
-        totalPlayerName: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
-        },
-        totalScore: {
-            color: colours.yellow,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-        },
-        nineSection: {
-            marginTop: 15,
-        },
-        nineHeader: {
-            color: colours.yellow,
-            fontSize: fontSizes.subHeader,
-            fontWeight: 'bold',
-            marginBottom: 10,
-        },
-        gridRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-        },
-        labelCell: {
-            width: 60,
-            paddingVertical: 4,
-        },
-        holeCell: {
-            flex: 1,
-            alignItems: 'center',
-            paddingVertical: 4,
-        },
-        holeNumberText: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
-        },
-        parText: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
-        },
-        labelText: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
-        },
-        playerNameText: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
-        },
-        scoreText: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-        },
-        underParText: {
-            color: colours.green,
-        },
-        overParText: {
-            color: colours.errorText,
-        },
-        atParText: {
-            color: colours.yellow,
-        },
-        selectedCell: {
-            borderWidth: 2,
-            borderColor: colours.yellow,
-            borderRadius: 4,
-        },
-        roundTotalSection: {
-            marginTop: 15,
-            borderTopWidth: 1,
-            borderTopColor: colours.yellow,
-            paddingTop: 10,
-        },
-    }), [colours]);
-
-    const holeNumbers = [...new Set(holeScores.map(s => s.HoleNumber))].sort((a, b) => a - b);
+    const holeNumbers = [...new Set(holeScores.map(sc => sc.HoleNumber))].sort((a, b) => a - b);
     const front9Holes = holeNumbers.filter(h => h <= 9);
     const back9Holes = holeNumbers.filter(h => h > 9);
 
     const getPlayerTotal = (playerId: number): number => {
         return holeScores
-            .filter(s => s.RoundPlayerId === playerId)
-            .reduce((sum, s) => sum + (s.Score - s.HolePar), 0);
+            .filter(sc => sc.RoundPlayerId === playerId)
+            .reduce((sum, sc) => sum + (sc.Score - sc.HolePar), 0);
     };
 
     const getPlayerScoreForHole = (playerId: number, holeNumber: number): number | null => {
-        const score = holeScores.find(s => s.RoundPlayerId === playerId && s.HoleNumber === holeNumber);
+        const score = holeScores.find(sc => sc.RoundPlayerId === playerId && sc.HoleNumber === holeNumber);
         return score ? score.Score : null;
     };
 
     const getHolePar = (holeNumber: number): number => {
-        const score = holeScores.find(s => s.HoleNumber === holeNumber);
+        const score = holeScores.find(sc => sc.HoleNumber === holeNumber);
         return score ? score.HolePar : 4;
     };
 
     const getScoreColor = (score: number, par: number) => {
-        if (score < par) return localStyles.underParText;
-        if (score > par) return localStyles.overParText;
-        return localStyles.atParText;
+        if (score < par) return s.underParText;
+        if (score > par) return s.overParText;
+        return s.atParText;
     };
 
     const getPlayerStrokeTotal = (playerId: number, holes: number[]): number => {
         return holeScores
-            .filter(s => s.RoundPlayerId === playerId && holes.includes(s.HoleNumber))
-            .reduce((sum, s) => sum + s.Score, 0);
+            .filter(sc => sc.RoundPlayerId === playerId && holes.includes(sc.HoleNumber))
+            .reduce((sum, sc) => sum + sc.Score, 0);
     };
 
     const getParTotalForHoles = (holes: number[]): number => {
@@ -145,38 +61,38 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
 
         return (
             <View>
-                <View style={localStyles.gridRow}>
-                    <View style={localStyles.labelCell} />
+                <View style={s.gridRow}>
+                    <View style={s.labelCell} />
                     {holes.map(h => (
-                        <View key={h} style={localStyles.holeCell}>
-                            <Text testID={`hole-number-${h}`} style={localStyles.holeNumberText}>{h}</Text>
+                        <View key={h} style={s.holeCell}>
+                            <Text testID={`hole-number-${h}`} style={s.holeNumberText}>{h}</Text>
                         </View>
                     ))}
-                    <View style={localStyles.holeCell}>
-                        <Text style={localStyles.holeNumberText}>Tot</Text>
+                    <View style={s.holeCell}>
+                        <Text style={s.holeNumberText}>Tot</Text>
                     </View>
                 </View>
 
-                <View style={localStyles.gridRow}>
-                    <View style={localStyles.labelCell}>
-                        <Text style={localStyles.labelText}>Par</Text>
+                <View style={s.gridRow}>
+                    <View style={s.labelCell}>
+                        <Text style={s.labelText}>Par</Text>
                     </View>
                     {holes.map(h => (
-                        <View key={h} style={localStyles.holeCell}>
-                            <Text testID={`hole-par-${h}`} style={localStyles.parText}>{getHolePar(h)}</Text>
+                        <View key={h} style={s.holeCell}>
+                            <Text testID={`hole-par-${h}`} style={s.parText}>{getHolePar(h)}</Text>
                         </View>
                     ))}
-                    <View style={localStyles.holeCell}>
-                        <Text testID={`${nineLabel}-par-total`} style={localStyles.parText}>{parTotal}</Text>
+                    <View style={s.holeCell}>
+                        <Text testID={`${nineLabel}-par-total`} style={s.parText}>{parTotal}</Text>
                     </View>
                 </View>
 
                 {players.map(player => {
                     const strokeTotal = getPlayerStrokeTotal(player.Id, holes);
                     return (
-                        <View key={player.Id} style={localStyles.gridRow}>
-                            <View style={localStyles.labelCell}>
-                                <Text style={localStyles.playerNameText}>{player.PlayerName}</Text>
+                        <View key={player.Id} style={s.gridRow}>
+                            <View style={s.labelCell}>
+                                <Text style={s.playerNameText}>{player.PlayerName}</Text>
                             </View>
                             {holes.map(h => {
                                 const score = getPlayerScoreForHole(player.Id, h);
@@ -185,7 +101,7 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                 const cellContent = (
                                     <Text
                                         testID={`hole-${h}-player-${player.Id}-score`}
-                                        style={[localStyles.scoreText, score !== null ? getScoreColor(score, par) : undefined]}
+                                        style={[s.scoreText, score !== null ? getScoreColor(score, par) : undefined]}
                                     >
                                         {score !== null ? score : '-'}
                                     </Text>
@@ -196,7 +112,7 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                         <TouchableOpacity
                                             key={h}
                                             testID={`score-cell-${h}-${player.Id}`}
-                                            style={[localStyles.holeCell, isSelected && localStyles.selectedCell]}
+                                            style={[s.holeCell, isSelected && s.selectedCell]}
                                             onPress={() => onScoreSelect?.(h, player.Id)}
                                         >
                                             {cellContent}
@@ -205,15 +121,15 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                 }
 
                                 return (
-                                    <View key={h} style={localStyles.holeCell}>
+                                    <View key={h} style={s.holeCell}>
                                         {cellContent}
                                     </View>
                                 );
                             })}
-                            <View style={localStyles.holeCell}>
+                            <View style={s.holeCell}>
                                 <Text
                                     testID={`${nineLabel}-player-${player.Id}-total`}
-                                    style={[localStyles.scoreText, getScoreColor(strokeTotal, parTotal)]}
+                                    style={[s.scoreText, getScoreColor(strokeTotal, parTotal)]}
                                 >
                                     {strokeTotal}
                                 </Text>
@@ -226,40 +142,40 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
     };
 
     return (
-        <View style={localStyles.container}>
+        <View style={s.container}>
             {front9Holes.length > 0 && (
-                <View style={localStyles.nineSection}>
-                    <Text style={localStyles.nineHeader}>Front 9</Text>
+                <View style={s.nineSection}>
+                    <Text style={s.nineHeader}>Front 9</Text>
                     {renderHoleGrid(front9Holes, 'front9')}
                 </View>
             )}
 
             {back9Holes.length > 0 && (
-                <View style={localStyles.nineSection}>
-                    <Text style={localStyles.nineHeader}>Back 9</Text>
+                <View style={s.nineSection}>
+                    <Text style={s.nineHeader}>Back 9</Text>
                     {renderHoleGrid(back9Holes, 'back9')}
                 </View>
             )}
 
             {holeNumbers.length > 0 && (
-                <View style={localStyles.roundTotalSection}>
+                <View style={s.roundTotalSection}>
                     {players.map(player => {
                         const allHoles = [...front9Holes, ...back9Holes];
                         const strokeTotal = getPlayerStrokeTotal(player.Id, allHoles);
                         const parTotal = getParTotalForHoles(allHoles);
                         const relativeTotal = getPlayerTotal(player.Id);
                         return (
-                            <View key={player.Id} style={localStyles.totalRow}>
-                                <Text style={localStyles.totalPlayerName}>{player.PlayerName}</Text>
+                            <View key={player.Id} style={s.totalRow}>
+                                <Text style={s.totalPlayerName}>{player.PlayerName}</Text>
                                 <Text
                                     testID={`round-player-${player.Id}-total`}
-                                    style={[localStyles.totalScore, getScoreColor(strokeTotal, parTotal)]}
+                                    style={[s.totalScore, getScoreColor(strokeTotal, parTotal)]}
                                 >
                                     {strokeTotal}
                                 </Text>
                                 <Text
                                     testID={`player-total-${player.Id}`}
-                                    style={[localStyles.totalScore, getScoreColor(relativeTotal, 0)]}
+                                    style={[s.totalScore, getScoreColor(relativeTotal, 0)]}
                                 >
                                     ({formatScore(relativeTotal)})
                                 </Text>

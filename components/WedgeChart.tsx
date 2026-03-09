@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
-import fontSizes from '../assets/font-sizes';
 import type { WedgeChartData } from '../service/DbService';
 
 type Props = {
@@ -18,7 +18,9 @@ const MAX_CLUBS = 4;
 const MAX_DISTANCES = 6;
 
 const WedgeChart = ({ data, onSave }: Props) => {
+    const styles = useStyles();
     const colours = useThemeColours();
+    const s = styles.wedgeChart;
     const [distanceNames, setDistanceNames] = useState<string[]>(
         data.distanceNames.length > 0 ? [...data.distanceNames] : []
     );
@@ -78,82 +80,15 @@ const WedgeChart = ({ data, onSave }: Props) => {
         onSave(chartData);
     };
 
-    const localStyles = useMemo(() => StyleSheet.create({
-        container: {
-            padding: 15,
-        },
-        headerRow: {
-            flexDirection: 'row',
-            borderBottomWidth: 1,
-            borderBottomColor: colours.yellow,
-            paddingBottom: 8,
-            marginBottom: 5,
-        },
-        row: {
-            flexDirection: 'row',
-            paddingVertical: 6,
-            borderBottomWidth: 0.5,
-            borderBottomColor: colours.yellow,
-        },
-        headerCell: {
-            color: colours.yellow,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-        },
-        headerInput: {
-            color: colours.yellow,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-            paddingVertical: 4,
-        },
-        clubCell: {
-            flex: 2,
-        },
-        distanceCell: {
-            flex: 1,
-            textAlign: 'right',
-        },
-        input: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
-            paddingVertical: 4,
-        },
-        buttonRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            marginTop: 10,
-        },
-        addButton: {
-            padding: 10,
-            alignItems: 'center',
-        },
-        addButtonText: {
-            color: colours.yellow,
-            fontSize: fontSizes.normal,
-        },
-        saveButton: {
-            backgroundColor: colours.yellow,
-            padding: 12,
-            borderRadius: 8,
-            alignItems: 'center',
-            marginTop: 10,
-        },
-        saveButtonText: {
-            color: colours.background,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
-    }), [colours]);
-
     return (
-        <View style={localStyles.container}>
-            <View style={localStyles.headerRow}>
-                <Text style={[localStyles.headerCell, localStyles.clubCell]}>Club</Text>
+        <View style={s.container}>
+            <View style={s.headerRow}>
+                <Text style={[s.headerCell, s.clubCell]}>Club</Text>
                 {distanceNames.map((name, i) => (
                     <TextInput
                         key={`dn-${i}`}
                         testID={`distance-name-input-${i}`}
-                        style={[localStyles.headerInput, localStyles.distanceCell]}
+                        style={[s.headerInput, s.distanceCell]}
                         value={name}
                         onChangeText={(v) => handleUpdateDistanceName(i, v)}
                         placeholder="Name"
@@ -163,10 +98,10 @@ const WedgeChart = ({ data, onSave }: Props) => {
             </View>
 
             {rows.map((row, rowIndex) => (
-                <View key={rowIndex} style={localStyles.row}>
+                <View key={rowIndex} style={s.row}>
                     <TextInput
                         testID={`wedge-club-input-${rowIndex}`}
-                        style={[localStyles.input, localStyles.clubCell]}
+                        style={[s.input, s.clubCell]}
                         value={row.club}
                         onChangeText={(v) => handleUpdateClub(rowIndex, v)}
                         placeholder="Club"
@@ -176,7 +111,7 @@ const WedgeChart = ({ data, onSave }: Props) => {
                         <TextInput
                             key={`${rowIndex}-${colIndex}`}
                             testID={`wedge-distance-input-${rowIndex}-${colIndex}`}
-                            style={[localStyles.input, localStyles.distanceCell]}
+                            style={[s.input, s.distanceCell]}
                             value={dist}
                             onChangeText={(v) => handleUpdateDistance(rowIndex, colIndex, v)}
                             keyboardType="number-pad"
@@ -187,23 +122,23 @@ const WedgeChart = ({ data, onSave }: Props) => {
                 </View>
             ))}
 
-            <View style={localStyles.buttonRow}>
+            <View style={s.buttonRow}>
                 {rows.length < MAX_CLUBS && (
                     <TouchableOpacity
                         testID="add-wedge-club-button"
                         onPress={handleAddClub}
-                        style={localStyles.addButton}
+                        style={s.addButton}
                     >
-                        <Text style={localStyles.addButtonText}>+ Add club</Text>
+                        <Text style={s.addButtonText}>+ Add club</Text>
                     </TouchableOpacity>
                 )}
                 {distanceNames.length < MAX_DISTANCES && (
                     <TouchableOpacity
                         testID="add-wedge-distance-button"
                         onPress={handleAddDistance}
-                        style={localStyles.addButton}
+                        style={s.addButton}
                     >
-                        <Text style={localStyles.addButtonText}>+ Add distance</Text>
+                        <Text style={s.addButtonText}>+ Add distance</Text>
                     </TouchableOpacity>
                 )}
             </View>
@@ -211,9 +146,9 @@ const WedgeChart = ({ data, onSave }: Props) => {
             <TouchableOpacity
                 testID="save-wedge-chart-button"
                 onPress={handleSave}
-                style={localStyles.saveButton}
+                style={s.saveButton}
             >
-                <Text style={localStyles.saveButtonText}>Save</Text>
+                <Text style={s.saveButtonText}>Save</Text>
             </TouchableOpacity>
         </View>
     );

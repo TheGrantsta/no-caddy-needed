@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useThemeColours } from '../context/ThemeContext';
-import fontSizes from '../assets/font-sizes';
+import { useState } from 'react';
+import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { useStyles } from '@/hooks/useStyles';
 
 type OnboardingStep = {
     text: string;
@@ -15,7 +14,8 @@ type Props = {
 };
 
 const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
-    const colours = useThemeColours();
+    const styles = useStyles();
+    const s = styles.onboardingOverlay;
     const [currentStep, setCurrentStep] = useState(0);
 
     const isLastStep = currentStep === steps.length - 1;
@@ -36,83 +36,6 @@ const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
         }
     };
 
-    const localStyles = useMemo(() => StyleSheet.create({
-        overlay: {
-            flex: 1,
-            backgroundColor: 'rgba(0, 0, 0, 0.85)',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 20,
-        },
-        container: {
-            backgroundColor: colours.background,
-            borderRadius: 16,
-            padding: 24,
-            width: '100%',
-            maxWidth: 400,
-            borderWidth: 2,
-            borderColor: colours.yellow,
-        },
-        title: {
-            color: colours.yellow,
-            fontSize: fontSizes.header,
-            fontWeight: 'bold',
-            textAlign: 'center',
-            marginBottom: 20,
-        },
-        stepText: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
-            textAlign: 'center',
-            marginBottom: 24,
-            lineHeight: 24,
-        },
-        indicatorContainer: {
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginBottom: 20,
-        },
-        indicator: {
-            width: 10,
-            height: 10,
-            borderRadius: 5,
-            marginHorizontal: 4,
-        },
-        indicatorActive: {
-            backgroundColor: colours.yellow,
-        },
-        indicatorInactive: {
-            backgroundColor: colours.backgroundAlternate,
-        },
-        buttonContainer: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-        },
-        primaryButton: {
-            backgroundColor: colours.yellow,
-            paddingVertical: 12,
-            paddingHorizontal: 24,
-            borderRadius: 8,
-        },
-        primaryButtonText: {
-            color: colours.background,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-        },
-        secondaryButton: {
-            paddingVertical: 12,
-            paddingHorizontal: 24,
-        },
-        secondaryButtonText: {
-            color: colours.backgroundAlternate,
-            fontSize: fontSizes.normal,
-        },
-        spacer: {
-            width: 80,
-        },
-    }), [colours]);
-
     if (!visible) {
         return null;
     }
@@ -124,64 +47,64 @@ const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
             animationType="fade"
             testID="onboarding-overlay"
         >
-            <View style={localStyles.overlay}>
-                <View style={localStyles.container}>
-                    <Text style={localStyles.title}>{title}</Text>
-                    <Text style={localStyles.stepText}>{steps[currentStep].text}</Text>
+            <View style={s.overlay}>
+                <View style={s.container}>
+                    <Text style={s.title}>{title}</Text>
+                    <Text style={s.stepText}>{steps[currentStep].text}</Text>
 
                     {steps.length > 1 && (
-                        <View style={localStyles.indicatorContainer}>
+                        <View style={s.indicatorContainer}>
                             {steps.map((_, index) => (
                                 <View
                                     key={index}
                                     testID={`step-indicator-${index}`}
                                     style={[
-                                        localStyles.indicator,
+                                        s.indicator,
                                         index === currentStep
-                                            ? localStyles.indicatorActive
-                                            : localStyles.indicatorInactive,
+                                            ? s.indicatorActive
+                                            : s.indicatorInactive,
                                     ]}
                                 />
                             ))}
                         </View>
                     )}
 
-                    <View style={localStyles.buttonContainer}>
+                    <View style={s.buttonContainer}>
                         {!isFirstStep ? (
                             <TouchableOpacity
                                 testID="back-button"
                                 onPress={handleBack}
-                                style={localStyles.secondaryButton}
+                                style={s.secondaryButton}
                             >
-                                <Text style={localStyles.secondaryButtonText}>Back</Text>
+                                <Text style={s.secondaryButtonText}>Back</Text>
                             </TouchableOpacity>
                         ) : !isSingleStep ? (
                             <TouchableOpacity
                                 testID="skip-button"
                                 onPress={onDismiss}
-                                style={localStyles.secondaryButton}
+                                style={s.secondaryButton}
                             >
-                                <Text style={localStyles.secondaryButtonText}>Skip</Text>
+                                <Text style={s.secondaryButtonText}>Skip</Text>
                             </TouchableOpacity>
                         ) : (
-                            <View style={localStyles.spacer} />
+                            <View style={s.spacer} />
                         )}
 
                         {isLastStep || isSingleStep ? (
                             <TouchableOpacity
                                 testID="done-button"
                                 onPress={onDismiss}
-                                style={localStyles.primaryButton}
+                                style={s.primaryButton}
                             >
-                                <Text style={localStyles.primaryButtonText}>Done</Text>
+                                <Text style={s.primaryButtonText}>Done</Text>
                             </TouchableOpacity>
                         ) : (
                             <TouchableOpacity
                                 testID="next-button"
                                 onPress={handleNext}
-                                style={localStyles.primaryButton}
+                                style={s.primaryButton}
                             >
-                                <Text style={localStyles.primaryButtonText}>Next</Text>
+                                <Text style={s.primaryButtonText}>Next</Text>
                             </TouchableOpacity>
                         )}
                     </View>

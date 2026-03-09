@@ -37,7 +37,6 @@ import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
 import fontSizes from '../../assets/font-sizes';
-import { StyleSheet } from 'react-native';
 import DistancesScreen from '../play/distances';
 
 const ONBOARDING_STEPS = [
@@ -83,104 +82,7 @@ export default function Play() {
         [holeContributions]
     );
 
-    const localStyles = useMemo(() => StyleSheet.create({
-        startRoundContainer: {
-            padding: 15,
-            alignItems: 'center',
-        },
-        actionButton: {
-            backgroundColor: colours.yellow,
-            padding: 12,
-            borderRadius: 8,
-            alignItems: 'center',
-            width: '100%',
-            marginTop: 5,
-        },
-        actionButtonText: {
-            color: colours.background,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
-        nextHoleButton: {
-            backgroundColor: colours.yellow,
-            padding: 12,
-            borderRadius: 8,
-            alignItems: 'center' as const,
-            marginTop: 10,
-            marginHorizontal: 15,
-        },
-        nextHoleButtonText: {
-            color: colours.background,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold' as const,
-        },
-        confirmContainer: {
-            marginTop: 20,
-            marginHorizontal: 15,
-        },
-        endRoundButton: {
-            backgroundColor: colours.errorText,
-            padding: 12,
-            borderRadius: 8,
-            alignItems: 'center' as const,
-            marginTop: 20,
-            marginHorizontal: 15,
-        },
-        endRoundButtonText: {
-            color: colours.white,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold' as const,
-        },
-        roundHistoryScroll: {
-            maxHeight: 300,
-        },
-        filterContainer: {
-            flexDirection: 'row' as const,
-            justifyContent: 'flex-end' as const,
-            paddingHorizontal: 15,
-            paddingTop: 20,
-            gap: 8,
-        },
-        filterLabel: {
-            color: colours.yellow,
-            fontSize: fontSizes.normal,
-            alignSelf: 'center' as const,
-            marginRight: 4,
-        },
-        filterButton: {
-            paddingVertical: 4,
-            width: 68,
-            alignItems: 'center' as const,
-            borderRadius: 6,
-            borderWidth: 1,
-            borderColor: colours.yellow,
-        },
-        filterButtonSelected: {
-            backgroundColor: colours.yellow,
-        },
-        filterButtonText: {
-            color: colours.yellow,
-            fontSize: fontSizes.normal,
-        },
-        filterButtonTextSelected: {
-            color: colours.background,
-        },
-        historyDateColumn: {
-            width: '70%' as const,
-        },
-        historyNarrowColumn: {
-            width: '15%' as const,
-            textAlign: 'center' as const,
-        },
-        scorecardHeader: {
-            color: colours.text,
-            fontSize: fontSizes.subHeader,
-            fontWeight: 'bold',
-            textAlign: 'center' as const,
-            marginTop: 10,
-            marginBottom: 5,
-        },
-    }), [colours]);
+    const localStyles = styles.playScreen;
 
     useEffect(() => {
         const activeRound = getActiveRoundService();

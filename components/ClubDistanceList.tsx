@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
-import fontSizes from '../assets/font-sizes';
 
 type ClubDistance = {
     Id: number;
@@ -23,7 +23,9 @@ type Props = {
 };
 
 const ClubDistanceList = ({ distances, onSave }: Props) => {
+    const styles = useStyles();
     const colours = useThemeColours();
+    const s = styles.clubDistanceList;
     const [rows, setRows] = useState<EditableRow[]>(
         distances.map(d => ({ club: d.Club, distance: String(d.CarryDistance), totalDistance: d.TotalDistance }))
     );
@@ -53,83 +55,17 @@ const ClubDistanceList = ({ distances, onSave }: Props) => {
         onSave(data);
     };
 
-    const localStyles = useMemo(() => StyleSheet.create({
-        container: {
-            padding: 15,
-        },
-        headerRow: {
-            flexDirection: 'row',
-            borderBottomWidth: 1,
-            borderBottomColor: colours.yellow,
-            paddingBottom: 8,
-            marginBottom: 5,
-        },
-        row: {
-            flexDirection: 'row',
-            paddingVertical: 6,
-            borderBottomWidth: 0.5,
-            borderBottomColor: colours.yellow,
-        },
-        headerCell: {
-            color: colours.yellow,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-        },
-        cell: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
-        },
-        clubCell: {
-            flex: 2,
-        },
-        distanceCell: {
-            flex: 1,
-            textAlign: 'right',
-        },
-        emptyText: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
-            textAlign: 'center',
-        },
-        input: {
-            color: colours.text,
-            fontSize: fontSizes.normal,
-            paddingVertical: 4,
-        },
-        addButton: {
-            padding: 10,
-            alignItems: 'center',
-            marginTop: 10,
-        },
-        addButtonText: {
-            color: colours.yellow,
-            fontSize: fontSizes.normal,
-        },
-        saveButton: {
-            backgroundColor: colours.yellow,
-            padding: 12,
-            borderRadius: 8,
-            alignItems: 'center',
-            marginTop: 10,
-        },
-        saveButtonText: {
-            color: colours.background,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
-    }), [colours]);
-
     return (
-        <View style={localStyles.container}>
-            <View style={localStyles.headerRow}>
-                <Text style={[localStyles.headerCell, localStyles.clubCell]}>Club</Text>
-                <Text style={[localStyles.headerCell, localStyles.distanceCell]}>Distance</Text>
+        <View style={s.container}>
+            <View style={s.headerRow}>
+                <Text style={[s.headerCell, s.clubCell]}>Club</Text>
+                <Text style={[s.headerCell, s.distanceCell]}>Distance</Text>
             </View>
             {rows.map((row, index) => (
-                <View key={index} style={localStyles.row}>
+                <View key={index} style={s.row}>
                     <TextInput
                         testID={`club-input-${index}`}
-                        style={[localStyles.input, localStyles.clubCell]}
+                        style={[s.input, s.clubCell]}
                         value={row.club}
                         onChangeText={(v) => handleUpdateRow(index, 'club', v)}
                         placeholder="Club name"
@@ -137,7 +73,7 @@ const ClubDistanceList = ({ distances, onSave }: Props) => {
                     />
                     <TextInput
                         testID={`distance-input-${index}`}
-                        style={[localStyles.input, localStyles.distanceCell]}
+                        style={[s.input, s.distanceCell]}
                         value={row.distance}
                         onChangeText={(v) => handleUpdateRow(index, 'distance', v)}
                         keyboardType="number-pad"
@@ -150,19 +86,19 @@ const ClubDistanceList = ({ distances, onSave }: Props) => {
             <TouchableOpacity
                 testID="add-club-button"
                 onPress={handleAddRow}
-                style={localStyles.addButton}
+                style={s.addButton}
             >
                 {distances.length !== 14 && (
-                    <Text style={localStyles.addButtonText}>+ Add club</Text>
+                    <Text style={s.addButtonText}>+ Add club</Text>
                 )}
             </TouchableOpacity>
 
             <TouchableOpacity
                 testID="save-distances-button"
                 onPress={handleSave}
-                style={localStyles.saveButton}
+                style={s.saveButton}
             >
-                <Text style={localStyles.saveButtonText}>Save</Text>
+                <Text style={s.saveButtonText}>Save</Text>
             </TouchableOpacity>
         </View>
     );

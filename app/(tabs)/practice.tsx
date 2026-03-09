@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Dimensions, FlatList, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
@@ -226,7 +226,7 @@ export default function Practice() {
                     showsHorizontalScrollIndicator={false}
                     onScroll={handleScroll}
                     renderItem={({ item }) => (
-                      <View style={[localStyles.page, styles.scrollWrapper, { margin: 10 }]}>
+                      <View style={[styles.practiceScreen.page, styles.scrollWrapper, { margin: 10 }]}>
                         <View style={{ flexDirection: 'row' }}>
                           <Text style={[styles.subHeaderText, { flex: 9 / 12 }]}>
                             Drill
@@ -293,24 +293,3 @@ export default function Practice() {
   )
 };
 
-const localStyles = StyleSheet.create({
-  page: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  item: {
-    width: 100,
-    height: 100,
-    backgroundColor: "#4A90E2",
-    margin: 5,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-  },
-  text: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});

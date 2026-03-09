@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { createStyles } from '../assets/stlyes';
+import { createStyles } from '../assets/styles';
 import { useThemeColours } from '../context/ThemeContext';
 
 export const useStyles = () => {

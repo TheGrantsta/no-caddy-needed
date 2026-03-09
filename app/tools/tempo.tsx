@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, ScrollView, View, Text, TouchableOpacity, RefreshControl } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { ScrollView, View, Text, TouchableOpacity, RefreshControl } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import Chevrons from '@/components/Chevrons';
 import Slider from '@react-native-community/slider';
 import { useThemeColours } from '@/context/ThemeContext';
-import fontSizes from '@/assets/font-sizes';
 import { useStyles } from '@/hooks/useStyles';
 import { useOrientation } from '@/hooks/useOrientation';
 
@@ -98,36 +97,7 @@ export default function Tempo() {
 
     const points = ['Tempo: focus on flow, and not mechanics', 'Fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Misconception: amateurs believe they swing "too fast" even though they swing slower than professionals - sequence over speed']
 
-    const localStyles = useMemo(() => StyleSheet.create({
-        container: {
-            padding: 20,
-            alignItems: "center"
-        },
-        title: {
-            fontSize: fontSizes.subHeader,
-            color: colours.yellow,
-            marginBottom: 10
-        },
-        slider: {
-            width: "90%",
-            height: 40
-        },
-        labelsContainer: {
-            flexDirection: "row",
-            justifyContent: "space-between",
-            width: "90%",
-            marginTop: 5
-        },
-        label: {
-            fontSize: fontSizes.normal,
-            color: colours.yellow
-        },
-        valueText: {
-            marginTop: 10,
-            fontSize: 18,
-            fontWeight: "bold"
-        },
-    }), [colours]);
+    const localStyles = styles.tempoTool;
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>

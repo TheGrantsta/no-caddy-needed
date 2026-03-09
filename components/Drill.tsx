@@ -1,10 +1,9 @@
-import { useMemo, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import Instructions from "./Instructions";
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
-import fontSizes from "@/assets/font-sizes";
 
 type Props = {
     label: string;
@@ -23,39 +22,6 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
     const [isAchieved, setIsAchieved] = useState(true);
     const [pendingDelete, setPendingDelete] = useState(false);
 
-    const localStyles = useMemo(() => StyleSheet.create({
-        contentText: {
-            marginTop: 5,
-            fontSize: fontSizes.normal,
-            color: colours.white,
-        },
-        toggleWrapper: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            width: 150,
-        },
-        toggleContainer: {
-            width: 45,
-            height: 15,
-            borderRadius: 10,
-            backgroundColor: colours.backgroundLight,
-            justifyContent: 'center',
-        },
-        toggleOn: {
-            backgroundColor: colours.yellow,
-        },
-        toggleCircle: {
-            width: 20,
-            height: 20,
-            borderRadius: 10,
-            backgroundColor: colours.backgroundLight,
-            alignSelf: 'flex-start',
-        },
-        circleOn: {
-            alignSelf: 'flex-end',
-        },
-    }), [colours]);
-
     const toggleSwitch = () => {
         setIsAchieved((previousState) => !previousState);
     };
@@ -70,15 +36,15 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     </Text>
                 </View>
                 <View style={{ flex: 1 / 3 }}>
-                    <Text style={localStyles.contentText}>
+                    <Text style={styles.drill.contentText}>
                         <Text style={styles.yellowText}>Target:</Text> {target}
                     </Text>
-                    <View style={[localStyles.toggleWrapper, { paddingTop: 10 }]}>
+                    <View style={[styles.drill.toggleWrapper, { paddingTop: 10 }]}>
                         <TouchableOpacity
                             testID='drill-met-toggle'
-                            style={[localStyles.toggleContainer, isAchieved && localStyles.toggleOn]}
+                            style={[styles.drill.toggleContainer, isAchieved && styles.drill.toggleOn]}
                             onPress={toggleSwitch}>
-                            <View style={[localStyles.toggleCircle, isAchieved && localStyles.circleOn]} />
+                            <View style={[styles.drill.toggleCircle, isAchieved && styles.drill.circleOn]} />
                         </TouchableOpacity>
 
                         <Text style={[styles.normalText, { paddingLeft: 10 }]}>

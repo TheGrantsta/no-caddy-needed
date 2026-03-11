@@ -70,6 +70,13 @@ export default function HomeScreen() {
 
         <View style={styles.divider} />
 
+        <View style={styles.contentSection}>
+          <Text style={styles.headerText}>Be your own best caddy</Text>
+          <Text style={styles.normalText}>
+            Golf is not a game of perfect, or having a perfect swing
+          </Text>
+        </View>
+
         {/* Navigation cards — 2 + 1 grid */}
         <View style={styles.navGrid}>
           <View style={styles.navRow}>
@@ -106,12 +113,6 @@ export default function HomeScreen() {
           <Chevrons heading="Golf simplified" points={points} />
         </View>
 
-        <View style={styles.contentSection}>
-          <Text style={styles.headerText}>Be your own best caddy</Text>
-          <Text style={styles.normalText}>
-            Golf is not a game of perfect, or having a perfect swing
-          </Text>
-        </View>
       </ScrollView>
 
       <OnboardingOverlay

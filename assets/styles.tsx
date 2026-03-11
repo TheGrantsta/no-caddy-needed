@@ -1179,7 +1179,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 15,
             paddingTop: 10,
             borderTopWidth: 1,
-            borderTopColor: c.border,
+            borderTopColor: c.primary,
         },
         legendItem: {
             flexDirection: 'row',

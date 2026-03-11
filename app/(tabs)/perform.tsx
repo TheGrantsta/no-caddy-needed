@@ -150,13 +150,15 @@ export default function Perform() {
               * Your dispersion changes with different clubs and swing types — know your tendencies for full and partial shots
             </Text>
 
-            <Text style={styles.subHeaderText}>
-              Key
-            </Text>
+            <View style={styles.contentSection}>
+              <Text style={styles.subHeaderText}>
+                Key
+              </Text>
 
-            <Text style={[styles.normalText, styles.marginBottom, { padding: 10 }]}>
-              Know your shot pattern & carry numbers, then make informed decisions that allow for your natural spread, not perfection
-            </Text>
+              <Text style={[styles.normalText, styles.marginBottom, { padding: 10 }]}>
+                Know your shot pattern & carry numbers, then make informed decisions that allow for your natural spread, not perfection
+              </Text>
+            </View>
           </View>
         )}
 

@@ -13,7 +13,6 @@ import fontSizes from '@/assets/font-sizes';
 
 const FOREST_GREEN = '#2D5A3D';
 const OFF_WHITE = '#f5f5f0';
-const DARK_TEXT = '#1a1a2e';
 
 const points = ['In a nutshell: hit it, find it and hit it again', 'Point: get the ball in the hole with the fewest shots', 'Have fun: golf is a game, so for goodness sake enjoy it!'];
 
@@ -56,9 +55,8 @@ export default function HomeScreen() {
       textAlign: 'left',
     },
     subtitle: {
-      color: DARK_TEXT,
+      color: colours.text,
       fontSize: fontSizes.normal,
-      opacity: 0.65,
       textAlign: 'left',
     },
     divider: {
@@ -105,7 +103,7 @@ export default function HomeScreen() {
       letterSpacing: 0.3,
     },
     sectionHeading: {
-      color: FOREST_GREEN,
+      color: colours.primary,
       fontSize: 24,
       fontWeight: 'bold',
       padding: 6,
@@ -119,9 +117,8 @@ export default function HomeScreen() {
       borderColor: FOREST_GREEN + '33',
     },
     bodyText: {
-      color: DARK_TEXT,
+      color: colours.text,
       fontSize: fontSizes.normal,
-      opacity: 0.65,
       lineHeight: 24,
       marginTop: 8,
     },
@@ -203,12 +200,10 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Golf simplified */}
         <View style={home.contentSection}>
           <Chevrons heading="Golf simplified" points={points} />
         </View>
 
-        {/* Be your own best caddy */}
         <View style={home.contentSection}>
           <Text style={home.sectionHeading}>Be your own best caddy</Text>
           <Text style={home.bodyText}>

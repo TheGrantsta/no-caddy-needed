@@ -39,7 +39,7 @@ describe('Colour palettes', () => {
     });
 
     it('darkColours has expected text value', () => {
-        expect(darkColours.text).toBe('#fffae7');
+        expect(darkColours.text).toBe('#1A1A2EA6');
     });
 
     it('lightColours has expected text value', () => {

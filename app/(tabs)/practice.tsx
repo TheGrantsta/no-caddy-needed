@@ -6,7 +6,6 @@ import { useThemeColours } from "@/context/ThemeContext";
 import { useOrientation } from "@/hooks/useOrientation";
 import SubMenu from "@/components/SubMenu";
 import { Link } from "expo-router";
-import IconButton from "@/components/IconButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import fontSizes from "@/assets/font-sizes";
 import { getAllDrillHistoryService, getDrillStatsByTypeService, getSettingsService, saveSettingsService, DrillStats } from "@/service/DbService";

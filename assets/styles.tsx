@@ -433,37 +433,6 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
-    iconButton: StyleSheet.create({
-        iconButton: {
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderColor: c.border,
-            borderWidth: 2,
-            padding: 10,
-            zIndex: 1,
-        },
-        small: {
-            borderRadius: 10,
-            width: 75,
-            height: 75,
-        },
-        medium: {
-            borderRadius: 20,
-            width: 125,
-            height: 125,
-        },
-        large: {
-            borderRadius: 40,
-            width: 175,
-            height: 175,
-        },
-        iconButtonLabel: {
-            fontSize: fontSizes.smallText,
-            color: c.white,
-            marginTop: 24,
-        },
-    }),
-
     drill: StyleSheet.create({
         contentText: {
             marginTop: 5,
@@ -953,7 +922,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         recentLabel: {
             color: c.text,
-            fontSize: fontSizes.small,
+            fontSize: fontSizes.smallText,
             marginBottom: 5,
         },
         recentItem: {
@@ -1231,7 +1200,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         label: {
             color: c.white,
-            fontSize: fontSizes.small,
+            fontSize: fontSizes.smallText,
         },
         barWrapper: {
             flex: 1,
@@ -1257,13 +1226,13 @@ export const createStyles = (c: ThemeColours) => ({
         },
         statsText: {
             color: c.primary,
-            fontSize: fontSizes.small,
+            fontSize: fontSizes.smallText,
             fontWeight: 'bold',
             marginRight: 2,
         },
         countText: {
             color: c.white,
-            fontSize: fontSizes.smallest,
+            fontSize: fontSizes.smallText,
         },
         legend: {
             flexDirection: 'row',
@@ -1286,7 +1255,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         legendText: {
             color: c.white,
-            fontSize: fontSizes.smallest,
+            fontSize: fontSizes.smallText,
         },
     }),
 
@@ -1306,7 +1275,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         text: {
             color: c.white,
-            fontSize: fontSizes.small,
+            fontSize: fontSizes.smallText,
             marginLeft: 8,
             fontWeight: '500',
         },
@@ -1340,23 +1309,6 @@ export const createStyles = (c: ThemeColours) => ({
             color: '#0a7ea4',
         },
     }),
-
-    // parallaxScrollView: StyleSheet.create({
-    //     container: {
-    //         flex: 1,
-    //     },
-    //     header: {
-    //         height: 250,
-    //         overflow: 'hidden',
-    //     },
-    //     content: {
-    //         flex: 1,
-    //         padding: 32,
-    //         gap: 16,
-    //         overflow: 'hidden',
-    //     },
-    // }),
-
     collapsible: StyleSheet.create({
         heading: {
             flexDirection: 'row',

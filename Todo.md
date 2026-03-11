@@ -1,12 +1,11 @@
 # To do
 - [ ] SafeAreaView has been deprecation warning message
-- [ ] Start Google Play closed group - alpha
+- [?] Start Google Play closed group - alpha
 - [ ] Deprecation warning in debugger
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Integrate Firebase iOS into project
 - [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
-- [ ] Make light green theme the default
 
 # Done
 - [X] Amend colours to be primary, secondary, etc rather than specifying the colour, etc
@@ -53,6 +52,7 @@
 - [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
 
 # Release notes
+* Amend theme colours for dark and light
 * Golfers can add their own drills and mark as 'inactive' default drills if unwanted
 * Golfers can add their own games and delete default games if unwanted
 * Amended microphone button text for clearer instructions

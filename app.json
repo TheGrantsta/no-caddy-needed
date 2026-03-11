@@ -4,20 +4,19 @@
     "slug": "no-caddy-needed",
     "version": "1.0.21",
     "orientation": "default",
-    "icon": "./assets/images/adaptive-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/full-logo-transparent-square.png",
+      "image": "./assets/images/full-white-logo-transparent.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffd33d"
+      "backgroundColor": "#f5f5f0"
     },
     "ios": {
       "supportsTablet": true,
       "splash": {
-        "image": "./assets/images/full-logo-transparent-square.png",
+        "image": "./assets/images/full-white-logo-transparent.png",
         "resizeMode": "contain",
-        "backgroundColor": "#ffd33d"
+        "backgroundColor": "#f5f5f0"
       },
       "bundleIdentifier": "com.grantsta.golf.nocaddyneeded",
       "infoPlist": {
@@ -28,13 +27,13 @@
     },
     "android": {
       "splash": {
-        "image": "./assets/images/full-logo-transparent-square.png",
+        "image": "./assets/images/full-white-logo-transparent.png",
         "resizeMode": "contain",
-        "backgroundColor": "#ffd33d"
+        "backgroundColor": "#f5f5f0"
       },
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/full-logo-transparent-square.png",
-        "backgroundColor": "#ffd33d"
+        "foregroundImage": "./assets/images/full-white-logo-transparent.png",
+        "backgroundColor": "#f5f5f0"
       },
       "package": "com.grantsta.golf.nocaddyneeded"
     },

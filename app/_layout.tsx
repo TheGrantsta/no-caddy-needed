@@ -31,7 +31,7 @@ SplashScreen.preventAutoHideAsync();
 
 const LogoTitle = () => (
   <Image
-    source={require("../assets/images/full-logo-transparent-no-buffer.png")}
+    source={require("../assets/images/full-white-logo-transparent-no-buffer.png")}
     style={{ width: 120, height: 40, resizeMode: "contain" }}
   />
 );

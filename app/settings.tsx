@@ -9,8 +9,8 @@ import { useOrientation } from '../hooks/useOrientation';
 import { useAppToast } from '../hooks/useAppToast';
 
 const THEMES: { key: AppSettings['theme']; label: string }[] = [
-  { key: 'light', label: 'Light' },
-  { key: 'dark', label: 'Dark' },
+  { key: 'light', label: 'Light green' },
+  { key: 'dark', label: 'Dark green' },
 ];
 
 const VOICES: { key: AppSettings['voice']; label: string }[] = [
@@ -104,95 +104,104 @@ export default function Settings() {
           <Text style={[styles.headerText, styles.marginTop]}>Settings</Text>
         </View>
 
-        <View style={styles.headerContainer}>
-          <Text style={[styles.subHeaderText, styles.marginTop]}>Theme</Text>
+        <View style={styles.contentSection}>
+          <View style={styles.headerContainer}>
+            <Text style={[styles.subHeaderText, styles.marginTop]}>Theme</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
+            {THEMES.map(({ key, label }) => {
+              const isSelected = settings.theme === key;
+              return (
+                <TouchableOpacity
+                  key={key}
+                  testID={`theme-${key}`}
+                  onPress={() => handleThemeChange(key)}
+                  style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
+                >
+                  {isSelected && <Text testID={`theme-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
+                  {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
 
-        <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
-          {THEMES.map(({ key, label }) => {
-            const isSelected = settings.theme === key;
-            return (
-              <TouchableOpacity
-                key={key}
-                testID={`theme-${key}`}
-                onPress={() => handleThemeChange(key)}
-                style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
-              >
-                {isSelected && <Text testID={`theme-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
-                {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
-              </TouchableOpacity>
-            );
-          })}
+        <View style={styles.contentSection}>
+          <View style={styles.headerContainer}>
+            <Text style={[styles.subHeaderText, styles.marginTop]}>Notifications</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
+            {NOTIFICATIONS.map(({ key, label, value }) => {
+              const isSelected = settings.notificationsEnabled === value;
+              return (
+                <TouchableOpacity
+                  key={key}
+                  testID={`notifications-${key}`}
+                  onPress={() => handleNotificationsChange(value)}
+                  style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
+                >
+                  {isSelected && <Text testID={`notifications-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
+                  {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
 
-        <View style={styles.headerContainer}>
-          <Text style={[styles.subHeaderText, styles.marginTop]}>Notifications</Text>
+        <View style={styles.contentSection}>
+          <View style={styles.headerContainer}>
+            <Text style={[styles.subHeaderText, styles.marginTop]}>Sounds</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
+            {SOUNDS.map(({ key, label, value }) => {
+              const isSelected = settings.soundsEnabled === value;
+              return (
+                <TouchableOpacity
+                  key={key}
+                  testID={`sounds-${key}`}
+                  onPress={() => handleSoundsChange(value)}
+                  style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
+                >
+                  {isSelected && <Text testID={`sounds-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
+                  {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
 
-        <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
-          {NOTIFICATIONS.map(({ key, label, value }) => {
-            const isSelected = settings.notificationsEnabled === value;
-            return (
-              <TouchableOpacity
-                key={key}
-                testID={`notifications-${key}`}
-                onPress={() => handleNotificationsChange(value)}
-                style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
-              >
-                {isSelected && <Text testID={`notifications-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
-                {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
-              </TouchableOpacity>
-            );
-          })}
+        <View style={styles.contentSection}>
+          <View style={styles.headerContainer}>
+            <Text style={[styles.subHeaderText, styles.marginTop]}>Voice</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
+            {VOICES.map(({ key, label }) => {
+              const isSelected = settings.voice === key;
+              return (
+                <TouchableOpacity
+                  key={key}
+                  testID={`voice-${key}`}
+                  onPress={() => handleVoiceChange(key)}
+                  style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
+                >
+                  {isSelected && <Text testID={`voice-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
+                  {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
 
-        <View style={styles.headerContainer}>
-          <Text style={[styles.subHeaderText, styles.marginTop]}>Sounds</Text>
-        </View>
-
-        <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
-          {SOUNDS.map(({ key, label, value }) => {
-            const isSelected = settings.soundsEnabled === value;
-            return (
-              <TouchableOpacity
-                key={key}
-                testID={`sounds-${key}`}
-                onPress={() => handleSoundsChange(value)}
-                style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
-              >
-                {isSelected && <Text testID={`sounds-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
-                {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        <View style={styles.headerContainer}>
-          <Text style={[styles.subHeaderText, styles.marginTop]}>Voice</Text>
-        </View>
-
-        <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
-          {VOICES.map(({ key, label }) => {
-            const isSelected = settings.voice === key;
-            return (
-              <TouchableOpacity
-                key={key}
-                testID={`voice-${key}`}
-                onPress={() => handleVoiceChange(key)}
-                style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
-              >
-                {isSelected && <Text testID={`voice-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
-                {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
         <View style={{ alignItems: 'center', paddingVertical: 20, marginTop: 'auto' }}>
           <Text style={styles.normalText}>
             Version {Constants.expoConfig?.version}
           </Text>
         </View>
       </ScrollView>
-    </GestureHandlerRootView>
+    </GestureHandlerRootView >
   );
 }

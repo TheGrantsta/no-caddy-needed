@@ -22,7 +22,7 @@ export default function DrillStatsChart({ stats }: Props) {
     const getBarColor = (successRate: number) => {
         if (successRate >= 70) return colours.green;
         if (successRate >= 40) return colours.primary;
-        return colours.errorText;
+        return colours.red;
     };
 
     const truncateName = (name: string, maxLength: number = 20) => {

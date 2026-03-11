@@ -165,7 +165,7 @@ const ShortGameScreen = ({ config }: Props) => {
                     testID='undo-game-delete'
                     style={[{
                         backgroundColor: colours.primary, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
-                        borderColor: colours.errorText, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
+                        borderColor: colours.red, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
                     }]}
                     onPress={() => {
                         restoreGameService(lastDeletedGameId).then(() => {
@@ -182,7 +182,7 @@ const ShortGameScreen = ({ config }: Props) => {
                     testID='undo-drill-delete'
                     style={[{
                         backgroundColor: colours.primary, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
-                        borderColor: colours.errorText, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
+                        borderColor: colours.red, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
                     }]}
                     onPress={() => {
                         restoreDrillService(lastDeletedDrillId).then(() => {

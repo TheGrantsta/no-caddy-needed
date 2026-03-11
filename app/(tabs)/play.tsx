@@ -449,7 +449,7 @@ export default function Play() {
                                     onPress={handleEndRoundPress}
                                     style={{ padding: 12, alignItems: 'center', marginTop: 20 }}
                                 >
-                                    <Text style={{ color: colours.errorText, fontSize: fontSizes.normal }}>End round</Text>
+                                    <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>End round</Text>
                                 </TouchableOpacity>
                             )}
 

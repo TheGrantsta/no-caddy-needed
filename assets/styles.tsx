@@ -932,7 +932,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         cancelButton: {
-            backgroundColor: c.errorText,
+            backgroundColor: c.red,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -960,8 +960,8 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 10,
         },
         errorText: {
-            color: c.errorText,
-            fontSize: fontSizes.small,
+            color: c.red,
+            fontSize: fontSizes.smallText,
             marginBottom: 10,
         },
     }),
@@ -1438,7 +1438,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginHorizontal: 15,
         },
         endRoundButton: {
-            backgroundColor: c.errorText,
+            backgroundColor: c.red,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',

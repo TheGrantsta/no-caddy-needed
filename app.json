@@ -2,7 +2,7 @@
   "expo": {
     "name": "No caddy needed",
     "slug": "no-caddy-needed",
-    "version": "1.0.21",
+    "version": "1.0.22",
     "orientation": "default",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",

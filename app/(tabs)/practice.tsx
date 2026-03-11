@@ -30,7 +30,6 @@ export default function Practice() {
   const [loading, setLoading] = useState(true);
   const [drillHistoryIndex, setDrillHistoryIndex] = useState(0);
   const [drillHistory, setDrillHistory] = useState<any[]>([]);
-  const [drillStats, setDrillStats] = useState<DrillStats[]>([]);
   const flatListRef = useRef(null);
 
   const points = ['Intention: practice with a purpose!', 'Evaluate: be honest with yourself - identify the shots you avoid (or can\'t play) and give yourself time to improve', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
@@ -56,11 +55,9 @@ export default function Practice() {
   const fetchData = () => {
     try {
       const items = getAllDrillHistoryService();
-      const pages = items.length > 0 ? [items.slice(0, 5), items.slice(5)] : [];
-      const stats = getDrillStatsByTypeService();
+      const pages = items.length > 0 ? [items.slice(0, 10), items.slice(10)] : [];
 
       setDrillHistory(pages);
-      setDrillStats(stats);
     } catch (e) {
       console.error("Error fetching drill history:", e);
     } finally {
@@ -221,9 +218,6 @@ export default function Practice() {
               </View>
             ) : (
               <View>
-                {drillStats.length > 0 && (
-                  <DrillStatsChart stats={drillStats} />
-                )}
 
                 <Text style={{
                   color: colours.primary,

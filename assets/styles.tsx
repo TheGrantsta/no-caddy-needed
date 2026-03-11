@@ -268,9 +268,9 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 4,
             borderWidth: 1,
             borderColor: c.border,
-            padding: 10,
+            padding: 2,
             textAlign: 'center',
-            color: c.white,
+            color: c.primary,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
         },
@@ -323,14 +323,14 @@ export const createStyles = (c: ThemeColours) => ({
             width: 10,
             height: 10,
             borderRadius: 5,
-            backgroundColor: c.backgroundAlternate,
+            backgroundColor: c.black,
             marginHorizontal: 5,
-            borderColor: c.backgroundAlternate,
+            borderColor: c.black,
             borderWidth: 1,
         },
         scrollActiveDot: {
-            backgroundColor: c.primary,
-            borderColor: c.primary,
+            backgroundColor: c.red,
+            borderColor: c.red,
         },
         navGrid: {
             paddingHorizontal: 8,
@@ -1195,11 +1195,11 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 8,
         },
         labelContainer: {
-            width: 100,
+            width: 125,
             paddingRight: 5,
         },
         label: {
-            color: c.white,
+            color: c.primary,
             fontSize: fontSizes.smallText,
         },
         barWrapper: {
@@ -1219,7 +1219,7 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.backgroundLight,
         },
         statsContainer: {
-            width: 70,
+            width: 90,
             flexDirection: 'row',
             justifyContent: 'flex-end',
             alignItems: 'center',

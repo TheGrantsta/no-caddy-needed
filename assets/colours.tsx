@@ -13,9 +13,7 @@ export type ThemeColours = {
     mutedYellow: string;
     errorText: string;
     backgroundLight: string;
-    backgroundDelete: string;
     border: string;
-    borderEdit: string;
     borderError: string;
     green: string;
 };
@@ -35,9 +33,7 @@ export const darkColours: ThemeColours = {
     mutedYellow: '#e6be36',
     errorText: '#fd0303',
     backgroundLight: '#fff',
-    backgroundDelete: '#fd0303',
     border: '#fff',
-    borderEdit: '#ccc',
     borderError: '#fd0303',
     green: '#00C851',
 };
@@ -57,10 +53,7 @@ export const lightColours: ThemeColours = {
     mutedYellow: '#1B5E20',
     errorText: '#d32f2f',
     backgroundLight: '#dfe3e8',
-    backgroundDelete: '#d32f2f',
-
     border: '#3a3a3a',
-    borderEdit: '#999',
     borderError: '#d32f2f',
     green: '#00C851',
 };

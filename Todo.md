@@ -6,6 +6,10 @@
 - [ ] Integrate Firebase iOS into project
 - [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
+- [ ] Amend colours to be primary, secondary, etc rather than specifying the colour, etc
+- [ ] Make light theme the default
+- [ ] Define dark theme
+- [ ] Amend logo
 
 # Done
 - [X] Add ability to add new games in Short Game

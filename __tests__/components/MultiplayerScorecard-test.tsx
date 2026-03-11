@@ -235,7 +235,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('hole-number-1')).toHaveStyle({ fontSize: 18 });
+            expect(getByTestId('hole-number-1')).toHaveStyle({ fontSize: 20 });
         });
 
         it('uses same font size for par values as player scores', () => {
@@ -247,7 +247,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('hole-par-1')).toHaveStyle({ fontSize: 18 });
+            expect(getByTestId('hole-par-1')).toHaveStyle({ fontSize: 20 });
         });
     });
 

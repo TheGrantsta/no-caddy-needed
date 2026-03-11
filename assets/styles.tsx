@@ -1193,7 +1193,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginRight: 5,
         },
         legendText: {
-            color: c.white,
+            color: c.text,
             fontSize: fontSizes.smallestText,
         },
         toggleHeader: {

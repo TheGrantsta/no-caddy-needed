@@ -75,9 +75,9 @@ export default function WedgeChartScreen() {
                     <TouchableOpacity
                         testID="clear-button"
                         onPress={() => setShowClearConfirm(true)}
-                        style={{ padding: 12, alignItems: 'center', marginTop: 20 }}
+                        style={{ padding: 12, alignItems: 'center', marginTop: 10 }}
                     >
-                        <Text style={{ color: colours.errorText, fontSize: fontSizes.normal }}>Clear all</Text>
+                        <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>Clear all</Text>
                     </TouchableOpacity>
                 )}
 

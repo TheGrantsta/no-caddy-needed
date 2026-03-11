@@ -11,7 +11,7 @@ import Chevrons from '@/components/Chevrons';
 import OnboardingOverlay from '@/components/OnboardingOverlay';
 import fontSizes from '@/assets/font-sizes';
 
-const points = ['In a nutshell: hit it, find it and hit it again', 'Point: get the ball in the hole with the fewest shots', 'Have fun: golf is a game, so for goodness sake enjoy it!'];
+const points = ['In a nutshell: hit it, find it & hit it again', 'Point: get the ball in the hole with the fewest shots', 'Have fun: golf is a game, so for goodness sake enjoy it!'];
 
 const ONBOARDING_STEPS = [
   { text: 'Welcome to No Caddy Needed — your personal golf companion for smarter play, practice and performance.' },

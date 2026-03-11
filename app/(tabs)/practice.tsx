@@ -134,39 +134,52 @@ export default function Practice() {
         {/* Short game */}
         {displaySection('short-game') && (
           <View>
-            <View style={styles.viewContainer}>
-              <Text style={[styles.subHeaderText, styles.marginTop]}>
-                Short game practice
-              </Text>
+            <Text style={[styles.subHeaderText, styles.marginTop]}>
+              Short game practice
+            </Text>
 
-              <View style={styles.iconsContainer}>
-                <Link href='../short-game/putting'>
-                  <View style={styles.iconContainer}>
-                    <IconButton iconName='adjust' label='Putting' size='medium' />
+            <View style={styles.navGrid}>
+              <View style={styles.navRow}>
+                <Link href="../short-game/putting" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="adjust" size={36} color="#ffffff" />
+                    </View>
+                    <Text style={styles.navCardLabel}>Putting</Text>
                   </View>
                 </Link>
-
-                <Link href='../short-game/chipping'>
-                  <View style={styles.iconContainer}>
-                    <IconButton iconName='filter-tilt-shift' label='Chipping' size='medium' />
+                <Link href="../short-game/chipping" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="filter-tilt-shift" size={36} color="#ffffff" />
+                    </View>
+                    <Text style={styles.navCardLabel}>Chipping</Text>
                   </View>
                 </Link>
-
-                <Link href='../short-game/pitching'>
-                  <View style={styles.iconContainer}>
-                    <IconButton iconName='golf-course' label='Pitching' size='medium' />
+              </View>
+              <View style={styles.navRow}>
+                <Link href="../short-game/pitching" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="golf-course" size={36} color="#ffffff" />
+                    </View>
+                    <Text style={styles.navCardLabel}>Pitching</Text>
                   </View>
                 </Link>
-
-                <Link href='../short-game/bunker'>
-                  <View style={styles.iconContainer}>
-                    <IconButton iconName='beach-access' label='Bunker play' size='medium' />
+                <Link href="../short-game/bunker" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="beach-access" size={36} color="#ffffff" />
+                    </View>
+                    <Text style={styles.navCardLabel}>Bunker play</Text>
                   </View>
                 </Link>
               </View>
             </View>
 
-            <Chevrons heading='Principles' points={points} />
+            <View style={styles.contentSection}>
+              <Chevrons heading='Principles' points={points} />
+            </View>
           </View>
         )}
 

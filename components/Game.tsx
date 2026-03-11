@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Instructions from './Instructions';
 import { useStyles } from '@/hooks/useStyles';
+import { useThemeColours } from '@/context/ThemeContext';
 
 type Props = {
     header: string;
@@ -13,6 +14,7 @@ type Props = {
 
 export default function Game({ header, objective, setUp, howToPlay, onDelete }: Props) {
     const styles = useStyles();
+    const colours = useThemeColours();
     const [pendingDelete, setPendingDelete] = useState(false);
 
     return (
@@ -26,13 +28,13 @@ export default function Game({ header, objective, setUp, howToPlay, onDelete }: 
                     <>
                         <TouchableOpacity
                             testID='cancel-game-delete'
-                            style={styles.button}
+                            style={[styles.mediumButton, { backgroundColor: colours.red }]}
                             onPress={() => setPendingDelete(false)}>
                             <Text style={styles.buttonText}>Cancel</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             testID='confirm-game-delete'
-                            style={styles.button}
+                            style={styles.mediumButton}
                             onPress={() => { onDelete?.(); setPendingDelete(false); }}>
                             <Text style={styles.buttonText}>Confirm</Text>
                         </TouchableOpacity>
@@ -40,7 +42,7 @@ export default function Game({ header, objective, setUp, howToPlay, onDelete }: 
                 ) : (
                     <TouchableOpacity
                         testID='delete-game-button'
-                        style={styles.button}
+                        style={styles.mediumButton}
                         onPress={() => setPendingDelete(true)}>
                         <Text style={styles.buttonText}>Delete</Text>
                     </TouchableOpacity>

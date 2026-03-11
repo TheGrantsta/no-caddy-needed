@@ -81,6 +81,8 @@ export default function HomeScreen() {
                 <Text style={styles.navCardLabel}>Play</Text>
               </View>
             </Link>
+          </View>
+          <View style={styles.navRow}>
             <Link testID="home-practice-link" href="/practice" style={styles.navCardLink}>
               <View style={styles.navCard}>
                 <View style={styles.iconCircle}>
@@ -89,8 +91,6 @@ export default function HomeScreen() {
                 <Text style={styles.navCardLabel}>Practice</Text>
               </View>
             </Link>
-          </View>
-          <View style={styles.navRow}>
             <Link testID="home-perform-link" href="/perform" style={styles.navCardLink}>
               <View style={styles.navCard}>
                 <View style={styles.iconCircle}>

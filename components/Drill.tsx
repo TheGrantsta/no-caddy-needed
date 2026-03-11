@@ -73,13 +73,13 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     <>
                         <TouchableOpacity
                             testID='cancel-drill-delete'
-                            style={styles.button}
+                            style={[styles.mediumButton, { backgroundColor: colours.red }]}
                             onPress={() => setPendingDelete(false)}>
                             <Text style={styles.buttonText}>Cancel</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             testID='confirm-drill-delete'
-                            style={styles.button}
+                            style={styles.mediumButton}
                             onPress={() => { onDelete?.(); setPendingDelete(false); }}>
                             <Text style={styles.buttonText}>Confirm</Text>
                         </TouchableOpacity>
@@ -87,7 +87,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                 ) : (
                     <TouchableOpacity
                         testID='delete-drill-button'
-                        style={styles.button}
+                        style={styles.mediumButton}
                         onPress={() => setPendingDelete(true)}>
                         <Text style={styles.buttonText}>Delete</Text>
                     </TouchableOpacity>

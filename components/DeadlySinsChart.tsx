@@ -43,9 +43,9 @@ export default function DeadlySinsChart({ rounds }: Props) {
     const maxCount = Math.max(...categories.map(c => c.count));
 
     const getBarColor = (index: number) => {
-        if (index === 0) return colours.errorText;
+        if (index === 0) return colours.red;
         if (index === 6) return colours.green;
-        return colours.yellow;
+        return colours.primary;
     };
 
     const getBarWidth = (count: number): string => {
@@ -103,7 +103,7 @@ export default function DeadlySinsChart({ rounds }: Props) {
 
                     <View style={s.legend}>
                         <View style={s.legendItem}>
-                            <View style={[s.legendDot, { backgroundColor: colours.errorText }]} />
+                            <View style={[s.legendDot, { backgroundColor: colours.red }]} />
                             <Text style={s.legendText}>Biggest problem</Text>
                         </View>
                     </View>

@@ -117,6 +117,19 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    maestro test .maestro/screenshots.yaml
    ```
    
+4. Workflow
+
+  How it works:
+
+  - Normal push: hook runs tests → then ui:check diffs current Maestro screenshots against .maestro/baselines/. Fails with exit 1 if any screenshot exceeds the
+  0.5% pixel diff threshold. Exits 0 gracefully if no simulator is booted or SKIP_UI_CHECK=1 is set.
+  - Intentional UI change:
+  npm run ui:update
+  git add .maestro/baselines/
+  git commit -m "Update UI baselines: <reason>"
+  - Emergency skip: SKIP_UI_CHECK=1 git push
+
+
 ## Integrating with AI
 
 Repomix can create a prompt-friendly version of your repo that can be uploaded along with a prompt into an AI-assistant

@@ -235,7 +235,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('hole-number-1')).toHaveStyle({ fontSize: 18 });
+            expect(getByTestId('hole-number-1')).toHaveStyle({ fontSize: 20 });
         });
 
         it('uses same font size for par values as player scores', () => {
@@ -247,7 +247,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('hole-par-1')).toHaveStyle({ fontSize: 18 });
+            expect(getByTestId('hole-par-1')).toHaveStyle({ fontSize: 20 });
         });
     });
 
@@ -280,7 +280,7 @@ describe('Scorecard', () => {
     });
 
     describe('Score colour coding', () => {
-        it('applies yellow colour to par scores', () => {
+        it('applies primary colour to par scores', () => {
             const holeScores = makeScores([
                 { holeNumber: 1, holePar: 4, scores: [4, 4] },
             ]);
@@ -289,7 +289,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#ffd33d' });
+            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#2D5A3D' });
         });
 
         it('applies green colour to under par scores', () => {
@@ -318,7 +318,7 @@ describe('Scorecard', () => {
     });
 
     describe('Total colour coding', () => {
-        it('applies yellow colour to even par total', () => {
+        it('applies primary colour to even par total', () => {
             const holeScores = makeScores([
                 { holeNumber: 1, holePar: 4, scores: [4, 4] },
             ]);
@@ -327,7 +327,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('player-total-1')).toHaveStyle({ color: '#ffd33d' });
+            expect(getByTestId('player-total-1')).toHaveStyle({ color: '#2D5A3D' });
         });
 
         it('applies green colour to under par total', () => {
@@ -410,7 +410,7 @@ describe('Scorecard', () => {
             expect(getByTestId('back9-player-2-total')).toHaveTextContent('9');
         });
 
-        it('colour codes sub-total yellow when at par', () => {
+        it('colour codes sub-total primary when at par', () => {
             const holeScores = makeScores([
                 { holeNumber: 1, holePar: 4, scores: [4, 4] },
             ]);
@@ -419,7 +419,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#ffd33d' });
+            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#2D5A3D' });
         });
 
         it('colour codes sub-total green when under par', () => {
@@ -514,7 +514,7 @@ describe('Scorecard', () => {
             expect(onScoreSelect).toHaveBeenCalledWith(1, 1);
         });
 
-        it('highlights selected cell with yellow border', () => {
+        it('highlights selected cell with primary border', () => {
             const holeScores = makeScores([
                 { holeNumber: 1, holePar: 4, scores: [4, 4] },
             ]);
@@ -530,7 +530,7 @@ describe('Scorecard', () => {
                 />
             );
 
-            expect(getByTestId('score-cell-1-1')).toHaveStyle({ borderWidth: 2, borderColor: '#ffd33d' });
+            expect(getByTestId('score-cell-1-1')).toHaveStyle({ borderWidth: 2, borderColor: '#2D5A3D' });
         });
 
         it('does not highlight unselected cells', () => {

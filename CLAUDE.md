@@ -137,7 +137,7 @@ Writes are async (prepared statements). Reads are synchronous (`openDatabaseSync
 
 ### Styling
 
-Direct `StyleSheet.create()` — no CSS-in-JS library. Centralized colors in `assets/colours.tsx` (primary yellow `#ffd33d`, background dark `#25292e`, accent green `#00C851`). Font sizes in `assets/font-sizes.tsx`.
+Direct `StyleSheet.create()` — no CSS-in-JS library. Centralized colors in `assets/colours.tsx` (primary `#2D5A3D`, background dark `#25292e`, accent green `#00C851`). Font sizes in `assets/font-sizes.tsx`.
 
 ## Test Patterns
 

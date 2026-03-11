@@ -29,7 +29,7 @@ function Chevrons({ heading, points }: Props): React.JSX.Element {
 
         return (
             <Text style={styles.normalText}>
-                <Text testID={`point-label-${index}`} style={{ color: colours.yellow }}>{label}</Text>
+                <Text testID={`point-label-${index}`} style={{ color: colours.primary }}>{label}</Text>
                 <Text testID={`point-description-${index}`}>{description}</Text>
             </Text>
         );
@@ -37,14 +37,14 @@ function Chevrons({ heading, points }: Props): React.JSX.Element {
 
     return (
         <View>
-            <Text style={styles.subHeaderText}>
+            <Text style={styles.headerText}>
                 {heading}
             </Text>
             <View>
                 {
                     points.map((point, index) => (
                         <View key={index} style={styles.principlesContainer}>
-                            <MaterialIcons name="chevron-right" color={colours.yellow} size={24} />
+                            <MaterialIcons name="chevron-right" color={colours.primary} size={24} />
                             {renderPoint(point, index)}
                         </View>
                     ))

@@ -52,27 +52,30 @@ export default function DistancesScreen() {
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
-                <View style={styles.headerContainer}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={styles.header}>
+                    <View style={styles.titleRow}>
                         <TouchableOpacity
                             testID="info-button"
                             onPress={handleShowOnboarding}
                         >
-                            <MaterialIcons name="info-outline" size={24} color={colours.yellow} />
+                            <MaterialIcons name="info-outline" size={24} color={colours.primary} />
                         </TouchableOpacity>
                         <Text style={[styles.headerText, styles.marginTop]}>Distances</Text>
                     </View>
                     <Text style={[styles.normalText, styles.marginBottom]}>Club carry distances</Text>
                 </View>
+
+                <View style={styles.divider} />
+
                 <ClubDistanceList distances={distances} onSave={handleSave} />
 
                 {!distancesIsEmpty && !showClearConfirm && (
                     <TouchableOpacity
                         testID="clear-button"
                         onPress={() => setShowClearConfirm(true)}
-                        style={{ padding: 12, alignItems: 'center', marginTop: 20 }}
+                        style={{ padding: 12, alignItems: 'center', marginTop: 10 }}
                     >
-                        <Text style={{ color: colours.errorText, fontSize: fontSizes.normal }}>Clear all</Text>
+                        <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>Clear all</Text>
                     </TouchableOpacity>
                 )}
 

@@ -13,7 +13,7 @@ export const useAppToast = () => {
             style: {
                 borderLeftColor: colours.green,
                 borderLeftWidth: 10,
-                backgroundColor: colours.yellow,
+                backgroundColor: colours.primary,
             },
         });
     };
@@ -23,9 +23,9 @@ export const useAppToast = () => {
             type: 'danger',
             textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
             style: {
-                borderLeftColor: colours.errorText,
+                borderLeftColor: colours.red,
                 borderLeftWidth: 10,
-                backgroundColor: colours.yellow,
+                backgroundColor: colours.primary,
             },
         });
     };

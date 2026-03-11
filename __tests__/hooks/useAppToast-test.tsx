@@ -32,7 +32,7 @@ describe('useAppToast', () => {
             style: expect.objectContaining({
                 borderLeftColor: '#00C851',
                 borderLeftWidth: 10,
-                backgroundColor: '#ffd33d',
+                backgroundColor: '#2D5A3D',
             }),
         }));
     });
@@ -49,7 +49,7 @@ describe('useAppToast', () => {
             style: expect.objectContaining({
                 borderLeftColor: '#fd0303',
                 borderLeftWidth: 10,
-                backgroundColor: '#ffd33d',
+                backgroundColor: '#2D5A3D',
             }),
         }));
     });

@@ -152,21 +152,11 @@ describe('Practice', () => {
         expect(getByText('Drill History')).toBeTruthy();
     });
 
-    it('showsDrillStatsChartWhenStatsExist', () => {
-        mockGetDrillStatsByTypeService.mockReturnValue([
-            { name: 'Putting', total: 10, met: 7, successRate: 70 },
-        ]);
-
-        const { getByTestId, getByText } = render(<Practice />);
-        fireEvent.press(getByTestId('practice-sub-menu-history'));
-        expect(getByText('Success Rate by Drill')).toBeTruthy();
-    });
-
     it('logsErrorWhenFetchDataFails', () => {
         mockGetAllDrillHistoryService.mockImplementation(() => {
             throw new Error('DB error');
         });
-        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
 
         render(<Practice />);
 

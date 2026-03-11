@@ -61,8 +61,8 @@ const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
                                     style={[
                                         s.indicator,
                                         index === currentStep
-                                            ? s.indicatorActive
-                                            : s.indicatorInactive,
+                                            ? styles.scrollActiveDot
+                                            : styles.scrollIndicatorDot
                                     ]}
                                 />
                             ))}

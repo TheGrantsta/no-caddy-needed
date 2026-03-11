@@ -164,8 +164,8 @@ const ShortGameScreen = ({ config }: Props) => {
                 <TouchableOpacity
                     testID='undo-game-delete'
                     style={[{
-                        backgroundColor: colours.yellow, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
-                        borderColor: colours.errorText, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
+                        backgroundColor: colours.primary, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
+                        borderColor: colours.red, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
                     }]}
                     onPress={() => {
                         restoreGameService(lastDeletedGameId).then(() => {
@@ -181,8 +181,8 @@ const ShortGameScreen = ({ config }: Props) => {
                 <TouchableOpacity
                     testID='undo-drill-delete'
                     style={[{
-                        backgroundColor: colours.yellow, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
-                        borderColor: colours.errorText, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
+                        backgroundColor: colours.primary, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
+                        borderColor: colours.red, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
                     }]}
                     onPress={() => {
                         restoreDrillService(lastDeletedDrillId).then(() => {
@@ -198,7 +198,7 @@ const ShortGameScreen = ({ config }: Props) => {
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    tintColor={colours.yellow} />
+                    tintColor={colours.primary} />
             }>
 
                 {/* Drills */}
@@ -213,6 +213,9 @@ const ShortGameScreen = ({ config }: Props) => {
                                     Improve your mechanics and accuracy through focused, repetitive actions.
                                 </Text>
                             </View>
+
+                            <View style={styles.divider} />
+
                             <View>
                                 {showAddDrillForm ? (
                                     <AddDrillForm
@@ -249,7 +252,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                                 />
                                             ))}
                                         </View>
-                                        <View>
+                                        <View style={styles.contentSection}>
                                             <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
                                                 {drillsFooter}
                                             </Text>
@@ -282,6 +285,8 @@ const ShortGameScreen = ({ config }: Props) => {
                                         Improve your accuracy, touch, consistency, and mental focus while keeping practice engaging
                                     </Text>
                                 </View>
+
+                                <View style={styles.divider} />
 
                                 {showAddGameForm ? (
                                     <AddGameForm
@@ -326,7 +331,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                                 </View>
                                             </>
                                         )}
-                                        <View>
+                                        <View style={styles.contentSection}>
                                             <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
                                                 {gamesFooter}
                                             </Text>

@@ -1,52 +1,55 @@
 export type ThemeColours = {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+    background: string;
+    backgroundAlternate: string;
     text: string;
+    red: string;
     white: string;
     black: string;
-    yellow: string;
     mutedYellow: string;
     errorText: string;
-    background: string;
     backgroundLight: string;
-    backgroundDelete: string;
-    backgroundAlternate: string;
     border: string;
-    borderEdit: string;
     borderError: string;
     green: string;
 };
 
 export const darkColours: ThemeColours = {
-    text: '#fffae7',
+    primary: '#2D5A3D',
+    secondary: '#FFFFFF26',
+    tertiary: '#8FA79A',
+    background: '#f5f5f0',
+    backgroundAlternate: '#FFFFFF26',
+    text: '#1A1A2EA6',
     white: '#fff',
+    red: '#fd0303',
     black: '#000',
-    yellow: '#ffd33d',
     mutedYellow: '#e6be36',
     errorText: '#fd0303',
-    background: '#25292e',
     backgroundLight: '#fff',
-    backgroundDelete: '#fd0303',
-    backgroundAlternate: '#8d98a5',
     border: '#fff',
-    borderEdit: '#ccc',
     borderError: '#fd0303',
     green: '#00C851',
 };
 
 export const lightColours: ThemeColours = {
-    text: '#1a1a2e',
-    white: '#1a1a2e',
+    primary: '#6FAF8A',
+    secondary: '#E6F2EC',
+    tertiary: '#A9C7B5',
+    background: '#F6FBF8',
+    backgroundAlternate: '#EAF5EF',
+    text: '#1F2D26',
+    white: '#fff',
+    red: '#fd0303',
     black: '#000',
-    yellow: '#2E7D32',
-    mutedYellow: '#1B5E20',
-    errorText: '#d32f2f',
-    background: '#f5f5f0',
-    backgroundLight: '#dfe3e8',
-    backgroundDelete: '#d32f2f',
-    backgroundAlternate: '#dfe3e8',
-    border: '#3a3a3a',
-    borderEdit: '#999',
-    borderError: '#d32f2f',
-    green: '#00C851',
+    mutedYellow: '#E6BE36',
+    errorText: '#fd0303',
+    backgroundLight: '#FFFFFF',
+    border: '#D6E6DD',
+    borderError: '#fd0303',
+    green: '#2FBF71',
 };
 
 export default darkColours;

@@ -8,6 +8,39 @@ export const createStyles = (c: ThemeColours) => ({
         flexOne: {
             flex: 1,
         },
+        header: {
+            paddingTop: 32,
+            paddingHorizontal: 24,
+            paddingBottom: 4,
+            alignItems: 'center',
+        },
+        titleRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            alignSelf: 'flex-start',
+            gap: 10,
+            marginBottom: 8,
+        },
+        titleText: {
+            color: colours.primary,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            padding: 8,
+            textAlign: 'left',
+        },
+        subtitleText: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+            textAlign: 'left',
+        },
+        divider: {
+            height: 1,
+            backgroundColor: colours.primary,
+            opacity: 0.2,
+            marginHorizontal: 24,
+            marginTop: 20,
+            marginBottom: 4,
+        },
         marginTop: {
             marginTop: 10,
         },
@@ -20,9 +53,6 @@ export const createStyles = (c: ThemeColours) => ({
         },
         scrollContentContainer: {
             paddingBottom: 100,
-        },
-        viewContainer: {
-            alignItems: 'center',
         },
         principlesContainer: {
             flexDirection: 'row',
@@ -40,33 +70,17 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'center',
             alignItems: 'center',
         },
-        iconsContainer: {
-            backgroundColor: c.background,
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-            width: '100%',
-            paddingHorizontal: 2,
-        },
-        iconContainer: {
-            padding: 15,
-        },
-        wrapper: {
-            borderColor: c.border,
-            borderWidth: 2,
-            borderRadius: 10,
-            marginTop: 10
-        },
         headerText: {
-            color: c.yellow,
-            fontSize: fontSizes.header,
-            alignItems: 'center',
-            padding: 8,
+            color: c.primary,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            alignItems: 'baseline',
+            padding: 6,
         },
         subHeaderText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
             alignItems: 'baseline',
             padding: 6,
         },
@@ -81,22 +95,13 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             padding: 5,
         },
-        overlay: {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.85)',
-            zIndex: 1000,
-        },
-        overlayText: {
-            color: c.white,
-            fontSize: fontSizes.normal,
-            paddingBottom: 20,
-            paddingLeft: 10,
-            alignItems: 'center',
+        contentSection: {
+            marginHorizontal: 8,
+            marginTop: 20,
+            borderRadius: 14,
+            padding: 16,
+            borderWidth: 1,
+            borderColor: colours.primary + '33',
         },
         buttonContainer: {
             margin: 8,
@@ -105,15 +110,23 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
         },
         largeButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 10,
             borderRadius: 8,
             width: '90%',
             alignItems: 'center',
             margin: 5,
         },
+        mediumButton: {
+            backgroundColor: c.primary,
+            padding: 10,
+            borderRadius: 8,
+            width: '35%',
+            alignItems: 'center',
+            margin: 5,
+        },
         button: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 10,
             borderRadius: 8,
             width: 100,
@@ -121,126 +134,54 @@ export const createStyles = (c: ThemeColours) => ({
             margin: 5,
         },
         buttonText: {
-            color: c.background,
+            color: c.white,
             fontSize: fontSizes.tableHeader,
             fontWeight: 'bold',
         },
         yellowText: {
-            color: c.yellow,
-        },
-        deleteBackground: {
-            backgroundColor: c.backgroundDelete,
-            position: 'absolute',
-            right: 0,
-            left: 0,
-            top: 0,
-            bottom: 0,
-            justifyContent: 'center',
-            alignItems: 'flex-end',
-            width: '90%',
-        },
-        deleteText: {
-            color: c.white,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-            padding: 2,
-        },
-        cardRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: 2,
-        },
-        card: {
-            backgroundColor: c.background,
-            paddingTop: 3,
-            width: '90%',
-        },
-        cardText: {
-            flex: 1,
-            color: c.text,
-            fontSize: fontSizes.smallText,
-            paddingLeft: 2,
-        },
-        cardIcon: {
-            paddingBottom: 1,
-        },
-        textarea: {
-            height: 150,
-            borderColor: c.border,
-            borderWidth: 1,
-            padding: 10,
-            borderRadius: 5,
-            backgroundColor: c.backgroundLight,
-            fontSize: fontSizes.normal,
-        },
-        textareaError: {
-            borderColor: c.borderError,
+            color: c.primary,
         },
         errorText: {
             color: c.errorText,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.smallText,
             marginTop: 5,
         },
         textLabel: {
             fontSize: fontSizes.smallText,
-            color: c.white,
+            color: c.primary,
             margin: 5,
         },
         textInput: {
             height: 40,
-            borderColor: c.border,
+            borderColor: c.secondary,
             borderWidth: 1,
             borderRadius: 5,
             paddingHorizontal: 10,
             fontSize: fontSizes.smallText,
-            color: c.white,
+            color: c.primary,
         },
         textInputError: {
             borderColor: c.borderError,
         },
-        table: {
-            marginTop: 20,
-            marginLeft: 20,
-            marginRight: 20,
-            marginBottom: 5,
-            borderWidth: 1,
-            borderColor: c.border,
-        },
         row: {
             flexDirection: 'row',
-        },
-        alternateRow: {
-            backgroundColor: c.backgroundAlternate,
-            color: c.black,
         },
         cell: {
             flex: 4,
             borderWidth: 1,
             borderColor: c.border,
-            padding: 10,
+            padding: 2,
             textAlign: 'center',
-            color: c.white,
+            color: c.primary,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
-        },
-        header: {
-            color: c.yellow,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
-        bold: {
-            fontWeight: 'bold',
-        },
-        spinnerContainer: {
-            marginTop: 16,
-            alignItems: 'center',
         },
         updateOverlay: {
             width: '100%',
             backgroundColor: c.background,
         },
         updateText: {
-            color: c.yellow,
+            color: c.primary,
             marginTop: 5,
             fontSize: fontSizes.normal,
             textAlign: 'center',
@@ -248,9 +189,9 @@ export const createStyles = (c: ThemeColours) => ({
         scrollWrapper: {
             margin: 5,
             borderRadius: 5,
-            borderColor: c.yellow,
+            borderColor: c.primary,
             borderWidth: 2,
-            borderLeftColor: c.yellow,
+            borderLeftColor: c.primary,
             borderLeftWidth: 10,
         },
         horizontalScrollContainer: {
@@ -263,10 +204,6 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'center',
             alignItems: 'center',
         },
-        scrollItemText: {
-            fontSize: 24,
-            fontWeight: 'bold',
-        },
         scrollIndicatorContainer: {
             flexDirection: 'row',
             justifyContent: 'center',
@@ -277,14 +214,49 @@ export const createStyles = (c: ThemeColours) => ({
             width: 10,
             height: 10,
             borderRadius: 5,
-            backgroundColor: c.backgroundAlternate,
+            backgroundColor: c.black,
             marginHorizontal: 5,
-            borderColor: c.backgroundAlternate,
+            borderColor: c.black,
             borderWidth: 1,
         },
         scrollActiveDot: {
-            backgroundColor: c.yellow,
-            borderColor: c.yellow,
+            backgroundColor: c.red,
+            borderColor: c.red,
+        },
+        navGrid: {
+            paddingHorizontal: 8,
+            paddingTop: 16,
+            gap: 12,
+        },
+        navRow: {
+            flexDirection: 'row',
+            gap: 12,
+        },
+        navCardLink: {
+            flex: 1,
+        },
+        navCard: {
+            backgroundColor: colours.primary,
+            borderRadius: 16,
+            paddingVertical: 28,
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 14,
+            width: '100%',
+        },
+        iconCircle: {
+            width: 72,
+            height: 72,
+            borderRadius: 36,
+            backgroundColor: colours.secondary,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        navCardLabel: {
+            color: colours.white,
+            fontSize: fontSizes.subHeader,
+            fontWeight: '700',
+            letterSpacing: 0.3,
         },
     }),
 
@@ -299,7 +271,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         button: {
             borderRadius: 10,
-            borderColor: c.yellow,
+            borderColor: c.primary,
             borderWidth: 1,
             backgroundColor: c.mutedYellow,
             width: '100%',
@@ -318,7 +290,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         selected: {
             color: c.background,
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
         },
     }),
 
@@ -330,7 +302,7 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'space-evenly',
             backgroundColor: c.background,
             borderBottomWidth: 0.5,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
         },
         subMenuItemContainer: {
             flex: 1,
@@ -338,48 +310,17 @@ export const createStyles = (c: ThemeColours) => ({
         },
         subMenuItemContainerSelected: {
             borderBottomWidth: 4,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
         },
         subMenuItem: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
         subMenuItemSelected: {
-            textDecorationColor: c.yellow,
+            textDecorationColor: c.primary,
             textDecorationStyle: 'solid',
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
-        },
-    }),
-
-    iconButton: StyleSheet.create({
-        iconButton: {
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderColor: c.border,
-            borderWidth: 2,
-            padding: 10,
-            zIndex: 1,
-        },
-        small: {
-            borderRadius: 10,
-            width: 75,
-            height: 75,
-        },
-        medium: {
-            borderRadius: 20,
-            width: 125,
-            height: 125,
-        },
-        large: {
-            borderRadius: 40,
-            width: 175,
-            height: 175,
-        },
-        iconButtonLabel: {
-            fontSize: fontSizes.smallText,
-            color: c.white,
-            marginTop: 24,
         },
     }),
 
@@ -402,7 +343,7 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'center',
         },
         toggleOn: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
         },
         toggleCircle: {
             width: 20,
@@ -421,7 +362,7 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 15,
         },
         holeText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -436,15 +377,15 @@ export const createStyles = (c: ThemeColours) => ({
             paddingVertical: 8,
             paddingHorizontal: 16,
             borderWidth: 1,
-            borderColor: c.yellow,
+            borderColor: c.primary,
             marginHorizontal: 5,
             borderRadius: 4,
         },
         parButtonActive: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
         },
         parButtonText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
@@ -459,7 +400,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingVertical: 5,
         },
         playerName: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             flex: 1,
         },
@@ -471,7 +412,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 40,
             height: 40,
             borderRadius: 20,
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -504,7 +445,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
         },
         totalScore: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
@@ -512,7 +453,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 15,
         },
         nineHeader: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             marginBottom: 10,
@@ -558,17 +499,17 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.errorText,
         },
         atParText: {
-            color: c.yellow,
+            color: c.primary,
         },
         selectedCell: {
             borderWidth: 2,
-            borderColor: c.yellow,
+            borderColor: c.primary,
             borderRadius: 4,
         },
         roundTotalSection: {
             marginTop: 15,
             borderTopWidth: 1,
-            borderTopColor: c.yellow,
+            borderTopColor: c.primary,
             paddingTop: 10,
         },
     }),
@@ -578,7 +519,7 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 15,
         },
         totalScore: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.massive,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -588,7 +529,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 15,
         },
         nineHeader: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             marginBottom: 10,
@@ -623,7 +564,7 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'right',
             marginTop: 5,
             borderTopWidth: 0.5,
-            borderTopColor: c.yellow,
+            borderTopColor: c.primary,
             paddingTop: 5,
         },
     }),
@@ -635,7 +576,7 @@ export const createStyles = (c: ThemeColours) => ({
         headerRow: {
             flexDirection: 'row',
             borderBottomWidth: 1,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
             paddingBottom: 8,
             marginBottom: 5,
         },
@@ -643,10 +584,10 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
             paddingVertical: 6,
             borderBottomWidth: 0.5,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
         },
         headerCell: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
@@ -677,11 +618,11 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 10,
         },
         addButtonText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
         saveButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -701,7 +642,7 @@ export const createStyles = (c: ThemeColours) => ({
         headerRow: {
             flexDirection: 'row',
             borderBottomWidth: 1,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
             paddingBottom: 8,
             marginBottom: 5,
         },
@@ -709,15 +650,15 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
             paddingVertical: 6,
             borderBottomWidth: 0.5,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
         },
         headerCell: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
         headerInput: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
             paddingVertical: 4,
@@ -744,11 +685,11 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         addButtonText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
         saveButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -767,7 +708,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         headerText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             marginBottom: 15,
@@ -780,7 +721,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 40,
             height: 40,
             borderRadius: 20,
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -809,7 +750,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 10,
         },
         playerName: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
@@ -818,14 +759,14 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.text,
             fontSize: fontSizes.normal,
             borderBottomWidth: 1,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
             paddingVertical: 5,
         },
         courseNameInput: {
             color: c.text,
             fontSize: fontSizes.normal,
             borderBottomWidth: 1,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
             paddingVertical: 5,
             marginBottom: 15,
         },
@@ -843,11 +784,11 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         addButtonText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
         startButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -859,7 +800,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         cancelButton: {
-            backgroundColor: c.errorText,
+            backgroundColor: c.red,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -872,7 +813,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         recentLabel: {
             color: c.text,
-            fontSize: fontSizes.small,
+            fontSize: fontSizes.smallText,
             marginBottom: 5,
         },
         recentItem: {
@@ -880,15 +821,15 @@ export const createStyles = (c: ThemeColours) => ({
             paddingHorizontal: 10,
         },
         recentItemText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
         recentContainer: {
             marginBottom: 10,
         },
         errorText: {
-            color: c.errorText,
-            fontSize: fontSizes.small,
+            color: c.red,
+            fontSize: fontSizes.smallText,
             marginBottom: 10,
         },
     }),
@@ -908,10 +849,10 @@ export const createStyles = (c: ThemeColours) => ({
             width: '100%',
             maxWidth: 400,
             borderWidth: 2,
-            borderColor: c.yellow,
+            borderColor: c.primary,
         },
         title: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -936,7 +877,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginHorizontal: 4,
         },
         indicatorActive: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
         },
         indicatorInactive: {
             backgroundColor: c.backgroundAlternate,
@@ -947,7 +888,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         primaryButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             paddingVertical: 12,
             paddingHorizontal: 24,
             borderRadius: 8,
@@ -962,7 +903,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingHorizontal: 24,
         },
         secondaryButtonText: {
-            color: c.backgroundAlternate,
+            color: c.tertiary,
             fontSize: fontSizes.normal,
         },
         spacer: {
@@ -983,7 +924,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             paddingVertical: 6,
             borderBottomWidth: 0.5,
-            borderColor: c.yellow,
+            borderColor: c.primary,
         },
         label: {
             color: c.text,
@@ -995,7 +936,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         button: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             width: 24,
             height: 24,
             borderRadius: 12,
@@ -1014,7 +955,7 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'center',
         },
         saveButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -1031,7 +972,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             paddingVertical: 8,
             borderBottomWidth: 0.5,
-            borderColor: c.yellow,
+            borderColor: c.primary,
         },
         toggleLabel: {
             color: c.text,
@@ -1039,7 +980,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         chevron: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
         },
     }),
@@ -1050,7 +991,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingBottom: 0,
         },
         title: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             textAlign: 'center',
         },
@@ -1064,7 +1005,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingRight: 5,
         },
         label: {
-            color: c.white,
+            color: c.primary,
             fontSize: fontSizes.smallestText,
         },
         barWrapper: {
@@ -1088,7 +1029,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'flex-end',
         },
         countText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
         },
@@ -1098,7 +1039,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 15,
             paddingTop: 10,
             borderTopWidth: 1,
-            borderTopColor: c.border,
+            borderTopColor: c.primary,
         },
         legendItem: {
             flexDirection: 'row',
@@ -1112,7 +1053,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginRight: 5,
         },
         legendText: {
-            color: c.white,
+            color: c.text,
             fontSize: fontSizes.smallestText,
         },
         toggleHeader: {
@@ -1121,10 +1062,10 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             marginBottom: 8,
             borderBottomWidth: 0.5,
-            borderColor: c.yellow,
+            borderColor: c.primary,
         },
         chevron: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.header,
         },
     }),
@@ -1135,7 +1076,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 10,
         },
         title: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             marginBottom: 15,
         },
@@ -1145,12 +1086,12 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 8,
         },
         labelContainer: {
-            width: 100,
+            width: 125,
             paddingRight: 5,
         },
         label: {
-            color: c.white,
-            fontSize: fontSizes.small,
+            color: c.primary,
+            fontSize: fontSizes.smallText,
         },
         barWrapper: {
             flex: 1,
@@ -1169,20 +1110,20 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.backgroundLight,
         },
         statsContainer: {
-            width: 70,
+            width: 90,
             flexDirection: 'row',
             justifyContent: 'flex-end',
             alignItems: 'center',
         },
         statsText: {
-            color: c.yellow,
-            fontSize: fontSizes.small,
+            color: c.primary,
+            fontSize: fontSizes.smallText,
             fontWeight: 'bold',
             marginRight: 2,
         },
         countText: {
             color: c.white,
-            fontSize: fontSizes.smallest,
+            fontSize: fontSizes.smallText,
         },
         legend: {
             flexDirection: 'row',
@@ -1205,7 +1146,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         legendText: {
             color: c.white,
-            fontSize: fontSizes.smallest,
+            fontSize: fontSizes.smallText,
         },
     }),
 
@@ -1225,7 +1166,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         text: {
             color: c.white,
-            fontSize: fontSizes.small,
+            fontSize: fontSizes.smallText,
             marginLeft: 8,
             fontWeight: '500',
         },
@@ -1240,46 +1181,25 @@ export const createStyles = (c: ThemeColours) => ({
 
     themedText: StyleSheet.create({
         default: {
-            fontSize: 16,
+            fontSize: fontSizes.smallText,
             lineHeight: 24,
         },
         defaultSemiBold: {
-            fontSize: 16,
+            fontSize: fontSizes.smallText,
             lineHeight: 24,
             fontWeight: '600',
         },
         title: {
-            fontSize: 32,
+            fontSize: fontSizes.header,
             fontWeight: 'bold',
             lineHeight: 32,
         },
-        subtitle: {
-            fontSize: 20,
-            fontWeight: 'bold',
-        },
         link: {
             lineHeight: 30,
-            fontSize: 16,
+            fontSize: fontSizes.smallText,
             color: '#0a7ea4',
         },
     }),
-
-    parallaxScrollView: StyleSheet.create({
-        container: {
-            flex: 1,
-        },
-        header: {
-            height: 250,
-            overflow: 'hidden',
-        },
-        content: {
-            flex: 1,
-            padding: 32,
-            gap: 16,
-            overflow: 'hidden',
-        },
-    }),
-
     collapsible: StyleSheet.create({
         heading: {
             flexDirection: 'row',
@@ -1321,7 +1241,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 24,
         },
         button: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             paddingHorizontal: 24,
             paddingVertical: 12,
             borderRadius: 8,
@@ -1339,7 +1259,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         actionButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -1352,7 +1272,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         nextHoleButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -1369,7 +1289,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginHorizontal: 15,
         },
         endRoundButton: {
-            backgroundColor: c.errorText,
+            backgroundColor: c.red,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -1392,7 +1312,7 @@ export const createStyles = (c: ThemeColours) => ({
             gap: 8,
         },
         filterLabel: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             alignSelf: 'center',
             marginRight: 4,
@@ -1403,13 +1323,13 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             borderRadius: 6,
             borderWidth: 1,
-            borderColor: c.yellow,
+            borderColor: c.primary,
         },
         filterButtonSelected: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
         },
         filterButtonText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
         filterButtonTextSelected: {
@@ -1438,20 +1358,6 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'center',
             alignItems: 'center',
         },
-        item: {
-            width: 100,
-            height: 100,
-            backgroundColor: '#4A90E2',
-            margin: 5,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 10,
-        },
-        text: {
-            color: '#fff',
-            fontSize: 16,
-            fontWeight: 'bold',
-        },
     }),
 
     screenWrapper: StyleSheet.create({
@@ -1468,7 +1374,7 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 20,
         },
         actionButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -1481,7 +1387,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         randomNumberContainer: {
             backgroundColor: c.background,
-            borderColor: c.yellow,
+            borderColor: c.primary,
             borderWidth: 2,
             borderRadius: 12,
             margin: 15,
@@ -1491,7 +1397,7 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
         },
         randomNumberText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.massive,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -1505,10 +1411,10 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             justifyContent: 'center',
             gap: 8,
-            backgroundColor: c.backgroundAlternate,
+            backgroundColor: c.tertiary,
         },
         micButtonActive: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
         },
     }),
 
@@ -1519,7 +1425,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         title: {
             fontSize: fontSizes.subHeader,
-            color: c.yellow,
+            color: c.primary,
             marginBottom: 10,
         },
         slider: {
@@ -1534,7 +1440,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         label: {
             fontSize: fontSizes.normal,
-            color: c.yellow,
+            color: c.primary,
         },
         valueText: {
             marginTop: 10,

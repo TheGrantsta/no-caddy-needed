@@ -6,7 +6,6 @@ import { useThemeColours } from "@/context/ThemeContext";
 import { useOrientation } from "@/hooks/useOrientation";
 import SubMenu from "@/components/SubMenu";
 import { Link } from "expo-router";
-import IconButton from "@/components/IconButton";
 import { MaterialIcons } from "@expo/vector-icons";
 import fontSizes from "@/assets/font-sizes";
 import { getAllDrillHistoryService, getDrillStatsByTypeService, getSettingsService, saveSettingsService, DrillStats } from "@/service/DbService";
@@ -31,7 +30,6 @@ export default function Practice() {
   const [loading, setLoading] = useState(true);
   const [drillHistoryIndex, setDrillHistoryIndex] = useState(0);
   const [drillHistory, setDrillHistory] = useState<any[]>([]);
-  const [drillStats, setDrillStats] = useState<DrillStats[]>([]);
   const flatListRef = useRef(null);
 
   const points = ['Intention: practice with a purpose!', 'Evaluate: be honest with yourself - identify the shots you avoid (or can\'t play) and give yourself time to improve', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
@@ -57,11 +55,9 @@ export default function Practice() {
   const fetchData = () => {
     try {
       const items = getAllDrillHistoryService();
-      const pages = items.length > 0 ? [items.slice(0, 5), items.slice(5)] : [];
-      const stats = getDrillStatsByTypeService();
+      const pages = items.length > 0 ? [items.slice(0, 10), items.slice(10)] : [];
 
       setDrillHistory(pages);
-      setDrillStats(stats);
     } catch (e) {
       console.error("Error fetching drill history:", e);
     } finally {
@@ -107,17 +103,17 @@ export default function Practice() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor={colours.yellow} />
+          tintColor={colours.primary} />
       }>
 
         <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={styles.header}>
+            <View style={styles.titleRow}>
               <TouchableOpacity
                 testID="info-button"
                 onPress={handleShowOnboarding}
               >
-                <MaterialIcons name="info-outline" size={24} color={colours.yellow} />
+                <MaterialIcons name="info-outline" size={24} color={colours.primary} />
               </TouchableOpacity>
               <Text style={[styles.headerText, styles.marginTop]}>
                 Practice
@@ -127,65 +123,85 @@ export default function Practice() {
               Make your practice time more effective
             </Text>
           </View>
+
+          <View style={styles.divider} />
         </View>
 
         {/* Short game */}
         {displaySection('short-game') && (
           <View>
-            <View style={styles.viewContainer}>
-              <Text style={[styles.subHeaderText, styles.marginTop]}>
-                Short game practice
-              </Text>
+            <Text style={[styles.subHeaderText, styles.marginTop]}>
+              Short game practice
+            </Text>
 
-              <View style={styles.iconsContainer}>
-                <Link href='../short-game/putting'>
-                  <View style={styles.iconContainer}>
-                    <IconButton iconName='adjust' label='Putting' size='medium' />
+            <View style={styles.navGrid}>
+              <View style={styles.navRow}>
+                <Link href="../short-game/putting" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="adjust" size={36} color={colours.white} />
+                    </View>
+                    <Text style={styles.navCardLabel}>Putting</Text>
                   </View>
                 </Link>
-
-                <Link href='../short-game/chipping'>
-                  <View style={styles.iconContainer}>
-                    <IconButton iconName='filter-tilt-shift' label='Chipping' size='medium' />
+                <Link href="../short-game/chipping" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="filter-tilt-shift" size={36} color={colours.white} />
+                    </View>
+                    <Text style={styles.navCardLabel}>Chipping</Text>
                   </View>
                 </Link>
-
-                <Link href='../short-game/pitching'>
-                  <View style={styles.iconContainer}>
-                    <IconButton iconName='golf-course' label='Pitching' size='medium' />
+              </View>
+              <View style={styles.navRow}>
+                <Link href="../short-game/pitching" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="golf-course" size={36} color={colours.white} />
+                    </View>
+                    <Text style={styles.navCardLabel}>Pitching</Text>
                   </View>
                 </Link>
-
-                <Link href='../short-game/bunker'>
-                  <View style={styles.iconContainer}>
-                    <IconButton iconName='beach-access' label='Bunker play' size='medium' />
+                <Link href="../short-game/bunker" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="beach-access" size={36} color={colours.white} />
+                    </View>
+                    <Text style={styles.navCardLabel}>Bunker play</Text>
                   </View>
                 </Link>
               </View>
             </View>
 
-            <Chevrons heading='Principles' points={points} />
+            <View style={styles.contentSection}>
+              <Chevrons heading='Principles' points={points} />
+            </View>
           </View>
         )}
 
         {/* Tools */}
         {displaySection('tools') && (
           <View>
-            <View style={styles.viewContainer}>
-              <Text style={[styles.subHeaderText, styles.marginTop]}>
-                Practice tools
-              </Text>
+            <Text style={[styles.subHeaderText, styles.marginTop]}>
+              Practice tools
+            </Text>
 
-              <View style={styles.iconsContainer}>
-                <Link href='../tools/tempo'>
-                  <View style={styles.iconContainer}>
-                    <IconButton iconName='music-note' label='Tempo' size='medium' />
+            <View style={styles.navGrid}>
+              <View style={styles.navRow}>
+                <Link href="../tools/tempo" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="music-note" size={36} color={colours.white} />
+                    </View>
+                    <Text style={styles.navCardLabel}>Tempo</Text>
                   </View>
                 </Link>
-
-                <Link href='../tools/random'>
-                  <View style={styles.iconContainer}>
-                    <IconButton iconName='shuffle-on' label='Random' size='medium' />
+                <Link href="../tools/random" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="shuffle-on" size={36} color={colours.white} />
+                    </View>
+                    <Text style={styles.navCardLabel}>Random</Text>
                   </View>
                 </Link>
               </View>
@@ -198,16 +214,13 @@ export default function Practice() {
           <View>
             {loading ? (
               <View>
-                <ActivityIndicator size="large" color={colours.yellow} />
+                <ActivityIndicator size="large" color={colours.primary} />
               </View>
             ) : (
               <View>
-                {drillStats.length > 0 && (
-                  <DrillStatsChart stats={drillStats} />
-                )}
 
                 <Text style={{
-                  color: colours.yellow,
+                  color: colours.primary,
                   fontSize: fontSizes.subHeader,
                   alignItems: 'baseline',
                   padding: 6,
@@ -251,7 +264,7 @@ export default function Practice() {
                                 <Text style={[styles.cell, { flex: 2 / 12, borderWidth: 0 }]}>
                                   <MaterialIcons
                                     name={item.Result === 1 ? 'check' : 'clear'}
-                                    color={item.Result === 1 ? colours.yellow : colours.errorText}
+                                    color={item.Result === 1 ? colours.primary : colours.errorText}
                                     size={24} />
                                 </Text>
                                 <Text style={[styles.cell, { flex: 3 / 12, borderWidth: 0 }]}>

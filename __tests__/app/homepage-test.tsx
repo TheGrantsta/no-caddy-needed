@@ -94,7 +94,7 @@ describe('renders homepage', () => {
         const { getByText } = render(<Homepage />);
 
         expect(getByText('Golf simplified')).toBeTruthy();
-        expect(getByText('In a nutshell: hit it, find it and hit it again')).toBeTruthy();
+        expect(getByText('In a nutshell: hit it, find it & hit it again')).toBeTruthy();
         expect(getByText('Point: get the ball in the hole with the fewest shots')).toBeTruthy();
         expect(getByText('Have fun: golf is a game, so for goodness sake enjoy it!')).toBeTruthy();
     });

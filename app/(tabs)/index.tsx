@@ -7,16 +7,15 @@ import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
 import { getSettingsService, saveSettingsService } from '@/service/DbService';
-import IconButton from '@/components/IconButton';
 import Chevrons from '@/components/Chevrons';
 import OnboardingOverlay from '@/components/OnboardingOverlay';
 
-const points = ['In a nutshell: hit it, find it and hit it again', 'Point: get the ball in the hole with the fewest shots', 'Have fun: golf is a game, so for goodness sake enjoy it!'];
+const points = ['In a nutshell: hit it, find it & hit it again', 'Point: get the ball in the hole with the fewest shots', 'Have fun: golf is a game, so for goodness sake enjoy it!'];
 
 const ONBOARDING_STEPS = [
-    { text: 'Welcome to No Caddy Needed — your personal golf companion for smarter play, practice and performance.' },
-    { text: 'Use the Play, Practice and Perform sections to track rounds, sharpen your short game and review your stats.' },
-    { text: 'Pull down to refresh at any time. Tap the info icon to see this guide again.' },
+  { text: 'Welcome to No Caddy Needed — your personal golf companion for smarter play, practice and performance.' },
+  { text: 'Use the Play, Practice and Perform sections to track rounds, sharpen your short game and review your stats.' },
+  { text: 'Pull down to refresh at any time. Tap the info icon to see this guide again.' },
 ];
 
 export default function HomeScreen() {
@@ -39,73 +38,81 @@ export default function HomeScreen() {
 
   const onRefresh = () => {
     setRefreshing(true);
-
     setTimeout(() => {
       setRefreshing(false);
     }, 750);
   };
 
   return (
-    <GestureHandlerRootView style={styles.flexOne}>
+    <GestureHandlerRootView style={[styles.flexOne]}>
       {refreshing && (
         <View style={styles.updateOverlay}>
-          <Text style={styles.updateText}>
-            Release to update
-          </Text>
+          <Text style={styles.updateText}>Release to update</Text>
         </View>
       )}
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={colours.yellow} />
-      }>
-        <View style={styles.viewContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-            <TouchableOpacity
-              testID="info-button"
-              onPress={handleShowOnboarding}
-            >
-              <MaterialIcons name="info-outline" size={24} color={colours.yellow} />
+      <ScrollView
+        style={[styles.scrollContainer]}
+        contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colours.primary} />
+        }
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.titleRow}>
+            <TouchableOpacity testID="info-button" onPress={handleShowOnboarding}>
+              <MaterialIcons name="info-outline" size={26} color={colours.primary} />
             </TouchableOpacity>
-            <Text style={[styles.headerText, styles.marginTop]}>
-              No caddy needed!
-            </Text>
+            <Text style={styles.titleText}>No caddy needed!</Text>
           </View>
-          <Text style={[styles.normalText, styles.marginBottom]}>
-            Smarter play, practice & performance
-          </Text>
+          <Text style={styles.subtitleText}>Smarter play, practice & performance</Text>
+        </View>
 
-          <View style={[styles.iconsContainer, styles.marginTop]}>
-            <Link testID="home-play-link" href='/play'>
-              <View style={styles.iconContainer}>
-                <IconButton iconName='sports-golf' label='Play' size='medium' />
-              </View>
-            </Link>
-            <Link testID="home-practice-link" href='/practice'>
-              <View style={styles.iconContainer}>
-                <IconButton iconName='golf-course' label='Practice' size='medium' />
-              </View>
-            </Link>
-            <Link testID="home-perform-link" href='/perform'>
-              <View style={styles.iconContainer}>
-                <IconButton iconName='lightbulb' label='Perform' size='medium' />
-              </View>
-            </Link>
-          </View>
+        <View style={styles.divider} />
 
-          <Chevrons heading='Golf simplified' points={points} />
-
-          <Text style={[styles.subHeaderText, styles.marginTop]}>
-            Be your own best caddy
-          </Text>
-
-          <Text style={[styles.normalText, styles.marginTop, styles.marginBottom]}>
+        <View style={styles.contentSection}>
+          <Text style={styles.headerText}>Be your own best caddy</Text>
+          <Text style={styles.normalText}>
             Golf is not a game of perfect, or having a perfect swing
           </Text>
-
-
         </View>
+
+        {/* Navigation cards — 2 + 1 grid */}
+        <View style={styles.navGrid}>
+          <View style={styles.navRow}>
+            <Link testID="home-play-link" href="/play" style={styles.navCardLink}>
+              <View style={styles.navCard}>
+                <View style={styles.iconCircle}>
+                  <MaterialIcons name="sports-golf" size={36} color={colours.white} />
+                </View>
+                <Text style={styles.navCardLabel}>Play</Text>
+              </View>
+            </Link>
+          </View>
+          <View style={styles.navRow}>
+            <Link testID="home-practice-link" href="/practice" style={styles.navCardLink}>
+              <View style={styles.navCard}>
+                <View style={styles.iconCircle}>
+                  <MaterialIcons name="golf-course" size={36} color={colours.white} />
+                </View>
+                <Text style={styles.navCardLabel}>Practice</Text>
+              </View>
+            </Link>
+            <Link testID="home-perform-link" href="/perform" style={styles.navCardLink}>
+              <View style={styles.navCard}>
+                <View style={styles.iconCircle}>
+                  <MaterialIcons name="lightbulb" size={36} color={colours.white} />
+                </View>
+                <Text style={styles.navCardLabel}>Perform</Text>
+              </View>
+            </Link>
+          </View>
+        </View>
+
+        <View style={styles.contentSection}>
+          <Chevrons heading="Golf simplified" points={points} />
+        </View>
+
       </ScrollView>
 
       <OnboardingOverlay

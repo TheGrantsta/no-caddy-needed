@@ -33,7 +33,7 @@ describe('renders chevrons', () => {
         expect(getByText('Point 3')).toBeTruthy();
     });
 
-    it('splits point on first colon with label in yellow', () => {
+    it('splits point on first colon with label in primary', () => {
         const points = ['Label: This is the description'];
         const { getByTestId } = render(<Chevrons heading='fake heading' points={points} />);
 

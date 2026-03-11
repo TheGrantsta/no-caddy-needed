@@ -20,12 +20,12 @@ export default function DrillStatsChart({ stats }: Props) {
     const maxTotal = Math.max(...stats.map(st => st.total));
 
     const getBarColor = (successRate: number) => {
-        if (successRate >= 70) return colours.green;
-        if (successRate >= 40) return colours.yellow;
-        return colours.errorText;
+        if (successRate >= 70) return colours.black;
+        if (successRate >= 40) return colours.primary;
+        return colours.red;
     };
 
-    const truncateName = (name: string, maxLength: number = 20) => {
+    const truncateName = (name: string, maxLength: number = 15) => {
         if (name.length <= maxLength) return name;
         return name.substring(0, maxLength - 3) + '...';
     };
@@ -52,12 +52,6 @@ export default function DrillStatsChart({ stats }: Props) {
                                 }
                             ]}
                         />
-                        <View
-                            style={[
-                                s.barBackground,
-                                { width: `${100 - (stat.total / maxTotal) * 100}%` }
-                            ]}
-                        />
                     </View>
 
                     <View style={s.statsContainer}>
@@ -71,20 +65,6 @@ export default function DrillStatsChart({ stats }: Props) {
                 </View>
             ))}
 
-            <View style={s.legend}>
-                <View style={s.legendItem}>
-                    <View style={[s.legendDot, { backgroundColor: colours.green }]} />
-                    <Text style={s.legendText}>≥70%</Text>
-                </View>
-                <View style={s.legendItem}>
-                    <View style={[s.legendDot, { backgroundColor: colours.yellow }]} />
-                    <Text style={s.legendText}>40-69%</Text>
-                </View>
-                <View style={s.legendItem}>
-                    <View style={[s.legendDot, { backgroundColor: colours.errorText }]} />
-                    <Text style={s.legendText}>&lt;40%</Text>
-                </View>
-            </View>
         </View>
     );
 }

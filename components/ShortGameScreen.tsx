@@ -213,6 +213,9 @@ const ShortGameScreen = ({ config }: Props) => {
                                     Improve your mechanics and accuracy through focused, repetitive actions.
                                 </Text>
                             </View>
+
+                            <View style={styles.divider} />
+
                             <View>
                                 {showAddDrillForm ? (
                                     <AddDrillForm
@@ -249,7 +252,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                                 />
                                             ))}
                                         </View>
-                                        <View>
+                                        <View style={styles.contentSection}>
                                             <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
                                                 {drillsFooter}
                                             </Text>
@@ -282,6 +285,8 @@ const ShortGameScreen = ({ config }: Props) => {
                                         Improve your accuracy, touch, consistency, and mental focus while keeping practice engaging
                                     </Text>
                                 </View>
+
+                                <View style={styles.divider} />
 
                                 {showAddGameForm ? (
                                     <AddGameForm
@@ -326,7 +331,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                                 </View>
                                             </>
                                         )}
-                                        <View>
+                                        <View style={styles.contentSection}>
                                             <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
                                                 {gamesFooter}
                                             </Text>

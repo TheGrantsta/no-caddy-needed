@@ -30,7 +30,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
         <View style={{ padding: 8 }}>
             <View style={{ flexDirection: 'row' }}>
                 <View style={{ flex: 1 / 3, padding: 10 }}>
-                    <MaterialIcons name={iconName} size={48} color={colours.white} />
+                    <MaterialIcons name={iconName} size={48} color={colours.primary} />
                     <Text style={styles.normalText}>
                         {label}
                     </Text>

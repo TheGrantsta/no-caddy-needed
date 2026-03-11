@@ -7,11 +7,12 @@
 - [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
 - [ ] Amend colours to be primary, secondary, etc rather than specifying the colour, etc
-- [ ] Make light theme the default
-- [ ] Define dark theme
-- [ ] Amend logo
+- [ ] Make light green theme the default
+- [ ] Define dark green theme
+- [ ] Remove unused styles
 
 # Done
+- [X] Amend logo
 - [X] Add ability to add new games in Short Game
 - [X] Amend microphone button
 - [X] Add ability for players to add their own practice drills

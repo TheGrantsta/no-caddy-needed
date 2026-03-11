@@ -9,6 +9,7 @@ import { useOrientation } from '@/hooks/useOrientation';
 import { getSettingsService, saveSettingsService } from '@/service/DbService';
 import Chevrons from '@/components/Chevrons';
 import OnboardingOverlay from '@/components/OnboardingOverlay';
+import fontSizes from '@/assets/font-sizes';
 
 const FOREST_GREEN = '#2D5A3D';
 const OFF_WHITE = '#f5f5f0';
@@ -17,9 +18,9 @@ const DARK_TEXT = '#1a1a2e';
 const points = ['In a nutshell: hit it, find it and hit it again', 'Point: get the ball in the hole with the fewest shots', 'Have fun: golf is a game, so for goodness sake enjoy it!'];
 
 const ONBOARDING_STEPS = [
-    { text: 'Welcome to No Caddy Needed — your personal golf companion for smarter play, practice and performance.' },
-    { text: 'Use the Play, Practice and Perform sections to track rounds, sharpen your short game and review your stats.' },
-    { text: 'Pull down to refresh at any time. Tap the info icon to see this guide again.' },
+  { text: 'Welcome to No Caddy Needed — your personal golf companion for smarter play, practice and performance.' },
+  { text: 'Use the Play, Practice and Perform sections to track rounds, sharpen your short game and review your stats.' },
+  { text: 'Pull down to refresh at any time. Tap the info icon to see this guide again.' },
 ];
 
 export default function HomeScreen() {
@@ -43,20 +44,22 @@ export default function HomeScreen() {
     titleRow: {
       flexDirection: 'row',
       alignItems: 'center',
+      alignSelf: 'flex-start',
       gap: 10,
       marginBottom: 8,
     },
     titleText: {
       color: FOREST_GREEN,
-      fontSize: 32,
+      fontSize: fontSizes.header,
       fontWeight: 'bold',
       padding: 8,
+      textAlign: 'left',
     },
     subtitle: {
       color: DARK_TEXT,
-      fontSize: 16,
+      fontSize: fontSizes.normal,
       opacity: 0.65,
-      textAlign: 'center',
+      textAlign: 'left',
     },
     divider: {
       height: 1,
@@ -85,6 +88,7 @@ export default function HomeScreen() {
       alignItems: 'center',
       justifyContent: 'center',
       gap: 14,
+      width: '100%',
     },
     iconCircle: {
       width: 72,
@@ -96,7 +100,7 @@ export default function HomeScreen() {
     },
     navCardLabel: {
       color: '#ffffff',
-      fontSize: 17,
+      fontSize: fontSizes.subHeader,
       fontWeight: '700',
       letterSpacing: 0.3,
     },
@@ -116,7 +120,8 @@ export default function HomeScreen() {
     },
     bodyText: {
       color: DARK_TEXT,
-      fontSize: 16,
+      fontSize: fontSizes.normal,
+      opacity: 0.65,
       lineHeight: 24,
       marginTop: 8,
     },

@@ -155,6 +155,14 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             margin: 5,
         },
+        mediumButton: {
+            backgroundColor: c.primary,
+            padding: 10,
+            borderRadius: 8,
+            width: '35%',
+            alignItems: 'center',
+            margin: 5,
+        },
         button: {
             backgroundColor: c.primary,
             padding: 10,
@@ -164,7 +172,7 @@ export const createStyles = (c: ThemeColours) => ({
             margin: 5,
         },
         buttonText: {
-            color: c.background,
+            color: c.white,
             fontSize: fontSizes.tableHeader,
             fontWeight: 'bold',
         },
@@ -1137,7 +1145,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingRight: 5,
         },
         label: {
-            color: c.white,
+            color: c.primary,
             fontSize: fontSizes.smallestText,
         },
         barWrapper: {

@@ -224,7 +224,7 @@ export default function ScorecardScreen() {
                             <View style={styles.headerContainer}>
                                 <TouchableOpacity
                                     testID="delete-round-button"
-                                    style={[styles.largeButton, { backgroundColor: '#fd0303' }]}
+                                    style={[styles.largeButton, { backgroundColor: colours.red }]}
                                     onPress={handleDelete}
                                 >
                                     <Text style={styles.buttonText}>Delete round</Text>
@@ -233,20 +233,20 @@ export default function ScorecardScreen() {
                         )}
 
                         {!isEditing && showDeleteConfirm && (
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20, gap: 10 }}>
+                            <View style={styles.buttonContainer}>
                                 <TouchableOpacity
                                     testID="cancel-delete-button"
                                     onPress={handleCancelDelete}
-                                    style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, borderWidth: 1, borderColor: colours.backgroundAlternate }}
+                                    style={[styles.mediumButton, { backgroundColor: colours.red }]}
                                 >
-                                    <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
+                                    <Text style={styles.buttonText}>Cancel</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     testID="confirm-delete-button"
                                     onPress={handleConfirmDelete}
-                                    style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.errorText }}
+                                    style={styles.mediumButton}
                                 >
-                                    <Text style={{ color: colours.text, fontSize: fontSizes.normal }}>Confirm delete</Text>
+                                    <Text style={styles.buttonText}>Confirm</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -255,14 +255,14 @@ export default function ScorecardScreen() {
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity
                                     testID="cancel-edit-button"
-                                    style={[styles.button, { backgroundColor: '#fd0303' }]}
+                                    style={[styles.mediumButton, { backgroundColor: colours.red }]}
                                     onPress={handleCancelEdit}
                                 >
                                     <Text style={styles.buttonText}>Cancel</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     testID="save-scorecard-button"
-                                    style={styles.button}
+                                    style={styles.mediumButton}
                                     onPress={handleSave}
                                 >
                                     <Text style={styles.buttonText}>Save</Text>
@@ -274,14 +274,14 @@ export default function ScorecardScreen() {
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity
                                     testID="cancel-save-button"
-                                    style={[styles.button, { backgroundColor: '#fd0303' }]}
+                                    style={[styles.mediumButton, { backgroundColor: colours.red }]}
                                     onPress={handleCancelSave}
                                 >
                                     <Text style={styles.buttonText}>Cancel</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     testID="confirm-save-button"
-                                    style={styles.button}
+                                    style={styles.mediumButton}
                                     onPress={handleConfirmSave}
                                 >
                                     <Text style={styles.buttonText}>Confirm</Text>

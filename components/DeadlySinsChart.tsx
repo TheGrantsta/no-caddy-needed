@@ -45,7 +45,7 @@ export default function DeadlySinsChart({ rounds }: Props) {
     const getBarColor = (index: number) => {
         if (index === 0) return colours.errorText;
         if (index === 6) return colours.green;
-        return colours.yellow;
+        return colours.primary;
     };
 
     const getBarWidth = (count: number): string => {

@@ -294,7 +294,7 @@ export default function Play() {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        tintColor={colours.yellow}
+                        tintColor={colours.primary}
                     />
                 }
             >
@@ -310,7 +310,7 @@ export default function Play() {
                                     onPress={handleShowOnboarding}
                                     style={{ padding: 4 }}
                                 >
-                                    <MaterialIcons name="info-outline" size={24} color={colours.yellow} />
+                                    <MaterialIcons name="info-outline" size={24} color={colours.primary} />
                                 </TouchableOpacity>
                                 <Text style={[styles.headerText, styles.marginTop]}>Play</Text>
                             </View>
@@ -362,7 +362,7 @@ export default function Play() {
                                     <Text style={[styles.subHeaderText, { textAlign: 'center' }]}>
                                         Round history
                                     </Text>
-                                    <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.yellow }]}>
+                                    <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.primary }]}>
                                         <Text testID="round-history-header-date" style={[styles.normalText, localStyles.historyDateColumn]}>Date</Text>
                                         <Text testID="round-history-header-score" style={[styles.normalText, localStyles.historyNarrowColumn]}>Score</Text>
                                         <Text testID="round-history-header-7DS" style={[styles.normalText, localStyles.historyNarrowColumn]}>7DS</Text>
@@ -374,7 +374,7 @@ export default function Play() {
                                                 testID={`round-history-row-${round.Id}`}
                                                 onPress={() => router.push({ pathname: '/play/scorecard', params: { roundId: String(round.Id) } })}
                                             >
-                                                <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.yellow }]}>
+                                                <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.primary }]}>
                                                     <Text style={[styles.normalText, localStyles.historyDateColumn]}>{round.CourseName ? `${round.Created_At} - ${round.CourseName}` : round.Created_At}{round.HolesPlayed < 18 ? ` (${round.HolesPlayed})` : ''}</Text>
                                                     <Text style={[styles.normalText, localStyles.historyNarrowColumn]}>{formatScore(round.TotalScore)}</Text>
                                                     <Text style={[styles.normalText, localStyles.historyNarrowColumn]}>{deadlySinsMap.has(round.Id) ? deadlySinsMap.get(round.Id) : '-'}</Text>
@@ -430,7 +430,7 @@ export default function Play() {
                                         onPress={handlePreviousHole}
                                         style={{ padding: 12, alignItems: 'center', marginTop: 4 }}
                                     >
-                                        <Text style={{ color: colours.yellow, fontSize: fontSizes.normal }}>Previous hole</Text>
+                                        <Text style={{ color: colours.primary, fontSize: fontSizes.normal }}>Previous hole</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}

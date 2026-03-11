@@ -82,8 +82,8 @@ export default function Settings() {
       borderColor: colours.backgroundAlternate,
     },
     selected: {
-      backgroundColor: colours.yellow,
-      borderColor: colours.yellow,
+      backgroundColor: colours.primary,
+      borderColor: colours.primary,
     },
     unselected: {
       backgroundColor: 'transparent',

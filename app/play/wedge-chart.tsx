@@ -58,7 +58,7 @@ export default function WedgeChartScreen() {
                             testID="info-button"
                             onPress={handleShowOnboarding}
                         >
-                            <MaterialIcons name="info-outline" size={24} color={colours.yellow} />
+                            <MaterialIcons name="info-outline" size={24} color={colours.primary} />
                         </TouchableOpacity>
                         <Text style={[styles.headerText, styles.marginTop]}>Wedge chart</Text>
                     </View>

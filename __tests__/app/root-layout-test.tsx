@@ -28,7 +28,7 @@ jest.mock('../../context/ThemeContext', () => ({
     AppThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
     useTheme: jest.fn().mockReturnValue({
         theme: 'dark',
-        colours: { yellow: '#ffd33d', background: '#25292e' },
+        colours: { primary: '#2D5A3D', background: '#25292e' },
     }),
 }));
 
@@ -97,7 +97,7 @@ describe('RootLayout', () => {
         // Restore the default dark theme after clearAllMocks wipes the impl.
         mockUseTheme.mockReturnValue({
             theme: 'dark',
-            colours: { yellow: '#ffd33d', background: '#25292e' },
+            colours: { primary: '#2D5A3D', background: '#25292e' },
         });
     });
 
@@ -108,7 +108,7 @@ describe('RootLayout', () => {
     async function renderReady() {
         const result = render(<RootLayout />);
         // Flush microtasks up to the setTimeout registration
-        await act(async () => {});
+        await act(async () => { });
         // Fire the timer, then flush the remaining promise chain
         await act(async () => {
             jest.runAllTimers();
@@ -205,7 +205,7 @@ describe('RootLayout', () => {
 
     it('logsWarningWhenPrepareAppFails', async () => {
         mockInitialize.mockRejectedValueOnce(new Error('init failed'));
-        const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
 
         await renderReady();
 
@@ -216,7 +216,7 @@ describe('RootLayout', () => {
     it('rendersWithLightTheme', async () => {
         mockUseTheme.mockReturnValueOnce({
             theme: 'light',
-            colours: { yellow: '#ffd33d', background: '#25292e' },
+            colours: { primary: '#2D5A3D', background: '#25292e' },
         });
 
         const { getByTestId } = await renderReady();

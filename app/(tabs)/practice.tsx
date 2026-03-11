@@ -107,7 +107,7 @@ export default function Practice() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor={colours.yellow} />
+          tintColor={colours.primary} />
       }>
 
         <View style={styles.container}>
@@ -117,7 +117,7 @@ export default function Practice() {
                 testID="info-button"
                 onPress={handleShowOnboarding}
               >
-                <MaterialIcons name="info-outline" size={24} color={colours.yellow} />
+                <MaterialIcons name="info-outline" size={24} color={colours.primary} />
               </TouchableOpacity>
               <Text style={[styles.headerText, styles.marginTop]}>
                 Practice
@@ -198,7 +198,7 @@ export default function Practice() {
           <View>
             {loading ? (
               <View>
-                <ActivityIndicator size="large" color={colours.yellow} />
+                <ActivityIndicator size="large" color={colours.primary} />
               </View>
             ) : (
               <View>
@@ -207,7 +207,7 @@ export default function Practice() {
                 )}
 
                 <Text style={{
-                  color: colours.yellow,
+                  color: colours.primary,
                   fontSize: fontSizes.subHeader,
                   alignItems: 'baseline',
                   padding: 6,
@@ -251,7 +251,7 @@ export default function Practice() {
                                 <Text style={[styles.cell, { flex: 2 / 12, borderWidth: 0 }]}>
                                   <MaterialIcons
                                     name={item.Result === 1 ? 'check' : 'clear'}
-                                    color={item.Result === 1 ? colours.yellow : colours.errorText}
+                                    color={item.Result === 1 ? colours.primary : colours.errorText}
                                     size={24} />
                                 </Text>
                                 <Text style={[styles.cell, { flex: 3 / 12, borderWidth: 0 }]}>

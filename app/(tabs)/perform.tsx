@@ -125,7 +125,7 @@ export default function Perform() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor={colours.yellow} />
+          tintColor={colours.primary} />
       }>
 
         {/* Approach */}

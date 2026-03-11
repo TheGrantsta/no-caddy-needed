@@ -104,13 +104,13 @@ describe('DeadlySinsChart component', () => {
         expect(barStyle.backgroundColor).toBe(colours.green);
     });
 
-    it('colors middle categories yellow', () => {
+    it('colors middle categories primary', () => {
         const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
 
         for (const i of [1, 2, 3, 4, 5]) {
             const bar = getByTestId(`7deadly-sins-chart-bar-${i}`);
             const barStyle = Array.isArray(bar.props.style) ? Object.assign({}, ...bar.props.style) : bar.props.style;
-            expect(barStyle.backgroundColor).toBe(colours.yellow);
+            expect(barStyle.backgroundColor).toBe(colours.primary);
         }
     });
 

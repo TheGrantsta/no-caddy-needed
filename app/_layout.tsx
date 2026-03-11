@@ -53,7 +53,7 @@ function ThemedApp() {
               </Link>
             ),
             headerStyle: {
-              backgroundColor: colours.yellow,
+              backgroundColor: colours.primary,
             },
           }} />
         <Stack.Screen
@@ -62,7 +62,7 @@ function ThemedApp() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {
-              backgroundColor: colours.yellow,
+              backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
             headerBackButtonDisplayMode: 'minimal',
@@ -73,7 +73,7 @@ function ThemedApp() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {
-              backgroundColor: colours.yellow,
+              backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
             headerBackButtonDisplayMode: 'minimal',
@@ -84,7 +84,7 @@ function ThemedApp() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {
-              backgroundColor: colours.yellow,
+              backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
             headerBackButtonDisplayMode: 'minimal',
@@ -95,7 +95,7 @@ function ThemedApp() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {
-              backgroundColor: colours.yellow,
+              backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
             headerBackButtonDisplayMode: 'minimal',
@@ -106,7 +106,7 @@ function ThemedApp() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {
-              backgroundColor: colours.yellow,
+              backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
             headerBackButtonDisplayMode: 'minimal',
@@ -117,7 +117,7 @@ function ThemedApp() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {
-              backgroundColor: colours.yellow,
+              backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
             headerBackButtonDisplayMode: 'minimal',
@@ -128,7 +128,7 @@ function ThemedApp() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {
-              backgroundColor: colours.yellow,
+              backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
             headerBackButtonDisplayMode: 'minimal',
@@ -139,7 +139,7 @@ function ThemedApp() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {
-              backgroundColor: colours.yellow,
+              backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
             headerBackButtonDisplayMode: 'minimal',
@@ -150,7 +150,7 @@ function ThemedApp() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {
-              backgroundColor: colours.yellow,
+              backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
             headerBackButtonDisplayMode: 'minimal',
@@ -161,7 +161,7 @@ function ThemedApp() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {
-              backgroundColor: colours.yellow,
+              backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
             headerBackButtonDisplayMode: 'minimal',
@@ -172,7 +172,7 @@ function ThemedApp() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {
-              backgroundColor: colours.yellow,
+              backgroundColor: colours.primary,
             },
           }} />
       </Stack>

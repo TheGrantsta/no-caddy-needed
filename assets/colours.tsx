@@ -1,11 +1,13 @@
 export type ThemeColours = {
+    primary: string;
+    background: string;
+
     text: string;
     white: string;
     black: string;
-    yellow: string;
+
     mutedYellow: string;
     errorText: string;
-    background: string;
     backgroundLight: string;
     backgroundDelete: string;
     backgroundAlternate: string;
@@ -16,13 +18,15 @@ export type ThemeColours = {
 };
 
 export const darkColours: ThemeColours = {
+    primary: '#2D5A3D',
+    background: '#f5f5f0',
+
     text: '#fffae7',
     white: '#fff',
     black: '#000',
-    yellow: '#ffd33d',
     mutedYellow: '#e6be36',
     errorText: '#fd0303',
-    background: '#25292e',
+
     backgroundLight: '#fff',
     backgroundDelete: '#fd0303',
     backgroundAlternate: '#8d98a5',
@@ -33,10 +37,10 @@ export const darkColours: ThemeColours = {
 };
 
 export const lightColours: ThemeColours = {
+    primary: '#2E7D32',
     text: '#1a1a2e',
     white: '#1a1a2e',
     black: '#000',
-    yellow: '#2E7D32',
     mutedYellow: '#1B5E20',
     errorText: '#d32f2f',
     background: '#f5f5f0',

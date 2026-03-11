@@ -113,8 +113,8 @@ export default function Tempo() {
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    colors={[colours.yellow]}
-                    tintColor={colours.yellow} />
+                    colors={[colours.primary]}
+                    tintColor={colours.primary} />
             }>
                 <View style={styles.container}>
                     <View style={styles.headerContainer}>
@@ -134,9 +134,9 @@ export default function Tempo() {
                             step={12}
                             value={tempo}
                             onValueChange={tempoValueChange}
-                            minimumTrackTintColor={colours.yellow}
-                            maximumTrackTintColor={colours.yellow}
-                            thumbTintColor={colours.yellow}
+                            minimumTrackTintColor={colours.primary}
+                            maximumTrackTintColor={colours.primary}
+                            thumbTintColor={colours.primary}
                         />
 
                         {/* Labels */}
@@ -149,7 +149,7 @@ export default function Tempo() {
                         </View>
 
                         <View style={{ flexDirection: 'row', flexWrap: 'nowrap', flex: 1, alignContent: 'space-evenly' }}>
-                            <Text style={[localStyles.valueText, styles.normalText, { color: colours.yellow, padding: 5 }]}>
+                            <Text style={[localStyles.valueText, styles.normalText, { color: colours.primary, padding: 5 }]}>
                                 Beats per minute: {tempo}
                             </Text>
                         </View>

@@ -59,13 +59,13 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 10
         },
         headerText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.header,
             alignItems: 'center',
             padding: 8,
         },
         subHeaderText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             alignItems: 'baseline',
             padding: 6,
@@ -105,7 +105,7 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
         },
         largeButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 10,
             borderRadius: 8,
             width: '90%',
@@ -113,7 +113,7 @@ export const createStyles = (c: ThemeColours) => ({
             margin: 5,
         },
         button: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 10,
             borderRadius: 8,
             width: 100,
@@ -126,7 +126,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         yellowText: {
-            color: c.yellow,
+            color: c.primary,
         },
         deleteBackground: {
             backgroundColor: c.backgroundDelete,
@@ -224,7 +224,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         header: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.tableHeader,
             fontWeight: 'bold',
         },
@@ -240,7 +240,7 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.background,
         },
         updateText: {
-            color: c.yellow,
+            color: c.primary,
             marginTop: 5,
             fontSize: fontSizes.normal,
             textAlign: 'center',
@@ -248,9 +248,9 @@ export const createStyles = (c: ThemeColours) => ({
         scrollWrapper: {
             margin: 5,
             borderRadius: 5,
-            borderColor: c.yellow,
+            borderColor: c.primary,
             borderWidth: 2,
-            borderLeftColor: c.yellow,
+            borderLeftColor: c.primary,
             borderLeftWidth: 10,
         },
         horizontalScrollContainer: {
@@ -283,8 +283,8 @@ export const createStyles = (c: ThemeColours) => ({
             borderWidth: 1,
         },
         scrollActiveDot: {
-            backgroundColor: c.yellow,
-            borderColor: c.yellow,
+            backgroundColor: c.primary,
+            borderColor: c.primary,
         },
     }),
 
@@ -299,7 +299,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         button: {
             borderRadius: 10,
-            borderColor: c.yellow,
+            borderColor: c.primary,
             borderWidth: 1,
             backgroundColor: c.mutedYellow,
             width: '100%',
@@ -318,7 +318,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         selected: {
             color: c.background,
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
         },
     }),
 
@@ -330,7 +330,7 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'space-evenly',
             backgroundColor: c.background,
             borderBottomWidth: 0.5,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
         },
         subMenuItemContainer: {
             flex: 1,
@@ -338,16 +338,16 @@ export const createStyles = (c: ThemeColours) => ({
         },
         subMenuItemContainerSelected: {
             borderBottomWidth: 4,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
         },
         subMenuItem: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
         subMenuItemSelected: {
-            textDecorationColor: c.yellow,
+            textDecorationColor: c.primary,
             textDecorationStyle: 'solid',
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
     }),
@@ -402,7 +402,7 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'center',
         },
         toggleOn: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
         },
         toggleCircle: {
             width: 20,
@@ -421,7 +421,7 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 15,
         },
         holeText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -436,15 +436,15 @@ export const createStyles = (c: ThemeColours) => ({
             paddingVertical: 8,
             paddingHorizontal: 16,
             borderWidth: 1,
-            borderColor: c.yellow,
+            borderColor: c.primary,
             marginHorizontal: 5,
             borderRadius: 4,
         },
         parButtonActive: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
         },
         parButtonText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
@@ -459,7 +459,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingVertical: 5,
         },
         playerName: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             flex: 1,
         },
@@ -471,7 +471,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 40,
             height: 40,
             borderRadius: 20,
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -504,7 +504,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
         },
         totalScore: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
@@ -512,7 +512,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 15,
         },
         nineHeader: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             marginBottom: 10,
@@ -558,17 +558,17 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.errorText,
         },
         atParText: {
-            color: c.yellow,
+            color: c.primary,
         },
         selectedCell: {
             borderWidth: 2,
-            borderColor: c.yellow,
+            borderColor: c.primary,
             borderRadius: 4,
         },
         roundTotalSection: {
             marginTop: 15,
             borderTopWidth: 1,
-            borderTopColor: c.yellow,
+            borderTopColor: c.primary,
             paddingTop: 10,
         },
     }),
@@ -578,7 +578,7 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 15,
         },
         totalScore: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.massive,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -588,7 +588,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 15,
         },
         nineHeader: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             marginBottom: 10,
@@ -623,7 +623,7 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'right',
             marginTop: 5,
             borderTopWidth: 0.5,
-            borderTopColor: c.yellow,
+            borderTopColor: c.primary,
             paddingTop: 5,
         },
     }),
@@ -635,7 +635,7 @@ export const createStyles = (c: ThemeColours) => ({
         headerRow: {
             flexDirection: 'row',
             borderBottomWidth: 1,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
             paddingBottom: 8,
             marginBottom: 5,
         },
@@ -643,10 +643,10 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
             paddingVertical: 6,
             borderBottomWidth: 0.5,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
         },
         headerCell: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
@@ -677,11 +677,11 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 10,
         },
         addButtonText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
         saveButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -701,7 +701,7 @@ export const createStyles = (c: ThemeColours) => ({
         headerRow: {
             flexDirection: 'row',
             borderBottomWidth: 1,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
             paddingBottom: 8,
             marginBottom: 5,
         },
@@ -709,15 +709,15 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
             paddingVertical: 6,
             borderBottomWidth: 0.5,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
         },
         headerCell: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
         headerInput: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
             paddingVertical: 4,
@@ -744,11 +744,11 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         addButtonText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
         saveButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -767,7 +767,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         headerText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             marginBottom: 15,
@@ -780,7 +780,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 40,
             height: 40,
             borderRadius: 20,
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -809,7 +809,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 10,
         },
         playerName: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
@@ -818,14 +818,14 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.text,
             fontSize: fontSizes.normal,
             borderBottomWidth: 1,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
             paddingVertical: 5,
         },
         courseNameInput: {
             color: c.text,
             fontSize: fontSizes.normal,
             borderBottomWidth: 1,
-            borderBottomColor: c.yellow,
+            borderBottomColor: c.primary,
             paddingVertical: 5,
             marginBottom: 15,
         },
@@ -843,11 +843,11 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         addButtonText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
         startButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -880,7 +880,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingHorizontal: 10,
         },
         recentItemText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
         recentContainer: {
@@ -908,10 +908,10 @@ export const createStyles = (c: ThemeColours) => ({
             width: '100%',
             maxWidth: 400,
             borderWidth: 2,
-            borderColor: c.yellow,
+            borderColor: c.primary,
         },
         title: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -936,7 +936,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginHorizontal: 4,
         },
         indicatorActive: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
         },
         indicatorInactive: {
             backgroundColor: c.backgroundAlternate,
@@ -947,7 +947,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         primaryButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             paddingVertical: 12,
             paddingHorizontal: 24,
             borderRadius: 8,
@@ -983,7 +983,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             paddingVertical: 6,
             borderBottomWidth: 0.5,
-            borderColor: c.yellow,
+            borderColor: c.primary,
         },
         label: {
             color: c.text,
@@ -995,7 +995,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         button: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             width: 24,
             height: 24,
             borderRadius: 12,
@@ -1014,7 +1014,7 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'center',
         },
         saveButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -1031,7 +1031,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             paddingVertical: 8,
             borderBottomWidth: 0.5,
-            borderColor: c.yellow,
+            borderColor: c.primary,
         },
         toggleLabel: {
             color: c.text,
@@ -1039,7 +1039,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         chevron: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
         },
     }),
@@ -1050,7 +1050,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingBottom: 0,
         },
         title: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             textAlign: 'center',
         },
@@ -1088,7 +1088,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'flex-end',
         },
         countText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
         },
@@ -1121,10 +1121,10 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             marginBottom: 8,
             borderBottomWidth: 0.5,
-            borderColor: c.yellow,
+            borderColor: c.primary,
         },
         chevron: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.header,
         },
     }),
@@ -1135,7 +1135,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 10,
         },
         title: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             marginBottom: 15,
         },
@@ -1175,7 +1175,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         statsText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.small,
             fontWeight: 'bold',
             marginRight: 2,
@@ -1321,7 +1321,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 24,
         },
         button: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             paddingHorizontal: 24,
             paddingVertical: 12,
             borderRadius: 8,
@@ -1339,7 +1339,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         actionButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -1352,7 +1352,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         nextHoleButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -1392,7 +1392,7 @@ export const createStyles = (c: ThemeColours) => ({
             gap: 8,
         },
         filterLabel: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
             alignSelf: 'center',
             marginRight: 4,
@@ -1403,13 +1403,13 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             borderRadius: 6,
             borderWidth: 1,
-            borderColor: c.yellow,
+            borderColor: c.primary,
         },
         filterButtonSelected: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
         },
         filterButtonText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.normal,
         },
         filterButtonTextSelected: {
@@ -1468,7 +1468,7 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 20,
         },
         actionButton: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
@@ -1481,7 +1481,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         randomNumberContainer: {
             backgroundColor: c.background,
-            borderColor: c.yellow,
+            borderColor: c.primary,
             borderWidth: 2,
             borderRadius: 12,
             margin: 15,
@@ -1491,7 +1491,7 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
         },
         randomNumberText: {
-            color: c.yellow,
+            color: c.primary,
             fontSize: fontSizes.massive,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -1508,7 +1508,7 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.backgroundAlternate,
         },
         micButtonActive: {
-            backgroundColor: c.yellow,
+            backgroundColor: c.primary,
         },
     }),
 
@@ -1519,7 +1519,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         title: {
             fontSize: fontSizes.subHeader,
-            color: c.yellow,
+            color: c.primary,
             marginBottom: 10,
         },
         slider: {
@@ -1534,7 +1534,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         label: {
             fontSize: fontSizes.normal,
-            color: c.yellow,
+            color: c.primary,
         },
         valueText: {
             marginTop: 10,

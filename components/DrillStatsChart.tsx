@@ -21,7 +21,7 @@ export default function DrillStatsChart({ stats }: Props) {
 
     const getBarColor = (successRate: number) => {
         if (successRate >= 70) return colours.green;
-        if (successRate >= 40) return colours.yellow;
+        if (successRate >= 40) return colours.primary;
         return colours.errorText;
     };
 
@@ -77,7 +77,7 @@ export default function DrillStatsChart({ stats }: Props) {
                     <Text style={s.legendText}>≥70%</Text>
                 </View>
                 <View style={s.legendItem}>
-                    <View style={[s.legendDot, { backgroundColor: colours.yellow }]} />
+                    <View style={[s.legendDot, { backgroundColor: colours.primary }]} />
                     <Text style={s.legendText}>40-69%</Text>
                 </View>
                 <View style={s.legendItem}>

@@ -164,7 +164,7 @@ const ShortGameScreen = ({ config }: Props) => {
                 <TouchableOpacity
                     testID='undo-game-delete'
                     style={[{
-                        backgroundColor: colours.yellow, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
+                        backgroundColor: colours.primary, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
                         borderColor: colours.errorText, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
                     }]}
                     onPress={() => {
@@ -181,7 +181,7 @@ const ShortGameScreen = ({ config }: Props) => {
                 <TouchableOpacity
                     testID='undo-drill-delete'
                     style={[{
-                        backgroundColor: colours.yellow, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
+                        backgroundColor: colours.primary, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
                         borderColor: colours.errorText, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
                     }]}
                     onPress={() => {
@@ -198,7 +198,7 @@ const ShortGameScreen = ({ config }: Props) => {
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    tintColor={colours.yellow} />
+                    tintColor={colours.primary} />
             }>
 
                 {/* Drills */}

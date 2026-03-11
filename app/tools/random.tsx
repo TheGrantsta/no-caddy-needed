@@ -136,7 +136,7 @@ export default function Random() {
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    tintColor={colours.yellow} />
+                    tintColor={colours.primary} />
             }>
                 <View>
                     <View style={styles.headerContainer}>

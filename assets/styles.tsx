@@ -81,6 +81,13 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             padding: 5,
         },
+        chevronHeaderText: {
+            color: c.primary,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            alignItems: 'baseline',
+            padding: 6,
+        },
         overlay: {
             position: 'absolute',
             top: 0,

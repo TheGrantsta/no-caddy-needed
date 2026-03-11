@@ -54,9 +54,6 @@ export const createStyles = (c: ThemeColours) => ({
         scrollContentContainer: {
             paddingBottom: 100,
         },
-        viewContainer: {
-            alignItems: 'center',
-        },
         principlesContainer: {
             flexDirection: 'row',
             marginTop: 10,
@@ -72,24 +69,6 @@ export const createStyles = (c: ThemeColours) => ({
         headerContainer: {
             justifyContent: 'center',
             alignItems: 'center',
-        },
-        iconsContainer: {
-            backgroundColor: c.background,
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-            width: '100%',
-            paddingHorizontal: 2,
-        },
-        iconContainer: {
-            padding: 15,
-        },
-        wrapper: {
-            borderColor: c.border,
-            borderWidth: 2,
-            borderRadius: 10,
-            marginTop: 10
         },
         headerText: {
             color: c.primary,
@@ -123,23 +102,6 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 16,
             borderWidth: 1,
             borderColor: colours.primary + '33',
-        },
-        overlay: {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.85)',
-            zIndex: 1000,
-        },
-        overlayText: {
-            color: c.white,
-            fontSize: fontSizes.normal,
-            paddingBottom: 20,
-            paddingLeft: 10,
-            alignItems: 'center',
         },
         buttonContainer: {
             margin: 8,
@@ -179,54 +141,6 @@ export const createStyles = (c: ThemeColours) => ({
         yellowText: {
             color: c.primary,
         },
-        deleteBackground: {
-            backgroundColor: c.backgroundDelete,
-            position: 'absolute',
-            right: 0,
-            left: 0,
-            top: 0,
-            bottom: 0,
-            justifyContent: 'center',
-            alignItems: 'flex-end',
-            width: '90%',
-        },
-        deleteText: {
-            color: c.white,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-            padding: 2,
-        },
-        cardRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: 2,
-        },
-        card: {
-            backgroundColor: c.background,
-            paddingTop: 3,
-            width: '90%',
-        },
-        cardText: {
-            flex: 1,
-            color: c.text,
-            fontSize: fontSizes.smallText,
-            paddingLeft: 2,
-        },
-        cardIcon: {
-            paddingBottom: 1,
-        },
-        textarea: {
-            height: 150,
-            borderColor: c.border,
-            borderWidth: 1,
-            padding: 10,
-            borderRadius: 5,
-            backgroundColor: c.backgroundLight,
-            fontSize: fontSizes.normal,
-        },
-        textareaError: {
-            borderColor: c.borderError,
-        },
         errorText: {
             color: c.errorText,
             fontSize: fontSizes.smallText,
@@ -249,20 +163,8 @@ export const createStyles = (c: ThemeColours) => ({
         textInputError: {
             borderColor: c.borderError,
         },
-        table: {
-            marginTop: 20,
-            marginLeft: 20,
-            marginRight: 20,
-            marginBottom: 5,
-            borderWidth: 1,
-            borderColor: c.border,
-        },
         row: {
             flexDirection: 'row',
-        },
-        alternateRow: {
-            backgroundColor: c.backgroundAlternate,
-            color: c.black,
         },
         cell: {
             flex: 4,
@@ -273,13 +175,6 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.primary,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
-        },
-        bold: {
-            fontWeight: 'bold',
-        },
-        spinnerContainer: {
-            marginTop: 16,
-            alignItems: 'center',
         },
         updateOverlay: {
             width: '100%',
@@ -308,10 +203,6 @@ export const createStyles = (c: ThemeColours) => ({
             width: Dimensions.get('window').width,
             justifyContent: 'center',
             alignItems: 'center',
-        },
-        scrollItemText: {
-            fontSize: 24,
-            fontWeight: 'bold',
         },
         scrollIndicatorContainer: {
             flexDirection: 'row',
@@ -1466,20 +1357,6 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-        },
-        item: {
-            width: 100,
-            height: 100,
-            backgroundColor: '#4A90E2',
-            margin: 5,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 10,
-        },
-        text: {
-            color: '#fff',
-            fontSize: 16,
-            fontWeight: 'bold',
         },
     }),
 

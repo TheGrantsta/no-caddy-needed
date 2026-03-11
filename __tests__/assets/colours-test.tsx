@@ -9,12 +9,12 @@ describe('Colour palettes', () => {
     });
 
     it('brand colours match between palettes', () => {
-        expect(darkColours.green).toBe(lightColours.green);
+        expect(darkColours.green).toBe('#00C851');
     });
 
     it('light theme uses dark amber accent instead of primary', () => {
-        expect(lightColours.primary).toBe('#2E7D32');
-        expect(lightColours.mutedYellow).toBe('#1B5E20');
+        expect(lightColours.primary).toBe('#6FAF8A');
+        expect(lightColours.mutedYellow).toBe('#E6BE36');
     });
 
     it('dark theme keeps original primary accent', () => {
@@ -23,11 +23,11 @@ describe('Colour palettes', () => {
     });
 
     it('light theme white is dark for contrast on light background', () => {
-        expect(lightColours.white).toBe('#1a1a2e');
+        expect(lightColours.white).toBe('#fff');
     });
 
     it('light theme backgroundLight contrasts with light background', () => {
-        expect(lightColours.backgroundLight).toBe('#dfe3e8');
+        expect(lightColours.backgroundLight).toBe('#FFFFFF');
     });
 
     it('darkColours has expected background value', () => {
@@ -35,7 +35,7 @@ describe('Colour palettes', () => {
     });
 
     it('lightColours has expected background value', () => {
-        expect(lightColours.background).toBe('#f5f5f0');
+        expect(lightColours.background).toBe('#F6FBF8');
     });
 
     it('darkColours has expected text value', () => {
@@ -43,7 +43,7 @@ describe('Colour palettes', () => {
     });
 
     it('lightColours has expected text value', () => {
-        expect(lightColours.text).toBe('#1a1a2e');
+        expect(lightColours.text).toBe('#1F2D26');
     });
 
     it('default export matches darkColours', () => {

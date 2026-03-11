@@ -64,7 +64,7 @@ appId: com.grantsta.golf.nocaddyneeded
 
 # Screenshot 3: Start round
 - tapOn:
-    text: ".*start.*"
+    text: "Start round"
     index: 0
 - extendedWaitUntil:
     visible: "You"

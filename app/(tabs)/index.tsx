@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Link } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -9,7 +9,6 @@ import { useOrientation } from '@/hooks/useOrientation';
 import { getSettingsService, saveSettingsService } from '@/service/DbService';
 import Chevrons from '@/components/Chevrons';
 import OnboardingOverlay from '@/components/OnboardingOverlay';
-import fontSizes from '@/assets/font-sizes';
 
 const points = ['In a nutshell: hit it, find it & hit it again', 'Point: get the ball in the hole with the fewest shots', 'Have fun: golf is a game, so for goodness sake enjoy it!'];
 
@@ -77,7 +76,7 @@ export default function HomeScreen() {
             <Link testID="home-play-link" href="/play" style={styles.navCardLink}>
               <View style={styles.navCard}>
                 <View style={styles.iconCircle}>
-                  <MaterialIcons name="sports-golf" size={36} color="#ffffff" />
+                  <MaterialIcons name="sports-golf" size={36} color={colours.white} />
                 </View>
                 <Text style={styles.navCardLabel}>Play</Text>
               </View>
@@ -85,7 +84,7 @@ export default function HomeScreen() {
             <Link testID="home-practice-link" href="/practice" style={styles.navCardLink}>
               <View style={styles.navCard}>
                 <View style={styles.iconCircle}>
-                  <MaterialIcons name="golf-course" size={36} color="#ffffff" />
+                  <MaterialIcons name="golf-course" size={36} color={colours.white} />
                 </View>
                 <Text style={styles.navCardLabel}>Practice</Text>
               </View>
@@ -95,7 +94,7 @@ export default function HomeScreen() {
             <Link testID="home-perform-link" href="/perform" style={styles.navCardLink}>
               <View style={styles.navCard}>
                 <View style={styles.iconCircle}>
-                  <MaterialIcons name="lightbulb" size={36} color="#ffffff" />
+                  <MaterialIcons name="lightbulb" size={36} color={colours.white} />
                 </View>
                 <Text style={styles.navCardLabel}>Perform</Text>
               </View>

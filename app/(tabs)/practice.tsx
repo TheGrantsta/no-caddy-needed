@@ -143,7 +143,7 @@ export default function Practice() {
                 <Link href="../short-game/putting" style={styles.navCardLink}>
                   <View style={styles.navCard}>
                     <View style={styles.iconCircle}>
-                      <MaterialIcons name="adjust" size={36} color="#ffffff" />
+                      <MaterialIcons name="adjust" size={36} color={colours.white} />
                     </View>
                     <Text style={styles.navCardLabel}>Putting</Text>
                   </View>
@@ -151,7 +151,7 @@ export default function Practice() {
                 <Link href="../short-game/chipping" style={styles.navCardLink}>
                   <View style={styles.navCard}>
                     <View style={styles.iconCircle}>
-                      <MaterialIcons name="filter-tilt-shift" size={36} color="#ffffff" />
+                      <MaterialIcons name="filter-tilt-shift" size={36} color={colours.white} />
                     </View>
                     <Text style={styles.navCardLabel}>Chipping</Text>
                   </View>
@@ -161,7 +161,7 @@ export default function Practice() {
                 <Link href="../short-game/pitching" style={styles.navCardLink}>
                   <View style={styles.navCard}>
                     <View style={styles.iconCircle}>
-                      <MaterialIcons name="golf-course" size={36} color="#ffffff" />
+                      <MaterialIcons name="golf-course" size={36} color={colours.white} />
                     </View>
                     <Text style={styles.navCardLabel}>Pitching</Text>
                   </View>
@@ -169,7 +169,7 @@ export default function Practice() {
                 <Link href="../short-game/bunker" style={styles.navCardLink}>
                   <View style={styles.navCard}>
                     <View style={styles.iconCircle}>
-                      <MaterialIcons name="beach-access" size={36} color="#ffffff" />
+                      <MaterialIcons name="beach-access" size={36} color={colours.white} />
                     </View>
                     <Text style={styles.navCardLabel}>Bunker play</Text>
                   </View>
@@ -195,7 +195,7 @@ export default function Practice() {
                 <Link href="../tools/tempo" style={styles.navCardLink}>
                   <View style={styles.navCard}>
                     <View style={styles.iconCircle}>
-                      <MaterialIcons name="music-note" size={36} color="#ffffff" />
+                      <MaterialIcons name="music-note" size={36} color={colours.white} />
                     </View>
                     <Text style={styles.navCardLabel}>Tempo</Text>
                   </View>
@@ -203,7 +203,7 @@ export default function Practice() {
                 <Link href="../tools/random" style={styles.navCardLink}>
                   <View style={styles.navCard}>
                     <View style={styles.iconCircle}>
-                      <MaterialIcons name="shuffle-on" size={36} color="#ffffff" />
+                      <MaterialIcons name="shuffle-on" size={36} color={colours.white} />
                     </View>
                     <Text style={styles.navCardLabel}>Random</Text>
                   </View>

@@ -65,7 +65,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
                 testID="course-name-input"
                 style={s.courseNameInput}
                 placeholder="Course name"
-                placeholderTextColor={colours.backgroundAlternate}
+                placeholderTextColor={colours.tertiary}
                 value={courseName}
                 onChangeText={handleCourseNameChange}
             />
@@ -102,7 +102,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
                         testID={`player-name-input-${index}`}
                         style={s.input}
                         placeholder="Player name"
-                        placeholderTextColor={colours.backgroundAlternate}
+                        placeholderTextColor={colours.tertiary}
                         value={name}
                         onChangeText={(text) => handleNameChange(index, text)}
                     />

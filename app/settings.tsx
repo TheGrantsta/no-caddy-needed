@@ -79,7 +79,7 @@ export default function Settings() {
       borderRadius: 8,
       alignItems: 'center' as const,
       borderWidth: 1,
-      borderColor: colours.backgroundAlternate,
+      borderColor: colours.primary,
     },
     selected: {
       backgroundColor: colours.primary,

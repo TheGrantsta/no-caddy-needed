@@ -2,6 +2,7 @@ export type ThemeColours = {
     primary: string;
     secondary: string;
     background: string;
+    backgroundAlternate: string;
 
     text: string;
     red: string;
@@ -12,7 +13,6 @@ export type ThemeColours = {
     errorText: string;
     backgroundLight: string;
     backgroundDelete: string;
-    backgroundAlternate: string;
     border: string;
     borderEdit: string;
     borderError: string;

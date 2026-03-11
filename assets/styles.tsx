@@ -229,22 +229,22 @@ export const createStyles = (c: ThemeColours) => ({
         },
         errorText: {
             color: c.errorText,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.smallText,
             marginTop: 5,
         },
         textLabel: {
             fontSize: fontSizes.smallText,
-            color: c.white,
+            color: c.primary,
             margin: 5,
         },
         textInput: {
             height: 40,
-            borderColor: c.border,
+            borderColor: c.secondary,
             borderWidth: 1,
             borderRadius: 5,
             paddingHorizontal: 10,
             fontSize: fontSizes.smallText,
-            color: c.white,
+            color: c.primary,
         },
         textInputError: {
             borderColor: c.borderError,
@@ -1012,7 +1012,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingHorizontal: 24,
         },
         secondaryButtonText: {
-            color: c.backgroundAlternate,
+            color: c.tertiary,
             fontSize: fontSizes.normal,
         },
         spacer: {
@@ -1534,7 +1534,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             justifyContent: 'center',
             gap: 8,
-            backgroundColor: c.backgroundAlternate,
+            backgroundColor: c.tertiary,
         },
         micButtonActive: {
             backgroundColor: c.primary,

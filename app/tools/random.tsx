@@ -226,7 +226,7 @@ export default function Random() {
                             </Text>
                         </View>
 
-                        <View style={styles.marginTop}>
+                        <View style={styles.contentSection}>
                             <Chevrons heading='Purpose' points={points} />
                         </View>
                     </View>

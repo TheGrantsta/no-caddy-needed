@@ -158,12 +158,14 @@ export default function Tempo() {
                             <Text style={styles.buttonText}>{isPlaying ? 'Stop' : 'Play'}</Text>
                         </TouchableOpacity>
                         <View>
-                            <Text style={[styles.smallestText, styles.marginTop, styles.marginBottom]}>
+                            <Text style={[styles.smallestText, styles.marginTop]}>
                                 Based on John Garrity's work, long game tempo (start, take away, top & impact) is 3:1 & short game tempo is 2:1
                             </Text>
                         </View>
 
-                        <Chevrons heading='Why tempo training is important' points={points} />
+                        <View style={styles.contentSection}>
+                            <Chevrons heading='Why tempo is important' points={points} />
+                        </View>
                     </View>
                 </View>
             </ScrollView>

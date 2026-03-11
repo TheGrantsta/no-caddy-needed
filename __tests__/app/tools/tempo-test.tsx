@@ -100,7 +100,7 @@ describe('Tempo training page', () => {
     it('renders the chevrons section with heading', () => {
         const { getByText } = render(<Tempo />);
 
-        expect(getByText('Why tempo training is important')).toBeTruthy();
+        expect(getByText('Why tempo is important')).toBeTruthy();
     });
 
     it('renders tempo training tips', () => {
@@ -165,10 +165,10 @@ describe('Tempo training page', () => {
 
     it('logsErrorWhenSetAudioModeAsyncRejects', async () => {
         mockSetAudioModeAsync.mockRejectedValueOnce(new Error('audio error'));
-        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
 
         render(<Tempo />);
-        await act(async () => {});
+        await act(async () => { });
 
         expect(consoleSpy).toHaveBeenCalledWith('Error loading sound:', expect.any(Error));
         consoleSpy.mockRestore();
@@ -177,7 +177,7 @@ describe('Tempo training page', () => {
     it('logsErrorWhenSeekToThrows', async () => {
         const mockPlayer = mockUseAudioPlayer();
         mockPlayer.seekTo.mockRejectedValueOnce(new Error('seek error'));
-        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
 
         const { getByText } = render(<Tempo />);
         fireEvent.press(getByText('Play'));

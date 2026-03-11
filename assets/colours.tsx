@@ -1,6 +1,7 @@
 export type ThemeColours = {
     primary: string;
     secondary: string;
+    tertiary: string;
     background: string;
     backgroundAlternate: string;
 
@@ -22,6 +23,7 @@ export type ThemeColours = {
 export const darkColours: ThemeColours = {
     primary: '#2D5A3D',
     secondary: '#FFFFFF26',
+    tertiary: '#8FA79A',
     background: '#f5f5f0',
     backgroundAlternate: '#FFFFFF26',
 
@@ -43,6 +45,7 @@ export const darkColours: ThemeColours = {
 export const lightColours: ThemeColours = {
     primary: '#2E7D32',
     secondary: '#1B5E20',
+    tertiary: '#8FA79A',
     background: '#f5f5f0',
     backgroundAlternate: '#dfe3e8',
 

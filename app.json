@@ -9,14 +9,14 @@
     "splash": {
       "image": "./assets/images/full-white-logo-transparent.png",
       "resizeMode": "contain",
-      "backgroundColor": "#f5f5f0"
+      "backgroundColor": "#2D5A3D"
     },
     "ios": {
       "supportsTablet": true,
       "splash": {
         "image": "./assets/images/full-white-logo-transparent.png",
         "resizeMode": "contain",
-        "backgroundColor": "#f5f5f0"
+        "backgroundColor": "#2D5A3D"
       },
       "bundleIdentifier": "com.grantsta.golf.nocaddyneeded",
       "infoPlist": {
@@ -29,11 +29,11 @@
       "splash": {
         "image": "./assets/images/full-white-logo-transparent.png",
         "resizeMode": "contain",
-        "backgroundColor": "#f5f5f0"
+        "backgroundColor": "#2D5A3D"
       },
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/full-white-logo-transparent.png",
-        "backgroundColor": "#f5f5f0"
+        "backgroundColor": "#2D5A3D"
       },
       "package": "com.grantsta.golf.nocaddyneeded"
     },

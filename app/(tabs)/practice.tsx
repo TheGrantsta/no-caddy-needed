@@ -186,21 +186,26 @@ export default function Practice() {
         {/* Tools */}
         {displaySection('tools') && (
           <View>
-            <View style={styles.viewContainer}>
-              <Text style={[styles.subHeaderText, styles.marginTop]}>
-                Practice tools
-              </Text>
+            <Text style={[styles.subHeaderText, styles.marginTop]}>
+              Practice tools
+            </Text>
 
-              <View style={styles.iconsContainer}>
-                <Link href='../tools/tempo'>
-                  <View style={styles.iconContainer}>
-                    <IconButton iconName='music-note' label='Tempo' size='medium' />
+            <View style={styles.navGrid}>
+              <View style={styles.navRow}>
+                <Link href="../tools/tempo" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="music-note" size={36} color="#ffffff" />
+                    </View>
+                    <Text style={styles.navCardLabel}>Tempo</Text>
                   </View>
                 </Link>
-
-                <Link href='../tools/random'>
-                  <View style={styles.iconContainer}>
-                    <IconButton iconName='shuffle-on' label='Random' size='medium' />
+                <Link href="../tools/random" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="shuffle-on" size={36} color="#ffffff" />
+                    </View>
+                    <Text style={styles.navCardLabel}>Random</Text>
                   </View>
                 </Link>
               </View>

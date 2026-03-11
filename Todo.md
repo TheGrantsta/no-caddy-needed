@@ -6,12 +6,12 @@
 - [ ] Integrate Firebase iOS into project
 - [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
-- [ ] Amend colours to be primary, secondary, etc rather than specifying the colour, etc
 - [ ] Make light green theme the default
-- [ ] Define dark green theme
-- [ ] Remove unused styles
 
 # Done
+- [X] Amend colours to be primary, secondary, etc rather than specifying the colour, etc
+- [X] Define dark green theme
+- [X] Remove unused styles
 - [X] Amend logo
 - [X] Add ability to add new games in Short Game
 - [X] Amend microphone button

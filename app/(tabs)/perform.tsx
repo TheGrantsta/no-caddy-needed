@@ -99,7 +99,7 @@ export default function Perform() {
               <View key={colIndex} style={{
                 flex: 1, padding: 3, alignItems: "center", justifyContent: "center",
               }}>
-                <Text style={[rowIndex === 0 ? styles.header : styles.normalText, { padding: 5 }]}>
+                <Text style={[rowIndex === 0 ? styles.subHeaderText : styles.normalText, { padding: 5 }]}>
                   {cell}
                 </Text>
               </View>
@@ -131,14 +131,18 @@ export default function Perform() {
         {/* Approach */}
         {displaySection('approach') && (
           <View style={styles.container}>
-            <View style={styles.headerContainer}>
-              <Text style={[styles.headerText, styles.marginTop]}>
-                Approach shots
+            <View style={styles.header}>
+              <View style={styles.titleRow}>
+                <Text style={[styles.headerText, styles.marginTop]}>
+                  Approach shots
+                </Text>
+              </View>
+              <Text style={[styles.normalText, styles.marginBottom]}>
+                Make better on course decisions & choose better targets
               </Text>
             </View>
-            <Text style={[styles.normalText, styles.marginBottom]}>
-              Make better on course decisions & choose better targets
-            </Text>
+
+            <View style={styles.divider} />
 
             <Chevrons heading='Concepts' points={points} />
 
@@ -160,14 +164,18 @@ export default function Perform() {
         {displaySection('pros') && (
           <View>
             <View style={styles.container}>
-              <View style={styles.headerContainer}>
-                <Text style={[styles.headerText, { marginTop: 10 }]}>
-                  Perform
-                </Text>
-                <Text style={[styles.normalText, { marginBottom: 10 }]}>
+              <View style={styles.header}>
+                <View style={styles.titleRow}>
+                  <Text style={[styles.headerText, styles.marginTop]}>
+                    Perform
+                  </Text>
+                </View>
+                <Text style={[styles.normalText, styles.marginBottom]}>
                   Manage your expectations, better!
                 </Text>
               </View>
+
+              <View style={styles.divider} />
 
               {activeIndex === 0 && (
                 <View>

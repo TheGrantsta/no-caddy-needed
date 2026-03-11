@@ -303,8 +303,8 @@ export default function Play() {
 
                 {!isRoundActive && !showPlayerSetup && !scorecardData && displaySection('play-score') && (
                     <View style={styles.container}>
-                        <View style={styles.headerContainer}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                        <View style={styles.header}>
+                            <View style={styles.titleRow}>
                                 <TouchableOpacity
                                     testID="play-onboarding-info-button"
                                     onPress={handleShowOnboarding}
@@ -314,14 +314,22 @@ export default function Play() {
                                 </TouchableOpacity>
                                 <Text style={[styles.headerText, styles.marginTop]}>Play</Text>
                             </View>
-                            <TouchableOpacity
-                                testID="start-round-button"
-                                onPress={handleShowPlayerSetup}
-                                style={localStyles.actionButton}
-                            >
-                                <Text style={localStyles.actionButtonText}>Start round</Text>
-                            </TouchableOpacity>
+
+                            <Text style={[styles.normalText, styles.marginBottom]}>
+                                Start round, review past rounds and 7 Deadly Sins stats
+                            </Text>
                         </View>
+
+                        <View style={styles.divider} />
+
+                        <TouchableOpacity
+                            testID="start-round-button"
+                            onPress={handleShowPlayerSetup}
+                            style={[localStyles.actionButton, styles.marginTop]}
+                        >
+                            <Text style={localStyles.actionButtonText}>Start round</Text>
+                        </TouchableOpacity>
+
 
                         {roundHistory.length > 0 && (
                             <View style={localStyles.filterContainer}>

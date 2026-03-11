@@ -52,8 +52,8 @@ export default function WedgeChartScreen() {
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
-                <View style={styles.headerContainer}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={styles.header}>
+                    <View style={styles.titleRow}>
                         <TouchableOpacity
                             testID="info-button"
                             onPress={handleShowOnboarding}
@@ -66,6 +66,9 @@ export default function WedgeChartScreen() {
                         Your wedge carry distances
                     </Text>
                 </View>
+
+                <View style={styles.divider} />
+
                 <WedgeChart data={data} onSave={handleSave} />
 
                 {!chartIsEmpty && !showClearConfirm && (

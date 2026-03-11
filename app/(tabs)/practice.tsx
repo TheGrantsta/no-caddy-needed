@@ -111,8 +111,8 @@ export default function Practice() {
       }>
 
         <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={styles.header}>
+            <View style={styles.titleRow}>
               <TouchableOpacity
                 testID="info-button"
                 onPress={handleShowOnboarding}
@@ -127,6 +127,8 @@ export default function Practice() {
               Make your practice time more effective
             </Text>
           </View>
+
+          <View style={styles.divider} />
         </View>
 
         {/* Short game */}

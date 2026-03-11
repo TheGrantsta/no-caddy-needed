@@ -11,9 +11,6 @@ import Chevrons from '@/components/Chevrons';
 import OnboardingOverlay from '@/components/OnboardingOverlay';
 import fontSizes from '@/assets/font-sizes';
 
-const FOREST_GREEN = '#2D5A3D';
-const OFF_WHITE = '#f5f5f0';
-
 const points = ['In a nutshell: hit it, find it and hit it again', 'Point: get the ball in the hole with the fewest shots', 'Have fun: golf is a game, so for goodness sake enjoy it!'];
 
 const ONBOARDING_STEPS = [
@@ -31,42 +28,6 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const home = useMemo(() => StyleSheet.create({
-    screenBg: {
-      backgroundColor: OFF_WHITE,
-    },
-    header: {
-      paddingTop: 32,
-      paddingHorizontal: 24,
-      paddingBottom: 4,
-      alignItems: 'center',
-    },
-    titleRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      alignSelf: 'flex-start',
-      gap: 10,
-      marginBottom: 8,
-    },
-    titleText: {
-      color: FOREST_GREEN,
-      fontSize: fontSizes.header,
-      fontWeight: 'bold',
-      padding: 8,
-      textAlign: 'left',
-    },
-    subtitle: {
-      color: colours.text,
-      fontSize: fontSizes.normal,
-      textAlign: 'left',
-    },
-    divider: {
-      height: 1,
-      backgroundColor: FOREST_GREEN,
-      opacity: 0.2,
-      marginHorizontal: 24,
-      marginTop: 20,
-      marginBottom: 4,
-    },
     navGrid: {
       paddingHorizontal: 8,
       paddingTop: 16,
@@ -80,7 +41,7 @@ export default function HomeScreen() {
       flex: 1,
     },
     navCard: {
-      backgroundColor: FOREST_GREEN,
+      backgroundColor: colours.primary,
       borderRadius: 16,
       paddingVertical: 28,
       alignItems: 'center',
@@ -114,7 +75,7 @@ export default function HomeScreen() {
       borderRadius: 14,
       padding: 16,
       borderWidth: 1,
-      borderColor: FOREST_GREEN + '33',
+      borderColor: colours.primary + '33',
     },
     bodyText: {
       color: colours.text,
@@ -142,31 +103,31 @@ export default function HomeScreen() {
   };
 
   return (
-    <GestureHandlerRootView style={[styles.flexOne, home.screenBg]}>
+    <GestureHandlerRootView style={[styles.flexOne]}>
       {refreshing && (
         <View style={styles.updateOverlay}>
           <Text style={styles.updateText}>Release to update</Text>
         </View>
       )}
       <ScrollView
-        style={[styles.scrollContainer, home.screenBg]}
+        style={[styles.scrollContainer]}
         contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={FOREST_GREEN} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colours.primary} />
         }
       >
         {/* Header */}
-        <View style={home.header}>
-          <View style={home.titleRow}>
+        <View style={styles.header}>
+          <View style={styles.titleRow}>
             <TouchableOpacity testID="info-button" onPress={handleShowOnboarding}>
-              <MaterialIcons name="info-outline" size={26} color={FOREST_GREEN} />
+              <MaterialIcons name="info-outline" size={26} color={colours.primary} />
             </TouchableOpacity>
-            <Text style={home.titleText}>No caddy needed!</Text>
+            <Text style={styles.titleText}>No caddy needed!</Text>
           </View>
-          <Text style={home.subtitle}>Smarter play, practice & performance</Text>
+          <Text style={styles.subtitleText}>Smarter play, practice & performance</Text>
         </View>
 
-        <View style={home.divider} />
+        <View style={styles.divider} />
 
         {/* Navigation cards — 2 + 1 grid */}
         <View style={home.navGrid}>

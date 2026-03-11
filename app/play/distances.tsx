@@ -52,8 +52,8 @@ export default function DistancesScreen() {
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
-                <View style={styles.headerContainer}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={styles.header}>
+                    <View style={styles.titleRow}>
                         <TouchableOpacity
                             testID="info-button"
                             onPress={handleShowOnboarding}
@@ -64,6 +64,9 @@ export default function DistancesScreen() {
                     </View>
                     <Text style={[styles.normalText, styles.marginBottom]}>Club carry distances</Text>
                 </View>
+
+                <View style={styles.divider} />
+
                 <ClubDistanceList distances={distances} onSave={handleSave} />
 
                 {!distancesIsEmpty && !showClearConfirm && (

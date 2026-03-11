@@ -8,6 +8,39 @@ export const createStyles = (c: ThemeColours) => ({
         flexOne: {
             flex: 1,
         },
+        header: {
+            paddingTop: 32,
+            paddingHorizontal: 24,
+            paddingBottom: 4,
+            alignItems: 'center',
+        },
+        titleRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            alignSelf: 'flex-start',
+            gap: 10,
+            marginBottom: 8,
+        },
+        titleText: {
+            color: colours.primary,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            padding: 8,
+            textAlign: 'left',
+        },
+        subtitleText: {
+            color: colours.text,
+            fontSize: fontSizes.normal,
+            textAlign: 'left',
+        },
+        divider: {
+            height: 1,
+            backgroundColor: colours.primary,
+            opacity: 0.2,
+            marginHorizontal: 24,
+            marginTop: 20,
+            marginBottom: 4,
+        },
         marginTop: {
             marginTop: 10,
         },
@@ -67,6 +100,7 @@ export const createStyles = (c: ThemeColours) => ({
         subHeaderText: {
             color: c.primary,
             fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
             alignItems: 'baseline',
             padding: 6,
         },
@@ -230,11 +264,11 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
         },
-        header: {
-            color: c.primary,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
+        // header: {
+        //     color: c.primary,
+        //     fontSize: fontSizes.tableHeader,
+        //     fontWeight: 'bold',
+        // },
         bold: {
             fontWeight: 'bold',
         },
@@ -1247,45 +1281,41 @@ export const createStyles = (c: ThemeColours) => ({
 
     themedText: StyleSheet.create({
         default: {
-            fontSize: 16,
+            fontSize: fontSizes.smallText,
             lineHeight: 24,
         },
         defaultSemiBold: {
-            fontSize: 16,
+            fontSize: fontSizes.smallText,
             lineHeight: 24,
             fontWeight: '600',
         },
         title: {
-            fontSize: 32,
+            fontSize: fontSizes.header,
             fontWeight: 'bold',
             lineHeight: 32,
         },
-        subtitle: {
-            fontSize: 20,
-            fontWeight: 'bold',
-        },
         link: {
             lineHeight: 30,
-            fontSize: 16,
+            fontSize: fontSizes.smallText,
             color: '#0a7ea4',
         },
     }),
 
-    parallaxScrollView: StyleSheet.create({
-        container: {
-            flex: 1,
-        },
-        header: {
-            height: 250,
-            overflow: 'hidden',
-        },
-        content: {
-            flex: 1,
-            padding: 32,
-            gap: 16,
-            overflow: 'hidden',
-        },
-    }),
+    // parallaxScrollView: StyleSheet.create({
+    //     container: {
+    //         flex: 1,
+    //     },
+    //     header: {
+    //         height: 250,
+    //         overflow: 'hidden',
+    //     },
+    //     content: {
+    //         flex: 1,
+    //         padding: 32,
+    //         gap: 16,
+    //         overflow: 'hidden',
+    //     },
+    // }),
 
     collapsible: StyleSheet.create({
         heading: {

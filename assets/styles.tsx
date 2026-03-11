@@ -93,9 +93,10 @@ export const createStyles = (c: ThemeColours) => ({
         },
         headerText: {
             color: c.primary,
-            fontSize: fontSizes.header,
-            alignItems: 'center',
-            padding: 8,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            alignItems: 'baseline',
+            padding: 6,
         },
         subHeaderText: {
             color: c.primary,
@@ -115,12 +116,13 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             padding: 5,
         },
-        chevronHeaderText: {
-            color: c.primary,
-            fontSize: fontSizes.subHeader,
-            fontWeight: 'bold',
-            alignItems: 'baseline',
-            padding: 6,
+        contentSection: {
+            marginHorizontal: 8,
+            marginTop: 20,
+            borderRadius: 14,
+            padding: 16,
+            borderWidth: 1,
+            borderColor: colours.primary + '33',
         },
         overlay: {
             position: 'absolute',
@@ -264,11 +266,6 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
         },
-        // header: {
-        //     color: c.primary,
-        //     fontSize: fontSizes.tableHeader,
-        //     fontWeight: 'bold',
-        // },
         bold: {
             fontWeight: 'bold',
         },
@@ -326,6 +323,41 @@ export const createStyles = (c: ThemeColours) => ({
         scrollActiveDot: {
             backgroundColor: c.primary,
             borderColor: c.primary,
+        },
+        navGrid: {
+            paddingHorizontal: 8,
+            paddingTop: 16,
+            gap: 12,
+        },
+        navRow: {
+            flexDirection: 'row',
+            gap: 12,
+        },
+        navCardLink: {
+            flex: 1,
+        },
+        navCard: {
+            backgroundColor: colours.primary,
+            borderRadius: 16,
+            paddingVertical: 28,
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 14,
+            width: '100%',
+        },
+        iconCircle: {
+            width: 72,
+            height: 72,
+            borderRadius: 36,
+            backgroundColor: 'rgba(255,255,255,0.15)',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        navCardLabel: {
+            color: '#ffffff',
+            fontSize: fontSizes.subHeader,
+            fontWeight: '700',
+            letterSpacing: 0.3,
         },
     }),
 

@@ -27,64 +27,6 @@ export default function HomeScreen() {
   const [showOnboarding, setShowOnboarding] = useState(!settings.homeOnboardingSeen);
   const [refreshing, setRefreshing] = useState(false);
 
-  const home = useMemo(() => StyleSheet.create({
-    navGrid: {
-      paddingHorizontal: 8,
-      paddingTop: 16,
-      gap: 12,
-    },
-    navRow: {
-      flexDirection: 'row',
-      gap: 12,
-    },
-    navCardLink: {
-      flex: 1,
-    },
-    navCard: {
-      backgroundColor: colours.primary,
-      borderRadius: 16,
-      paddingVertical: 28,
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: 14,
-      width: '100%',
-    },
-    iconCircle: {
-      width: 72,
-      height: 72,
-      borderRadius: 36,
-      backgroundColor: 'rgba(255,255,255,0.15)',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    navCardLabel: {
-      color: '#ffffff',
-      fontSize: fontSizes.subHeader,
-      fontWeight: '700',
-      letterSpacing: 0.3,
-    },
-    sectionHeading: {
-      color: colours.primary,
-      fontSize: 24,
-      fontWeight: 'bold',
-      padding: 6,
-    },
-    contentSection: {
-      marginHorizontal: 8,
-      marginTop: 20,
-      borderRadius: 14,
-      padding: 16,
-      borderWidth: 1,
-      borderColor: colours.primary + '33',
-    },
-    bodyText: {
-      color: colours.text,
-      fontSize: fontSizes.normal,
-      lineHeight: 24,
-      marginTop: 8,
-    },
-  }), []);
-
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
     const currentSettings = getSettingsService();
@@ -130,44 +72,44 @@ export default function HomeScreen() {
         <View style={styles.divider} />
 
         {/* Navigation cards — 2 + 1 grid */}
-        <View style={home.navGrid}>
-          <View style={home.navRow}>
-            <Link testID="home-play-link" href="/play" style={home.navCardLink}>
-              <View style={home.navCard}>
-                <View style={home.iconCircle}>
+        <View style={styles.navGrid}>
+          <View style={styles.navRow}>
+            <Link testID="home-play-link" href="/play" style={styles.navCardLink}>
+              <View style={styles.navCard}>
+                <View style={styles.iconCircle}>
                   <MaterialIcons name="sports-golf" size={36} color="#ffffff" />
                 </View>
-                <Text style={home.navCardLabel}>Play</Text>
+                <Text style={styles.navCardLabel}>Play</Text>
               </View>
             </Link>
-            <Link testID="home-practice-link" href="/practice" style={home.navCardLink}>
-              <View style={home.navCard}>
-                <View style={home.iconCircle}>
+            <Link testID="home-practice-link" href="/practice" style={styles.navCardLink}>
+              <View style={styles.navCard}>
+                <View style={styles.iconCircle}>
                   <MaterialIcons name="golf-course" size={36} color="#ffffff" />
                 </View>
-                <Text style={home.navCardLabel}>Practice</Text>
+                <Text style={styles.navCardLabel}>Practice</Text>
               </View>
             </Link>
           </View>
-          <View style={home.navRow}>
-            <Link testID="home-perform-link" href="/perform" style={home.navCardLink}>
-              <View style={home.navCard}>
-                <View style={home.iconCircle}>
+          <View style={styles.navRow}>
+            <Link testID="home-perform-link" href="/perform" style={styles.navCardLink}>
+              <View style={styles.navCard}>
+                <View style={styles.iconCircle}>
                   <MaterialIcons name="lightbulb" size={36} color="#ffffff" />
                 </View>
-                <Text style={home.navCardLabel}>Perform</Text>
+                <Text style={styles.navCardLabel}>Perform</Text>
               </View>
             </Link>
           </View>
         </View>
 
-        <View style={home.contentSection}>
+        <View style={styles.contentSection}>
           <Chevrons heading="Golf simplified" points={points} />
         </View>
 
-        <View style={home.contentSection}>
-          <Text style={home.sectionHeading}>Be your own best caddy</Text>
-          <Text style={home.bodyText}>
+        <View style={styles.contentSection}>
+          <Text style={styles.headerText}>Be your own best caddy</Text>
+          <Text style={styles.normalText}>
             Golf is not a game of perfect, or having a perfect swing
           </Text>
         </View>

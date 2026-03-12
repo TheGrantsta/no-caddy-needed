@@ -62,7 +62,9 @@ export default function DistancesScreen() {
                         </TouchableOpacity>
                         <Text style={[styles.headerText, styles.marginTop]}>Distances</Text>
                     </View>
-                    <Text style={[styles.normalText, styles.marginBottom]}>Club carry distances</Text>
+                    <Text style={[styles.normalText, styles.marginBottom]}>
+                        Club carry distances NOT total distances to choose the right club
+                    </Text>
                 </View>
 
                 <View style={styles.divider} />

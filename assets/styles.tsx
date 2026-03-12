@@ -89,6 +89,12 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             alignItems: 'center',
         },
+        smallText: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            alignItems: 'center',
+            padding: 5,
+        },
         smallestText: {
             color: c.text,
             fontSize: fontSizes.smallestText,

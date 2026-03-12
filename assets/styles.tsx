@@ -159,7 +159,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         textInput: {
             height: 40,
-            borderColor: c.secondary,
+            borderColor: c.tertiary,
             borderWidth: 1,
             borderRadius: 5,
             paddingHorizontal: 10,

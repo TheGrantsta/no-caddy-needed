@@ -220,10 +220,6 @@ export default function Random() {
                                     color={micActive ? colours.background : colours.text}
                                 />
                             </TouchableOpacity>
-
-                            <Text style={styles.smallestText}>
-                                Say "next" to generate a number hands-free (make sure to allow microphone permissions when prompted and have sounds enabled in Settings)
-                            </Text>
                         </View>
 
                         <View style={styles.contentSection}>

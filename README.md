@@ -141,6 +141,18 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
       SKIP_UI_CHECK=1 git push
    ```
 
+## App Store submission
+
+App Store needs images with 1242x2688px but the screen shots produced using maestro have an output of 1320x2868px.
+
+To resize, run resize-crop command from the .maestro folder
+
+   ```
+      node resize-crop.js input.png output.png
+   ```
+
+The resulting output images can be upload via browser.
+
 ## Integrating with AI
 
 Repomix can create a prompt-friendly version of your repo that can be uploaded along with a prompt into an AI-assistant

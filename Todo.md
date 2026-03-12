@@ -6,6 +6,8 @@
 - [ ] Integrate Firebase iOS into project
 - [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
+- [ ] Amend App Store app asset
+- [ ] Implement epic to create practice Reminders in app
 
 # Done
 - [X] Amend colours to be primary, secondary, etc rather than specifying the colour, etc

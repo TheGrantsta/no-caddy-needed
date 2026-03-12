@@ -383,9 +383,9 @@ export default function Play() {
                                                 onPress={() => router.push({ pathname: '/play/scorecard', params: { roundId: String(round.Id) } })}
                                             >
                                                 <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.primary }]}>
-                                                    <Text style={[styles.normalText, localStyles.historyDateColumn]}>{round.CourseName ? `${round.Created_At} - ${round.CourseName}` : round.Created_At}{round.HolesPlayed < 18 ? ` (${round.HolesPlayed})` : ''}</Text>
-                                                    <Text style={[styles.normalText, localStyles.historyNarrowColumn]}>{formatScore(round.TotalScore)}</Text>
-                                                    <Text style={[styles.normalText, localStyles.historyNarrowColumn]}>{deadlySinsMap.has(round.Id) ? deadlySinsMap.get(round.Id) : '-'}</Text>
+                                                    <Text style={[styles.smallText, localStyles.historyDateColumn]}>{round.CourseName ? `${round.Created_At} - ${round.CourseName}` : round.Created_At}{round.HolesPlayed < 18 ? ` (${round.HolesPlayed})` : ''}</Text>
+                                                    <Text style={[styles.smallText, localStyles.historyNarrowColumn]}>{formatScore(round.TotalScore)}</Text>
+                                                    <Text style={[styles.smallText, localStyles.historyNarrowColumn]}>{deadlySinsMap.has(round.Id) ? deadlySinsMap.get(round.Id) : '-'}</Text>
                                                 </View>
                                             </TouchableOpacity>
                                         ))}
@@ -458,16 +458,16 @@ export default function Play() {
                                     <TouchableOpacity
                                         testID="cancel-end-round-button"
                                         onPress={handleCancelEndRound}
-                                        style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, borderWidth: 1, borderColor: colours.backgroundAlternate }}
+                                        style={[styles.mediumButton, { backgroundColor: colours.red }]}
                                     >
                                         <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         testID="confirm-end-round-button"
                                         onPress={handleConfirmEndRound}
-                                        style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.errorText }}
+                                        style={styles.mediumButton}
                                     >
-                                        <Text style={{ color: colours.text, fontSize: fontSizes.normal }}>Confirm end round</Text>
+                                        <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Confirm</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}

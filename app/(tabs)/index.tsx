@@ -110,7 +110,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.contentSection}>
-          <Chevrons heading="Golf simplified" points={points} />
+          <Chevrons heading="Golf, simplified" points={points} />
         </View>
 
       </ScrollView>

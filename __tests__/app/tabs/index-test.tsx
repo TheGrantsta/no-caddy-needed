@@ -93,7 +93,7 @@ describe('HomeScreen', () => {
 
     it('displaysGolfSimplifiedChevrons', () => {
         const { getByText } = render(<HomeScreen />);
-        expect(getByText('Golf simplified')).toBeTruthy();
+        expect(getByText('Golf, simplified')).toBeTruthy();
     });
 
     it('displaysBestCaddyText', () => {

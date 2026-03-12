@@ -63,7 +63,7 @@ export default function WedgeChartScreen() {
                         <Text style={[styles.headerText, styles.marginTop]}>Wedge chart</Text>
                     </View>
                     <Text style={[styles.normalText, styles.marginBottom]}>
-                        Your wedge carry distances
+                        Your wedge carry distances NOT total distances to choose the right club
                     </Text>
                 </View>
 

@@ -119,7 +119,7 @@ appId: com.grantsta.golf.nocaddyneeded
 
 # Screenshot 5: Wedge Chart
 - extendedWaitUntil:
-    visible: "Your wedge carry distances"
+    visible: "Your wedge carry distances NOT total distances to choose the right club"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/02C-play-wedge-chart
 

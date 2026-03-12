@@ -836,7 +836,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('play-sub-menu-wedge-chart'));
 
-            expect(getByText('Your wedge carry distances')).toBeTruthy();
+            expect(getByText('Your wedge carry distances NOT total distances to choose the right club')).toBeTruthy();
         });
 
         it('returns to score input when Play is pressed after switching', async () => {
@@ -876,7 +876,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('play-sub-menu-wedge-chart'));
 
-            expect(getByText('Your wedge carry distances')).toBeTruthy();
+            expect(getByText('Your wedge carry distances NOT total distances to choose the right club')).toBeTruthy();
             expect(queryByTestId('start-round-button')).toBeNull();
         });
 

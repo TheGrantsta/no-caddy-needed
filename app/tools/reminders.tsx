@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -19,6 +20,7 @@ export default function Reminders() {
     const [reminderDate, setReminderDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [swipedOpen, setSwipedOpen] = useState<Set<number>>(new Set());
 
     const loadReminders = () => {
         setReminders(getPracticeRemindersService());
@@ -66,18 +68,39 @@ export default function Reminders() {
                 <View style={styles.divider} />
 
                 {reminders.length === 0 && !showAddForm && (
-                    <Text style={styles.normalText}>No reminders yet</Text>
+                    <View style={styles.contentSection}>
+                        <Text style={styles.normalText}>No reminders set</Text>
+                    </View>
                 )}
 
                 {reminders.map((reminder) => (
-                    <View key={reminder.Id} style={[styles.contentSection, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
-                        <View>
-                            <Text style={styles.normalText}>{reminder.Label}</Text>
-                            <Text style={styles.normalText}>{new Date(reminder.ScheduledFor).toLocaleString()}</Text>
-                        </View>
-                        <TouchableOpacity testID={`delete-reminder-${reminder.Id}`} onPress={() => handleDeleteReminder(reminder)}>
-                            <MaterialIcons name="delete-outline" size={24} color={colours.errorText} />
-                        </TouchableOpacity>
+                    <View key={reminder.Id} style={{ marginHorizontal: 8, marginTop: 20, borderRadius: 14, borderWidth: 1, borderColor: colours.primary + '33', overflow: 'hidden' }}>
+                        <ReanimatedSwipeable
+                            onSwipeableWillOpen={() => setSwipedOpen(prev => new Set(prev).add(reminder.Id))}
+                            onSwipeableClose={() => setSwipedOpen(prev => { const next = new Set(prev); next.delete(reminder.Id); return next; })}
+                            renderRightActions={() => (
+                                <TouchableOpacity
+                                    testID={`delete-reminder-${reminder.Id}`}
+                                    onPress={() => handleDeleteReminder(reminder)}
+                                    style={{ backgroundColor: colours.red, justifyContent: 'center', alignItems: 'center', width: 80 }}
+                                >
+                                    <MaterialIcons name="delete-outline" size={24} color={colours.white} />
+                                    <Text style={{ color: colours.white, fontSize: 12 }}>Delete</Text>
+                                </TouchableOpacity>
+                            )}
+                        >
+                            <View style={{ padding: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <View>
+                                    <Text style={styles.normalText}>{reminder.Label}</Text>
+                                    <Text style={styles.normalText}>{new Date(reminder.ScheduledFor).toLocaleString()}</Text>
+                                </View>
+                                {!swipedOpen.has(reminder.Id) && (
+                                    <View testID={`reminder-delete-icon-${reminder.Id}`}>
+                                        <MaterialIcons name="delete-outline" size={20} color={colours.primary + '66'} />
+                                    </View>
+                                )}
+                            </View>
+                        </ReanimatedSwipeable>
                     </View>
                 ))}
 

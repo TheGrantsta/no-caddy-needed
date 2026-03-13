@@ -39,6 +39,19 @@ jest.mock('react-native-gesture-handler', () => {
 
 jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
 
+jest.mock('react-native-gesture-handler/ReanimatedSwipeable', () => {
+    const { View, TouchableOpacity } = require('react-native');
+    const MockSwipeable = ({ children, renderRightActions, onSwipeableWillOpen, onSwipeableClose }: any) => (
+        <View>
+            {children}
+            {renderRightActions && renderRightActions()}
+            <TouchableOpacity testID="swipeable-trigger-open" onPress={onSwipeableWillOpen} />
+            <TouchableOpacity testID="swipeable-trigger-close" onPress={onSwipeableClose} />
+        </View>
+    );
+    return { __esModule: true, default: MockSwipeable };
+});
+
 jest.mock('../../../service/NotificationService', () => ({
     schedulePracticeReminder: jest.fn(),
     cancelPracticeReminder: jest.fn(),
@@ -70,7 +83,7 @@ describe('Reminders screen', () => {
 
     it('shows no reminders message when list is empty', () => {
         const { getByText } = render(<Reminders />);
-        expect(getByText('No reminders yet')).toBeTruthy();
+        expect(getByText('No reminders set')).toBeTruthy();
     });
 
     it('shouldShowAddReminderButtonInRemindersSection', () => {
@@ -122,6 +135,31 @@ describe('Reminders screen', () => {
 
         expect(mockDeletePracticeReminderService).toHaveBeenCalledWith(1);
         expect(mockCancelPracticeReminder).toHaveBeenCalledWith('notif-1');
+    });
+
+    it('hidesDeleteIconWhenSwipeableOpens', () => {
+        mockGetPracticeRemindersService.mockReturnValue([
+            { Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }
+        ]);
+
+        const { getByTestId, queryByTestId } = render(<Reminders />);
+        expect(getByTestId('reminder-delete-icon-1')).toBeTruthy();
+
+        fireEvent.press(getByTestId('swipeable-trigger-open'));
+
+        expect(queryByTestId('reminder-delete-icon-1')).toBeNull();
+    });
+
+    it('showsDeleteIconWhenSwipeableCloses', () => {
+        mockGetPracticeRemindersService.mockReturnValue([
+            { Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }
+        ]);
+
+        const { getByTestId } = render(<Reminders />);
+        fireEvent.press(getByTestId('swipeable-trigger-open'));
+        fireEvent.press(getByTestId('swipeable-trigger-close'));
+
+        expect(getByTestId('reminder-delete-icon-1')).toBeTruthy();
     });
 
     it('hides add form when cancel is pressed', () => {

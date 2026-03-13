@@ -20,6 +20,7 @@ export default function Reminders() {
     const [reminderDate, setReminderDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+    const [refreshKey, setRefreshKey] = useState(0);
     const [swipedOpen, setSwipedOpen] = useState<Set<number>>(new Set());
 
     const loadReminders = () => {
@@ -39,6 +40,8 @@ export default function Reminders() {
         setRefreshing(true);
         setTimeout(() => {
             loadReminders();
+            setRefreshKey(prev => prev + 1);
+            setSwipedOpen(new Set());
             setRefreshing(false);
         }, 750);
     };
@@ -76,6 +79,7 @@ export default function Reminders() {
                 {reminders.map((reminder) => (
                     <View key={reminder.Id} style={{ marginHorizontal: 8, marginTop: 20, borderRadius: 14, borderWidth: 1, borderColor: colours.primary + '33', overflow: 'hidden' }}>
                         <ReanimatedSwipeable
+                            key={refreshKey}
                             onSwipeableWillOpen={() => setSwipedOpen(prev => new Set(prev).add(reminder.Id))}
                             onSwipeableClose={() => setSwipedOpen(prev => { const next = new Set(prev); next.delete(reminder.Id); return next; })}
                             renderRightActions={() => (

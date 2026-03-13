@@ -137,31 +137,6 @@ describe('Reminders screen', () => {
         expect(mockCancelPracticeReminder).toHaveBeenCalledWith('notif-1');
     });
 
-    it('hidesDeleteIconWhenSwipeableOpens', () => {
-        mockGetPracticeRemindersService.mockReturnValue([
-            { Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }
-        ]);
-
-        const { getByTestId, queryByTestId } = render(<Reminders />);
-        expect(getByTestId('reminder-delete-icon-1')).toBeTruthy();
-
-        fireEvent.press(getByTestId('swipeable-trigger-open'));
-
-        expect(queryByTestId('reminder-delete-icon-1')).toBeNull();
-    });
-
-    it('showsDeleteIconWhenSwipeableCloses', () => {
-        mockGetPracticeRemindersService.mockReturnValue([
-            { Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }
-        ]);
-
-        const { getByTestId } = render(<Reminders />);
-        fireEvent.press(getByTestId('swipeable-trigger-open'));
-        fireEvent.press(getByTestId('swipeable-trigger-close'));
-
-        expect(getByTestId('reminder-delete-icon-1')).toBeTruthy();
-    });
-
     it('hides add form when cancel is pressed', () => {
         const { getByTestId, queryByTestId, getByText } = render(<Reminders />);
         fireEvent.press(getByTestId('add-reminder-button'));
@@ -222,25 +197,6 @@ describe('Reminders screen', () => {
             });
 
             expect(getByText('Evening chipping')).toBeTruthy();
-        });
-
-        it('onRefreshResetsOpenSwipeables', () => {
-            mockGetPracticeRemindersService.mockReturnValue([
-                { Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }
-            ]);
-
-            const { UNSAFE_getByType, getByTestId } = render(<Reminders />);
-
-            fireEvent.press(getByTestId('swipeable-trigger-open'));
-            expect(() => getByTestId('reminder-delete-icon-1')).toThrow();
-
-            const scrollView = UNSAFE_getByType(ScrollView);
-            act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
-                jest.advanceTimersByTime(750);
-            });
-
-            expect(getByTestId('reminder-delete-icon-1')).toBeTruthy();
         });
     });
 });

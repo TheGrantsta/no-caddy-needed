@@ -98,11 +98,6 @@ export default function Reminders() {
                                     <Text style={styles.normalText}>{reminder.Label}</Text>
                                     <Text style={styles.normalText}>{new Date(reminder.ScheduledFor).toLocaleString()}</Text>
                                 </View>
-                                {!swipedOpen.has(reminder.Id) && (
-                                    <View testID={`reminder-delete-icon-${reminder.Id}`}>
-                                        <MaterialIcons name="delete-outline" size={20} color={colours.primary + '66'} />
-                                    </View>
-                                )}
                             </View>
                         </ReanimatedSwipeable>
                     </View>

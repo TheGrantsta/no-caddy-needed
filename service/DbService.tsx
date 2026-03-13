@@ -39,6 +39,9 @@ import {
     insertGame,
     softDeleteGame,
     restoreGame,
+    getAllPracticeReminders,
+    insertPracticeReminder,
+    deletePracticeReminder,
 } from '../database/db';
 
 export type WedgeChartClub = {
@@ -487,6 +490,21 @@ export const getSettingsService = (): AppSettings => {
 export const saveSettingsService = async (settings: AppSettings): Promise<boolean> => {
     return saveSettings(settings.theme, settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0);
 };
+
+export type PracticeReminder = {
+    Id: number;
+    Label: string;
+    ScheduledFor: string;
+    NotificationId: string | null;
+    Created_At: string;
+};
+
+export const getPracticeRemindersService = (): PracticeReminder[] => getAllPracticeReminders() as PracticeReminder[];
+
+export const addPracticeReminderService = (label: string, scheduledFor: string, notificationId: string | null) =>
+    insertPracticeReminder(label, scheduledFor, notificationId);
+
+export const deletePracticeReminderService = (id: number) => deletePracticeReminder(id);
 
 export const updateScorecardService = async (roundId: number, updatedScores: { id: number; score: number }[]): Promise<boolean> => {
     for (const s of updatedScores) {

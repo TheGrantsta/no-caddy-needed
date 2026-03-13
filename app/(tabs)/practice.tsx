@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
@@ -8,7 +8,9 @@ import SubMenu from "@/components/SubMenu";
 import { Link } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import fontSizes from "@/assets/font-sizes";
-import { getAllDrillHistoryService, getDrillStatsByTypeService, getSettingsService, saveSettingsService, DrillStats } from "@/service/DbService";
+import { getAllDrillHistoryService, getDrillStatsByTypeService, getSettingsService, saveSettingsService, DrillStats, getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, PracticeReminder } from "@/service/DbService";
+import { schedulePracticeReminder, cancelPracticeReminder } from "../../service/NotificationService";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import DrillStatsChart from "@/components/DrillStatsChart";
 import Chevrons from "@/components/Chevrons";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
@@ -31,6 +33,11 @@ export default function Practice() {
   const [drillHistoryIndex, setDrillHistoryIndex] = useState(0);
   const [drillHistory, setDrillHistory] = useState<any[]>([]);
   const flatListRef = useRef(null);
+  const [reminders, setReminders] = useState<PracticeReminder[]>([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [reminderLabel, setReminderLabel] = useState('');
+  const [reminderDate, setReminderDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const points = ['Intention: practice with a purpose!', 'Evaluate: be honest with yourself - identify the shots you avoid (or can\'t play) and give yourself time to improve', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
 
@@ -52,17 +59,38 @@ export default function Practice() {
     return section === sectionName;
   };
 
+  const loadReminders = () => {
+    const items = getPracticeRemindersService();
+    setReminders(items);
+  };
+
   const fetchData = () => {
     try {
       const items = getAllDrillHistoryService();
       const pages = items.length > 0 ? [items.slice(0, 10), items.slice(10)] : [];
 
       setDrillHistory(pages);
+      loadReminders();
     } catch (e) {
       console.error("Error fetching drill history:", e);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSaveReminder = async () => {
+    const notificationId = await schedulePracticeReminder(reminderLabel, reminderDate);
+    await addPracticeReminderService(reminderLabel, reminderDate.toISOString(), notificationId);
+    loadReminders();
+    setShowAddForm(false);
+    setReminderLabel('');
+    setReminderDate(new Date());
+  };
+
+  const handleDeleteReminder = async (reminder: PracticeReminder) => {
+    await cancelPracticeReminder(reminder.NotificationId);
+    await deletePracticeReminderService(reminder.Id);
+    loadReminders();
   };
 
   const { width } = Dimensions.get('window');
@@ -290,6 +318,68 @@ export default function Practice() {
                     />
                   ))}
                 </View>
+              </View>
+            )}
+          </View>
+        )}
+        {/* Reminders */}
+        {displaySection('reminders') && (
+          <View>
+            <Text style={[styles.subHeaderText, styles.marginTop]}>
+              Practice reminders
+            </Text>
+
+            {reminders.length === 0 && !showAddForm && (
+              <Text style={styles.normalText}>No reminders yet</Text>
+            )}
+
+            {reminders.map((reminder) => (
+              <View key={reminder.Id} style={[styles.contentSection, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+                <View>
+                  <Text style={styles.normalText}>{reminder.Label}</Text>
+                  <Text style={styles.normalText}>{new Date(reminder.ScheduledFor).toLocaleString()}</Text>
+                </View>
+                <TouchableOpacity testID={`delete-reminder-${reminder.Id}`} onPress={() => handleDeleteReminder(reminder)}>
+                  <MaterialIcons name="delete-outline" size={24} color={colours.errorText} />
+                </TouchableOpacity>
+              </View>
+            ))}
+
+            {!showAddForm && (
+              <TouchableOpacity testID="add-reminder-button" onPress={() => setShowAddForm(true)} style={styles.button}>
+                <Text style={styles.buttonText}>Add reminder</Text>
+              </TouchableOpacity>
+            )}
+
+            {showAddForm && (
+              <View style={styles.contentSection}>
+                <TextInput
+                  testID="reminder-label-input"
+                  style={styles.input}
+                  placeholder="Reminder label"
+                  placeholderTextColor={colours.tertiary}
+                  value={reminderLabel}
+                  onChangeText={setReminderLabel}
+                />
+                <TouchableOpacity testID="reminder-date-button" onPress={() => setShowDatePicker(true)} style={styles.button}>
+                  <Text style={styles.buttonText}>{reminderDate.toLocaleString()}</Text>
+                </TouchableOpacity>
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={reminderDate}
+                    mode="datetime"
+                    onChange={(_: any, date?: Date) => {
+                      setShowDatePicker(false);
+                      if (date) setReminderDate(date);
+                    }}
+                  />
+                )}
+                <TouchableOpacity testID="save-reminder-button" onPress={handleSaveReminder} style={styles.button}>
+                  <Text style={styles.buttonText}>Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => { setShowAddForm(false); setReminderLabel(''); setReminderDate(new Date()); }} style={styles.button}>
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
               </View>
             )}
           </View>

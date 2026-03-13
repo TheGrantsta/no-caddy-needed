@@ -1,6 +1,8 @@
 import {
     scheduleRoundReminder,
     cancelRoundReminder,
+    schedulePracticeReminder,
+    cancelPracticeReminder,
 } from '../../service/NotificationService';
 import * as Notifications from 'expo-notifications';
 
@@ -59,6 +61,53 @@ describe('NotificationService', () => {
 
         it('handles cancellation of null ID gracefully', async () => {
             await cancelRoundReminder(null);
+
+            expect(mockCancel).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('schedulePracticeReminder', () => {
+        it('shouldSchedulePracticeReminderAtSpecificDate', async () => {
+            mockSchedule.mockResolvedValue('practice-notif-id-1');
+            const date = new Date('2026-03-15T08:00:00.000Z');
+
+            const result = await schedulePracticeReminder('Morning putting', date);
+
+            expect(mockSchedule).toHaveBeenCalledWith({
+                content: {
+                    title: 'Practice reminder',
+                    body: 'Morning putting',
+                },
+                trigger: {
+                    type: 'date',
+                    date,
+                },
+            });
+            expect(result).toBe('practice-notif-id-1');
+        });
+
+        it('returns null when scheduling fails', async () => {
+            const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+            mockSchedule.mockRejectedValue(new Error('failed'));
+
+            const result = await schedulePracticeReminder('Test', new Date());
+
+            expect(result).toBeNull();
+            consoleSpy.mockRestore();
+        });
+    });
+
+    describe('cancelPracticeReminder', () => {
+        it('shouldCancelPracticeReminder', async () => {
+            mockCancel.mockResolvedValue(undefined);
+
+            await cancelPracticeReminder('practice-notif-id-1');
+
+            expect(mockCancel).toHaveBeenCalledWith('practice-notif-id-1');
+        });
+
+        it('handles cancellation of null ID gracefully', async () => {
+            await cancelPracticeReminder(null);
 
             expect(mockCancel).not.toHaveBeenCalled();
         });

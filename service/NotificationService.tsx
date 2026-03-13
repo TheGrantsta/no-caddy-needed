@@ -34,3 +34,26 @@ export const cancelRoundReminder = async (notificationId: string | null): Promis
         console.log(e);
     }
 };
+
+export const schedulePracticeReminder = async (label: string, date: Date): Promise<string | null> => {
+    if (!Notifications) return null;
+    try {
+        const id = await Notifications.scheduleNotificationAsync({
+            content: { title: 'Practice reminder', body: label },
+            trigger: { type: 'date', date },
+        });
+        return id;
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
+};
+
+export const cancelPracticeReminder = async (notificationId: string | null): Promise<void> => {
+    if (!Notifications || !notificationId) return;
+    try {
+        await Notifications.cancelScheduledNotificationAsync(notificationId);
+    } catch (e) {
+        console.log(e);
+    }
+};

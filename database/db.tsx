@@ -64,6 +64,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
         CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS Games (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Header TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsDeleted INTEGER NOT NULL DEFAULT 0);
+        CREATE TABLE IF NOT EXISTS PracticeReminders (Id INTEGER PRIMARY KEY AUTOINCREMENT, Label TEXT NOT NULL, ScheduledFor TEXT NOT NULL, NotificationId TEXT, Created_At TEXT NOT NULL);
     `);
 
     const migrations: TableAmendment[] = [
@@ -672,6 +673,49 @@ export const softDeleteGame = async (id: number): Promise<boolean> => {
         }
     } catch (e) {
         success = false;
+    }
+
+    return success;
+};
+
+export const insertPracticeReminder = async (label: string, scheduledFor: string, notificationId: string | null): Promise<boolean> => {
+    let success = true;
+    const db = await SQLite.openDatabaseAsync(dbName);
+
+    const statement = await db.prepareAsync(
+        'INSERT INTO PracticeReminders (Label, ScheduledFor, NotificationId, Created_At) VALUES ($Label, $ScheduledFor, $NotificationId, $Created_At);'
+    );
+
+    try {
+        await statement.executeAsync({ $Label: label, $ScheduledFor: scheduledFor, $NotificationId: notificationId, $Created_At: new Date().toISOString() });
+    } catch (e) {
+        success = false;
+    } finally {
+        await statement.finalizeAsync();
+    }
+
+    return success;
+};
+
+export const getAllPracticeReminders = () => {
+    const db = SQLite.openDatabaseSync(dbName);
+    return db.getAllSync('SELECT * FROM PracticeReminders ORDER BY Id DESC;');
+};
+
+export const deletePracticeReminder = async (id: number): Promise<boolean> => {
+    let success = true;
+    const db = await SQLite.openDatabaseAsync(dbName);
+
+    const statement = await db.prepareAsync(
+        'DELETE FROM PracticeReminders WHERE Id = $Id;'
+    );
+
+    try {
+        await statement.executeAsync({ $Id: id });
+    } catch (e) {
+        success = false;
+    } finally {
+        await statement.finalizeAsync();
     }
 
     return success;

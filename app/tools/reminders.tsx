@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -18,6 +18,7 @@ export default function Reminders() {
     const [reminderLabel, setReminderLabel] = useState('');
     const [reminderDate, setReminderDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
     const loadReminders = () => {
         setReminders(getPracticeRemindersService());
@@ -32,6 +33,14 @@ export default function Reminders() {
         setReminderDate(new Date());
     };
 
+    const onRefresh = () => {
+        setRefreshing(true);
+        setTimeout(() => {
+            loadReminders();
+            setRefreshing(false);
+        }, 750);
+    };
+
     const handleDeleteReminder = async (reminder: PracticeReminder) => {
         await cancelPracticeReminder(reminder.NotificationId);
         await deletePracticeReminderService(reminder.Id);
@@ -40,7 +49,14 @@ export default function Reminders() {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
+            {refreshing && (
+                <View style={styles.updateOverlay}>
+                    <Text style={styles.updateText}>Release to update</Text>
+                </View>
+            )}
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colours.primary} />
+            }>
                 <View style={styles.headerContainer}>
                     <Text style={[styles.headerText, styles.marginTop]}>
                         Practice reminders

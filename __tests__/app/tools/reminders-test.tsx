@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { ScrollView } from 'react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Reminders from '../../../app/tools/reminders';
 import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService } from '../../../service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder } from '../../../service/NotificationService';
@@ -129,5 +130,60 @@ describe('Reminders screen', () => {
         expect(getByTestId('reminder-label-input')).toBeTruthy();
         fireEvent.press(getByText('Cancel'));
         expect(queryByTestId('reminder-label-input')).toBeNull();
+    });
+
+    describe('onRefresh', () => {
+        beforeEach(() => {
+            jest.useFakeTimers();
+        });
+
+        afterEach(() => {
+            jest.clearAllTimers();
+            jest.useRealTimers();
+        });
+
+        it('onRefreshShowsRefreshingOverlay', () => {
+            const { UNSAFE_getByType, getByText } = render(<Reminders />);
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            act(() => {
+                scrollView.props.refreshControl.props.onRefresh();
+            });
+
+            expect(getByText('Release to update')).toBeTruthy();
+        });
+
+        it('onRefreshHidesOverlayAfterTimeout', () => {
+            const { UNSAFE_getByType, queryByText } = render(<Reminders />);
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            act(() => {
+                scrollView.props.refreshControl.props.onRefresh();
+            });
+            act(() => {
+                jest.advanceTimersByTime(750);
+            });
+
+            expect(queryByText('Release to update')).toBeNull();
+        });
+
+        it('onRefreshReloadsReminders', () => {
+            const updatedReminders = [
+                { Id: 1, Label: 'Evening chipping', ScheduledFor: '2026-03-15T18:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }
+            ];
+            mockGetPracticeRemindersService
+                .mockReturnValueOnce([])
+                .mockReturnValue(updatedReminders);
+
+            const { UNSAFE_getByType, getByText } = render(<Reminders />);
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            act(() => {
+                scrollView.props.refreshControl.props.onRefresh();
+                jest.advanceTimersByTime(750);
+            });
+
+            expect(getByText('Evening chipping')).toBeTruthy();
+        });
     });
 });

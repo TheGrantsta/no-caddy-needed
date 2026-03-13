@@ -47,6 +47,8 @@ export default function Reminders() {
                     </Text>
                 </View>
 
+                <View style={styles.divider} />
+
                 {reminders.length === 0 && !showAddForm && (
                     <Text style={styles.normalText}>No reminders yet</Text>
                 )}
@@ -64,9 +66,11 @@ export default function Reminders() {
                 ))}
 
                 {!showAddForm && (
-                    <TouchableOpacity testID="add-reminder-button" onPress={() => setShowAddForm(true)} style={styles.button}>
-                        <Text style={styles.buttonText}>Add reminder</Text>
-                    </TouchableOpacity>
+                    <View style={styles.headerContainer}>
+                        <TouchableOpacity testID="add-reminder-button" onPress={() => setShowAddForm(true)} style={styles.largeButton}>
+                            <Text style={styles.buttonText}>Add reminder</Text>
+                        </TouchableOpacity>
+                    </View>
                 )}
 
                 {showAddForm && (

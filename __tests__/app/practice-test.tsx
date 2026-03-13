@@ -247,20 +247,23 @@ describe('Practice page ', () => {
         expect(getByTestId('onboarding-overlay')).toBeTruthy();
     });
 
-    it('shouldRenderRemindersTabInSubMenu', () => {
+    it('shouldRenderRemindersButtonInToolsSection', () => {
         const { getByTestId } = render(<View />);
-        expect(getByTestId('practice-sub-menu-reminders')).toBeTruthy();
+        fireEvent.press(getByTestId('practice-sub-menu-tools'));
+        expect(getByTestId('tools-reminders-button')).toBeTruthy();
     });
 
     it('shouldShowAddReminderButtonInRemindersSection', () => {
         const { getByTestId } = render(<View />);
-        fireEvent.press(getByTestId('practice-sub-menu-reminders'));
+        fireEvent.press(getByTestId('practice-sub-menu-tools'));
+        fireEvent.press(getByTestId('tools-reminders-button'));
         expect(getByTestId('add-reminder-button')).toBeTruthy();
     });
 
     it('shouldShowAddFormWhenAddReminderPressed', () => {
         const { getByTestId } = render(<View />);
-        fireEvent.press(getByTestId('practice-sub-menu-reminders'));
+        fireEvent.press(getByTestId('practice-sub-menu-tools'));
+        fireEvent.press(getByTestId('tools-reminders-button'));
         fireEvent.press(getByTestId('add-reminder-button'));
         expect(getByTestId('reminder-label-input')).toBeTruthy();
         expect(getByTestId('reminder-date-button')).toBeTruthy();
@@ -268,7 +271,8 @@ describe('Practice page ', () => {
 
     it('shouldSaveReminderAndHideFormOnSave', async () => {
         const { getByTestId, queryByTestId } = render(<View />);
-        fireEvent.press(getByTestId('practice-sub-menu-reminders'));
+        fireEvent.press(getByTestId('practice-sub-menu-tools'));
+        fireEvent.press(getByTestId('tools-reminders-button'));
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
         fireEvent.press(getByTestId('save-reminder-button'));
@@ -285,7 +289,8 @@ describe('Practice page ', () => {
             .mockReturnValue([{ Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }]);
 
         const { getByTestId, getByText } = render(<View />);
-        fireEvent.press(getByTestId('practice-sub-menu-reminders'));
+        fireEvent.press(getByTestId('practice-sub-menu-tools'));
+        fireEvent.press(getByTestId('tools-reminders-button'));
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
         fireEvent.press(getByTestId('save-reminder-button'));
@@ -301,7 +306,8 @@ describe('Practice page ', () => {
         ]);
 
         const { getByTestId } = render(<View />);
-        fireEvent.press(getByTestId('practice-sub-menu-reminders'));
+        fireEvent.press(getByTestId('practice-sub-menu-tools'));
+        fireEvent.press(getByTestId('tools-reminders-button'));
         await fireEvent.press(getByTestId('delete-reminder-1'));
 
         expect(mockDeletePracticeReminderService).toHaveBeenCalledWith(1);

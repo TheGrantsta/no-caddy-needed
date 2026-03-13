@@ -233,6 +233,16 @@ export default function Practice() {
                   </View>
                 </Link>
               </View>
+              <View style={styles.navRow}>
+                <TouchableOpacity testID="tools-reminders-button" onPress={() => handleSubMenu('reminders')} style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="notifications-none" size={36} color={colours.white} />
+                    </View>
+                    <Text style={styles.navCardLabel}>Reminders</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         )}

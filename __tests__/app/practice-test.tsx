@@ -1,8 +1,7 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import View from '../../app/(tabs)/practice';
-import { getAllDrillHistoryService, getDrillStatsByTypeService, getSettingsService, saveSettingsService, getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService } from '@/service/DbService';
-import { schedulePracticeReminder, cancelPracticeReminder } from '../../service/NotificationService';
+import { getAllDrillHistoryService, getDrillStatsByTypeService, getSettingsService, saveSettingsService } from '@/service/DbService';
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -26,13 +25,6 @@ jest.mock('../../hooks/useOrientation', () => ({
     }),
 }));
 
-jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
-
-jest.mock('../../service/NotificationService', () => ({
-    schedulePracticeReminder: jest.fn(),
-    cancelPracticeReminder: jest.fn(),
-}));
-
 jest.mock('../../service/DbService', () => ({
     getAllDrillHistoryService: jest.fn(),
     getDrillStatsByTypeService: jest.fn(),
@@ -46,20 +38,12 @@ jest.mock('../../service/DbService', () => ({
         practiceOnboardingSeen: true,
     }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
-    getPracticeRemindersService: jest.fn().mockReturnValue([]),
-    addPracticeReminderService: jest.fn().mockResolvedValue(true),
-    deletePracticeReminderService: jest.fn().mockResolvedValue(true),
 }));
 
 // Explicitly cast as Jest mock functions
 const mockedGetAllDrillHistoryService = getAllDrillHistoryService as jest.Mock;
 const mockedGetDrillStatsByTypeService = getDrillStatsByTypeService as jest.Mock;
 const mockGetSettingsService = getSettingsService as jest.Mock;
-const mockGetPracticeRemindersService = getPracticeRemindersService as jest.Mock;
-const mockAddPracticeReminderService = addPracticeReminderService as jest.Mock;
-const mockDeletePracticeReminderService = deletePracticeReminderService as jest.Mock;
-const mockSchedulePracticeReminder = schedulePracticeReminder as jest.Mock;
-const mockCancelPracticeReminder = cancelPracticeReminder as jest.Mock;
 
 jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
@@ -85,8 +69,6 @@ describe('Practice page ', () => {
             homeOnboardingSeen: true,
             practiceOnboardingSeen: true,
         });
-        mockGetPracticeRemindersService.mockReturnValue([]);
-        mockSchedulePracticeReminder.mockResolvedValue('notif-id-1');
     });
 
     it('renders correctly with the default text', () => {
@@ -116,6 +98,7 @@ describe('Practice page ', () => {
         expect(getByText('Practice tools')).toBeTruthy();
         expect(getByText('Tempo')).toBeTruthy();
         expect(getByText('Random')).toBeTruthy();
+        expect(getByText('Reminders')).toBeTruthy();
     });
 
     it('renders correctly history options', () => {
@@ -248,70 +231,9 @@ describe('Practice page ', () => {
     });
 
     it('shouldRenderRemindersButtonInToolsSection', () => {
-        const { getByTestId } = render(<View />);
+        const { getByText, getByTestId } = render(<View />);
         fireEvent.press(getByTestId('practice-sub-menu-tools'));
-        expect(getByTestId('tools-reminders-button')).toBeTruthy();
-    });
-
-    it('shouldShowAddReminderButtonInRemindersSection', () => {
-        const { getByTestId } = render(<View />);
-        fireEvent.press(getByTestId('practice-sub-menu-tools'));
-        fireEvent.press(getByTestId('tools-reminders-button'));
-        expect(getByTestId('add-reminder-button')).toBeTruthy();
-    });
-
-    it('shouldShowAddFormWhenAddReminderPressed', () => {
-        const { getByTestId } = render(<View />);
-        fireEvent.press(getByTestId('practice-sub-menu-tools'));
-        fireEvent.press(getByTestId('tools-reminders-button'));
-        fireEvent.press(getByTestId('add-reminder-button'));
-        expect(getByTestId('reminder-label-input')).toBeTruthy();
-        expect(getByTestId('reminder-date-button')).toBeTruthy();
-    });
-
-    it('shouldSaveReminderAndHideFormOnSave', async () => {
-        const { getByTestId, queryByTestId } = render(<View />);
-        fireEvent.press(getByTestId('practice-sub-menu-tools'));
-        fireEvent.press(getByTestId('tools-reminders-button'));
-        fireEvent.press(getByTestId('add-reminder-button'));
-        fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
-        fireEvent.press(getByTestId('save-reminder-button'));
-        await waitFor(() => {
-            expect(mockSchedulePracticeReminder).toHaveBeenCalledWith('Morning putting', expect.any(Date));
-            expect(mockAddPracticeReminderService).toHaveBeenCalled();
-            expect(queryByTestId('reminder-label-input')).toBeNull();
-        });
-    });
-
-    it('shouldShowReminderInListAfterSaving', async () => {
-        mockGetPracticeRemindersService
-            .mockReturnValueOnce([])
-            .mockReturnValue([{ Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }]);
-
-        const { getByTestId, getByText } = render(<View />);
-        fireEvent.press(getByTestId('practice-sub-menu-tools'));
-        fireEvent.press(getByTestId('tools-reminders-button'));
-        fireEvent.press(getByTestId('add-reminder-button'));
-        fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
-        fireEvent.press(getByTestId('save-reminder-button'));
-
-        await waitFor(() => {
-            expect(getByText('Morning putting')).toBeTruthy();
-        });
-    });
-
-    it('shouldDeleteReminderWhenDeletePressed', async () => {
-        mockGetPracticeRemindersService.mockReturnValue([
-            { Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'notif-1', Created_At: '2026-03-12T09:00:00.000Z' }
-        ]);
-
-        const { getByTestId } = render(<View />);
-        fireEvent.press(getByTestId('practice-sub-menu-tools'));
-        fireEvent.press(getByTestId('tools-reminders-button'));
-        await fireEvent.press(getByTestId('delete-reminder-1'));
-
-        expect(mockDeletePracticeReminderService).toHaveBeenCalledWith(1);
-        expect(mockCancelPracticeReminder).toHaveBeenCalledWith('notif-1');
+        expect(getByText('Reminders')).toBeTruthy();
     });
 
     it('dismisses onboarding and saves settings when done is pressed', async () => {

@@ -1,0 +1,133 @@
+import React from 'react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import Reminders from '../../../app/tools/reminders';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService } from '../../../service/DbService';
+import { schedulePracticeReminder, cancelPracticeReminder } from '../../../service/NotificationService';
+
+jest.mock('../../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../../assets/colours').default,
+    useTheme: () => ({
+        theme: 'dark',
+        colours: require('../../../assets/colours').default,
+        toggleTheme: jest.fn(),
+        setTheme: jest.fn(),
+    }),
+}));
+
+jest.mock('../../../hooks/useStyles', () => ({
+    useStyles: () => require('../../../assets/styles').default,
+}));
+
+jest.mock('../../../hooks/useOrientation', () => ({
+    useOrientation: () => ({
+        isLandscape: false,
+        isPortrait: true,
+        landscapePadding: {},
+    }),
+}));
+
+jest.mock('react-native-gesture-handler', () => {
+    const GestureHandler = jest.requireActual('react-native-gesture-handler');
+    return {
+        ...GestureHandler,
+        GestureHandlerRootView: jest
+            .fn()
+            .mockImplementation(({ children }) => children),
+    };
+});
+
+jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
+
+jest.mock('../../../service/NotificationService', () => ({
+    schedulePracticeReminder: jest.fn(),
+    cancelPracticeReminder: jest.fn(),
+}));
+
+jest.mock('../../../service/DbService', () => ({
+    getPracticeRemindersService: jest.fn().mockReturnValue([]),
+    addPracticeReminderService: jest.fn().mockResolvedValue(true),
+    deletePracticeReminderService: jest.fn().mockResolvedValue(true),
+}));
+
+const mockGetPracticeRemindersService = getPracticeRemindersService as jest.Mock;
+const mockAddPracticeReminderService = addPracticeReminderService as jest.Mock;
+const mockDeletePracticeReminderService = deletePracticeReminderService as jest.Mock;
+const mockSchedulePracticeReminder = schedulePracticeReminder as jest.Mock;
+const mockCancelPracticeReminder = cancelPracticeReminder as jest.Mock;
+
+describe('Reminders screen', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockGetPracticeRemindersService.mockReturnValue([]);
+        mockSchedulePracticeReminder.mockResolvedValue('notif-id-1');
+    });
+
+    it('renders the screen heading', () => {
+        const { getByText } = render(<Reminders />);
+        expect(getByText('Practice reminders')).toBeTruthy();
+    });
+
+    it('shows no reminders message when list is empty', () => {
+        const { getByText } = render(<Reminders />);
+        expect(getByText('No reminders yet')).toBeTruthy();
+    });
+
+    it('shouldShowAddReminderButtonInRemindersSection', () => {
+        const { getByTestId } = render(<Reminders />);
+        expect(getByTestId('add-reminder-button')).toBeTruthy();
+    });
+
+    it('shouldShowAddFormWhenAddReminderPressed', () => {
+        const { getByTestId } = render(<Reminders />);
+        fireEvent.press(getByTestId('add-reminder-button'));
+        expect(getByTestId('reminder-label-input')).toBeTruthy();
+        expect(getByTestId('reminder-date-button')).toBeTruthy();
+    });
+
+    it('shouldSaveReminderAndHideFormOnSave', async () => {
+        const { getByTestId, queryByTestId } = render(<Reminders />);
+        fireEvent.press(getByTestId('add-reminder-button'));
+        fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
+        fireEvent.press(getByTestId('save-reminder-button'));
+        await waitFor(() => {
+            expect(mockSchedulePracticeReminder).toHaveBeenCalledWith('Morning putting', expect.any(Date));
+            expect(mockAddPracticeReminderService).toHaveBeenCalled();
+            expect(queryByTestId('reminder-label-input')).toBeNull();
+        });
+    });
+
+    it('shouldShowReminderInListAfterSaving', async () => {
+        mockGetPracticeRemindersService
+            .mockReturnValueOnce([])
+            .mockReturnValue([{ Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }]);
+
+        const { getByTestId, getByText } = render(<Reminders />);
+        fireEvent.press(getByTestId('add-reminder-button'));
+        fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
+        fireEvent.press(getByTestId('save-reminder-button'));
+
+        await waitFor(() => {
+            expect(getByText('Morning putting')).toBeTruthy();
+        });
+    });
+
+    it('shouldDeleteReminderWhenDeletePressed', async () => {
+        mockGetPracticeRemindersService.mockReturnValue([
+            { Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'notif-1', Created_At: '2026-03-12T09:00:00.000Z' }
+        ]);
+
+        const { getByTestId } = render(<Reminders />);
+        await fireEvent.press(getByTestId('delete-reminder-1'));
+
+        expect(mockDeletePracticeReminderService).toHaveBeenCalledWith(1);
+        expect(mockCancelPracticeReminder).toHaveBeenCalledWith('notif-1');
+    });
+
+    it('hides add form when cancel is pressed', () => {
+        const { getByTestId, queryByTestId, getByText } = render(<Reminders />);
+        fireEvent.press(getByTestId('add-reminder-button'));
+        expect(getByTestId('reminder-label-input')).toBeTruthy();
+        fireEvent.press(getByText('Cancel'));
+        expect(queryByTestId('reminder-label-input')).toBeNull();
+    });
+});

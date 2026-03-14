@@ -108,6 +108,7 @@ jest.mock('expo-router', () => {
                 {children}
             </View>
         ),
+        useSegments: () => ['(tabs)', 'practice'],
     };
 });
 

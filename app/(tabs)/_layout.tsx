@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useSegments } from 'expo-router';
 import React from 'react';
 import { Platform, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -8,6 +8,7 @@ import { getPracticeRemindersService } from '@/service/DbService';
 
 export default function TabLayout() {
   const colours = useThemeColours();
+  useSegments(); // Re-render on navigation changes so overdue badge stays current
   const reminders = getPracticeRemindersService();
   const hasOverdue = reminders.some(r => new Date(r.ScheduledFor) < new Date());
 

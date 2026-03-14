@@ -13,6 +13,8 @@ jest.mock('../../context/ThemeContext', () => ({
     }),
 }));
 
+const mockUseSegments = jest.fn().mockReturnValue(['(tabs)', 'practice']);
+
 jest.mock('expo-router', () => ({
     Tabs: Object.assign(
         ({ children }: any) => <>{children}</>,
@@ -28,6 +30,7 @@ jest.mock('expo-router', () => ({
             },
         }
     ),
+    useSegments: () => mockUseSegments(),
 }));
 
 jest.mock('../../app/screen-wrapper', () => ({ children }: any) => <>{children}</>);
@@ -62,6 +65,20 @@ describe('Tabs layout — Practice overdue badge', () => {
 
     it('shouldNotShowOverdueBadgeWhenRemindersListIsEmpty', () => {
         const { queryByTestId } = render(<TabLayout />);
+        expect(queryByTestId('practice-overdue-badge')).toBeNull();
+    });
+
+    it('shouldClearOverdueBadgeWhenOverdueReminderIsDeleted', () => {
+        mockGetPracticeRemindersService.mockReturnValue([
+            { Id: 1, Label: 'Morning putting', ScheduledFor: '2020-01-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2019-12-31T09:00:00.000Z' }
+        ]);
+        const { getByTestId, queryByTestId, rerender } = render(<TabLayout />);
+        expect(getByTestId('practice-overdue-badge')).toBeTruthy();
+
+        mockGetPracticeRemindersService.mockReturnValue([]);
+        mockUseSegments.mockReturnValue(['(tabs)', 'practice']);
+        rerender(<TabLayout />);
+
         expect(queryByTestId('practice-overdue-badge')).toBeNull();
     });
 });

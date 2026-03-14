@@ -365,19 +365,17 @@ export const createStyles = (c: ThemeColours) => ({
 
     holeScoreInput: StyleSheet.create({
         container: {
-            padding: 15,
+            paddingTop: 15,
         },
         holeText: {
             color: c.primary,
             fontSize: fontSizes.header,
-            fontWeight: 'bold',
-            textAlign: 'center',
-            marginBottom: 15,
+            paddingEnd: 10,
         },
         parRow: {
             flexDirection: 'row',
             justifyContent: 'center',
-            marginBottom: 20,
+            marginBottom: 10,
         },
         parButton: {
             paddingVertical: 8,
@@ -946,13 +944,12 @@ export const createStyles = (c: ThemeColours) => ({
             width: 24,
             height: 24,
             borderRadius: 12,
-            justifyContent: 'center',
-            alignItems: 'center',
         },
         buttonText: {
             color: c.background,
             fontSize: fontSizes.tableHeader,
             fontWeight: 'bold',
+            textAlign: 'center',
         },
         count: {
             color: c.text,

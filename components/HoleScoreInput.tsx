@@ -53,9 +53,8 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser }
 
     return (
         <View style={styles.holeScoreInput.container}>
-            <Text style={styles.holeScoreInput.holeText}>Hole {holeNumber}</Text>
-
             <View style={styles.holeScoreInput.parRow}>
+                <Text style={styles.holeScoreInput.holeText}>Hole {holeNumber}</Text>
                 {parOptions.map(p => (
                     <TouchableOpacity
                         key={p}

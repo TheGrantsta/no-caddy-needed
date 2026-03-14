@@ -113,6 +113,22 @@ describe('Reminders screen', () => {
         expect(mockAddPracticeReminderService).not.toHaveBeenCalled();
     });
 
+    it('shouldShowOverdueLabelForPastReminder', () => {
+        mockGetPracticeRemindersService.mockReturnValue([
+            { Id: 1, Label: 'Morning putting', ScheduledFor: '2020-01-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2019-12-31T09:00:00.000Z' }
+        ]);
+        const { getByText } = render(<Reminders />);
+        expect(getByText('Overdue')).toBeTruthy();
+    });
+
+    it('shouldNotShowOverdueLabelForFutureReminder', () => {
+        mockGetPracticeRemindersService.mockReturnValue([
+            { Id: 1, Label: 'Morning putting', ScheduledFor: '2099-01-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }
+        ]);
+        const { queryByText } = render(<Reminders />);
+        expect(queryByText('Overdue')).toBeNull();
+    });
+
     it('shouldSaveReminderAndHideFormOnSave', async () => {
         const { getByTestId, queryByTestId } = render(<Reminders />);
         fireEvent.press(getByTestId('add-reminder-button'));

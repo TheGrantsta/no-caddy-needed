@@ -61,6 +61,7 @@ jest.mock('../../service/DbService', () => ({
         practiceOnboardingSeen: true,
     }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
+    getPracticeRemindersService: jest.fn().mockReturnValue([]),
 }));
 
 jest.mock('react-native-gesture-handler', () => {

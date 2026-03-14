@@ -1,12 +1,15 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
 import ScreenWrapper from '../screen-wrapper';
+import { getPracticeRemindersService } from '@/service/DbService';
 
 export default function TabLayout() {
   const colours = useThemeColours();
+  const reminders = getPracticeRemindersService();
+  const hasOverdue = reminders.some(r => new Date(r.ScheduledFor) < new Date());
 
   return (
     <ScreenWrapper>
@@ -47,7 +50,23 @@ export default function TabLayout() {
           options={{
             title: 'Practice',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='golf-course' color={color} size={30} />
+              <View>
+                <MaterialIcons name='golf-course' color={color} size={30} />
+                {hasOverdue && (
+                  <View
+                    testID="practice-overdue-badge"
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      right: -2,
+                      width: 10,
+                      height: 10,
+                      borderRadius: 5,
+                      backgroundColor: colours.red,
+                    }}
+                  />
+                )}
+              </View>
             )
           }}
         />

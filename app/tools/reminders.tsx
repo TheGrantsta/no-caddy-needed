@@ -146,6 +146,7 @@ export default function Reminders() {
                                 value={reminderDate}
                                 mode="date"
                                 display="default"
+                                minimumDate={(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; })()}
                                 onChange={(_: any, date?: Date) => {
                                     if (date) setReminderDate(date);
                                 }}

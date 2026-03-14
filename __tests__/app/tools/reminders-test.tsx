@@ -98,6 +98,15 @@ describe('Reminders screen', () => {
         expect(getByTestId('reminder-date-picker')).toBeTruthy();
     });
 
+    it('shouldSetTodayAsMinimumDateOnDatePicker', () => {
+        const { getByTestId } = render(<Reminders />);
+        fireEvent.press(getByTestId('add-reminder-button'));
+        const picker = getByTestId('reminder-date-picker');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        expect(picker.props.minimumDate.toDateString()).toBe(today.toDateString());
+    });
+
     it('shouldShowErrorWhenSavingWithEmptyLabel', () => {
         const { getByTestId, getByText } = render(<Reminders />);
         fireEvent.press(getByTestId('add-reminder-button'));

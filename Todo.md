@@ -7,9 +7,9 @@
 - [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
 - [ ] Amend App Store app asset
-- [ ] Implement epic to create practice Reminders in app
 
 # Done
+- [X] Implement epic to create practice Reminders in app
 - [X] Amend colours to be primary, secondary, etc rather than specifying the colour, etc
 - [X] Define dark green theme
 - [X] Remove unused styles
@@ -54,7 +54,4 @@
 - [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
 
 # Release notes
-* Amend theme colours for dark and light
-* Golfers can add their own drills and mark as 'inactive' default drills if unwanted
-* Golfers can add their own games and delete default games if unwanted
-* Amended microphone button text for clearer instructions
+* Golfers can add practice reminders with due dates so help practice effectively

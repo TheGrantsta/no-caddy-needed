@@ -17,8 +17,12 @@ export default function Reminders() {
     const [reminders, setReminders] = useState<PracticeReminder[]>(() => getPracticeRemindersService());
     const [showAddForm, setShowAddForm] = useState(false);
     const [reminderLabel, setReminderLabel] = useState('');
-    const [reminderDate, setReminderDate] = useState(new Date());
-    const [showDatePicker, setShowDatePicker] = useState(true);
+    const [reminderDate, setReminderDate] = useState(() => {
+        const d = new Date();
+        d.setDate(d.getDate() + 1);
+        d.setHours(12, 0, 0, 0);
+        return d;
+    });
     const [labelError, setLabelError] = useState('');
     const [refreshing, setRefreshing] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
@@ -38,7 +42,10 @@ export default function Reminders() {
         loadReminders();
         setShowAddForm(false);
         setReminderLabel('');
-        setReminderDate(new Date());
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(12, 0, 0, 0);
+        setReminderDate(tomorrow);
         setLabelError('');
     };
 
@@ -128,21 +135,20 @@ export default function Reminders() {
                             onChangeText={(text) => { setReminderLabel(text); if (labelError) setLabelError(''); }}
                         />
                         {labelError ? <Text style={styles.errorText}>{labelError}</Text> : null}
-                        <TouchableOpacity testID="reminder-date-button" onPress={() => setShowDatePicker(true)} style={styles.button}>
-                            <Text style={styles.buttonText}>{reminderDate.toLocaleString()}</Text>
-                        </TouchableOpacity>
-                        {showDatePicker && (
+                        <View style={[styles.titleRow, styles.marginTop]}>
+                            <Text style={styles.textLabel}>Date</Text>
                             <DateTimePicker
+                                testID="reminder-date-picker"
                                 value={reminderDate}
                                 mode="date"
+                                display="default"
                                 onChange={(_: any, date?: Date) => {
-                                    setShowDatePicker(false);
                                     if (date) setReminderDate(date);
                                 }}
                             />
-                        )}
+                        </View>
                         <View style={styles.buttonContainer}>
-                            <TouchableOpacity onPress={() => { setShowAddForm(false); setReminderLabel(''); setReminderDate(new Date()); }} style={[styles.mediumButton, { backgroundColor: colours.red }]}>
+                            <TouchableOpacity onPress={() => { setShowAddForm(false); setReminderLabel(''); const t = new Date(); t.setDate(t.getDate() + 1); t.setHours(12, 0, 0, 0); setReminderDate(t); }} style={[styles.mediumButton, { backgroundColor: colours.red }]}>
                                 <Text style={styles.buttonText}>Cancel</Text>
                             </TouchableOpacity>
                             <TouchableOpacity testID="save-reminder-button" onPress={handleSaveReminder} style={styles.mediumButton}>

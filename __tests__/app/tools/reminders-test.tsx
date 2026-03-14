@@ -95,7 +95,7 @@ describe('Reminders screen', () => {
         const { getByTestId } = render(<Reminders />);
         fireEvent.press(getByTestId('add-reminder-button'));
         expect(getByTestId('reminder-label-input')).toBeTruthy();
-        expect(getByTestId('reminder-date-button')).toBeTruthy();
+        expect(getByTestId('reminder-date-picker')).toBeTruthy();
     });
 
     it('shouldShowErrorWhenSavingWithEmptyLabel', () => {

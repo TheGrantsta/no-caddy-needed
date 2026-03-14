@@ -98,6 +98,21 @@ describe('Reminders screen', () => {
         expect(getByTestId('reminder-date-button')).toBeTruthy();
     });
 
+    it('shouldShowErrorWhenSavingWithEmptyLabel', () => {
+        const { getByTestId, getByText } = render(<Reminders />);
+        fireEvent.press(getByTestId('add-reminder-button'));
+        fireEvent.press(getByTestId('save-reminder-button'));
+        expect(getByText('Reminder label is required')).toBeTruthy();
+    });
+
+    it('shouldNotSaveWhenLabelIsEmpty', () => {
+        const { getByTestId } = render(<Reminders />);
+        fireEvent.press(getByTestId('add-reminder-button'));
+        fireEvent.press(getByTestId('save-reminder-button'));
+        expect(mockSchedulePracticeReminder).not.toHaveBeenCalled();
+        expect(mockAddPracticeReminderService).not.toHaveBeenCalled();
+    });
+
     it('shouldSaveReminderAndHideFormOnSave', async () => {
         const { getByTestId, queryByTestId } = render(<Reminders />);
         fireEvent.press(getByTestId('add-reminder-button'));

@@ -19,6 +19,7 @@ export default function Reminders() {
     const [reminderLabel, setReminderLabel] = useState('');
     const [reminderDate, setReminderDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(true);
+    const [labelError, setLabelError] = useState('');
     const [refreshing, setRefreshing] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const [swipedOpen, setSwipedOpen] = useState<Set<number>>(new Set());
@@ -28,12 +29,17 @@ export default function Reminders() {
     };
 
     const handleSaveReminder = async () => {
+        if (!reminderLabel.trim()) {
+            setLabelError('Reminder label is required');
+            return;
+        }
         const notificationId = await schedulePracticeReminder(reminderLabel, reminderDate);
         await addPracticeReminderService(reminderLabel, reminderDate.toISOString(), notificationId);
         loadReminders();
         setShowAddForm(false);
         setReminderLabel('');
         setReminderDate(new Date());
+        setLabelError('');
     };
 
     const onRefresh = () => {
@@ -115,12 +121,13 @@ export default function Reminders() {
                     <View style={styles.contentSection}>
                         <TextInput
                             testID="reminder-label-input"
-                            style={styles.textInput}
+                            style={[styles.textInput, labelError ? styles.textInputError : null]}
                             placeholder="Reminder label"
                             placeholderTextColor={colours.tertiary}
                             value={reminderLabel}
-                            onChangeText={setReminderLabel}
+                            onChangeText={(text) => { setReminderLabel(text); if (labelError) setLabelError(''); }}
                         />
+                        {labelError ? <Text style={styles.errorText}>{labelError}</Text> : null}
                         <TouchableOpacity testID="reminder-date-button" onPress={() => setShowDatePicker(true)} style={styles.button}>
                             <Text style={styles.buttonText}>{reminderDate.toLocaleString()}</Text>
                         </TouchableOpacity>

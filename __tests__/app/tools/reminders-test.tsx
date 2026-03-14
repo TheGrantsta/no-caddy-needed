@@ -171,10 +171,23 @@ describe('Reminders screen', () => {
         ]);
 
         const { getByTestId } = render(<Reminders />);
-        await fireEvent.press(getByTestId('delete-reminder-1'));
+        fireEvent.press(getByTestId('delete-reminder-1'));
 
-        expect(mockDeletePracticeReminderService).toHaveBeenCalledWith(1);
-        expect(mockCancelPracticeReminder).toHaveBeenCalledWith('notif-1');
+        await waitFor(() => {
+            expect(mockDeletePracticeReminderService).toHaveBeenCalledWith(1);
+            expect(mockCancelPracticeReminder).toHaveBeenCalledWith('notif-1');
+        });
+    });
+
+    it('shouldDisplayRemindersSortedSoonestFirst', () => {
+        mockGetPracticeRemindersService.mockReturnValue([
+            { Id: 1, Label: 'Far future', ScheduledFor: '2099-06-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-01-01T00:00:00.000Z' },
+            { Id: 2, Label: 'Near future', ScheduledFor: '2026-04-01T08:00:00.000Z', NotificationId: 'n2', Created_At: '2026-01-01T00:00:00.000Z' },
+            { Id: 3, Label: 'Medium future', ScheduledFor: '2050-01-01T08:00:00.000Z', NotificationId: 'n3', Created_At: '2026-01-01T00:00:00.000Z' },
+        ]);
+        const { getAllByText } = render(<Reminders />);
+        const labels = getAllByText(/Near future|Medium future|Far future/).map(el => el.props.children);
+        expect(labels).toEqual(['Near future', 'Medium future', 'Far future']);
     });
 
     it('hides add form when cancel is pressed', () => {

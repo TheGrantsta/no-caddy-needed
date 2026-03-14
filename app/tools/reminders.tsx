@@ -14,7 +14,10 @@ export default function Reminders() {
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const [reminders, setReminders] = useState<PracticeReminder[]>(() => getPracticeRemindersService());
+    const sortBySoonest = (list: PracticeReminder[]) =>
+        [...list].sort((a, b) => new Date(a.ScheduledFor).getTime() - new Date(b.ScheduledFor).getTime());
+
+    const [reminders, setReminders] = useState<PracticeReminder[]>(() => sortBySoonest(getPracticeRemindersService()));
     const [showAddForm, setShowAddForm] = useState(false);
     const [reminderLabel, setReminderLabel] = useState('');
     const [reminderDate, setReminderDate] = useState(() => {
@@ -29,7 +32,7 @@ export default function Reminders() {
     const [swipedOpen, setSwipedOpen] = useState<Set<number>>(new Set());
 
     const loadReminders = () => {
-        setReminders(getPracticeRemindersService());
+        setReminders(sortBySoonest(getPracticeRemindersService()));
     };
 
     const handleSaveReminder = async () => {

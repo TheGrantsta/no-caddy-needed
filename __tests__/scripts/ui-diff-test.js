@@ -51,6 +51,13 @@ beforeEach(() => {
   jest.clearAllMocks();
   delete process.env.SKIP_UI_CHECK;
   delete process.env.UI_DIFF_THRESHOLD;
+  jest.spyOn(console, 'log').mockImplementation(() => {});
+  jest.spyOn(console, 'warn').mockImplementation(() => {});
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 // --- isSimulatorBooted ---

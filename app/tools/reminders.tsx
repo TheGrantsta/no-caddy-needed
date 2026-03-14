@@ -18,7 +18,7 @@ export default function Reminders() {
     const [showAddForm, setShowAddForm] = useState(false);
     const [reminderLabel, setReminderLabel] = useState('');
     const [reminderDate, setReminderDate] = useState(new Date());
-    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const [swipedOpen, setSwipedOpen] = useState<Set<number>>(new Set());
@@ -115,7 +115,7 @@ export default function Reminders() {
                     <View style={styles.contentSection}>
                         <TextInput
                             testID="reminder-label-input"
-                            style={styles.input}
+                            style={styles.textInput}
                             placeholder="Reminder label"
                             placeholderTextColor={colours.tertiary}
                             value={reminderLabel}
@@ -127,19 +127,21 @@ export default function Reminders() {
                         {showDatePicker && (
                             <DateTimePicker
                                 value={reminderDate}
-                                mode="datetime"
+                                mode="date"
                                 onChange={(_: any, date?: Date) => {
                                     setShowDatePicker(false);
                                     if (date) setReminderDate(date);
                                 }}
                             />
                         )}
-                        <TouchableOpacity testID="save-reminder-button" onPress={handleSaveReminder} style={styles.button}>
-                            <Text style={styles.buttonText}>Save</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => { setShowAddForm(false); setReminderLabel(''); setReminderDate(new Date()); }} style={styles.button}>
-                            <Text style={styles.buttonText}>Cancel</Text>
-                        </TouchableOpacity>
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity onPress={() => { setShowAddForm(false); setReminderLabel(''); setReminderDate(new Date()); }} style={[styles.mediumButton, { backgroundColor: colours.red }]}>
+                                <Text style={styles.buttonText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity testID="save-reminder-button" onPress={handleSaveReminder} style={styles.mediumButton}>
+                                <Text style={styles.buttonText}>Save</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 )}
             </ScrollView>

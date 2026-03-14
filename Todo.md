@@ -55,3 +55,4 @@
 
 # Release notes
 * Golfers can add practice reminders with due dates so help practice effectively
+* Reduced white space on score input to minimise scrolling when playing

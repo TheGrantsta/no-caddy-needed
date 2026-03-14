@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image } from "react-native";
+import { Image, LogBox } from "react-native";
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Link, Stack } from 'expo-router';
@@ -11,6 +11,8 @@ import { ToastProvider } from 'react-native-toast-notifications';
 import NetworkStatus from '@/components/NetworkStatus';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { AppThemeProvider, useTheme } from '@/context/ThemeContext';
+
+LogBox.ignoreAllLogs();
 
 let Notifications: typeof import('expo-notifications') | null = null;
 try {

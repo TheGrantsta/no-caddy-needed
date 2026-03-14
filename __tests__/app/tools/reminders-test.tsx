@@ -150,6 +150,20 @@ describe('Reminders screen', () => {
         });
     });
 
+    it('shouldScheduleNotificationAt9amOnDueDate', async () => {
+        const { getByTestId } = render(<Reminders />);
+        fireEvent.press(getByTestId('add-reminder-button'));
+        fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
+        fireEvent(getByTestId('reminder-date-picker'), 'onChange', {}, new Date('2099-06-15T14:30:00.000Z'));
+        fireEvent.press(getByTestId('save-reminder-button'));
+        await waitFor(() => {
+            const scheduledDate: Date = mockSchedulePracticeReminder.mock.calls[0][1];
+            expect(scheduledDate.getHours()).toBe(9);
+            expect(scheduledDate.getMinutes()).toBe(0);
+            expect(scheduledDate.getSeconds()).toBe(0);
+        });
+    });
+
     it('shouldShowReminderInListAfterSaving', async () => {
         mockGetPracticeRemindersService
             .mockReturnValueOnce([])

@@ -40,8 +40,10 @@ export default function Reminders() {
             setLabelError('Reminder label is required');
             return;
         }
-        const notificationId = await schedulePracticeReminder(reminderLabel, reminderDate);
-        await addPracticeReminderService(reminderLabel, reminderDate.toISOString(), notificationId);
+        const scheduledDate = new Date(reminderDate);
+        scheduledDate.setHours(9, 0, 0, 0);
+        const notificationId = await schedulePracticeReminder(reminderLabel, scheduledDate);
+        await addPracticeReminderService(reminderLabel, scheduledDate.toISOString(), notificationId);
         loadReminders();
         setShowAddForm(false);
         setReminderLabel('');

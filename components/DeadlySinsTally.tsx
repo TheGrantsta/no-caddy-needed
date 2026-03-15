@@ -34,27 +34,31 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     const [penalties, setPenalties] = useState(0);
     const [isOpen, setIsOpen] = useState(true);
 
-    const values = [threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties];
-    const setters = [setThreePutts, setDoubleBogeys, setBogeysPar5, setBogeysInside9Iron, setDoubleChips, setTroubleOffTee, setPenalties];
+    // Order matches counters array: troubleOffTee, penalties, threePutts, bogeysInside9Iron, doubleChips, doubleBogeys, bogeysPar5
+    const values = [troubleOffTee, penalties, threePutts, bogeysInside9Iron, doubleChips, doubleBogeys, bogeysPar5];
+    const setters = [setTroubleOffTee, setPenalties, setThreePutts, setBogeysInside9Iron, setDoubleChips, setDoubleBogeys, setBogeysPar5];
+
+    const notifyValuesChange = (newValues: number[]) => {
+        if (onValuesChange) {
+            // Pass in callback signature order: (threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties)
+            onValuesChange(newValues[2], newValues[5], newValues[6], newValues[3], newValues[4], newValues[0], newValues[1]);
+        }
+    };
 
     const handleIncrement = (index: number) => {
         const newValue = values[index] + 1;
         setters[index](newValue);
-        if (onValuesChange) {
-            const newValues = [...values];
-            newValues[index] = newValue;
-            onValuesChange(newValues[0], newValues[1], newValues[2], newValues[3], newValues[4], newValues[5], newValues[6]);
-        }
+        const newValues = [...values];
+        newValues[index] = newValue;
+        notifyValuesChange(newValues);
     };
 
     const handleDecrement = (index: number) => {
         const newValue = Math.max(0, values[index] - 1);
         setters[index](newValue);
-        if (onValuesChange) {
-            const newValues = [...values];
-            newValues[index] = newValue;
-            onValuesChange(newValues[0], newValues[1], newValues[2], newValues[3], newValues[4], newValues[5], newValues[6]);
-        }
+        const newValues = [...values];
+        newValues[index] = newValue;
+        notifyValuesChange(newValues);
     };
 
     const handleStartRound = () => {

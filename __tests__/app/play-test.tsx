@@ -143,12 +143,6 @@ describe('Play screen', () => {
             expect(getByTestId('start-round-button')).toBeTruthy();
         });
 
-        it('shows no round history message when empty', () => {
-            const { getByText } = render(<Play />);
-
-            expect(getByText('No round history yet')).toBeTruthy();
-        });
-
         it('shows round history when rounds exist', () => {
             mockGetAllRoundHistory.mockReturnValue([
                 { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },

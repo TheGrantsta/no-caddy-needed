@@ -387,14 +387,6 @@ export default function Play() {
 
                         <DeadlySinsChart key={String(historyFilter)} rounds={filteredDeadlySinsRounds} />
 
-                        {roundHistory.length === 0 && (
-                            <View style={styles.headerContainer}>
-                                <Text style={[styles.normalText, styles.marginTop]}>
-                                    No round history yet
-                                </Text>
-                            </View>
-                        )}
-
                         {roundHistory.length > 0 && (() => {
                             const deadlySinsMap = new Map<number, number>(
                                 filteredDeadlySinsRounds

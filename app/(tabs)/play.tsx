@@ -76,6 +76,7 @@ export default function Play() {
     const [settings, setSettings] = useState(getSettingsService());
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [historyFilter, setHistoryFilter] = useState<1 | 10 | 'all'>('all');
+    const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
 
     const runningTotal = useMemo(
         () => Object.values(holeContributions).reduce((sum, c) => sum + c, 0),
@@ -87,7 +88,7 @@ export default function Play() {
     useEffect(() => {
         const activeRound = getActiveRoundService();
         if (activeRound) {
-            setActiveRoundId(activeRound.Id);
+            setIncompleteRound(activeRound);
             const roundPlayers = getRoundPlayersService(activeRound.Id);
             if (roundPlayers.length > 0) {
                 setPlayers(roundPlayers);
@@ -128,6 +129,22 @@ export default function Play() {
 
     const handleShowPlayerSetup = () => {
         setShowPlayerSetup(true);
+    };
+
+    const handleContinueRound = () => {
+        if (!incompleteRound) return;
+        setActiveRoundId(incompleteRound.Id);
+        setIncompleteRound(null);
+    };
+
+    const handleEndIncompleteRound = async () => {
+        if (!incompleteRound) return;
+        await endRoundService(incompleteRound.Id);
+        await cancelRoundReminder(notificationId);
+        setIncompleteRound(null);
+        setPlayers([]);
+        const history = getAllRoundHistoryService();
+        setRoundHistory(history);
     };
 
     const handleStartRound = async (playerNames: string[], courseName: string) => {
@@ -322,13 +339,32 @@ export default function Play() {
 
                         <View style={styles.divider} />
 
-                        <TouchableOpacity
-                            testID="start-round-button"
-                            onPress={handleShowPlayerSetup}
-                            style={[localStyles.actionButton, styles.marginTop]}
-                        >
-                            <Text style={localStyles.actionButtonText}>Start round</Text>
-                        </TouchableOpacity>
+                        {incompleteRound ? (
+                            <>
+                                <TouchableOpacity
+                                    testID="continue-round-button"
+                                    onPress={handleContinueRound}
+                                    style={[localStyles.actionButton, styles.marginTop]}
+                                >
+                                    <Text style={localStyles.actionButtonText}>Continue round</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    testID="end-incomplete-round-link"
+                                    onPress={handleEndIncompleteRound}
+                                    style={{ padding: 12, alignItems: 'center', marginTop: 4 }}
+                                >
+                                    <Text style={styles.normalText}>End round</Text>
+                                </TouchableOpacity>
+                            </>
+                        ) : (
+                            <TouchableOpacity
+                                testID="start-round-button"
+                                onPress={handleShowPlayerSetup}
+                                style={[localStyles.actionButton, styles.marginTop]}
+                            >
+                                <Text style={localStyles.actionButtonText}>Start round</Text>
+                            </TouchableOpacity>
+                        )}
 
 
                         {roundHistory.length > 0 && (

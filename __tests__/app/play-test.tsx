@@ -289,6 +289,51 @@ describe('Play screen', () => {
 
             expect(queryByText(/St Andrews.*9/)).toBeTruthy();
         });
+
+        describe('Incomplete round on mount', () => {
+            const incompleteRound = { Id: 42, TotalScore: 0, IsCompleted: 0, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: 'Pebble Beach', HolesPlayed: 5 };
+
+            beforeEach(() => {
+                mockGetActiveRound.mockReturnValue(incompleteRound);
+                mockGetRoundPlayers.mockReturnValue([]);
+            });
+
+            it('shouldShowContinueButtonWhenIncompleteRoundExists', () => {
+                const { getByTestId } = render(<Play />);
+                expect(getByTestId('continue-round-button')).toBeTruthy();
+            });
+
+            it('shouldShowEndRoundLinkWhenIncompleteRoundExists', () => {
+                const { getByTestId } = render(<Play />);
+                expect(getByTestId('end-incomplete-round-link')).toBeTruthy();
+            });
+
+            it('shouldNotShowStartRoundButtonWhenIncompleteRoundExists', () => {
+                const { queryByTestId } = render(<Play />);
+                expect(queryByTestId('start-round-button')).toBeNull();
+            });
+
+            it('shouldResumeRoundWhenContinuePressed', async () => {
+                const { getByTestId, queryByTestId } = render(<Play />);
+                await act(async () => {
+                    fireEvent.press(getByTestId('continue-round-button'));
+                });
+                expect(getByTestId('next-hole-button')).toBeTruthy();
+                expect(queryByTestId('continue-round-button')).toBeNull();
+            });
+
+            it('shouldEndIncompleteRoundWhenEndRoundLinkPressed', async () => {
+                mockEndRound.mockResolvedValue(true);
+                mockGetAllRoundHistory.mockReturnValue([]);
+                const { getByTestId, queryByTestId } = render(<Play />);
+                await act(async () => {
+                    fireEvent.press(getByTestId('end-incomplete-round-link'));
+                });
+                expect(mockEndRound).toHaveBeenCalledWith(42);
+                expect(getByTestId('start-round-button')).toBeTruthy();
+                expect(queryByTestId('continue-round-button')).toBeNull();
+            });
+        });
     });
 
     describe('History filter', () => {
@@ -517,6 +562,8 @@ describe('Play screen', () => {
             ]);
 
             const { getByText, getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('continue-round-button'));
 
             expect(getByText(/Hole/)).toBeTruthy();
             expect(getByTestId('end-round-button')).toBeTruthy();
@@ -1188,7 +1235,9 @@ describe('Play screen', () => {
                 { Id: 2, RoundId: 5, PlayerName: 'Alice', IsUser: 0, SortOrder: 1 },
             ]);
 
-            const { getByText } = render(<Play />);
+            const { getByText, getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('continue-round-button'));
 
             expect(getByText('You')).toBeTruthy();
             expect(getByText('Alice')).toBeTruthy();
@@ -1203,6 +1252,8 @@ describe('Play screen', () => {
             mockGetRoundPlayers.mockReturnValue([]);
 
             const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('continue-round-button'));
 
             expect(getByTestId('end-round-button')).toBeTruthy();
         });
@@ -1241,6 +1292,8 @@ describe('Play screen', () => {
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
 
             const { getByTestId, getByText } = render(<Play />);
+
+            fireEvent.press(getByTestId('continue-round-button'));
 
             expect(getByText('Hole 1')).toBeTruthy();
 

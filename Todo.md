@@ -6,9 +6,9 @@
 - [ ] Integrate Firebase iOS into project
 - [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
-- [ ] Amend App Store app asset
 
 # Done
+- [X] Amend App Store app asset
 - [X] Implement epic to create practice Reminders in app
 - [X] Amend colours to be primary, secondary, etc rather than specifying the colour, etc
 - [X] Define dark green theme
@@ -57,3 +57,4 @@
 * Golfers can add practice reminders with due dates so help practice effectively
 * Reduced white space on score input to minimise scrolling when playing
 * Added ability to "continue" active round if the app closes, etc
+* Fix bug mapping DeadlySingTally counts to the database table fields

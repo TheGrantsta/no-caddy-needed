@@ -23,7 +23,7 @@
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "This app does not access your photo library unless you choose to select a photo."
       },
-      "icon": "./assets/images/adaptive-icon.png"
+      "icon": "./assets/images/adaptive-icon-green-background.png"
     },
     "android": {
       "splash": {

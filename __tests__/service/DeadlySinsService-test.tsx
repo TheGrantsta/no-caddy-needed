@@ -18,9 +18,9 @@ describe('insertDeadlySinsRoundService', () => {
     it('computes total as sum of all seven stats and delegates to DB', async () => {
         mockInsertDeadlySinsRound.mockResolvedValue(true);
 
-        const result = await insertDeadlySinsRoundService(1, 1, 2, 3, 4, 5, 6, 7);
+        const result = await insertDeadlySinsRoundService(99, 1, 2, 3, 4, 5, 6, 7);
 
-        expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(1, 1, 2, 3, 4, 5, 6, 7, 28);
+        expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(99, 1, 2, 3, 4, 5, 6, 7, 28);
         expect(result).toBe(true);
     });
 
@@ -35,9 +35,9 @@ describe('insertDeadlySinsRoundService', () => {
     it('computes total of zero when all stats are zero', async () => {
         mockInsertDeadlySinsRound.mockResolvedValue(true);
 
-        await insertDeadlySinsRoundService(null, 0, 0, 0, 0, 0, 0, 0);
+        await insertDeadlySinsRoundService(99, 0, 0, 0, 0, 0, 0, 0);
 
-        expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(null, 0, 0, 0, 0, 0, 0, 0, 0);
+        expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(99, 0, 0, 0, 0, 0, 0, 0, 0);
     });
 });
 
@@ -67,22 +67,22 @@ describe('getAllDeadlySinsRoundsService', () => {
 
     it('preserves all seven stat fields', () => {
         mockGetAllDeadlySinsRounds.mockReturnValue([
-            { Id: 1, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 4, DoubleChips: 0, TroubleOffTee: 5, Penalties: 2, Total: 17, RoundId: 7, Created_At: '2025-01-10T12:00:00.000Z' },
+            { Id: 99, ThreePutts: 1, DoubleBogeys: 2, BogeysPar5: 3, BogeysInside9Iron: 4, DoubleChips: 5, TroubleOffTee: 6, Penalties: 7, Total: 28, RoundId: 999, Created_At: '2025-01-10T12:00:00.000Z' },
         ]);
 
         const result = getAllDeadlySinsRoundsService();
 
         expect(result[0]).toEqual({
-            Id: 1,
-            ThreePutts: 2,
-            DoubleBogeys: 3,
-            BogeysPar5: 1,
+            Id: 99,
+            ThreePutts: 1,
+            DoubleBogeys: 2,
+            BogeysPar5: 3,
             BogeysInside9Iron: 4,
-            DoubleChips: 0,
-            TroubleOffTee: 5,
-            Penalties: 2,
-            Total: 17,
-            RoundId: 7,
+            DoubleChips: 5,
+            TroubleOffTee: 6,
+            Penalties: 7,
+            Total: 28,
+            RoundId: 999,
             Created_At: '10/01',
         });
     });

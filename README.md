@@ -95,7 +95,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    ```bash
    eas build --platform android; eas submit --platform android --profile production --latest
 
-   eas build --platform ios; eas submit --platform ios
+   eas build --platform ios --profile production; eas submit --platform ios --latest
    ```
 
 ## Capturing screenshots

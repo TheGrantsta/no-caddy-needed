@@ -15,7 +15,7 @@ const ScoreEditor = ({ holeNumber, playerName, score, onIncrement, onDecrement }
 
     return (
         <View style={s.container}>
-            <Text style={s.headerText}>Hole {holeNumber} - {playerName}</Text>
+            <Text style={s.headerText}>#{holeNumber} - {playerName}</Text>
             <View style={s.stepperRow}>
                 <TouchableOpacity
                     testID="score-editor-decrement"

@@ -1279,7 +1279,6 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 12,
             borderRadius: 8,
             alignItems: 'center',
-            marginTop: 10,
             marginHorizontal: 15,
         },
         nextHoleButtonText: {

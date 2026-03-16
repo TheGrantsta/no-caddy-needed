@@ -31,7 +31,7 @@ describe('HoleScoreInput', () => {
             <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
-        expect(getByText('Hole 1')).toBeTruthy();
+        expect(getByText('#1')).toBeTruthy();
     });
 
     it('shows par selector with 3, 4, 5 options', () => {

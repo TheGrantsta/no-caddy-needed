@@ -230,7 +230,7 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('score-cell-1-1'));
 
-            expect(getByText('Hole 1 - You')).toBeTruthy();
+            expect(getByText('#1 - You')).toBeTruthy();
             expect(getByTestId('score-editor-value')).toHaveTextContent('5');
         });
 

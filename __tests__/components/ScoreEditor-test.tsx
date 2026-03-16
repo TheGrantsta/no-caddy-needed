@@ -18,7 +18,7 @@ describe('ScoreEditor', () => {
             <ScoreEditor holeNumber={3} playerName="Alice" score={5} onIncrement={jest.fn()} onDecrement={jest.fn()} />
         );
 
-        expect(getByText('Hole 3 - Alice')).toBeTruthy();
+        expect(getByText('#3 - Alice')).toBeTruthy();
     });
 
     it('shows current score', () => {

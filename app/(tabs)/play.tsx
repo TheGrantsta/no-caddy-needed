@@ -453,12 +453,6 @@ export default function Play() {
 
                             {!showEndRoundConfirm && (
                                 <View>
-                                    <View style={styles.contentSection}>
-                                        <Text style={styles.normalText}>
-                                            Golf is a game; be good to yourself!
-                                        </Text>
-                                    </View>
-
                                     <TouchableOpacity
                                         testID="next-hole-button"
                                         onPress={handleNextHole}
@@ -474,6 +468,12 @@ export default function Play() {
                                     >
                                         <Text style={{ color: colours.primary, fontSize: fontSizes.normal }}>Previous hole</Text>
                                     </TouchableOpacity>
+
+                                    <View style={styles.contentSection}>
+                                        <Text style={styles.normalText}>
+                                            Golf is a game; have fun & be good to yourself!
+                                        </Text>
+                                    </View>
                                 </View>
                             )}
 

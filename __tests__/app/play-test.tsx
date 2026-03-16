@@ -504,7 +504,7 @@ describe('Play screen', () => {
 
             await waitFor(() => {
                 expect(mockStartRound).toHaveBeenCalledWith('St Andrews');
-                expect(getByText('Hole 1')).toBeTruthy();
+                expect(getByText('#1')).toBeTruthy();
             });
         });
 
@@ -527,7 +527,7 @@ describe('Play screen', () => {
     });
 
     describe('Starting a round', () => {
-        it('shows hole score input after player setup completed', async () => {
+        it('shows #score input after player setup completed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
@@ -538,7 +538,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('Hole 1')).toBeTruthy();
+                expect(getByText('#1')).toBeTruthy();
                 expect(getByTestId('end-round-button')).toBeTruthy();
             });
         });
@@ -559,11 +559,11 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('continue-round-button'));
 
-            expect(getByText(/Hole/)).toBeTruthy();
+            expect(getByText(/#/)).toBeTruthy();
             expect(getByTestId('end-round-button')).toBeTruthy();
         });
 
-        it('advances to next hole after scoring', async () => {
+        it('advances to next #after scoring', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -575,7 +575,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('Hole 1')).toBeTruthy();
+                expect(getByText('#1')).toBeTruthy();
             });
 
             await act(async () => {
@@ -583,11 +583,11 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
-                expect(getByText('Hole 2')).toBeTruthy();
+                expect(getByText('#2')).toBeTruthy();
             });
         });
 
-        it('submits default par scores when next hole pressed without changing score', async () => {
+        it('submits default par scores when next #pressed without changing score', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -599,7 +599,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('Hole 1')).toBeTruthy();
+                expect(getByText('#1')).toBeTruthy();
             });
 
             await act(async () => {
@@ -630,7 +630,7 @@ describe('Play screen', () => {
             expect(queryByText('Round in progress')).toBeNull();
         });
 
-        it('pressing previous hole button on hole 1 does not navigate below hole 1', async () => {
+        it('pressing previous #button on #1 does not navigate below #1', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
@@ -641,15 +641,15 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('Hole 1')).toBeTruthy();
+                expect(getByText('#1')).toBeTruthy();
             });
 
             fireEvent.press(getByTestId('previous-hole-button'));
 
-            expect(getByText('Hole 1')).toBeTruthy();
+            expect(getByText('#1')).toBeTruthy();
         });
 
-        it('shows previous hole button from hole 2 onwards', async () => {
+        it('shows previous #button from #2 onwards', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -673,7 +673,7 @@ describe('Play screen', () => {
             });
         });
 
-        it('goes back one hole when previous hole is pressed', async () => {
+        it('goes back one #when previous #is pressed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -685,7 +685,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('Hole 1')).toBeTruthy();
+                expect(getByText('#1')).toBeTruthy();
             });
 
             await act(async () => {
@@ -693,12 +693,12 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
-                expect(getByText('Hole 2')).toBeTruthy();
+                expect(getByText('#2')).toBeTruthy();
             });
 
             fireEvent.press(getByTestId('previous-hole-button'));
 
-            expect(getByText('Hole 1')).toBeTruthy();
+            expect(getByText('#1')).toBeTruthy();
         });
     });
 
@@ -837,7 +837,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('Hole 1')).toBeTruthy();
+                expect(getByText('#1')).toBeTruthy();
             });
         });
 
@@ -898,7 +898,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('play-sub-menu-distances'));
             fireEvent.press(getByTestId('play-sub-menu-score'));
 
-            expect(getByText('Hole 1')).toBeTruthy();
+            expect(getByText('#1')).toBeTruthy();
         });
 
         it('shows distances when Distances is pressed without active round', () => {
@@ -1096,7 +1096,7 @@ describe('Play screen', () => {
             });
         });
 
-        it('does not double-count running total when hole is re-submitted after going back', async () => {
+        it('does not double-count running total when #is re-submitted after going back', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -1114,7 +1114,7 @@ describe('Play screen', () => {
                 expect(getByTestId('next-hole-button')).toBeTruthy();
             });
 
-            // Score hole 1 above par (+1) then advance
+            // Score #1 above par (+1) then advance
             fireEvent.press(getByTestId('increment-1'));
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));
@@ -1124,7 +1124,7 @@ describe('Play screen', () => {
                 expect(getByTestId('previous-hole-button')).toBeTruthy();
             });
 
-            // Go back to hole 1 and re-submit at par (default score = 4)
+            // Go back to #1 and re-submit at par (default score = 4)
             fireEvent.press(getByTestId('previous-hole-button'));
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));
@@ -1252,7 +1252,7 @@ describe('Play screen', () => {
             expect(getByTestId('end-round-button')).toBeTruthy();
         });
 
-        it('does not advance hole when addMultiplayerHoleScoresService returns false', async () => {
+        it('does not advance #when addMultiplayerHoleScoresService returns false', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(false);
@@ -1264,17 +1264,17 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('Hole 1')).toBeTruthy();
+                expect(getByText('#1')).toBeTruthy();
             });
 
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));
             });
 
-            expect(getByText('Hole 1')).toBeTruthy();
+            expect(getByText('#1')).toBeTruthy();
         });
 
-        it('advances hole with zero contribution when no user player found in scores', async () => {
+        it('advances #with zero contribution when no user player found in scores', async () => {
             mockGetActiveRound.mockReturnValue({
                 Id: 5, TotalScore: 0, IsCompleted: 0,
                 StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
@@ -1289,13 +1289,13 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('continue-round-button'));
 
-            expect(getByText('Hole 1')).toBeTruthy();
+            expect(getByText('#1')).toBeTruthy();
 
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));
             });
 
-            expect(getByText('Hole 2')).toBeTruthy();
+            expect(getByText('#2')).toBeTruthy();
         });
     });
 
@@ -1348,14 +1348,14 @@ describe('Play screen', () => {
         });
     });
 
-    describe('18-hole limit', () => {
+    describe('18-Hole limit', () => {
         const startRoundAndAdvanceToHole = async (getByTestId: any, getByText: any, targetHole: number) => {
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('Hole 1')).toBeTruthy();
+                expect(getByText('#1')).toBeTruthy();
             });
 
             for (let i = 1; i < targetHole; i++) {
@@ -1363,12 +1363,12 @@ describe('Play screen', () => {
                     fireEvent.press(getByTestId('next-hole-button'));
                 });
                 await waitFor(() => {
-                    expect(getByText(`Hole ${i + 1}`)).toBeTruthy();
+                    expect(getByText(`#${i + 1}`)).toBeTruthy();
                 });
             }
         };
 
-        it('shows end round confirm after submitting hole 18 scores', async () => {
+        it('shows end round confirm after submitting Hole 18 scores', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -1385,10 +1385,10 @@ describe('Play screen', () => {
                 expect(getByTestId('confirm-end-round-button')).toBeTruthy();
             });
 
-            expect(queryByText('Hole 19')).toBeNull();
+            expect(queryByText('#19')).toBeNull();
         });
 
-        it('saves hole 18 scores before showing end round confirmation', async () => {
+        it('saves Hole 18 scores before showing end round confirmation', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);

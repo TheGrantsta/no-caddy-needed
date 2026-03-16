@@ -169,6 +169,17 @@ function ThemedApp() {
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen
+          name="play/deadly-sin-trend"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.primary,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
           name="settings"
           options={{
             headerTitle: () => <LogoTitle />,

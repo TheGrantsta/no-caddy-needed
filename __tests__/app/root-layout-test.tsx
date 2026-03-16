@@ -157,6 +157,7 @@ describe('RootLayout', () => {
         expect(names).toContain('tools/tempo');
         expect(names).toContain('play/distances');
         expect(names).toContain('play/wedge-chart');
+        expect(names).toContain('play/deadly-sin-trend');
     });
 
     it('doesNotRenderAppContentBeforeInitialisation', () => {

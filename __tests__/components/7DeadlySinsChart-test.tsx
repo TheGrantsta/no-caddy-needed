@@ -4,6 +4,11 @@ import DeadlySinsChart from '../../components/DeadlySinsChart';
 import { DeadlySinsRound } from '@/service/DbService';
 import colours from '../../assets/colours';
 
+const mockPush = jest.fn();
+jest.mock('expo-router', () => ({
+    useRouter: () => ({ push: mockPush }),
+}));
+
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
     useTheme: () => ({
@@ -132,6 +137,53 @@ describe('DeadlySinsChart component', () => {
         const { getByText } = render(<DeadlySinsChart rounds={mockRounds} />);
 
         expect(getByText('Biggest problem')).toBeTruthy();
+    });
+
+    describe('bar tap navigation', () => {
+        const unambiguousRound: DeadlySinsRound[] = [
+            { Id: 1, ThreePutts: 10, DoubleBogeys: 2, BogeysPar5: 3, BogeysInside9Iron: 4, DoubleChips: 1, TroubleOffTee: 6, Penalties: 8, Total: 34, RoundId: 1, Created_At: '15/06' },
+        ];
+
+        beforeEach(() => {
+            mockPush.mockClear();
+        });
+
+        it('wraps each bar row in a tappable element', () => {
+            const { getByTestId } = render(<DeadlySinsChart rounds={unambiguousRound} />);
+
+            expect(getByTestId('7deadly-sins-chart-bar-row-0')).toBeTruthy();
+        });
+
+        it('navigates to deadly-sin-trend on bar tap', () => {
+            const { getByTestId } = render(<DeadlySinsChart rounds={unambiguousRound} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-chart-bar-row-0'));
+
+            expect(mockPush).toHaveBeenCalledWith({
+                pathname: '/play/deadly-sin-trend',
+                params: { sinKey: 'ThreePutts', label: '3-putts' },
+            });
+        });
+
+        it('passes correct sinKey for highest bar', () => {
+            const { getByTestId } = render(<DeadlySinsChart rounds={unambiguousRound} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-chart-bar-row-0'));
+
+            expect(mockPush).toHaveBeenCalledWith(
+                expect.objectContaining({ params: expect.objectContaining({ sinKey: 'ThreePutts' }) })
+            );
+        });
+
+        it('passes correct sinKey for lowest bar', () => {
+            const { getByTestId } = render(<DeadlySinsChart rounds={unambiguousRound} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-chart-bar-row-6'));
+
+            expect(mockPush).toHaveBeenCalledWith(
+                expect.objectContaining({ params: expect.objectContaining({ sinKey: 'DoubleChips' }) })
+            );
+        });
     });
 
     describe('open/close toggle', () => {

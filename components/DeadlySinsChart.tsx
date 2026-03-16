@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useThemeColours } from '@/context/ThemeContext';
 import { DeadlySinsRound } from '@/service/DbService';
 import { useStyles } from '@/hooks/useStyles';
 
 type CategoryTotal = {
     label: string;
+    key: keyof DeadlySinsRound;
     count: number;
 };
 
@@ -28,6 +30,7 @@ export default function DeadlySinsChart({ rounds }: Props) {
     const colours = useThemeColours();
     const s = styles.deadlySinsChart;
     const [isOpen, setIsOpen] = useState(true);
+    const router = useRouter();
 
     if (rounds.length === 0 || rounds.every(r => r.Total === 0)) {
         return null;
@@ -35,6 +38,7 @@ export default function DeadlySinsChart({ rounds }: Props) {
 
     const categories: CategoryTotal[] = CATEGORY_LABELS.map(({ key, label }) => ({
         label,
+        key,
         count: rounds.reduce((sum, round) => sum + (round[key] as number), 0),
     }));
 
@@ -67,7 +71,15 @@ export default function DeadlySinsChart({ rounds }: Props) {
             {isOpen && (
                 <>
                     {categories.map((category, index) => (
-                        <View key={index} style={s.barContainer}>
+                        <TouchableOpacity
+                            key={index}
+                            testID={`7deadly-sins-chart-bar-row-${index}`}
+                            style={s.barContainer}
+                            onPress={() => router.push({
+                                pathname: '/play/deadly-sin-trend',
+                                params: { sinKey: category.key, label: category.label },
+                            })}
+                        >
                             <View style={s.labelContainer}>
                                 <Text testID="7deadly-sins-chart-label" style={s.label} numberOfLines={1}>
                                     {category.label}
@@ -98,7 +110,7 @@ export default function DeadlySinsChart({ rounds }: Props) {
                                     {category.count}
                                 </Text>
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     ))}
 
                     <View style={s.legend}>

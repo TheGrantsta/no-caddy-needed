@@ -1073,6 +1073,50 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    deadlySinTrend: StyleSheet.create({
+        heading: {
+            color: c.primary,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            padding: 16,
+        },
+        chartContainer: {
+            position: 'relative',
+            marginHorizontal: 16,
+            marginTop: 20,
+        },
+        dot: {
+            position: 'absolute',
+            width: 10,
+            height: 10,
+            borderRadius: 5,
+            backgroundColor: c.primary,
+        },
+        line: {
+            position: 'absolute',
+            height: 2,
+            backgroundColor: c.primary,
+        },
+        xAxisRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginHorizontal: 16,
+            marginTop: 4,
+        },
+        dateLabel: {
+            color: c.text,
+            fontSize: fontSizes.smallestText,
+            textAlign: 'center',
+        },
+        emptyText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            textAlign: 'center',
+            padding: 20,
+        },
+    }),
+
     drillStatsChart: StyleSheet.create({
         container: {
             padding: 10,

@@ -399,9 +399,9 @@ export default function Play() {
                                         Round history
                                     </Text>
                                     <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.primary }]}>
-                                        <Text testID="round-history-header-date" style={[styles.normalText, localStyles.historyDateColumn]}>Date</Text>
-                                        <Text testID="round-history-header-score" style={[styles.normalText, localStyles.historyNarrowColumn]}>Score</Text>
-                                        <Text testID="round-history-header-7DS" style={[styles.normalText, localStyles.historyNarrowColumn]}>7DS</Text>
+                                        <Text testID="round-history-header-date" style={[styles.smallText, localStyles.historyDateColumn]}>Date</Text>
+                                        <Text testID="round-history-header-score" style={[styles.smallText, localStyles.historyNarrowColumn]}>Score</Text>
+                                        <Text testID="round-history-header-7DS" style={[styles.smallText, localStyles.historyNarrowColumn]}>7DS</Text>
                                     </View>
                                     <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
                                         {filteredRoundHistory.map((round) => (

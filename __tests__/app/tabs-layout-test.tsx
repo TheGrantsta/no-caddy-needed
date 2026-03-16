@@ -17,17 +17,17 @@ const mockUseSegments = jest.fn().mockReturnValue(['(tabs)', 'practice']);
 
 jest.mock('expo-router', () => ({
     Tabs: Object.assign(
-        ({ children }: any) => <>{children}</>,
+        jest.fn(({ children }: any) => <>{children}</>),
         {
-            Screen: ({ options }: any) => {
+            Screen: jest.fn(({ options }: any) => {
                 const colours = require('../../assets/colours').default;
                 if (options?.tabBarIcon) {
-                    const icon = options.tabBarIcon({ color: colours.primary });
+                    const icon = options.tabBarIcon({ color: colours.primary, focused: false });
                     const React = require('react');
                     return React.isValidElement(icon) ? icon : null;
                 }
                 return null;
-            },
+            }),
         }
     ),
     useSegments: () => mockUseSegments(),
@@ -66,6 +66,40 @@ describe('Tabs layout — Practice overdue badge', () => {
     it('shouldNotShowOverdueBadgeWhenRemindersListIsEmpty', () => {
         const { queryByTestId } = render(<TabLayout />);
         expect(queryByTestId('practice-overdue-badge')).toBeNull();
+    });
+
+    it('shouldNotShowActiveIndicatorWhenFocused', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const colours = require('../../assets/colours').default;
+        const firstCall = (Tabs.Screen as jest.Mock).mock.calls[0];
+        const icon = firstCall[0].options.tabBarIcon({ color: colours.primary, focused: true });
+        const { queryByTestId } = render(icon);
+        expect(queryByTestId('tab-active-indicator')).toBeNull();
+    });
+
+    it('shouldUseAMutedGreenForActiveTabTintColour', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const activeTint = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarActiveTintColor;
+        expect(activeTint).not.toBe('#00C851');
+        expect(activeTint).not.toBe('#2D5A3D');
+    });
+
+    it('shouldUseEnlargedIconSize', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const firstCall = (Tabs.Screen as jest.Mock).mock.calls[0];
+        const icon = firstCall[0].options.tabBarIcon({ color: '#4A9068', focused: false });
+        const { getByText } = render(icon);
+        expect(getByText(/Size: 32/)).toBeTruthy();
+    });
+
+    it('shouldUseEnlargedLabelFontSize', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const labelStyle = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarLabelStyle;
+        expect(labelStyle.fontSize).toBe(14);
     });
 
     it('shouldClearOverdueBadgeWhenOverdueReminderIsDeleted', () => {

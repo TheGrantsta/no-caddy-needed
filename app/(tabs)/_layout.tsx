@@ -5,6 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
 import ScreenWrapper from '../screen-wrapper';
 import { getPracticeRemindersService } from '@/service/DbService';
+import fontSizes from '@/assets/font-sizes';
 
 export default function TabLayout() {
   const colours = useThemeColours();
@@ -17,14 +18,19 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: colours.primary,
+          tabBarActiveTintColor: colours.red,
+          tabBarLabelStyle: {
+            fontSize: fontSizes.smallestText
+          },
           tabBarStyle: Platform.select({
             ios: {
               position: 'absolute',
               backgroundColor: colours.background,
+              height: 80,
             },
             default: {
               backgroundColor: colours.background,
+              height: 80,
             },
           })
         }}>
@@ -33,7 +39,7 @@ export default function TabLayout() {
           options={{
             title: 'Home',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='home' color={color} size={30} />
+              <MaterialIcons name='home' color={color} size={32} />
             )
           }}
         />
@@ -42,7 +48,7 @@ export default function TabLayout() {
           options={{
             title: 'Play',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='sports-golf' color={color} size={30} />
+              <MaterialIcons name='sports-golf' color={color} size={32} />
             )
           }}
         />
@@ -52,7 +58,7 @@ export default function TabLayout() {
             title: 'Practice',
             tabBarIcon: ({ color }) => (
               <View>
-                <MaterialIcons name='golf-course' color={color} size={30} />
+                <MaterialIcons name='golf-course' color={color} size={32} />
                 {hasOverdue && (
                   <View
                     testID="practice-overdue-badge"
@@ -76,7 +82,7 @@ export default function TabLayout() {
           options={{
             title: 'Perform',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='lightbulb' color={color} size={30} />
+              <MaterialIcons name='lightbulb' color={color} size={32} />
             )
           }}
         />

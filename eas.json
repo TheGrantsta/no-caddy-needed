@@ -32,6 +32,7 @@
   },
   "submit": {
     "production": {
+      "autoIncrement": true,
       "android": {
         "track": "internal",
         "releaseStatus": "draft"

@@ -56,7 +56,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS WedgeChartEntries (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL, DistanceName TEXT NOT NULL, Distance INTEGER NOT NULL, ClubSortOrder INTEGER NOT NULL, DistanceSortOrder INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS DrillHistory (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, Result BOOLEAN NOT NULL, DrillId INTEGER, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS Drills (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Label TEXT NOT NULL, IconName TEXT NOT NULL, Target TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsDeleted INTEGER NOT NULL DEFAULT 0);
-        CREATE TABLE IF NOT EXISTS DeadlySinsRounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, ThreePutts INTEGER NOT NULL DEFAULT 0, DoubleBogeys INTEGER NOT NULL DEFAULT 0, BogeysPar5 INTEGER NOT NULL DEFAULT 0, BogeysInside9Iron INTEGER NOT NULL DEFAULT 0, DoubleChips INTEGER NOT NULL DEFAULT 0, TroubleOffTee INTEGER NOT NULL DEFAULT 0, Penalties INTEGER NOT NULL DEFAULT 0, Total INTEGER NOT NULL DEFAULT 0, RoundId INTEGER, Created_At TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS DeadlySinsRounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, ThreePutts INTEGER NOT NULL DEFAULT 0, DoubleBogeys INTEGER NOT NULL DEFAULT 0, BogeysPar5 INTEGER NOT NULL DEFAULT 0, BogeysInside9Iron INTEGER NOT NULL DEFAULT 0, DoubleChips INTEGER NOT NULL DEFAULT 0, TroubleOffTee INTEGER NOT NULL DEFAULT 0, Penalties INTEGER NOT NULL DEFAULT 0, Total INTEGER NOT NULL DEFAULT 0, RoundId INTEGER, MappedCorrectly INTEGER NOT NULL DEFAULT 0, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, CoursePar INTEGER NOT NULL DEFAULT 0, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, CourseName TEXT, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundHoles (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, ScoreRelativeToPar INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
@@ -94,6 +94,7 @@ export const initialize = async () => {
                 'TroubleOffTee INTEGER NOT NULL DEFAULT 0',
                 'Penalties INTEGER NOT NULL DEFAULT 0',
                 'RoundId INTEGER',
+                'MappedCorrectly INTEGER NOT NULL DEFAULT 0',
             ],
             columnsToRemove: [],
         },
@@ -134,6 +135,17 @@ export const initialize = async () => {
             `('${escape(g.category)}', '${escape(g.header)}', '${escape(g.objective)}', '${escape(g.setUp)}', '${escape(g.howToPlay)}')`
         ).join(', ');
         await db.execAsync(`INSERT INTO Games (Category, Header, Objective, SetUp, HowToPlay) VALUES ${values};`);
+    }
+
+    // Data migration: fix DeadlySinsRounds column swap (runs once per unmapped row)
+    const unmappedRows = syncDb.getAllSync('SELECT * FROM DeadlySinsRounds WHERE MappedCorrectly = 0');
+    if (unmappedRows.length > 0) {
+        console.log('[DeadlySinsRounds migration] BEFORE:', JSON.stringify(unmappedRows));
+        syncDb.execSync(
+            'UPDATE DeadlySinsRounds SET TroubleOffTee = ThreePutts, Penalties = DoubleBogeys, ThreePutts = BogeysPar5, DoubleBogeys = TroubleOffTee, BogeysPar5 = Penalties, MappedCorrectly = 1 WHERE MappedCorrectly = 0'
+        );
+        const updatedRows = syncDb.getAllSync('SELECT * FROM DeadlySinsRounds WHERE MappedCorrectly = 1');
+        console.log('[DeadlySinsRounds migration] AFTER:', JSON.stringify(updatedRows));
     }
 };
 
@@ -215,11 +227,11 @@ export const insertDeadlySinsRound = async (roundId: number | null, threePutts: 
     const db = await SQLite.openDatabaseAsync(dbName);
 
     const statement = await db.prepareAsync(
-        'INSERT INTO DeadlySinsRounds (RoundId, ThreePutts, DoubleBogeys, BogeysPar5, BogeysInside9Iron, DoubleChips, TroubleOffTee, Penalties, Total, Created_At) VALUES ($RoundId, $ThreePutts, $DoubleBogeys, $BogeysPar5, $BogeysInside9Iron, $DoubleChips, $TroubleOffTee, $Penalties, $Total, $Created_At);'
+        'INSERT INTO DeadlySinsRounds (RoundId, ThreePutts, DoubleBogeys, BogeysPar5, BogeysInside9Iron, DoubleChips, TroubleOffTee, Penalties, Total, MappedCorrectly, Created_At) VALUES ($RoundId, $ThreePutts, $DoubleBogeys, $BogeysPar5, $BogeysInside9Iron, $DoubleChips, $TroubleOffTee, $Penalties, $Total, $MappedCorrectly, $Created_At);'
     );
 
     try {
-        await statement.executeAsync({ $RoundId: roundId, $ThreePutts: threePutts, $DoubleBogeys: doubleBogeys, $BogeysPar5: bogeysPar5, $BogeysInside9Iron: bogeysInside9Iron, $DoubleChips: doubleChips, $TroubleOffTee: troubleOffTee, $Penalties: penalties, $Total: total, $Created_At: new Date().toISOString() });
+        await statement.executeAsync({ $RoundId: roundId, $ThreePutts: threePutts, $DoubleBogeys: doubleBogeys, $BogeysPar5: bogeysPar5, $BogeysInside9Iron: bogeysInside9Iron, $DoubleChips: doubleChips, $TroubleOffTee: troubleOffTee, $Penalties: penalties, $Total: total, $MappedCorrectly: 1, $Created_At: new Date().toISOString() });
     } catch (e) {
         success = false;
     } finally {

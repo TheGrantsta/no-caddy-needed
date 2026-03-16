@@ -164,7 +164,7 @@ describe('DeadlySinsRounds migration', () => {
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
         { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
         { name: 'TroubleOffTee' }, { name: 'Penalties' }, { name: 'Total' },
-        { name: 'RoundId' }, { name: 'Created_At' },
+        { name: 'RoundId' }, { name: 'Created_At' }, { name: 'MappedCorrectly' },
     ];
 
     it('adds TroubleOffTee column when missing from DeadlySinsRounds', async () => {
@@ -438,6 +438,22 @@ describe('insertDeadlySinsRound with RoundId', () => {
             expect.objectContaining({ $RoundId: null })
         );
     });
+
+    it('includes MappedCorrectly column in INSERT SQL', async () => {
+        await insertDeadlySinsRound(1, 1, 2, 3, 4, 5, 6, 7, 28);
+
+        const sql = mockPrepareAsync.mock.calls[0][0];
+        expect(sql).toContain('MappedCorrectly');
+        expect(sql).toContain('$MappedCorrectly');
+    });
+
+    it('sets MappedCorrectly to 1 on insert', async () => {
+        await insertDeadlySinsRound(1, 1, 2, 3, 4, 5, 6, 7, 28);
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $MappedCorrectly: 1 })
+        );
+    });
 });
 
 describe('getDeadlySinsRoundByRoundId', () => {
@@ -471,6 +487,98 @@ describe('getDeadlySinsRoundByRoundId', () => {
         const result = getDeadlySinsRoundByRoundId(5);
 
         expect(result).toBeNull();
+    });
+});
+
+describe('DeadlySinsRounds column swap data migration', () => {
+    const allSettingsCols = [
+        { name: 'Id' }, { name: 'Theme' }, { name: 'NotificationsEnabled' },
+        { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
+        { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
+        { name: 'PracticeOnboardingSeen' }, { name: 'Voice' }, { name: 'SoundsEnabled' },
+    ];
+    const allDeadlySinsCols = [
+        { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
+        { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
+        { name: 'TroubleOffTee' }, { name: 'Penalties' }, { name: 'Total' },
+        { name: 'RoundId' }, { name: 'Created_At' }, { name: 'MappedCorrectly' },
+    ];
+
+    // Returns all table columns for PRAGMA calls so amendTable makes no changes
+    const pragmaAllColumns = (sql: string) => {
+        if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
+        if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
+        if (sql.includes('PRAGMA table_info')) return [{ name: 'Id' }, { name: 'CoursePar' }];
+        return null;
+    };
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockExecAsync.mockResolvedValue(undefined);
+    });
+
+    it('shouldRunColumnSwapWhenUnmappedRowsExist', async () => {
+        const sampleRows = [{ Id: 1, ThreePutts: 7, DoubleBogeys: 6, BogeysPar5: 5, BogeysInside9Iron: 4, DoubleChips: 3, TroubleOffTee: 2, Penalties: 1, Total: 28, RoundId: 1, MappedCorrectly: 0 }];
+        mockGetAllSync.mockImplementation((sql: string) => {
+            const pragma = pragmaAllColumns(sql);
+            if (pragma) return pragma;
+            if (sql.includes('WHERE MappedCorrectly = 0')) return sampleRows;
+            return [{ count: 1 }];
+        });
+
+        await initialize();
+
+        const updateCall = mockExecSync.mock.calls.find((c: string[]) => c[0].includes('UPDATE DeadlySinsRounds'));
+        expect(updateCall).toBeTruthy();
+    });
+
+    it('shouldNotRunColumnSwapWhenNoUnmappedRowsExist', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            const pragma = pragmaAllColumns(sql);
+            if (pragma) return pragma;
+            if (sql.includes('WHERE MappedCorrectly = 0')) return [];
+            return [{ count: 1 }];
+        });
+
+        await initialize();
+
+        const updateCall = mockExecSync.mock.calls.find((c: string[]) => c[0].includes('UPDATE DeadlySinsRounds'));
+        expect(updateCall).toBeUndefined();
+    });
+
+    it('shouldMarkRowsAsMappedCorrectlyAfterColumnSwap', async () => {
+        const sampleRows = [{ Id: 1, ThreePutts: 7, DoubleBogeys: 6, BogeysPar5: 5, BogeysInside9Iron: 4, DoubleChips: 3, TroubleOffTee: 2, Penalties: 1, Total: 28, RoundId: 1, MappedCorrectly: 0 }];
+        mockGetAllSync.mockImplementation((sql: string) => {
+            const pragma = pragmaAllColumns(sql);
+            if (pragma) return pragma;
+            if (sql.includes('WHERE MappedCorrectly = 0')) return sampleRows;
+            return [{ count: 1 }];
+        });
+
+        await initialize();
+
+        const updateCall = mockExecSync.mock.calls.find((c: string[]) => c[0].includes('UPDATE DeadlySinsRounds'));
+        expect(updateCall![0]).toContain('MappedCorrectly = 1');
+        expect(updateCall![0]).toContain('WHERE MappedCorrectly = 0');
+    });
+
+    it('shouldSwapColumnsWithCorrectMappings', async () => {
+        const sampleRows = [{ Id: 1, ThreePutts: 7, DoubleBogeys: 6, BogeysPar5: 5, BogeysInside9Iron: 4, DoubleChips: 3, TroubleOffTee: 2, Penalties: 1, Total: 28, RoundId: 1, MappedCorrectly: 0 }];
+        mockGetAllSync.mockImplementation((sql: string) => {
+            const pragma = pragmaAllColumns(sql);
+            if (pragma) return pragma;
+            if (sql.includes('WHERE MappedCorrectly = 0')) return sampleRows;
+            return [{ count: 1 }];
+        });
+
+        await initialize();
+
+        const updateCall = mockExecSync.mock.calls.find((c: string[]) => c[0].includes('UPDATE DeadlySinsRounds'));
+        expect(updateCall![0]).toContain('TroubleOffTee = ThreePutts');
+        expect(updateCall![0]).toContain('Penalties = DoubleBogeys');
+        expect(updateCall![0]).toContain('ThreePutts = BogeysPar5');
+        expect(updateCall![0]).toContain('DoubleBogeys = TroubleOffTee');
+        expect(updateCall![0]).toContain('BogeysPar5 = Penalties');
     });
 });
 
@@ -552,7 +660,7 @@ describe('old Drills to DrillHistory rename migration', () => {
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
         { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
         { name: 'TroubleOffTee' }, { name: 'Penalties' }, { name: 'Total' },
-        { name: 'RoundId' }, { name: 'Created_At' },
+        { name: 'RoundId' }, { name: 'Created_At' }, { name: 'MappedCorrectly' },
     ];
     const allDrillHistoryCols = [
         { name: 'Id' }, { name: 'Name' }, { name: 'Result' }, { name: 'DrillId' }, { name: 'Created_At' },
@@ -703,7 +811,7 @@ describe('DrillHistory DrillId column migration', () => {
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
         { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
         { name: 'TroubleOffTee' }, { name: 'Penalties' }, { name: 'Total' },
-        { name: 'RoundId' }, { name: 'Created_At' },
+        { name: 'RoundId' }, { name: 'Created_At' }, { name: 'MappedCorrectly' },
     ];
     const newDrillsCols = [
         { name: 'Id' }, { name: 'Category' }, { name: 'Label' }, { name: 'IconName' },
@@ -769,7 +877,7 @@ describe('Drills table seeding', () => {
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
         { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
         { name: 'TroubleOffTee' }, { name: 'Penalties' }, { name: 'Total' },
-        { name: 'RoundId' }, { name: 'Created_At' },
+        { name: 'RoundId' }, { name: 'Created_At' }, { name: 'MappedCorrectly' },
     ];
     const newDrillsCols = [
         { name: 'Id' }, { name: 'Category' }, { name: 'Label' }, { name: 'IconName' },

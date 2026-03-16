@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
@@ -77,6 +77,7 @@ export default function Play() {
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [historyFilter, setHistoryFilter] = useState<1 | 10 | 'all'>('all');
     const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
+    const scrollRef = useRef<ScrollView>(null);
 
     const runningTotal = useMemo(
         () => Object.values(holeContributions).reduce((sum, c) => sum + c, 0),
@@ -207,6 +208,7 @@ export default function Play() {
             const contribution = userScore ? userScore.score - holePar : 0;
             setHoleContributions(prev => ({ ...prev, [holeNumber]: contribution }));
             setCurrentHoleData(null);
+            scrollRef.current?.scrollTo({ y: 0, animated: true });
             if (currentHole >= 18) {
                 setShowEndRoundConfirm(true);
             } else {
@@ -305,6 +307,7 @@ export default function Play() {
             )}
 
             <ScrollView
+                ref={scrollRef}
                 style={styles.scrollContainer}
                 contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}
                 refreshControl={

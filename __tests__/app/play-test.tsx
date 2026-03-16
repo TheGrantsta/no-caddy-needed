@@ -611,6 +611,46 @@ describe('Play screen', () => {
             });
         });
 
+        it('scrollsToTopWhenNextHoleIsSuccessful', async () => {
+            const mockScrollTo = jest.fn();
+            const realUseRef = jest.requireActual('react').useRef;
+            const spy = jest.spyOn(React, 'useRef')
+                .mockImplementationOnce(() => {
+                    const ref = realUseRef(null);
+                    Object.defineProperty(ref, 'current', {
+                        get: () => ({ scrollTo: mockScrollTo }),
+                        set: () => { /* intentionally ignore React's native instance assignment */ },
+                        configurable: true,
+                    });
+                    return ref;
+                })
+                .mockImplementation((initial: any) => realUseRef(initial));
+
+            try {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+                const { getByTestId } = render(<Play />);
+
+                fireEvent.press(getByTestId('start-round-button'));
+                fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+                fireEvent.press(getByTestId('start-button'));
+
+                await waitFor(() => {
+                    expect(getByTestId('next-hole-button')).toBeTruthy();
+                });
+
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+
+                expect(mockScrollTo).toHaveBeenCalledWith({ y: 0, animated: true });
+            } finally {
+                spy.mockRestore();
+            }
+        });
+
         it('submits default par scores when next #pressed without changing score', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);

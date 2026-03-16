@@ -24,6 +24,7 @@ import {
     getMultiplayerScorecardService,
     getRecentCourseNamesService,
     getRecentPlayerNamesService,
+    getHolesPlayedForRoundService,
     getSettingsService,
     saveSettingsService,
     Round,
@@ -134,6 +135,8 @@ export default function Play() {
 
     const handleContinueRound = () => {
         if (!incompleteRound) return;
+        const holesPlayed = getHolesPlayedForRoundService(incompleteRound.Id);
+        setCurrentHole(holesPlayed > 0 ? holesPlayed + 1 : 1);
         setActiveRoundId(incompleteRound.Id);
         setIncompleteRound(null);
     };
@@ -335,9 +338,15 @@ export default function Play() {
                                 <Text style={[styles.headerText, styles.marginTop]}>Play</Text>
                             </View>
 
-                            <Text style={[styles.normalText, styles.marginBottom]}>
-                                Start round, review past rounds & 7 Deadly Sins stats
-                            </Text>
+                            {incompleteRound ? (
+                                <Text style={[styles.normalText, styles.marginBottom]}>
+                                    Continue or end round
+                                </Text>
+                            ) : (
+                                <Text style={[styles.normalText, styles.marginBottom]}>
+                                    Start round, review past rounds & 7 Deadly Sins stats
+                                </Text>
+                            )}
                         </View>
 
                         <View style={styles.divider} />

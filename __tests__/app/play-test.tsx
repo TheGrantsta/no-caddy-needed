@@ -19,6 +19,7 @@ import {
     getRecentPlayerNamesService,
     getSettingsService,
     saveSettingsService,
+    getHolesPlayedForRoundService,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
 
@@ -52,6 +53,7 @@ jest.mock('../../service/DbService', () => ({
     getMultiplayerScorecardService: jest.fn(),
     getRecentCourseNamesService: jest.fn(),
     getRecentPlayerNamesService: jest.fn(),
+    getHolesPlayedForRoundService: jest.fn().mockReturnValue(0),
     getSettingsService: jest.fn().mockReturnValue({
         theme: 'dark',
         notificationsEnabled: true,
@@ -122,6 +124,7 @@ const mockGetRecentCourseNames = getRecentCourseNamesService as jest.Mock;
 const mockGetRecentPlayerNames = getRecentPlayerNamesService as jest.Mock;
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
+const mockGetHolesPlayedForRound = getHolesPlayedForRoundService as jest.Mock;
 
 describe('Play screen', () => {
     beforeEach(() => {
@@ -326,6 +329,24 @@ describe('Play screen', () => {
                 expect(mockEndRound).toHaveBeenCalledWith(42);
                 expect(getByTestId('start-round-button')).toBeTruthy();
                 expect(queryByTestId('continue-round-button')).toBeNull();
+            });
+
+            it('shouldResumeAtNextHoleAfterLastSavedHole', async () => {
+                mockGetHolesPlayedForRound.mockReturnValue(5);
+                const { getByTestId, getByText } = render(<Play />);
+                await act(async () => {
+                    fireEvent.press(getByTestId('continue-round-button'));
+                });
+                expect(getByText('#6')).toBeTruthy();
+            });
+
+            it('shouldResumeAtHole1WhenNoHolesSaved', async () => {
+                mockGetHolesPlayedForRound.mockReturnValue(0);
+                const { getByTestId, getByText } = render(<Play />);
+                await act(async () => {
+                    fireEvent.press(getByTestId('continue-round-button'));
+                });
+                expect(getByText('#1')).toBeTruthy();
             });
 
             it('shouldHideDeadlySinsChartWhenIncompleteRoundExists', () => {

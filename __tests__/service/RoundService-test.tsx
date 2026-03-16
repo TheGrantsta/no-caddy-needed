@@ -11,6 +11,7 @@ import {
     getMultiplayerScorecardService,
     getRecentCourseNamesService,
     getRecentPlayerNamesService,
+    getHolesPlayedForRoundService,
 } from '../../service/DbService';
 import {
     insertRound,
@@ -643,5 +644,28 @@ describe('getRecentPlayerNamesService', () => {
         const result = getRecentPlayerNamesService();
 
         expect(result).toEqual([]);
+    });
+});
+
+describe('getHolesPlayedForRoundService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('returns the holes played count for a round', () => {
+        mockGetHolesPlayedForRound.mockReturnValue(5);
+
+        const result = getHolesPlayedForRoundService(42);
+
+        expect(mockGetHolesPlayedForRound).toHaveBeenCalledWith(42);
+        expect(result).toBe(5);
+    });
+
+    it('returns 0 when no holes have been played', () => {
+        mockGetHolesPlayedForRound.mockReturnValue(0);
+
+        const result = getHolesPlayedForRoundService(1);
+
+        expect(result).toBe(0);
     });
 });

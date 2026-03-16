@@ -416,6 +416,10 @@ export const getRoundPlayersService = (roundId: number): RoundPlayer[] => {
     return getRoundPlayers(roundId) as RoundPlayer[];
 };
 
+export const getHolesPlayedForRoundService = (roundId: number): number => {
+    return getHolesPlayedForRound(roundId);
+};
+
 export const getMultiplayerScorecardService = (roundId: number): MultiplayerRoundScorecard | null => {
     const round = getRoundById(roundId) as Round | null;
     if (!round) return null;

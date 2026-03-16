@@ -353,7 +353,7 @@ export default function Play() {
                                     onPress={handleEndIncompleteRound}
                                     style={{ padding: 12, alignItems: 'center', marginTop: 4 }}
                                 >
-                                    <Text style={styles.normalText}>End round</Text>
+                                    <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>End round</Text>
                                 </TouchableOpacity>
                             </>
                         ) : (
@@ -367,7 +367,7 @@ export default function Play() {
                         )}
 
 
-                        {roundHistory.length > 0 && (
+                        {!incompleteRound && roundHistory.length > 0 && (
                             <View style={localStyles.filterContainer}>
                                 <Text testID="filter-label" style={localStyles.filterLabel}>Show</Text>
                                 {([1, 10, 'all'] as const).map(f => (
@@ -385,9 +385,9 @@ export default function Play() {
                             </View>
                         )}
 
-                        <DeadlySinsChart key={String(historyFilter)} rounds={filteredDeadlySinsRounds} />
+                        {!incompleteRound && <DeadlySinsChart key={String(historyFilter)} rounds={filteredDeadlySinsRounds} />}
 
-                        {roundHistory.length > 0 && (() => {
+                        {!incompleteRound && roundHistory.length > 0 && (() => {
                             const deadlySinsMap = new Map<number, number>(
                                 filteredDeadlySinsRounds
                                     .filter(t => t.RoundId != null)
@@ -471,7 +471,7 @@ export default function Play() {
 
                                     <View style={styles.contentSection}>
                                         <Text style={styles.normalText}>
-                                            Golf is a game; have fun & be good to yourself!
+                                            Golf is a game; have fun & be kind to yourself!
                                         </Text>
                                     </View>
                                 </View>

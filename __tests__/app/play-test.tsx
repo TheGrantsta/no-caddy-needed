@@ -327,6 +327,30 @@ describe('Play screen', () => {
                 expect(getByTestId('start-round-button')).toBeTruthy();
                 expect(queryByTestId('continue-round-button')).toBeNull();
             });
+
+            it('shouldHideDeadlySinsChartWhenIncompleteRoundExists', () => {
+                mockGetAllDeadlySinsRounds.mockReturnValue([
+                    { Id: 1, RoundId: 1, Total: 5, ThreePutts: 1, DoubleBogeys: 1, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 1, TroubleOffTee: 0, Penalties: 0 },
+                ]);
+                const { queryByTestId } = render(<Play />);
+                expect(queryByTestId('7deadly-sins-chart-toggle')).toBeNull();
+            });
+
+            it('shouldHideRoundHistoryWhenIncompleteRoundExists', () => {
+                mockGetAllRoundHistory.mockReturnValue([
+                    { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null, HolesPlayed: 18 },
+                ]);
+                const { queryByTestId } = render(<Play />);
+                expect(queryByTestId('round-history-scroll')).toBeNull();
+            });
+
+            it('shouldStyleEndRoundLinkWithRedColour', () => {
+                const { UNSAFE_getByProps } = render(<Play />);
+                const endRoundText = UNSAFE_getByProps({ testID: 'end-incomplete-round-link' });
+                const textChild = endRoundText.findByProps({ children: 'End round' });
+                const colours = require('../../assets/colours').default;
+                expect(textChild.props.style).toEqual(expect.objectContaining({ color: colours.red }));
+            });
         });
     });
 

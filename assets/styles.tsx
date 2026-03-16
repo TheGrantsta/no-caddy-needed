@@ -1075,16 +1075,45 @@ export const createStyles = (c: ThemeColours) => ({
 
     deadlySinTrend: StyleSheet.create({
         heading: {
-            color: c.primary,
+            color: c.text,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             textAlign: 'center',
             padding: 16,
         },
-        chartContainer: {
-            position: 'relative',
-            marginHorizontal: 16,
+        chartWrapper: {
             marginTop: 20,
+            marginHorizontal: 16,
+        },
+        chartRow: {
+            flexDirection: 'row',
+        },
+        yAxisLabels: {
+            width: 30,
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            paddingRight: 6,
+        },
+        axisLabel: {
+            color: c.text,
+            fontSize: fontSizes.smallestText,
+        },
+        chartArea: {
+            flex: 1,
+            position: 'relative',
+        },
+        yAxis: {
+            position: 'absolute',
+            left: 0,
+            width: 1,
+            backgroundColor: c.primary,
+        },
+        xAxis: {
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            height: 1,
+            backgroundColor: c.primary,
         },
         dot: {
             position: 'absolute',
@@ -1098,11 +1127,24 @@ export const createStyles = (c: ThemeColours) => ({
             height: 2,
             backgroundColor: c.primary,
         },
+        valueLabel: {
+            position: 'absolute',
+            width: 24,
+            textAlign: 'center',
+            color: c.text,
+            fontSize: fontSizes.smallestText,
+        },
         xAxisRow: {
             flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginHorizontal: 16,
             marginTop: 4,
+        },
+        yAxisLabelSpacer: {
+            width: 30,
+        },
+        dateRow: {
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
         },
         dateLabel: {
             color: c.text,

@@ -138,4 +138,24 @@ describe('DeadlySinTrendScreen', () => {
 
         expect(queryByTestId('deadly-sin-trend-line-0')).toBeNull();
     });
+
+    it('renders y-axis line', () => {
+        mockGetAllDeadlySinsRoundsService.mockReturnValue([
+            makeRound(1, 2, '01/06'),
+        ]);
+
+        const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+        expect(getByTestId('deadly-sin-trend-y-axis')).toBeTruthy();
+    });
+
+    it('renders x-axis line', () => {
+        mockGetAllDeadlySinsRoundsService.mockReturnValue([
+            makeRound(1, 2, '01/06'),
+        ]);
+
+        const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+        expect(getByTestId('deadly-sin-trend-x-axis')).toBeTruthy();
+    });
 });

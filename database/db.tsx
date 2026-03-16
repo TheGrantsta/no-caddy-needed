@@ -140,12 +140,9 @@ export const initialize = async () => {
     // Data migration: fix DeadlySinsRounds column swap (runs once per unmapped row)
     const unmappedRows = syncDb.getAllSync('SELECT * FROM DeadlySinsRounds WHERE MappedCorrectly = 0');
     if (unmappedRows.length > 0) {
-        console.log('[DeadlySinsRounds migration] BEFORE:', JSON.stringify(unmappedRows));
         syncDb.execSync(
             'UPDATE DeadlySinsRounds SET TroubleOffTee = ThreePutts, Penalties = DoubleBogeys, ThreePutts = BogeysPar5, DoubleBogeys = TroubleOffTee, BogeysPar5 = Penalties, MappedCorrectly = 1 WHERE MappedCorrectly = 0'
         );
-        const updatedRows = syncDb.getAllSync('SELECT * FROM DeadlySinsRounds WHERE MappedCorrectly = 1');
-        console.log('[DeadlySinsRounds migration] AFTER:', JSON.stringify(updatedRows));
     }
 };
 

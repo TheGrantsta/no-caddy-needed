@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image } from 'react-native';
-import { render, act } from '@testing-library/react-native';
+import { render, act, fireEvent } from '@testing-library/react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { initialize } from '../../database/db';
 import { useTheme } from '../../context/ThemeContext';
@@ -21,7 +21,7 @@ jest.mock('../../database/db', () => ({
 }));
 
 jest.mock('react-native-toast-notifications', () => ({
-    ToastProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    ToastProvider: jest.fn(({ children }: { children: React.ReactNode }) => <>{children}</>),
 }));
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -221,5 +221,48 @@ describe('RootLayout', () => {
 
         const { getByTestId } = await renderReady();
         expect(getByTestId('stack')).toBeTruthy();
+    });
+
+    describe('ToastProvider renderType', () => {
+        async function getToastRenderType() {
+            const { ToastProvider } = require('react-native-toast-notifications');
+            await renderReady();
+            const calls = (ToastProvider as jest.Mock).mock.calls;
+            return calls[calls.length - 1][0].renderType;
+        }
+
+        it('successRenderTypeShowsMessage', async () => {
+            const renderType = await getToastRenderType();
+            const { getByText } = render(renderType.success({ message: 'Test message', onHide: jest.fn() }));
+            expect(getByText('Test message')).toBeTruthy();
+        });
+
+        it('successRenderTypeShowsCloseButton', async () => {
+            const renderType = await getToastRenderType();
+            const { getByTestId } = render(renderType.success({ message: 'Test', onHide: jest.fn() }));
+            expect(getByTestId('toast-close-button')).toBeTruthy();
+        });
+
+        it('successCloseButtonCallsOnHide', async () => {
+            const renderType = await getToastRenderType();
+            const mockOnHide = jest.fn();
+            const { getByTestId } = render(renderType.success({ message: 'Test', onHide: mockOnHide }));
+            fireEvent.press(getByTestId('toast-close-button'));
+            expect(mockOnHide).toHaveBeenCalled();
+        });
+
+        it('dangerRenderTypeShowsCloseButton', async () => {
+            const renderType = await getToastRenderType();
+            const { getByTestId } = render(renderType.danger({ message: 'Error', onHide: jest.fn() }));
+            expect(getByTestId('toast-close-button')).toBeTruthy();
+        });
+
+        it('dangerCloseButtonCallsOnHide', async () => {
+            const renderType = await getToastRenderType();
+            const mockOnHide = jest.fn();
+            const { getByTestId } = render(renderType.danger({ message: 'Error', onHide: mockOnHide }));
+            fireEvent.press(getByTestId('toast-close-button'));
+            expect(mockOnHide).toHaveBeenCalled();
+        });
     });
 });

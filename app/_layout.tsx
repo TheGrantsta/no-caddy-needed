@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, LogBox } from "react-native";
+import { Image, LogBox, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Link, Stack } from 'expo-router';
@@ -236,6 +236,24 @@ export default function RootLayout() {
         style={{
           maxWidth: "100%",
         }}
+        renderType={{
+          success: (toast) => (
+            <View style={[toastStyles.container, { borderLeftColor: '#00C851' }]}>
+              <Text style={toastStyles.message}>{toast.message}</Text>
+              <TouchableOpacity testID="toast-close-button" onPress={toast.onHide} style={toastStyles.closeButton}>
+                <Text style={toastStyles.closeText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+          ),
+          danger: (toast) => (
+            <View style={[toastStyles.container, { borderLeftColor: '#fd0303' }]}>
+              <Text style={toastStyles.message}>{toast.message}</Text>
+              <TouchableOpacity testID="toast-close-button" onPress={toast.onHide} style={toastStyles.closeButton}>
+                <Text style={toastStyles.closeText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+          ),
+        }}
       >
         <AppThemeProvider>
           <ThemedApp />
@@ -244,3 +262,30 @@ export default function RootLayout() {
     </ErrorBoundary>
   );
 };
+
+const toastStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#2D5A3D',
+    borderLeftWidth: 10,
+    borderRadius: 4,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginHorizontal: 8,
+    maxWidth: '100%',
+  },
+  message: {
+    flex: 1,
+    color: '#ffffff',
+    fontSize: 14,
+  },
+  closeButton: {
+    marginLeft: 12,
+    padding: 4,
+  },
+  closeText: {
+    color: '#ffffff',
+    fontSize: 16,
+  },
+});

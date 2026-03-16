@@ -78,7 +78,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
 
             {recentCourseNames && recentCourseNames.length > 0 && (
                 <View style={s.recentContainer}>
-                    <Text style={s.recentLabel}>Recent</Text>
+                    <Text style={s.recentLabel}>Recent courses</Text>
                     {recentCourseNames.map((name) => (
                         <TouchableOpacity
                             key={name}

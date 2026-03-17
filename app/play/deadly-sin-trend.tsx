@@ -33,11 +33,6 @@ function LineChart({ rounds, sinKey }: LineChartProps) {
     return (
         <View testID="deadly-sin-trend-chart" style={s.chartWrapper}>
             <View style={s.chartRow}>
-                <View style={[s.yAxisLabels, { paddingTop: CHART_PADDING_TOP, paddingBottom: CHART_PADDING_BOTTOM }]}>
-                    <Text style={s.axisLabel}>{maxValue}</Text>
-                    <Text style={s.axisLabel}>0</Text>
-                </View>
-
                 <View
                     style={[s.chartArea, { height: CHART_HEIGHT }]}
                     onLayout={(e) => setChartWidth(e.nativeEvent.layout.width)}

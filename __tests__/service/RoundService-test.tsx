@@ -260,6 +260,8 @@ describe('getAllRoundHistoryService', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockGetHolesPlayedForRound.mockReturnValue(18);
+        mockGetRoundPlayers.mockReturnValue([]);
+        mockGetRoundHoleScores.mockReturnValue([]);
     });
 
     it('returns empty array when no rounds exist', () => {
@@ -324,6 +326,71 @@ describe('getAllRoundHistoryService', () => {
         const result = getAllRoundHistoryService();
 
         expect(result[0].CourseName).toBeNull();
+    });
+
+    it('computes StrokeTotal by summing user player hole scores', () => {
+        mockGetAllRounds.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
+        ]);
+        mockGetRoundPlayers.mockReturnValue([
+            { Id: 10, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+        ]);
+        mockGetRoundHoleScores.mockReturnValue([
+            { Id: 1, RoundId: 1, RoundPlayerId: 10, HoleNumber: 1, HolePar: 4, Score: 5 },
+            { Id: 2, RoundId: 1, RoundPlayerId: 10, HoleNumber: 2, HolePar: 4, Score: 4 },
+        ]);
+
+        const result = getAllRoundHistoryService();
+
+        expect(result[0].StrokeTotal).toBe(9);
+    });
+
+    it('returns null StrokeTotal when user player has no hole scores', () => {
+        mockGetAllRounds.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
+        ]);
+        mockGetRoundPlayers.mockReturnValue([
+            { Id: 10, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+        ]);
+        mockGetRoundHoleScores.mockReturnValue([]);
+
+        const result = getAllRoundHistoryService();
+
+        expect(result[0].StrokeTotal).toBeNull();
+    });
+
+    it('returns null StrokeTotal when no user player exists for the round', () => {
+        mockGetAllRounds.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
+        ]);
+        mockGetRoundPlayers.mockReturnValue([
+            { Id: 10, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 0 },
+        ]);
+        mockGetRoundHoleScores.mockReturnValue([
+            { Id: 1, RoundId: 1, RoundPlayerId: 10, HoleNumber: 1, HolePar: 4, Score: 5 },
+        ]);
+
+        const result = getAllRoundHistoryService();
+
+        expect(result[0].StrokeTotal).toBeNull();
+    });
+
+    it('only sums scores for the user player not other players', () => {
+        mockGetAllRounds.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
+        ]);
+        mockGetRoundPlayers.mockReturnValue([
+            { Id: 10, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+            { Id: 11, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 1 },
+        ]);
+        mockGetRoundHoleScores.mockReturnValue([
+            { Id: 1, RoundId: 1, RoundPlayerId: 10, HoleNumber: 1, HolePar: 4, Score: 5 },
+            { Id: 2, RoundId: 1, RoundPlayerId: 11, HoleNumber: 1, HolePar: 4, Score: 6 },
+        ]);
+
+        const result = getAllRoundHistoryService();
+
+        expect(result[0].StrokeTotal).toBe(5);
     });
 });
 

@@ -148,34 +148,34 @@ describe('Play screen', () => {
 
         it('shows round history when rounds exist', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, TotalScore: 3, StrokeTotal: 75, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
 
             const { getByText } = render(<Play />);
 
             expect(getByText('Round history')).toBeTruthy();
             expect(getByText('15/06')).toBeTruthy();
-            expect(getByText('+3')).toBeTruthy();
+            expect(getByText('75')).toBeTruthy();
         });
 
-        it('shows even par as E in round history', () => {
+        it('shows stroke total in round history', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, TotalScore: 0, StrokeTotal: 72, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
 
             const { getByText } = render(<Play />);
 
-            expect(getByText('E')).toBeTruthy();
+            expect(getByText('72')).toBeTruthy();
         });
 
-        it('shows negative score in round history', () => {
+        it('shows dash when no stroke total recorded', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: -2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                { Id: 1, TotalScore: -2, StrokeTotal: null, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
             ]);
 
-            const { getByText } = render(<Play />);
+            const { getByTestId } = render(<Play />);
 
-            expect(getByText('-2')).toBeTruthy();
+            expect(getByTestId('round-history-strokes-1').props.children).toBe('-');
         });
 
         it('All filter shows all rounds', () => {
@@ -199,19 +199,19 @@ describe('Play screen', () => {
             expect(getByTestId('round-history-scroll')).toBeTruthy();
         });
 
-        it('renders date column at 70% width and score and 7 Deadly Sins columns at 15% width', () => {
+        it('renders date column at 55%, strokes column at 30%, and 7DS column at 15%', () => {
             mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
+                { Id: 1, TotalScore: 3, StrokeTotal: 72, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
             ]);
 
             const { getByTestId } = render(<Play />);
 
             const dateHeader = getByTestId('round-history-header-date');
-            const scoreHeader = getByTestId('round-history-header-score');
+            const strokesHeader = getByTestId('round-history-header-strokes');
             const t5Header = getByTestId('round-history-header-7DS');
 
-            expect(dateHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '70%' })]));
-            expect(scoreHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '15%' })]));
+            expect(dateHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '65%' })]));
+            expect(strokesHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '20%' })]));
             expect(t5Header.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '15%' })]));
         });
 
@@ -244,7 +244,7 @@ describe('Play screen', () => {
 
             const { getByText } = render(<Play />);
 
-            expect(getByText('15/06 - St Andrews')).toBeTruthy();
+            expect(getByText('15/06 St Andrews')).toBeTruthy();
         });
 
         it('does not show course name text when CourseName is null', () => {
@@ -1416,9 +1416,9 @@ describe('Play screen', () => {
                 { Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 1, TroubleOffTee: 0, Penalties: 0, Total: 5, RoundId: null, Created_At: '15/06' },
             ]);
 
-            const { getByText } = render(<Play />);
+            const { getAllByText } = render(<Play />);
 
-            expect(getByText('-')).toBeTruthy();
+            expect(getAllByText('-').length).toBeGreaterThan(0);
         });
 
         it('shows dash when no 7 Deadly Sins data for a round', () => {
@@ -1427,9 +1427,9 @@ describe('Play screen', () => {
             ]);
             mockGetAllDeadlySinsRounds.mockReturnValue([]);
 
-            const { getByText } = render(<Play />);
+            const { getAllByText } = render(<Play />);
 
-            expect(getByText('-')).toBeTruthy();
+            expect(getAllByText('-').length).toBeGreaterThan(0);
         });
     });
 

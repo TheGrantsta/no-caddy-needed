@@ -411,8 +411,8 @@ export default function Play() {
                                         Round history
                                     </Text>
                                     <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.primary }]}>
-                                        <Text testID="round-history-header-date" style={[styles.smallText, localStyles.historyDateColumn]}>Date</Text>
-                                        <Text testID="round-history-header-score" style={[styles.smallText, localStyles.historyNarrowColumn]}>Score</Text>
+                                        <Text testID="round-history-header-date" style={[styles.smallText, localStyles.historyDateColumn]}>Date Course</Text>
+                                        <Text testID="round-history-header-strokes" style={[styles.smallText, localStyles.historyTotalColumn, { textAlign: 'left' }]}>Score</Text>
                                         <Text testID="round-history-header-7DS" style={[styles.smallText, localStyles.historyNarrowColumn]}>7DS</Text>
                                     </View>
                                     <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
@@ -423,9 +423,20 @@ export default function Play() {
                                                 onPress={() => router.push({ pathname: '/play/scorecard', params: { roundId: String(round.Id) } })}
                                             >
                                                 <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.primary }]}>
-                                                    <Text style={[styles.smallText, localStyles.historyDateColumn]}>{round.CourseName ? `${round.Created_At} - ${round.CourseName}` : round.Created_At}{round.HolesPlayed < 18 ? ` (${round.HolesPlayed})` : ''}</Text>
-                                                    <Text style={[styles.smallText, localStyles.historyNarrowColumn]}>{formatScore(round.TotalScore)}</Text>
-                                                    <Text style={[styles.smallText, localStyles.historyNarrowColumn]}>{deadlySinsMap.has(round.Id) ? deadlySinsMap.get(round.Id) : '-'}</Text>
+                                                    <Text style={[styles.smallTextNoPadding, localStyles.historyDateColumn]}>{round.CourseName ? `${round.Created_At} ${round.CourseName}` : round.Created_At}{round.HolesPlayed < 18 ? ` (${round.HolesPlayed})` : ''}</Text>
+                                                    <View style={[styles.row, localStyles.historyTotalColumn]}>
+                                                        <Text testID={`round-history-strokes-${round.Id}`} style={styles.smallTextNoPadding}>
+                                                            {round.StrokeTotal !== null && round.StrokeTotal !== undefined ? String(round.StrokeTotal) : '-'}
+                                                        </Text>
+                                                        <Text style={[styles.smallTextNoPadding, { textAlign: 'right' }]}>
+                                                            &nbsp;({formatScore(round.TotalScore)})
+                                                        </Text>
+                                                    </View>
+                                                    <Text style={[styles.smallTextNoPadding, localStyles.historyNarrowColumn]}>
+                                                        {deadlySinsMap.has(round.Id) ? deadlySinsMap.get(round.Id) : '-'}
+                                                    </Text>
+
+
                                                 </View>
                                             </TouchableOpacity>
                                         ))}

@@ -259,6 +259,7 @@ export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {
 export type Round = {
     Id: number;
     TotalScore: number;
+    StrokeTotal: number | null;
     StartTime: string;
     EndTime: string | null;
     IsCompleted: number;
@@ -351,9 +352,22 @@ export const getAllRoundHistoryService = (): Round[] => {
     const rounds: Round[] = [];
 
     getAllRounds().forEach((round: any) => {
+        const players = getRoundPlayers(round.Id) as RoundPlayer[];
+        const userPlayer = players.find(p => p.IsUser === 1);
+
+        let strokeTotal: number | null = null;
+        if (userPlayer) {
+            const holeScores = getRoundHoleScores(round.Id) as RoundHoleScore[];
+            const userScores = holeScores.filter(s => s.RoundPlayerId === userPlayer.Id);
+            if (userScores.length > 0) {
+                strokeTotal = userScores.reduce((sum, s) => sum + s.Score, 0);
+            }
+        }
+
         rounds.push({
             Id: round.Id,
             TotalScore: round.TotalScore,
+            StrokeTotal: strokeTotal,
             StartTime: round.StartTime,
             EndTime: round.EndTime,
             IsCompleted: round.IsCompleted,

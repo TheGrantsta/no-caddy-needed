@@ -95,6 +95,11 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             padding: 5,
         },
+        smallTextNoPadding: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            alignItems: 'center',
+        },
         smallestText: {
             color: c.text,
             fontSize: fontSizes.smallestText,
@@ -1424,7 +1429,11 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.background,
         },
         historyDateColumn: {
-            width: '70%',
+            width: '65%',
+        },
+        historyTotalColumn: {
+            width: '20%',
+            textAlign: 'center',
         },
         historyNarrowColumn: {
             width: '15%',

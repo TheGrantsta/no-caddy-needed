@@ -15,9 +15,7 @@ import {
     getDeadlySinsRoundByRoundId,
     insertRound,
     updateRound,
-    insertRoundHole,
     getRoundById,
-    getRoundHoles,
     getActiveRound,
     getAllRounds,
     getClubDistances,
@@ -318,30 +316,18 @@ export const startRoundService = async (courseName: string): Promise<number | nu
 
 export const endRoundService = async (roundId: number): Promise<boolean> => {
     const players = getRoundPlayers(roundId) as RoundPlayer[];
-
-    if (players.length > 0) {
-        const holeScores = getRoundHoleScores(roundId) as RoundHoleScore[];
-        const userPlayer = players.find(p => p.IsUser === 1);
-        const userScores = userPlayer ? holeScores.filter(s => s.RoundPlayerId === userPlayer.Id) : [];
-        const totalScore = userScores.reduce((sum, s) => sum + (s.Score - s.HolePar), 0);
-        return updateRound(roundId, totalScore);
-    }
-
-    const holes: any[] = getRoundHoles(roundId);
-    const totalScore = holes.reduce((sum: number, hole: any) => sum + hole.ScoreRelativeToPar, 0);
+    const holeScores = getRoundHoleScores(roundId) as RoundHoleScore[];
+    const userPlayer = players.find(p => p.IsUser === 1);
+    const userScores = userPlayer ? holeScores.filter(s => s.RoundPlayerId === userPlayer.Id) : [];
+    const totalScore = userScores.reduce((sum, s) => sum + (s.Score - s.HolePar), 0);
     return updateRound(roundId, totalScore);
-};
-
-export const addHoleScoreService = async (roundId: number, holeNumber: number, scoreRelativeToPar: number): Promise<boolean> => {
-    return insertRoundHole(roundId, holeNumber, scoreRelativeToPar);
 };
 
 export const getRoundScorecardService = (roundId: number): RoundScorecard | null => {
     const round = getRoundById(roundId) as Round | null;
     if (!round) return null;
 
-    const holes = getRoundHoles(roundId) as RoundHole[];
-    return { round: { ...round, Created_At: getTwoDigitDayAndMonth(round.Created_At) }, holes };
+    return { round: { ...round, Created_At: getTwoDigitDayAndMonth(round.Created_At) }, holes: [] };
 };
 
 export const getActiveRoundService = (): Round | null => {

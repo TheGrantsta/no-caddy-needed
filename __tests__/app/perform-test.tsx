@@ -49,18 +49,16 @@ describe('Perform page ', () => {
             const { getByText } = render(<View />);
 
             expect(getByText('Concepts')).toBeTruthy();
-            expect(getByText('Target: play for your shot dispersion *')).toBeTruthy();
+            expect(getByText('Target: play for your shot dispersion')).toBeTruthy();
             expect(getByText('Aim: think shotgun pattern')).toBeTruthy();
             expect(getByText('Strategy: favour the "fat" side')).toBeTruthy();
-            expect(getByText('Eliminate: big numbers by staying away from water & severe hazards')).toBeTruthy();
+            expect(getByText('Eliminate: big numbers by playing away from water & severe hazards')).toBeTruthy();
         });
 
         it('renders approach tendencies', () => {
             const { getByText } = render(<View />);
 
             expect(getByText('* Your dispersion changes with different clubs and swing types — know your tendencies for full and partial shots')).toBeTruthy();
-            expect(getByText('Key')).toBeTruthy();
-            expect(getByText('Know your shot pattern & carry numbers, then make informed decisions that allow for your natural spread, not perfection')).toBeTruthy();
         });
     });
 

@@ -1,7 +1,6 @@
 import {
     startRoundService,
     endRoundService,
-    addHoleScoreService,
     getRoundScorecardService,
     getActiveRoundService,
     getAllRoundHistoryService,
@@ -16,9 +15,7 @@ import {
 import {
     insertRound,
     updateRound,
-    insertRoundHole,
     getRoundById,
-    getRoundHoles,
     getActiveRound,
     getAllRounds,
     insertRoundPlayer,
@@ -34,9 +31,7 @@ import {
 jest.mock('../../database/db', () => ({
     insertRound: jest.fn(),
     updateRound: jest.fn(),
-    insertRoundHole: jest.fn(),
     getRoundById: jest.fn(),
-    getRoundHoles: jest.fn(),
     getActiveRound: jest.fn(),
     getAllRounds: jest.fn(),
     insertRoundPlayer: jest.fn(),
@@ -51,9 +46,7 @@ jest.mock('../../database/db', () => ({
 
 const mockInsertRound = insertRound as jest.Mock;
 const mockUpdateRound = updateRound as jest.Mock;
-const mockInsertRoundHole = insertRoundHole as jest.Mock;
 const mockGetRoundById = getRoundById as jest.Mock;
-const mockGetRoundHoles = getRoundHoles as jest.Mock;
 const mockGetActiveRound = getActiveRound as jest.Mock;
 const mockGetAllRounds = getAllRounds as jest.Mock;
 const mockInsertRoundPlayer = insertRoundPlayer as jest.Mock;
@@ -103,35 +96,7 @@ describe('endRoundService', () => {
         mockGetRoundPlayers.mockReturnValue([]);
     });
 
-    it('calculates total score from holes and updates round', async () => {
-        mockGetRoundHoles.mockReturnValue([
-            { Id: 1, RoundId: 1, HoleNumber: 1, ScoreRelativeToPar: 1 },
-            { Id: 2, RoundId: 1, HoleNumber: 2, ScoreRelativeToPar: -1 },
-            { Id: 3, RoundId: 1, HoleNumber: 3, ScoreRelativeToPar: 0 },
-        ]);
-        mockUpdateRound.mockResolvedValue(true);
-
-        const result = await endRoundService(1);
-
-        expect(mockGetRoundHoles).toHaveBeenCalledWith(1);
-        expect(mockUpdateRound).toHaveBeenCalledWith(1, 0);
-        expect(result).toBe(true);
-    });
-
-    it('handles round with all above par holes', async () => {
-        mockGetRoundHoles.mockReturnValue([
-            { Id: 1, RoundId: 1, HoleNumber: 1, ScoreRelativeToPar: 2 },
-            { Id: 2, RoundId: 1, HoleNumber: 2, ScoreRelativeToPar: 1 },
-        ]);
-        mockUpdateRound.mockResolvedValue(true);
-
-        await endRoundService(1);
-
-        expect(mockUpdateRound).toHaveBeenCalledWith(1, 3);
-    });
-
-    it('returns false when update fails', async () => {
-        mockGetRoundHoles.mockReturnValue([]);
+    it('returns false when update fails and no players', async () => {
         mockUpdateRound.mockResolvedValue(false);
 
         const result = await endRoundService(1);
@@ -140,70 +105,25 @@ describe('endRoundService', () => {
     });
 });
 
-describe('addHoleScoreService', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-
-    it('inserts a hole score for the round', async () => {
-        mockInsertRoundHole.mockResolvedValue(true);
-
-        const result = await addHoleScoreService(1, 5, 1);
-
-        expect(mockInsertRoundHole).toHaveBeenCalledWith(1, 5, 1);
-        expect(result).toBe(true);
-    });
-
-    it('handles even par score', async () => {
-        mockInsertRoundHole.mockResolvedValue(true);
-
-        const result = await addHoleScoreService(1, 1, 0);
-
-        expect(mockInsertRoundHole).toHaveBeenCalledWith(1, 1, 0);
-        expect(result).toBe(true);
-    });
-
-    it('handles under par score', async () => {
-        mockInsertRoundHole.mockResolvedValue(true);
-
-        const result = await addHoleScoreService(1, 3, -1);
-
-        expect(mockInsertRoundHole).toHaveBeenCalledWith(1, 3, -1);
-        expect(result).toBe(true);
-    });
-
-    it('returns false when insert fails', async () => {
-        mockInsertRoundHole.mockResolvedValue(false);
-
-        const result = await addHoleScoreService(1, 1, 0);
-
-        expect(result).toBe(false);
-    });
-});
 
 describe('getRoundScorecardService', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    it('returns round with holes', () => {
+    it('returns round with empty holes', () => {
         mockGetRoundById.mockReturnValue({
             Id: 1, TotalScore: 3, IsCompleted: 1,
             StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z',
             Created_At: '2025-06-15T10:00:00.000Z',
         });
-        mockGetRoundHoles.mockReturnValue([
-            { Id: 1, RoundId: 1, HoleNumber: 1, ScoreRelativeToPar: 1 },
-            { Id: 2, RoundId: 1, HoleNumber: 2, ScoreRelativeToPar: 0 },
-            { Id: 3, RoundId: 1, HoleNumber: 3, ScoreRelativeToPar: 2 },
-        ]);
 
         const result = getRoundScorecardService(1);
 
         expect(result).not.toBeNull();
         expect(result!.round.Id).toBe(1);
         expect(result!.round.TotalScore).toBe(3);
-        expect(result!.holes).toHaveLength(3);
+        expect(result!.holes).toHaveLength(0);
     });
 
     it('returns null when round not found', () => {
@@ -220,7 +140,6 @@ describe('getRoundScorecardService', () => {
             StartTime: '2025-06-15T10:00:00.000Z', EndTime: '',
             Created_At: '2025-06-15T10:00:00.000Z',
         });
-        mockGetRoundHoles.mockReturnValue([]);
 
         const result = getRoundScorecardService(1);
 
@@ -635,17 +554,13 @@ describe('endRoundService multiplayer path', () => {
         expect(mockUpdateRound).toHaveBeenCalledWith(1, -2);
     });
 
-    it('falls back to legacy path when no players exist', async () => {
+    it('updates round with score 0 when no players exist', async () => {
         mockGetRoundPlayers.mockReturnValue([]);
-        mockGetRoundHoles.mockReturnValue([
-            { Id: 1, RoundId: 1, HoleNumber: 1, ScoreRelativeToPar: 1 },
-        ]);
         mockUpdateRound.mockResolvedValue(true);
 
         await endRoundService(1);
 
-        expect(mockGetRoundHoles).toHaveBeenCalledWith(1);
-        expect(mockUpdateRound).toHaveBeenCalledWith(1, 1);
+        expect(mockUpdateRound).toHaveBeenCalledWith(1, 0);
     });
 
     it('usesTotalScoreOfZeroWhenNoUserPlayerFound', async () => {

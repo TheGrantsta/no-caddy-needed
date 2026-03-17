@@ -48,11 +48,6 @@ describe('Perform', () => {
         expect(getByText('Concepts')).toBeTruthy();
     });
 
-    it('displaysKeyText', () => {
-        const { getByText } = render(<Perform />);
-        expect(getByText('Key')).toBeTruthy();
-    });
-
     it('displaysDispersionFootnote', () => {
         const { getByText } = render(<Perform />);
         expect(getByText(/Your dispersion changes with different clubs/)).toBeTruthy();

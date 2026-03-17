@@ -23,7 +23,7 @@ export default function Perform() {
   const getApproachShotStats = () => {
     const approachStats: any[] = [];
 
-    approachStats.push(['Distance', 'Fairway', 'Rough']);
+    approachStats.push(['Yards', 'Fairway', 'Rough']);
     approachStats.push(['225-250', '44\'10"', '56\'2"']);
     approachStats.push(['200-225', '42\'5"', '54\'6"']);
     approachStats.push(['175-200', '34\'1"', '44\'8"']);
@@ -39,7 +39,7 @@ export default function Perform() {
   const getPuttingStats = () => {
     const puttingStats: any[] = [];
 
-    puttingStats.push(['Distance (feet)', 'Make rate']);
+    puttingStats.push(['Feet', 'Make rate']);
     puttingStats.push(['1', '100%']);
     puttingStats.push(['2', '99%']);
     puttingStats.push(['3', '95%']);

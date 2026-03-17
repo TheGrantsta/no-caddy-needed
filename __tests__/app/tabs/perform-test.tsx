@@ -86,7 +86,7 @@ describe('Perform', () => {
     it('renderItemShowsApproachTableHeaders', () => {
         const { getByTestId, getByText } = render(<Perform />);
         fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-        expect(getByText('Distance')).toBeTruthy();
+        expect(getByText('Yards')).toBeTruthy();
         expect(getByText('Fairway')).toBeTruthy();
         expect(getByText('Rough')).toBeTruthy();
     });
@@ -94,7 +94,7 @@ describe('Perform', () => {
     it('renderItemShowsPuttingTableHeaders', () => {
         const { getByTestId, getByText } = render(<Perform />);
         fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-        expect(getByText('Distance (feet)')).toBeTruthy();
+        expect(getByText('Feet')).toBeTruthy();
         expect(getByText('Make rate')).toBeTruthy();
     });
 

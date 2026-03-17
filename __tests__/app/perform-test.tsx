@@ -90,7 +90,7 @@ describe('Perform page ', () => {
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Distance')).toBeTruthy();
+        expect(getByText('Yards')).toBeTruthy();
         expect(getByText('Fairway')).toBeTruthy();
         expect(getByText('Rough')).toBeTruthy();
     });
@@ -113,7 +113,7 @@ describe('Perform page ', () => {
         });
 
         await waitFor(() => {
-            expect(getByText('Distance (feet)')).toBeTruthy();
+            expect(getByText('Feet')).toBeTruthy();
             expect(getByText('Make rate')).toBeTruthy();
             expect(getByText(/Source:/)).toBeTruthy();
         });

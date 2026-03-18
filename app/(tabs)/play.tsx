@@ -406,8 +406,8 @@ export default function Play() {
                                     .map(t => [t.RoundId as number, t.Total])
                             );
                             return (
-                                <View style={{ padding: 15 }}>
-                                    <Text style={[styles.subHeaderText, { textAlign: 'center' }]}>
+                                <View style={{ padding: 5 }}>
+                                    <Text style={styles.subHeaderText}>
                                         Round history
                                     </Text>
                                     <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.primary }]}>

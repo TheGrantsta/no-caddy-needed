@@ -6,10 +6,10 @@
 - [ ] Integrate Firebase iOS into project
 - [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
-- [ ] Click through the 7 Deadly Sins chart to map one sin over time
 - [ ] Support playing 6 x 3 hole 'courses'
 
 # Done
+- [X] Click through the 7 Deadly Sins chart to map one sin over time
 - [X] Amend App Store app asset
 - [X] Implement epic to create practice Reminders in app
 - [X] Amend colours to be primary, secondary, etc rather than specifying the colour, etc
@@ -57,6 +57,7 @@
 
 # Release notes
 * Golfers can add practice reminders with due dates so help practice effectively
-* Reduced white space on score input to minimise scrolling when playing and scroll to the top when clicking 'Next hole' to make the flow clearer
+* Reduced white space on score input to minimise scrolling when playing and scroll to the top when clicking 'Next hole' to make it clearer
 * Added ability to "continue" active round if the app closes, etc
+* Add "Average score by par" to help golfers
 * Fix bug mapping DeadlySinsTally counts to the database table fields

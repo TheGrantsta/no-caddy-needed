@@ -112,13 +112,6 @@ export default function DeadlySinsChart({ rounds }: Props) {
                             </View>
                         </TouchableOpacity>
                     ))}
-
-                    <View style={s.legend}>
-                        <View style={s.legendItem}>
-                            <View style={[s.legendDot, { backgroundColor: colours.red }]} />
-                            <Text style={s.legendText}>Biggest problem</Text>
-                        </View>
-                    </View>
                 </>
             )}
         </View>

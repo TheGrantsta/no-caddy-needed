@@ -133,12 +133,6 @@ describe('DeadlySinsChart component', () => {
         expect(bar6Style.width).toBe('40%');
     });
 
-    it('renders the legend', () => {
-        const { getByText } = render(<DeadlySinsChart rounds={mockRounds} />);
-
-        expect(getByText('Biggest problem')).toBeTruthy();
-    });
-
     describe('bar tap navigation', () => {
         const unambiguousRound: DeadlySinsRound[] = [
             { Id: 1, ThreePutts: 10, DoubleBogeys: 2, BogeysPar5: 3, BogeysInside9Iron: 4, DoubleChips: 1, TroubleOffTee: 6, Penalties: 8, Total: 34, RoundId: 1, Created_At: '15/06' },

@@ -1041,36 +1041,11 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
         },
-        legend: {
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginTop: 15,
-            paddingTop: 10,
-            borderTopWidth: 1,
-            borderTopColor: c.primary,
-        },
-        legendItem: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginHorizontal: 10,
-        },
-        legendDot: {
-            width: 10,
-            height: 10,
-            borderRadius: 5,
-            marginRight: 5,
-        },
-        legendText: {
-            color: c.text,
-            fontSize: fontSizes.smallestText,
-        },
         toggleHeader: {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
             marginBottom: 8,
-            borderBottomWidth: 0.5,
-            borderColor: c.primary,
         },
         chevron: {
             color: c.primary,

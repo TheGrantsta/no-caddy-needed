@@ -400,7 +400,7 @@ export default function Play() {
                             </View>
                         )}
 
-                        {!incompleteRound && <DeadlySinsChart key={String(historyFilter)} rounds={filteredDeadlySinsRounds} />}
+                        {!incompleteRound && <DeadlySinsChart key={String(historyFilter)} rounds={filteredDeadlySinsRounds} filter={historyFilter} />}
 
                         {!incompleteRound && roundHistory.length > 0 && (
                             <View testID="par-averages-container" style={styles.parAverages.container}>

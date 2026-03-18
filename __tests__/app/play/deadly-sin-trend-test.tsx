@@ -29,8 +29,9 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
+const mockUseLocalSearchParams = jest.fn().mockReturnValue({ sinKey: 'ThreePutts', label: '3-putts' });
 jest.mock('expo-router', () => ({
-    useLocalSearchParams: () => ({ sinKey: 'ThreePutts', label: '3-putts' }),
+    useLocalSearchParams: () => mockUseLocalSearchParams(),
     useRouter: () => ({ push: jest.fn(), back: jest.fn() }),
 }));
 
@@ -157,5 +158,50 @@ describe('DeadlySinTrendScreen', () => {
         const { getByTestId } = render(<DeadlySinTrendScreen />);
 
         expect(getByTestId('deadly-sin-trend-x-axis')).toBeTruthy();
+    });
+
+    describe('filter param', () => {
+        beforeEach(() => {
+            mockUseLocalSearchParams.mockReturnValue({ sinKey: 'ThreePutts', label: '3-putts' });
+        });
+
+        it('respects filter=1 to show only most recent round', () => {
+            mockUseLocalSearchParams.mockReturnValue({ sinKey: 'ThreePutts', label: '3-putts', filter: '1' });
+            const rounds = Array.from({ length: 5 }, (_, i) => makeRound(5 - i, i + 1, `${String(5 - i).padStart(2, '0')}/06`));
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
+
+            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(1);
+        });
+
+        it('respects filter=10 to show only 10 most recent rounds', () => {
+            mockUseLocalSearchParams.mockReturnValue({ sinKey: 'ThreePutts', label: '3-putts', filter: '10' });
+            const rounds = Array.from({ length: 15 }, (_, i) => makeRound(15 - i, i + 1, `${String(15 - i).padStart(2, '0')}/06`));
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
+
+            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(10);
+        });
+
+        it('shows up to MAX_ROUNDS when filter is all', () => {
+            mockUseLocalSearchParams.mockReturnValue({ sinKey: 'ThreePutts', label: '3-putts', filter: 'all' });
+            const rounds = Array.from({ length: 25 }, (_, i) => makeRound(25 - i, i + 1, `${String(25 - i).padStart(2, '0')}/06`));
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
+
+            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(20);
+        });
+
+        it('shows up to MAX_ROUNDS when no filter param provided', () => {
+            const rounds = Array.from({ length: 25 }, (_, i) => makeRound(25 - i, i + 1, `${String(25 - i).padStart(2, '0')}/06`));
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
+
+            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(20);
+        });
     });
 });

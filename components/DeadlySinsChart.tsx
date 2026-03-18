@@ -13,6 +13,7 @@ type CategoryTotal = {
 
 type Props = {
     rounds: DeadlySinsRound[];
+    filter?: 'all' | 1 | 10;
 };
 
 const CATEGORY_LABELS: { key: keyof DeadlySinsRound; label: string }[] = [
@@ -25,7 +26,7 @@ const CATEGORY_LABELS: { key: keyof DeadlySinsRound; label: string }[] = [
     { key: 'BogeysPar5', label: 'Bogeys on par 5' },
 ];
 
-export default function DeadlySinsChart({ rounds }: Props) {
+export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.deadlySinsChart;
@@ -77,7 +78,7 @@ export default function DeadlySinsChart({ rounds }: Props) {
                             style={s.barContainer}
                             onPress={() => router.push({
                                 pathname: '/play/deadly-sin-trend',
-                                params: { sinKey: category.key, label: category.label },
+                                params: { sinKey: category.key, label: category.label, filter: String(filter) },
                             })}
                         >
                             <View style={s.labelContainer}>

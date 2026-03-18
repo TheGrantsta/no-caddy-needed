@@ -98,12 +98,13 @@ function LineChart({ rounds, sinKey }: LineChartProps) {
 }
 
 export default function DeadlySinTrendScreen() {
-    const { sinKey, label } = useLocalSearchParams<{ sinKey: string; label: string }>();
+    const { sinKey, label, filter } = useLocalSearchParams<{ sinKey: string; label: string; filter?: string }>();
     const styles = useStyles();
     const s = styles.deadlySinTrend;
 
     const allRounds = getAllDeadlySinsRoundsService();
-    const rounds = allRounds.slice().reverse().slice(-MAX_ROUNDS);
+    const limit = filter === '1' ? 1 : filter === '10' ? 10 : MAX_ROUNDS;
+    const rounds = allRounds.slice().reverse().slice(-limit);
 
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>

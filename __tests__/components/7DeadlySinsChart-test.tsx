@@ -155,7 +155,7 @@ describe('DeadlySinsChart component', () => {
 
             expect(mockPush).toHaveBeenCalledWith({
                 pathname: '/play/deadly-sin-trend',
-                params: { sinKey: 'ThreePutts', label: '3-putts' },
+                params: { sinKey: 'ThreePutts', label: '3-putts', filter: 'all' },
             });
         });
 
@@ -176,6 +176,26 @@ describe('DeadlySinsChart component', () => {
 
             expect(mockPush).toHaveBeenCalledWith(
                 expect.objectContaining({ params: expect.objectContaining({ sinKey: 'DoubleChips' }) })
+            );
+        });
+
+        it('passes numeric filter as string in navigation params', () => {
+            const { getByTestId } = render(<DeadlySinsChart rounds={unambiguousRound} filter={1} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-chart-bar-row-0'));
+
+            expect(mockPush).toHaveBeenCalledWith(
+                expect.objectContaining({ params: expect.objectContaining({ filter: '1' }) })
+            );
+        });
+
+        it('passes filter=10 as string in navigation params', () => {
+            const { getByTestId } = render(<DeadlySinsChart rounds={unambiguousRound} filter={10} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-chart-bar-row-0'));
+
+            expect(mockPush).toHaveBeenCalledWith(
+                expect.objectContaining({ params: expect.objectContaining({ filter: '10' }) })
             );
         });
     });

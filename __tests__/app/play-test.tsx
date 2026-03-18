@@ -20,6 +20,7 @@ import {
     getSettingsService,
     saveSettingsService,
     getHolesPlayedForRoundService,
+    getParAveragesService,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
 
@@ -54,6 +55,7 @@ jest.mock('../../service/DbService', () => ({
     getRecentCourseNamesService: jest.fn(),
     getRecentPlayerNamesService: jest.fn(),
     getHolesPlayedForRoundService: jest.fn().mockReturnValue(0),
+    getParAveragesService: jest.fn().mockReturnValue({ par3: null, par4: null, par5: null }),
     getSettingsService: jest.fn().mockReturnValue({
         theme: 'dark',
         notificationsEnabled: true,
@@ -125,6 +127,7 @@ const mockGetRecentPlayerNames = getRecentPlayerNamesService as jest.Mock;
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
 const mockGetHolesPlayedForRound = getHolesPlayedForRoundService as jest.Mock;
+const mockGetParAverages = getParAveragesService as jest.Mock;
 
 describe('Play screen', () => {
     beforeEach(() => {
@@ -1919,6 +1922,80 @@ describe('Play screen', () => {
             });
 
             expect(mockGetAllDeadlySinsRounds.mock.calls.length).toBeGreaterThan(initialCount);
+        });
+    });
+
+    describe('par averages section', () => {
+        it('shows par averages section when round history exists', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01' },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('par-averages-container')).toBeTruthy();
+        });
+
+        it('hides par averages section when no round history', () => {
+            mockGetAllRoundHistory.mockReturnValue([]);
+
+            const { queryByTestId } = render(<Play />);
+
+            expect(queryByTestId('par-averages-container')).toBeNull();
+        });
+
+        it('shows average score for par 3 holes', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01' },
+            ]);
+            mockGetParAverages.mockReturnValue({ par3: 3.5, par4: null, par5: null });
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('par-averages-par3').props.children).toBe('3.50');
+        });
+
+        it('shows dash for par type with no data', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01' },
+            ]);
+            mockGetParAverages.mockReturnValue({ par3: null, par4: null, par5: null });
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('par-averages-par5').props.children).toBe('-');
+        });
+
+        it('passes filteredRoundHistory to getParAveragesService', () => {
+            const rounds = Array.from({ length: 3 }, (_, i) => ({
+                Id: i + 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
+            }));
+            mockGetAllRoundHistory.mockReturnValue(rounds);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('filter-button-1'));
+
+            const calls = mockGetParAverages.mock.calls;
+            const lastCall = calls[calls.length - 1][0];
+            expect(lastCall).toHaveLength(1);
+        });
+
+        it('recalculates par averages when filter changes', () => {
+            const rounds = Array.from({ length: 3 }, (_, i) => ({
+                Id: i + 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
+            }));
+            mockGetAllRoundHistory.mockReturnValue(rounds);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('filter-button-1'));
+            const callsAfterFilter1 = mockGetParAverages.mock.calls;
+            expect(callsAfterFilter1[callsAfterFilter1.length - 1][0]).toHaveLength(1);
+
+            fireEvent.press(getByTestId('filter-button-all'));
+            const callsAfterAll = mockGetParAverages.mock.calls;
+            expect(callsAfterAll[callsAfterAll.length - 1][0]).toHaveLength(3);
         });
     });
 

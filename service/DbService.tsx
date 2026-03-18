@@ -510,6 +510,37 @@ export const addPracticeReminderService = (label: string, scheduledFor: string, 
 
 export const deletePracticeReminderService = (id: number) => deletePracticeReminder(id);
 
+export type ParAverages = {
+    par3: number | null;
+    par4: number | null;
+    par5: number | null;
+};
+
+export const getParAveragesService = (rounds: Round[]): ParAverages => {
+    const totals: Record<number, { sum: number; count: number }> = {};
+
+    for (const round of rounds) {
+        const players = getRoundPlayers(round.Id) as RoundPlayer[];
+        const userPlayer = players.find(p => p.IsUser === 1);
+        if (!userPlayer) continue;
+
+        const holeScores = getRoundHoleScores(round.Id) as RoundHoleScore[];
+        const userScores = holeScores.filter(s => s.RoundPlayerId === userPlayer.Id);
+
+        for (const score of userScores) {
+            const par = score.HolePar;
+            if (!totals[par]) totals[par] = { sum: 0, count: 0 };
+            totals[par].sum += score.Score;
+            totals[par].count += 1;
+        }
+    }
+
+    const avg = (par: number): number | null =>
+        totals[par]?.count > 0 ? totals[par].sum / totals[par].count : null;
+
+    return { par3: avg(3), par4: avg(4), par5: avg(5) };
+};
+
 export const updateScorecardService = async (roundId: number, updatedScores: { id: number; score: number }[]): Promise<boolean> => {
     for (const s of updatedScores) {
         const success = await updateRoundHoleScore(s.id, s.score);

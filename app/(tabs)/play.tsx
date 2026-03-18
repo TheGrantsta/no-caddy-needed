@@ -27,10 +27,12 @@ import {
     getHolesPlayedForRoundService,
     getSettingsService,
     saveSettingsService,
+    getParAveragesService,
     Round,
     RoundPlayer,
     DeadlySinsRound,
     MultiplayerRoundScorecard,
+    ParAverages,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
 import { useStyles } from '../../hooks/useStyles';
@@ -296,6 +298,7 @@ export default function Play() {
     const isRoundActive = activeRoundId !== null;
 
     const filteredRoundHistory = historyFilter === 'all' ? roundHistory : roundHistory.slice(0, historyFilter);
+    const parAverages = getParAveragesService(filteredRoundHistory);
     const filteredRoundIds = new Set(filteredRoundHistory.map(r => r.Id));
     const filteredDeadlySinsRounds = historyFilter === 'all'
         ? deadlySinsRounds
@@ -398,6 +401,28 @@ export default function Play() {
                         )}
 
                         {!incompleteRound && <DeadlySinsChart key={String(historyFilter)} rounds={filteredDeadlySinsRounds} />}
+
+                        {!incompleteRound && roundHistory.length > 0 && (
+                            <View testID="par-averages-container" style={styles.parAverages.container}>
+                                <Text style={styles.parAverages.heading}>Average score by par</Text>
+                                <View style={styles.parAverages.row}>
+                                    {([3, 4, 5] as const).map(par => {
+                                        const val = parAverages[`par${par}` as keyof ParAverages];
+                                        return (
+                                            <View key={par} style={styles.parAverages.cell}>
+                                                <Text style={styles.parAverages.parLabel}>Par {par}</Text>
+                                                <Text
+                                                    testID={`par-averages-par${par}`}
+                                                    style={styles.parAverages.value}
+                                                >
+                                                    {val !== null ? val.toFixed(2) : '-'}
+                                                </Text>
+                                            </View>
+                                        );
+                                    })}
+                                </View>
+                            </View>
+                        )}
 
                         {!incompleteRound && roundHistory.length > 0 && (() => {
                             const deadlySinsMap = new Map<number, number>(

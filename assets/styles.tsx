@@ -1533,6 +1533,43 @@ export const createStyles = (c: ThemeColours) => ({
             paddingVertical: 15,
         },
     }),
+
+    parAverages: StyleSheet.create({
+        container: {
+            marginHorizontal: 16,
+            marginTop: 12,
+            marginBottom: 4,
+            padding: 12,
+            backgroundColor: c.primary + '22',
+            borderRadius: 8,
+        },
+        heading: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+            marginBottom: 8,
+            textAlign: 'center',
+        },
+        row: {
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+        },
+        cell: {
+            alignItems: 'center',
+            flex: 1,
+        },
+        parLabel: {
+            color: c.text,
+            fontSize: fontSizes.smallestText,
+            opacity: 0.7,
+        },
+        value: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+            marginTop: 2,
+        },
+    }),
 });
 
 export default createStyles(colours);

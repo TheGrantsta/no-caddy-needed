@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Play from '../../app/(tabs)/play';
+import * as Haptics from 'expo-haptics';
 
 import {
     startRoundService,
@@ -85,6 +86,11 @@ jest.mock('../../service/NotificationService', () => ({
     cancelRoundReminder: jest.fn(),
 }));
 
+jest.mock('expo-haptics', () => ({
+    impactAsync: jest.fn(),
+    ImpactFeedbackStyle: { Medium: 'medium' },
+}));
+
 const mockPush = jest.fn();
 jest.mock('expo-router', () => {
     const React = require('react');
@@ -128,6 +134,7 @@ const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
 const mockGetHolesPlayedForRound = getHolesPlayedForRoundService as jest.Mock;
 const mockGetParAverages = getParAveragesService as jest.Mock;
+const mockHapticsImpact = Haptics.impactAsync as jest.Mock;
 
 describe('Play screen', () => {
     beforeEach(() => {
@@ -673,6 +680,32 @@ describe('Play screen', () => {
             } finally {
                 spy.mockRestore();
             }
+        });
+
+        it('triggers haptic feedback when next hole saves successfully', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+            const { getByTestId, getByText } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('next-hole-button')).toBeTruthy();
+            });
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            await waitFor(() => {
+                expect(mockHapticsImpact).toHaveBeenCalledWith(
+                    Haptics.ImpactFeedbackStyle.Medium
+                );
+            });
         });
 
         it('submits default par scores when next #pressed without changing score', async () => {

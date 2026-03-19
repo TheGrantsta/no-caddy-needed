@@ -60,4 +60,5 @@
 * Reduced white space on score input to minimise scrolling when playing and scroll to the top when clicking 'Next hole' to make it clearer
 * Added ability to "continue" active round if the app closes, etc
 * Add "Average score by par" to help golfers
+* Add Haptic feedback when saving hole input values
 * Fix bug mapping DeadlySinsTally counts to the database table fields

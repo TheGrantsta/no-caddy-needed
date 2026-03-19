@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import * as Haptics from 'expo-haptics';
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
@@ -206,6 +207,7 @@ export default function Play() {
         const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
         const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
         if (success) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             const userScore = scores.find(s => {
                 const player = players.find(p => p.Id === s.playerId);
                 return player && player.IsUser === 1;

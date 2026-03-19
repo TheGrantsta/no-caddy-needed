@@ -15,6 +15,7 @@
     "lint": "expo lint",
     "ui:check": "node scripts/ui-diff.js",
     "ui:update": "node scripts/ui-update.js",
+    "metrics": "node scripts/metrics.js",
     "prepare": "husky"
   },
   "jest": {

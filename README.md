@@ -223,3 +223,13 @@ https://console.firebase.google.com/u/0/?pli=1
 ```
 https://console.firebase.google.com/u/0/?pli=1
 ```
+
+### Reporting project metrics
+
+It is possible within the project to capture and report metrics for the project like lines of code, number of files, number of database tables, dependencies, and size of the project on disc
+
+Useful for checking the project is not bloated
+
+```
+npm run metrics
+```

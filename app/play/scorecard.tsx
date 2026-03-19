@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useToast } from 'react-native-toast-notifications';
 import RoundScorecard from '../../components/RoundScorecard';
 import Scorecard from '../../components/Scorecard';
 import ScoreEditor from '../../components/ScoreEditor';
@@ -11,7 +10,6 @@ import {
     getRoundScorecardService,
     getMultiplayerScorecardService,
     updateScorecardService,
-    getDeadlySinsForRoundService,
     deleteRoundService,
     RoundHoleScore,
     MultiplayerRoundScorecard,
@@ -27,7 +25,6 @@ export default function ScorecardScreen() {
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
     const { roundId } = useLocalSearchParams<{ roundId: string }>();
-    const toast = useToast();
     const { showResult } = useAppToast();
     const router = useRouter();
 
@@ -37,7 +34,6 @@ export default function ScorecardScreen() {
     const [editedScores, setEditedScores] = useState<RoundHoleScore[]>([]);
     const [selectedScore, setSelectedScore] = useState<{ holeNumber: number; playerId: number } | null>(null);
     const [showSaveConfirm, setShowSaveConfirm] = useState(false);
-    const [deadlySinsRound, setDeadlySinsRound] = useState<DeadlySinsRound | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     useEffect(() => {
@@ -49,7 +45,6 @@ export default function ScorecardScreen() {
         setMultiplayerScorecard(mp);
         const sc = mp ? null : getRoundScorecardService(Number(roundId));
         setScorecard(sc);
-        setDeadlySinsRound(getDeadlySinsForRoundService(Number(roundId)));
     };
 
     const handleEdit = () => {

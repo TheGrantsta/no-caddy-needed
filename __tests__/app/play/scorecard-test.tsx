@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, getDeadlySinsForRoundService, deleteRoundService } from '../../../service/DbService';
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -24,7 +24,6 @@ jest.mock('../../../service/DbService', () => ({
     getRoundScorecardService: jest.fn(),
     getMultiplayerScorecardService: jest.fn(),
     updateScorecardService: jest.fn(),
-    getDeadlySinsForRoundService: jest.fn(),
     deleteRoundService: jest.fn(),
 }));
 
@@ -54,7 +53,6 @@ jest.mock('react-native-toast-notifications', () => ({
 const mockGetRoundScorecard = getRoundScorecardService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
 const mockUpdateScorecard = updateScorecardService as jest.Mock;
-const mockGetDeadlySinsForRound = getDeadlySinsForRoundService as jest.Mock;
 const mockDeleteRound = deleteRoundService as jest.Mock;
 
 const multiplayerData = {
@@ -382,50 +380,6 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('cancel-save-button'));
 
             expect(queryByTestId('confirm-save-button')).toBeNull();
-        });
-    });
-
-    describe('7 Deadly Sins chart', () => {
-        it('calls getDeadlySinsForRoundService with numeric roundId from URL params', () => {
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-            mockGetDeadlySinsForRound.mockReturnValue(null);
-
-            render(<ScorecardScreen />);
-
-            expect(mockGetDeadlySinsForRound).toHaveBeenCalledWith(1);
-        });
-
-        it('does not show 7 Deadly Sins chart when scorecard is displayed', () => {
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-            mockGetDeadlySinsForRound.mockReturnValue({
-                Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 4, Created_At: '15/06',
-            });
-
-            const { queryByText } = render(<ScorecardScreen />);
-
-            expect(queryByText('7 Deadly Sins')).toBeNull();
-        });
-
-        it('does not show 7 Deadly Sins chart when no 7 Deadly Sins data for the round', () => {
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-            mockGetDeadlySinsForRound.mockReturnValue(null);
-
-            const { queryByText } = render(<ScorecardScreen />);
-
-            expect(queryByText('7 Deadly Sins')).toBeNull();
-        });
-
-        it('does not show 7 Deadly Sins chart in edit mode', () => {
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-            mockGetDeadlySinsForRound.mockReturnValue({
-                Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 4, Created_At: '15/06',
-            });
-
-            const { getByTestId, queryByText } = render(<ScorecardScreen />);
-
-            fireEvent.press(getByTestId('edit-scorecard-button'));
-
-            expect(queryByText('7 Deadly Sins')).toBeNull();
         });
     });
 

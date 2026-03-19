@@ -271,40 +271,6 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
-    // Component style groups
-    smallButton: StyleSheet.create({
-        buttonContainer: {
-            width: 175,
-            height: 38,
-            margin: 5,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        button: {
-            borderRadius: 10,
-            borderColor: c.primary,
-            borderWidth: 1,
-            backgroundColor: c.mutedYellow,
-            width: '100%',
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'row',
-        },
-        buttonIcon: {
-            paddingRight: 8,
-        },
-        buttonLabel: {
-            color: c.text,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
-        selected: {
-            color: c.background,
-            backgroundColor: c.primary,
-        },
-    }),
-
     subMenu: StyleSheet.create({
         subMenuContainer: {
             padding: 7,
@@ -1267,25 +1233,6 @@ export const createStyles = (c: ThemeColours) => ({
             lineHeight: 30,
             fontSize: fontSizes.smallText,
             color: '#0a7ea4',
-        },
-    }),
-    collapsible: StyleSheet.create({
-        heading: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 6,
-        },
-        content: {
-            marginTop: 6,
-            marginLeft: 24,
-        },
-    }),
-
-    helloWave: StyleSheet.create({
-        text: {
-            fontSize: 28,
-            lineHeight: 32,
-            marginTop: -6,
         },
     }),
 

@@ -19,6 +19,7 @@ jest.mock('../../../hooks/useStyles', () => ({
 
 const mockShow = jest.fn();
 const mockBack = jest.fn();
+const mockPush = jest.fn();
 
 jest.mock('../../../service/DbService', () => ({
     getRoundScorecardService: jest.fn(),
@@ -34,6 +35,7 @@ jest.mock('expo-router', () => ({
     useLocalSearchParams: () => ({ roundId: '1' }),
     useRouter: () => ({
         back: mockBack,
+        push: mockPush,
     }),
 }));
 
@@ -616,6 +618,61 @@ describe('Scorecard screen', () => {
 
             expect(queryByTestId('confirm-delete-button')).toBeNull();
             expect(getByTestId('delete-round-button')).toBeTruthy();
+        });
+    });
+
+    describe('Analyse round button', () => {
+        it('renders analyse button for multiplayer scorecard', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            expect(getByTestId('analyse-round-button')).toBeTruthy();
+        });
+
+        it('does not render analyse button for legacy scorecard', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(null);
+            mockGetRoundScorecard.mockReturnValue({
+                round: { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '' },
+                holes: [{ Id: 1, RoundId: 1, HoleNumber: 1, ScoreRelativeToPar: 3 }],
+            });
+
+            const { queryByTestId } = render(<ScorecardScreen />);
+
+            expect(queryByTestId('analyse-round-button')).toBeNull();
+        });
+
+        it('does not render analyse button in edit mode', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+
+            expect(queryByTestId('analyse-round-button')).toBeNull();
+        });
+
+        it('does not render analyse button when delete confirmation is shown', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('delete-round-button'));
+
+            expect(queryByTestId('analyse-round-button')).toBeNull();
+        });
+
+        it('navigates to round-analysis screen with roundId when pressed', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('analyse-round-button'));
+
+            expect(mockPush).toHaveBeenCalledWith({
+                pathname: '/play/round-analysis',
+                params: { roundId: '1' },
+            });
         });
     });
 });

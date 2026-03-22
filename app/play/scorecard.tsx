@@ -247,6 +247,18 @@ export default function ScorecardScreen() {
                         {!isEditing && !showDeleteConfirm && (
                             <View style={styles.headerContainer}>
                                 <TouchableOpacity
+                                    testID="analyse-round-button"
+                                    style={styles.largeButton}
+                                    onPress={() => router.push({ pathname: '/play/round-analysis', params: { roundId } })}
+                                >
+                                    <Text style={styles.buttonText}>Analyse round</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {!isEditing && !showDeleteConfirm && (
+                            <View style={styles.headerContainer}>
+                                <TouchableOpacity
                                     testID="edit-scorecard-button"
                                     style={styles.largeButton}
                                     onPress={handleEdit}

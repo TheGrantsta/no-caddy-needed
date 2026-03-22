@@ -62,3 +62,4 @@
 * Add "Average score by par" to help golfers
 * Add Haptic feedback when saving hole input values
 * Fix bug mapping DeadlySinsTally counts to the database table fields
+* Fix display bug where 7 Deadly Sins tally would reset to 0 (when navigating away) even though the counts were maintained

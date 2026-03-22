@@ -82,6 +82,7 @@ export default function Play() {
     const [historyFilter, setHistoryFilter] = useState<1 | 10 | 'all'>('all');
     const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
     const scrollRef = useRef<ScrollView>(null);
+    const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const runningTotal = useMemo(
         () => Object.values(holeContributions).reduce((sum, c) => sum + c, 0),
@@ -114,12 +115,18 @@ export default function Play() {
 
     const onRefresh = () => {
         setRefreshing(true);
-        setTimeout(() => {
+        refreshTimerRef.current = setTimeout(() => {
             setRoundHistory(getAllRoundHistoryService());
             setDeadlySinsRounds(getAllDeadlySinsRoundsService());
             setRefreshing(false);
         }, 750);
     };
+
+    useEffect(() => {
+        return () => {
+            if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
+        };
+    }, []);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);
@@ -299,12 +306,32 @@ export default function Play() {
 
     const isRoundActive = activeRoundId !== null;
 
-    const filteredRoundHistory = historyFilter === 'all' ? roundHistory : roundHistory.slice(0, historyFilter);
-    const parAverages = getParAveragesService(filteredRoundHistory);
-    const filteredRoundIds = new Set(filteredRoundHistory.map(r => r.Id));
-    const filteredDeadlySinsRounds = historyFilter === 'all'
-        ? deadlySinsRounds
-        : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
+    const filteredRoundHistory = useMemo(
+        () => historyFilter === 'all' ? roundHistory : roundHistory.slice(0, historyFilter),
+        [roundHistory, historyFilter]
+    );
+    const parAverages = useMemo(
+        () => getParAveragesService(filteredRoundHistory),
+        [filteredRoundHistory]
+    );
+    const filteredRoundIds = useMemo(
+        () => new Set(filteredRoundHistory.map(r => r.Id)),
+        [filteredRoundHistory]
+    );
+    const filteredDeadlySinsRounds = useMemo(
+        () => historyFilter === 'all'
+            ? deadlySinsRounds
+            : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number)),
+        [deadlySinsRounds, historyFilter, filteredRoundIds]
+    );
+    const deadlySinsMap = useMemo(
+        () => new Map<number, number>(
+            filteredDeadlySinsRounds
+                .filter(t => t.RoundId != null)
+                .map(t => [t.RoundId as number, t.Total])
+        ),
+        [filteredDeadlySinsRounds]
+    );
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>
@@ -426,13 +453,7 @@ export default function Play() {
                             </View>
                         )}
 
-                        {!incompleteRound && roundHistory.length > 0 && (() => {
-                            const deadlySinsMap = new Map<number, number>(
-                                filteredDeadlySinsRounds
-                                    .filter(t => t.RoundId != null)
-                                    .map(t => [t.RoundId as number, t.Total])
-                            );
-                            return (
+                        {!incompleteRound && roundHistory.length > 0 && (
                                 <View style={{ padding: 5 }}>
                                     <Text style={styles.subHeaderText}>
                                         Round history
@@ -469,8 +490,7 @@ export default function Play() {
                                         ))}
                                     </ScrollView>
                                 </View>
-                            );
-                        })()}
+                        )}
                     </View>
                 )}
 

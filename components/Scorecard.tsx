@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { RoundPlayer, RoundHoleScore } from '../service/DbService';
 import { useStyles } from '@/hooks/useStyles';
@@ -20,9 +21,12 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
     const styles = useStyles();
     const s = styles.scorecard;
 
-    const holeNumbers = [...new Set(holeScores.map(sc => sc.HoleNumber))].sort((a, b) => a - b);
-    const front9Holes = holeNumbers.filter(h => h <= 9);
-    const back9Holes = holeNumbers.filter(h => h > 9);
+    const holeNumbers = useMemo(
+        () => [...new Set(holeScores.map(sc => sc.HoleNumber))].sort((a, b) => a - b),
+        [holeScores]
+    );
+    const front9Holes = useMemo(() => holeNumbers.filter(h => h <= 9), [holeNumbers]);
+    const back9Holes = useMemo(() => holeNumbers.filter(h => h > 9), [holeNumbers]);
 
     const getPlayerTotal = (playerId: number): number => {
         return holeScores

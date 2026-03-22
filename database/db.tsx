@@ -4,6 +4,15 @@ import { gameSeedData } from '../data/gameSeedData';
 
 const dbName = 'NoCaddyNeeded.db';
 
+let _syncDb: SQLite.SQLiteDatabase | null = null;
+
+function getSyncDb(): SQLite.SQLiteDatabase {
+    if (!_syncDb) {
+        _syncDb = SQLite.openDatabaseSync(dbName);
+    }
+    return _syncDb;
+}
+
 export type TableAmendment = {
     table: string;
     columnsToAdd: string[];
@@ -165,13 +174,11 @@ export const insertDrillResult = async (name: string, result: boolean, drillId: 
 };
 
 export const getWedgeChartDistanceNames = () => {
-    const db = SQLite.openDatabaseSync(dbName);
-    return db.getAllSync('SELECT * FROM WedgeChartDistanceNames ORDER BY SortOrder ASC;');
+    return getSyncDb().getAllSync('SELECT * FROM WedgeChartDistanceNames ORDER BY SortOrder ASC;');
 };
 
 export const getWedgeChartEntries = () => {
-    const db = SQLite.openDatabaseSync(dbName);
-    return db.getAllSync('SELECT * FROM WedgeChartEntries ORDER BY ClubSortOrder ASC, DistanceSortOrder ASC;');
+    return getSyncDb().getAllSync('SELECT * FROM WedgeChartEntries ORDER BY ClubSortOrder ASC, DistanceSortOrder ASC;');
 };
 
 export const insertWedgeChart = async (
@@ -180,12 +187,11 @@ export const insertWedgeChart = async (
 ): Promise<boolean> => {
     let success = true;
     try {
-        const db = SQLite.openDatabaseSync(dbName);
-        db.execSync('DELETE FROM WedgeChartDistanceNames');
-        db.execSync('DELETE FROM WedgeChartEntries');
+        getSyncDb().execSync('DELETE FROM WedgeChartDistanceNames');
+        getSyncDb().execSync('DELETE FROM WedgeChartEntries');
 
         for (const dn of distanceNames) {
-            const statement = db.prepareSync(
+            const statement = getSyncDb().prepareSync(
                 'INSERT INTO WedgeChartDistanceNames (Name, SortOrder) VALUES ($Name, $SortOrder)'
             );
             try {
@@ -196,7 +202,7 @@ export const insertWedgeChart = async (
         }
 
         for (const entry of entries) {
-            const statement = db.prepareSync(
+            const statement = getSyncDb().prepareSync(
                 'INSERT INTO WedgeChartEntries (Club, DistanceName, Distance, ClubSortOrder, DistanceSortOrder) VALUES ($Club, $DistanceName, $Distance, $ClubSortOrder, $DistanceSortOrder)'
             );
             try {
@@ -244,8 +250,7 @@ export const getAllDeadlySinsRounds = () => {
 };
 
 export const getDeadlySinsRoundByRoundId = (roundId: number) => {
-    const db = SQLite.openDatabaseSync(dbName);
-    const rows = db.getAllSync('SELECT * FROM DeadlySinsRounds WHERE RoundId = ?;', [roundId]);
+    const rows = getSyncDb().getAllSync('SELECT * FROM DeadlySinsRounds WHERE RoundId = ?;', [roundId]);
     return rows.length > 0 ? rows[0] : null;
 };
 
@@ -256,8 +261,7 @@ export const getAllDrillHistory = () => {
 }
 
 export const getDrillsByCategory = (category: string) => {
-    const db = SQLite.openDatabaseSync(dbName);
-    return db.getAllSync(
+    return getSyncDb().getAllSync(
         'SELECT * FROM Drills WHERE Category = ? AND IsDeleted = 0 ORDER BY Label ASC;',
         [category]
     );
@@ -369,51 +373,43 @@ export const updateRound = async (roundId: number, totalScore: number): Promise<
 };
 
 export const getRoundById = (roundId: number) => {
-    const db = SQLite.openDatabaseSync(dbName);
-    const rows = db.getAllSync('SELECT * FROM Rounds WHERE Id = ?;', [roundId]);
+    const rows = getSyncDb().getAllSync('SELECT * FROM Rounds WHERE Id = ?;', [roundId]);
     return rows.length > 0 ? rows[0] : null;
 };
 
 export const getActiveRound = () => {
-    const db = SQLite.openDatabaseSync(dbName);
-    const rows = db.getAllSync('SELECT * FROM Rounds WHERE IsCompleted = 0 ORDER BY Id DESC LIMIT 1;');
+    const rows = getSyncDb().getAllSync('SELECT * FROM Rounds WHERE IsCompleted = 0 ORDER BY Id DESC LIMIT 1;');
     return rows.length > 0 ? rows[0] : null;
 };
 
 export const getAllRounds = () => {
-    const db = SQLite.openDatabaseSync(dbName);
-    return db.getAllSync('SELECT * FROM Rounds WHERE IsCompleted = 1 ORDER BY Id DESC;');
+    return getSyncDb().getAllSync('SELECT * FROM Rounds WHERE IsCompleted = 1 ORDER BY Id DESC;');
 };
 
 export const getDistinctCourseNames = () => {
-    const db = SQLite.openDatabaseSync(dbName);
-    return db.getAllSync("SELECT DISTINCT CourseName FROM Rounds WHERE CourseName IS NOT NULL AND CourseName != '' ORDER BY Id DESC;");
+    return getSyncDb().getAllSync("SELECT DISTINCT CourseName FROM Rounds WHERE CourseName IS NOT NULL AND CourseName != '' ORDER BY Id DESC;");
 };
 
 export const getDistinctPlayerNames = () => {
-    const db = SQLite.openDatabaseSync(dbName);
-    return db.getAllSync("SELECT DISTINCT PlayerName FROM RoundPlayers WHERE IsUser = 0 AND PlayerName IS NOT NULL AND PlayerName != '' ORDER BY Id DESC;");
+    return getSyncDb().getAllSync("SELECT DISTINCT PlayerName FROM RoundPlayers WHERE IsUser = 0 AND PlayerName IS NOT NULL AND PlayerName != '' ORDER BY Id DESC;");
 };
 
 export const getHolesPlayedForRound = (roundId: number): number => {
-    const db = SQLite.openDatabaseSync(dbName);
-    const rows = db.getAllSync('SELECT COUNT(DISTINCT HoleNumber) as count FROM RoundHoleScores WHERE RoundId = ?;', [roundId]) as { count: number }[];
+    const rows = getSyncDb().getAllSync('SELECT COUNT(DISTINCT HoleNumber) as count FROM RoundHoleScores WHERE RoundId = ?;', [roundId]) as { count: number }[];
     return rows[0]?.count ?? 0;
 };
 
 export const getClubDistances = () => {
-    const db = SQLite.openDatabaseSync(dbName);
-    return db.getAllSync('SELECT * FROM ClubDistances ORDER BY CarryDistance DESC;');
+    return getSyncDb().getAllSync('SELECT * FROM ClubDistances ORDER BY CarryDistance DESC;');
 };
 
 export const insertClubDistances = async (distances: { Club: string; CarryDistance: number; }[]): Promise<boolean> => {
     let success = true;
     try {
-        const db = SQLite.openDatabaseSync(dbName);
-        db.execSync('DELETE FROM ClubDistances');
+        getSyncDb().execSync('DELETE FROM ClubDistances');
 
         for (const item of distances) {
-            const statement = db.prepareSync(
+            const statement = getSyncDb().prepareSync(
                 'INSERT INTO ClubDistances (Club, CarryDistance) VALUES ($Club, $CarryDistance)'
             );
 
@@ -450,8 +446,7 @@ export const insertRoundPlayer = async (roundId: number, playerName: string, isU
 };
 
 export const getRoundPlayers = (roundId: number) => {
-    const db = SQLite.openDatabaseSync(dbName);
-    return db.getAllSync('SELECT * FROM RoundPlayers WHERE RoundId = ? ORDER BY SortOrder ASC;', [roundId]);
+    return getSyncDb().getAllSync('SELECT * FROM RoundPlayers WHERE RoundId = ? ORDER BY SortOrder ASC;', [roundId]);
 };
 
 export const insertRoundHoleScore = async (roundId: number, roundPlayerId: number, holeNumber: number, holePar: number, score: number): Promise<boolean> => {
@@ -494,8 +489,7 @@ export const deleteRoundHoleScoresByHole = async (roundId: number, holeNumber: n
 };
 
 export const getRoundHoleScores = (roundId: number) => {
-    const db = SQLite.openDatabaseSync(dbName);
-    return db.getAllSync('SELECT * FROM RoundHoleScores WHERE RoundId = ? ORDER BY HoleNumber ASC, RoundPlayerId ASC;', [roundId]);
+    return getSyncDb().getAllSync('SELECT * FROM RoundHoleScores WHERE RoundId = ? ORDER BY HoleNumber ASC, RoundPlayerId ASC;', [roundId]);
 };
 
 export const updateRoundHoleScore = async (id: number, score: number): Promise<boolean> => {
@@ -559,18 +553,16 @@ export const deleteRound = async (roundId: number): Promise<boolean> => {
 };
 
 export const getSettings = () => {
-    const db = SQLite.openDatabaseSync(dbName);
-    const rows = db.getAllSync('SELECT * FROM Settings LIMIT 1;');
+    const rows = getSyncDb().getAllSync('SELECT * FROM Settings LIMIT 1;');
     return rows.length > 0 ? rows[0] : null;
 };
 
 export const saveSettings = async (theme: string, notificationsEnabled: number, voice: string, soundsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number, homeOnboardingSeen: number, practiceOnboardingSeen: number): Promise<boolean> => {
     let success = true;
     try {
-        const db = SQLite.openDatabaseSync(dbName);
-        db.execSync('DELETE FROM Settings');
+        getSyncDb().execSync('DELETE FROM Settings');
 
-        const statement = db.prepareSync(
+        const statement = getSyncDb().prepareSync(
             'INSERT INTO Settings (Theme, NotificationsEnabled, Voice, SoundsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen, HomeOnboardingSeen, PracticeOnboardingSeen) VALUES ($Theme, $NotificationsEnabled, $Voice, $SoundsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen, $HomeOnboardingSeen, $PracticeOnboardingSeen)'
         );
 
@@ -587,8 +579,7 @@ export const saveSettings = async (theme: string, notificationsEnabled: number, 
 };
 
 export const getGamesByCategory = (category: string) => {
-    const db = SQLite.openDatabaseSync(dbName);
-    return db.getAllSync(
+    return getSyncDb().getAllSync(
         'SELECT * FROM Games WHERE Category = ? AND IsDeleted = 0 ORDER BY Header ASC;',
         [category]
     );
@@ -677,8 +668,7 @@ export const insertPracticeReminder = async (label: string, scheduledFor: string
 };
 
 export const getAllPracticeReminders = () => {
-    const db = SQLite.openDatabaseSync(dbName);
-    return db.getAllSync('SELECT * FROM PracticeReminders ORDER BY Id DESC;');
+    return getSyncDb().getAllSync('SELECT * FROM PracticeReminders ORDER BY Id DESC;');
 };
 
 export const deletePracticeReminder = async (id: number): Promise<boolean> => {
@@ -700,11 +690,27 @@ export const deletePracticeReminder = async (id: number): Promise<boolean> => {
     return success;
 };
 
+export const getAllRoundsWithPlayersAndScores = () => {
+    const sql = `
+        SELECT
+            r.Id, r.TotalScore, r.StartTime, r.EndTime, r.IsCompleted, r.CourseName, r.Created_At,
+            rp.Id AS UserPlayerId,
+            SUM(CASE WHEN rhs.RoundPlayerId = rp.Id THEN rhs.Score ELSE NULL END) AS StrokeTotal,
+            COUNT(DISTINCT rhs.HoleNumber) AS HolesPlayed
+        FROM Rounds r
+        LEFT JOIN RoundPlayers rp ON rp.RoundId = r.Id AND rp.IsUser = 1
+        LEFT JOIN RoundHoleScores rhs ON rhs.RoundId = r.Id
+        WHERE r.IsCompleted = 1
+        GROUP BY r.Id
+        ORDER BY r.Id DESC;
+    `;
+    return getSyncDb().getAllSync(sql);
+};
+
 function get(sql: string) {
     const rows: any[] = [];
-    const db = SQLite.openDatabaseSync(dbName);
 
-    const allRows = db.getAllSync(sql);
+    const allRows = getSyncDb().getAllSync(sql);
 
     allRows.forEach((item) => {
         rows.push(item);

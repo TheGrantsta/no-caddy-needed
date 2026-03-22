@@ -17,7 +17,7 @@ import {
     updateRound,
     getRoundById,
     getActiveRound,
-    getAllRounds,
+    getAllRoundsWithPlayersAndScores,
     insertRoundPlayer,
     getRoundPlayers,
     insertRoundHoleScore,
@@ -33,7 +33,7 @@ jest.mock('../../database/db', () => ({
     updateRound: jest.fn(),
     getRoundById: jest.fn(),
     getActiveRound: jest.fn(),
-    getAllRounds: jest.fn(),
+    getAllRoundsWithPlayersAndScores: jest.fn(),
     insertRoundPlayer: jest.fn(),
     getRoundPlayers: jest.fn(),
     insertRoundHoleScore: jest.fn(),
@@ -48,7 +48,7 @@ const mockInsertRound = insertRound as jest.Mock;
 const mockUpdateRound = updateRound as jest.Mock;
 const mockGetRoundById = getRoundById as jest.Mock;
 const mockGetActiveRound = getActiveRound as jest.Mock;
-const mockGetAllRounds = getAllRounds as jest.Mock;
+const mockGetAllRoundsWithPlayersAndScores = getAllRoundsWithPlayersAndScores as jest.Mock;
 const mockInsertRoundPlayer = insertRoundPlayer as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayers as jest.Mock;
 const mockInsertRoundHoleScore = insertRoundHoleScore as jest.Mock;
@@ -178,13 +178,10 @@ describe('getActiveRoundService', () => {
 describe('getAllRoundHistoryService', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        mockGetHolesPlayedForRound.mockReturnValue(18);
-        mockGetRoundPlayers.mockReturnValue([]);
-        mockGetRoundHoleScores.mockReturnValue([]);
     });
 
     it('returns empty array when no rounds exist', () => {
-        mockGetAllRounds.mockReturnValue([]);
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([]);
 
         const result = getAllRoundHistoryService();
 
@@ -192,10 +189,9 @@ describe('getAllRoundHistoryService', () => {
     });
 
     it('includes HolesPlayed in returned rounds', () => {
-        mockGetAllRounds.mockReturnValue([
-            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null, UserPlayerId: 10, StrokeTotal: 72, HolesPlayed: 9 },
         ]);
-        mockGetHolesPlayedForRound.mockReturnValue(9);
 
         const result = getAllRoundHistoryService();
 
@@ -203,8 +199,8 @@ describe('getAllRoundHistoryService', () => {
     });
 
     it('returns formatted rounds with dd/mm dates', () => {
-        mockGetAllRounds.mockReturnValue([
-            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: 'St Andrews' },
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: 'St Andrews', UserPlayerId: null, StrokeTotal: null, HolesPlayed: 0 },
         ]);
 
         const result = getAllRoundHistoryService();
@@ -215,9 +211,9 @@ describe('getAllRoundHistoryService', () => {
     });
 
     it('returns multiple rounds sorted by most recent', () => {
-        mockGetAllRounds.mockReturnValue([
-            { Id: 2, TotalScore: -1, IsCompleted: 1, StartTime: '2025-07-01T10:00:00.000Z', EndTime: '2025-07-01T14:00:00.000Z', Created_At: '2025-07-01T10:00:00.000Z', CourseName: 'Pebble Beach' },
-            { Id: 1, TotalScore: 5, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 2, TotalScore: -1, IsCompleted: 1, StartTime: '2025-07-01T10:00:00.000Z', EndTime: '2025-07-01T14:00:00.000Z', Created_At: '2025-07-01T10:00:00.000Z', CourseName: 'Pebble Beach', UserPlayerId: null, StrokeTotal: null, HolesPlayed: 0 },
+            { Id: 1, TotalScore: 5, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null, UserPlayerId: null, StrokeTotal: null, HolesPlayed: 0 },
         ]);
 
         const result = getAllRoundHistoryService();
@@ -228,8 +224,8 @@ describe('getAllRoundHistoryService', () => {
     });
 
     it('includes CourseName in returned rounds', () => {
-        mockGetAllRounds.mockReturnValue([
-            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: 'St Andrews' },
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: 'St Andrews', UserPlayerId: null, StrokeTotal: null, HolesPlayed: 0 },
         ]);
 
         const result = getAllRoundHistoryService();
@@ -238,8 +234,8 @@ describe('getAllRoundHistoryService', () => {
     });
 
     it('returns null CourseName when not set', () => {
-        mockGetAllRounds.mockReturnValue([
-            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null, UserPlayerId: null, StrokeTotal: null, HolesPlayed: 0 },
         ]);
 
         const result = getAllRoundHistoryService();
@@ -247,16 +243,9 @@ describe('getAllRoundHistoryService', () => {
         expect(result[0].CourseName).toBeNull();
     });
 
-    it('computes StrokeTotal by summing user player hole scores', () => {
-        mockGetAllRounds.mockReturnValue([
-            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
-        ]);
-        mockGetRoundPlayers.mockReturnValue([
-            { Id: 10, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
-        ]);
-        mockGetRoundHoleScores.mockReturnValue([
-            { Id: 1, RoundId: 1, RoundPlayerId: 10, HoleNumber: 1, HolePar: 4, Score: 5 },
-            { Id: 2, RoundId: 1, RoundPlayerId: 10, HoleNumber: 2, HolePar: 4, Score: 4 },
+    it('computes StrokeTotal from pre-joined data', () => {
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null, UserPlayerId: 10, StrokeTotal: 9, HolesPlayed: 2 },
         ]);
 
         const result = getAllRoundHistoryService();
@@ -265,13 +254,9 @@ describe('getAllRoundHistoryService', () => {
     });
 
     it('returns null StrokeTotal when user player has no hole scores', () => {
-        mockGetAllRounds.mockReturnValue([
-            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null, UserPlayerId: 10, StrokeTotal: null, HolesPlayed: 0 },
         ]);
-        mockGetRoundPlayers.mockReturnValue([
-            { Id: 10, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
-        ]);
-        mockGetRoundHoleScores.mockReturnValue([]);
 
         const result = getAllRoundHistoryService();
 
@@ -279,14 +264,8 @@ describe('getAllRoundHistoryService', () => {
     });
 
     it('returns null StrokeTotal when no user player exists for the round', () => {
-        mockGetAllRounds.mockReturnValue([
-            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
-        ]);
-        mockGetRoundPlayers.mockReturnValue([
-            { Id: 10, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 0 },
-        ]);
-        mockGetRoundHoleScores.mockReturnValue([
-            { Id: 1, RoundId: 1, RoundPlayerId: 10, HoleNumber: 1, HolePar: 4, Score: 5 },
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null, UserPlayerId: null, StrokeTotal: null, HolesPlayed: 0 },
         ]);
 
         const result = getAllRoundHistoryService();
@@ -294,22 +273,14 @@ describe('getAllRoundHistoryService', () => {
         expect(result[0].StrokeTotal).toBeNull();
     });
 
-    it('only sums scores for the user player not other players', () => {
-        mockGetAllRounds.mockReturnValue([
-            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: null },
-        ]);
-        mockGetRoundPlayers.mockReturnValue([
-            { Id: 10, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
-            { Id: 11, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 1 },
-        ]);
-        mockGetRoundHoleScores.mockReturnValue([
-            { Id: 1, RoundId: 1, RoundPlayerId: 10, HoleNumber: 1, HolePar: 4, Score: 5 },
-            { Id: 2, RoundId: 1, RoundPlayerId: 11, HoleNumber: 1, HolePar: 4, Score: 6 },
+    it('uses HolesPlayed of 0 when no scores exist', () => {
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 0, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: null, Created_At: '2025-06-15T10:00:00.000Z', CourseName: null, UserPlayerId: null, StrokeTotal: null, HolesPlayed: null },
         ]);
 
         const result = getAllRoundHistoryService();
 
-        expect(result[0].StrokeTotal).toBe(5);
+        expect(result[0].HolesPlayed).toBe(0);
     });
 });
 

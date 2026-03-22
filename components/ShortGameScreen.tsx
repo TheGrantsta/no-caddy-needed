@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { insertDrillResultService, getDrillsByCategoryService, deleteDrillService, restoreDrillService, getGamesByCategoryService, deleteGameService, restoreGameService } from "@/service/DbService";
@@ -18,6 +18,8 @@ import fontSizes from "@/assets/font-sizes";
 type Props = {
     config: ShortGameConfig;
 };
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ShortGameScreen = ({ config }: Props) => {
     const { category, drillsFooter, gamesFooter } = config;
@@ -59,8 +61,6 @@ const ShortGameScreen = ({ config }: Props) => {
         return () => clearTimeout(timer);
     }, [lastDeletedDrillId]);
 
-    const { width } = Dimensions.get('window');
-
     const categoryCapitalized = category.charAt(0).toUpperCase() + category.slice(1);
 
     const handleSubMenu = (sectionName: string) => {
@@ -79,17 +79,17 @@ const ShortGameScreen = ({ config }: Props) => {
 
     const handleGameScroll = (event: any) => {
         const scrollPosition = event.nativeEvent.contentOffset.x;
-        const index = Math.round(scrollPosition / width);
+        const index = Math.round(scrollPosition / SCREEN_WIDTH);
         setGameActiveIndex(index);
     };
 
     const handleDrillScroll = (event: any) => {
         const scrollPosition = event.nativeEvent.contentOffset.x;
-        const index = Math.round(scrollPosition / width);
+        const index = Math.round(scrollPosition / SCREEN_WIDTH);
         setDrillActiveIndex(index);
     };
 
-    const renderGameItem = ({ item }: { item: GameData }) => (
+    const renderGameItem = useCallback(({ item }: { item: GameData }) => (
         <View style={styles.scrollItemContainer}>
             <View style={[styles.container, styles.scrollWrapper, { alignSelf: 'stretch' }]}>
                 <ScrollView testID='game-item-scroll' nestedScrollEnabled>
@@ -110,9 +110,9 @@ const ShortGameScreen = ({ config }: Props) => {
                 </ScrollView>
             </View>
         </View>
-    );
+    ), [styles, category, setLastDeletedGameId, setGames]);
 
-    const renderDrillItem = ({ item }: { item: DrillData }) => (
+    const renderDrillItem = useCallback(({ item }: { item: DrillData }) => (
         <View style={styles.scrollItemContainer}>
             <View style={[styles.container, styles.scrollWrapper, { alignSelf: 'stretch' }]}>
                 <ScrollView testID='drill-item-scroll' nestedScrollEnabled>
@@ -136,7 +136,7 @@ const ShortGameScreen = ({ config }: Props) => {
                 </ScrollView>
             </View>
         </View>
-    );
+    ), [styles, category, saveDrillResultHandle, setLastDeletedDrillId, setDrills]);
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -237,7 +237,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                                 showsHorizontalScrollIndicator={false}
                                                 onScroll={handleDrillScroll}
                                                 renderItem={renderDrillItem}
-                                                keyExtractor={(_, index) => index.toString()}
+                                                keyExtractor={(item, index) => item.id?.toString() ?? index.toString()}
                                             />
                                         </View>
 
@@ -314,7 +314,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                                         showsHorizontalScrollIndicator={false}
                                                         onScroll={handleGameScroll}
                                                         renderItem={renderGameItem}
-                                                        keyExtractor={(_, index) => index.toString()}
+                                                        keyExtractor={(item, index) => item.id?.toString() ?? index.toString()}
                                                     />
                                                 </View>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -33,19 +33,21 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
     const [isOpen, setIsOpen] = useState(true);
     const router = useRouter();
 
+    const categories = useMemo((): CategoryTotal[] => {
+        const cats = CATEGORY_LABELS.map(({ key, label }) => ({
+            label,
+            key,
+            count: rounds.reduce((sum, round) => sum + (round[key] as number), 0),
+        }));
+        cats.sort((a, b) => b.count - a.count);
+        return cats;
+    }, [rounds]);
+
+    const maxCount = useMemo(() => Math.max(...categories.map(c => c.count)), [categories]);
+
     if (rounds.length === 0 || rounds.every(r => r.Total === 0)) {
         return null;
     }
-
-    const categories: CategoryTotal[] = CATEGORY_LABELS.map(({ key, label }) => ({
-        label,
-        key,
-        count: rounds.reduce((sum, round) => sum + (round[key] as number), 0),
-    }));
-
-    categories.sort((a, b) => b.count - a.count);
-
-    const maxCount = Math.max(...categories.map(c => c.count));
 
     const getBarColor = (index: number) => {
         if (index === 0) return colours.red;

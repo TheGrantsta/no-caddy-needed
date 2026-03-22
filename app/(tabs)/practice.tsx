@@ -19,18 +19,20 @@ const ONBOARDING_STEPS = [
   { text: 'Check your history to track drill results over time and spot areas for improvement.' },
 ];
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
 export default function Practice() {
   const styles = useStyles();
   const colours = useThemeColours();
   const { landscapePadding } = useOrientation();
-  const settings = getSettingsService();
-  const [showOnboarding, setShowOnboarding] = useState(!settings.practiceOnboardingSeen);
+  const [showOnboarding, setShowOnboarding] = useState(() => !getSettingsService().practiceOnboardingSeen);
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('short-game');
   const [loading, setLoading] = useState(true);
   const [drillHistoryIndex, setDrillHistoryIndex] = useState(0);
   const [drillHistory, setDrillHistory] = useState<any[]>([]);
   const flatListRef = useRef(null);
+  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const points = ['Intention: practice with a purpose!', 'Evaluate: be honest with yourself - identify the shots you avoid (or can\'t play) and give yourself time to improve', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
 
@@ -65,19 +67,16 @@ export default function Practice() {
     }
   };
 
-  const { width } = Dimensions.get('window');
-
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollPosition / width);
+    const index = Math.round(scrollPosition / SCREEN_WIDTH);
 
     setDrillHistoryIndex(index);
   };
 
   const onRefresh = () => {
     setRefreshing(true);
-
-    setTimeout(() => {
+    refreshTimerRef.current = setTimeout(() => {
       fetchData();
       setRefreshing(false);
     }, 750);
@@ -85,6 +84,9 @@ export default function Practice() {
 
   useEffect(() => {
     fetchData();
+    return () => {
+      if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
+    };
   }, []);
 
   return (
@@ -265,7 +267,7 @@ export default function Practice() {
                           data={item}
                           keyExtractor={(_, index) => index.toString()}
                           renderItem={({ item }) => (
-                            <View style={[styles.horizontalScrollContainer, { width: width - 50 }]}>
+                            <View style={[styles.horizontalScrollContainer, { width: SCREEN_WIDTH - 50 }]}>
                               <View style={[{ flexDirection: 'row' }]}>
 
                                 <Text style={[styles.cell, { textAlign: 'left', flex: 7 / 12, borderWidth: 0 }]}>

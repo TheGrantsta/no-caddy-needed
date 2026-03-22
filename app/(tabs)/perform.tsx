@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Dimensions, FlatList, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import Chevrons from '../../components/Chevrons';
@@ -6,6 +6,8 @@ import SubMenu from '../../components/SubMenu';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function Perform() {
   const styles = useStyles();
@@ -17,8 +19,6 @@ export default function Perform() {
   const flatListRef = useRef(null);
 
   const points = ['Target: play for your shot dispersion', 'Aim: think shotgun pattern', 'Strategy: favour the "fat" side', 'Eliminate:  big numbers by playing away from water & severe hazards'];
-
-  const { width } = Dimensions.get('window');
 
   const getApproachShotStats = () => {
     const approachStats: any[] = [];
@@ -86,15 +86,15 @@ export default function Perform() {
 
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollPosition / width);
+    const index = Math.round(scrollPosition / SCREEN_WIDTH);
     setActiveIndex(index);
   };
 
-  const renderItem = ({ item }: any) => (
+  const renderItem = useCallback(({ item }: any) => (
     <ScrollView style={[styles.container, styles.scrollWrapper, { maxHeight: 350, overflow: 'hidden' }]}>
       {
         item.map((row: any, rowIndex: number) => (
-          <View key={rowIndex} style={[styles.row, { width: width * 0.9 }]}>
+          <View key={rowIndex} style={[styles.row, { width: SCREEN_WIDTH * 0.9 }]}>
             {row.map((cell: any, colIndex: number) => (
               <View key={colIndex} style={{
                 flex: 1, padding: 3, alignItems: "center", justifyContent: "center",
@@ -107,7 +107,7 @@ export default function Perform() {
           </View>
         ))}
     </ScrollView>
-  );
+  ), [styles]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

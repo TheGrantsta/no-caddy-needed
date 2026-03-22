@@ -31,6 +31,7 @@ import {
     deleteRoundHoleScoresByHole,
     updateRoundTotalScore,
     deleteRound,
+    getAllRoundsWithPlayersAndScores,
     getSettings,
     saveSettings,
     getGamesByCategory,
@@ -335,35 +336,17 @@ export const getActiveRoundService = (): Round | null => {
 };
 
 export const getAllRoundHistoryService = (): Round[] => {
-    const rounds: Round[] = [];
-
-    getAllRounds().forEach((round: any) => {
-        const players = getRoundPlayers(round.Id) as RoundPlayer[];
-        const userPlayer = players.find(p => p.IsUser === 1);
-
-        let strokeTotal: number | null = null;
-        if (userPlayer) {
-            const holeScores = getRoundHoleScores(round.Id) as RoundHoleScore[];
-            const userScores = holeScores.filter(s => s.RoundPlayerId === userPlayer.Id);
-            if (userScores.length > 0) {
-                strokeTotal = userScores.reduce((sum, s) => sum + s.Score, 0);
-            }
-        }
-
-        rounds.push({
-            Id: round.Id,
-            TotalScore: round.TotalScore,
-            StrokeTotal: strokeTotal,
-            StartTime: round.StartTime,
-            EndTime: round.EndTime,
-            IsCompleted: round.IsCompleted,
-            CourseName: round.CourseName ?? null,
-            Created_At: getTwoDigitDayAndMonth(round.Created_At),
-            HolesPlayed: getHolesPlayedForRound(round.Id),
-        });
-    });
-
-    return rounds;
+    return getAllRoundsWithPlayersAndScores().map((row: any) => ({
+        Id: row.Id,
+        TotalScore: row.TotalScore,
+        StrokeTotal: row.UserPlayerId ? (row.StrokeTotal ?? null) : null,
+        StartTime: row.StartTime,
+        EndTime: row.EndTime,
+        IsCompleted: row.IsCompleted,
+        CourseName: row.CourseName ?? null,
+        Created_At: getTwoDigitDayAndMonth(row.Created_At),
+        HolesPlayed: row.HolesPlayed ?? 0,
+    }));
 };
 
 export const deleteRoundService = async (roundId: number): Promise<boolean> => {

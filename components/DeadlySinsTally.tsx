@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 
@@ -35,31 +35,37 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     const [isOpen, setIsOpen] = useState(true);
 
     // Order matches counters array: troubleOffTee, penalties, threePutts, bogeysInside9Iron, doubleChips, doubleBogeys, bogeysPar5
-    const values = [troubleOffTee, penalties, threePutts, bogeysInside9Iron, doubleChips, doubleBogeys, bogeysPar5];
-    const setters = [setTroubleOffTee, setPenalties, setThreePutts, setBogeysInside9Iron, setDoubleChips, setDoubleBogeys, setBogeysPar5];
+    const values = useMemo(
+        () => [troubleOffTee, penalties, threePutts, bogeysInside9Iron, doubleChips, doubleBogeys, bogeysPar5],
+        [troubleOffTee, penalties, threePutts, bogeysInside9Iron, doubleChips, doubleBogeys, bogeysPar5]
+    );
+    const setters = useMemo(
+        () => [setTroubleOffTee, setPenalties, setThreePutts, setBogeysInside9Iron, setDoubleChips, setDoubleBogeys, setBogeysPar5],
+        []
+    );
 
-    const notifyValuesChange = (newValues: number[]) => {
+    const notifyValuesChange = useCallback((newValues: number[]) => {
         if (onValuesChange) {
             // Pass in callback signature order: (threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties)
             onValuesChange(newValues[2], newValues[5], newValues[6], newValues[3], newValues[4], newValues[0], newValues[1]);
         }
-    };
+    }, [onValuesChange]);
 
-    const handleIncrement = (index: number) => {
+    const handleIncrement = useCallback((index: number) => {
         const newValue = values[index] + 1;
         setters[index](newValue);
         const newValues = [...values];
         newValues[index] = newValue;
         notifyValuesChange(newValues);
-    };
+    }, [values, setters, notifyValuesChange]);
 
-    const handleDecrement = (index: number) => {
+    const handleDecrement = useCallback((index: number) => {
         const newValue = Math.max(0, values[index] - 1);
         setters[index](newValue);
         const newValues = [...values];
         newValues[index] = newValue;
         notifyValuesChange(newValues);
-    };
+    }, [values, setters, notifyValuesChange]);
 
     const handleStartRound = () => {
         setRoundActive(true);

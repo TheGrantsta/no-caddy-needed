@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text } from 'react-native';
 import { useThemeColours } from '@/context/ThemeContext';
 import { DrillStats } from '@/service/DbService';
@@ -13,11 +13,11 @@ export default function DrillStatsChart({ stats }: Props) {
     const colours = useThemeColours();
     const s = styles.drillStatsChart;
 
+    const maxTotal = useMemo(() => Math.max(...stats.map(st => st.total)), [stats]);
+
     if (stats.length === 0) {
         return null;
     }
-
-    const maxTotal = Math.max(...stats.map(st => st.total));
 
     const getBarColor = (successRate: number) => {
         if (successRate >= 70) return colours.black;

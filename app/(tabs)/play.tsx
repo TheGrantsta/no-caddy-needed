@@ -512,6 +512,7 @@ export default function Play() {
                                         onEndRound={() => { }}
                                         roundControlled={true}
                                         onValuesChange={handledeadlySinsValuesChange}
+                                        initialValues={deadlySinsValues}
                                         holePar={currentHoleData?.holePar}
                                         userScore={currentHoleData?.scores.find(s => {
                                             const player = players.find(p => p.Id === s.playerId);

@@ -2,6 +2,16 @@ import { useCallback, useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 
+type InitialValues = {
+    threePutts: number;
+    doubleBogeys: number;
+    bogeysPar5: number;
+    bogeysInside9Iron: number;
+    doubleChips: number;
+    troubleOffTee: number;
+    penalties: number;
+};
+
 type Props = {
     onEndRound: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => void;
     onRoundStateChange?: (active: boolean) => void;
@@ -9,6 +19,7 @@ type Props = {
     onValuesChange?: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => void;
     holePar?: number;
     userScore?: number;
+    initialValues?: InitialValues;
 };
 
 const counters = [
@@ -21,17 +32,17 @@ const counters = [
     { slug: 'bogeys-par5', label: 'Bogeys on par 5s' },
 ];
 
-const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore }: Props) => {
+const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues }: Props) => {
     const styles = useStyles();
     const s = styles.deadlySinsTally;
     const [roundActive, setRoundActive] = useState(roundControlled === true);
-    const [threePutts, setThreePutts] = useState(0);
-    const [doubleBogeys, setDoubleBogeys] = useState(0);
-    const [bogeysPar5, setBogeysPar5] = useState(0);
-    const [bogeysInside9Iron, setBogeysInside9Iron] = useState(0);
-    const [doubleChips, setDoubleChips] = useState(0);
-    const [troubleOffTee, setTroubleOffTee] = useState(0);
-    const [penalties, setPenalties] = useState(0);
+    const [threePutts, setThreePutts] = useState(() => initialValues?.threePutts ?? 0);
+    const [doubleBogeys, setDoubleBogeys] = useState(() => initialValues?.doubleBogeys ?? 0);
+    const [bogeysPar5, setBogeysPar5] = useState(() => initialValues?.bogeysPar5 ?? 0);
+    const [bogeysInside9Iron, setBogeysInside9Iron] = useState(() => initialValues?.bogeysInside9Iron ?? 0);
+    const [doubleChips, setDoubleChips] = useState(() => initialValues?.doubleChips ?? 0);
+    const [troubleOffTee, setTroubleOffTee] = useState(() => initialValues?.troubleOffTee ?? 0);
+    const [penalties, setPenalties] = useState(() => initialValues?.penalties ?? 0);
     const [isOpen, setIsOpen] = useState(true);
 
     // Order matches counters array: troubleOffTee, penalties, threePutts, bogeysInside9Iron, doubleChips, doubleBogeys, bogeysPar5

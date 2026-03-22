@@ -540,4 +540,52 @@ describe('DeadlySinsTally component', () => {
             expect(mockOnValuesChange).toHaveBeenCalledWith(0, 0, 0, 0, 0, 0, 1);
         });
     });
+
+    describe('initialValues prop restores counters after remount', () => {
+        it('displays initialValues counters when roundControlled and initialValues provided', () => {
+            const initialValues = { threePutts: 2, doubleBogeys: 1, bogeysPar5: 3, bogeysInside9Iron: 1, doubleChips: 0, troubleOffTee: 2, penalties: 1 };
+            const { getByTestId } = render(
+                <DeadlySinsTally
+                    onEndRound={mockOnEndRound}
+                    roundControlled={true}
+                    initialValues={initialValues}
+                    holePar={5}
+                    userScore={7}
+                />
+            );
+
+            expect(getByTestId('7deadly-sins-count-three-putts').props.children).toBe(2);
+            expect(getByTestId('7deadly-sins-count-double-bogeys').props.children).toBe(1);
+            expect(getByTestId('7deadly-sins-count-bogeys-par5').props.children).toBe(3);
+            expect(getByTestId('7deadly-sins-count-bogeys-inside-9iron').props.children).toBe(1);
+            expect(getByTestId('7deadly-sins-count-double-chips').props.children).toBe(0);
+            expect(getByTestId('7deadly-sins-count-trouble-off-tee').props.children).toBe(2);
+            expect(getByTestId('7deadly-sins-count-penalties').props.children).toBe(1);
+        });
+
+        it('increments correctly from initialValues', () => {
+            const initialValues = { threePutts: 3, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0, troubleOffTee: 0, penalties: 0 };
+            const { getByTestId } = render(
+                <DeadlySinsTally
+                    onEndRound={mockOnEndRound}
+                    roundControlled={true}
+                    initialValues={initialValues}
+                />
+            );
+
+            fireEvent.press(getByTestId('7deadly-sins-increment-three-putts'));
+
+            expect(getByTestId('7deadly-sins-count-three-putts').props.children).toBe(4);
+        });
+
+        it('defaults to 0 when initialValues not provided', () => {
+            const { getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} />
+            );
+
+            expect(getByTestId('7deadly-sins-count-three-putts').props.children).toBe(0);
+            expect(getByTestId('7deadly-sins-count-trouble-off-tee').props.children).toBe(0);
+            expect(getByTestId('7deadly-sins-count-penalties').props.children).toBe(0);
+        });
+    });
 });

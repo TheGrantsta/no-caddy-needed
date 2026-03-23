@@ -103,7 +103,7 @@ export default function RoundAnalysisScreen() {
             <GestureHandlerRootView style={styles.flexOne}>
                 <View style={[styles.container, styles.headerContainer]}>
                     <Text testID="round-analysis-error" style={styles.headerText}>
-                        {payload === null ? 'Round not found' : 'Something went wrong. Please try again.'}
+                        {payload === null ? 'Round not found' : 'Something went wrong. Please try again later.'}
                     </Text>
                 </View>
             </GestureHandlerRootView>

@@ -60,7 +60,8 @@ export default function RoundAnalysisScreen() {
         try {
             const response = await callAiCoach(API_KEY, p, state);
             setAiResponse(response);
-        } catch {
+        } catch (e) {
+            console.error('[RoundAnalysis] callAiCoach failed:', e);
             setError(true);
         } finally {
             setLoading(false);

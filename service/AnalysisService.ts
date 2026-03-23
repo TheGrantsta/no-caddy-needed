@@ -189,7 +189,8 @@ export const callAiCoach = async (
             'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-            model: 'gpt-4o',
+            model: 'gpt-4o-mini',
+            response_format: { type: 'json_object' },
             messages: [
                 { role: 'system', content: SYSTEM_PROMPT },
                 { role: 'user', content: JSON.stringify({ ...payload, conversation_state: conversationState }) },

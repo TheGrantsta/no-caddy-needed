@@ -136,6 +136,16 @@ describe('callAiCoach', () => {
     });
 
     describe('request structure', () => {
+        it('uses gpt-4o-mini model', async () => {
+            mockFetchResponse(wrapInOpenAiResponse(ASK_QUESTION_RESPONSE));
+
+            await callAiCoach('test-key', makePayload(), makeConversationState());
+
+            const [, options] = (global.fetch as jest.Mock).mock.calls[0];
+            const body = JSON.parse(options.body);
+            expect(body.model).toBe('gpt-4o-mini');
+        });
+
         it('sends POST to OpenAI chat completions endpoint', async () => {
             mockFetchResponse(wrapInOpenAiResponse(ASK_QUESTION_RESPONSE));
 
@@ -190,6 +200,16 @@ describe('callAiCoach', () => {
             expect(systemMessage).toBeDefined();
             expect(typeof systemMessage.content).toBe('string');
             expect(systemMessage.content.length).toBeGreaterThan(0);
+        });
+
+        it('sends response_format json_object to prevent markdown-wrapped responses', async () => {
+            mockFetchResponse(wrapInOpenAiResponse(ASK_QUESTION_RESPONSE));
+
+            await callAiCoach('test-key', makePayload(), makeConversationState());
+
+            const [, options] = (global.fetch as jest.Mock).mock.calls[0];
+            const body = JSON.parse(options.body);
+            expect(body.response_format).toEqual({ type: 'json_object' });
         });
     });
 

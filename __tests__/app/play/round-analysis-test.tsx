@@ -77,9 +77,16 @@ const GIVE_COACHING_RESPONSE = {
 };
 
 describe('RoundAnalysisScreen', () => {
+    let consoleErrorSpy: jest.SpyInstance;
+
     beforeEach(() => {
         jest.clearAllMocks();
         mockBuildPayload.mockReturnValue(PAYLOAD);
+        consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        consoleErrorSpy.mockRestore();
     });
 
     describe('loading state', () => {
@@ -123,6 +130,7 @@ describe('RoundAnalysisScreen', () => {
             const { getByTestId } = render(<RoundAnalysisScreen />);
 
             await waitFor(() => expect(getByTestId('round-analysis-error')).toBeTruthy());
+            expect(consoleErrorSpy).toHaveBeenCalled();
         });
     });
 

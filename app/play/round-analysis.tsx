@@ -110,6 +110,9 @@ export default function RoundAnalysisScreen() {
             <GestureHandlerRootView style={styles.flexOne}>
                 <View style={[styles.container, styles.headerContainer]}>
                     <ActivityIndicator testID="round-analysis-loading" size="large" color={colours.primary} />
+                    <Text testID="round-analysis-thinking-text" style={[styles.normalText, { marginTop: 16 }]}>
+                        Thinking about your round...
+                    </Text>
                 </View>
             </GestureHandlerRootView>
         );

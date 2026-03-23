@@ -98,6 +98,14 @@ describe('RoundAnalysisScreen', () => {
             expect(getByTestId('round-analysis-loading')).toBeTruthy();
         });
 
+        it('shows thinking text while AI call is in progress', async () => {
+            mockCallAiCoach.mockReturnValue(new Promise(() => {})); // never resolves
+
+            const { getByTestId } = render(<RoundAnalysisScreen />);
+
+            expect(getByTestId('round-analysis-thinking-text')).toBeTruthy();
+        });
+
         it('hides loading indicator once AI responds', async () => {
             mockCallAiCoach.mockResolvedValue(ASK_QUESTION_RESPONSE);
 

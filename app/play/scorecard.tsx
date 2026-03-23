@@ -235,17 +235,6 @@ export default function ScorecardScreen() {
                             />
                         )}
 
-                        {isEditing && selectedScore && editedSins && (
-                            <DeadlySinsTally
-                                onEndRound={() => { }}
-                                roundControlled
-                                onValuesChange={handleSinsChange}
-                                initialValues={editedSins}
-                                holePar={editedScores.find(s => s.HoleNumber === selectedScore.holeNumber)?.HolePar}
-                                userScore={editedScores.find(s => s.HoleNumber === selectedScore.holeNumber && s.RoundPlayerId === multiplayerScorecard?.players.find(p => p.IsUser === 1)?.Id)?.Score}
-                            />
-                        )}
-
                         {analyseRoundEnabled && !isEditing && !showDeleteConfirm && (
                             <View style={styles.headerContainer}>
                                 <TouchableOpacity
@@ -278,6 +267,18 @@ export default function ScorecardScreen() {
                                     onPress={handleDelete}
                                 >
                                     <Text style={styles.buttonText}>Delete round</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {analyseRoundEnabled && !isEditing && !showDeleteConfirm && (
+                            <View style={styles.headerContainer}>
+                                <TouchableOpacity
+                                    testID="analyse-round-button"
+                                    style={[styles.largeButton, { backgroundColor: colours.tertiary }]}
+                                    onPress={() => router.push({ pathname: '/play/round-analysis', params: { roundId } })}
+                                >
+                                    <Text style={styles.buttonText}>Analyse your round</Text>
                                 </TouchableOpacity>
                             </View>
                         )}

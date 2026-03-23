@@ -9,6 +9,7 @@ type Props = {
     editable?: boolean;
     selectedScore?: { holeNumber: number; playerId: number } | null;
     onScoreSelect?: (holeNumber: number, playerId: number) => void;
+    sinHoles?: Set<number>;
 };
 
 const formatScore = (score: number): string => {
@@ -17,7 +18,7 @@ const formatScore = (score: number): string => {
     return `${score}`;
 };
 
-const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect }: Props) => {
+const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect, sinHoles }: Props) => {
     const styles = useStyles();
     const s = styles.scorecard;
 
@@ -111,6 +112,10 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                     </Text>
                                 );
 
+                                const sinDot = player.IsUser === 1 && sinHoles?.has(h)
+                                    ? <View testID={`sin-indicator-${h}`} style={s.sinIndicatorDot} />
+                                    : null;
+
                                 if (editable) {
                                     return (
                                         <TouchableOpacity
@@ -120,6 +125,7 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                             onPress={() => onScoreSelect?.(h, player.Id)}
                                         >
                                             {cellContent}
+                                            {sinDot}
                                         </TouchableOpacity>
                                     );
                                 }
@@ -127,6 +133,7 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                 return (
                                     <View key={h} style={s.holeCell}>
                                         {cellContent}
+                                        {sinDot}
                                     </View>
                                 );
                             })}

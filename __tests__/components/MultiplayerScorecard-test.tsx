@@ -553,3 +553,35 @@ describe('Scorecard', () => {
         });
     });
 });
+
+describe('sin indicator dots', () => {
+    const scores = makeScores([
+        { holeNumber: 1, holePar: 4, scores: [5, 4] },
+        { holeNumber: 2, holePar: 4, scores: [4, 4] },
+    ]);
+
+    it('shows sin indicator dot for holes in sinHoles', () => {
+        const { getByTestId } = render(
+            <Scorecard players={mockPlayers} holeScores={scores} sinHoles={new Set([1])} />
+        );
+
+        expect(getByTestId('sin-indicator-1')).toBeTruthy();
+    });
+
+    it('does not show dot for holes not in sinHoles', () => {
+        const { queryByTestId } = render(
+            <Scorecard players={mockPlayers} holeScores={scores} sinHoles={new Set([1])} />
+        );
+
+        expect(queryByTestId('sin-indicator-2')).toBeNull();
+    });
+
+    it('does not show any dots when sinHoles is not provided', () => {
+        const { queryByTestId } = render(
+            <Scorecard players={mockPlayers} holeScores={scores} />
+        );
+
+        expect(queryByTestId('sin-indicator-1')).toBeNull();
+        expect(queryByTestId('sin-indicator-2')).toBeNull();
+    });
+});

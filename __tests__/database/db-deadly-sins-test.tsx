@@ -1,4 +1,4 @@
-import { insertHoleDeadlySins, getDeadlySinsForRound, getAllDeadlySinsRoundTotals, getHoleDeadlySins, deleteHoleDeadlySinsByHole } from '../../database/db';
+import { insertHoleDeadlySins, getDeadlySinsForRound, getAllDeadlySinsRoundTotals, getHoleDeadlySins, deleteHoleDeadlySinsByHole, getHolesWithSinsForRound } from '../../database/db';
 import * as SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
@@ -337,5 +337,49 @@ describe('deleteHoleDeadlySinsByHole', () => {
         await deleteHoleDeadlySinsByHole(1, 1);
 
         expect(mockStatementFinalizeAsync).toHaveBeenCalled();
+    });
+});
+
+describe('getHolesWithSinsForRound', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('queries HoleDeadlySins for holes with at least one sin', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        getHolesWithSinsForRound(1);
+
+        const [sql, params] = mockGetAllSync.mock.calls[0];
+        expect(sql).toContain('FROM HoleDeadlySins');
+        expect(sql).toContain('WHERE RoundId = ?');
+        expect(params).toEqual([1]);
+    });
+
+    it('filters to only holes where sum of sins is greater than zero', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        getHolesWithSinsForRound(1);
+
+        const [sql] = mockGetAllSync.mock.calls[0];
+        expect(sql).toContain('> 0');
+    });
+
+    it('returns array of hole numbers with sins', () => {
+        mockGetAllSync.mockReturnValue([{ HoleNumber: 3 }, { HoleNumber: 7 }]);
+
+        const result = getHolesWithSinsForRound(1) as any[];
+
+        expect(result).toHaveLength(2);
+        expect(result[0].HoleNumber).toBe(3);
+        expect(result[1].HoleNumber).toBe(7);
+    });
+
+    it('returns empty array when no holes have sins', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        const result = getHolesWithSinsForRound(1);
+
+        expect(result).toEqual([]);
     });
 });

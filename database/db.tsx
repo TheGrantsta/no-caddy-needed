@@ -267,6 +267,13 @@ export const getAllDeadlySinsRoundTotals = () => {
     `);
 };
 
+export const getHolesWithSinsForRound = (roundId: number) => {
+    return getSyncDb().getAllSync(
+        'SELECT HoleNumber FROM HoleDeadlySins WHERE RoundId = ? AND (ThreePutts + DoubleBogeys + BogeysPar5 + BogeysInside9Iron + DoubleChips + TroubleOffTee + Penalties) > 0',
+        [roundId]
+    );
+};
+
 export const getHoleDeadlySins = (roundId: number, holeNumber: number) => {
     const rows = getSyncDb().getAllSync(
         'SELECT ThreePutts, DoubleBogeys, BogeysPar5, BogeysInside9Iron, DoubleChips, TroubleOffTee, Penalties FROM HoleDeadlySins WHERE RoundId = ? AND HoleNumber = ? LIMIT 1',

@@ -15,6 +15,7 @@ import {
     getAllDeadlySinsRoundTotals,
     getHoleDeadlySins,
     deleteHoleDeadlySinsByHole,
+    getHolesWithSinsForRound,
     insertRound,
     updateRound,
     getRoundById,
@@ -254,6 +255,11 @@ export const getHoleDeadlySinsService = (roundId: number, holeNumber: number): D
         troubleOffTee: row.TroubleOffTee === 1,
         penalties: row.Penalties === 1,
     };
+};
+
+export const getHolesWithSinsForRoundService = (roundId: number): Set<number> => {
+    const rows = getHolesWithSinsForRound(roundId) as { HoleNumber: number }[];
+    return new Set(rows.map(r => r.HoleNumber));
 };
 
 export const replaceHoleDeadlySinsService = async (roundId: number, holeNumber: number, sins: DeadlySinsValues): Promise<boolean> => {

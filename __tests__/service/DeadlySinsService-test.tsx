@@ -4,6 +4,7 @@ import {
     getDeadlySinsForRoundService,
     getHoleDeadlySinsService,
     replaceHoleDeadlySinsService,
+    getHolesWithSinsForRoundService,
     DeadlySinsValues,
 } from '../../service/DbService';
 import {
@@ -14,6 +15,7 @@ import {
     getRoundById,
     getHoleDeadlySins,
     deleteHoleDeadlySinsByHole,
+    getHolesWithSinsForRound,
 } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
@@ -24,6 +26,7 @@ jest.mock('../../database/db', () => ({
     getRoundById: jest.fn(),
     getHoleDeadlySins: jest.fn(),
     deleteHoleDeadlySinsByHole: jest.fn(),
+    getHolesWithSinsForRound: jest.fn(),
 }));
 
 const mockInsertHoleDeadlySins = insertHoleDeadlySins as jest.Mock;
@@ -33,6 +36,7 @@ const mockGetAllRounds = getAllRounds as jest.Mock;
 const mockGetRoundById = getRoundById as jest.Mock;
 const mockGetHoleDeadlySins = getHoleDeadlySins as jest.Mock;
 const mockDeleteHoleDeadlySinsByHole = deleteHoleDeadlySinsByHole as jest.Mock;
+const mockGetHolesWithSinsForRound = getHolesWithSinsForRound as jest.Mock;
 
 const allFalseSins: DeadlySinsValues = {
     threePutts: false,
@@ -343,5 +347,37 @@ describe('replaceHoleDeadlySinsService', () => {
 
         expect(mockDeleteHoleDeadlySinsByHole).toHaveBeenCalledWith(42, 9);
         expect(mockInsertHoleDeadlySins).toHaveBeenCalledWith(42, 9, allFalseSins);
+    });
+});
+
+describe('getHolesWithSinsForRoundService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('calls getHolesWithSinsForRound with roundId', () => {
+        mockGetHolesWithSinsForRound.mockReturnValue([]);
+
+        getHolesWithSinsForRoundService(42);
+
+        expect(mockGetHolesWithSinsForRound).toHaveBeenCalledWith(42);
+    });
+
+    it('returns a Set of hole numbers', () => {
+        mockGetHolesWithSinsForRound.mockReturnValue([{ HoleNumber: 3 }, { HoleNumber: 7 }]);
+
+        const result = getHolesWithSinsForRoundService(1);
+
+        expect(result).toBeInstanceOf(Set);
+        expect(result.has(3)).toBe(true);
+        expect(result.has(7)).toBe(true);
+    });
+
+    it('returns empty Set when no holes have sins', () => {
+        mockGetHolesWithSinsForRound.mockReturnValue([]);
+
+        const result = getHolesWithSinsForRoundService(1);
+
+        expect(result.size).toBe(0);
     });
 });

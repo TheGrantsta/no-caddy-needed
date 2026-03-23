@@ -14,6 +14,7 @@ import {
     deleteRoundService,
     getHoleDeadlySinsService,
     replaceHoleDeadlySinsService,
+    getHolesWithSinsForRoundService,
     RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
@@ -51,6 +52,7 @@ export default function ScorecardScreen() {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [editedSins, setEditedSins] = useState<DeadlySinsValues | null>(null);
     const [sinsHoleNumber, setSinsHoleNumber] = useState<number | null>(null);
+    const [sinHoles, setSinHoles] = useState<Set<number>>(new Set());
 
     useEffect(() => {
         loadData();
@@ -61,6 +63,7 @@ export default function ScorecardScreen() {
         setMultiplayerScorecard(mp);
         const sc = mp ? null : getRoundScorecardService(Number(roundId));
         setScorecard(sc);
+        setSinHoles(getHolesWithSinsForRoundService(Number(roundId)));
     };
 
     const handleEdit = () => {
@@ -217,6 +220,7 @@ export default function ScorecardScreen() {
                             editable={isEditing}
                             selectedScore={selectedScore}
                             onScoreSelect={handleScoreSelect}
+                            sinHoles={sinHoles}
                         />
 
                         {isEditing && selectedScore && (

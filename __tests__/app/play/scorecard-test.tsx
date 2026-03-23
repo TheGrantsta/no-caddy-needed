@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService } from '../../../service/DbService';
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -27,6 +27,7 @@ jest.mock('../../../service/DbService', () => ({
     deleteRoundService: jest.fn(),
     getHoleDeadlySinsService: jest.fn(),
     replaceHoleDeadlySinsService: jest.fn().mockResolvedValue(true),
+    getHolesWithSinsForRoundService: jest.fn(),
 }));
 
 jest.mock('expo-router', () => ({
@@ -58,6 +59,7 @@ const mockUpdateScorecard = updateScorecardService as jest.Mock;
 const mockDeleteRound = deleteRoundService as jest.Mock;
 const mockGetHoleDeadlySinsService = getHoleDeadlySinsService as jest.Mock;
 const mockReplaceHoleDeadlySinsService = replaceHoleDeadlySinsService as jest.Mock;
+const mockGetHolesWithSinsForRoundService = getHolesWithSinsForRoundService as jest.Mock;
 
 const multiplayerData = {
     round: { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '' },
@@ -77,6 +79,7 @@ describe('Scorecard screen', () => {
         mockGetMultiplayerScorecard.mockReturnValue(null);
         mockGetHoleDeadlySinsService.mockReturnValue(null);
         mockReplaceHoleDeadlySinsService.mockResolvedValue(true);
+        mockGetHolesWithSinsForRoundService.mockReturnValue(new Set());
     });
 
     it('renders scorecard heading', () => {
@@ -459,6 +462,34 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('cancel-edit-button'));
 
             expect(queryByTestId('7deadly-sins-toggle-three-putts')).toBeNull();
+        });
+    });
+
+    describe('Sin indicator dots', () => {
+        it('shows sin indicator dot for holes with sins recorded', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetHolesWithSinsForRoundService.mockReturnValue(new Set([1]));
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            expect(getByTestId('sin-indicator-1')).toBeTruthy();
+        });
+
+        it('does not show sin indicator dot for holes without sins', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetHolesWithSinsForRoundService.mockReturnValue(new Set([1]));
+
+            const { queryByTestId } = render(<ScorecardScreen />);
+
+            expect(queryByTestId('sin-indicator-2')).toBeNull();
+        });
+
+        it('calls getHolesWithSinsForRoundService with roundId on load', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            render(<ScorecardScreen />);
+
+            expect(mockGetHolesWithSinsForRoundService).toHaveBeenCalledWith(1);
         });
     });
 

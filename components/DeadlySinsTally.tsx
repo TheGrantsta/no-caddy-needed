@@ -49,12 +49,10 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     const [isOpen, setIsOpen] = useState(true);
 
     const handleToggle = useCallback((key: keyof DeadlySinsValues) => {
-        setValues(prev => {
-            const next = { ...prev, [key]: !prev[key] };
-            onValuesChange?.(next);
-            return next;
-        });
-    }, [onValuesChange]);
+        const next = { ...values, [key]: !values[key] };
+        setValues(next);
+        onValuesChange?.(next);
+    }, [values, onValuesChange]);
 
     const handleStartRound = () => {
         setRoundActive(true);

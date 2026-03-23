@@ -89,7 +89,7 @@
       "eas": {
         "projectId": "d7975635-84fc-4539-9990-1260133b1e87"
       },
-      "analyseRoundEnabled": true
+      "analyseRoundEnabled": false
     }
   }
 }

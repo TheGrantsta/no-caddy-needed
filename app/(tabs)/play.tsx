@@ -18,7 +18,7 @@ import {
     addMultiplayerHoleScoresService,
     getActiveRoundService,
     getAllRoundHistoryService,
-    insertDeadlySinsRoundService,
+    insertHoleDeadlySinsService,
     getAllDeadlySinsRoundsService,
     addRoundPlayersService,
     getRoundPlayersService,
@@ -32,6 +32,7 @@ import {
     Round,
     RoundPlayer,
     DeadlySinsRound,
+    DeadlySinsValues,
     MultiplayerRoundScorecard,
     ParAverages,
 } from '../../service/DbService';
@@ -66,7 +67,8 @@ export default function Play() {
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
     const [deadlySinsRounds, setDeadlySinsRounds] = useState<DeadlySinsRound[]>([]);
     const [section, setSection] = useState('play-score');
-    const [deadlySinsValues, setDeadlySinsValues] = useState({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0, troubleOffTee: 0, penalties: 0 });
+    const INITIAL_SINS: DeadlySinsValues = { threePutts: false, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false };
+    const [deadlySinsValues, setDeadlySinsValues] = useState<DeadlySinsValues>(INITIAL_SINS);
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
@@ -214,6 +216,8 @@ export default function Play() {
         const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
         const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
         if (success) {
+            await insertHoleDeadlySinsService(activeRoundId, holeNumber, deadlySinsValues);
+            setDeadlySinsValues(INITIAL_SINS);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             const userScore = scores.find(s => {
                 const player = players.find(p => p.Id === s.playerId);
@@ -239,8 +243,8 @@ export default function Play() {
         return section === sectionName;
     };
 
-    const handledeadlySinsValuesChange = (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => {
-        setDeadlySinsValues({ threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties });
+    const handledeadlySinsValuesChange = (values: DeadlySinsValues) => {
+        setDeadlySinsValues(values);
     };
 
     const handleEndRoundPress = () => {
@@ -256,7 +260,7 @@ export default function Play() {
         setCurrentHole(1);
         setHoleContributions({});
         setSection('play-score');
-        setDeadlySinsValues({ threePutts: 0, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0, troubleOffTee: 0, penalties: 0 });
+        setDeadlySinsValues(INITIAL_SINS);
         setPlayers([]);
         setShowPlayerSetup(false);
         setCurrentHoleData(null);
@@ -275,19 +279,6 @@ export default function Play() {
         setNotificationId(null);
 
         const success = await endRoundService(activeRoundId);
-
-        if (runningTotal > 0) {
-            await insertDeadlySinsRoundService(
-                activeRoundId,
-                deadlySinsValues.threePutts,
-                deadlySinsValues.doubleBogeys,
-                deadlySinsValues.bogeysPar5,
-                deadlySinsValues.bogeysInside9Iron,
-                deadlySinsValues.doubleChips,
-                deadlySinsValues.troubleOffTee,
-                deadlySinsValues.penalties,
-            );
-        }
 
         showResult(success, 'Round saved', 'Round not saved');
 
@@ -509,6 +500,7 @@ export default function Play() {
                                 onScoresChange={handleScoresChange}
                                 renderAfterUser={
                                     <DeadlySinsTally
+                                        key={`tally-${currentHole}`}
                                         onEndRound={() => { }}
                                         roundControlled={true}
                                         onValuesChange={handledeadlySinsValuesChange}

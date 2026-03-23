@@ -10,9 +10,9 @@ import {
     insertDrill,
     softDeleteDrill,
     restoreDrill,
-    insertDeadlySinsRound,
-    getAllDeadlySinsRounds,
-    getDeadlySinsRoundByRoundId,
+    insertHoleDeadlySins,
+    getDeadlySinsForRound,
+    getAllDeadlySinsRoundTotals,
     insertRound,
     updateRound,
     getRoundById,
@@ -226,31 +226,38 @@ export type DeadlySinsRound = {
     Created_At: string;
 };
 
-export const insertDeadlySinsRoundService = (roundId: number | null, threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => {
-    const total = threePutts + doubleBogeys + bogeysPar5 + bogeysInside9Iron + doubleChips + troubleOffTee + penalties;
-    return insertDeadlySinsRound(roundId, threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties, total);
+export type DeadlySinsValues = {
+    threePutts: boolean;
+    doubleBogeys: boolean;
+    bogeysPar5: boolean;
+    bogeysInside9Iron: boolean;
+    doubleChips: boolean;
+    troubleOffTee: boolean;
+    penalties: boolean;
+};
+
+export const insertHoleDeadlySinsService = (roundId: number, holeNumber: number, sins: DeadlySinsValues): Promise<boolean> => {
+    return insertHoleDeadlySins(roundId, holeNumber, sins);
 };
 
 export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {
-    const rounds: DeadlySinsRound[] = [];
+    const totals = getAllDeadlySinsRoundTotals() as any[];
+    const rounds = getAllRounds() as { Id: number; Created_At: string }[];
+    const roundMap = new Map(rounds.map(r => [r.Id, r.Created_At]));
 
-    getAllDeadlySinsRounds().filter((round: any) => round.RoundId != null).forEach((round: any) => {
-        rounds.push({
-            Id: round.Id,
-            ThreePutts: round.ThreePutts,
-            DoubleBogeys: round.DoubleBogeys,
-            BogeysPar5: round.BogeysPar5,
-            BogeysInside9Iron: round.BogeysInside9Iron,
-            DoubleChips: round.DoubleChips,
-            TroubleOffTee: round.TroubleOffTee,
-            Penalties: round.Penalties,
-            Total: round.Total,
-            RoundId: round.RoundId ?? null,
-            Created_At: getTwoDigitDayAndMonth(round.Created_At),
-        });
-    });
-
-    return rounds;
+    return totals.map(t => ({
+        Id: t.RoundId,
+        ThreePutts: t.ThreePutts ?? 0,
+        DoubleBogeys: t.DoubleBogeys ?? 0,
+        BogeysPar5: t.BogeysPar5 ?? 0,
+        BogeysInside9Iron: t.BogeysInside9Iron ?? 0,
+        DoubleChips: t.DoubleChips ?? 0,
+        TroubleOffTee: t.TroubleOffTee ?? 0,
+        Penalties: t.Penalties ?? 0,
+        Total: t.Total ?? 0,
+        RoundId: t.RoundId,
+        Created_At: getTwoDigitDayAndMonth(roundMap.get(t.RoundId) ?? ''),
+    }));
 };
 
 
@@ -424,20 +431,23 @@ export const saveClubDistancesService = async (distances: { Club: string; CarryD
 };
 
 export const getDeadlySinsForRoundService = (roundId: number): DeadlySinsRound | null => {
-    const r = getDeadlySinsRoundByRoundId(roundId) as any;
+    const r = getDeadlySinsForRound(roundId) as any;
     if (!r) return null;
+    const round = getRoundById(roundId) as any;
+    const total = (r.ThreePutts ?? 0) + (r.DoubleBogeys ?? 0) + (r.BogeysPar5 ?? 0) +
+        (r.BogeysInside9Iron ?? 0) + (r.DoubleChips ?? 0) + (r.TroubleOffTee ?? 0) + (r.Penalties ?? 0);
     return {
-        Id: r.Id,
-        ThreePutts: r.ThreePutts,
-        DoubleBogeys: r.DoubleBogeys,
-        BogeysPar5: r.BogeysPar5,
-        BogeysInside9Iron: r.BogeysInside9Iron,
-        DoubleChips: r.DoubleChips,
-        TroubleOffTee: r.TroubleOffTee,
-        Penalties: r.Penalties,
-        Total: r.Total,
-        RoundId: r.RoundId ?? null,
-        Created_At: getTwoDigitDayAndMonth(r.Created_At),
+        Id: roundId,
+        ThreePutts: r.ThreePutts ?? 0,
+        DoubleBogeys: r.DoubleBogeys ?? 0,
+        BogeysPar5: r.BogeysPar5 ?? 0,
+        BogeysInside9Iron: r.BogeysInside9Iron ?? 0,
+        DoubleChips: r.DoubleChips ?? 0,
+        TroubleOffTee: r.TroubleOffTee ?? 0,
+        Penalties: r.Penalties ?? 0,
+        Total: total,
+        RoundId: roundId,
+        Created_At: round ? getTwoDigitDayAndMonth(round.Created_At) : '',
     };
 };
 

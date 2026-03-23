@@ -1,6 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
+import { DeadlySinsValues } from '../../service/DbService';
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -11,6 +12,16 @@ jest.mock('../../context/ThemeContext', () => ({
         setTheme: jest.fn(),
     }),
 }));
+
+const allFalse: DeadlySinsValues = {
+    threePutts: false,
+    doubleBogeys: false,
+    bogeysPar5: false,
+    bogeysInside9Iron: false,
+    doubleChips: false,
+    troubleOffTee: false,
+    penalties: false,
+};
 
 describe('DeadlySinsTally component', () => {
     const mockOnEndRound = jest.fn();
@@ -27,16 +38,16 @@ describe('DeadlySinsTally component', () => {
             expect(getByTestId('7deadly-sins-start-round')).toBeTruthy();
         });
 
-        it('does not show counters before round starts', () => {
+        it('does not show toggle buttons before round starts', () => {
             const { queryByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
 
-            expect(queryByTestId('7deadly-sins-count-three-putts')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-double-bogeys')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-bogeys-par5')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-bogeys-inside-9iron')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-double-chips')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-trouble-off-tee')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-penalties')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-three-putts')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-double-bogeys')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-bogeys-par5')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-bogeys-inside-9iron')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-double-chips')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-penalties')).toBeNull();
         });
 
         it('does not show End round button initially', () => {
@@ -44,7 +55,6 @@ describe('DeadlySinsTally component', () => {
 
             expect(queryByTestId('7deadly-sins-end-round')).toBeNull();
         });
-
     });
 
     describe('active state (round in progress)', () => {
@@ -56,17 +66,17 @@ describe('DeadlySinsTally component', () => {
             expect(queryByTestId('7deadly-sins-total')).toBeNull();
         });
 
-        it('shows counters and End round after pressing Start round', () => {
+        it('shows toggle buttons and End round after pressing Start round', () => {
             const { getByTestId, queryByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
 
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
-            expect(getByTestId('7deadly-sins-count-three-putts')).toBeTruthy();
-            expect(queryByTestId('7deadly-sins-count-double-bogeys')).toBeNull();
-            expect(getByTestId('7deadly-sins-count-bogeys-inside-9iron')).toBeTruthy();
-            expect(getByTestId('7deadly-sins-count-double-chips')).toBeTruthy();
-            expect(getByTestId('7deadly-sins-count-trouble-off-tee')).toBeTruthy();
-            expect(getByTestId('7deadly-sins-count-penalties')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
+            expect(queryByTestId('7deadly-sins-toggle-double-bogeys')).toBeNull();
+            expect(getByTestId('7deadly-sins-toggle-bogeys-inside-9iron')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-double-chips')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-penalties')).toBeTruthy();
             expect(getByTestId('7deadly-sins-end-round')).toBeTruthy();
         });
 
@@ -88,7 +98,7 @@ describe('DeadlySinsTally component', () => {
             expect(mockOnRoundStateChange).toHaveBeenCalledWith(true);
         });
 
-        it('renders all seven labels and counters at 0 when round starts', () => {
+        it('renders all seven labels and toggles when round starts', () => {
             const { getByTestId, getByText } = render(<DeadlySinsTally onEndRound={mockOnEndRound} holePar={5} userScore={7} />);
 
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
@@ -101,162 +111,140 @@ describe('DeadlySinsTally component', () => {
             expect(getByText('Trouble off tee')).toBeTruthy();
             expect(getByText('Penalties')).toBeTruthy();
 
-            expect(getByTestId('7deadly-sins-count-three-putts').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-double-bogeys').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-bogeys-par5').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-bogeys-inside-9iron').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-double-chips').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-trouble-off-tee').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-penalties').props.children).toBe(0);
+            expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-double-bogeys')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-bogeys-par5')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-bogeys-inside-9iron')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-double-chips')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-penalties')).toBeTruthy();
         });
 
-        it('increments three-putts counter', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
+        it('toggles three-putts to true when pressed', () => {
+            const mockOnValuesChange = jest.fn();
+            const { getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
+            );
 
-            fireEvent.press(getByTestId('7deadly-sins-start-round'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-three-putts'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
 
-            expect(getByTestId('7deadly-sins-count-three-putts').props.children).toBe(1);
+            expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ threePutts: true }));
         });
 
-        it('increments double-bogeys counter', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} holePar={4} userScore={6} />);
+        it('toggles three-putts back to false when pressed twice', () => {
+            const mockOnValuesChange = jest.fn();
+            const { getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
+            );
 
-            fireEvent.press(getByTestId('7deadly-sins-start-round'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-bogeys'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
 
-            expect(getByTestId('7deadly-sins-count-double-bogeys').props.children).toBe(1);
+            expect(mockOnValuesChange).toHaveBeenLastCalledWith(expect.objectContaining({ threePutts: false }));
         });
 
-        it('increments bogeys-par5 counter', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} holePar={5} />);
+        it('toggles double-bogeys when holePar and userScore allow it', () => {
+            const mockOnValuesChange = jest.fn();
+            const { getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={4} userScore={6} />
+            );
 
-            fireEvent.press(getByTestId('7deadly-sins-start-round'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-bogeys-par5'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-double-bogeys'));
 
-            expect(getByTestId('7deadly-sins-count-bogeys-par5').props.children).toBe(1);
+            expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ doubleBogeys: true }));
         });
 
-        it('increments bogeys-inside-9iron counter', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
+        it('toggles bogeys-par5 when holePar is 5', () => {
+            const mockOnValuesChange = jest.fn();
+            const { getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={5} />
+            );
 
-            fireEvent.press(getByTestId('7deadly-sins-start-round'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-bogeys-inside-9iron'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-bogeys-par5'));
 
-            expect(getByTestId('7deadly-sins-count-bogeys-inside-9iron').props.children).toBe(1);
+            expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ bogeysPar5: true }));
         });
 
-        it('increments double-chips counter', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
+        it('toggling one sin does not affect others', () => {
+            const mockOnValuesChange = jest.fn();
+            const { getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
+            );
 
-            fireEvent.press(getByTestId('7deadly-sins-start-round'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-chips'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
 
-            expect(getByTestId('7deadly-sins-count-double-chips').props.children).toBe(1);
+            expect(mockOnValuesChange).toHaveBeenCalledWith({
+                threePutts: true,
+                doubleBogeys: false,
+                bogeysPar5: false,
+                bogeysInside9Iron: false,
+                doubleChips: false,
+                troubleOffTee: false,
+                penalties: false,
+            });
         });
 
-        it('increments trouble-off-tee counter', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
+        it('toggling multiple sins accumulates correctly', () => {
+            const mockOnValuesChange = jest.fn();
+            const { getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={4} userScore={6} />
+            );
 
-            fireEvent.press(getByTestId('7deadly-sins-start-round'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-trouble-off-tee'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-double-bogeys'));
 
-            expect(getByTestId('7deadly-sins-count-trouble-off-tee').props.children).toBe(1);
+            expect(mockOnValuesChange).toHaveBeenLastCalledWith(expect.objectContaining({
+                threePutts: true,
+                doubleBogeys: true,
+            }));
         });
-
-        it('increments penalties counter', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
-
-            fireEvent.press(getByTestId('7deadly-sins-start-round'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-penalties'));
-
-            expect(getByTestId('7deadly-sins-count-penalties').props.children).toBe(1);
-        });
-
-        it('decrements three-putts counter', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
-
-            fireEvent.press(getByTestId('7deadly-sins-start-round'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-three-putts'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-three-putts'));
-            fireEvent.press(getByTestId('7deadly-sins-decrement-three-putts'));
-
-            expect(getByTestId('7deadly-sins-count-three-putts').props.children).toBe(1);
-        });
-
-        it('does not decrement below 0', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
-
-            fireEvent.press(getByTestId('7deadly-sins-start-round'));
-            fireEvent.press(getByTestId('7deadly-sins-decrement-three-putts'));
-
-            expect(getByTestId('7deadly-sins-count-three-putts').props.children).toBe(0);
-        });
-
-        it('multiple increments on same counter', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} holePar={4} userScore={6} />);
-
-            fireEvent.press(getByTestId('7deadly-sins-start-round'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-bogeys'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-bogeys'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-bogeys'));
-
-            expect(getByTestId('7deadly-sins-count-double-bogeys').props.children).toBe(3);
-        });
-
     });
 
     describe('ending a round', () => {
-        it('End round calls callback with correct values', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} holePar={5} userScore={7} />);
+        it('End round calls callback with correct values object', () => {
+            const { getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} holePar={5} userScore={7} />
+            );
 
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-three-putts'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-bogeys-inside-9iron'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-chips'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-chips'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-chips'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-bogeys'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-bogeys'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-bogeys-par5'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-trouble-off-tee'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-penalties'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-penalties'));
-
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-bogeys-par5'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
             fireEvent.press(getByTestId('7deadly-sins-end-round'));
 
-            expect(mockOnEndRound).toHaveBeenCalledWith(1, 2, 1, 1, 3, 1, 2);
+            expect(mockOnEndRound).toHaveBeenCalledWith({
+                threePutts: true,
+                doubleBogeys: false,
+                bogeysPar5: true,
+                bogeysInside9Iron: false,
+                doubleChips: false,
+                troubleOffTee: true,
+                penalties: false,
+            });
         });
 
-        it('End round with all zeros works', () => {
+        it('End round with all false works', () => {
             const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
 
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
             fireEvent.press(getByTestId('7deadly-sins-end-round'));
 
-            expect(mockOnEndRound).toHaveBeenCalledWith(0, 0, 0, 0, 0, 0, 0);
+            expect(mockOnEndRound).toHaveBeenCalledWith(allFalse);
         });
 
-        it('counters reset to 0 after ending round', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} holePar={5} userScore={7} />);
+        it('values reset to false after ending round', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
 
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-three-putts'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-bogeys'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-trouble-off-tee'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-penalties'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
             fireEvent.press(getByTestId('7deadly-sins-end-round'));
 
-            // After ending, we're back to idle — start a new round to verify counters are 0
+            // Start a new round and end it immediately — all values must be false
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
+            mockOnEndRound.mockClear();
+            fireEvent.press(getByTestId('7deadly-sins-end-round'));
 
-            expect(getByTestId('7deadly-sins-count-three-putts').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-double-bogeys').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-bogeys-par5').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-bogeys-inside-9iron').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-double-chips').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-trouble-off-tee').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-penalties').props.children).toBe(0);
+            expect(mockOnEndRound).toHaveBeenCalledWith(allFalse);
         });
 
         it('returns to Start round state after ending round', () => {
@@ -267,7 +255,7 @@ describe('DeadlySinsTally component', () => {
 
             expect(getByTestId('7deadly-sins-start-round')).toBeTruthy();
             expect(queryByTestId('7deadly-sins-end-round')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-three-putts')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-three-putts')).toBeNull();
         });
 
         it('calls onRoundStateChange with false when ending round', () => {
@@ -290,7 +278,7 @@ describe('DeadlySinsTally component', () => {
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
             expect(queryByText('Bogeys on par 5s')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-bogeys-par5')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-bogeys-par5')).toBeNull();
         });
 
         it('hides Bogeys on par 5s when holePar is 4', () => {
@@ -301,7 +289,7 @@ describe('DeadlySinsTally component', () => {
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
             expect(queryByText('Bogeys on par 5s')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-bogeys-par5')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-bogeys-par5')).toBeNull();
         });
 
         it('shows Bogeys on par 5s when holePar is 5', () => {
@@ -312,7 +300,7 @@ describe('DeadlySinsTally component', () => {
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
             expect(getByText('Bogeys on par 5s')).toBeTruthy();
-            expect(getByTestId('7deadly-sins-count-bogeys-par5')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-bogeys-par5')).toBeTruthy();
         });
 
         it('still shows other categories when holePar is not 5', () => {
@@ -340,7 +328,7 @@ describe('DeadlySinsTally component', () => {
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
             expect(queryByText('Double bogeys')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-double-bogeys')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-double-bogeys')).toBeNull();
         });
 
         it('hides Double bogeys when userScore equals par', () => {
@@ -351,7 +339,7 @@ describe('DeadlySinsTally component', () => {
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
             expect(queryByText('Double bogeys')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-double-bogeys')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-double-bogeys')).toBeNull();
         });
 
         it('shows Double bogeys when userScore is exactly 2 over par', () => {
@@ -362,7 +350,7 @@ describe('DeadlySinsTally component', () => {
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
             expect(getByText('Double bogeys')).toBeTruthy();
-            expect(getByTestId('7deadly-sins-count-double-bogeys')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-double-bogeys')).toBeTruthy();
         });
 
         it('shows Double bogeys when userScore is more than 2 over par', () => {
@@ -373,7 +361,7 @@ describe('DeadlySinsTally component', () => {
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
             expect(getByText('Double bogeys')).toBeTruthy();
-            expect(getByTestId('7deadly-sins-count-double-bogeys')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-double-bogeys')).toBeTruthy();
         });
 
         it('hides Double bogeys when userScore is not provided', () => {
@@ -384,7 +372,7 @@ describe('DeadlySinsTally component', () => {
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
             expect(queryByText('Double bogeys')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-double-bogeys')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-double-bogeys')).toBeNull();
         });
 
         it('hides Double bogeys when holePar is not provided but userScore is', () => {
@@ -395,7 +383,7 @@ describe('DeadlySinsTally component', () => {
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
             expect(queryByText('Double bogeys')).toBeNull();
-            expect(queryByTestId('7deadly-sins-count-double-bogeys')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-double-bogeys')).toBeNull();
         });
     });
 
@@ -414,31 +402,31 @@ describe('DeadlySinsTally component', () => {
             expect(queryByTestId('7deadly-sins-toggle')).toBeNull();
         });
 
-        it('counters are open by default when round is active', () => {
+        it('sin toggles are visible by default when round is active', () => {
             const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
 
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
-            expect(getByTestId('7deadly-sins-count-three-putts')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
         });
 
-        it('pressing toggle hides counter rows', () => {
+        it('pressing header toggle hides sin rows', () => {
             const { getByTestId, queryByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
 
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
             fireEvent.press(getByTestId('7deadly-sins-toggle'));
 
-            expect(queryByTestId('7deadly-sins-count-three-putts')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-three-putts')).toBeNull();
         });
 
-        it('pressing toggle again shows counter rows', () => {
+        it('pressing header toggle again shows sin rows', () => {
             const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
 
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
             fireEvent.press(getByTestId('7deadly-sins-toggle'));
             fireEvent.press(getByTestId('7deadly-sins-toggle'));
 
-            expect(getByTestId('7deadly-sins-count-three-putts')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
         });
 
         it('shows toggle header in roundControlled mode', () => {
@@ -449,14 +437,14 @@ describe('DeadlySinsTally component', () => {
             expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
         });
 
-        it('pressing toggle hides counters in roundControlled mode', () => {
+        it('pressing header toggle hides sins in roundControlled mode', () => {
             const { getByTestId, queryByTestId } = render(
                 <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} />
             );
 
             fireEvent.press(getByTestId('7deadly-sins-toggle'));
 
-            expect(queryByTestId('7deadly-sins-count-three-putts')).toBeNull();
+            expect(queryByTestId('7deadly-sins-toggle-three-putts')).toBeNull();
         });
     });
 
@@ -467,15 +455,15 @@ describe('DeadlySinsTally component', () => {
             jest.clearAllMocks();
         });
 
-        it('shows counters immediately without Start button', () => {
+        it('shows toggle buttons immediately without Start button', () => {
             const { getByTestId, queryByTestId } = render(
                 <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
             );
 
-            expect(getByTestId('7deadly-sins-count-three-putts')).toBeTruthy();
-            expect(queryByTestId('7deadly-sins-count-double-bogeys')).toBeNull();
-            expect(getByTestId('7deadly-sins-count-trouble-off-tee')).toBeTruthy();
-            expect(getByTestId('7deadly-sins-count-penalties')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
+            expect(queryByTestId('7deadly-sins-toggle-double-bogeys')).toBeNull();
+            expect(getByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-penalties')).toBeTruthy();
             expect(queryByTestId('7deadly-sins-start-round')).toBeNull();
         });
 
@@ -487,37 +475,22 @@ describe('DeadlySinsTally component', () => {
             expect(queryByTestId('7deadly-sins-end-round')).toBeNull();
         });
 
-        it('calls onValuesChange when counter changes', () => {
+        it('calls onValuesChange with object when toggle is pressed', () => {
             const { getByTestId } = render(
                 <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
             );
 
-            fireEvent.press(getByTestId('7deadly-sins-increment-three-putts'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
 
-            expect(mockOnValuesChange).toHaveBeenCalledWith(1, 0, 0, 0, 0, 0, 0);
-        });
-
-        it('calls onValuesChange with all updated values', () => {
-            const { getByTestId } = render(
-                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={4} userScore={6} />
-            );
-
-            fireEvent.press(getByTestId('7deadly-sins-increment-three-putts'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-bogeys'));
-
-            expect(mockOnValuesChange).toHaveBeenLastCalledWith(1, 1, 0, 0, 0, 0, 0);
-        });
-
-        it('increments and decrements work in roundControlled mode', () => {
-            const { getByTestId } = render(
-                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
-            );
-
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-chips'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-double-chips'));
-            fireEvent.press(getByTestId('7deadly-sins-decrement-double-chips'));
-
-            expect(getByTestId('7deadly-sins-count-double-chips').props.children).toBe(1);
+            expect(mockOnValuesChange).toHaveBeenCalledWith({
+                threePutts: true,
+                doubleBogeys: false,
+                bogeysPar5: false,
+                bogeysInside9Iron: false,
+                doubleChips: false,
+                troubleOffTee: false,
+                penalties: false,
+            });
         });
 
         it('calls onValuesChange with trouble-off-tee updated', () => {
@@ -525,9 +498,9 @@ describe('DeadlySinsTally component', () => {
                 <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
             );
 
-            fireEvent.press(getByTestId('7deadly-sins-increment-trouble-off-tee'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
 
-            expect(mockOnValuesChange).toHaveBeenCalledWith(0, 0, 0, 0, 0, 1, 0);
+            expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ troubleOffTee: true }));
         });
 
         it('calls onValuesChange with penalties updated', () => {
@@ -535,57 +508,72 @@ describe('DeadlySinsTally component', () => {
                 <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
             );
 
-            fireEvent.press(getByTestId('7deadly-sins-increment-penalties'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-penalties'));
 
-            expect(mockOnValuesChange).toHaveBeenCalledWith(0, 0, 0, 0, 0, 0, 1);
+            expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ penalties: true }));
+        });
+
+        it('toggling twice reverts to false', () => {
+            const { getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
+            );
+
+            fireEvent.press(getByTestId('7deadly-sins-toggle-double-chips'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-double-chips'));
+
+            expect(mockOnValuesChange).toHaveBeenLastCalledWith(expect.objectContaining({ doubleChips: false }));
         });
     });
 
-    describe('initialValues prop restores counters after remount', () => {
-        it('displays initialValues counters when roundControlled and initialValues provided', () => {
-            const initialValues = { threePutts: 2, doubleBogeys: 1, bogeysPar5: 3, bogeysInside9Iron: 1, doubleChips: 0, troubleOffTee: 2, penalties: 1 };
+    describe('initialValues prop restores state', () => {
+        it('uses initialValues booleans when roundControlled and initialValues provided', () => {
+            const mockOnValuesChange = jest.fn();
+            const initialValues: Partial<DeadlySinsValues> = { threePutts: true, troubleOffTee: true };
+
             const { getByTestId } = render(
                 <DeadlySinsTally
                     onEndRound={mockOnEndRound}
                     roundControlled={true}
+                    onValuesChange={mockOnValuesChange}
                     initialValues={initialValues}
-                    holePar={5}
-                    userScore={7}
                 />
             );
 
-            expect(getByTestId('7deadly-sins-count-three-putts').props.children).toBe(2);
-            expect(getByTestId('7deadly-sins-count-double-bogeys').props.children).toBe(1);
-            expect(getByTestId('7deadly-sins-count-bogeys-par5').props.children).toBe(3);
-            expect(getByTestId('7deadly-sins-count-bogeys-inside-9iron').props.children).toBe(1);
-            expect(getByTestId('7deadly-sins-count-double-chips').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-trouble-off-tee').props.children).toBe(2);
-            expect(getByTestId('7deadly-sins-count-penalties').props.children).toBe(1);
+            // threePutts was true → pressing flips to false
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+            expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ threePutts: false }));
         });
 
-        it('increments correctly from initialValues', () => {
-            const initialValues = { threePutts: 3, doubleBogeys: 0, bogeysPar5: 0, bogeysInside9Iron: 0, doubleChips: 0, troubleOffTee: 0, penalties: 0 };
+        it('increments correctly from initialValues true', () => {
+            const mockOnValuesChange = jest.fn();
+            const initialValues: Partial<DeadlySinsValues> = { threePutts: true };
+
             const { getByTestId } = render(
                 <DeadlySinsTally
                     onEndRound={mockOnEndRound}
                     roundControlled={true}
+                    onValuesChange={mockOnValuesChange}
                     initialValues={initialValues}
                 />
             );
 
-            fireEvent.press(getByTestId('7deadly-sins-increment-three-putts'));
-
-            expect(getByTestId('7deadly-sins-count-three-putts').props.children).toBe(4);
+            // pressing again flips to false, then true
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+            expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ threePutts: false }));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+            expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ threePutts: true }));
         });
 
-        it('defaults to 0 when initialValues not provided', () => {
+        it('defaults to false when initialValues not provided', () => {
+            const mockOnValuesChange = jest.fn();
+
             const { getByTestId } = render(
-                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} />
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
             );
 
-            expect(getByTestId('7deadly-sins-count-three-putts').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-trouble-off-tee').props.children).toBe(0);
-            expect(getByTestId('7deadly-sins-count-penalties').props.children).toBe(0);
+            // pressing should go from false → true
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+            expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ threePutts: true }));
         });
     });
 });

@@ -912,9 +912,14 @@ export const createStyles = (c: ThemeColours) => ({
         },
         button: {
             backgroundColor: c.primary,
-            width: 24,
-            height: 24,
-            borderRadius: 12,
+            width: 32,
+            height: 32,
+            borderRadius: 16,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        buttonActive: {
+            backgroundColor: c.accent,
         },
         buttonText: {
             color: c.background,

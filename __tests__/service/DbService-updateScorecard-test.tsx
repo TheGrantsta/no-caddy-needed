@@ -4,7 +4,8 @@ import {
     updateRoundTotalScore,
     getRoundHoleScores,
     getRoundPlayers,
-    getDeadlySinsRoundByRoundId,
+    getDeadlySinsForRound,
+    getRoundById,
 } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
@@ -12,14 +13,16 @@ jest.mock('../../database/db', () => ({
     updateRoundTotalScore: jest.fn(),
     getRoundHoleScores: jest.fn(),
     getRoundPlayers: jest.fn(),
-    getDeadlySinsRoundByRoundId: jest.fn(),
+    getDeadlySinsForRound: jest.fn(),
+    getRoundById: jest.fn(),
 }));
 
 const mockUpdateRoundHoleScore = updateRoundHoleScore as jest.Mock;
 const mockUpdateRoundTotalScore = updateRoundTotalScore as jest.Mock;
 const mockGetRoundHoleScores = getRoundHoleScores as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayers as jest.Mock;
-const mockGetDeadlySinsRoundByRoundId = getDeadlySinsRoundByRoundId as jest.Mock;
+const mockGetDeadlySinsForRound = getDeadlySinsForRound as jest.Mock;
+const mockGetRoundById = getRoundById as jest.Mock;
 
 describe('updateScorecardService', () => {
     beforeEach(() => {
@@ -126,45 +129,47 @@ describe('getDeadlySinsForRoundService', () => {
         jest.clearAllMocks();
     });
 
-    it('calls getDeadlySinsRoundByRoundId with the given numeric roundId', () => {
-        mockGetDeadlySinsRoundByRoundId.mockReturnValue(null);
+    it('calls getDeadlySinsForRound with the given numeric roundId', () => {
+        mockGetDeadlySinsForRound.mockReturnValue(null);
 
         getDeadlySinsForRoundService(5);
 
-        expect(mockGetDeadlySinsRoundByRoundId).toHaveBeenCalledWith(5);
+        expect(mockGetDeadlySinsForRound).toHaveBeenCalledWith(5);
     });
 
-    it('returns mapped DeadlySinsRound when db returns a row', () => {
-        mockGetDeadlySinsRoundByRoundId.mockReturnValue({
-            Id: 1, ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0,
-            DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 1,
-            RoundId: 5, Created_At: '2025-06-15T14:00:00.000Z',
-        });
-
-        const result = getDeadlySinsForRoundService(5);
-
-        expect(result).not.toBeNull();
-        expect(result!.Id).toBe(1);
-        expect(result!.Total).toBe(1);
-    });
-
-    it('returns null when db returns null', () => {
-        mockGetDeadlySinsRoundByRoundId.mockReturnValue(null);
+    it('returns null when getDeadlySinsForRound returns null', () => {
+        mockGetDeadlySinsForRound.mockReturnValue(null);
 
         const result = getDeadlySinsForRoundService(5);
 
         expect(result).toBeNull();
     });
 
-    it('returnsNullRoundIdWhenDbRowHasNullRoundId', () => {
-        mockGetDeadlySinsRoundByRoundId.mockReturnValue({
-            Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0,
-            DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 0,
-            RoundId: null, Created_At: '2025-06-15T14:00:00.000Z',
+    it('returns mapped DeadlySinsRound with computed Total when data exists', () => {
+        mockGetDeadlySinsForRound.mockReturnValue({
+            ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1,
+            DoubleChips: 0, TroubleOffTee: 1, Penalties: 0,
         });
+        mockGetRoundById.mockReturnValue({ Id: 5, Created_At: '2025-06-15T14:00:00.000Z' });
 
         const result = getDeadlySinsForRoundService(5);
 
-        expect(result!.RoundId).toBeNull();
+        expect(result).not.toBeNull();
+        expect(result!.ThreePutts).toBe(2);
+        expect(result!.Total).toBe(5);
+        expect(result!.RoundId).toBe(5);
+    });
+
+    it('returns empty Created_At when getRoundById returns null', () => {
+        mockGetDeadlySinsForRound.mockReturnValue({
+            ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0,
+            DoubleChips: 0, TroubleOffTee: 0, Penalties: 0,
+        });
+        mockGetRoundById.mockReturnValue(null);
+
+        const result = getDeadlySinsForRoundService(5);
+
+        expect(result).not.toBeNull();
+        expect(result!.Created_At).toBe('');
     });
 });

@@ -1,82 +1,60 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
-
-type InitialValues = {
-    threePutts: number;
-    doubleBogeys: number;
-    bogeysPar5: number;
-    bogeysInside9Iron: number;
-    doubleChips: number;
-    troubleOffTee: number;
-    penalties: number;
-};
+import { DeadlySinsValues } from '../service/DbService';
 
 type Props = {
-    onEndRound: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => void;
+    onEndRound: (values: DeadlySinsValues) => void;
     onRoundStateChange?: (active: boolean) => void;
     roundControlled?: boolean;
-    onValuesChange?: (threePutts: number, doubleBogeys: number, bogeysPar5: number, bogeysInside9Iron: number, doubleChips: number, troubleOffTee: number, penalties: number) => void;
+    onValuesChange?: (values: DeadlySinsValues) => void;
     holePar?: number;
     userScore?: number;
-    initialValues?: InitialValues;
+    initialValues?: Partial<DeadlySinsValues>;
 };
 
-const counters = [
-    { slug: 'trouble-off-tee', label: 'Trouble off tee' },
-    { slug: 'penalties', label: 'Penalties' },
-    { slug: 'three-putts', label: '3-putts' },
-    { slug: 'bogeys-inside-9iron', label: 'Bogeys inside 9-iron' },
-    { slug: 'double-chips', label: 'Double chips' },
-    { slug: 'double-bogeys', label: 'Double bogeys' },
-    { slug: 'bogeys-par5', label: 'Bogeys on par 5s' },
+const INITIAL_SINS: DeadlySinsValues = {
+    threePutts: false,
+    doubleBogeys: false,
+    bogeysPar5: false,
+    bogeysInside9Iron: false,
+    doubleChips: false,
+    troubleOffTee: false,
+    penalties: false,
+};
+
+const sinFields: { slug: string; label: string; key: keyof DeadlySinsValues }[] = [
+    { slug: 'trouble-off-tee', label: 'Trouble off tee', key: 'troubleOffTee' },
+    { slug: 'penalties', label: 'Penalties', key: 'penalties' },
+    { slug: 'three-putts', label: '3-putts', key: 'threePutts' },
+    { slug: 'bogeys-inside-9iron', label: 'Bogeys inside 9-iron', key: 'bogeysInside9Iron' },
+    { slug: 'double-chips', label: 'Double chips', key: 'doubleChips' },
+    { slug: 'double-bogeys', label: 'Double bogeys', key: 'doubleBogeys' },
+    { slug: 'bogeys-par5', label: 'Bogeys on par 5s', key: 'bogeysPar5' },
 ];
 
 const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues }: Props) => {
     const styles = useStyles();
     const s = styles.deadlySinsTally;
     const [roundActive, setRoundActive] = useState(roundControlled === true);
-    const [threePutts, setThreePutts] = useState(() => initialValues?.threePutts ?? 0);
-    const [doubleBogeys, setDoubleBogeys] = useState(() => initialValues?.doubleBogeys ?? 0);
-    const [bogeysPar5, setBogeysPar5] = useState(() => initialValues?.bogeysPar5 ?? 0);
-    const [bogeysInside9Iron, setBogeysInside9Iron] = useState(() => initialValues?.bogeysInside9Iron ?? 0);
-    const [doubleChips, setDoubleChips] = useState(() => initialValues?.doubleChips ?? 0);
-    const [troubleOffTee, setTroubleOffTee] = useState(() => initialValues?.troubleOffTee ?? 0);
-    const [penalties, setPenalties] = useState(() => initialValues?.penalties ?? 0);
+    const [values, setValues] = useState<DeadlySinsValues>({
+        threePutts: initialValues?.threePutts ?? false,
+        doubleBogeys: initialValues?.doubleBogeys ?? false,
+        bogeysPar5: initialValues?.bogeysPar5 ?? false,
+        bogeysInside9Iron: initialValues?.bogeysInside9Iron ?? false,
+        doubleChips: initialValues?.doubleChips ?? false,
+        troubleOffTee: initialValues?.troubleOffTee ?? false,
+        penalties: initialValues?.penalties ?? false,
+    });
     const [isOpen, setIsOpen] = useState(true);
 
-    // Order matches counters array: troubleOffTee, penalties, threePutts, bogeysInside9Iron, doubleChips, doubleBogeys, bogeysPar5
-    const values = useMemo(
-        () => [troubleOffTee, penalties, threePutts, bogeysInside9Iron, doubleChips, doubleBogeys, bogeysPar5],
-        [troubleOffTee, penalties, threePutts, bogeysInside9Iron, doubleChips, doubleBogeys, bogeysPar5]
-    );
-    const setters = useMemo(
-        () => [setTroubleOffTee, setPenalties, setThreePutts, setBogeysInside9Iron, setDoubleChips, setDoubleBogeys, setBogeysPar5],
-        []
-    );
-
-    const notifyValuesChange = useCallback((newValues: number[]) => {
-        if (onValuesChange) {
-            // Pass in callback signature order: (threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties)
-            onValuesChange(newValues[2], newValues[5], newValues[6], newValues[3], newValues[4], newValues[0], newValues[1]);
-        }
+    const handleToggle = useCallback((key: keyof DeadlySinsValues) => {
+        setValues(prev => {
+            const next = { ...prev, [key]: !prev[key] };
+            onValuesChange?.(next);
+            return next;
+        });
     }, [onValuesChange]);
-
-    const handleIncrement = useCallback((index: number) => {
-        const newValue = values[index] + 1;
-        setters[index](newValue);
-        const newValues = [...values];
-        newValues[index] = newValue;
-        notifyValuesChange(newValues);
-    }, [values, setters, notifyValuesChange]);
-
-    const handleDecrement = useCallback((index: number) => {
-        const newValue = Math.max(0, values[index] - 1);
-        setters[index](newValue);
-        const newValues = [...values];
-        newValues[index] = newValue;
-        notifyValuesChange(newValues);
-    }, [values, setters, notifyValuesChange]);
 
     const handleStartRound = () => {
         setRoundActive(true);
@@ -85,14 +63,8 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     };
 
     const handleEndRound = () => {
-        onEndRound(threePutts, doubleBogeys, bogeysPar5, bogeysInside9Iron, doubleChips, troubleOffTee, penalties);
-        setThreePutts(0);
-        setDoubleBogeys(0);
-        setBogeysPar5(0);
-        setBogeysInside9Iron(0);
-        setDoubleChips(0);
-        setTroubleOffTee(0);
-        setPenalties(0);
+        onEndRound(values);
+        setValues(INITIAL_SINS);
         setRoundActive(false);
         onRoundStateChange?.(false);
     };
@@ -118,29 +90,19 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                 <Text style={s.chevron}>{isOpen ? '▾' : '▴'}</Text>
             </TouchableOpacity>
 
-            {isOpen && counters.map((counter, index) => {
-                if (counter.slug === 'bogeys-par5' && holePar !== 5) return null;
-                if (counter.slug === 'double-bogeys' && (holePar === undefined || userScore === undefined || userScore < holePar + 2)) return null;
+            {isOpen && sinFields.map((field) => {
+                if (field.slug === 'bogeys-par5' && holePar !== 5) return null;
+                if (field.slug === 'double-bogeys' && (holePar === undefined || userScore === undefined || userScore < holePar + 2)) return null;
                 return (
-                    <View key={counter.slug} style={s.row}>
-                        <Text style={s.label}>{counter.label}</Text>
+                    <View key={field.slug} style={s.row}>
+                        <Text style={s.label}>{field.label}</Text>
                         <View style={s.controls}>
                             <TouchableOpacity
-                                testID={`7deadly-sins-decrement-${counter.slug}`}
-                                onPress={() => handleDecrement(index)}
-                                style={s.button}
+                                testID={`7deadly-sins-toggle-${field.slug}`}
+                                onPress={() => handleToggle(field.key)}
+                                style={[s.button, values[field.key] && s.buttonActive]}
                             >
-                                <Text style={s.buttonText}>-</Text>
-                            </TouchableOpacity>
-                            <Text testID={`7deadly-sins-count-${counter.slug}`} style={s.count}>
-                                {values[index]}
-                            </Text>
-                            <TouchableOpacity
-                                testID={`7deadly-sins-increment-${counter.slug}`}
-                                onPress={() => handleIncrement(index)}
-                                style={s.button}
-                            >
-                                <Text style={s.buttonText}>+</Text>
+                                <Text style={s.buttonText}>{values[field.key] ? '✓' : '○'}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

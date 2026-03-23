@@ -1,4 +1,4 @@
-import { initialize, amendTable, insertDeadlySinsRound, getDeadlySinsRoundByRoundId, deleteRound } from '../../database/db';
+import { initialize, amendTable, deleteRound } from '../../database/db';
 import * as SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
@@ -118,122 +118,53 @@ describe('amendTable', () => {
     });
 });
 
-describe('DeadlySinsRounds table schema', () => {
+describe('HoleDeadlySins table schema', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockExecAsync.mockResolvedValue(undefined);
         mockGetAllSync.mockReturnValue([]);
     });
 
-    it('creates DeadlySinsRounds table in initialize SQL', async () => {
+    it('creates HoleDeadlySins table in initialize SQL', async () => {
         await initialize();
 
         const sql = mockExecAsync.mock.calls[0][0];
-        expect(sql).toContain('DeadlySinsRounds');
+        expect(sql).toContain('HoleDeadlySins');
     });
 
-    it('includes TroubleOffTee column in DeadlySinsRounds DDL', async () => {
+    it('includes all seven sin columns in HoleDeadlySins DDL', async () => {
         await initialize();
 
         const sql = mockExecAsync.mock.calls[0][0];
+        expect(sql).toContain('ThreePutts');
+        expect(sql).toContain('DoubleBogeys');
+        expect(sql).toContain('BogeysPar5');
+        expect(sql).toContain('BogeysInside9Iron');
+        expect(sql).toContain('DoubleChips');
         expect(sql).toContain('TroubleOffTee');
+        expect(sql).toContain('Penalties');
     });
 
-    it('includes Penalties column in DeadlySinsRounds DDL', async () => {
+    it('includes RoundId and HoleNumber columns in HoleDeadlySins DDL', async () => {
         await initialize();
 
         const sql = mockExecAsync.mock.calls[0][0];
-        expect(sql).toContain('Penalties');
+        expect(sql).toContain('RoundId');
+        expect(sql).toContain('HoleNumber');
     });
 });
 
-describe('DeadlySinsRounds migration', () => {
+describe('DROP TABLE IF EXISTS DeadlySinsRounds migration', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockExecAsync.mockResolvedValue(undefined);
+        mockGetAllSync.mockReturnValue([]);
     });
 
-    const allSettingsColumns = [
-        { name: 'Id' }, { name: 'Theme' }, { name: 'NotificationsEnabled' },
-        { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
-        { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
-        { name: 'PracticeOnboardingSeen' },
-    ];
-
-    const allDeadlySinsColumns = [
-        { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
-        { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
-        { name: 'TroubleOffTee' }, { name: 'Penalties' }, { name: 'Total' },
-        { name: 'RoundId' }, { name: 'Created_At' }, { name: 'MappedCorrectly' },
-    ];
-
-    it('adds TroubleOffTee column when missing from DeadlySinsRounds', async () => {
-        mockGetAllSync.mockImplementation((sql: string) => {
-            if (sql === 'PRAGMA table_info(Settings)') return allSettingsColumns;
-            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
-            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return [
-                { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
-            ];
-            return [];
-        });
-
+    it('drops DeadlySinsRounds table after running amendments', async () => {
         await initialize();
 
-        expect(mockExecSync).toHaveBeenCalledWith(
-            'ALTER TABLE DeadlySinsRounds ADD COLUMN TroubleOffTee INTEGER NOT NULL DEFAULT 0'
-        );
-    });
-
-    it('adds Penalties column when missing from DeadlySinsRounds', async () => {
-        mockGetAllSync.mockImplementation((sql: string) => {
-            if (sql === 'PRAGMA table_info(Settings)') return allSettingsColumns;
-            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
-            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return [
-                { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
-            ];
-            return [];
-        });
-
-        await initialize();
-
-        expect(mockExecSync).toHaveBeenCalledWith(
-            'ALTER TABLE DeadlySinsRounds ADD COLUMN Penalties INTEGER NOT NULL DEFAULT 0'
-        );
-    });
-
-    it('adds RoundId column when missing from DeadlySinsRounds', async () => {
-        mockGetAllSync.mockImplementation((sql: string) => {
-            if (sql === 'PRAGMA table_info(Settings)') return allSettingsColumns;
-            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
-            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return [
-                { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
-                { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
-                { name: 'TroubleOffTee' }, { name: 'Penalties' }, { name: 'Total' }, { name: 'Created_At' },
-            ];
-            return [];
-        });
-
-        await initialize();
-
-        expect(mockExecSync).toHaveBeenCalledWith(
-            'ALTER TABLE DeadlySinsRounds ADD COLUMN RoundId INTEGER'
-        );
-    });
-
-    it('does not alter DeadlySinsRounds when TroubleOffTee and Penalties already exist', async () => {
-        mockGetAllSync.mockImplementation((sql: string) => {
-            if (sql === 'PRAGMA table_info(Settings)') return allSettingsColumns;
-            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
-            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsColumns;
-            return [];
-        });
-
-        await initialize();
-
-        const deadlySinsAlterCalls = mockExecSync.mock.calls.filter(
-            (call: string[]) => call[0].includes('DeadlySinsRounds')
-        );
-        expect(deadlySinsAlterCalls).toHaveLength(0);
+        expect(mockExecSync).toHaveBeenCalledWith('DROP TABLE IF EXISTS DeadlySinsRounds;');
     });
 });
 
@@ -405,194 +336,18 @@ describe('Settings table column migration', () => {
     });
 });
 
-describe('insertDeadlySinsRound with RoundId', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-        mockPrepareAsync.mockResolvedValue({
-            executeAsync: mockStatementExecuteAsync,
-            finalizeAsync: mockStatementFinalizeAsync,
-        });
-        mockStatementExecuteAsync.mockResolvedValue(undefined);
-    });
 
-    it('includes RoundId column and $RoundId binding in INSERT SQL', async () => {
-        await insertDeadlySinsRound(1, 1, 2, 3, 4, 5, 6, 7, 28);
-
-        const sql = mockPrepareAsync.mock.calls[0][0];
-        expect(sql).toContain('RoundId');
-        expect(sql).toContain('$RoundId');
-    });
-
-    it('binds $RoundId value in executeAsync', async () => {
-        await insertDeadlySinsRound(1, 1, 2, 3, 4, 5, 6, 7, 28);
-
-        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
-            expect.objectContaining({ $RoundId: 1 })
-        );
-    });
-
-    it('binds null $RoundId when roundId is null', async () => {
-        await insertDeadlySinsRound(null, 1, 2, 3, 4, 5, 6, 7, 28);
-
-        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
-            expect.objectContaining({ $RoundId: null })
-        );
-    });
-
-    it('includes MappedCorrectly column in INSERT SQL', async () => {
-        await insertDeadlySinsRound(1, 1, 2, 3, 4, 5, 6, 7, 28);
-
-        const sql = mockPrepareAsync.mock.calls[0][0];
-        expect(sql).toContain('MappedCorrectly');
-        expect(sql).toContain('$MappedCorrectly');
-    });
-
-    it('sets MappedCorrectly to 1 on insert', async () => {
-        await insertDeadlySinsRound(1, 1, 2, 3, 4, 5, 6, 7, 28);
-
-        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
-            expect.objectContaining({ $MappedCorrectly: 1 })
-        );
-    });
-});
-
-describe('getDeadlySinsRoundByRoundId', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-
-    it('calls getAllSync with SELECT on DeadlySinsRounds WHERE RoundId = ?', () => {
-        mockGetAllSync.mockReturnValue([]);
-
-        getDeadlySinsRoundByRoundId(5);
-
-        const [sql, params] = mockGetAllSync.mock.calls[0];
-        expect(sql).toContain('DeadlySinsRounds');
-        expect(sql).toContain('RoundId');
-        expect(params).toEqual([5]);
-    });
-
-    it('returns first row when found', () => {
-        const row = { Id: 1, RoundId: 5, Total: 7 };
-        mockGetAllSync.mockReturnValue([row]);
-
-        const result = getDeadlySinsRoundByRoundId(5);
-
-        expect(result).toEqual(row);
-    });
-
-    it('returns null when no row found', () => {
-        mockGetAllSync.mockReturnValue([]);
-
-        const result = getDeadlySinsRoundByRoundId(5);
-
-        expect(result).toBeNull();
-    });
-});
-
-describe('DeadlySinsRounds column swap data migration', () => {
-    const allSettingsCols = [
-        { name: 'Id' }, { name: 'Theme' }, { name: 'NotificationsEnabled' },
-        { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
-        { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
-        { name: 'PracticeOnboardingSeen' }, { name: 'Voice' }, { name: 'SoundsEnabled' },
-    ];
-    const allDeadlySinsCols = [
-        { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
-        { name: 'BogeysPar5' }, { name: 'BogeysInside9Iron' }, { name: 'DoubleChips' },
-        { name: 'TroubleOffTee' }, { name: 'Penalties' }, { name: 'Total' },
-        { name: 'RoundId' }, { name: 'Created_At' }, { name: 'MappedCorrectly' },
-    ];
-
-    // Returns all table columns for PRAGMA calls so amendTable makes no changes
-    const pragmaAllColumns = (sql: string) => {
-        if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
-        if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
-        if (sql.includes('PRAGMA table_info')) return [{ name: 'Id' }, { name: 'CoursePar' }];
-        return null;
-    };
-
+describe('deleteRound cascade to HoleDeadlySins', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockExecAsync.mockResolvedValue(undefined);
     });
 
-    it('shouldRunColumnSwapWhenUnmappedRowsExist', async () => {
-        const sampleRows = [{ Id: 1, ThreePutts: 7, DoubleBogeys: 6, BogeysPar5: 5, BogeysInside9Iron: 4, DoubleChips: 3, TroubleOffTee: 2, Penalties: 1, Total: 28, RoundId: 1, MappedCorrectly: 0 }];
-        mockGetAllSync.mockImplementation((sql: string) => {
-            const pragma = pragmaAllColumns(sql);
-            if (pragma) return pragma;
-            if (sql.includes('WHERE MappedCorrectly = 0')) return sampleRows;
-            return [{ count: 1 }];
-        });
-
-        await initialize();
-
-        const updateCall = mockExecSync.mock.calls.find((c: string[]) => c[0].includes('UPDATE DeadlySinsRounds'));
-        expect(updateCall).toBeTruthy();
-    });
-
-    it('shouldNotRunColumnSwapWhenNoUnmappedRowsExist', async () => {
-        mockGetAllSync.mockImplementation((sql: string) => {
-            const pragma = pragmaAllColumns(sql);
-            if (pragma) return pragma;
-            if (sql.includes('WHERE MappedCorrectly = 0')) return [];
-            return [{ count: 1 }];
-        });
-
-        await initialize();
-
-        const updateCall = mockExecSync.mock.calls.find((c: string[]) => c[0].includes('UPDATE DeadlySinsRounds'));
-        expect(updateCall).toBeUndefined();
-    });
-
-    it('shouldMarkRowsAsMappedCorrectlyAfterColumnSwap', async () => {
-        const sampleRows = [{ Id: 1, ThreePutts: 7, DoubleBogeys: 6, BogeysPar5: 5, BogeysInside9Iron: 4, DoubleChips: 3, TroubleOffTee: 2, Penalties: 1, Total: 28, RoundId: 1, MappedCorrectly: 0 }];
-        mockGetAllSync.mockImplementation((sql: string) => {
-            const pragma = pragmaAllColumns(sql);
-            if (pragma) return pragma;
-            if (sql.includes('WHERE MappedCorrectly = 0')) return sampleRows;
-            return [{ count: 1 }];
-        });
-
-        await initialize();
-
-        const updateCall = mockExecSync.mock.calls.find((c: string[]) => c[0].includes('UPDATE DeadlySinsRounds'));
-        expect(updateCall![0]).toContain('MappedCorrectly = 1');
-        expect(updateCall![0]).toContain('WHERE MappedCorrectly = 0');
-    });
-
-    it('shouldSwapColumnsWithCorrectMappings', async () => {
-        const sampleRows = [{ Id: 1, ThreePutts: 7, DoubleBogeys: 6, BogeysPar5: 5, BogeysInside9Iron: 4, DoubleChips: 3, TroubleOffTee: 2, Penalties: 1, Total: 28, RoundId: 1, MappedCorrectly: 0 }];
-        mockGetAllSync.mockImplementation((sql: string) => {
-            const pragma = pragmaAllColumns(sql);
-            if (pragma) return pragma;
-            if (sql.includes('WHERE MappedCorrectly = 0')) return sampleRows;
-            return [{ count: 1 }];
-        });
-
-        await initialize();
-
-        const updateCall = mockExecSync.mock.calls.find((c: string[]) => c[0].includes('UPDATE DeadlySinsRounds'));
-        expect(updateCall![0]).toContain('TroubleOffTee = ThreePutts');
-        expect(updateCall![0]).toContain('Penalties = DoubleBogeys');
-        expect(updateCall![0]).toContain('ThreePutts = BogeysPar5');
-        expect(updateCall![0]).toContain('DoubleBogeys = TroubleOffTee');
-        expect(updateCall![0]).toContain('BogeysPar5 = Penalties');
-    });
-});
-
-describe('deleteRound cascade to DeadlySinsRounds', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-        mockExecAsync.mockResolvedValue(undefined);
-    });
-
-    it('deletes DeadlySinsRounds for the round before deleting the round', async () => {
+    it('deletes HoleDeadlySins for the round before deleting the round', async () => {
         await deleteRound(99);
 
         const sql = mockExecAsync.mock.calls[0][0];
-        expect(sql).toContain('DELETE FROM DeadlySinsRounds WHERE RoundId = 99');
+        expect(sql).toContain('DELETE FROM HoleDeadlySins WHERE RoundId = 99');
     });
 });
 

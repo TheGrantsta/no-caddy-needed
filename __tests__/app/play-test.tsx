@@ -10,7 +10,7 @@ import {
     addMultiplayerHoleScoresService,
     getActiveRoundService,
     getAllRoundHistoryService,
-    insertDeadlySinsRoundService,
+    insertHoleDeadlySinsService,
     getAllDeadlySinsRoundsService,
     getClubDistancesService,
     addRoundPlayersService,
@@ -45,7 +45,7 @@ jest.mock('../../service/DbService', () => ({
     addMultiplayerHoleScoresService: jest.fn(),
     getActiveRoundService: jest.fn(),
     getAllRoundHistoryService: jest.fn(),
-    insertDeadlySinsRoundService: jest.fn(),
+    insertHoleDeadlySinsService: jest.fn().mockResolvedValue(true),
     getAllDeadlySinsRoundsService: jest.fn(),
     getClubDistancesService: jest.fn(),
     getWedgeChartService: jest.fn().mockReturnValue({ distanceNames: [], clubs: [] }),
@@ -120,7 +120,7 @@ const mockEndRound = endRoundService as jest.Mock;
 const mockAddMultiplayerHoleScores = addMultiplayerHoleScoresService as jest.Mock;
 const mockGetActiveRound = getActiveRoundService as jest.Mock;
 const mockGetAllRoundHistory = getAllRoundHistoryService as jest.Mock;
-const mockInsertDeadlySinsRound = insertDeadlySinsRoundService as jest.Mock;
+const mockInsertHoleDeadlySins = insertHoleDeadlySinsService as jest.Mock;
 const mockGetAllDeadlySinsRounds = getAllDeadlySinsRoundsService as jest.Mock;
 const mockGetClubDistances = getClubDistancesService as jest.Mock;
 const mockScheduleReminder = scheduleRoundReminder as jest.Mock;
@@ -1108,13 +1108,10 @@ describe('Play screen', () => {
             expect(queryByTestId('toggle-7deadly-sins')).toBeNull();
         });
 
-        it('saves Deadly Sins when round ends above par', async () => {
+        it('saves hole sins when next hole is pressed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
-            mockEndRound.mockResolvedValue(true);
-            mockInsertDeadlySinsRound.mockResolvedValue(true);
-            mockGetAllRoundHistory.mockReturnValue([]);
 
             const { getByTestId } = render(<Play />);
 
@@ -1126,36 +1123,21 @@ describe('Play screen', () => {
                 expect(getByTestId('next-hole-button')).toBeTruthy();
             });
 
-            // Increment score to be above par, then submit
-            fireEvent.press(getByTestId('increment-1'));
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));
             });
 
             await waitFor(() => {
-                expect(getByTestId('end-round-button')).toBeTruthy();
-            });
-
-            fireEvent.press(getByTestId('end-round-button'));
-            await act(async () => {
-                fireEvent.press(getByTestId('confirm-end-round-button'));
-            });
-
-            await waitFor(() => {
-                expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(
-                    1, expect.any(Number), expect.any(Number), expect.any(Number),
-                    expect.any(Number), expect.any(Number), expect.any(Number), expect.any(Number)
+                expect(mockInsertHoleDeadlySins).toHaveBeenCalledWith(
+                    1, 1, expect.objectContaining({ threePutts: false, penalties: false })
                 );
             });
         });
 
-        it('saves troubleOffTee and penalties values when round ends above par', async () => {
+        it('saves toggled sins when advancing to next hole', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
-            mockEndRound.mockResolvedValue(true);
-            mockInsertDeadlySinsRound.mockResolvedValue(true);
-            mockGetAllRoundHistory.mockReturnValue([]);
 
             const { getByTestId } = render(<Play />);
 
@@ -1167,63 +1149,24 @@ describe('Play screen', () => {
                 expect(getByTestId('next-hole-button')).toBeTruthy();
             });
 
-            // Increment trouble-off-tee and penalties
-            fireEvent.press(getByTestId('7deadly-sins-increment-trouble-off-tee'));
-            fireEvent.press(getByTestId('7deadly-sins-increment-penalties'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-penalties'));
 
-            // Increment score to be above par, then submit
-            fireEvent.press(getByTestId('increment-1'));
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));
             });
 
             await waitFor(() => {
-                expect(getByTestId('end-round-button')).toBeTruthy();
-            });
-
-            fireEvent.press(getByTestId('end-round-button'));
-            await act(async () => {
-                fireEvent.press(getByTestId('confirm-end-round-button'));
-            });
-
-            await waitFor(() => {
-                expect(mockInsertDeadlySinsRound).toHaveBeenCalledWith(1, 0, 0, 0, 0, 0, 1, 1);
+                expect(mockInsertHoleDeadlySins).toHaveBeenCalledWith(
+                    1, 1, expect.objectContaining({ troubleOffTee: true, penalties: true })
+                );
             });
         });
 
-        it('does not save Deadly Sins when round is at or under par', async () => {
+        it('does not save sins when addMultiplayerHoleScoresService fails', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
-            mockEndRound.mockResolvedValue(true);
-            mockGetAllRoundHistory.mockReturnValue([]);
-
-            const { getByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-            fireEvent.press(getByTestId('start-button'));
-
-            await waitFor(() => {
-                expect(getByTestId('end-round-button')).toBeTruthy();
-            });
-
-            fireEvent.press(getByTestId('end-round-button'));
-            await act(async () => {
-                fireEvent.press(getByTestId('confirm-end-round-button'));
-            });
-
-            await waitFor(() => {
-                expect(mockInsertDeadlySinsRound).not.toHaveBeenCalled();
-            });
-        });
-
-        it('does not double-count running total when #is re-submitted after going back', async () => {
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-            mockAddMultiplayerHoleScores.mockResolvedValue(true);
-            mockEndRound.mockResolvedValue(true);
-            mockInsertDeadlySinsRound.mockResolvedValue(true);
-            mockGetAllRoundHistory.mockReturnValue([]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(false);
 
             const { getByTestId } = render(<Play />);
 
@@ -1235,35 +1178,42 @@ describe('Play screen', () => {
                 expect(getByTestId('next-hole-button')).toBeTruthy();
             });
 
-            // Score #1 above par (+1) then advance
-            fireEvent.press(getByTestId('increment-1'));
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));
             });
 
-            await waitFor(() => {
-                expect(getByTestId('previous-hole-button')).toBeTruthy();
-            });
+            expect(mockInsertHoleDeadlySins).not.toHaveBeenCalled();
+        });
 
-            // Go back to #1 and re-submit at par (default score = 4)
-            fireEvent.press(getByTestId('previous-hole-button'));
-            await act(async () => {
-                fireEvent.press(getByTestId('next-hole-button'));
-            });
+        it('does not save sins at end-of-round confirm', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+            mockEndRound.mockResolvedValue(true);
+            mockGetAllRoundHistory.mockReturnValue([]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
                 expect(getByTestId('end-round-button')).toBeTruthy();
             });
 
-            // End round — running total should be 0 (par), so 7DS must NOT be saved
+            mockInsertHoleDeadlySins.mockClear();
+
             fireEvent.press(getByTestId('end-round-button'));
             await act(async () => {
                 fireEvent.press(getByTestId('confirm-end-round-button'));
             });
 
             await waitFor(() => {
-                expect(mockInsertDeadlySinsRound).not.toHaveBeenCalled();
+                expect(getByTestId('start-round-button')).toBeTruthy();
             });
+
+            expect(mockInsertHoleDeadlySins).not.toHaveBeenCalled();
         });
     });
 

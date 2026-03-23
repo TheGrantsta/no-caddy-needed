@@ -592,7 +592,7 @@ export default function Play() {
                             <TouchableOpacity
                                 testID="scorecard-analyse-button"
                                 onPress={() => router.push({ pathname: '/play/round-analysis', params: { roundId: activeRoundId! } })}
-                                style={[styles.largeButton, { backgroundColor: colours.tertiary }]}
+                                style={[localStyles.actionButton, { backgroundColor: colours.tertiary, marginTop: 12 }]}
                             >
                                 <Text style={localStyles.actionButtonText}>Analyse your round</Text>
                             </TouchableOpacity>

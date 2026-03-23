@@ -235,16 +235,15 @@ export default function ScorecardScreen() {
                             />
                         )}
 
-                        {analyseRoundEnabled && !isEditing && !showDeleteConfirm && (
-                            <View style={styles.headerContainer}>
-                                <TouchableOpacity
-                                    testID="analyse-round-button"
-                                    style={styles.largeButton}
-                                    onPress={() => router.push({ pathname: '/play/round-analysis', params: { roundId } })}
-                                >
-                                    <Text style={styles.buttonText}>Analyse round</Text>
-                                </TouchableOpacity>
-                            </View>
+                        {isEditing && selectedScore && editedSins && (
+                            <DeadlySinsTally
+                                onEndRound={() => {}}
+                                roundControlled
+                                onValuesChange={handleSinsChange}
+                                initialValues={editedSins}
+                                holePar={editedScores.find(s => s.HoleNumber === selectedScore.holeNumber)?.HolePar}
+                                userScore={editedScores.find(s => s.HoleNumber === selectedScore.holeNumber && s.RoundPlayerId === multiplayerScorecard?.players.find(p => p.IsUser === 1)?.Id)?.Score}
+                            />
                         )}
 
                         {!isEditing && !showDeleteConfirm && (

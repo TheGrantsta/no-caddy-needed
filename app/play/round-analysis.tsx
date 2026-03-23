@@ -118,10 +118,6 @@ export default function RoundAnalysisScreen() {
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
-                <View style={styles.headerContainer}>
-                    <Text style={[styles.headerText, styles.marginTop]}>Round analysis</Text>
-                </View>
-
                 {aiResponse?.status === 'ask_question' && (
                     <SinQuestion question={aiResponse.question} onAnswer={handleAnswer} />
                 )}

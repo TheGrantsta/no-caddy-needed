@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
 import { DeadlySinsValues } from '../../service/DbService';
@@ -197,6 +198,24 @@ describe('DeadlySinsTally component', () => {
                 threePutts: true,
                 doubleBogeys: true,
             }));
+        });
+
+        it('toggle button has secondary background when value is false', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+
+            const button = getByTestId('7deadly-sins-toggle-three-putts');
+            const style = StyleSheet.flatten(button.props.style);
+            expect(style.backgroundColor).toBe('#2D5A3D'); // c.primary
+        });
+
+        it('toggle button has primary background when value is true', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+
+            const button = getByTestId('7deadly-sins-toggle-three-putts');
+            const style = StyleSheet.flatten(button.props.style);
+            expect(style.backgroundColor).toBe('#2D5A3D'); // c.primary
         });
     });
 

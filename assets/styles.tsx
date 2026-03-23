@@ -918,9 +918,6 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'center',
             alignItems: 'center',
         },
-        buttonActive: {
-            backgroundColor: c.accent,
-        },
         buttonText: {
             color: c.background,
             fontSize: fontSizes.tableHeader,

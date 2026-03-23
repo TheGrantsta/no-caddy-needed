@@ -98,7 +98,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                             <TouchableOpacity
                                 testID={`7deadly-sins-toggle-${field.slug}`}
                                 onPress={() => handleToggle(field.key)}
-                                style={[s.button, values[field.key] && s.buttonActive]}
+                                style={s.button}
                             >
                                 <Text style={s.buttonText}>{values[field.key] ? '✓' : '○'}</Text>
                             </TouchableOpacity>

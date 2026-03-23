@@ -3,6 +3,16 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
 import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService } from '../../../service/DbService';
 
+const mockExtraConfig = { analyseRoundEnabled: true };
+jest.mock('expo-constants', () => ({
+    __esModule: true,
+    default: {
+        get expoConfig() {
+            return { extra: mockExtraConfig };
+        },
+    },
+}));
+
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
     useTheme: () => ({
@@ -673,6 +683,26 @@ describe('Scorecard screen', () => {
                 pathname: '/play/round-analysis',
                 params: { roundId: '1' },
             });
+        });
+
+        it('does not render analyse button when feature flag is disabled', () => {
+            mockExtraConfig.analyseRoundEnabled = false;
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { queryByTestId } = render(<ScorecardScreen />);
+
+            expect(queryByTestId('analyse-round-button')).toBeNull();
+
+            mockExtraConfig.analyseRoundEnabled = true;
+        });
+
+        it('renders analyse button when feature flag is enabled', () => {
+            mockExtraConfig.analyseRoundEnabled = true;
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            expect(getByTestId('analyse-round-button')).toBeTruthy();
         });
     });
 });

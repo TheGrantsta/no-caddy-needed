@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useThemeColours } from '@/context/ThemeContext';
+import { useStyles } from '@/hooks/useStyles';
 import { AiQuestion, QuestionOption } from '@/service/AnalysisService';
 
 export type SingleChoiceAnswer = { option_id: string; label: string };
@@ -16,6 +17,7 @@ type Props = {
 
 const SinQuestion = ({ question, onAnswer }: Props) => {
     const colours = useThemeColours();
+    const styles = useStyles();
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [scaleValue, setScaleValue] = useState(question.scale?.min ?? 1);
     const [textValue, setTextValue] = useState('');
@@ -54,52 +56,73 @@ const SinQuestion = ({ question, onAnswer }: Props) => {
     };
 
     const s = StyleSheet.create({
-        container: { padding: 16 },
-        questionText: { color: colours.text, fontSize: 16, fontWeight: '600', marginBottom: 16 },
         option: {
-            backgroundColor: colours.cardBackground,
+            backgroundColor: colours.backgroundAlternate,
             borderRadius: 8,
-            padding: 12,
-            marginBottom: 8,
+            padding: 14,
+            marginBottom: 10,
+            borderWidth: 1,
+            borderColor: colours.border,
         },
-        optionSelected: { borderWidth: 2, borderColor: colours.primary },
-        optionText: { color: colours.text, fontSize: 15 },
-        scaleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 24, marginBottom: 12 },
-        scaleButton: {
-            backgroundColor: colours.cardBackground,
-            borderRadius: 8,
-            width: 44,
-            height: 44,
+        optionSelected: {
+            borderColor: colours.primary,
+            borderWidth: 2,
+        },
+        scaleRow: {
+            flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
+            gap: 24,
+            marginBottom: 12,
         },
-        scaleButtonText: { color: colours.text, fontSize: 22, fontWeight: '700' },
-        scaleValue: { color: colours.text, fontSize: 28, fontWeight: '700', minWidth: 32, textAlign: 'center' },
-        scaleLabels: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
-        scaleLabel: { color: colours.textSecondary, fontSize: 12 },
+        scaleButton: {
+            backgroundColor: colours.backgroundAlternate,
+            borderRadius: 8,
+            width: 48,
+            height: 48,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderWidth: 1,
+            borderColor: colours.border,
+        },
+        scaleButtonText: {
+            color: colours.primary,
+            fontSize: 24,
+            fontWeight: '700',
+        },
+        scaleValue: {
+            color: colours.primary,
+            fontSize: 32,
+            fontWeight: '700',
+            minWidth: 40,
+            textAlign: 'center',
+        },
+        scaleLabels: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: 16,
+        },
+        scaleLabel: {
+            color: colours.tertiary,
+            fontSize: 14,
+        },
         textInput: {
-            backgroundColor: colours.cardBackground,
+            backgroundColor: colours.backgroundAlternate,
             color: colours.text,
             borderRadius: 8,
+            borderWidth: 1,
+            borderColor: colours.border,
             padding: 12,
-            fontSize: 15,
+            fontSize: 17,
             marginBottom: 12,
             minHeight: 80,
             textAlignVertical: 'top',
         },
-        submitButton: {
-            backgroundColor: colours.primary,
-            borderRadius: 8,
-            padding: 14,
-            alignItems: 'center',
-            marginTop: 4,
-        },
-        submitText: { color: colours.white, fontSize: 15, fontWeight: '600' },
     });
 
     return (
-        <View style={s.container}>
-            <Text testID="sin-question-text" style={s.questionText}>
+        <View style={styles.contentSection}>
+            <Text testID="sin-question-text" style={[styles.normalText, { marginBottom: 16 }]}>
                 {question.text}
             </Text>
 
@@ -112,7 +135,7 @@ const SinQuestion = ({ question, onAnswer }: Props) => {
                             style={s.option}
                             onPress={() => handleSingleChoice(option)}
                         >
-                            <Text style={s.optionText}>{option.label}</Text>
+                            <Text style={styles.smallText}>{option.label}</Text>
                         </TouchableOpacity>
                     ))}
                 </>
@@ -127,11 +150,11 @@ const SinQuestion = ({ question, onAnswer }: Props) => {
                             style={[s.option, selectedIds.includes(option.id) && s.optionSelected]}
                             onPress={() => handleMultiToggle(option)}
                         >
-                            <Text style={s.optionText}>{option.label}</Text>
+                            <Text style={styles.smallText}>{option.label}</Text>
                         </TouchableOpacity>
                     ))}
-                    <TouchableOpacity testID="sin-question-submit" style={s.submitButton} onPress={handleMultiSubmit}>
-                        <Text style={s.submitText}>Submit</Text>
+                    <TouchableOpacity testID="sin-question-submit" style={styles.largeButton} onPress={handleMultiSubmit}>
+                        <Text style={styles.buttonText}>Submit</Text>
                     </TouchableOpacity>
                 </>
             )}
@@ -161,8 +184,8 @@ const SinQuestion = ({ question, onAnswer }: Props) => {
                         <Text style={s.scaleLabel}>{question.scale.min_label}</Text>
                         <Text style={s.scaleLabel}>{question.scale.max_label}</Text>
                     </View>
-                    <TouchableOpacity testID="sin-question-submit" style={s.submitButton} onPress={handleScaleSubmit}>
-                        <Text style={s.submitText}>Submit</Text>
+                    <TouchableOpacity testID="sin-question-submit" style={styles.largeButton} onPress={handleScaleSubmit}>
+                        <Text style={styles.buttonText}>Submit</Text>
                     </TouchableOpacity>
                 </>
             )}
@@ -176,10 +199,10 @@ const SinQuestion = ({ question, onAnswer }: Props) => {
                         onChangeText={setTextValue}
                         multiline
                         placeholder="Type your answer..."
-                        placeholderTextColor={colours.textSecondary}
+                        placeholderTextColor={colours.tertiary}
                     />
-                    <TouchableOpacity testID="sin-question-submit" style={s.submitButton} onPress={handleTextSubmit}>
-                        <Text style={s.submitText}>Submit</Text>
+                    <TouchableOpacity testID="sin-question-submit" style={styles.largeButton} onPress={handleTextSubmit}>
+                        <Text style={styles.buttonText}>Submit</Text>
                     </TouchableOpacity>
                 </>
             )}

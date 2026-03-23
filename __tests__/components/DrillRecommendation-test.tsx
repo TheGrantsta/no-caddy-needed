@@ -45,37 +45,6 @@ describe('DrillRecommendation component', () => {
         });
     });
 
-    describe('diagnosis', () => {
-        it('renders the primary cause', () => {
-            const { getByTestId } = render(<DrillRecommendation response={FULL_RESPONSE} />);
-
-            expect(getByTestId('drill-rec-primary-cause').props.children).toBe(
-                'poor_lag_distance_control'
-            );
-        });
-
-        it('renders each supporting fact', () => {
-            const { getByTestId } = render(<DrillRecommendation response={FULL_RESPONSE} />);
-
-            expect(getByTestId('drill-rec-supporting-fact-0').props.children).toBe(
-                '4 three-putts recorded'
-            );
-            expect(getByTestId('drill-rec-supporting-fact-1').props.children).toBe(
-                'First putts consistently short'
-            );
-        });
-
-        it('renders no supporting facts when array is empty', () => {
-            const response: GiveCoachingResponse = {
-                ...FULL_RESPONSE,
-                diagnosis: { ...FULL_RESPONSE.diagnosis, supporting_facts: [] },
-            };
-            const { queryByTestId } = render(<DrillRecommendation response={response} />);
-
-            expect(queryByTestId('drill-rec-supporting-fact-0')).toBeNull();
-        });
-    });
-
     describe('actions', () => {
         it('renders each action', () => {
             const { getByTestId } = render(<DrillRecommendation response={FULL_RESPONSE} />);

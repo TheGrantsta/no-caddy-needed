@@ -15,6 +15,7 @@ import { AnswerValue } from '../../components/SinQuestion';
 import SinQuestion from '../../components/SinQuestion';
 import DrillRecommendation from '../../components/DrillRecommendation';
 import { useStyles } from '../../hooks/useStyles';
+import { useThemeColours } from '../../context/ThemeContext';
 
 const API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY ?? '';
 
@@ -35,6 +36,7 @@ const toAnswerRecord = (value: AnswerValue): Answer['answer'] => {
 
 export default function RoundAnalysisScreen() {
     const styles = useStyles();
+    const colours = useThemeColours();
     const { roundId } = useLocalSearchParams<{ roundId: string }>();
 
     const [payload, setPayload] = useState<RoundAnalysisPayload | null | undefined>(undefined);
@@ -94,7 +96,7 @@ export default function RoundAnalysisScreen() {
     if (payload === null || error) {
         return (
             <GestureHandlerRootView style={styles.flexOne}>
-                <View style={styles.headerContainer}>
+                <View style={[styles.container, styles.headerContainer]}>
                     <Text testID="round-analysis-error" style={styles.headerText}>
                         {payload === null ? 'Round not found' : 'Something went wrong. Please try again.'}
                     </Text>
@@ -106,8 +108,8 @@ export default function RoundAnalysisScreen() {
     if (loading || payload === undefined) {
         return (
             <GestureHandlerRootView style={styles.flexOne}>
-                <View style={styles.headerContainer}>
-                    <ActivityIndicator testID="round-analysis-loading" size="large" />
+                <View style={[styles.container, styles.headerContainer]}>
+                    <ActivityIndicator testID="round-analysis-loading" size="large" color={colours.primary} />
                 </View>
             </GestureHandlerRootView>
         );
@@ -116,7 +118,9 @@ export default function RoundAnalysisScreen() {
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
-                <Text style={[styles.headerText, styles.marginTop]}>Round Analysis</Text>
+                <View style={styles.headerContainer}>
+                    <Text style={[styles.headerText, styles.marginTop]}>Round analysis</Text>
+                </View>
 
                 {aiResponse?.status === 'ask_question' && (
                     <SinQuestion question={aiResponse.question} onAnswer={handleAnswer} />

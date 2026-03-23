@@ -1,4 +1,4 @@
-import { insertHoleDeadlySins, getDeadlySinsForRound, getAllDeadlySinsRoundTotals } from '../../database/db';
+import { insertHoleDeadlySins, getDeadlySinsForRound, getAllDeadlySinsRoundTotals, getHoleDeadlySins, deleteHoleDeadlySinsByHole } from '../../database/db';
 import * as SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
@@ -228,5 +228,114 @@ describe('getAllDeadlySinsRoundTotals', () => {
         const result = getAllDeadlySinsRoundTotals();
 
         expect(result).toEqual([]);
+    });
+});
+
+describe('getHoleDeadlySins', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('queries HoleDeadlySins with RoundId and HoleNumber', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        getHoleDeadlySins(1, 3);
+
+        const sql = mockGetAllSync.mock.calls[0][0];
+        expect(sql).toContain('FROM HoleDeadlySins');
+        expect(sql).toContain('WHERE RoundId = ?');
+        expect(sql).toContain('HoleNumber = ?');
+    });
+
+    it('passes roundId and holeNumber as parameters', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        getHoleDeadlySins(42, 7);
+
+        expect(mockGetAllSync).toHaveBeenCalledWith(expect.any(String), [42, 7]);
+    });
+
+    it('returns row when data exists', () => {
+        mockGetAllSync.mockReturnValue([
+            { ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0 },
+        ]);
+
+        const result = getHoleDeadlySins(1, 3) as any;
+
+        expect(result).not.toBeNull();
+        expect(result.ThreePutts).toBe(1);
+        expect(result.BogeysInside9Iron).toBe(1);
+    });
+
+    it('returns null when no rows returned', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        const result = getHoleDeadlySins(1, 3);
+
+        expect(result).toBeNull();
+    });
+
+    it('returns all seven sin fields', () => {
+        mockGetAllSync.mockReturnValue([
+            { ThreePutts: 1, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 1, TroubleOffTee: 0, Penalties: 1 },
+        ]);
+
+        const result = getHoleDeadlySins(5, 9) as any;
+
+        expect(result.ThreePutts).toBe(1);
+        expect(result.DoubleBogeys).toBe(1);
+        expect(result.BogeysPar5).toBe(0);
+        expect(result.BogeysInside9Iron).toBe(0);
+        expect(result.DoubleChips).toBe(1);
+        expect(result.TroubleOffTee).toBe(0);
+        expect(result.Penalties).toBe(1);
+    });
+});
+
+describe('deleteHoleDeadlySinsByHole', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockPrepareAsync.mockResolvedValue({
+            executeAsync: mockStatementExecuteAsync,
+            finalizeAsync: mockStatementFinalizeAsync,
+        });
+        mockStatementExecuteAsync.mockResolvedValue(undefined);
+    });
+
+    it('deletes from HoleDeadlySins by RoundId and HoleNumber', async () => {
+        await deleteHoleDeadlySinsByHole(1, 3);
+
+        const sql = mockPrepareAsync.mock.calls[0][0];
+        expect(sql).toContain('DELETE FROM HoleDeadlySins');
+        expect(sql).toContain('RoundId');
+        expect(sql).toContain('HoleNumber');
+    });
+
+    it('binds RoundId and HoleNumber parameters', async () => {
+        await deleteHoleDeadlySinsByHole(42, 7);
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $RoundId: 42, $HoleNumber: 7 })
+        );
+    });
+
+    it('returns true on success', async () => {
+        const result = await deleteHoleDeadlySinsByHole(1, 1);
+
+        expect(result).toBe(true);
+    });
+
+    it('returns false when prepareAsync throws', async () => {
+        mockPrepareAsync.mockRejectedValue(new Error('DB error'));
+
+        const result = await deleteHoleDeadlySinsByHole(1, 1);
+
+        expect(result).toBe(false);
+    });
+
+    it('finalizes statement after successful delete', async () => {
+        await deleteHoleDeadlySinsByHole(1, 1);
+
+        expect(mockStatementFinalizeAsync).toHaveBeenCalled();
     });
 });

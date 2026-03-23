@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService } from '../../../service/DbService';
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -25,6 +25,8 @@ jest.mock('../../../service/DbService', () => ({
     getMultiplayerScorecardService: jest.fn(),
     updateScorecardService: jest.fn(),
     deleteRoundService: jest.fn(),
+    getHoleDeadlySinsService: jest.fn(),
+    replaceHoleDeadlySinsService: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock('expo-router', () => ({
@@ -54,6 +56,8 @@ const mockGetRoundScorecard = getRoundScorecardService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
 const mockUpdateScorecard = updateScorecardService as jest.Mock;
 const mockDeleteRound = deleteRoundService as jest.Mock;
+const mockGetHoleDeadlySinsService = getHoleDeadlySinsService as jest.Mock;
+const mockReplaceHoleDeadlySinsService = replaceHoleDeadlySinsService as jest.Mock;
 
 const multiplayerData = {
     round: { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '' },
@@ -71,6 +75,8 @@ describe('Scorecard screen', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockGetMultiplayerScorecard.mockReturnValue(null);
+        mockGetHoleDeadlySinsService.mockReturnValue(null);
+        mockReplaceHoleDeadlySinsService.mockResolvedValue(true);
     });
 
     it('renders scorecard heading', () => {
@@ -380,6 +386,79 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('cancel-save-button'));
 
             expect(queryByTestId('confirm-save-button')).toBeNull();
+        });
+
+        it('shows 7 deadly sins tally when hole is selected in edit mode', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+
+            expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
+        });
+
+        it('calls getHoleDeadlySinsService with correct roundId and holeNumber when hole selected', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+
+            expect(mockGetHoleDeadlySinsService).toHaveBeenCalledWith(1, 1);
+        });
+
+        it('saves sins for selected hole on confirm save', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(true);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(mockReplaceHoleDeadlySinsService).toHaveBeenCalledWith(
+                    1,
+                    1,
+                    expect.objectContaining({ threePutts: false, doubleBogeys: false })
+                );
+            });
+        });
+
+        it('does not save sins when no hole selected during edit', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(true);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(mockUpdateScorecard).toHaveBeenCalled();
+            });
+            expect(mockReplaceHoleDeadlySinsService).not.toHaveBeenCalled();
+        });
+
+        it('clears sins editor when cancel edit pressed', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+
+            expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
+
+            fireEvent.press(getByTestId('cancel-edit-button'));
+
+            expect(queryByTestId('7deadly-sins-toggle-three-putts')).toBeNull();
         });
     });
 

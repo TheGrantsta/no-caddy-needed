@@ -2,6 +2,8 @@ import {
     insertHoleDeadlySinsService,
     getAllDeadlySinsRoundsService,
     getDeadlySinsForRoundService,
+    getHoleDeadlySinsService,
+    replaceHoleDeadlySinsService,
     DeadlySinsValues,
 } from '../../service/DbService';
 import {
@@ -10,6 +12,8 @@ import {
     getDeadlySinsForRound,
     getAllRounds,
     getRoundById,
+    getHoleDeadlySins,
+    deleteHoleDeadlySinsByHole,
 } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
@@ -18,6 +22,8 @@ jest.mock('../../database/db', () => ({
     getDeadlySinsForRound: jest.fn(),
     getAllRounds: jest.fn(),
     getRoundById: jest.fn(),
+    getHoleDeadlySins: jest.fn(),
+    deleteHoleDeadlySinsByHole: jest.fn(),
 }));
 
 const mockInsertHoleDeadlySins = insertHoleDeadlySins as jest.Mock;
@@ -25,6 +31,8 @@ const mockGetAllDeadlySinsRoundTotals = getAllDeadlySinsRoundTotals as jest.Mock
 const mockGetDeadlySinsForRound = getDeadlySinsForRound as jest.Mock;
 const mockGetAllRounds = getAllRounds as jest.Mock;
 const mockGetRoundById = getRoundById as jest.Mock;
+const mockGetHoleDeadlySins = getHoleDeadlySins as jest.Mock;
+const mockDeleteHoleDeadlySinsByHole = deleteHoleDeadlySinsByHole as jest.Mock;
 
 const allFalseSins: DeadlySinsValues = {
     threePutts: false,
@@ -240,5 +248,100 @@ describe('getDeadlySinsForRoundService', () => {
         getDeadlySinsForRoundService(42);
 
         expect(mockGetDeadlySinsForRound).toHaveBeenCalledWith(42);
+    });
+});
+
+describe('getHoleDeadlySinsService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('returns null when no row found for hole', () => {
+        mockGetHoleDeadlySins.mockReturnValue(null);
+
+        const result = getHoleDeadlySinsService(1, 3);
+
+        expect(result).toBeNull();
+    });
+
+    it('converts integer 1 to boolean true for each sin', () => {
+        mockGetHoleDeadlySins.mockReturnValue({
+            ThreePutts: 1, DoubleBogeys: 1, BogeysPar5: 1,
+            BogeysInside9Iron: 1, DoubleChips: 1, TroubleOffTee: 1, Penalties: 1,
+        });
+
+        const result = getHoleDeadlySinsService(1, 3);
+
+        expect(result).not.toBeNull();
+        expect(result!.threePutts).toBe(true);
+        expect(result!.doubleBogeys).toBe(true);
+        expect(result!.bogeysPar5).toBe(true);
+        expect(result!.bogeysInside9Iron).toBe(true);
+        expect(result!.doubleChips).toBe(true);
+        expect(result!.troubleOffTee).toBe(true);
+        expect(result!.penalties).toBe(true);
+    });
+
+    it('converts integer 0 to boolean false for each sin', () => {
+        mockGetHoleDeadlySins.mockReturnValue({
+            ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0,
+            BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0,
+        });
+
+        const result = getHoleDeadlySinsService(1, 3);
+
+        expect(result!.threePutts).toBe(false);
+        expect(result!.penalties).toBe(false);
+    });
+
+    it('passes roundId and holeNumber to db', () => {
+        mockGetHoleDeadlySins.mockReturnValue(null);
+
+        getHoleDeadlySinsService(99, 5);
+
+        expect(mockGetHoleDeadlySins).toHaveBeenCalledWith(99, 5);
+    });
+});
+
+describe('replaceHoleDeadlySinsService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockDeleteHoleDeadlySinsByHole.mockResolvedValue(true);
+        mockInsertHoleDeadlySins.mockResolvedValue(true);
+    });
+
+    it('deletes existing sins for hole before inserting', async () => {
+        await replaceHoleDeadlySinsService(1, 3, allFalseSins);
+
+        expect(mockDeleteHoleDeadlySinsByHole).toHaveBeenCalledWith(1, 3);
+    });
+
+    it('inserts new sins after deleting', async () => {
+        const sins: DeadlySinsValues = { ...allFalseSins, threePutts: true };
+
+        await replaceHoleDeadlySinsService(1, 3, sins);
+
+        expect(mockInsertHoleDeadlySins).toHaveBeenCalledWith(1, 3, sins);
+    });
+
+    it('returns true when insert succeeds', async () => {
+        const result = await replaceHoleDeadlySinsService(1, 1, allFalseSins);
+
+        expect(result).toBe(true);
+    });
+
+    it('returns false when insert fails', async () => {
+        mockInsertHoleDeadlySins.mockResolvedValue(false);
+
+        const result = await replaceHoleDeadlySinsService(1, 1, allFalseSins);
+
+        expect(result).toBe(false);
+    });
+
+    it('passes correct roundId and holeNumber to both delete and insert', async () => {
+        await replaceHoleDeadlySinsService(42, 9, allFalseSins);
+
+        expect(mockDeleteHoleDeadlySinsByHole).toHaveBeenCalledWith(42, 9);
+        expect(mockInsertHoleDeadlySins).toHaveBeenCalledWith(42, 9, allFalseSins);
     });
 });

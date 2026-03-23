@@ -267,6 +267,32 @@ export const getAllDeadlySinsRoundTotals = () => {
     `);
 };
 
+export const getHoleDeadlySins = (roundId: number, holeNumber: number) => {
+    const rows = getSyncDb().getAllSync(
+        'SELECT ThreePutts, DoubleBogeys, BogeysPar5, BogeysInside9Iron, DoubleChips, TroubleOffTee, Penalties FROM HoleDeadlySins WHERE RoundId = ? AND HoleNumber = ? LIMIT 1',
+        [roundId, holeNumber]
+    ) as any[];
+    return rows.length > 0 ? rows[0] : null;
+};
+
+export const deleteHoleDeadlySinsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync(
+            'DELETE FROM HoleDeadlySins WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
+        );
+        try {
+            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+    return success;
+};
+
 export const getAllDrillHistory = () => {
     const sqlStatement = `SELECT * FROM DrillHistory ORDER BY Id DESC;`
 

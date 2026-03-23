@@ -13,6 +13,8 @@ import {
     insertHoleDeadlySins,
     getDeadlySinsForRound,
     getAllDeadlySinsRoundTotals,
+    getHoleDeadlySins,
+    deleteHoleDeadlySinsByHole,
     insertRound,
     updateRound,
     getRoundById,
@@ -237,6 +239,25 @@ export type DeadlySinsValues = {
 };
 
 export const insertHoleDeadlySinsService = (roundId: number, holeNumber: number, sins: DeadlySinsValues): Promise<boolean> => {
+    return insertHoleDeadlySins(roundId, holeNumber, sins);
+};
+
+export const getHoleDeadlySinsService = (roundId: number, holeNumber: number): DeadlySinsValues | null => {
+    const row = getHoleDeadlySins(roundId, holeNumber) as any;
+    if (!row) return null;
+    return {
+        threePutts: row.ThreePutts === 1,
+        doubleBogeys: row.DoubleBogeys === 1,
+        bogeysPar5: row.BogeysPar5 === 1,
+        bogeysInside9Iron: row.BogeysInside9Iron === 1,
+        doubleChips: row.DoubleChips === 1,
+        troubleOffTee: row.TroubleOffTee === 1,
+        penalties: row.Penalties === 1,
+    };
+};
+
+export const replaceHoleDeadlySinsService = async (roundId: number, holeNumber: number, sins: DeadlySinsValues): Promise<boolean> => {
+    await deleteHoleDeadlySinsByHole(roundId, holeNumber);
     return insertHoleDeadlySins(roundId, holeNumber, sins);
 };
 

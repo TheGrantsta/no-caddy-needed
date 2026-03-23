@@ -5,20 +5,34 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import RoundScorecard from '../../components/RoundScorecard';
 import Scorecard from '../../components/Scorecard';
 import ScoreEditor from '../../components/ScoreEditor';
+import DeadlySinsTally from '../../components/DeadlySinsTally';
 import { useAppToast } from '../../hooks/useAppToast';
 import {
     getRoundScorecardService,
     getMultiplayerScorecardService,
     updateScorecardService,
     deleteRoundService,
+    getHoleDeadlySinsService,
+    replaceHoleDeadlySinsService,
     RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
+    DeadlySinsValues,
 } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import fontSizes from '@/assets/font-sizes';
+
+const INITIAL_SINS: DeadlySinsValues = {
+    threePutts: false,
+    doubleBogeys: false,
+    bogeysPar5: false,
+    bogeysInside9Iron: false,
+    doubleChips: false,
+    troubleOffTee: false,
+    penalties: false,
+};
 
 export default function ScorecardScreen() {
     const styles = useStyles();
@@ -35,6 +49,8 @@ export default function ScorecardScreen() {
     const [selectedScore, setSelectedScore] = useState<{ holeNumber: number; playerId: number } | null>(null);
     const [showSaveConfirm, setShowSaveConfirm] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [editedSins, setEditedSins] = useState<DeadlySinsValues | null>(null);
+    const [sinsHoleNumber, setSinsHoleNumber] = useState<number | null>(null);
 
     useEffect(() => {
         loadData();
@@ -61,11 +77,18 @@ export default function ScorecardScreen() {
         setEditedScores([]);
         setSelectedScore(null);
         setShowSaveConfirm(false);
+        setEditedSins(null);
+        setSinsHoleNumber(null);
     };
 
     const handleScoreSelect = (holeNumber: number, playerId: number) => {
         setSelectedScore({ holeNumber, playerId });
+        const existing = getHoleDeadlySinsService(Number(roundId), holeNumber);
+        setEditedSins(existing ?? INITIAL_SINS);
+        setSinsHoleNumber(holeNumber);
     };
+
+    const handleSinsChange = (values: DeadlySinsValues) => setEditedSins(values);
 
     const getSelectedScoreValue = (): number => {
         if (!selectedScore) return 0;
@@ -121,16 +144,19 @@ export default function ScorecardScreen() {
         const success = await updateScorecardService(Number(roundId), changes);
 
         if (success) {
+            if (sinsHoleNumber !== null && editedSins !== null) {
+                await replaceHoleDeadlySinsService(Number(roundId), sinsHoleNumber, editedSins);
+            }
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
-
             loadData();
             setIsEditing(false);
             setEditedScores([]);
             setSelectedScore(null);
             setShowSaveConfirm(false);
+            setEditedSins(null);
+            setSinsHoleNumber(null);
         } else {
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
-
             setShowSaveConfirm(false);
         }
     };
@@ -200,6 +226,17 @@ export default function ScorecardScreen() {
                                 score={getSelectedScoreValue()}
                                 onIncrement={handleIncrement}
                                 onDecrement={handleDecrement}
+                            />
+                        )}
+
+                        {isEditing && selectedScore && editedSins && (
+                            <DeadlySinsTally
+                                onEndRound={() => {}}
+                                roundControlled
+                                onValuesChange={handleSinsChange}
+                                initialValues={editedSins}
+                                holePar={editedScores.find(s => s.HoleNumber === selectedScore.holeNumber)?.HolePar}
+                                userScore={editedScores.find(s => s.HoleNumber === selectedScore.holeNumber && s.RoundPlayerId === multiplayerScorecard?.players.find(p => p.IsUser === 1)?.Id)?.Score}
                             />
                         )}
 

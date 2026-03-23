@@ -27,6 +27,11 @@ const INITIAL_STATE: ConversationState = {
     answers: [],
 };
 
+const formatIssueLabel = (issue: string): string => {
+    const label = issue.replace(/_/g, ' ').replace('9iron', '9-iron');
+    return label.charAt(0).toUpperCase() + label.slice(1);
+};
+
 const toAnswerRecord = (value: AnswerValue): Answer['answer'] => {
     if (Array.isArray(value)) {
         return { value: value.map(v => v.label).join(', ') };
@@ -121,6 +126,14 @@ export default function RoundAnalysisScreen() {
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
+                {aiResponse && (
+                    <View style={styles.contentSection}>
+                        <Text testID="round-analysis-focus-issue" style={styles.headerText}>
+                            {formatIssueLabel(aiResponse.focus_issue)}
+                        </Text>
+                    </View>
+                )}
+
                 {aiResponse?.status === 'ask_question' && (
                     <SinQuestion question={aiResponse.question} onAnswer={handleAnswer} />
                 )}

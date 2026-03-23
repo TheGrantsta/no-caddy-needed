@@ -142,6 +142,28 @@ describe('RoundAnalysisScreen', () => {
         });
     });
 
+    describe('issue context box', () => {
+        it('shows the focus issue label on the ask_question screen', async () => {
+            mockCallAiCoach.mockResolvedValue(ASK_QUESTION_RESPONSE);
+
+            const { getByTestId } = render(<RoundAnalysisScreen />);
+
+            await waitFor(() =>
+                expect(getByTestId('round-analysis-focus-issue').props.children).toBe('Three putts')
+            );
+        });
+
+        it('shows the focus issue label on the give_coaching screen', async () => {
+            mockCallAiCoach.mockResolvedValue(GIVE_COACHING_RESPONSE);
+
+            const { getByTestId } = render(<RoundAnalysisScreen />);
+
+            await waitFor(() =>
+                expect(getByTestId('round-analysis-focus-issue').props.children).toBe('Three putts')
+            );
+        });
+    });
+
     describe('ask_question flow', () => {
         it('renders SinQuestion with question text when AI returns ask_question', async () => {
             mockCallAiCoach.mockResolvedValue(ASK_QUESTION_RESPONSE);

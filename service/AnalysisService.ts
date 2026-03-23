@@ -177,40 +177,65 @@ Remember: output JSON only.`;
 
 // ── AI call ───────────────────────────────────────────────────────────────────
 
+const RETRY_DELAYS_MS = [1000, 2000, 4000];
+
+const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
+
 export const callAiCoach = async (
     apiKey: string,
     payload: RoundAnalysisPayload,
     conversationState: ConversationState,
 ): Promise<AiCoachResponse> => {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-            model: 'gpt-4o-mini',
-            response_format: { type: 'json_object' },
-            messages: [
-                { role: 'system', content: SYSTEM_PROMPT },
-                { role: 'user', content: JSON.stringify({ ...payload, conversation_state: conversationState }) },
-            ],
-        }),
-    });
+    let lastError: Error = new Error('Unknown error');
 
-    if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.status}`);
+    for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
+        if (attempt > 0) {
+            await sleep(RETRY_DELAYS_MS[attempt - 1]);
+        }
+
+        try {
+            const response = await fetch('https://api.openai.com/v1/responses', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    input: [
+                        { role: 'system', content: SYSTEM_PROMPT },
+                        { role: 'user', content: JSON.stringify({ ...payload, conversation_state: conversationState }) },
+                    ],
+                    text: { format: { type: 'json_object' } },
+                }),
+            });
+
+            if (!response.ok) {
+                if (response.status === 429) {
+                    throw new Error('Sorry this service is unavailable at the moment');
+                }
+                throw new Error(`OpenAI API error: ${response.status} - message: ${await response.text()}`);
+            }
+
+            const data = await response.json();
+            const content: string = data.output[0].content[0].text;
+            const parsed = JSON.parse(content) as AiCoachResponse;
+
+            if (parsed.status !== 'ask_question' && parsed.status !== 'give_coaching') {
+                throw new Error(`Unexpected AI response status: ${(parsed as { status: string }).status}`);
+            }
+
+            return parsed;
+        } catch (e) {
+            const error = e as Error;
+            if (error.message === 'Sorry this service is unavailable at the moment') {
+                throw error;
+            }
+            lastError = error;
+        }
     }
 
-    const data = await response.json();
-    const content: string = data.choices[0].message.content;
-    const parsed = JSON.parse(content) as AiCoachResponse;
-
-    if (parsed.status !== 'ask_question' && parsed.status !== 'give_coaching') {
-        throw new Error(`Unexpected AI response status: ${(parsed as { status: string }).status}`);
-    }
-
-    return parsed;
+    throw lastError;
 };
 
 export type DetectedIssue = {

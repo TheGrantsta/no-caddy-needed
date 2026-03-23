@@ -56,6 +56,20 @@ describe('Drill component', () => {
         expect(getByText('Met')).toBeTruthy();
     });
 
+    it('shows checkmark when toggle is in Met state', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} />);
+
+        expect(getByTestId('drill-met-toggle')).toHaveTextContent('✓');
+    });
+
+    it('shows circle when toggle is in Not Met state', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} />);
+
+        fireEvent.press(getByTestId('drill-met-toggle'));
+
+        expect(getByTestId('drill-met-toggle')).toHaveTextContent('○');
+    });
+
     it('calls saveDrillResult with label and true when Save is pressed with Met (default)', () => {
         const mockSave = jest.fn();
         const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);

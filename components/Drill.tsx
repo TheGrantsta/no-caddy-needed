@@ -42,9 +42,9 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     <View style={[styles.drill.toggleWrapper, { paddingTop: 10 }]}>
                         <TouchableOpacity
                             testID='drill-met-toggle'
-                            style={[styles.drill.toggleContainer, isAchieved && styles.drill.toggleOn]}
+                            style={styles.deadlySinsTally.button}
                             onPress={toggleSwitch}>
-                            <View style={[styles.drill.toggleCircle, isAchieved && styles.drill.circleOn]} />
+                            <Text style={styles.deadlySinsTally.buttonText}>{isAchieved ? '✓' : '○'}</Text>
                         </TouchableOpacity>
 
                         <Text style={[styles.normalText, { paddingLeft: 10 }]}>

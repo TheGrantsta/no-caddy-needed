@@ -37,6 +37,7 @@ import {
     ParAverages,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
+import Constants from 'expo-constants';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
@@ -295,6 +296,7 @@ export default function Play() {
         resetToIdle();
     };
 
+    const analyseRoundEnabled = Constants.expoConfig?.extra?.analyseRoundEnabled ?? false;
     const isRoundActive = activeRoundId !== null;
 
     const filteredRoundHistory = useMemo(
@@ -586,6 +588,15 @@ export default function Play() {
                         >
                             <Text style={localStyles.actionButtonText}>Done</Text>
                         </TouchableOpacity>
+                        {analyseRoundEnabled && (
+                            <TouchableOpacity
+                                testID="scorecard-analyse-button"
+                                onPress={() => router.push({ pathname: '/play/round-analysis', params: { roundId: activeRoundId! } })}
+                                style={[localStyles.actionButton, { backgroundColor: colours.tertiary, marginTop: 12 }]}
+                            >
+                                <Text style={localStyles.actionButtonText}>Analyse your round</Text>
+                            </TouchableOpacity>
+                        )}
                     </View>
                 )}
 

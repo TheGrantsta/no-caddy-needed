@@ -12,6 +12,22 @@ const db = getFirestore(app);
 
 export type FeedbackType = 'positive' | 'neutral' | 'negative';
 
+export const logEvent = async (
+    event: string,
+    properties?: Record<string, unknown>
+): Promise<boolean> => {
+    try {
+        await addDoc(collection(db, 'app_events'), {
+            event,
+            loggedAt: serverTimestamp(),
+            ...properties,
+        });
+        return true;
+    } catch {
+        return false;
+    }
+};
+
 export const submitRoundFeedback = async (
     roundId: string,
     feedback: FeedbackType,

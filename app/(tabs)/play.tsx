@@ -37,6 +37,7 @@ import {
     ParAverages,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
+import { logEvent } from '../../service/FirebaseService';
 import Constants from 'expo-constants';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
@@ -148,6 +149,7 @@ export default function Play() {
 
     const handleContinueRound = () => {
         if (!incompleteRound) return;
+        logEvent('continue_round');
         const holesPlayed = getHolesPlayedForRoundService(incompleteRound.Id);
         setCurrentHole(holesPlayed > 0 ? holesPlayed + 1 : 1);
         setActiveRoundId(incompleteRound.Id);
@@ -168,6 +170,7 @@ export default function Play() {
         const roundId = await startRoundService(courseName);
 
         if (roundId) {
+            logEvent('start_round');
             const playerIds = await addRoundPlayersService(roundId, playerNames);
             const roundPlayers = playerIds.map((id, index) => ({
                 Id: id,
@@ -276,6 +279,7 @@ export default function Play() {
     const handleConfirmEndRound = async () => {
         if (!activeRoundId) return;
 
+        logEvent('end_round');
         await cancelRoundReminder(notificationId);
         setNotificationId(null);
 
@@ -591,7 +595,10 @@ export default function Play() {
                         {analyseRoundEnabled && (
                             <TouchableOpacity
                                 testID="scorecard-analyse-button"
-                                onPress={() => router.push({ pathname: '/play/round-analysis', params: { roundId: activeRoundId! } })}
+                                onPress={() => {
+                                    logEvent('analyse_round', { roundId: activeRoundId! });
+                                    router.push({ pathname: '/play/round-analysis', params: { roundId: activeRoundId! } });
+                                }}
                                 style={[localStyles.actionButton, { backgroundColor: colours.tertiary, marginTop: 12 }]}
                             >
                                 <Text style={localStyles.actionButtonText}>Analyse your round</Text>

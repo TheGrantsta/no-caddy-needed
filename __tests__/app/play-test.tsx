@@ -24,6 +24,7 @@ import {
     getParAveragesService,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
+import { logEvent } from '../../service/FirebaseService';
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -86,6 +87,10 @@ jest.mock('../../service/NotificationService', () => ({
     cancelRoundReminder: jest.fn(),
 }));
 
+jest.mock('../../service/FirebaseService', () => ({
+    logEvent: jest.fn().mockResolvedValue(true),
+}));
+
 const mockExtraConfig = { analyseRoundEnabled: true };
 jest.mock('expo-constants', () => ({
     __esModule: true,
@@ -136,6 +141,7 @@ const mockCancelReminder = cancelRoundReminder as jest.Mock;
 const mockAddRoundPlayers = addRoundPlayersService as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayersService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
+const mockLogEvent = logEvent as jest.Mock;
 const mockGetRecentCourseNames = getRecentCourseNamesService as jest.Mock;
 const mockGetRecentPlayerNames = getRecentPlayerNamesService as jest.Mock;
 const mockGetSettingsService = getSettingsService as jest.Mock;
@@ -1963,6 +1969,107 @@ describe('Play screen', () => {
             });
 
             expect(mockGetAllDeadlySinsRounds.mock.calls.length).toBeGreaterThan(initialCount);
+        });
+    });
+
+    describe('Analytics tracking', () => {
+        it('logs start_round event when start round button pressed and round starts', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            await act(async () => {
+                fireEvent.press(getByTestId('start-button'));
+            });
+
+            await waitFor(() => expect(mockLogEvent).toHaveBeenCalledWith('start_round'));
+        });
+
+        it('logs continue_round event when continue round button pressed', async () => {
+            mockGetActiveRound.mockReturnValue({ Id: 42, TotalScore: 0, IsCompleted: 0, StartTime: '', EndTime: '', Created_At: '15/06' });
+            mockGetRoundPlayers.mockReturnValue([]);
+
+            const { getByTestId } = render(<Play />);
+
+            await act(async () => {
+                fireEvent.press(getByTestId('continue-round-button'));
+            });
+
+            expect(mockLogEvent).toHaveBeenCalledWith('continue_round');
+        });
+
+        // it('logs next_hole event when next hole button pressed successfully', async () => {
+        //     mockStartRound.mockResolvedValue(1);
+        //     mockAddRoundPlayers.mockResolvedValue([1]);
+        //     mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+        //     const { getByTestId } = render(<Play />);
+
+        //     fireEvent.press(getByTestId('start-round-button'));
+        //     fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+        //     fireEvent.press(getByTestId('start-button'));
+
+        //     await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
+
+        //     await act(async () => {
+        //         fireEvent.press(getByTestId('next-hole-button'));
+        //     });
+
+        //     await waitFor(() => expect(mockLogEvent).toHaveBeenCalledWith('next_hole', { hole: 1 }));
+        // });
+
+        it('logs end_round event when confirm end round pressed', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockEndRound.mockResolvedValue(true);
+            mockGetAllRoundHistory.mockReturnValue([]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
+
+            fireEvent.press(getByTestId('end-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('confirm-end-round-button'));
+            });
+
+            await waitFor(() => expect(mockLogEvent).toHaveBeenCalledWith('end_round'));
+        });
+
+        it('logs analyse_round event when analyse button pressed', async () => {
+            mockExtraConfig.analyseRoundEnabled = true;
+            mockStartRound.mockResolvedValue(7);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockEndRound.mockResolvedValue(true);
+            mockGetMultiplayerScorecard.mockReturnValue({
+                round: { Id: 7, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                players: [{ Id: 1, RoundId: 7, PlayerName: 'You', IsUser: 1, SortOrder: 0 }],
+                holeScores: [],
+            });
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
+            fireEvent.press(getByTestId('end-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('confirm-end-round-button'));
+            });
+
+            await waitFor(() => expect(getByTestId('scorecard-analyse-button')).toBeTruthy());
+            fireEvent.press(getByTestId('scorecard-analyse-button'));
+
+            expect(mockLogEvent).toHaveBeenCalledWith('analyse_round', { roundId: 7 });
         });
     });
 

@@ -27,6 +27,10 @@ jest.mock('@expo/vector-icons', () => ({
     MaterialIcons: () => null,
 }));
 
+jest.mock('../../../service/FirebaseService', () => ({
+    logEvent: jest.fn().mockResolvedValue(true),
+}));
+
 describe('Perform', () => {
     it('rendersWithoutCrashing', () => {
         const { toJSON } = render(<Perform />);

@@ -6,6 +6,7 @@ import SubMenu from '../../components/SubMenu';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
+import { logEvent } from '../../service/FirebaseService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -78,6 +79,8 @@ export default function Perform() {
 
   const handleSubMenu = (sectionName: string) => {
     setSection(sectionName);
+    if (sectionName === 'approach') logEvent('view_approach');
+    if (sectionName === 'pros') logEvent('view_pro_stats');
   };
 
   const displaySection = (sectionName: string) => {

@@ -1,6 +1,13 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import View from '../../app/(tabs)/perform';
+import { logEvent } from '../../service/FirebaseService';
+
+jest.mock('../../service/FirebaseService', () => ({
+    logEvent: jest.fn().mockResolvedValue(true),
+}));
+
+const mockLogEvent = logEvent as jest.Mock;
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -93,6 +100,27 @@ describe('Perform page ', () => {
         expect(getByText('Yards')).toBeTruthy();
         expect(getByText('Fairway')).toBeTruthy();
         expect(getByText('Rough')).toBeTruthy();
+    });
+
+    describe('Analytics tracking', () => {
+        it('logs view_pro_stats when pro stats sub-menu tab pressed', () => {
+            const { getByTestId } = render(<View />);
+
+            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
+
+            expect(mockLogEvent).toHaveBeenCalledWith('view_pro_stats');
+        });
+
+        it('logs view_approach when approach sub-menu tab pressed', () => {
+            const { getByTestId } = render(<View />);
+
+            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
+            mockLogEvent.mockClear();
+
+            fireEvent.press(getByTestId('perform-sub-menu-approach'));
+
+            expect(mockLogEvent).toHaveBeenCalledWith('view_approach');
+        });
     });
 
     it('renders correctly with stats putting make rates', async () => {

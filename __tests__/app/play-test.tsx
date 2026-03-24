@@ -2001,26 +2001,6 @@ describe('Play screen', () => {
             expect(mockLogEvent).toHaveBeenCalledWith('continue_round');
         });
 
-        // it('logs next_hole event when next hole button pressed successfully', async () => {
-        //     mockStartRound.mockResolvedValue(1);
-        //     mockAddRoundPlayers.mockResolvedValue([1]);
-        //     mockAddMultiplayerHoleScores.mockResolvedValue(true);
-
-        //     const { getByTestId } = render(<Play />);
-
-        //     fireEvent.press(getByTestId('start-round-button'));
-        //     fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-        //     fireEvent.press(getByTestId('start-button'));
-
-        //     await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
-
-        //     await act(async () => {
-        //         fireEvent.press(getByTestId('next-hole-button'));
-        //     });
-
-        //     await waitFor(() => expect(mockLogEvent).toHaveBeenCalledWith('next_hole', { hole: 1 }));
-        // });
-
         it('logs end_round event when confirm end round pressed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);

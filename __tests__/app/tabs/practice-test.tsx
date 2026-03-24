@@ -8,6 +8,7 @@ import {
     getAllDrillHistoryService,
     getDrillStatsByTypeService,
 } from '../../../service/DbService';
+import { logEvent } from '../../../service/FirebaseService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -47,10 +48,15 @@ jest.mock('../../../service/DbService', () => ({
     getDrillStatsByTypeService: jest.fn().mockReturnValue([]),
 }));
 
+jest.mock('../../../service/FirebaseService', () => ({
+    logEvent: jest.fn().mockResolvedValue(true),
+}));
+
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
 const mockGetAllDrillHistoryService = getAllDrillHistoryService as jest.Mock;
 const mockGetDrillStatsByTypeService = getDrillStatsByTypeService as jest.Mock;
+const mockLogEvent = logEvent as jest.Mock;
 
 const defaultSettings = {
     theme: 'dark',
@@ -224,6 +230,35 @@ describe('Practice', () => {
         expect(mockSaveSettingsService).toHaveBeenCalledWith(
             expect.objectContaining({ practiceOnboardingSeen: true })
         );
+    });
+
+    describe('Analytics tracking', () => {
+        it('logs view_tools when Tools sub-menu tab pressed', () => {
+            const { getByTestId } = render(<Practice />);
+
+            fireEvent.press(getByTestId('practice-sub-menu-tools'));
+
+            expect(mockLogEvent).toHaveBeenCalledWith('view_tools');
+        });
+
+        it('logs view_history when History sub-menu tab pressed', () => {
+            const { getByTestId } = render(<Practice />);
+
+            fireEvent.press(getByTestId('practice-sub-menu-history'));
+
+            expect(mockLogEvent).toHaveBeenCalledWith('view_history');
+        });
+
+        it('logs view_short_game when Short game sub-menu tab pressed', () => {
+            const { getByTestId } = render(<Practice />);
+
+            fireEvent.press(getByTestId('practice-sub-menu-tools'));
+            mockLogEvent.mockClear();
+
+            fireEvent.press(getByTestId('practice-sub-menu-short-game'));
+
+            expect(mockLogEvent).toHaveBeenCalledWith('view_short_game');
+        });
     });
 
     describe('onRefresh', () => {

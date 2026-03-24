@@ -55,6 +55,10 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
+jest.mock('../../service/FirebaseService', () => ({
+    logEvent: jest.fn().mockResolvedValue(true),
+}));
+
 describe('Practice page ', () => {
     beforeEach(() => {
         jest.clearAllMocks();

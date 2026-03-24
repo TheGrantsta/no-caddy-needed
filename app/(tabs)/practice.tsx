@@ -9,6 +9,7 @@ import { Link } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import fontSizes from "@/assets/font-sizes";
 import { getAllDrillHistoryService, getDrillStatsByTypeService, getSettingsService, saveSettingsService, DrillStats } from "@/service/DbService";
+import { logEvent } from "@/service/FirebaseService";
 import DrillStatsChart from "@/components/DrillStatsChart";
 import Chevrons from "@/components/Chevrons";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
@@ -48,6 +49,9 @@ export default function Practice() {
 
   const handleSubMenu = (sectionName: string) => {
     setSection(sectionName);
+    if (sectionName === 'short-game') logEvent('view_short_game');
+    if (sectionName === 'tools') logEvent('view_tools');
+    if (sectionName === 'history') logEvent('view_history');
   };
 
   const displaySection = (sectionName: string) => {

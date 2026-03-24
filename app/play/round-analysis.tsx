@@ -16,6 +16,7 @@ import SinQuestion from '../../components/SinQuestion';
 import DrillRecommendation from '../../components/DrillRecommendation';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
+import { FeedbackType, submitRoundFeedback } from '../../service/FirebaseService';
 
 const API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY ?? '';
 
@@ -49,6 +50,7 @@ export default function RoundAnalysisScreen() {
     const [aiResponse, setAiResponse] = useState<AiCoachResponse | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
+    const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
     useEffect(() => {
         const p = buildRoundAnalysisPayload(Number(roundId));
@@ -73,6 +75,12 @@ export default function RoundAnalysisScreen() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleFeedback = async (type: FeedbackType) => {
+        if (feedbackSubmitted || !aiResponse) return;
+        setFeedbackSubmitted(true);
+        await submitRoundFeedback(String(roundId), type, aiResponse.focus_issue);
     };
 
     const handleAnswer = (value: AnswerValue) => {
@@ -139,7 +147,11 @@ export default function RoundAnalysisScreen() {
                 )}
 
                 {aiResponse?.status === 'give_coaching' && (
-                    <DrillRecommendation response={aiResponse} />
+                    <DrillRecommendation
+                        response={aiResponse}
+                        onFeedback={handleFeedback}
+                        feedbackSubmitted={feedbackSubmitted}
+                    />
                 )}
             </ScrollView>
         </GestureHandlerRootView>

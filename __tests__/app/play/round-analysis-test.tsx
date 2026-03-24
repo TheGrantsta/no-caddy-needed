@@ -2,6 +2,7 @@ import React from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import RoundAnalysisScreen from '../../../app/play/round-analysis';
 import { buildRoundAnalysisPayload, callAiCoach } from '../../../service/AnalysisService';
+import { submitRoundFeedback } from '../../../service/FirebaseService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -22,6 +23,10 @@ jest.mock('../../../service/AnalysisService', () => ({
     callAiCoach: jest.fn(),
 }));
 
+jest.mock('../../../service/FirebaseService', () => ({
+    submitRoundFeedback: jest.fn().mockResolvedValue(true),
+}));
+
 jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
     return {
@@ -37,6 +42,7 @@ jest.mock('expo-router', () => ({
 
 const mockBuildPayload = buildRoundAnalysisPayload as jest.Mock;
 const mockCallAiCoach = callAiCoach as jest.Mock;
+const mockSubmitRoundFeedback = submitRoundFeedback as jest.Mock;
 
 const PAYLOAD = {
     round: {
@@ -285,6 +291,60 @@ describe('RoundAnalysisScreen', () => {
             await waitFor(() =>
                 expect(getByTestId('drill-rec-summary').props.children).toBe('Work on lag putting.')
             );
+        });
+
+        it('renders feedback buttons when coaching response is shown', async () => {
+            mockCallAiCoach.mockResolvedValue(GIVE_COACHING_RESPONSE);
+
+            const { getByTestId } = render(<RoundAnalysisScreen />);
+
+            await waitFor(() => expect(getByTestId('feedback-positive')).toBeTruthy());
+            expect(getByTestId('feedback-neutral')).toBeTruthy();
+            expect(getByTestId('feedback-negative')).toBeTruthy();
+        });
+
+        it('calls submitRoundFeedback with roundId, feedback type, and focusIssue when feedback pressed', async () => {
+            mockCallAiCoach.mockResolvedValue(GIVE_COACHING_RESPONSE);
+
+            const { getByTestId } = render(<RoundAnalysisScreen />);
+
+            await waitFor(() => expect(getByTestId('feedback-positive')).toBeTruthy());
+            await act(async () => {
+                fireEvent.press(getByTestId('feedback-positive'));
+            });
+
+            expect(mockSubmitRoundFeedback).toHaveBeenCalledWith('5', 'positive', 'three_putts');
+        });
+
+        it('disables feedback buttons after feedback submitted', async () => {
+            mockCallAiCoach.mockResolvedValue(GIVE_COACHING_RESPONSE);
+
+            const { getByTestId } = render(<RoundAnalysisScreen />);
+
+            await waitFor(() => expect(getByTestId('feedback-positive')).toBeTruthy());
+            await act(async () => {
+                fireEvent.press(getByTestId('feedback-positive'));
+            });
+
+            await waitFor(() =>
+                expect(getByTestId('feedback-positive').props.accessibilityState?.disabled).toBe(true)
+            );
+        });
+
+        it('does not call submitRoundFeedback more than once if button pressed again', async () => {
+            mockCallAiCoach.mockResolvedValue(GIVE_COACHING_RESPONSE);
+
+            const { getByTestId } = render(<RoundAnalysisScreen />);
+
+            await waitFor(() => expect(getByTestId('feedback-positive')).toBeTruthy());
+            await act(async () => {
+                fireEvent.press(getByTestId('feedback-positive'));
+            });
+            await act(async () => {
+                fireEvent.press(getByTestId('feedback-negative'));
+            });
+
+            expect(mockSubmitRoundFeedback).toHaveBeenCalledTimes(1);
         });
     });
 });

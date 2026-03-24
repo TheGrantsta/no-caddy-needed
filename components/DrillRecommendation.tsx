@@ -1,14 +1,18 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { GiveCoachingResponse } from '@/service/AnalysisService';
+import { FeedbackType } from '@/service/FirebaseService';
 import fontSizes from '@/assets/font-sizes';
 
 type Props = {
     response: GiveCoachingResponse;
+    onFeedback?: (type: FeedbackType) => void;
+    feedbackSubmitted?: boolean;
 };
 
-const DrillRecommendation = ({ response }: Props) => {
+const DrillRecommendation = ({ response, onFeedback, feedbackSubmitted }: Props) => {
     const colours = useThemeColours();
     const styles = useStyles();
 
@@ -16,9 +20,6 @@ const DrillRecommendation = ({ response }: Props) => {
         sectionLabel: {
             color: colours.primary,
             fontSize: fontSizes.subHeader,
-            // fontWeight: '700',
-            // textTransform: 'uppercase',
-            // letterSpacing: 1,
             marginBottom: 8,
         },
         primaryCause: {
@@ -38,6 +39,20 @@ const DrillRecommendation = ({ response }: Props) => {
             lineHeight: 24,
             marginBottom: 4,
         },
+        feedbackRow: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            gap: 24,
+            marginTop: 16,
+        },
+        feedbackButton: {
+            padding: 8,
+        },
+        thanksText: {
+            textAlign: 'center',
+            marginTop: 8,
+            color: colours.tertiary,
+        },
     });
 
     return (
@@ -48,18 +63,6 @@ const DrillRecommendation = ({ response }: Props) => {
                     {response.coaching.summary}
                 </Text>
             </View>
-
-            {/* <View style={styles.contentSection}>
-                <Text style={s.sectionLabel}>Root Cause</Text>
-                <Text testID="drill-rec-primary-cause" style={s.primaryCause}>
-                    {response.diagnosis.primary_cause}
-                </Text>
-                {response.diagnosis.supporting_facts.map((fact, i) => (
-                    <Text key={i} testID={`drill-rec-supporting-fact-${i}`} style={s.factItem}>
-                        {fact}
-                    </Text>
-                ))}
-            </View> */}
 
             {response.coaching.actions.length > 0 && (
                 <View style={styles.contentSection}>
@@ -80,6 +83,59 @@ const DrillRecommendation = ({ response }: Props) => {
                             {drill}
                         </Text>
                     ))}
+                </View>
+            )}
+
+            {onFeedback && (
+                <View>
+                    <View style={styles.contentSection}>
+                        <Text style={styles.normalText}>
+                            Was this recommendation helpful?
+                        </Text>
+                        <View style={s.feedbackRow}>
+                            <TouchableOpacity
+                                testID="feedback-positive"
+                                style={s.feedbackButton}
+                                onPress={() => onFeedback('positive')}
+                                disabled={feedbackSubmitted}
+                            >
+                                <MaterialIcons
+                                    name="thumb-up"
+                                    size={28}
+                                    color={feedbackSubmitted ? colours.tertiary : colours.primary}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                testID="feedback-neutral"
+                                style={s.feedbackButton}
+                                onPress={() => onFeedback('neutral')}
+                                disabled={feedbackSubmitted}
+                            >
+                                <MaterialIcons
+                                    name="thumbs-up-down"
+                                    size={28}
+                                    color={feedbackSubmitted ? colours.tertiary : colours.primary}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                testID="feedback-negative"
+                                style={s.feedbackButton}
+                                onPress={() => onFeedback('negative')}
+                                disabled={feedbackSubmitted}
+                            >
+                                <MaterialIcons
+                                    name="thumb-down"
+                                    size={28}
+                                    color={feedbackSubmitted ? colours.tertiary : colours.primary}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        {feedbackSubmitted && (
+                            <Text testID="feedback-thanks" style={s.thanksText}>
+                                Thanks for your feedback!
+                            </Text>
+                        )}
+                    </View>
                 </View>
             )}
         </View>

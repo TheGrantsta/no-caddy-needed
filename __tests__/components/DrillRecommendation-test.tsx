@@ -1,7 +1,11 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import DrillRecommendation from '../../components/DrillRecommendation';
 import { GiveCoachingResponse } from '../../service/AnalysisService';
+
+jest.mock('../../service/FirebaseService', () => ({
+    submitRoundFeedback: jest.fn().mockResolvedValue(true),
+}));
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -81,6 +85,87 @@ describe('DrillRecommendation component', () => {
             const { queryByTestId } = render(<DrillRecommendation response={response} />);
 
             expect(queryByTestId('drill-rec-drill-0')).toBeNull();
+        });
+    });
+
+    describe('feedback buttons', () => {
+        it('renders 3 feedback buttons when onFeedback is provided', () => {
+            const onFeedback = jest.fn();
+            const { getByTestId } = render(
+                <DrillRecommendation response={FULL_RESPONSE} onFeedback={onFeedback} />
+            );
+
+            expect(getByTestId('feedback-positive')).toBeTruthy();
+            expect(getByTestId('feedback-neutral')).toBeTruthy();
+            expect(getByTestId('feedback-negative')).toBeTruthy();
+        });
+
+        it('calls onFeedback with positive when positive button pressed', () => {
+            const onFeedback = jest.fn();
+            const { getByTestId } = render(
+                <DrillRecommendation response={FULL_RESPONSE} onFeedback={onFeedback} />
+            );
+
+            fireEvent.press(getByTestId('feedback-positive'));
+
+            expect(onFeedback).toHaveBeenCalledWith('positive');
+        });
+
+        it('calls onFeedback with negative when negative button pressed', () => {
+            const onFeedback = jest.fn();
+            const { getByTestId } = render(
+                <DrillRecommendation response={FULL_RESPONSE} onFeedback={onFeedback} />
+            );
+
+            fireEvent.press(getByTestId('feedback-negative'));
+
+            expect(onFeedback).toHaveBeenCalledWith('negative');
+        });
+
+        it('calls onFeedback with neutral when neutral button pressed', () => {
+            const onFeedback = jest.fn();
+            const { getByTestId } = render(
+                <DrillRecommendation response={FULL_RESPONSE} onFeedback={onFeedback} />
+            );
+
+            fireEvent.press(getByTestId('feedback-neutral'));
+
+            expect(onFeedback).toHaveBeenCalledWith('neutral');
+        });
+
+        it('buttons are disabled when feedbackSubmitted is true', () => {
+            const onFeedback = jest.fn();
+            const { getByTestId } = render(
+                <DrillRecommendation
+                    response={FULL_RESPONSE}
+                    onFeedback={onFeedback}
+                    feedbackSubmitted={true}
+                />
+            );
+
+            expect(getByTestId('feedback-positive').props.accessibilityState?.disabled).toBe(true);
+            expect(getByTestId('feedback-neutral').props.accessibilityState?.disabled).toBe(true);
+            expect(getByTestId('feedback-negative').props.accessibilityState?.disabled).toBe(true);
+        });
+
+        it('shows thanks text when feedbackSubmitted is true', () => {
+            const { getByTestId } = render(
+                <DrillRecommendation
+                    response={FULL_RESPONSE}
+                    onFeedback={jest.fn()}
+                    feedbackSubmitted={true}
+                />
+            );
+
+            expect(getByTestId('feedback-thanks')).toBeTruthy();
+        });
+
+        it('does not render feedback buttons when onFeedback is not provided', () => {
+            const { queryByTestId } = render(<DrillRecommendation response={FULL_RESPONSE} />);
+
+            expect(queryByTestId('feedback-positive')).toBeNull();
+            expect(queryByTestId('feedback-neutral')).toBeNull();
+            expect(queryByTestId('feedback-negative')).toBeNull();
         });
     });
 

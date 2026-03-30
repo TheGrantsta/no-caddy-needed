@@ -7,6 +7,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { initialize } from '@/database/db';
+import { initializeRevenueCat } from '@/service/SubscriptionService';
 import { ToastProvider } from 'react-native-toast-notifications';
 import NetworkStatus from '@/components/NetworkStatus';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -191,6 +192,17 @@ function ThemedApp() {
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen
+          name="play/premium-paywall"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.primary,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
           name="settings"
           options={{
             headerTitle: () => <LogoTitle />,
@@ -228,6 +240,7 @@ export default function RootLayout() {
       try {
         // Initialize database first
         await initialize();
+        await initializeRevenueCat();
 
         // Request notification permissions if available
         if (Notifications) {

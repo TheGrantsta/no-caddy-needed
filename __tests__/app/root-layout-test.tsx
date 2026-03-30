@@ -7,6 +7,8 @@ import { useTheme } from '../../context/ThemeContext';
 
 import RootLayout from '../../app/_layout';
 
+import { initializeRevenueCat } from '../../service/SubscriptionService';
+
 jest.mock('expo-font', () => ({
     useFonts: jest.fn().mockReturnValue([true, null]),
 }));
@@ -18,6 +20,10 @@ jest.mock('expo-splash-screen', () => ({
 
 jest.mock('../../database/db', () => ({
     initialize: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../../service/SubscriptionService', () => ({
+    initializeRevenueCat: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('react-native-toast-notifications', () => ({
@@ -78,6 +84,7 @@ jest.mock('expo-notifications', () => ({
 }));
 
 const mockInitialize = initialize as jest.Mock;
+const mockInitializeRevenueCat = initializeRevenueCat as jest.Mock;
 const mockHideAsync = SplashScreen.hideAsync as jest.Mock;
 const mockUseTheme = useTheme as jest.Mock;
 
@@ -126,6 +133,11 @@ describe('RootLayout', () => {
         expect(mockInitialize).toHaveBeenCalledTimes(1);
     });
 
+    it('callsInitializeRevenueCatOnMount', async () => {
+        await renderReady();
+        expect(mockInitializeRevenueCat).toHaveBeenCalledTimes(1);
+    });
+
     it('hidesSplashScreenAfterSetup', async () => {
         await renderReady();
         expect(mockHideAsync).toHaveBeenCalledTimes(1);
@@ -158,6 +170,7 @@ describe('RootLayout', () => {
         expect(names).toContain('play/distances');
         expect(names).toContain('play/wedge-chart');
         expect(names).toContain('play/deadly-sin-trend');
+        expect(names).toContain('play/premium-paywall');
     });
 
     it('doesNotRenderAppContentBeforeInitialisation', () => {

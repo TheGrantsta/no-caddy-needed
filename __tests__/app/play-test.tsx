@@ -25,6 +25,7 @@ import {
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
+import { checkPremiumEntitlement } from '../../service/SubscriptionService';
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -92,12 +93,8 @@ jest.mock('../../service/FirebaseService', () => ({
     logEvent: jest.fn().mockResolvedValue(true),
 }));
 
-const mockExtraConfig = { analyseRoundEnabled: true };
-jest.mock('expo-constants', () => ({
-    __esModule: true,
-    default: {
-        get expoConfig() { return { extra: mockExtraConfig }; },
-    },
+jest.mock('../../service/SubscriptionService', () => ({
+    checkPremiumEntitlement: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock('expo-haptics', () => ({
@@ -144,6 +141,7 @@ const mockAddRoundPlayers = addRoundPlayersService as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayersService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
 const mockLogEvent = logEvent as jest.Mock;
+const mockCheckPremiumEntitlement = checkPremiumEntitlement as jest.Mock;
 const mockGetRecentCourseNames = getRecentCourseNamesService as jest.Mock;
 const mockGetRecentPlayerNames = getRecentPlayerNamesService as jest.Mock;
 const mockGetSettingsService = getSettingsService as jest.Mock;
@@ -1625,8 +1623,7 @@ describe('Play screen', () => {
         });
 
         describe('Analyse your round button', () => {
-            it('shows analyse button when feature flag is enabled', async () => {
-                mockExtraConfig.analyseRoundEnabled = true;
+            it('shows analyse button when scorecard is present', async () => {
                 mockStartRound.mockResolvedValue(1);
                 mockAddRoundPlayers.mockResolvedValue([1]);
                 mockEndRound.mockResolvedValue(true);
@@ -1639,25 +1636,8 @@ describe('Play screen', () => {
                 await waitFor(() => expect(getByTestId('scorecard-analyse-button')).toBeTruthy());
             });
 
-            it('does not show analyse button when feature flag is disabled', async () => {
-                mockExtraConfig.analyseRoundEnabled = false;
-                mockStartRound.mockResolvedValue(1);
-                mockAddRoundPlayers.mockResolvedValue([1]);
-                mockEndRound.mockResolvedValue(true);
-                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
-
-                const { getByTestId, queryByTestId } = render(<Play />);
-
-                await startAndEndRound(getByTestId);
-
-                await waitFor(() => expect(getByTestId('scorecard-done-button')).toBeTruthy());
-                expect(queryByTestId('scorecard-analyse-button')).toBeNull();
-
-                mockExtraConfig.analyseRoundEnabled = true;
-            });
-
-            it('navigates to round-analysis with active round ID when analyse button pressed', async () => {
-                mockExtraConfig.analyseRoundEnabled = true;
+            it('navigates to round-analysis when already subscribed', async () => {
+                mockCheckPremiumEntitlement.mockResolvedValue(true);
                 mockStartRound.mockResolvedValue(7);
                 mockAddRoundPlayers.mockResolvedValue([1]);
                 mockEndRound.mockResolvedValue(true);
@@ -1670,7 +1650,24 @@ describe('Play screen', () => {
                 await waitFor(() => getByTestId('scorecard-analyse-button'));
                 fireEvent.press(getByTestId('scorecard-analyse-button'));
 
-                expect(mockPush).toHaveBeenCalledWith({ pathname: '/play/round-analysis', params: { roundId: 7 } });
+                await waitFor(() => expect(mockPush).toHaveBeenCalledWith({ pathname: '/play/round-analysis', params: { roundId: 7 } }));
+            });
+
+            it('navigates to premium-paywall when not subscribed', async () => {
+                mockCheckPremiumEntitlement.mockResolvedValue(false);
+                mockStartRound.mockResolvedValue(7);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockEndRound.mockResolvedValue(true);
+                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
+
+                const { getByTestId } = render(<Play />);
+
+                await startAndEndRound(getByTestId);
+
+                await waitFor(() => getByTestId('scorecard-analyse-button'));
+                fireEvent.press(getByTestId('scorecard-analyse-button'));
+
+                await waitFor(() => expect(mockPush).toHaveBeenCalledWith({ pathname: '/play/premium-paywall', params: { roundId: 7 } }));
             });
         });
     });
@@ -2042,7 +2039,7 @@ describe('Play screen', () => {
         });
 
         it('logs analyse_round event when analyse button pressed', async () => {
-            mockExtraConfig.analyseRoundEnabled = true;
+            mockCheckPremiumEntitlement.mockResolvedValue(true);
             mockStartRound.mockResolvedValue(7);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockEndRound.mockResolvedValue(true);

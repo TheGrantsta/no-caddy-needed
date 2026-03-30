@@ -2,15 +2,10 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
 import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService } from '../../../service/DbService';
+import { checkPremiumEntitlement } from '../../../service/SubscriptionService';
 
-const mockExtraConfig = { analyseRoundEnabled: true };
-jest.mock('expo-constants', () => ({
-    __esModule: true,
-    default: {
-        get expoConfig() {
-            return { extra: mockExtraConfig };
-        },
-    },
+jest.mock('../../../service/SubscriptionService', () => ({
+    checkPremiumEntitlement: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -65,6 +60,7 @@ jest.mock('react-native-toast-notifications', () => ({
     }),
 }));
 
+const mockCheckPremiumEntitlement = checkPremiumEntitlement as jest.Mock;
 const mockGetRoundScorecard = getRoundScorecardService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
 const mockUpdateScorecard = updateScorecardService as jest.Mock;
@@ -672,37 +668,32 @@ describe('Scorecard screen', () => {
             expect(queryByTestId('analyse-round-button')).toBeNull();
         });
 
-        it('navigates to round-analysis screen with roundId when pressed', () => {
+        it('navigates to round-analysis when already subscribed', async () => {
+            mockCheckPremiumEntitlement.mockResolvedValue(true);
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
             const { getByTestId } = render(<ScorecardScreen />);
 
             fireEvent.press(getByTestId('analyse-round-button'));
 
-            expect(mockPush).toHaveBeenCalledWith({
+            await waitFor(() => expect(mockPush).toHaveBeenCalledWith({
                 pathname: '/play/round-analysis',
                 params: { roundId: '1' },
-            });
+            }));
         });
 
-        it('does not render analyse button when feature flag is disabled', () => {
-            mockExtraConfig.analyseRoundEnabled = false;
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-
-            const { queryByTestId } = render(<ScorecardScreen />);
-
-            expect(queryByTestId('analyse-round-button')).toBeNull();
-
-            mockExtraConfig.analyseRoundEnabled = true;
-        });
-
-        it('renders analyse button when feature flag is enabled', () => {
-            mockExtraConfig.analyseRoundEnabled = true;
+        it('navigates to premium-paywall when not subscribed', async () => {
+            mockCheckPremiumEntitlement.mockResolvedValue(false);
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
             const { getByTestId } = render(<ScorecardScreen />);
 
-            expect(getByTestId('analyse-round-button')).toBeTruthy();
+            fireEvent.press(getByTestId('analyse-round-button'));
+
+            await waitFor(() => expect(mockPush).toHaveBeenCalledWith({
+                pathname: '/play/premium-paywall',
+                params: { roundId: '1' },
+            }));
         });
     });
 });

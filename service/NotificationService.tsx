@@ -35,6 +35,20 @@ export const cancelRoundReminder = async (notificationId: string | null): Promis
     }
 };
 
+export const cancelAllRoundReminders = async (): Promise<void> => {
+    if (!Notifications) return;
+    try {
+        const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+        for (const n of scheduled) {
+            if (n.content.title === 'Round still in progress') {
+                await Notifications.cancelScheduledNotificationAsync(n.identifier);
+            }
+        }
+    } catch (e) {
+        console.log(e);
+    }
+};
+
 export const schedulePracticeReminder = async (label: string, date: Date): Promise<string | null> => {
     if (!Notifications) return null;
     try {

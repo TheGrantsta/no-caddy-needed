@@ -23,7 +23,7 @@ import {
     getHolesPlayedForRoundService,
     getParAveragesService,
 } from '../../service/DbService';
-import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
+import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -85,6 +85,7 @@ jest.mock('react-native-toast-notifications', () => ({
 jest.mock('../../service/NotificationService', () => ({
     scheduleRoundReminder: jest.fn(),
     cancelRoundReminder: jest.fn(),
+    cancelAllRoundReminders: jest.fn(),
 }));
 
 jest.mock('../../service/FirebaseService', () => ({
@@ -138,6 +139,7 @@ const mockGetAllDeadlySinsRounds = getAllDeadlySinsRoundsService as jest.Mock;
 const mockGetClubDistances = getClubDistancesService as jest.Mock;
 const mockScheduleReminder = scheduleRoundReminder as jest.Mock;
 const mockCancelReminder = cancelRoundReminder as jest.Mock;
+const mockCancelAllReminders = cancelAllRoundReminders as jest.Mock;
 const mockAddRoundPlayers = addRoundPlayersService as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayersService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
@@ -371,6 +373,14 @@ describe('Play screen', () => {
                     fireEvent.press(getByTestId('continue-round-button'));
                 });
                 expect(getByText('#1')).toBeTruthy();
+            });
+
+            it('shouldCancelRoundReminderWhenContinueRoundPressed', async () => {
+                const { getByTestId } = render(<Play />);
+                await act(async () => {
+                    fireEvent.press(getByTestId('continue-round-button'));
+                });
+                expect(mockCancelAllReminders).toHaveBeenCalled();
             });
 
             it('shouldHideDeadlySinsChartWhenIncompleteRoundExists', () => {
@@ -614,7 +624,7 @@ describe('Play screen', () => {
     });
 
     describe('Active round', () => {
-        it('resumes active round on mount', () => {
+        it('resumes active round on mount', async () => {
             mockGetActiveRound.mockReturnValue({
                 Id: 5, TotalScore: 0, IsCompleted: 0,
                 StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
@@ -626,7 +636,9 @@ describe('Play screen', () => {
 
             const { getByText, getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('continue-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('continue-round-button'));
+            });
 
             expect(getByText(/#/)).toBeTruthy();
             expect(getByTestId('end-round-button')).toBeTruthy();
@@ -1303,7 +1315,7 @@ describe('Play screen', () => {
             });
         });
 
-        it('resumes active round with players on mount', () => {
+        it('resumes active round with players on mount', async () => {
             mockGetActiveRound.mockReturnValue({
                 Id: 5, TotalScore: 0, IsCompleted: 0,
                 StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
@@ -1316,13 +1328,15 @@ describe('Play screen', () => {
 
             const { getByText, getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('continue-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('continue-round-button'));
+            });
 
             expect(getByText('You')).toBeTruthy();
             expect(getByText('Alice')).toBeTruthy();
         });
 
-        it('shows active round section when active round has no players', () => {
+        it('shows active round section when active round has no players', async () => {
             mockGetActiveRound.mockReturnValue({
                 Id: 5, TotalScore: 0, IsCompleted: 0,
                 StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
@@ -1332,7 +1346,9 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('continue-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('continue-round-button'));
+            });
 
             expect(getByTestId('end-round-button')).toBeTruthy();
         });
@@ -1372,7 +1388,9 @@ describe('Play screen', () => {
 
             const { getByTestId, getByText } = render(<Play />);
 
-            fireEvent.press(getByTestId('continue-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('continue-round-button'));
+            });
 
             expect(getByText('#1')).toBeTruthy();
 

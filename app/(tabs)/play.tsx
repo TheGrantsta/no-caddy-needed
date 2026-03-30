@@ -36,7 +36,7 @@ import {
     MultiplayerRoundScorecard,
     ParAverages,
 } from '../../service/DbService';
-import { scheduleRoundReminder, cancelRoundReminder } from '../../service/NotificationService';
+import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
 import Constants from 'expo-constants';
 import { useStyles } from '../../hooks/useStyles';
@@ -147,9 +147,14 @@ export default function Play() {
         setShowPlayerSetup(true);
     };
 
-    const handleContinueRound = () => {
+    const handleContinueRound = async () => {
         if (!incompleteRound) return;
         logEvent('continue_round');
+        if (notificationId) {
+            await cancelRoundReminder(notificationId);
+        } else {
+            await cancelAllRoundReminders();
+        }
         const holesPlayed = getHolesPlayedForRoundService(incompleteRound.Id);
         setCurrentHole(holesPlayed > 0 ? holesPlayed + 1 : 1);
         setActiveRoundId(incompleteRound.Id);
@@ -159,7 +164,11 @@ export default function Play() {
     const handleEndIncompleteRound = async () => {
         if (!incompleteRound) return;
         await endRoundService(incompleteRound.Id);
-        await cancelRoundReminder(notificationId);
+        if (notificationId) {
+            await cancelRoundReminder(notificationId);
+        } else {
+            await cancelAllRoundReminders();
+        }
         setIncompleteRound(null);
         setPlayers([]);
         const history = getAllRoundHistoryService();

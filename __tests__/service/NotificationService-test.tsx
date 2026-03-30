@@ -1,6 +1,7 @@
 import {
     scheduleRoundReminder,
     cancelRoundReminder,
+    cancelAllRoundReminders,
     schedulePracticeReminder,
     cancelPracticeReminder,
 } from '../../service/NotificationService';
@@ -9,11 +10,13 @@ import * as Notifications from 'expo-notifications';
 jest.mock('expo-notifications', () => ({
     scheduleNotificationAsync: jest.fn(),
     cancelScheduledNotificationAsync: jest.fn(),
+    getAllScheduledNotificationsAsync: jest.fn(),
     setNotificationHandler: jest.fn(),
 }));
 
 const mockSchedule = Notifications.scheduleNotificationAsync as jest.Mock;
 const mockCancel = Notifications.cancelScheduledNotificationAsync as jest.Mock;
+const mockGetAllScheduled = Notifications.getAllScheduledNotificationsAsync as jest.Mock;
 
 describe('NotificationService', () => {
     beforeEach(() => {
@@ -94,6 +97,28 @@ describe('NotificationService', () => {
 
             expect(result).toBeNull();
             consoleSpy.mockRestore();
+        });
+    });
+
+    describe('cancelAllRoundReminders', () => {
+        it('shouldCancelScheduledNotificationWithRoundStillInProgressTitle', async () => {
+            mockGetAllScheduled.mockResolvedValue([
+                { identifier: 'round-notif-1', content: { title: 'Round still in progress' } },
+            ]);
+
+            await cancelAllRoundReminders();
+
+            expect(mockCancel).toHaveBeenCalledWith('round-notif-1');
+        });
+
+        it('shouldNotCancelNotificationWithDifferentTitle', async () => {
+            mockGetAllScheduled.mockResolvedValue([
+                { identifier: 'practice-notif-1', content: { title: 'Practice reminder' } },
+            ]);
+
+            await cancelAllRoundReminders();
+
+            expect(mockCancel).not.toHaveBeenCalled();
         });
     });
 

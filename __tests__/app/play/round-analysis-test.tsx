@@ -220,7 +220,7 @@ describe('RoundAnalysisScreen', () => {
                 fireEvent.press(getByTestId('sin-question-option-mostly_short'));
             });
 
-            const secondCallState = mockCallAiCoach.mock.calls[1][2];
+            const secondCallState = mockCallAiCoach.mock.calls[1][1];
             expect(secondCallState.asked_question_ids).toContain('putt_leave_pattern');
         });
 
@@ -236,7 +236,7 @@ describe('RoundAnalysisScreen', () => {
                 fireEvent.press(getByTestId('sin-question-option-mostly_short'));
             });
 
-            const secondCallState = mockCallAiCoach.mock.calls[1][2];
+            const secondCallState = mockCallAiCoach.mock.calls[1][1];
             expect(secondCallState.answers).toHaveLength(1);
             expect(secondCallState.answers[0].question_id).toBe('putt_leave_pattern');
         });
@@ -253,7 +253,7 @@ describe('RoundAnalysisScreen', () => {
                 fireEvent.press(getByTestId('sin-question-option-mostly_short'));
             });
 
-            const secondCallState = mockCallAiCoach.mock.calls[1][2];
+            const secondCallState = mockCallAiCoach.mock.calls[1][1];
             expect(secondCallState.current_focus).toBe('three_putts');
             expect(secondCallState.question_count_for_issue).toBe(1);
         });

@@ -18,8 +18,6 @@ import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { FeedbackType, submitRoundFeedback } from '../../service/FirebaseService';
 
-const API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY ?? '';
-
 const INITIAL_STATE: ConversationState = {
     current_focus: null,
     question_count_for_issue: 0,
@@ -67,7 +65,7 @@ export default function RoundAnalysisScreen() {
         setLoading(true);
         setError(false);
         try {
-            const response = await callAiCoach(API_KEY, p, state);
+            const response = await callAiCoach(p, state);
             setAiResponse(response);
         } catch (e) {
             console.error('[RoundAnalysis] callAiCoach failed:', e);

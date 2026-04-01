@@ -38,6 +38,7 @@ import {
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
+import Constants from 'expo-constants';
 import { checkPremiumEntitlement } from '../../service/SubscriptionService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
@@ -309,6 +310,7 @@ export default function Play() {
         resetToIdle();
     };
 
+    const analyseRoundEnabled = Constants.expoConfig?.extra?.analyseRoundEnabled ?? false;
     const isRoundActive = activeRoundId !== null;
 
     const filteredRoundHistory = useMemo(
@@ -600,21 +602,23 @@ export default function Play() {
                         >
                             <Text style={localStyles.actionButtonText}>Done</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            testID="scorecard-analyse-button"
-                            onPress={async () => {
-                                logEvent('analyse_round', { roundId: activeRoundId! });
-                                const isPremium = await checkPremiumEntitlement();
-                                if (isPremium) {
-                                    router.push({ pathname: '/play/round-analysis', params: { roundId: activeRoundId! } });
-                                } else {
-                                    router.push({ pathname: '/play/premium-paywall', params: { roundId: activeRoundId! } });
-                                }
-                            }}
-                            style={[localStyles.actionButton, { backgroundColor: colours.tertiary, marginTop: 12 }]}
-                        >
-                            <Text style={localStyles.actionButtonText}>Analyse your round</Text>
-                        </TouchableOpacity>
+                        {analyseRoundEnabled && (
+                            <TouchableOpacity
+                                testID="scorecard-analyse-button"
+                                onPress={async () => {
+                                    logEvent('analyse_round', { roundId: activeRoundId! });
+                                    const isPremium = await checkPremiumEntitlement();
+                                    if (isPremium) {
+                                        router.push({ pathname: '/play/round-analysis', params: { roundId: activeRoundId! } });
+                                    } else {
+                                        router.push({ pathname: '/play/premium-paywall', params: { roundId: activeRoundId! } });
+                                    }
+                                }}
+                                style={[localStyles.actionButton, { backgroundColor: colours.tertiary, marginTop: 12 }]}
+                            >
+                                <Text style={localStyles.actionButtonText}>Analyse your round</Text>
+                            </TouchableOpacity>
+                        )}
                     </View>
                 )}
 

@@ -20,6 +20,7 @@ import {
     RoundScorecard as RoundScorecardType,
     DeadlySinsValues,
 } from '../../service/DbService';
+import Constants from 'expo-constants';
 import { checkPremiumEntitlement } from '../../service/SubscriptionService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
@@ -54,6 +55,8 @@ export default function ScorecardScreen() {
     const [editedSins, setEditedSins] = useState<DeadlySinsValues | null>(null);
     const [sinsHoleNumber, setSinsHoleNumber] = useState<number | null>(null);
     const [sinHoles, setSinHoles] = useState<Set<number>>(new Set());
+    const analyseRoundEnabled = Constants.expoConfig?.extra?.analyseRoundEnabled ?? false;
+
     useEffect(() => {
         loadData();
     }, []);
@@ -268,7 +271,7 @@ export default function ScorecardScreen() {
                             </View>
                         )}
 
-                        {!isEditing && !showDeleteConfirm && (
+                        {analyseRoundEnabled && !isEditing && !showDeleteConfirm && (
                             <View style={styles.headerContainer}>
                                 <TouchableOpacity
                                     testID="analyse-round-button"

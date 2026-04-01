@@ -14,7 +14,7 @@ describe('useSubscription', () => {
     });
 
     it('returns isLoading true and isPremium false on initial render', () => {
-        mockCheckPremiumEntitlement.mockResolvedValue(true);
+        mockCheckPremiumEntitlement.mockReturnValue(new Promise(() => {}));
 
         const { result } = renderHook(() => useSubscription());
 

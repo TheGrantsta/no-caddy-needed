@@ -8,6 +8,16 @@ jest.mock('../../../service/SubscriptionService', () => ({
     checkPremiumEntitlement: jest.fn().mockResolvedValue(true),
 }));
 
+const mockExtraConfig = { analyseRoundEnabled: true };
+jest.mock('expo-constants', () => ({
+    __esModule: true,
+    default: {
+        get expoConfig() {
+            return { extra: mockExtraConfig };
+        },
+    },
+}));
+
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
     useTheme: () => ({
@@ -694,6 +704,17 @@ describe('Scorecard screen', () => {
                 pathname: '/play/premium-paywall',
                 params: { roundId: '1' },
             }));
+        });
+
+        it('does not render analyse button when feature flag is disabled', () => {
+            mockExtraConfig.analyseRoundEnabled = false;
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { queryByTestId } = render(<ScorecardScreen />);
+
+            expect(queryByTestId('analyse-round-button')).toBeNull();
+
+            mockExtraConfig.analyseRoundEnabled = true;
         });
     });
 });

@@ -97,6 +97,14 @@ jest.mock('../../service/SubscriptionService', () => ({
     checkPremiumEntitlement: jest.fn().mockResolvedValue(true),
 }));
 
+const mockExtraConfig = { analyseRoundEnabled: true };
+jest.mock('expo-constants', () => ({
+    __esModule: true,
+    default: {
+        get expoConfig() { return { extra: mockExtraConfig }; },
+    },
+}));
+
 jest.mock('expo-haptics', () => ({
     impactAsync: jest.fn(),
     ImpactFeedbackStyle: { Medium: 'medium' },
@@ -1668,6 +1676,23 @@ describe('Play screen', () => {
                 fireEvent.press(getByTestId('scorecard-analyse-button'));
 
                 await waitFor(() => expect(mockPush).toHaveBeenCalledWith({ pathname: '/play/premium-paywall', params: { roundId: 7 } }));
+            });
+
+            it('hides analyse button when feature flag is disabled', async () => {
+                mockExtraConfig.analyseRoundEnabled = false;
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockEndRound.mockResolvedValue(true);
+                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
+
+                const { getByTestId, queryByTestId } = render(<Play />);
+
+                await startAndEndRound(getByTestId);
+
+                await waitFor(() => expect(getByTestId('scorecard-done-button')).toBeTruthy());
+                expect(queryByTestId('scorecard-analyse-button')).toBeNull();
+
+                mockExtraConfig.analyseRoundEnabled = true;
             });
         });
     });

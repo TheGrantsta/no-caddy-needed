@@ -35,12 +35,12 @@ export const darkColours: ThemeColours = {
 };
 
 export const lightColours: ThemeColours = {
-    primary: '#6FAF8A',
-    secondary: '#E6F2EC',
-    tertiary: '#A9C7B5',
-    background: '#F6FBF8',
+    primary: '#d97706',
+    secondary: '#b45309',
+    tertiary: '#f97316',
+    background: '#fafaf9',
     backgroundAlternate: '#EAF5EF',
-    text: '#1F2D26',
+    text: '#292524',
     white: '#fff',
     red: '#fd0303',
     black: '#000',

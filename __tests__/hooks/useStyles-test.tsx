@@ -32,6 +32,26 @@ describe('createStyles', () => {
 
         expect(defaultStyles.scrollContainer.backgroundColor).toBe(darkColours.background);
     });
+
+    it('titleText colour uses the provided colour parameter', () => {
+        expect(createStyles(lightColours).titleText.color).toBe(lightColours.primary);
+        expect(createStyles(darkColours).titleText.color).toBe(darkColours.primary);
+    });
+
+    it('subtitleText colour uses the provided colour parameter', () => {
+        expect(createStyles(lightColours).subtitleText.color).toBe(lightColours.text);
+        expect(createStyles(darkColours).subtitleText.color).toBe(darkColours.text);
+    });
+
+    it('navCard background uses the provided colour parameter', () => {
+        expect(createStyles(lightColours).navCard.backgroundColor).toBe(lightColours.primary);
+        expect(createStyles(darkColours).navCard.backgroundColor).toBe(darkColours.primary);
+    });
+
+    it('iconCircle background uses the provided colour parameter', () => {
+        expect(createStyles(lightColours).iconCircle.backgroundColor).toBe(lightColours.secondary);
+        expect(createStyles(darkColours).iconCircle.backgroundColor).toBe(darkColours.secondary);
+    });
 });
 
 describe('useStyles', () => {

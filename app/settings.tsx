@@ -9,8 +9,8 @@ import { useOrientation } from '../hooks/useOrientation';
 import { useAppToast } from '../hooks/useAppToast';
 
 const THEMES: { key: AppSettings['theme']; label: string }[] = [
-  { key: 'light', label: 'Light green' },
-  { key: 'dark', label: 'Dark green' },
+  { key: 'light', label: 'Orange' },
+  { key: 'dark', label: 'Green' },
 ];
 
 const VOICES: { key: AppSettings['voice']; label: string }[] = [

@@ -1,9 +1,9 @@
-import { darkColours, ThemeColours } from '../assets/colours';
+import { darkGreen, ThemeColours } from '../assets/colours';
 
 export function useThemeColours(): ThemeColours {
-    return darkColours;
+    return darkGreen;
 }
 
 export function useTheme() {
-    return { colours: darkColours };
+    return { colours: darkGreen };
 }

@@ -1,12 +1,12 @@
 import { useTheme, useThemeColours } from '../../context/ThemeContext';
-import { darkColours } from '../../assets/colours';
+import { darkGreen } from '../../assets/colours';
 
 describe('ThemeContext', () => {
-    it('useThemeColours returns darkColours', () => {
-        expect(useThemeColours()).toEqual(darkColours);
+    it('useThemeColours returns darkGreen', () => {
+        expect(useThemeColours()).toEqual(darkGreen);
     });
 
-    it('useTheme returns darkColours', () => {
-        expect(useTheme().colours).toEqual(darkColours);
+    it('useTheme returns darkGreen', () => {
+        expect(useTheme().colours).toEqual(darkGreen);
     });
 });

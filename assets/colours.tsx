@@ -16,7 +16,7 @@ export type ThemeColours = {
     green: string;
 };
 
-export const darkColours: ThemeColours = {
+export const darkGreen: ThemeColours = {
     primary: '#2D5A3D',
     secondary: '#FFFFFF26',
     tertiary: '#8FA79A',
@@ -34,4 +34,4 @@ export const darkColours: ThemeColours = {
     green: '#00C851',
 };
 
-export default darkColours;
+export default darkGreen;

@@ -8,11 +8,6 @@ import { useTheme } from '../context/ThemeContext';
 import { useOrientation } from '../hooks/useOrientation';
 import { useAppToast } from '../hooks/useAppToast';
 
-const THEMES: { key: AppSettings['theme']; label: string }[] = [
-  { key: 'light', label: 'Orange' },
-  { key: 'dark', label: 'Green' },
-];
-
 const VOICES: { key: AppSettings['voice']; label: string }[] = [
   { key: 'female', label: 'Female' },
   { key: 'male', label: 'Male' },
@@ -30,19 +25,11 @@ const SOUNDS: { key: 'on' | 'off'; label: string; value: boolean }[] = [
 ];
 
 export default function Settings() {
-  const { colours, setTheme } = useTheme();
+  const { colours } = useTheme();
   const styles = useStyles();
   const { landscapePadding } = useOrientation();
   const { showSuccess, showResult } = useAppToast();
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
-
-  const handleThemeChange = async (theme: AppSettings['theme']) => {
-    const updated: AppSettings = { ...settings, theme };
-    setSettings(updated);
-    setTheme(theme);
-
-    showSuccess('Settings saved');
-  };
 
   const handleNotificationsChange = async (value: boolean) => {
     const updated: AppSettings = { ...settings, notificationsEnabled: value };
@@ -102,29 +89,6 @@ export default function Settings() {
       <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding, { flexGrow: 1 }]}>
         <View style={styles.headerContainer}>
           <Text style={[styles.headerText, styles.marginTop]}>Settings</Text>
-        </View>
-
-        <View style={styles.contentSection}>
-          <View style={styles.headerContainer}>
-            <Text style={[styles.subHeaderText, styles.marginTop]}>Theme</Text>
-          </View>
-
-          <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
-            {THEMES.map(({ key, label }) => {
-              const isSelected = settings.theme === key;
-              return (
-                <TouchableOpacity
-                  key={key}
-                  testID={`theme-${key}`}
-                  onPress={() => handleThemeChange(key)}
-                  style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
-                >
-                  {isSelected && <Text testID={`theme-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
-                  {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
         </View>
 
         <View style={styles.contentSection}>

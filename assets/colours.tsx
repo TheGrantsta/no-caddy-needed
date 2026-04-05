@@ -34,22 +34,4 @@ export const darkColours: ThemeColours = {
     green: '#00C851',
 };
 
-export const lightColours: ThemeColours = {
-    primary: '#d97706',
-    secondary: '#b45309',
-    tertiary: '#f97316',
-    background: '#fafaf9',
-    backgroundAlternate: '#EAF5EF',
-    text: '#292524',
-    white: '#fff',
-    red: '#fd0303',
-    black: '#000',
-    mutedYellow: '#E6BE36',
-    errorText: '#fd0303',
-    backgroundLight: '#FFFFFF',
-    border: '#D6E6DD',
-    borderError: '#fd0303',
-    green: '#2FBF71',
-};
-
 export default darkColours;

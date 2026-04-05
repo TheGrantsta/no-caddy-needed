@@ -480,7 +480,6 @@ export const getDeadlySinsForRoundService = (roundId: number): DeadlySinsRound |
 
 // Settings services
 export type AppSettings = {
-    theme: 'dark' | 'light';
     notificationsEnabled: boolean;
     voice: 'female' | 'male' | 'neutral';
     soundsEnabled: boolean;
@@ -495,11 +494,10 @@ export const getSettingsService = (): AppSettings => {
     const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number } | null;
 
     if (!row) {
-        return { theme: 'dark', notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
+        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
     }
 
     return {
-        theme: row.Theme as 'dark' | 'light',
         notificationsEnabled: row.NotificationsEnabled === 1,
         voice: (row.Voice ?? 'female') as 'female' | 'male' | 'neutral',
         soundsEnabled: (row.SoundsEnabled ?? 1) === 1,
@@ -512,7 +510,7 @@ export const getSettingsService = (): AppSettings => {
 };
 
 export const saveSettingsService = async (settings: AppSettings): Promise<boolean> => {
-    return saveSettings(settings.theme, settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0);
+    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0);
 };
 
 export type PracticeReminder = {

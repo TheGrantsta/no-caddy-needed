@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Image, LogBox, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Link, Stack } from 'expo-router';
 import { MaterialIcons } from "@expo/vector-icons";
@@ -11,7 +11,7 @@ import { initializeRevenueCat } from '@/service/SubscriptionService';
 import { ToastProvider } from 'react-native-toast-notifications';
 import NetworkStatus from '@/components/NetworkStatus';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { AppThemeProvider, useTheme } from '@/context/ThemeContext';
+import { useTheme } from '@/context/ThemeContext';
 
 LogBox.ignoreAllLogs();
 
@@ -39,11 +39,43 @@ const LogoTitle = () => (
   />
 );
 
-function ThemedApp() {
-  const { theme, colours } = useTheme();
+function ThemedToastProvider({ children }: { children: React.ReactNode }) {
+  const { colours } = useTheme();
 
   return (
-    <ThemeProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ToastProvider
+      placement="bottom"
+      offset={80}
+      style={{ maxWidth: '100%' }}
+      renderType={{
+        success: (toast) => (
+          <View style={[{ backgroundColor: colours.primary, borderLeftColor: colours.green }, toastStyles.container]}>
+            <Text style={[toastStyles.message, { color: colours.background }]}>{toast.message}</Text>
+            <TouchableOpacity testID="toast-close-button" onPress={toast.onHide} style={toastStyles.closeButton}>
+              <Text style={[toastStyles.closeText, { color: colours.background }]}>✕</Text>
+            </TouchableOpacity>
+          </View>
+        ),
+        danger: (toast) => (
+          <View style={[{ backgroundColor: colours.primary, borderLeftColor: colours.red }, toastStyles.container]}>
+            <Text style={[toastStyles.message, { color: colours.background }]}>{toast.message}</Text>
+            <TouchableOpacity testID="toast-close-button" onPress={toast.onHide} style={toastStyles.closeButton}>
+              <Text style={[toastStyles.closeText, { color: colours.background }]}>✕</Text>
+            </TouchableOpacity>
+          </View>
+        ),
+      }}
+    >
+      {children}
+    </ToastProvider>
+  );
+}
+
+function ThemedApp() {
+  const { colours } = useTheme();
+
+  return (
+    <ThemeProvider value={DarkTheme}>
       <Stack>
         <Stack.Screen
           name="(tabs)"
@@ -223,7 +255,7 @@ function ThemedApp() {
             },
           }} />
       </Stack>
-      <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+      <StatusBar style="light" />
       <NetworkStatus />
     </ThemeProvider>
   );
@@ -265,35 +297,9 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      <ToastProvider
-        placement="bottom"
-        offset={80}
-        style={{
-          maxWidth: "100%",
-        }}
-        renderType={{
-          success: (toast) => (
-            <View style={[toastStyles.container, { borderLeftColor: '#00C851' }]}>
-              <Text style={toastStyles.message}>{toast.message}</Text>
-              <TouchableOpacity testID="toast-close-button" onPress={toast.onHide} style={toastStyles.closeButton}>
-                <Text style={toastStyles.closeText}>✕</Text>
-              </TouchableOpacity>
-            </View>
-          ),
-          danger: (toast) => (
-            <View style={[toastStyles.container, { borderLeftColor: '#fd0303' }]}>
-              <Text style={toastStyles.message}>{toast.message}</Text>
-              <TouchableOpacity testID="toast-close-button" onPress={toast.onHide} style={toastStyles.closeButton}>
-                <Text style={toastStyles.closeText}>✕</Text>
-              </TouchableOpacity>
-            </View>
-          ),
-        }}
-      >
-        <AppThemeProvider>
-          <ThemedApp />
-        </AppThemeProvider>
-      </ToastProvider>
+      <ThemedToastProvider>
+        <ThemedApp />
+      </ThemedToastProvider>
     </ErrorBoundary>
   );
 };
@@ -302,7 +308,6 @@ const toastStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2D5A3D',
     borderLeftWidth: 10,
     borderRadius: 4,
     paddingVertical: 12,
@@ -312,7 +317,6 @@ const toastStyles = StyleSheet.create({
   },
   message: {
     flex: 1,
-    color: '#ffffff',
     fontSize: 14,
   },
   closeButton: {
@@ -320,7 +324,6 @@ const toastStyles = StyleSheet.create({
     padding: 4,
   },
   closeText: {
-    color: '#ffffff',
     fontSize: 16,
   },
 });

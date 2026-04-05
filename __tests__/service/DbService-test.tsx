@@ -143,7 +143,6 @@ describe('getSettingsService', () => {
         const result = getSettingsService();
 
         expect(result).toEqual({
-            theme: 'dark',
             notificationsEnabled: true,
             voice: 'female',
             soundsEnabled: true,
@@ -172,7 +171,6 @@ describe('getSettingsService', () => {
         const result = getSettingsService();
 
         expect(result).toEqual({
-            theme: 'light',
             notificationsEnabled: true,
             voice: 'female',
             soundsEnabled: true,
@@ -201,7 +199,6 @@ describe('getSettingsService', () => {
         const result = getSettingsService();
 
         expect(result).toEqual({
-            theme: 'dark',
             notificationsEnabled: false,
             voice: 'female',
             soundsEnabled: true,
@@ -230,7 +227,6 @@ describe('getSettingsService', () => {
         const result = getSettingsService();
 
         expect(result).toEqual({
-            theme: 'dark',
             notificationsEnabled: true,
             voice: 'female',
             soundsEnabled: true,
@@ -259,7 +255,6 @@ describe('getSettingsService', () => {
         const result = getSettingsService();
 
         expect(result).toEqual({
-            theme: 'dark',
             notificationsEnabled: true,
             voice: 'female',
             soundsEnabled: true,
@@ -341,7 +336,6 @@ describe('saveSettingsService', () => {
         mockSaveSettings.mockResolvedValue(true);
 
         const settings: AppSettings = {
-            theme: 'dark',
             notificationsEnabled: true,
             voice: 'female',
             soundsEnabled: true,
@@ -355,14 +349,13 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 'female', 1, 0, 0, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0);
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
         const settings: AppSettings = {
-            theme: 'light',
             notificationsEnabled: false,
             voice: 'female',
             soundsEnabled: true,
@@ -376,14 +369,13 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('light', 0, 'female', 1, 1, 0, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0);
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
         const settings: AppSettings = {
-            theme: 'dark',
             notificationsEnabled: true,
             voice: 'female',
             soundsEnabled: true,
@@ -397,6 +389,6 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith('dark', 1, 'female', 1, 0, 1, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0);
     });
 });

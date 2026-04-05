@@ -3,15 +3,10 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import Settings from '../../app/settings';
 import { getSettingsService, saveSettingsService } from '../../service/DbService';
 
-const mockSetTheme = jest.fn();
-
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
     useTheme: () => ({
-        theme: 'dark',
         colours: require('../../assets/colours').default,
-        toggleTheme: jest.fn(),
-        setTheme: mockSetTheme,
     }),
 }));
 
@@ -20,7 +15,7 @@ jest.mock('../../hooks/useStyles', () => ({
 }));
 
 jest.mock('../../service/DbService', () => ({
-    getSettingsService: jest.fn(() => ({ theme: 'dark', notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false })),
+    getSettingsService: jest.fn(() => ({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false })),
     saveSettingsService: jest.fn(() => Promise.resolve(true)),
 }));
 
@@ -51,7 +46,7 @@ jest.mock('react-native-gesture-handler', () => {
 describe('Settings page', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
         mockSaveSettingsService.mockResolvedValue(true);
     });
 
@@ -61,28 +56,10 @@ describe('Settings page', () => {
         expect(getByText('Settings')).toBeTruthy();
     });
 
-    it('renders theme heading', () => {
-        const { getByText } = render(<Settings />);
-
-        expect(getByText('Theme')).toBeTruthy();
-    });
-
     it('renders notifications heading', () => {
         const { getByText } = render(<Settings />);
 
         expect(getByText('Notifications')).toBeTruthy();
-    });
-
-    it('renders theme Light button', () => {
-        const { getByTestId } = render(<Settings />);
-
-        expect(getByTestId('theme-light')).toBeTruthy();
-    });
-
-    it('renders theme Dark button', () => {
-        const { getByTestId } = render(<Settings />);
-
-        expect(getByTestId('theme-dark')).toBeTruthy();
     });
 
     it('renders notifications On button', () => {
@@ -97,20 +74,6 @@ describe('Settings page', () => {
         expect(getByTestId('notifications-off')).toBeTruthy();
     });
 
-    it('shows Dark as selected by default', () => {
-        const { getByTestId } = render(<Settings />);
-
-        expect(getByTestId('theme-dark-selected')).toBeTruthy();
-    });
-
-    it('shows Light as selected when theme is light', () => {
-        mockGetSettingsService.mockReturnValue({ theme: 'light', notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
-
-        const { getByTestId } = render(<Settings />);
-
-        expect(getByTestId('theme-light-selected')).toBeTruthy();
-    });
-
     it('shows On as selected when notifications enabled', () => {
         const { getByTestId } = render(<Settings />);
 
@@ -118,33 +81,11 @@ describe('Settings page', () => {
     });
 
     it('shows Off as selected when notifications disabled', () => {
-        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        mockGetSettingsService.mockReturnValue({ notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
 
         const { getByTestId } = render(<Settings />);
 
         expect(getByTestId('notifications-off-selected')).toBeTruthy();
-    });
-
-    it('calls setTheme with light when Light button is pressed', async () => {
-        const { getByTestId } = render(<Settings />);
-
-        fireEvent.press(getByTestId('theme-light'));
-
-        await waitFor(() => {
-            expect(mockSetTheme).toHaveBeenCalledWith('light');
-        });
-    });
-
-    it('calls setTheme with dark when Dark button is pressed', async () => {
-        mockGetSettingsService.mockReturnValue({ theme: 'light', notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
-
-        const { getByTestId } = render(<Settings />);
-
-        fireEvent.press(getByTestId('theme-dark'));
-
-        await waitFor(() => {
-            expect(mockSetTheme).toHaveBeenCalledWith('dark');
-        });
     });
 
     it('calls saveSettingsService with notificationsEnabled false when Off is pressed', async () => {
@@ -154,7 +95,6 @@ describe('Settings page', () => {
 
         await waitFor(() => {
             expect(mockSaveSettingsService).toHaveBeenCalledWith({
-                theme: 'dark',
                 notificationsEnabled: false,
                 voice: 'female',
                 soundsEnabled: true,
@@ -168,7 +108,7 @@ describe('Settings page', () => {
     });
 
     it('calls saveSettingsService with notificationsEnabled true when On is pressed', async () => {
-        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        mockGetSettingsService.mockReturnValue({ notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
 
         const { getByTestId } = render(<Settings />);
 
@@ -176,7 +116,6 @@ describe('Settings page', () => {
 
         await waitFor(() => {
             expect(mockSaveSettingsService).toHaveBeenCalledWith({
-                theme: 'dark',
                 notificationsEnabled: true,
                 voice: 'female',
                 soundsEnabled: true,
@@ -214,7 +153,7 @@ describe('Settings page', () => {
     });
 
     it('shows Off as selected when sounds disabled', () => {
-        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: true, voice: 'female', soundsEnabled: false, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: false, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
 
         const { getByTestId } = render(<Settings />);
 
@@ -234,7 +173,7 @@ describe('Settings page', () => {
     });
 
     it('calls saveSettingsService with soundsEnabled true when sounds On is pressed', async () => {
-        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: true, voice: 'female', soundsEnabled: false, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: false, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
 
         const { getByTestId } = render(<Settings />);
 
@@ -278,7 +217,7 @@ describe('Settings page', () => {
     });
 
     it('shows Male as selected when settings voice is male', () => {
-        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
 
         const { getByTestId } = render(<Settings />);
 
@@ -286,7 +225,7 @@ describe('Settings page', () => {
     });
 
     it('shows Neutral as selected when settings voice is neutral', () => {
-        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: true, voice: 'neutral', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'neutral', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
 
         const { getByTestId } = render(<Settings />);
 
@@ -300,7 +239,6 @@ describe('Settings page', () => {
 
         await waitFor(() => {
             expect(mockSaveSettingsService).toHaveBeenCalledWith({
-                theme: 'dark',
                 notificationsEnabled: true,
                 voice: 'male',
                 soundsEnabled: true,
@@ -320,7 +258,6 @@ describe('Settings page', () => {
 
         await waitFor(() => {
             expect(mockSaveSettingsService).toHaveBeenCalledWith({
-                theme: 'dark',
                 notificationsEnabled: true,
                 voice: 'neutral',
                 soundsEnabled: true,
@@ -339,7 +276,7 @@ describe('Settings page', () => {
     });
 
     it('calls saveSettingsService with voice female when Female is pressed', async () => {
-        mockGetSettingsService.mockReturnValue({ theme: 'dark', notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
 
         const { getByTestId } = render(<Settings />);
 
@@ -347,7 +284,6 @@ describe('Settings page', () => {
 
         await waitFor(() => {
             expect(mockSaveSettingsService).toHaveBeenCalledWith({
-                theme: 'dark',
                 notificationsEnabled: true,
                 voice: 'female',
                 soundsEnabled: true,

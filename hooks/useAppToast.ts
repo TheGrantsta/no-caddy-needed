@@ -11,7 +11,7 @@ export const useAppToast = () => {
             type: 'success',
             textStyle: { color: colours.background, fontSize: fontSizes.normal, padding: 5, width: '100%' },
             style: {
-                borderLeftColor: colours.green,
+                borderLeftColor: colours.tertiary,
                 borderLeftWidth: 10,
                 backgroundColor: colours.primary,
             },

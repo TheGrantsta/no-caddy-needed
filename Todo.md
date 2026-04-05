@@ -3,12 +3,12 @@
 - [?] Start Google Play closed group - alpha
 - [ ] Deprecation warning in debugger
 - [ ] Create 'skill' to run screen shots on remote push
-- [ ] Integrate Firebase iOS into project
-- [ ] Integrate Firebase Android into project
 - [ ] Expo-notifications warning message
 - [ ] Support playing 6 x 3 hole 'courses'
 
 # Done
+- [X] Integrate Firebase iOS into project
+- [X] Integrate Firebase Android into project
 - [X] Click through the 7 Deadly Sins chart to map one sin over time
 - [X] Amend App Store app asset
 - [X] Implement epic to create practice Reminders in app

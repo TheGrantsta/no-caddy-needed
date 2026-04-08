@@ -13,10 +13,18 @@ jest.mock('react-native-purchases', () => ({
     __esModule: true,
     default: {
         configure: jest.fn(),
+        setLogLevel: jest.fn().mockResolvedValue(undefined),
         getCustomerInfo: jest.fn(),
         purchasePackage: jest.fn(),
         restorePurchases: jest.fn(),
         getOfferings: jest.fn(),
+    },
+    LOG_LEVEL: {
+        VERBOSE: 'VERBOSE',
+        DEBUG: 'DEBUG',
+        INFO: 'INFO',
+        WARN: 'WARN',
+        ERROR: 'ERROR',
     },
 }));
 

@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import Purchases from 'react-native-purchases';
+import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 
 export const PREMIUM_ENTITLEMENT_ID = 'premium';
 
@@ -24,6 +24,7 @@ export async function initializeRevenueCat(): Promise<void> {
         return;
     }
 
+    await Purchases.setLogLevel(LOG_LEVEL.WARN);
     Purchases.configure({ apiKey });
 }
 

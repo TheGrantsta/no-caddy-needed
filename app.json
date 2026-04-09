@@ -2,7 +2,7 @@
   "expo": {
     "name": "No caddy needed",
     "slug": "no-caddy-needed",
-    "version": "2.0.7",
+    "version": "2.0.8",
     "orientation": "default",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
@@ -89,7 +89,7 @@
       "eas": {
         "projectId": "d7975635-84fc-4539-9990-1260133b1e87"
       },
-      "analyseRoundEnabled": true
+      "analyseRoundEnabled": false
     }
   }
 }

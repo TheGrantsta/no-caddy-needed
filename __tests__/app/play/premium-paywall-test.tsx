@@ -75,7 +75,7 @@ describe('PremiumPaywallScreen', () => {
     });
 
     it('shows loading indicator while getOfferings is resolving', () => {
-        mockGetOfferings.mockReturnValue(new Promise(() => {}));
+        mockGetOfferings.mockReturnValue(new Promise(() => { }));
 
         const { getByTestId } = render(<PremiumPaywallScreen />);
 
@@ -106,21 +106,6 @@ describe('PremiumPaywallScreen', () => {
         const { getByTestId } = render(<PremiumPaywallScreen />);
 
         await waitFor(() => expect(getByTestId('restore-purchase-button')).toBeTruthy());
-    });
-
-    it('renders back button', async () => {
-        const { getByTestId } = render(<PremiumPaywallScreen />);
-
-        await waitFor(() => expect(getByTestId('paywall-back-button')).toBeTruthy());
-    });
-
-    it('calls router.back when back button is pressed', async () => {
-        const { getByTestId } = render(<PremiumPaywallScreen />);
-
-        await waitFor(() => expect(getByTestId('paywall-back-button')).toBeTruthy());
-        fireEvent.press(getByTestId('paywall-back-button'));
-
-        expect(mockBack).toHaveBeenCalledTimes(1);
     });
 
     it('navigates to round-analysis with roundId on successful purchase', async () => {

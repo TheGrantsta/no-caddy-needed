@@ -112,14 +112,6 @@ export default function PremiumPaywallScreen() {
                                 {restoring ? 'Restoring...' : 'Restore Purchase'}
                             </Text>
                         </TouchableOpacity>
-
-                        <TouchableOpacity
-                            testID="paywall-back-button"
-                            style={localStyles.backButton}
-                            onPress={() => router.back()}
-                        >
-                            <Text style={[styles.normalText, localStyles.backText]}>{'< Back'}</Text>
-                        </TouchableOpacity>
                     </>
                 )}
             </ScrollView>

@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 
-export const PREMIUM_ENTITLEMENT_ID = 'premium';
+export const PREMIUM_ENTITLEMENT_ID = 'No caddy needed Pro';
 
 export type PurchaseResult = {
     success: boolean;

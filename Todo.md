@@ -1,12 +1,12 @@
 # To do
 - [ ] SafeAreaView has been deprecation warning message
-- [?] Start Google Play closed group - alpha
 - [ ] Deprecation warning in debugger
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Expo-notifications warning message
 - [ ] Support playing 6 x 3 hole 'courses'
 
 # Done
+- [X] Start Google Play closed group - alpha
 - [X] Integrate Firebase iOS into project
 - [X] Integrate Firebase Android into project
 - [X] Click through the 7 Deadly Sins chart to map one sin over time
@@ -56,10 +56,10 @@
 - [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
 
 # Release notes
+* Add 'Analyse your round' as a subscription service
 * Golfers can add practice reminders with due dates so help practice effectively
 * Reduced white space on score input to minimise scrolling when playing and scroll to the top when clicking 'Next hole' to make it clearer
 * Added ability to "continue" active round if the app closes, etc
 * Add "Average score by par" to help golfers
 * Add Haptic feedback when saving hole input values
-* Fix bug mapping DeadlySinsTally counts to the database table fields
-* Fix display bug where 7 Deadly Sins tally would reset to 0 (when navigating away) even though the counts were maintained
+* Fix bug when editing scorecard

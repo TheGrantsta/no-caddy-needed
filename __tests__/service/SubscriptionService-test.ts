@@ -8,6 +8,13 @@ import {
     getOfferings,
     PREMIUM_ENTITLEMENT_ID,
 } from '../../service/SubscriptionService';
+import { logError } from '../../service/FirebaseService';
+
+jest.mock('../../service/FirebaseService', () => ({
+    logError: jest.fn().mockResolvedValue(true),
+}));
+
+const mockLogError = logError as jest.Mock;
 
 jest.mock('react-native-purchases', () => ({
     __esModule: true,
@@ -90,6 +97,16 @@ describe('SubscriptionService', () => {
 
             await expect(initializeRevenueCat()).resolves.not.toThrow();
         });
+
+        it('logs error to Firebase when Purchases.configure throws', async () => {
+            jest.replaceProperty(Platform, 'OS', 'ios');
+            process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY = 'ios-key-123';
+            mockConfigure.mockImplementation(() => { throw new Error('SDK init failed'); });
+
+            await initializeRevenueCat();
+
+            expect(mockLogError).toHaveBeenCalledWith('subscription/initialize', 'SDK init failed');
+        });
     });
 
     describe('checkPremiumEntitlement', () => {
@@ -115,6 +132,14 @@ describe('SubscriptionService', () => {
             const result = await checkPremiumEntitlement();
 
             expect(result).toBe(false);
+        });
+
+        it('logs error to Firebase when getCustomerInfo throws', async () => {
+            mockGetCustomerInfo.mockRejectedValue(new Error('Network error'));
+
+            await checkPremiumEntitlement();
+
+            expect(mockLogError).toHaveBeenCalledWith('subscription/check-entitlement', 'Network error');
         });
     });
 
@@ -150,6 +175,16 @@ describe('SubscriptionService', () => {
             expect(result).toEqual({ success: false, error: 'cancelled' });
         });
 
+        it('does not log error to Firebase when user cancels purchase', async () => {
+            mockGetOfferings.mockResolvedValue(makeOfferings([mockPackage]));
+            const cancelError = Object.assign(new Error('Purchase cancelled'), { userCancelled: true });
+            mockPurchasePackage.mockRejectedValue(cancelError);
+
+            await purchasePremium();
+
+            expect(mockLogError).not.toHaveBeenCalled();
+        });
+
         it('returns error message when purchase fails for non-cancellation reason', async () => {
             mockGetOfferings.mockResolvedValue(makeOfferings([mockPackage]));
             mockPurchasePackage.mockRejectedValue(new Error('Payment declined'));
@@ -160,6 +195,15 @@ describe('SubscriptionService', () => {
             expect(result.error).toBe('Payment declined');
         });
 
+        it('logs error to Firebase when purchase fails for non-cancellation reason', async () => {
+            mockGetOfferings.mockResolvedValue(makeOfferings([mockPackage]));
+            mockPurchasePackage.mockRejectedValue(new Error('Payment declined'));
+
+            await purchasePremium();
+
+            expect(mockLogError).toHaveBeenCalledWith('subscription/purchase', 'Payment declined');
+        });
+
         it('returns error when no offerings are available', async () => {
             mockGetOfferings.mockResolvedValue({ current: null });
 
@@ -167,6 +211,23 @@ describe('SubscriptionService', () => {
 
             expect(result.success).toBe(false);
             expect(result.error).toBeDefined();
+        });
+
+        it('logs error to Firebase when no offerings are available', async () => {
+            mockGetOfferings.mockResolvedValue({ current: null });
+
+            await purchasePremium();
+
+            expect(mockLogError).toHaveBeenCalledWith('subscription/purchase', 'No subscription available');
+        });
+
+        it('logs error to Firebase when purchase completes but entitlement not activated', async () => {
+            mockGetOfferings.mockResolvedValue(makeOfferings([mockPackage]));
+            mockPurchasePackage.mockResolvedValue({ customerInfo: makeCustomerInfo(false) });
+
+            await purchasePremium();
+
+            expect(mockLogError).toHaveBeenCalledWith('subscription/purchase', 'Purchase completed but entitlement not activated');
         });
     });
 
@@ -193,6 +254,14 @@ describe('SubscriptionService', () => {
             const result = await restorePurchases();
 
             expect(result).toBe(false);
+        });
+
+        it('logs error to Firebase when restorePurchases throws', async () => {
+            mockRestorePurchases.mockRejectedValue(new Error('Restore failed'));
+
+            await restorePurchases();
+
+            expect(mockLogError).toHaveBeenCalledWith('subscription/restore', 'Restore failed');
         });
     });
 
@@ -242,6 +311,14 @@ describe('SubscriptionService', () => {
             const result = await getOfferings();
 
             expect(result).toEqual([]);
+        });
+
+        it('logs error to Firebase when getOfferings throws', async () => {
+            mockGetOfferings.mockRejectedValue(new Error('Network error'));
+
+            await getOfferings();
+
+            expect(mockLogError).toHaveBeenCalledWith('subscription/get-offerings', 'Network error');
         });
     });
 });

@@ -28,6 +28,22 @@ export const logEvent = async (
     }
 };
 
+export const logError = async (
+    context: string,
+    message: string
+): Promise<boolean> => {
+    try {
+        await addDoc(collection(db, 'app_errors'), {
+            context,
+            message,
+            loggedAt: serverTimestamp(),
+        });
+        return true;
+    } catch {
+        return false;
+    }
+};
+
 export const submitRoundFeedback = async (
     roundId: string,
     feedback: FeedbackType,

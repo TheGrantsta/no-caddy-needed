@@ -1,4 +1,4 @@
-import { submitRoundFeedback, logEvent } from '../../service/FirebaseService';
+import { submitRoundFeedback, logEvent, logError } from '../../service/FirebaseService';
 import { addDoc, collection } from 'firebase/firestore';
 
 jest.mock('firebase/app', () => ({
@@ -107,6 +107,37 @@ describe('FirebaseService', () => {
                 loggedAt: 'MOCK_TIMESTAMP',
                 hole: 5,
             });
+        });
+    });
+
+    describe('logError', () => {
+        it('writes to the app_errors collection with context, message and timestamp', async () => {
+            mockAddDoc.mockResolvedValue({ id: 'err1' });
+
+            await logError('subscription/purchase', 'Payment declined');
+
+            expect(mockCollection).toHaveBeenCalledWith('MOCK_DB', 'app_errors');
+            expect(mockAddDoc).toHaveBeenCalledWith('MOCK_COLLECTION_REF', {
+                context: 'subscription/purchase',
+                message: 'Payment declined',
+                loggedAt: 'MOCK_TIMESTAMP',
+            });
+        });
+
+        it('returns true when addDoc succeeds', async () => {
+            mockAddDoc.mockResolvedValue({ id: 'err2' });
+
+            const result = await logError('subscription/restore', 'Restore failed');
+
+            expect(result).toBe(true);
+        });
+
+        it('returns false when addDoc throws', async () => {
+            mockAddDoc.mockRejectedValue(new Error('Firestore error'));
+
+            const result = await logError('subscription/check-entitlement', 'Network error');
+
+            expect(result).toBe(false);
         });
     });
 });

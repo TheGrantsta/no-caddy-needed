@@ -89,9 +89,15 @@ export default function ScorecardScreen() {
 
     const handleScoreSelect = (holeNumber: number, playerId: number) => {
         setSelectedScore({ holeNumber, playerId });
-        const existing = getHoleDeadlySinsService(Number(roundId), holeNumber);
-        setEditedSins(existing ?? INITIAL_SINS);
-        setSinsHoleNumber(holeNumber);
+        const isUserPlayer = multiplayerScorecard?.players.find(p => p.Id === playerId)?.IsUser === 1;
+        if (isUserPlayer) {
+            const existing = getHoleDeadlySinsService(Number(roundId), holeNumber);
+            setEditedSins(existing ?? INITIAL_SINS);
+            setSinsHoleNumber(holeNumber);
+        } else {
+            setEditedSins(null);
+            setSinsHoleNumber(null);
+        }
     };
 
     const handleSinsChange = (values: DeadlySinsValues) => setEditedSins(values);

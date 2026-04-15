@@ -467,6 +467,34 @@ describe('Scorecard screen', () => {
             expect(mockReplaceHoleDeadlySinsService).not.toHaveBeenCalled();
         });
 
+        it('does not show 7 deadly sins tally when non-primary player score selected', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-2')); // Alice (IsUser: 0)
+
+            expect(queryByTestId('7deadly-sins-toggle-three-putts')).toBeNull();
+        });
+
+        it('does not save sins when non-primary player score is selected during edit', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(true);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-2')); // Alice (IsUser: 0)
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(mockUpdateScorecard).toHaveBeenCalled();
+            });
+            expect(mockReplaceHoleDeadlySinsService).not.toHaveBeenCalled();
+        });
+
         it('clears sins editor when cancel edit pressed', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 

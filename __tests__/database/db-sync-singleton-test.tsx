@@ -1,8 +1,14 @@
-// Tests that the database is opened once via openDatabaseAsync and that
-// openDatabaseSync is NEVER called. On Android, openDatabaseSync calls
-// nativeDatabase.initSync() which produces a null native handle, causing
-// NullPointerException in prepareSync. The correct approach is to open
-// once with openDatabaseAsync and use sync methods on that connection.
+// Tests that initialize() opens both an async connection (kept alive at module
+// level to hold the native sqlite3* handle on Android) and a sync connection
+// (used for all sync reads/writes on both platforms).
+//
+// Background:
+// - openDatabaseSync alone: on Android, initSync() leaves the native handle
+//   null → NullPointerException in prepareSync.
+// - openDatabaseAsync alone: getAllSync on an async connection deadlocks the
+//   JS thread on iOS → app stuck on black screen.
+// - Solution: keep _db (async) alive so the native handle stays valid on
+//   Android, and use _syncDb (sync) for all sync operations on both platforms.
 
 describe('getSyncDb singleton behaviour after initialize', () => {
     let mockOpenDatabaseSync: jest.Mock;
@@ -26,22 +32,41 @@ describe('getSyncDb singleton behaviour after initialize', () => {
         }));
     });
 
-    it('does not call openDatabaseSync at any point during or after initialize', async () => {
+    it('calls openDatabaseSync exactly once inside initialize to create the sync handle', async () => {
+        const { initialize } = require('../../database/db');
+
+        await initialize();
+
+        expect(mockOpenDatabaseSync).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls openDatabaseAsync exactly once inside initialize to keep native handle alive', async () => {
+        const { initialize } = require('../../database/db');
+
+        await initialize();
+
+        expect(mockOpenDatabaseAsync).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not call openDatabaseSync a second time for reads after initialize', async () => {
         const { initialize, getAllPracticeReminders } = require('../../database/db');
 
         await initialize();
+        mockOpenDatabaseSync.mockClear();
+
         getAllPracticeReminders();
 
         expect(mockOpenDatabaseSync).not.toHaveBeenCalled();
     });
 
-    it('reuses the async connection for reads after initialize', async () => {
+    it('uses the sync connection for reads after initialize, not the async connection', async () => {
         const { initialize, getAllPracticeReminders } = require('../../database/db');
 
         await initialize();
+
+        const syncDbInstance = mockOpenDatabaseSync.mock.results[0].value;
         getAllPracticeReminders();
 
-        // openDatabaseAsync called once during initialize, not again for reads
-        expect(mockOpenDatabaseAsync).toHaveBeenCalledTimes(1);
+        expect(syncDbInstance.getAllSync).toHaveBeenCalled();
     });
 });

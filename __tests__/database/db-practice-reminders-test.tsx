@@ -15,7 +15,7 @@ jest.mock('expo-sqlite', () => ({
         getAllSync: mockGetAllSync,
         execSync: mockExecSync,
     })),
-    openDatabaseSync: jest.fn(),
+    openDatabaseSync: jest.fn(() => ({ getAllSync: mockGetAllSync, execSync: mockExecSync })),
 }));
 
 beforeAll(async () => {

@@ -4,6 +4,15 @@ import { gameSeedData } from '../data/gameSeedData';
 
 const dbName = 'NoCaddyNeeded.db';
 
+// _db is kept alive at module level so the underlying native sqlite3* handle
+// is not released on Android (openDatabaseSync shares the same native handle;
+// if the async connection goes out of scope Android nulls it out, causing a
+// NullPointerException in prepareSync).
+let _db: SQLite.SQLiteDatabase | null = null;
+
+// _syncDb is opened with openDatabaseSync so that getAllSync / execSync /
+// prepareSync run on the JS thread without deadlocking (calling those methods
+// on an openDatabaseAsync connection deadlocks iOS).
 let _syncDb: SQLite.SQLiteDatabase | null = null;
 
 function getSyncDb(): SQLite.SQLiteDatabase {
@@ -38,9 +47,12 @@ export const amendTable = (syncDb: SQLite.SQLiteDatabase, amendment: TableAmendm
 };
 
 export const initialize = async () => {
-    const db = await SQLite.openDatabaseAsync(dbName);
-    _syncDb = db;
-    const syncDb = db;
+    _db = await SQLite.openDatabaseAsync(dbName);
+    if (!_syncDb) {
+        _syncDb = SQLite.openDatabaseSync(dbName);
+    }
+    const db = _db;
+    const syncDb = _syncDb;
 
     // Rename migrations must run BEFORE CREATE TABLE IF NOT EXISTS to avoid name conflicts
     const tiger5Columns = syncDb.getAllSync('PRAGMA table_info(Tiger5Rounds)');

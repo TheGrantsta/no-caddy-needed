@@ -7,31 +7,30 @@ appId: com.grantsta.golf.nocaddyneeded
 - launchApp:
     clearState: true
 
-# Wait for the app to fully initialise (DB setup + splash screen)
-# Android requires a longer timeout due to slower emulator startup
+# Wait for the home onboarding to appear before tapping.
+# Android emulators are slower to initialise (DB setup + splash delay)
+# so we wait explicitly for the Next button rather than tapping blindly.
 - extendedWaitUntil:
-    visible: "No Caddy Needed"
+    visible:
+      id: "next-button"
     timeout: 30000
 
 # Complete the onboarding flow - step 1
 - tapOn:
-    text: ".*Next.*"
-    index: 0
+    id: "next-button"
 
 # Complete the onboarding flow - step 2
 - tapOn:
-    text: ".*Next.*"
-    index: 0
+    id: "next-button"
 
 # Complete the onboarding flow - step 3
 - tapOn:
-    text: ".*Done.*"
-    index: 0
+    id: "done-button"
 
-# Wait for home screen content to be visible
+# Wait for app to load (splash screen then home)
 - extendedWaitUntil:
     visible: "No caddy needed!"
-    timeout: 10000
+    timeout: 15000
 
 # Screenshot 1: Home screen
 - tapOn:

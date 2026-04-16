@@ -63,3 +63,4 @@
 * Add "Average score by par" to help golfers
 * Add Haptic feedback when saving hole input values
 * Fix bug when editing scorecard
+* Fix issue with database connection with Android

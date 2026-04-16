@@ -12,11 +12,10 @@ jest.mock('expo-sqlite', () => ({
     openDatabaseAsync: jest.fn(() => Promise.resolve({
         execAsync: mockExecAsync,
         prepareAsync: mockPrepareAsync,
-    })),
-    openDatabaseSync: jest.fn(() => ({
         getAllSync: mockGetAllSync,
         execSync: mockExecSync,
     })),
+    openDatabaseSync: jest.fn(),
 }));
 
 describe('amendTable', () => {
@@ -24,7 +23,7 @@ describe('amendTable', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        mockSyncDb = (SQLite.openDatabaseSync as jest.Mock)('TestDb');
+        mockSyncDb = { getAllSync: mockGetAllSync, execSync: mockExecSync };
     });
 
     it('should add column when missing from table', () => {

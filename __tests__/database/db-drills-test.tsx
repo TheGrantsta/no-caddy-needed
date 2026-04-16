@@ -1,4 +1,4 @@
-import { insertDrillResult, getAllDrillHistory, getDrillsByCategory, insertDrill, softDeleteDrill, restoreDrill } from '../../database/db';
+import { insertDrillResult, getAllDrillHistory, getDrillsByCategory, insertDrill, softDeleteDrill, restoreDrill, initialize } from '../../database/db';
 import * as SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
@@ -12,12 +12,17 @@ jest.mock('expo-sqlite', () => ({
     openDatabaseAsync: jest.fn(() => Promise.resolve({
         execAsync: mockExecAsync,
         prepareAsync: mockPrepareAsync,
-    })),
-    openDatabaseSync: jest.fn(() => ({
         getAllSync: mockGetAllSync,
         execSync: mockExecSync,
     })),
+    openDatabaseSync: jest.fn(),
 }));
+
+beforeAll(async () => {
+    mockGetAllSync.mockReturnValue([]);
+    mockExecAsync.mockResolvedValue(undefined);
+    await initialize();
+});
 
 describe('insertDrillResult', () => {
     beforeEach(() => {

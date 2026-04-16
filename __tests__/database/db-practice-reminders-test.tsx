@@ -1,4 +1,4 @@
-import { insertPracticeReminder, getAllPracticeReminders, deletePracticeReminder } from '../../database/db';
+import { insertPracticeReminder, getAllPracticeReminders, deletePracticeReminder, initialize } from '../../database/db';
 import * as SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
@@ -12,12 +12,17 @@ jest.mock('expo-sqlite', () => ({
     openDatabaseAsync: jest.fn(() => Promise.resolve({
         execAsync: mockExecAsync,
         prepareAsync: mockPrepareAsync,
-    })),
-    openDatabaseSync: jest.fn(() => ({
         getAllSync: mockGetAllSync,
         execSync: mockExecSync,
     })),
+    openDatabaseSync: jest.fn(),
 }));
+
+beforeAll(async () => {
+    mockGetAllSync.mockReturnValue([]);
+    mockExecAsync.mockResolvedValue(undefined);
+    await initialize();
+});
 
 describe('insertPracticeReminder', () => {
     beforeEach(() => {

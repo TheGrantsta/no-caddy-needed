@@ -1,4 +1,4 @@
-import { insertHoleDeadlySins, getDeadlySinsForRound, getAllDeadlySinsRoundTotals, getHoleDeadlySins, deleteHoleDeadlySinsByHole, getHolesWithSinsForRound } from '../../database/db';
+import { insertHoleDeadlySins, getDeadlySinsForRound, getAllDeadlySinsRoundTotals, getHoleDeadlySins, deleteHoleDeadlySinsByHole, getHolesWithSinsForRound, initialize } from '../../database/db';
 import * as SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
@@ -12,12 +12,17 @@ jest.mock('expo-sqlite', () => ({
     openDatabaseAsync: jest.fn(() => Promise.resolve({
         execAsync: mockExecAsync,
         prepareAsync: mockPrepareAsync,
-    })),
-    openDatabaseSync: jest.fn(() => ({
         getAllSync: mockGetAllSync,
         execSync: mockExecSync,
     })),
+    openDatabaseSync: jest.fn(),
 }));
+
+beforeAll(async () => {
+    mockGetAllSync.mockReturnValue([]);
+    mockExecAsync.mockResolvedValue(undefined);
+    await initialize();
+});
 
 const allFalse = {
     threePutts: false,

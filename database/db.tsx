@@ -8,7 +8,7 @@ let _syncDb: SQLite.SQLiteDatabase | null = null;
 
 function getSyncDb(): SQLite.SQLiteDatabase {
     if (!_syncDb) {
-        _syncDb = SQLite.openDatabaseSync(dbName);
+        throw new Error('Database not initialized. Call initialize() first.');
     }
     return _syncDb;
 }
@@ -39,7 +39,8 @@ export const amendTable = (syncDb: SQLite.SQLiteDatabase, amendment: TableAmendm
 
 export const initialize = async () => {
     const db = await SQLite.openDatabaseAsync(dbName);
-    const syncDb = SQLite.openDatabaseSync(dbName);
+    _syncDb = db;
+    const syncDb = db;
 
     // Rename migrations must run BEFORE CREATE TABLE IF NOT EXISTS to avoid name conflicts
     const tiger5Columns = syncDb.getAllSync('PRAGMA table_info(Tiger5Rounds)');

@@ -25,6 +25,18 @@ function isSimulatorBooted() {
   }
 }
 
+function isEmulatorRunning() {
+  try {
+    const result = execSync('adb devices', {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    });
+    return result.split('\n').some(line => line.startsWith('emulator-') && line.includes('device'));
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Diffs two PNG files pixel-by-pixel.
  * Returns { numDiffPixels, diffPercent }.
@@ -61,8 +73,8 @@ function main() {
     return 0;
   }
 
-  if (!isSimulatorBooted()) {
-    console.warn('Warning: No iOS simulator booted. Skipping UI visual regression check.');
+  if (!isSimulatorBooted() && !isEmulatorRunning()) {
+    console.warn('Warning: No iOS simulator or Android emulator running. Skipping UI visual regression check.');
     return 0;
   }
 
@@ -123,7 +135,7 @@ function main() {
   return 0;
 }
 
-module.exports = { isSimulatorBooted, diffImages, main };
+module.exports = { isSimulatorBooted, isEmulatorRunning, diffImages, main };
 
 if (require.main === module) {
   process.exit(main());

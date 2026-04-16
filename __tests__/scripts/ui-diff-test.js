@@ -81,6 +81,65 @@ describe('isSimulatorBooted', () => {
   });
 });
 
+// --- isEmulatorRunning ---
+
+describe('isEmulatorRunning', () => {
+  it('returns true when adb devices lists a running emulator', () => {
+    execSync.mockReturnValue('List of devices attached\nemulator-5554\tdevice\n');
+    expect(uiDiff.isEmulatorRunning()).toBe(true);
+  });
+
+  it('returns false when adb devices shows no emulators', () => {
+    execSync.mockReturnValue('List of devices attached\n');
+    expect(uiDiff.isEmulatorRunning()).toBe(false);
+  });
+
+  it('returns false when emulator is listed as offline', () => {
+    execSync.mockReturnValue('List of devices attached\nemulator-5554\toffline\n');
+    expect(uiDiff.isEmulatorRunning()).toBe(false);
+  });
+
+  it('returns false when adb throws', () => {
+    execSync.mockImplementation(() => {
+      throw new Error('adb not found');
+    });
+    expect(uiDiff.isEmulatorRunning()).toBe(false);
+  });
+});
+
+// --- main: Android emulator ---
+
+describe('main with Android emulator', () => {
+  beforeEach(() => {
+    fs.readdirSync.mockReturnValue([]);
+    fs.existsSync.mockReturnValue(true);
+  });
+
+  it('runs Maestro when Android emulator is running but no iOS simulator', () => {
+    execSync.mockImplementation((cmd) => {
+      if (cmd.includes('simctl')) throw new Error('no simulator');
+      if (cmd.includes('adb devices')) return 'List of devices attached\nemulator-5554\tdevice\n';
+      return ''; // maestro
+    });
+
+    uiDiff.main();
+
+    expect(execSync).toHaveBeenCalledWith(
+      expect.stringContaining('maestro test'),
+      expect.anything()
+    );
+  });
+
+  it('skips when neither iOS simulator nor Android emulator is running', () => {
+    execSync.mockImplementation(() => { throw new Error('not found'); });
+
+    const code = uiDiff.main();
+
+    expect(code).toBe(0);
+    expect(execSync).not.toHaveBeenCalledWith(expect.stringContaining('maestro'), expect.anything());
+  });
+});
+
 // --- diffImages ---
 
 describe('diffImages', () => {

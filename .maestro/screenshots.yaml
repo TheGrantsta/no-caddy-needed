@@ -8,12 +8,12 @@ appId: com.grantsta.golf.nocaddyneeded
     clearState: true
 
 # Wait for the home onboarding to appear before tapping.
-# Android emulators are slower to initialise (DB setup + splash delay)
-# so we wait explicitly for the Next button rather than tapping blindly.
+# Android emulators are slower to initialise (DB setup + splash delay +
+# Metro bundle compilation after clearState) so we use a generous timeout.
 - extendedWaitUntil:
     visible:
       id: "next-button"
-    timeout: 30000
+    timeout: 90000
 
 # Complete the onboarding flow - step 1
 - tapOn:

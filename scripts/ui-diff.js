@@ -25,6 +25,19 @@ function isSimulatorBooted() {
   }
 }
 
+function getBootedSimulatorUdid() {
+  try {
+    const result = execSync('xcrun simctl list | grep Booted', {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    });
+    const match = result.match(/\(([0-9A-F-]{36})\)\s*\(Booted\)/i);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
+}
+
 function isEmulatorRunning() {
   try {
     const result = execSync('adb devices', {
@@ -73,8 +86,15 @@ function main() {
     return 0;
   }
 
-  if (!isSimulatorBooted() && !isEmulatorRunning()) {
-    console.warn('Warning: No iOS simulator or Android emulator running. Skipping UI visual regression check.');
+  // Visual regression requires an iOS simulator — Android emulator cold-starts
+  // are too slow (100+ s) for a pre-push hook, and baselines are iOS captures.
+  const simulatorUdid = getBootedSimulatorUdid();
+  if (!simulatorUdid) {
+    if (isEmulatorRunning()) {
+      console.warn('Warning: Only Android emulator running (no iOS simulator). Skipping UI visual regression check (iOS simulator required).');
+    } else {
+      console.warn('Warning: No iOS simulator booted. Skipping UI visual regression check.');
+    }
     return 0;
   }
 
@@ -82,7 +102,7 @@ function main() {
 
   console.log('Running Maestro to capture current screenshots...');
   try {
-    execSync(`maestro test .maestro/screenshots.yaml`, {
+    execSync(`maestro --device ${simulatorUdid} test .maestro/screenshots.yaml`, {
       stdio: 'inherit',
       cwd: ROOT,
     });
@@ -135,7 +155,7 @@ function main() {
   return 0;
 }
 
-module.exports = { isSimulatorBooted, isEmulatorRunning, diffImages, main };
+module.exports = { isSimulatorBooted, isEmulatorRunning, getBootedSimulatorUdid, diffImages, main };
 
 if (require.main === module) {
   process.exit(main());

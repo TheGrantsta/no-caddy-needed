@@ -107,25 +107,75 @@ describe('isEmulatorRunning', () => {
   });
 });
 
-// --- main: Android emulator ---
+// --- getBootedSimulatorUdid ---
 
-describe('main with Android emulator', () => {
+describe('getBootedSimulatorUdid', () => {
+  it('returns the UDID when a simulator is booted', () => {
+    execSync.mockReturnValue(
+      '    iPhone 17 Pro Max (71E2C8B8-23F3-4838-A007-D655CCEDA8ED) (Booted)\n'
+    );
+    expect(uiDiff.getBootedSimulatorUdid()).toBe('71E2C8B8-23F3-4838-A007-D655CCEDA8ED');
+  });
+
+  it('returns null when xcrun output has no Booted simulator', () => {
+    execSync.mockReturnValue('');
+    expect(uiDiff.getBootedSimulatorUdid()).toBeNull();
+  });
+
+  it('returns null when xcrun throws', () => {
+    execSync.mockImplementation(() => {
+      throw new Error('Command failed');
+    });
+    expect(uiDiff.getBootedSimulatorUdid()).toBeNull();
+  });
+
+  it('extracts UDID from a line with other text', () => {
+    execSync.mockReturnValue(
+      '    iPhone SE (3rd generation) (A1B2C3D4-E5F6-7890-ABCD-EF1234567890) (Booted)\n'
+    );
+    expect(uiDiff.getBootedSimulatorUdid()).toBe('A1B2C3D4-E5F6-7890-ABCD-EF1234567890');
+  });
+});
+
+// --- main: Android emulator only (no iOS simulator) ---
+
+describe('main with Android emulator only (no iOS simulator)', () => {
+  it('skips and returns 0 when only Android emulator is running but no iOS simulator', () => {
+    execSync.mockImplementation((cmd) => {
+      if (cmd.includes('simctl')) throw new Error('no simulator');
+      if (cmd.includes('adb devices')) return 'List of devices attached\nemulator-5554\tdevice\n';
+      return '';
+    });
+
+    const code = uiDiff.main();
+
+    expect(code).toBe(0);
+    expect(execSync).not.toHaveBeenCalledWith(
+      expect.stringContaining('maestro test'),
+      expect.anything()
+    );
+  });
+});
+
+// --- main: runs Maestro with iOS simulator UDID ---
+
+describe('main with iOS simulator', () => {
   beforeEach(() => {
     fs.readdirSync.mockReturnValue([]);
     fs.existsSync.mockReturnValue(true);
   });
 
-  it('runs Maestro when Android emulator is running but no iOS simulator', () => {
+  it('passes --device <udid> to the maestro test command', () => {
+    const udid = '71E2C8B8-23F3-4838-A007-D655CCEDA8ED';
     execSync.mockImplementation((cmd) => {
-      if (cmd.includes('simctl')) throw new Error('no simulator');
-      if (cmd.includes('adb devices')) return 'List of devices attached\nemulator-5554\tdevice\n';
-      return ''; // maestro
+      if (cmd.includes('simctl')) return `    iPhone 17 Pro Max (${udid}) (Booted)\n`;
+      return '';
     });
 
     uiDiff.main();
 
     expect(execSync).toHaveBeenCalledWith(
-      expect.stringContaining('maestro test'),
+      expect.stringContaining(`--device ${udid}`),
       expect.anything()
     );
   });
@@ -188,10 +238,12 @@ describe('diffImages', () => {
 // --- main ---
 
 describe('main', () => {
+  const udid = '71E2C8B8-23F3-4838-A007-D655CCEDA8ED';
+
   beforeEach(() => {
-    // Default: simulator is booted
+    // Default: iOS simulator is booted with a UDID
     execSync.mockImplementation((cmd) => {
-      if (cmd.includes('simctl')) return 'iPhone 16 (Booted)';
+      if (cmd.includes('simctl')) return `    iPhone 16 (${udid}) (Booted)\n`;
       return ''; // maestro command
     });
     // No baselines by default

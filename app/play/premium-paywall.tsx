@@ -89,11 +89,11 @@ export default function PremiumPaywallScreen() {
                     </View>
                 )}
 
-                {!isLoading && (
-                    <>
+                {!isLoading && offerings!.length > 0 && (
+                    <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             testID="subscribe-button"
-                            style={[styles.largeButton, { backgroundColor: colours.primary, marginBottom: 12 }]}
+                            style={[styles.largeButton, { backgroundColor: colours.primary }]}
                             onPress={handleSubscribe}
                             disabled={purchasing || offerings!.length === 0}
                         >
@@ -112,7 +112,7 @@ export default function PremiumPaywallScreen() {
                                 {restoring ? 'Restoring...' : 'Restore Purchase'}
                             </Text>
                         </TouchableOpacity>
-                    </>
+                    </View>
                 )}
             </ScrollView>
         </GestureHandlerRootView>

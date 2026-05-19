@@ -3,13 +3,21 @@ import { ScrollView, View, Text, TextInput, RefreshControl, TouchableOpacity } f
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getRandomNumber } from '../../assets/random-number';
 import * as Speech from 'expo-speech';
-import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { MaterialIcons } from '@expo/vector-icons';
 import { getSettingsService } from '../../service/DbService';
 import Chevrons from '@/components/Chevrons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
+let ExpoSpeechRecognitionModule: any = null;
+let useSpeechRecognitionEvent: (eventName: string, handler: (event: any) => void) => void = () => {};
+let speechRecognitionAvailable = false;
+try {
+    const mod = require('expo-speech-recognition');
+    ExpoSpeechRecognitionModule = mod.ExpoSpeechRecognitionModule;
+    useSpeechRecognitionEvent = mod.useSpeechRecognitionEvent;
+    speechRecognitionAvailable = true;
+} catch { }
 
 const FEMALE_VOICE_NAMES = ['samantha', 'ava', 'allison', 'susan', 'noelle', 'karen', 'moira', 'tessa', 'fiona'];
 const MALE_VOICE_NAMES = ['tom', 'alex', 'fred', 'daniel', 'lee', 'ralph', 'rishi'];
@@ -58,7 +66,7 @@ export default function Random() {
 
     useEffect(() => {
         return () => {
-            ExpoSpeechRecognitionModule.stop();
+            ExpoSpeechRecognitionModule?.stop();
         };
     }, []);
 
@@ -206,6 +214,7 @@ export default function Random() {
                                 </Text>
                             </TouchableOpacity>
 
+                            {speechRecognitionAvailable && (
                             <TouchableOpacity
                                 testID="mic-button"
                                 style={[localStyles.micButton, micActive && localStyles.micButtonActive]}
@@ -220,6 +229,7 @@ export default function Random() {
                                     color={micActive ? colours.background : colours.text}
                                 />
                             </TouchableOpacity>
+                        )}
                         </View>
 
                         <View style={styles.contentSection}>

@@ -495,6 +495,34 @@ describe('Scorecard screen', () => {
             expect(mockReplaceHoleDeadlySinsService).not.toHaveBeenCalled();
         });
 
+        it('updates 7 deadly sins display when switching to a different hole', () => {
+            const twoHoleData = {
+                ...multiplayerData,
+                holeScores: [
+                    ...multiplayerData.holeScores,
+                    { Id: 12, RoundId: 1, RoundPlayerId: 1, HoleNumber: 2, HolePar: 4, Score: 5 },
+                    { Id: 13, RoundId: 1, RoundPlayerId: 2, HoleNumber: 2, HolePar: 4, Score: 4 },
+                ],
+            };
+            mockGetMultiplayerScorecard.mockReturnValue(twoHoleData);
+            mockGetHoleDeadlySinsService.mockImplementation((_: number, holeNumber: number) =>
+                holeNumber === 1
+                    ? { threePutts: true, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false }
+                    : null
+            );
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+
+            expect(getByTestId('7deadly-sins-toggle-three-putts')).toHaveTextContent('✓');
+
+            fireEvent.press(getByTestId('score-cell-2-1'));
+
+            expect(getByTestId('7deadly-sins-toggle-three-putts')).toHaveTextContent('○');
+        });
+
         it('clears sins editor when cancel edit pressed', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 

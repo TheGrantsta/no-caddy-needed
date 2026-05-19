@@ -244,6 +244,7 @@ export default function ScorecardScreen() {
 
                         {isEditing && selectedScore && editedSins && (
                             <DeadlySinsTally
+                                key={selectedScore.holeNumber}
                                 onEndRound={() => {}}
                                 roundControlled
                                 onValuesChange={handleSinsChange}

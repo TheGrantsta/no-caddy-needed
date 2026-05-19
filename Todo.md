@@ -4,6 +4,7 @@
 - [ ] Create 'skill' to run screen shots on remote push
 - [ ] Expo-notifications warning message
 - [ ] Support playing 6 x 3 hole 'courses'
+- [ ] Subscriptions flow and layout
 
 # Done
 - [X] Start Google Play closed group - alpha

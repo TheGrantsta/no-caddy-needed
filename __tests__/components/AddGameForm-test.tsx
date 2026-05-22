@@ -34,11 +34,13 @@ const defaultProps = {
     onCancel: jest.fn(),
 };
 
-const fillForm = (getByTestId: (id: string) => any) => {
-    fireEvent.changeText(getByTestId('add-game-header'), 'My Game');
-    fireEvent.changeText(getByTestId('add-game-objective'), 'Improve accuracy');
-    fireEvent.changeText(getByTestId('add-game-setup'), 'Place markers');
-    fireEvent.changeText(getByTestId('add-game-how-to-play'), 'Hit 10 balls');
+const fillAllSteps = (getByTestId: (id: string) => any) => {
+    const values = ['My Game', 'Improve accuracy', 'Place markers', 'Hit 10 balls'];
+    for (let i = 0; i < 3; i++) {
+        fireEvent.changeText(getByTestId('game-wizard-input'), values[i]);
+        fireEvent.press(getByTestId('game-wizard-next'));
+    }
+    fireEvent.changeText(getByTestId('game-wizard-input'), values[3]);
 };
 
 describe('AddGameForm', () => {
@@ -46,110 +48,117 @@ describe('AddGameForm', () => {
         jest.clearAllMocks();
     });
 
-    it('rendersHeaderInput', () => {
-        const { getByTestId } = render(<AddGameForm {...defaultProps} />);
-        expect(getByTestId('add-game-header')).toBeTruthy();
+    it('showsFirstStepQuestionOnRender', () => {
+        const { getByText } = render(<AddGameForm {...defaultProps} />);
+        expect(getByText('What do you want to call this game?')).toBeTruthy();
     });
 
-    it('rendersObjectiveInput', () => {
-        const { getByTestId } = render(<AddGameForm {...defaultProps} />);
-        expect(getByTestId('add-game-objective')).toBeTruthy();
+    it('showsFourProgressDots', () => {
+        const { getAllByTestId } = render(<AddGameForm {...defaultProps} />);
+        expect(getAllByTestId('game-wizard-dot').length).toBe(4);
     });
 
-    it('rendersSetUpInput', () => {
-        const { getByTestId } = render(<AddGameForm {...defaultProps} />);
-        expect(getByTestId('add-game-setup')).toBeTruthy();
+    it('doesNotShowBackButtonOnFirstStep', () => {
+        const { queryByTestId } = render(<AddGameForm {...defaultProps} />);
+        expect(queryByTestId('game-wizard-back')).toBeNull();
     });
 
-    it('rendersHowToPlayInput', () => {
+    it('showsCancelButtonOnFirstStep', () => {
         const { getByTestId } = render(<AddGameForm {...defaultProps} />);
-        expect(getByTestId('add-game-how-to-play')).toBeTruthy();
+        expect(getByTestId('game-wizard-cancel')).toBeTruthy();
     });
 
-    it('rendersSaveButton', () => {
-        const { getByTestId } = render(<AddGameForm {...defaultProps} />);
-        expect(getByTestId('add-game-save')).toBeTruthy();
-    });
-
-    it('rendersCancelButton', () => {
-        const { getByTestId } = render(<AddGameForm {...defaultProps} />);
-        expect(getByTestId('add-game-cancel')).toBeTruthy();
+    it('showsNextButtonLabel', () => {
+        const { getByText } = render(<AddGameForm {...defaultProps} />);
+        expect(getByText('Next')).toBeTruthy();
     });
 
     it('callsOnCancelWhenCancelPressed', () => {
         const mockOnCancel = jest.fn();
         const { getByTestId } = render(<AddGameForm {...defaultProps} onCancel={mockOnCancel} />);
-        fireEvent.press(getByTestId('add-game-cancel'));
+        fireEvent.press(getByTestId('game-wizard-cancel'));
         expect(mockOnCancel).toHaveBeenCalledTimes(1);
     });
 
-    it('objectiveInputIsMultiline', () => {
-        const { getByTestId } = render(<AddGameForm {...defaultProps} />);
-        expect(getByTestId('add-game-objective').props.multiline).toBe(true);
-    });
-
-    it('setupInputIsMultiline', () => {
-        const { getByTestId } = render(<AddGameForm {...defaultProps} />);
-        expect(getByTestId('add-game-setup').props.multiline).toBe(true);
-    });
-
-    it('howToPlayInputIsMultiline', () => {
-        const { getByTestId } = render(<AddGameForm {...defaultProps} />);
-        expect(getByTestId('add-game-how-to-play').props.multiline).toBe(true);
-    });
-
-    it('showsErrorWhenHeaderIsEmpty', () => {
+    it('doesNotAdvanceWhenFieldEmpty', () => {
         const { getByTestId, getByText } = render(<AddGameForm {...defaultProps} />);
-        fireEvent.changeText(getByTestId('add-game-objective'), 'Obj');
-        fireEvent.changeText(getByTestId('add-game-setup'), 'Setup');
-        fireEvent.changeText(getByTestId('add-game-how-to-play'), 'Play');
-        fireEvent.press(getByTestId('add-game-save'));
-        expect(getByText('Name is required')).toBeTruthy();
+        fireEvent.press(getByTestId('game-wizard-next'));
+        expect(getByText('What do you want to call this game?')).toBeTruthy();
     });
 
-    it('showsErrorWhenObjectiveIsEmpty', () => {
+    it('showsErrorWhenNextPressedWithEmptyField', () => {
         const { getByTestId, getByText } = render(<AddGameForm {...defaultProps} />);
-        fireEvent.changeText(getByTestId('add-game-header'), 'My Game');
-        fireEvent.changeText(getByTestId('add-game-setup'), 'Setup');
-        fireEvent.changeText(getByTestId('add-game-how-to-play'), 'Play');
-        fireEvent.press(getByTestId('add-game-save'));
-        expect(getByText('Objective is required')).toBeTruthy();
+        fireEvent.press(getByTestId('game-wizard-next'));
+        expect(getByText('This field is required')).toBeTruthy();
     });
 
-    it('showsErrorWhenSetUpIsEmpty', () => {
+    it('clearsErrorWhenFieldChanged', () => {
+        const { getByTestId, queryByText } = render(<AddGameForm {...defaultProps} />);
+        fireEvent.press(getByTestId('game-wizard-next'));
+        fireEvent.changeText(getByTestId('game-wizard-input'), 'My Game');
+        expect(queryByText('This field is required')).toBeNull();
+    });
+
+    it('advancesToNextStepWhenNextPressed', () => {
         const { getByTestId, getByText } = render(<AddGameForm {...defaultProps} />);
-        fireEvent.changeText(getByTestId('add-game-header'), 'My Game');
-        fireEvent.changeText(getByTestId('add-game-objective'), 'Obj');
-        fireEvent.changeText(getByTestId('add-game-how-to-play'), 'Play');
-        fireEvent.press(getByTestId('add-game-save'));
-        expect(getByText('Set up is required')).toBeTruthy();
+        fireEvent.changeText(getByTestId('game-wizard-input'), 'My Game');
+        fireEvent.press(getByTestId('game-wizard-next'));
+        expect(getByText('What is the objective?')).toBeTruthy();
     });
 
-    it('showsErrorWhenHowToPlayIsEmpty', () => {
-        const { getByTestId, getByText } = render(<AddGameForm {...defaultProps} />);
-        fireEvent.changeText(getByTestId('add-game-header'), 'My Game');
-        fireEvent.changeText(getByTestId('add-game-objective'), 'Obj');
-        fireEvent.changeText(getByTestId('add-game-setup'), 'Setup');
-        fireEvent.press(getByTestId('add-game-save'));
-        expect(getByText('How to play is required')).toBeTruthy();
-    });
-
-    it('doesNotCallServiceWhenFieldsAreEmpty', () => {
+    it('showsBackButtonFromSecondStep', () => {
         const { getByTestId } = render(<AddGameForm {...defaultProps} />);
-        fireEvent.press(getByTestId('add-game-save'));
+        fireEvent.changeText(getByTestId('game-wizard-input'), 'My Game');
+        fireEvent.press(getByTestId('game-wizard-next'));
+        expect(getByTestId('game-wizard-back')).toBeTruthy();
+    });
+
+    it('doesNotShowCancelButtonFromSecondStep', () => {
+        const { getByTestId, queryByTestId } = render(<AddGameForm {...defaultProps} />);
+        fireEvent.changeText(getByTestId('game-wizard-input'), 'My Game');
+        fireEvent.press(getByTestId('game-wizard-next'));
+        expect(queryByTestId('game-wizard-cancel')).toBeNull();
+    });
+
+    it('goesBackToPreviousStepOnBackPress', () => {
+        const { getByTestId, getByText } = render(<AddGameForm {...defaultProps} />);
+        fireEvent.changeText(getByTestId('game-wizard-input'), 'My Game');
+        fireEvent.press(getByTestId('game-wizard-next'));
+        fireEvent.press(getByTestId('game-wizard-back'));
+        expect(getByText('What do you want to call this game?')).toBeTruthy();
+    });
+
+    it('preservesEnteredValueWhenGoingBack', () => {
+        const { getByTestId } = render(<AddGameForm {...defaultProps} />);
+        fireEvent.changeText(getByTestId('game-wizard-input'), 'My Game');
+        fireEvent.press(getByTestId('game-wizard-next'));
+        fireEvent.press(getByTestId('game-wizard-back'));
+        expect(getByTestId('game-wizard-input').props.value).toBe('My Game');
+    });
+
+    it('showsSaveButtonOnLastStep', () => {
+        const { getByTestId, getByText } = render(<AddGameForm {...defaultProps} />);
+        const values = ['My Game', 'Improve accuracy', 'Place markers'];
+        for (const val of values) {
+            fireEvent.changeText(getByTestId('game-wizard-input'), val);
+            fireEvent.press(getByTestId('game-wizard-next'));
+        }
+        expect(getByText('Save')).toBeTruthy();
+    });
+
+    it('doesNotCallServiceWhenFieldEmpty', () => {
+        const { getByTestId } = render(<AddGameForm {...defaultProps} />);
+        fireEvent.press(getByTestId('game-wizard-next'));
         expect(mockInsertGameService).not.toHaveBeenCalled();
     });
 
-    it('callsInsertGameServiceWithAllFieldsOnSubmit', async () => {
+    it('callsInsertGameServiceOnFinalSave', async () => {
         mockInsertGameService.mockResolvedValue(true);
         const { getByTestId } = render(<AddGameForm {...defaultProps} />);
-
-        fillForm(getByTestId);
-
+        fillAllSteps(getByTestId);
         await act(async () => {
-            fireEvent.press(getByTestId('add-game-save'));
+            fireEvent.press(getByTestId('game-wizard-next'));
         });
-
         expect(mockInsertGameService).toHaveBeenCalledWith(
             'putting', 'My Game', 'Improve accuracy', 'Place markers', 'Hit 10 balls'
         );
@@ -158,40 +167,31 @@ describe('AddGameForm', () => {
     it('showsGameSavedToastOnSuccess', async () => {
         mockInsertGameService.mockResolvedValue(true);
         const { getByTestId } = render(<AddGameForm {...defaultProps} />);
-
-        fillForm(getByTestId);
-
+        fillAllSteps(getByTestId);
         await act(async () => {
-            fireEvent.press(getByTestId('add-game-save'));
+            fireEvent.press(getByTestId('game-wizard-next'));
         });
-
         expect(mockShowSuccess).toHaveBeenCalledWith('Game saved');
     });
 
-    it('callsOnSavedAfterSuccessfulSubmit', async () => {
+    it('callsOnSavedAfterSuccessfulSave', async () => {
         mockInsertGameService.mockResolvedValue(true);
         const mockOnSaved = jest.fn();
         const { getByTestId } = render(<AddGameForm {...defaultProps} onSaved={mockOnSaved} />);
-
-        fillForm(getByTestId);
-
+        fillAllSteps(getByTestId);
         await act(async () => {
-            fireEvent.press(getByTestId('add-game-save'));
+            fireEvent.press(getByTestId('game-wizard-next'));
         });
-
         expect(mockOnSaved).toHaveBeenCalledTimes(1);
     });
 
-    it('showsErrorWhenInsertFails', async () => {
+    it('showsSaveErrorWhenInsertFails', async () => {
         mockInsertGameService.mockResolvedValue(false);
         const { getByTestId, getByText } = render(<AddGameForm {...defaultProps} />);
-
-        fillForm(getByTestId);
-
+        fillAllSteps(getByTestId);
         await act(async () => {
-            fireEvent.press(getByTestId('add-game-save'));
+            fireEvent.press(getByTestId('game-wizard-next'));
         });
-
         expect(getByText('Failed to save game')).toBeTruthy();
     });
 
@@ -199,13 +199,10 @@ describe('AddGameForm', () => {
         mockInsertGameService.mockResolvedValue(false);
         const mockOnSaved = jest.fn();
         const { getByTestId } = render(<AddGameForm {...defaultProps} onSaved={mockOnSaved} />);
-
-        fillForm(getByTestId);
-
+        fillAllSteps(getByTestId);
         await act(async () => {
-            fireEvent.press(getByTestId('add-game-save'));
+            fireEvent.press(getByTestId('game-wizard-next'));
         });
-
         expect(mockOnSaved).not.toHaveBeenCalled();
     });
 });

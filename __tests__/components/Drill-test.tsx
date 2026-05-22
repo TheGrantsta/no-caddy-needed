@@ -40,8 +40,7 @@ describe('Drill component', () => {
     it('renders the target', () => {
         const { getByText } = render(<Drill {...defaultProps} />);
 
-        expect(getByText('Target:')).toBeTruthy();
-        expect(getByText(/5 out of 10/)).toBeTruthy();
+        expect(getByText('Aim: 5 out of 10')).toBeTruthy();
     });
 
     it('renders the Save button', () => {

@@ -34,12 +34,13 @@ const defaultProps = {
     onCancel: jest.fn(),
 };
 
-const fillForm = (getByTestId: (id: string) => any) => {
-    fireEvent.changeText(getByTestId('add-drill-label'), 'My Drill');
-    fireEvent.changeText(getByTestId('add-drill-target'), '8/10');
-    fireEvent.changeText(getByTestId('add-drill-objective'), 'Improve accuracy');
-    fireEvent.changeText(getByTestId('add-drill-setup'), 'Place markers');
-    fireEvent.changeText(getByTestId('add-drill-how-to-play'), 'Hit 10 balls');
+const fillAllSteps = (getByTestId: (id: string) => any) => {
+    const values = ['My Drill', '8/10', 'Improve accuracy', 'Place markers', 'Hit 10 balls'];
+    for (let i = 0; i < 4; i++) {
+        fireEvent.changeText(getByTestId('drill-wizard-input'), values[i]);
+        fireEvent.press(getByTestId('drill-wizard-next'));
+    }
+    fireEvent.changeText(getByTestId('drill-wizard-input'), values[4]);
 };
 
 describe('AddDrillForm', () => {
@@ -47,149 +48,117 @@ describe('AddDrillForm', () => {
         jest.clearAllMocks();
     });
 
-    it('rendersLabelInput', () => {
-        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-label')).toBeTruthy();
-    });
-
-    it('rendersNameLabelText', () => {
+    it('showsFirstStepQuestionOnRender', () => {
         const { getByText } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByText('Name')).toBeTruthy();
+        expect(getByText('What do you want to call this drill?')).toBeTruthy();
     });
 
-    it('rendersTargetInput', () => {
-        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-target')).toBeTruthy();
+    it('showsFiveProgressDots', () => {
+        const { getAllByTestId } = render(<AddDrillForm {...defaultProps} />);
+        expect(getAllByTestId('drill-wizard-dot').length).toBe(5);
     });
 
-    it('rendersObjectiveInput', () => {
-        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-objective')).toBeTruthy();
+    it('doesNotShowBackButtonOnFirstStep', () => {
+        const { queryByTestId } = render(<AddDrillForm {...defaultProps} />);
+        expect(queryByTestId('drill-wizard-back')).toBeNull();
     });
 
-    it('rendersSetUpInput', () => {
+    it('showsCancelButtonOnFirstStep', () => {
         const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-setup')).toBeTruthy();
+        expect(getByTestId('drill-wizard-cancel')).toBeTruthy();
     });
 
-    it('rendersHowToPlayInput', () => {
-        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-how-to-play')).toBeTruthy();
-    });
-
-    it('rendersSaveButton', () => {
-        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-save')).toBeTruthy();
-    });
-
-    it('rendersCancelButton', () => {
-        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-cancel')).toBeTruthy();
+    it('showsNextButtonLabel', () => {
+        const { getByText } = render(<AddDrillForm {...defaultProps} />);
+        expect(getByText('Next')).toBeTruthy();
     });
 
     it('callsOnCancelWhenCancelPressed', () => {
         const mockOnCancel = jest.fn();
         const { getByTestId } = render(<AddDrillForm {...defaultProps} onCancel={mockOnCancel} />);
-        fireEvent.press(getByTestId('add-drill-cancel'));
+        fireEvent.press(getByTestId('drill-wizard-cancel'));
         expect(mockOnCancel).toHaveBeenCalledTimes(1);
     });
 
-    it('objectiveInputIsMultiline', () => {
-        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-objective').props.multiline).toBe(true);
-    });
-
-    it('setupInputIsMultiline', () => {
-        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-setup').props.multiline).toBe(true);
-    });
-
-    it('howToPlayInputIsMultiline', () => {
-        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-how-to-play').props.multiline).toBe(true);
-    });
-
-    it('objectiveHasCharacterLimit', () => {
-        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-objective').props.maxLength).toBeTruthy();
-    });
-
-    it('setupHasCharacterLimit', () => {
-        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-setup').props.maxLength).toBeTruthy();
-    });
-
-    it('howToPlayHasCharacterLimit', () => {
-        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByTestId('add-drill-how-to-play').props.maxLength).toBeTruthy();
-    });
-
-    it('showsErrorWhenLabelIsEmpty', () => {
+    it('doesNotAdvanceWhenFieldEmpty', () => {
         const { getByTestId, getByText } = render(<AddDrillForm {...defaultProps} />);
-        fireEvent.changeText(getByTestId('add-drill-target'), '8/10');
-        fireEvent.changeText(getByTestId('add-drill-objective'), 'Obj');
-        fireEvent.changeText(getByTestId('add-drill-setup'), 'Setup');
-        fireEvent.changeText(getByTestId('add-drill-how-to-play'), 'Play');
-        fireEvent.press(getByTestId('add-drill-save'));
-        expect(getByText('Name is required')).toBeTruthy();
+        fireEvent.press(getByTestId('drill-wizard-next'));
+        expect(getByText('What do you want to call this drill?')).toBeTruthy();
     });
 
-    it('showsErrorWhenTargetIsEmpty', () => {
+    it('showsErrorWhenNextPressedWithEmptyField', () => {
         const { getByTestId, getByText } = render(<AddDrillForm {...defaultProps} />);
-        fireEvent.changeText(getByTestId('add-drill-label'), 'My Drill');
-        fireEvent.changeText(getByTestId('add-drill-objective'), 'Obj');
-        fireEvent.changeText(getByTestId('add-drill-setup'), 'Setup');
-        fireEvent.changeText(getByTestId('add-drill-how-to-play'), 'Play');
-        fireEvent.press(getByTestId('add-drill-save'));
-        expect(getByText('Target is required')).toBeTruthy();
+        fireEvent.press(getByTestId('drill-wizard-next'));
+        expect(getByText('This field is required')).toBeTruthy();
     });
 
-    it('showsErrorWhenObjectiveIsEmpty', () => {
+    it('clearsErrorWhenFieldChanged', () => {
+        const { getByTestId, queryByText } = render(<AddDrillForm {...defaultProps} />);
+        fireEvent.press(getByTestId('drill-wizard-next'));
+        fireEvent.changeText(getByTestId('drill-wizard-input'), 'My Drill');
+        expect(queryByText('This field is required')).toBeNull();
+    });
+
+    it('advancesToNextStepWhenNextPressed', () => {
         const { getByTestId, getByText } = render(<AddDrillForm {...defaultProps} />);
-        fireEvent.changeText(getByTestId('add-drill-label'), 'My Drill');
-        fireEvent.changeText(getByTestId('add-drill-target'), '8/10');
-        fireEvent.changeText(getByTestId('add-drill-setup'), 'Setup');
-        fireEvent.changeText(getByTestId('add-drill-how-to-play'), 'Play');
-        fireEvent.press(getByTestId('add-drill-save'));
-        expect(getByText('Objective is required')).toBeTruthy();
+        fireEvent.changeText(getByTestId('drill-wizard-input'), 'My Drill');
+        fireEvent.press(getByTestId('drill-wizard-next'));
+        expect(getByText('What is the aim?')).toBeTruthy();
     });
 
-    it('showsErrorWhenSetUpIsEmpty', () => {
-        const { getByTestId, getByText } = render(<AddDrillForm {...defaultProps} />);
-        fireEvent.changeText(getByTestId('add-drill-label'), 'My Drill');
-        fireEvent.changeText(getByTestId('add-drill-target'), '8/10');
-        fireEvent.changeText(getByTestId('add-drill-objective'), 'Obj');
-        fireEvent.changeText(getByTestId('add-drill-how-to-play'), 'Play');
-        fireEvent.press(getByTestId('add-drill-save'));
-        expect(getByText('Set up is required')).toBeTruthy();
-    });
-
-    it('showsErrorWhenHowToPlayIsEmpty', () => {
-        const { getByTestId, getByText } = render(<AddDrillForm {...defaultProps} />);
-        fireEvent.changeText(getByTestId('add-drill-label'), 'My Drill');
-        fireEvent.changeText(getByTestId('add-drill-target'), '8/10');
-        fireEvent.changeText(getByTestId('add-drill-objective'), 'Obj');
-        fireEvent.changeText(getByTestId('add-drill-setup'), 'Setup');
-        fireEvent.press(getByTestId('add-drill-save'));
-        expect(getByText('How to play is required')).toBeTruthy();
-    });
-
-    it('doesNotCallServiceWhenFieldsAreEmpty', () => {
+    it('showsBackButtonFromSecondStep', () => {
         const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-        fireEvent.press(getByTestId('add-drill-save'));
+        fireEvent.changeText(getByTestId('drill-wizard-input'), 'My Drill');
+        fireEvent.press(getByTestId('drill-wizard-next'));
+        expect(getByTestId('drill-wizard-back')).toBeTruthy();
+    });
+
+    it('doesNotShowCancelButtonFromSecondStep', () => {
+        const { getByTestId, queryByTestId } = render(<AddDrillForm {...defaultProps} />);
+        fireEvent.changeText(getByTestId('drill-wizard-input'), 'My Drill');
+        fireEvent.press(getByTestId('drill-wizard-next'));
+        expect(queryByTestId('drill-wizard-cancel')).toBeNull();
+    });
+
+    it('goesBackToPreviousStepOnBackPress', () => {
+        const { getByTestId, getByText } = render(<AddDrillForm {...defaultProps} />);
+        fireEvent.changeText(getByTestId('drill-wizard-input'), 'My Drill');
+        fireEvent.press(getByTestId('drill-wizard-next'));
+        fireEvent.press(getByTestId('drill-wizard-back'));
+        expect(getByText('What do you want to call this drill?')).toBeTruthy();
+    });
+
+    it('preservesEnteredValueWhenGoingBack', () => {
+        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
+        fireEvent.changeText(getByTestId('drill-wizard-input'), 'My Drill');
+        fireEvent.press(getByTestId('drill-wizard-next'));
+        fireEvent.press(getByTestId('drill-wizard-back'));
+        expect(getByTestId('drill-wizard-input').props.value).toBe('My Drill');
+    });
+
+    it('showsSaveButtonOnLastStep', () => {
+        const { getByTestId, getByText } = render(<AddDrillForm {...defaultProps} />);
+        const values = ['My Drill', '8/10', 'Improve accuracy', 'Place markers'];
+        for (const val of values) {
+            fireEvent.changeText(getByTestId('drill-wizard-input'), val);
+            fireEvent.press(getByTestId('drill-wizard-next'));
+        }
+        expect(getByText('Save')).toBeTruthy();
+    });
+
+    it('doesNotCallServiceWhenFieldEmpty', () => {
+        const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
+        fireEvent.press(getByTestId('drill-wizard-next'));
         expect(mockInsertDrillService).not.toHaveBeenCalled();
     });
 
-    it('callsInsertDrillServiceWithAllFieldsOnSubmit', async () => {
+    it('callsInsertDrillServiceOnFinalSave', async () => {
         mockInsertDrillService.mockResolvedValue(true);
         const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-
-        fillForm(getByTestId);
-
+        fillAllSteps(getByTestId);
         await act(async () => {
-            fireEvent.press(getByTestId('add-drill-save'));
+            fireEvent.press(getByTestId('drill-wizard-next'));
         });
-
         expect(mockInsertDrillService).toHaveBeenCalledWith(
             'putting', 'My Drill', 'handyman', '8/10', 'Improve accuracy', 'Place markers', 'Hit 10 balls'
         );
@@ -198,40 +167,31 @@ describe('AddDrillForm', () => {
     it('showsDrillSavedToastOnSuccess', async () => {
         mockInsertDrillService.mockResolvedValue(true);
         const { getByTestId } = render(<AddDrillForm {...defaultProps} />);
-
-        fillForm(getByTestId);
-
+        fillAllSteps(getByTestId);
         await act(async () => {
-            fireEvent.press(getByTestId('add-drill-save'));
+            fireEvent.press(getByTestId('drill-wizard-next'));
         });
-
         expect(mockShowSuccess).toHaveBeenCalledWith('Drill saved');
     });
 
-    it('callsOnSavedAfterSuccessfulSubmit', async () => {
+    it('callsOnSavedAfterSuccessfulSave', async () => {
         mockInsertDrillService.mockResolvedValue(true);
         const mockOnSaved = jest.fn();
         const { getByTestId } = render(<AddDrillForm {...defaultProps} onSaved={mockOnSaved} />);
-
-        fillForm(getByTestId);
-
+        fillAllSteps(getByTestId);
         await act(async () => {
-            fireEvent.press(getByTestId('add-drill-save'));
+            fireEvent.press(getByTestId('drill-wizard-next'));
         });
-
         expect(mockOnSaved).toHaveBeenCalledTimes(1);
     });
 
-    it('showsErrorWhenInsertFails', async () => {
+    it('showsSaveErrorWhenInsertFails', async () => {
         mockInsertDrillService.mockResolvedValue(false);
         const { getByTestId, getByText } = render(<AddDrillForm {...defaultProps} />);
-
-        fillForm(getByTestId);
-
+        fillAllSteps(getByTestId);
         await act(async () => {
-            fireEvent.press(getByTestId('add-drill-save'));
+            fireEvent.press(getByTestId('drill-wizard-next'));
         });
-
         expect(getByText('Failed to save drill')).toBeTruthy();
     });
 
@@ -239,13 +199,10 @@ describe('AddDrillForm', () => {
         mockInsertDrillService.mockResolvedValue(false);
         const mockOnSaved = jest.fn();
         const { getByTestId } = render(<AddDrillForm {...defaultProps} onSaved={mockOnSaved} />);
-
-        fillForm(getByTestId);
-
+        fillAllSteps(getByTestId);
         await act(async () => {
-            fireEvent.press(getByTestId('add-drill-save'));
+            fireEvent.press(getByTestId('drill-wizard-next'));
         });
-
         expect(mockOnSaved).not.toHaveBeenCalled();
     });
 });

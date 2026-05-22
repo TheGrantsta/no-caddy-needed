@@ -111,6 +111,17 @@ describe('getAllDrillHistoryService', () => {
         expect(result[1].Created_At).toBe('01/07');
         expect(result[2].Name).toBe('Pitching - Target');
     });
+
+    it('returnsHistoryEntriesEvenAfterDrillDeletion', () => {
+        mockGetAllDrillHistory.mockReturnValue([
+            { Id: 5, Name: 'Putting - Gate', Result: 1, DrillId: 3, Created_At: '2026-01-01T00:00:00.000Z' },
+        ]);
+
+        const result = getAllDrillHistoryService();
+
+        expect(result).toHaveLength(1);
+        expect(result[0].Name).toBe('Putting - Gate');
+    });
 });
 
 describe('getDrillsByCategoryService', () => {

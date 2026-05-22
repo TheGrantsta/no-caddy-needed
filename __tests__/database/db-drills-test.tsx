@@ -123,6 +123,25 @@ describe('getAllDrillHistory', () => {
         expect(result).toHaveLength(2);
         expect(result[0].Id).toBe(2);
     });
+
+    it('doesNotFilterHistoryByDrillIsDeletedStatus', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        getAllDrillHistory();
+
+        const sql = mockGetAllSync.mock.calls[0][0];
+        expect(sql.toUpperCase()).not.toContain('ISDELETED');
+    });
+
+    it('doesNotJoinWithDrillsTable', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        getAllDrillHistory();
+
+        const sql = mockGetAllSync.mock.calls[0][0].toUpperCase();
+        expect(sql).not.toContain('JOIN');
+        expect(sql).not.toContain('FROM DRILLS');
+    });
 });
 
 describe('getDrillsByCategory', () => {
@@ -278,6 +297,14 @@ describe('softDeleteDrill', () => {
         const result = await softDeleteDrill(1);
 
         expect(result).toBe(false);
+    });
+
+    it('doesNotModifyDrillHistoryTable', async () => {
+        await softDeleteDrill(5);
+
+        expect(mockPrepareAsync).toHaveBeenCalledTimes(1);
+        const [sql] = mockPrepareAsync.mock.calls[0];
+        expect(sql.toUpperCase()).not.toContain('DRILLHISTORY');
     });
 });
 

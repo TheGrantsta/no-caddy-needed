@@ -57,11 +57,6 @@
 - [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
 
 # Release notes
-* Add 'Analyse your round' as a subscription service
-* Golfers can add practice reminders with due dates so help practice effectively
-* Reduced white space on score input to minimise scrolling when playing and scroll to the top when clicking 'Next hole' to make it clearer
-* Added ability to "continue" active round if the app closes, etc
-* Add "Average score by par" to help golfers
-* Add Haptic feedback when saving hole input values
-* Fix bug when editing scorecard
-* Fix issue with database connection with Android
+* Bug fixes for 7 Deadly Sins
+* Remove course and player names from list
+* Make adding a drill and game into a wizard

@@ -271,6 +271,72 @@ describe('PlayerSetup', () => {
         });
     });
 
+    describe('Remove recent course', () => {
+        it('showsRemoveButtonForEachRecentCourse', () => {
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews', 'Pebble Beach']} />
+            );
+
+            expect(getByTestId('remove-recent-course-St Andrews')).toBeTruthy();
+            expect(getByTestId('remove-recent-course-Pebble Beach')).toBeTruthy();
+        });
+
+        it('callsOnRemoveCourseWhenRemoveButtonPressed', () => {
+            const mockOnRemoveCourse = jest.fn();
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews']} onRemoveCourse={mockOnRemoveCourse} />
+            );
+
+            fireEvent.press(getByTestId('remove-recent-course-St Andrews'));
+
+            expect(mockOnRemoveCourse).toHaveBeenCalledWith('St Andrews');
+        });
+
+        it('hidesRemovedCourseFromListOptimistically', () => {
+            const { getByTestId, queryByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews', 'Pebble Beach']} />
+            );
+
+            fireEvent.press(getByTestId('remove-recent-course-St Andrews'));
+
+            expect(queryByTestId('recent-course-St Andrews')).toBeNull();
+            expect(getByTestId('recent-course-Pebble Beach')).toBeTruthy();
+        });
+    });
+
+    describe('Remove recent player', () => {
+        it('showsRemoveButtonForEachRecentPlayer', () => {
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={['Alice', 'Bob']} />
+            );
+
+            expect(getByTestId('remove-recent-player-Alice')).toBeTruthy();
+            expect(getByTestId('remove-recent-player-Bob')).toBeTruthy();
+        });
+
+        it('callsOnRemovePlayerWhenRemoveButtonPressed', () => {
+            const mockOnRemovePlayer = jest.fn();
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={['Alice']} onRemovePlayer={mockOnRemovePlayer} />
+            );
+
+            fireEvent.press(getByTestId('remove-recent-player-Alice'));
+
+            expect(mockOnRemovePlayer).toHaveBeenCalledWith('Alice');
+        });
+
+        it('hidesRemovedPlayerFromListOptimistically', () => {
+            const { getByTestId, queryByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={['Alice', 'Bob']} />
+            );
+
+            fireEvent.press(getByTestId('remove-recent-player-Alice'));
+
+            expect(queryByTestId('recent-player-Alice')).toBeNull();
+            expect(getByTestId('recent-player-Bob')).toBeTruthy();
+        });
+    });
+
     describe('Cancel button', () => {
         it('shows cancel button when onCancel is provided', () => {
             const mockOnCancel = jest.fn();

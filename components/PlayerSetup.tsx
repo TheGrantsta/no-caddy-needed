@@ -8,17 +8,21 @@ type Props = {
     onCancel?: () => void;
     recentCourseNames?: string[];
     recentPlayerNames?: string[];
+    onRemoveCourse?: (name: string) => void;
+    onRemovePlayer?: (name: string) => void;
 };
 
 const MAX_ADDITIONAL_PLAYERS = 3;
 
-const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNames }: Props) => {
+const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNames, onRemoveCourse, onRemovePlayer }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.playerSetup;
     const [additionalPlayers, setAdditionalPlayers] = useState<string[]>([]);
     const [courseName, setCourseName] = useState('');
     const [courseNameError, setCourseNameError] = useState('');
+    const [hiddenCourses, setHiddenCourses] = useState<Set<string>>(new Set());
+    const [hiddenPlayers, setHiddenPlayers] = useState<Set<string>>(new Set());
 
     const handleAddPlayer = () => {
         if (additionalPlayers.length < MAX_ADDITIONAL_PLAYERS) {
@@ -41,6 +45,16 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
         if (courseNameError) {
             setCourseNameError('');
         }
+    };
+
+    const handleRemoveRecentCourse = (name: string) => {
+        setHiddenCourses(prev => new Set([...prev, name]));
+        onRemoveCourse?.(name);
+    };
+
+    const handleRemoveRecentPlayer = (name: string) => {
+        setHiddenPlayers(prev => new Set([...prev, name]));
+        onRemovePlayer?.(name);
     };
 
     const handleRecentPlayerTap = (name: string) => {
@@ -76,18 +90,25 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
                 </Text>
             )}
 
-            {recentCourseNames && recentCourseNames.length > 0 && (
+            {recentCourseNames && recentCourseNames.filter(n => !hiddenCourses.has(n)).length > 0 && (
                 <View style={s.recentContainer}>
                     <Text style={s.recentLabel}>Recent courses</Text>
-                    {recentCourseNames.map((name) => (
-                        <TouchableOpacity
-                            key={name}
-                            testID={`recent-course-${name}`}
-                            onPress={() => handleCourseNameChange(name)}
-                            style={s.recentItem}
-                        >
-                            <Text style={s.recentItemText}>{name}</Text>
-                        </TouchableOpacity>
+                    {recentCourseNames.filter(n => !hiddenCourses.has(n)).map((name) => (
+                        <View key={name} style={[s.recentItem, { flexDirection: 'row', alignItems: 'center' }]}>
+                            <TouchableOpacity
+                                testID={`recent-course-${name}`}
+                                onPress={() => handleCourseNameChange(name)}
+                                style={{ flex: 1 }}
+                            >
+                                <Text style={s.recentItemText}>{name}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                testID={`remove-recent-course-${name}`}
+                                onPress={() => handleRemoveRecentCourse(name)}
+                            >
+                                <Text style={s.removeButtonText}>×</Text>
+                            </TouchableOpacity>
+                        </View>
                     ))}
                 </View>
             )}
@@ -116,18 +137,25 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
                 </View>
             ))}
 
-            {recentPlayerNames && recentPlayerNames.length > 0 && additionalPlayers.length < MAX_ADDITIONAL_PLAYERS && (
+            {recentPlayerNames && recentPlayerNames.filter(n => !hiddenPlayers.has(n)).length > 0 && additionalPlayers.length < MAX_ADDITIONAL_PLAYERS && (
                 <View style={s.recentContainer}>
                     <Text style={s.recentLabel}>Recent players</Text>
-                    {recentPlayerNames.map((name) => (
-                        <TouchableOpacity
-                            key={name}
-                            testID={`recent-player-${name}`}
-                            onPress={() => handleRecentPlayerTap(name)}
-                            style={s.recentItem}
-                        >
-                            <Text style={s.recentItemText}>{name}</Text>
-                        </TouchableOpacity>
+                    {recentPlayerNames.filter(n => !hiddenPlayers.has(n)).map((name) => (
+                        <View key={name} style={[s.recentItem, { flexDirection: 'row', alignItems: 'center' }]}>
+                            <TouchableOpacity
+                                testID={`recent-player-${name}`}
+                                onPress={() => handleRecentPlayerTap(name)}
+                                style={{ flex: 1 }}
+                            >
+                                <Text style={s.recentItemText}>{name}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                testID={`remove-recent-player-${name}`}
+                                onPress={() => handleRemoveRecentPlayer(name)}
+                            >
+                                <Text style={s.removeButtonText}>×</Text>
+                            </TouchableOpacity>
+                        </View>
                     ))}
                 </View>
             )}

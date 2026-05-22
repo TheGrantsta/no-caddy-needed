@@ -25,6 +25,7 @@ import {
     insertClubDistances,
     getDistinctCourseNames,
     getDistinctPlayerNames,
+    addHiddenRecent,
     getHolesPlayedForRound,
     insertRoundPlayer,
     getRoundPlayers,
@@ -395,6 +396,14 @@ export const getRecentCourseNamesService = (): string[] => {
 export const getRecentPlayerNamesService = (): string[] => {
     const rows = getDistinctPlayerNames() as { PlayerName: string }[];
     return rows.map(r => r.PlayerName);
+};
+
+export const hideCourseFromRecentsService = async (name: string): Promise<boolean> => {
+    return addHiddenRecent('course', name);
+};
+
+export const hidePlayerFromRecentsService = async (name: string): Promise<boolean> => {
+    return addHiddenRecent('player', name);
 };
 
 // Multiplayer round services

@@ -86,6 +86,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS Games (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Header TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsDeleted INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS PracticeReminders (Id INTEGER PRIMARY KEY AUTOINCREMENT, Label TEXT NOT NULL, ScheduledFor TEXT NOT NULL, NotificationId TEXT, Created_At TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS HiddenRecents (Id INTEGER PRIMARY KEY AUTOINCREMENT, Type TEXT NOT NULL, Name TEXT NOT NULL, UNIQUE(Type, Name));
     `);
 
     const migrations: TableAmendment[] = [
@@ -446,11 +447,27 @@ export const getAllRounds = () => {
 };
 
 export const getDistinctCourseNames = () => {
-    return getSyncDb().getAllSync("SELECT DISTINCT CourseName FROM Rounds WHERE CourseName IS NOT NULL AND CourseName != '' ORDER BY Id DESC;");
+    return getSyncDb().getAllSync("SELECT DISTINCT CourseName FROM Rounds WHERE CourseName IS NOT NULL AND CourseName != '' AND CourseName NOT IN (SELECT Name FROM HiddenRecents WHERE Type = 'course') ORDER BY Id DESC;");
 };
 
 export const getDistinctPlayerNames = () => {
-    return getSyncDb().getAllSync("SELECT DISTINCT PlayerName FROM RoundPlayers WHERE IsUser = 0 AND PlayerName IS NOT NULL AND PlayerName != '' ORDER BY Id DESC;");
+    return getSyncDb().getAllSync("SELECT DISTINCT PlayerName FROM RoundPlayers WHERE IsUser = 0 AND PlayerName IS NOT NULL AND PlayerName != '' AND PlayerName NOT IN (SELECT Name FROM HiddenRecents WHERE Type = 'player') ORDER BY Id DESC;");
+};
+
+export const addHiddenRecent = async (type: 'course' | 'player', name: string): Promise<boolean> => {
+    let success = true;
+    const db = await SQLite.openDatabaseAsync(dbName);
+    const statement = await db.prepareAsync(
+        'INSERT OR IGNORE INTO HiddenRecents (Type, Name) VALUES ($Type, $Name);'
+    );
+    try {
+        await statement.executeAsync({ $Type: type, $Name: name });
+    } catch (e) {
+        success = false;
+    } finally {
+        await statement.finalizeAsync();
+    }
+    return success;
 };
 
 export const getHolesPlayedForRound = (roundId: number): number => {

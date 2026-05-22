@@ -25,6 +25,8 @@ import {
     getMultiplayerScorecardService,
     getRecentCourseNamesService,
     getRecentPlayerNamesService,
+    hideCourseFromRecentsService,
+    hidePlayerFromRecentsService,
     getHolesPlayedForRoundService,
     getSettingsService,
     saveSettingsService,
@@ -503,7 +505,20 @@ export default function Play() {
 
                 {!isRoundActive && showPlayerSetup && displaySection('play-score') && (
                     <View style={styles.container}>
-                        <PlayerSetup onStartRound={handleStartRound} onCancel={() => setShowPlayerSetup(false)} recentCourseNames={recentCourseNames} recentPlayerNames={recentPlayerNames} />
+                        <PlayerSetup
+                            onStartRound={handleStartRound}
+                            onCancel={() => setShowPlayerSetup(false)}
+                            recentCourseNames={recentCourseNames}
+                            recentPlayerNames={recentPlayerNames}
+                            onRemoveCourse={(name) => {
+                                hideCourseFromRecentsService(name);
+                                setRecentCourseNames(getRecentCourseNamesService());
+                            }}
+                            onRemovePlayer={(name) => {
+                                hidePlayerFromRecentsService(name);
+                                setRecentPlayerNames(getRecentPlayerNamesService());
+                            }}
+                        />
                     </View>
                 )}
 

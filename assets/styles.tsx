@@ -149,7 +149,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.tableHeader,
             fontWeight: 'bold',
         },
-        yellowText: {
+        primaryText: {
             color: c.primary,
         },
         errorText: {

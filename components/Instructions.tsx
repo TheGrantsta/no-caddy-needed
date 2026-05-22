@@ -13,13 +13,13 @@ export default function Instructions({ objective, setUp, howToPlay }: Props) {
     return (
         <View>
             <Text style={[styles.normalText, styles.instructions.contentText]}>
-                <Text style={styles.yellowText}>Objective:</Text> {objective}
+                <Text style={styles.primaryText}>Objective:</Text> {objective}
             </Text>
             <Text style={[styles.normalText, styles.instructions.contentText]}>
-                <Text style={styles.yellowText}>Setup:</Text> {setUp}
+                <Text style={styles.primaryText}>Setup:</Text> {setUp}
             </Text>
             <Text style={[styles.normalText, styles.instructions.contentText]}>
-                <Text style={styles.yellowText}>How to play:</Text> {howToPlay}
+                <Text style={styles.primaryText}>How to play:</Text> {howToPlay}
             </Text>
         </View>
     )

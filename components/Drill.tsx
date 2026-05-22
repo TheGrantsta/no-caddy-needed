@@ -37,7 +37,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                 </View>
                 <View style={{ flex: 1 / 3 }}>
                     <Text style={styles.drill.contentText}>
-                        <Text style={styles.yellowText}>Aim: {target}</Text>
+                        <Text style={styles.primaryText}>Aim: {target}</Text>
                     </Text>
                     <View style={[styles.drill.toggleWrapper, { paddingTop: 10 }]}>
                         <TouchableOpacity

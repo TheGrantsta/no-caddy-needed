@@ -132,6 +132,9 @@ export const initialize = async () => {
     }
 
     syncDb.execSync('DROP TABLE IF EXISTS DeadlySinsRounds;');
+    syncDb.execSync(
+        'DELETE FROM HoleDeadlySins WHERE Id NOT IN (SELECT MAX(Id) FROM HoleDeadlySins GROUP BY RoundId, HoleNumber);'
+    );
 
     const drillCount = syncDb.getAllSync('SELECT COUNT(*) as count FROM Drills') as { count: number }[];
     if (drillCount.length > 0 && drillCount[0].count === 0) {

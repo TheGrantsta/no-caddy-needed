@@ -388,3 +388,18 @@ describe('getHolesWithSinsForRound', () => {
         expect(result).toEqual([]);
     });
 });
+
+describe('initialize — HoleDeadlySins deduplication', () => {
+    it('removesDuplicateHoleDeadlySinsRowsKeepingLatest', async () => {
+        jest.clearAllMocks();
+        mockGetAllSync.mockReturnValue([]);
+        mockExecAsync.mockResolvedValue(undefined);
+
+        await initialize();
+
+        const dedupeCall = mockExecSync.mock.calls.find(([sql]: [string]) =>
+            sql.includes('HoleDeadlySins') && sql.toUpperCase().includes('DELETE')
+        );
+        expect(dedupeCall).toBeDefined();
+    });
+});

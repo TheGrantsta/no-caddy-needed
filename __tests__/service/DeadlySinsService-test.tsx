@@ -95,6 +95,15 @@ describe('insertHoleDeadlySinsService', () => {
 
         expect(mockInsertHoleDeadlySins).toHaveBeenCalledWith(5, 9, sins);
     });
+
+    it('callsDeleteHoleDeadlySinsByHoleBeforeInserting', async () => {
+        mockDeleteHoleDeadlySinsByHole.mockResolvedValue(undefined);
+        mockInsertHoleDeadlySins.mockResolvedValue(true);
+
+        await insertHoleDeadlySinsService(1, 3, allFalseSins);
+
+        expect(mockDeleteHoleDeadlySinsByHole).toHaveBeenCalledWith(1, 3);
+    });
 });
 
 describe('getAllDeadlySinsRoundsService', () => {

@@ -240,7 +240,8 @@ export type DeadlySinsValues = {
     penalties: boolean;
 };
 
-export const insertHoleDeadlySinsService = (roundId: number, holeNumber: number, sins: DeadlySinsValues): Promise<boolean> => {
+export const insertHoleDeadlySinsService = async (roundId: number, holeNumber: number, sins: DeadlySinsValues): Promise<boolean> => {
+    await deleteHoleDeadlySinsByHole(roundId, holeNumber);
     return insertHoleDeadlySins(roundId, holeNumber, sins);
 };
 
@@ -263,9 +264,8 @@ export const getHolesWithSinsForRoundService = (roundId: number): Set<number> =>
     return new Set(rows.map(r => r.HoleNumber));
 };
 
-export const replaceHoleDeadlySinsService = async (roundId: number, holeNumber: number, sins: DeadlySinsValues): Promise<boolean> => {
-    await deleteHoleDeadlySinsByHole(roundId, holeNumber);
-    return insertHoleDeadlySins(roundId, holeNumber, sins);
+export const replaceHoleDeadlySinsService = (roundId: number, holeNumber: number, sins: DeadlySinsValues): Promise<boolean> => {
+    return insertHoleDeadlySinsService(roundId, holeNumber, sins);
 };
 
 export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {

@@ -113,7 +113,7 @@ describe('DeadlySinsTally component', () => {
             expect(getByText('Penalties')).toBeTruthy();
 
             expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
-            expect(getByTestId('7deadly-sins-toggle-double-bogeys')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-auto-double-bogeys')).toBeTruthy();
             expect(getByTestId('7deadly-sins-toggle-bogeys-par5')).toBeTruthy();
             expect(getByTestId('7deadly-sins-toggle-bogeys-inside-9iron')).toBeTruthy();
             expect(getByTestId('7deadly-sins-toggle-double-chips')).toBeTruthy();
@@ -144,15 +144,15 @@ describe('DeadlySinsTally component', () => {
             expect(mockOnValuesChange).toHaveBeenLastCalledWith(expect.objectContaining({ threePutts: false }));
         });
 
-        it('toggles double-bogeys when holePar and userScore allow it', () => {
+        it('autoSelectedDoubleBogeyIsIncludedAlongWithManualToggles', () => {
             const mockOnValuesChange = jest.fn();
             const { getByTestId } = render(
                 <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={4} userScore={6} />
             );
 
-            fireEvent.press(getByTestId('7deadly-sins-toggle-double-bogeys'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
 
-            expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ doubleBogeys: true }));
+            expect(mockOnValuesChange).toHaveBeenLastCalledWith(expect.objectContaining({ doubleBogeys: true, threePutts: true }));
         });
 
         it('toggles bogeys-par5 when holePar is 5', () => {
@@ -188,15 +188,15 @@ describe('DeadlySinsTally component', () => {
         it('toggling multiple sins accumulates correctly', () => {
             const mockOnValuesChange = jest.fn();
             const { getByTestId } = render(
-                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={4} userScore={6} />
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} />
             );
 
             fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
-            fireEvent.press(getByTestId('7deadly-sins-toggle-double-bogeys'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-double-chips'));
 
             expect(mockOnValuesChange).toHaveBeenLastCalledWith(expect.objectContaining({
                 threePutts: true,
-                doubleBogeys: true,
+                doubleChips: true,
             }));
         });
 
@@ -233,7 +233,7 @@ describe('DeadlySinsTally component', () => {
 
             expect(mockOnEndRound).toHaveBeenCalledWith({
                 threePutts: true,
-                doubleBogeys: false,
+                doubleBogeys: true,
                 bogeysPar5: true,
                 bogeysInside9Iron: false,
                 doubleChips: false,
@@ -338,6 +338,54 @@ describe('DeadlySinsTally component', () => {
         });
     });
 
+    describe('double bogeys auto-selection', () => {
+        it('autoSelectsDoubleBogeyAndHidesToggleWhenScoreIsExactlyTwoAbovePar', () => {
+            const { queryByTestId, getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} holePar={4} userScore={6} />
+            );
+
+            expect(queryByTestId('7deadly-sins-toggle-double-bogeys')).toBeNull();
+            expect(getByTestId('7deadly-sins-auto-double-bogeys')).toBeTruthy();
+        });
+
+        it('autoSelectsDoubleBogeyAndHidesToggleWhenScoreIsMoreThanTwoAbovePar', () => {
+            const { queryByTestId, getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} holePar={3} userScore={7} />
+            );
+
+            expect(queryByTestId('7deadly-sins-toggle-double-bogeys')).toBeNull();
+            expect(getByTestId('7deadly-sins-auto-double-bogeys')).toBeTruthy();
+        });
+
+        it('callsOnValuesChangeWithDoubleBogeyTrueWhenAutoSelected', () => {
+            const mockOnValuesChange = jest.fn();
+            render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={4} userScore={6} />
+            );
+
+            expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ doubleBogeys: true }));
+        });
+
+        it('doesNotRenderAutoIndicatorWhenScoreIsOnlyOneBelowThreshold', () => {
+            const { queryByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} holePar={4} userScore={5} />
+            );
+
+            expect(queryByTestId('7deadly-sins-auto-double-bogeys')).toBeNull();
+        });
+
+        it('autoSelectsDoubleBogeyInNonControlledModeAfterRoundStart', () => {
+            const { getByTestId, queryByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} holePar={4} userScore={6} />
+            );
+
+            fireEvent.press(getByTestId('7deadly-sins-start-round'));
+
+            expect(queryByTestId('7deadly-sins-toggle-double-bogeys')).toBeNull();
+            expect(getByTestId('7deadly-sins-auto-double-bogeys')).toBeTruthy();
+        });
+    });
+
     describe('userScore conditional for double bogeys', () => {
         it('hides Double bogeys when userScore is less than 2 over par', () => {
             const { getByTestId, queryByText, queryByTestId } = render(
@@ -361,7 +409,7 @@ describe('DeadlySinsTally component', () => {
             expect(queryByTestId('7deadly-sins-toggle-double-bogeys')).toBeNull();
         });
 
-        it('shows Double bogeys when userScore is exactly 2 over par', () => {
+        it('shows Double bogeys auto indicator when userScore is exactly 2 over par', () => {
             const { getByTestId, getByText } = render(
                 <DeadlySinsTally onEndRound={mockOnEndRound} holePar={4} userScore={6} />
             );
@@ -369,10 +417,10 @@ describe('DeadlySinsTally component', () => {
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
             expect(getByText('Double bogeys')).toBeTruthy();
-            expect(getByTestId('7deadly-sins-toggle-double-bogeys')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-auto-double-bogeys')).toBeTruthy();
         });
 
-        it('shows Double bogeys when userScore is more than 2 over par', () => {
+        it('shows Double bogeys auto indicator when userScore is more than 2 over par', () => {
             const { getByTestId, getByText } = render(
                 <DeadlySinsTally onEndRound={mockOnEndRound} holePar={3} userScore={6} />
             );
@@ -380,7 +428,7 @@ describe('DeadlySinsTally component', () => {
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
 
             expect(getByText('Double bogeys')).toBeTruthy();
-            expect(getByTestId('7deadly-sins-toggle-double-bogeys')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-auto-double-bogeys')).toBeTruthy();
         });
 
         it('hides Double bogeys when userScore is not provided', () => {

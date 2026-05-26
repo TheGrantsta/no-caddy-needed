@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { DeadlySinsValues } from '../service/DbService';
@@ -48,6 +48,19 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     });
     const [isOpen, setIsOpen] = useState(true);
 
+    const isAutoDoubleBogey = holePar !== undefined && userScore !== undefined && userScore >= holePar + 2;
+
+    useEffect(() => {
+        if (!isAutoDoubleBogey) return;
+        setValues(prev => {
+            if (prev.doubleBogeys) return prev;
+            const next = { ...prev, doubleBogeys: true };
+            onValuesChange?.(next);
+            return next;
+        });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAutoDoubleBogey]);
+
     const handleToggle = useCallback((key: keyof DeadlySinsValues) => {
         const next = { ...values, [key]: !values[key] };
         setValues(next);
@@ -90,7 +103,19 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
 
             {isOpen && sinFields.map((field) => {
                 if (field.slug === 'bogeys-par5' && holePar !== 5) return null;
-                if (field.slug === 'double-bogeys' && (holePar === undefined || userScore === undefined || userScore < holePar + 2)) return null;
+                if (field.slug === 'double-bogeys') {
+                    if (!isAutoDoubleBogey) return null;
+                    return (
+                        <View key={field.slug} style={s.row}>
+                            <Text style={s.label}>{field.label}</Text>
+                            <View style={s.controls}>
+                                <View testID="7deadly-sins-auto-double-bogeys" style={s.button}>
+                                    <Text style={s.buttonText}>✓</Text>
+                                </View>
+                            </View>
+                        </View>
+                    );
+                }
                 return (
                     <View key={field.slug} style={s.row}>
                         <Text style={s.label}>{field.label}</Text>

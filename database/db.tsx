@@ -453,6 +453,17 @@ export const getDistinctCourseNames = () => {
     return getSyncDb().getAllSync("SELECT DISTINCT CourseName FROM Rounds WHERE CourseName IS NOT NULL AND CourseName != '' AND CourseName NOT IN (SELECT Name FROM HiddenRecents WHERE Type = 'course') ORDER BY Id DESC;");
 };
 
+export const getHoleParsForCourse = (courseName: string): { HoleNumber: number; HolePar: number }[] => {
+    return getSyncDb().getAllSync(
+        `SELECT HoleNumber, HolePar FROM RoundHoleScores
+         WHERE RoundId = (
+           SELECT Id FROM Rounds WHERE CourseName = ? AND IsCompleted = 1 ORDER BY Id DESC LIMIT 1
+         )
+         GROUP BY HoleNumber;`,
+        [courseName]
+    ) as { HoleNumber: number; HolePar: number }[];
+};
+
 export const getDistinctPlayerNames = () => {
     return getSyncDb().getAllSync("SELECT DISTINCT PlayerName FROM RoundPlayers WHERE IsUser = 0 AND PlayerName IS NOT NULL AND PlayerName != '' AND PlayerName NOT IN (SELECT Name FROM HiddenRecents WHERE Type = 'player') ORDER BY Id DESC;");
 };

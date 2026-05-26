@@ -8,6 +8,7 @@ type Props = {
     players: RoundPlayer[];
     onScoresChange: (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => void;
     renderAfterUser?: ReactNode;
+    initialPar?: number;
 };
 
 const parOptions = [3, 4, 5];
@@ -20,15 +21,16 @@ const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>
     }));
 };
 
-const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser }: Props) => {
+const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser, initialPar }: Props) => {
     const styles = useStyles();
     const [state, setState] = useState<{ par: number; scores: Record<number, number> }>({ par: 4, scores: {} });
 
     useEffect(() => {
+        const par = initialPar ?? 4;
         const initial: Record<number, number> = {};
-        players.forEach(p => { initial[p.Id] = 4; });
-        setState({ par: 4, scores: initial });
-    }, [holeNumber]);
+        players.forEach(p => { initial[p.Id] = par; });
+        setState({ par, scores: initial });
+    }, [holeNumber, initialPar]);
 
     const { par, scores } = state;
 

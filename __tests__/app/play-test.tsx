@@ -21,6 +21,7 @@ import {
     getSettingsService,
     saveSettingsService,
     getHolesPlayedForRoundService,
+    getCourseHoleParsService,
     getParAveragesService,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
@@ -58,6 +59,7 @@ jest.mock('../../service/DbService', () => ({
     getRecentCourseNamesService: jest.fn(),
     getRecentPlayerNamesService: jest.fn(),
     getHolesPlayedForRoundService: jest.fn().mockReturnValue(0),
+    getCourseHoleParsService: jest.fn().mockReturnValue({}),
     getParAveragesService: jest.fn().mockReturnValue({ par3: null, par4: null, par5: null }),
     getSettingsService: jest.fn().mockReturnValue({
         theme: 'dark',
@@ -155,6 +157,7 @@ const mockGetRecentPlayerNames = getRecentPlayerNamesService as jest.Mock;
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
 const mockGetHolesPlayedForRound = getHolesPlayedForRoundService as jest.Mock;
+const mockGetCourseHolePars = getCourseHoleParsService as jest.Mock;
 const mockGetParAverages = getParAveragesService as jest.Mock;
 const mockHapticsImpact = Haptics.impactAsync as jest.Mock;
 
@@ -590,6 +593,37 @@ describe('Play screen', () => {
             await waitFor(() => {
                 expect(mockStartRound).toHaveBeenCalledWith('St Andrews');
                 expect(getByText('#1')).toBeTruthy();
+            });
+        });
+
+        it('callsGetCourseHoleParsServiceWithCourseNameOnRoundStart', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(mockGetCourseHolePars).toHaveBeenCalledWith('St Andrews');
+            });
+        });
+
+        it('passesCorrectInitialParToHoleScoreInputFromPriorRound', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockGetCourseHolePars.mockReturnValue({ 1: 3 });
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('player-score-1')).toHaveTextContent('3');
             });
         });
 

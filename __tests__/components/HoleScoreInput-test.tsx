@@ -203,6 +203,30 @@ describe('HoleScoreInput', () => {
         ]);
     });
 
+    it('usesInitialParPropWhenProvided', () => {
+        const { getByTestId } = render(
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} initialPar={3} />
+        );
+
+        expect(getByTestId('player-score-1')).toHaveTextContent('3');
+        expect(getByTestId('player-score-2')).toHaveTextContent('3');
+    });
+
+    it('resetsToNewInitialParWhenHoleNumberChanges', () => {
+        const { getByTestId, rerender } = render(
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} initialPar={3} />
+        );
+
+        expect(getByTestId('player-score-1')).toHaveTextContent('3');
+
+        rerender(
+            <HoleScoreInput holeNumber={2} players={mockPlayers} onScoresChange={mockOnScoresChange} initialPar={5} />
+        );
+
+        expect(getByTestId('player-score-1')).toHaveTextContent('5');
+        expect(getByTestId('player-score-2')).toHaveTextContent('5');
+    });
+
     it('renders renderAfterUser content after user player row', () => {
         const { getByText } = render(
             <HoleScoreInput

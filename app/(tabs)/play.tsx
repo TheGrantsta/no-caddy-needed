@@ -28,6 +28,7 @@ import {
     hideCourseFromRecentsService,
     hidePlayerFromRecentsService,
     getHolesPlayedForRoundService,
+    getCourseHoleParsService,
     getSettingsService,
     saveSettingsService,
     getParAveragesService,
@@ -88,6 +89,7 @@ export default function Play() {
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [historyFilter, setHistoryFilter] = useState<1 | 10 | 'all'>('all');
     const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
+    const [courseHolePars, setCourseHolePars] = useState<Record<number, number>>({});
     const scrollRef = useRef<ScrollView>(null);
     const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -196,6 +198,7 @@ export default function Play() {
             setPlayers(roundPlayers);
             setCurrentHole(1);
             setHoleContributions({});
+            setCourseHolePars(getCourseHoleParsService(courseName));
             setShowPlayerSetup(false);
             const nId = await scheduleRoundReminder();
             setNotificationId(nId);
@@ -282,6 +285,7 @@ export default function Play() {
         setCurrentHoleData(null);
         setShowEndRoundConfirm(false);
         setScorecardData(null);
+        setCourseHolePars({});
         setRoundHistory(getAllRoundHistoryService());
         setDeadlySinsRounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
@@ -527,6 +531,7 @@ export default function Play() {
                         <View>
                             <HoleScoreInput
                                 holeNumber={currentHole}
+                                initialPar={courseHolePars[currentHole] ?? 4}
                                 players={players}
                                 onScoresChange={handleScoresChange}
                                 renderAfterUser={

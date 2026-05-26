@@ -58,4 +58,4 @@
 
 # Release notes
 * Add or edit hole-specific strategy notes
-* 
+* Amend 7 Deadly Sins to auto-select options based on the score

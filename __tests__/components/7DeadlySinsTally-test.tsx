@@ -114,7 +114,7 @@ describe('DeadlySinsTally component', () => {
 
             expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
             expect(getByTestId('7deadly-sins-auto-double-bogeys')).toBeTruthy();
-            expect(getByTestId('7deadly-sins-toggle-bogeys-par5')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-auto-bogeys-par5')).toBeTruthy();
             expect(getByTestId('7deadly-sins-toggle-bogeys-inside-9iron')).toBeTruthy();
             expect(getByTestId('7deadly-sins-toggle-double-chips')).toBeTruthy();
             expect(getByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeTruthy();
@@ -227,7 +227,6 @@ describe('DeadlySinsTally component', () => {
 
             fireEvent.press(getByTestId('7deadly-sins-start-round'));
             fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
-            fireEvent.press(getByTestId('7deadly-sins-toggle-bogeys-par5'));
             fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
             fireEvent.press(getByTestId('7deadly-sins-end-round'));
 
@@ -383,6 +382,86 @@ describe('DeadlySinsTally component', () => {
 
             expect(queryByTestId('7deadly-sins-toggle-double-bogeys')).toBeNull();
             expect(getByTestId('7deadly-sins-auto-double-bogeys')).toBeTruthy();
+        });
+    });
+
+    describe('bogeys-par5 auto-selection', () => {
+        it('autoSelectsBogeyPar5AndHidesToggleWhenScoreIsExactly6OnPar5', () => {
+            const { queryByTestId, getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} holePar={5} userScore={6} />
+            );
+
+            expect(queryByTestId('7deadly-sins-toggle-bogeys-par5')).toBeNull();
+            expect(getByTestId('7deadly-sins-auto-bogeys-par5')).toBeTruthy();
+        });
+
+        it('autoSelectsBogeyPar5WhenScoreIsMoreThan6OnPar5', () => {
+            const { queryByTestId, getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} holePar={5} userScore={8} />
+            );
+
+            expect(queryByTestId('7deadly-sins-toggle-bogeys-par5')).toBeNull();
+            expect(getByTestId('7deadly-sins-auto-bogeys-par5')).toBeTruthy();
+        });
+
+        it('doesNotAutoSelectBogeyPar5WhenScoreIs5OnPar5', () => {
+            const { getByTestId, queryByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} holePar={5} userScore={5} />
+            );
+
+            expect(getByTestId('7deadly-sins-toggle-bogeys-par5')).toBeTruthy();
+            expect(queryByTestId('7deadly-sins-auto-bogeys-par5')).toBeNull();
+        });
+
+        it('callsOnValuesChangeWithBogeyPar5TrueWhenAutoSelected', () => {
+            const mockOnValuesChange = jest.fn();
+            render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={5} userScore={6} />
+            );
+
+            expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ bogeysPar5: true }));
+        });
+
+        it('autoSelectsBothBogeyPar5AndDoubleBogeyWhenScoreIs7OnPar5', () => {
+            const mockOnValuesChange = jest.fn();
+            render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={5} userScore={7} />
+            );
+
+            expect(mockOnValuesChange).toHaveBeenLastCalledWith(expect.objectContaining({
+                bogeysPar5: true,
+                doubleBogeys: true,
+            }));
+        });
+
+        it('resetsBogeyPar5ToggledWhenScoreDecrementsBackBelow6', () => {
+            const mockOnValuesChange = jest.fn();
+            const { getByTestId, queryByTestId, rerender } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={5} userScore={6} />
+            );
+
+            expect(queryByTestId('7deadly-sins-toggle-bogeys-par5')).toBeNull();
+            expect(getByTestId('7deadly-sins-auto-bogeys-par5')).toBeTruthy();
+
+            rerender(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={5} userScore={5} />
+            );
+
+            expect(getByTestId('7deadly-sins-toggle-bogeys-par5')).toBeTruthy();
+            expect(queryByTestId('7deadly-sins-auto-bogeys-par5')).toBeNull();
+        });
+
+        it('callsOnValuesChangeWithBogeyPar5FalseWhenAutoSelectReversed', () => {
+            const mockOnValuesChange = jest.fn();
+            const { rerender } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={5} userScore={6} />
+            );
+
+            rerender(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} onValuesChange={mockOnValuesChange} holePar={5} userScore={5} />
+            );
+
+            expect(mockOnValuesChange).toHaveBeenLastCalledWith(expect.objectContaining({ bogeysPar5: false }));
         });
     });
 

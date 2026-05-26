@@ -49,17 +49,19 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     const [isOpen, setIsOpen] = useState(true);
 
     const isAutoDoubleBogey = holePar !== undefined && userScore !== undefined && userScore >= holePar + 2;
+    const isAutoBogeyPar5 = holePar === 5 && userScore !== undefined && userScore >= 6;
 
     useEffect(() => {
-        if (!isAutoDoubleBogey) return;
         setValues(prev => {
-            if (prev.doubleBogeys) return prev;
-            const next = { ...prev, doubleBogeys: true };
+            const nextDoubleBogeys = isAutoDoubleBogey ? true : false;
+            const nextBogeysPar5 = isAutoBogeyPar5 ? true : false;
+            if (prev.doubleBogeys === nextDoubleBogeys && prev.bogeysPar5 === nextBogeysPar5) return prev;
+            const next = { ...prev, doubleBogeys: nextDoubleBogeys, bogeysPar5: nextBogeysPar5 };
             onValuesChange?.(next);
             return next;
         });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isAutoDoubleBogey]);
+    }, [isAutoDoubleBogey, isAutoBogeyPar5]);
 
     const handleToggle = useCallback((key: keyof DeadlySinsValues) => {
         const next = { ...values, [key]: !values[key] };
@@ -102,7 +104,21 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
             </TouchableOpacity>
 
             {isOpen && sinFields.map((field) => {
-                if (field.slug === 'bogeys-par5' && holePar !== 5) return null;
+                if (field.slug === 'bogeys-par5') {
+                    if (holePar !== 5) return null;
+                    if (isAutoBogeyPar5) {
+                        return (
+                            <View key={field.slug} style={s.row}>
+                                <Text style={s.label}>{field.label}</Text>
+                                <View style={s.controls}>
+                                    <View testID="7deadly-sins-auto-bogeys-par5" style={s.button}>
+                                        <Text style={s.buttonText}>✓</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        );
+                    }
+                }
                 if (field.slug === 'double-bogeys') {
                     if (!isAutoDoubleBogey) return null;
                     return (

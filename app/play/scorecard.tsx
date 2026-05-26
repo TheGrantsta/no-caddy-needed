@@ -15,6 +15,7 @@ import {
     getHoleDeadlySinsService,
     replaceHoleDeadlySinsService,
     getHolesWithSinsForRoundService,
+    loadCourseNotesService,
     RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
@@ -47,6 +48,7 @@ export default function ScorecardScreen() {
 
     const [multiplayerScorecard, setMultiplayerScorecard] = useState<MultiplayerRoundScorecard | null>(null);
     const [scorecard, setScorecard] = useState<RoundScorecardType | null>(null);
+    const [courseNotes, setCourseNotes] = useState<Record<number, string>>({});
     const [isEditing, setIsEditing] = useState(false);
     const [editedScores, setEditedScores] = useState<RoundHoleScore[]>([]);
     const [selectedScore, setSelectedScore] = useState<{ holeNumber: number; playerId: number } | null>(null);
@@ -67,6 +69,10 @@ export default function ScorecardScreen() {
         const sc = mp ? null : getRoundScorecardService(Number(roundId));
         setScorecard(sc);
         setSinHoles(getHolesWithSinsForRoundService(Number(roundId)));
+        const courseName = mp?.round?.CourseName ?? sc?.round?.CourseName ?? null;
+        if (courseName) {
+            setCourseNotes(loadCourseNotesService(courseName));
+        }
     };
 
     const handleEdit = () => {
@@ -252,6 +258,19 @@ export default function ScorecardScreen() {
                                 holePar={editedScores.find(s => s.HoleNumber === selectedScore.holeNumber)?.HolePar}
                                 userScore={editedScores.find(s => s.HoleNumber === selectedScore.holeNumber && s.RoundPlayerId === multiplayerScorecard?.players.find(p => p.IsUser === 1)?.Id)?.Score}
                             />
+                        )}
+
+                        {Object.keys(courseNotes).length > 0 && (
+                            <View testID="course-notes-section" style={{ paddingHorizontal: 15, paddingTop: 12 }}>
+                                <Text style={styles.subHeaderText}>Course notes</Text>
+                                {Object.entries(courseNotes)
+                                    .sort(([a], [b]) => Number(a) - Number(b))
+                                    .map(([hole, note]) => (
+                                        <Text key={hole} style={styles.normalText}>
+                                            Hole {hole}: {note}
+                                        </Text>
+                                    ))}
+                            </View>
                         )}
 
                         {!isEditing && !showDeleteConfirm && (

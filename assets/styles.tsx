@@ -406,6 +406,52 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    holeNoteInput: StyleSheet.create({
+        container: {
+            marginTop: 24,
+            marginBottom: 8,
+            paddingTop: 20,
+            borderTopWidth: 0.5,
+            borderTopColor: c.primary,
+        },
+        label: {
+            color: c.primary,
+            fontSize: fontSizes.small,
+            marginBottom: 10,
+        },
+        input: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            borderWidth: 1,
+            borderColor: c.primary,
+            borderRadius: 4,
+            padding: 12,
+            minHeight: 52,
+        },
+        placeholder: {
+            color: c.tertiary,
+        },
+        noteRow: {
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            gap: 8,
+        },
+        noteText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            flex: 1,
+        },
+        addButton: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+        },
+        addButtonText: {
+            color: c.primary,
+            fontSize: fontSizes.small,
+        },
+    }),
+
     scorecard: StyleSheet.create({
         container: {
             padding: 15,

@@ -87,6 +87,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS Games (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Header TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsDeleted INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS PracticeReminders (Id INTEGER PRIMARY KEY AUTOINCREMENT, Label TEXT NOT NULL, ScheduledFor TEXT NOT NULL, NotificationId TEXT, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS HiddenRecents (Id INTEGER PRIMARY KEY AUTOINCREMENT, Type TEXT NOT NULL, Name TEXT NOT NULL, UNIQUE(Type, Name));
+        CREATE TABLE IF NOT EXISTS HoleNotes (Id INTEGER PRIMARY KEY AUTOINCREMENT, CourseName TEXT NOT NULL, HoleNumber INTEGER NOT NULL, Note TEXT NOT NULL, Updated_At TEXT NOT NULL, UNIQUE(CourseName, HoleNumber));
     `);
 
     const migrations: TableAmendment[] = [
@@ -462,6 +463,45 @@ export const getHoleParsForCourse = (courseName: string): { HoleNumber: number; 
          GROUP BY HoleNumber;`,
         [courseName]
     ) as { HoleNumber: number; HolePar: number }[];
+};
+
+export const getAllHoleNotesForCourse = (courseName: string): { HoleNumber: number; Note: string }[] => {
+    return getSyncDb().getAllSync(
+        'SELECT HoleNumber, Note FROM HoleNotes WHERE CourseName = ? ORDER BY HoleNumber ASC;',
+        [courseName]
+    ) as { HoleNumber: number; Note: string }[];
+};
+
+export const upsertHoleNote = async (courseName: string, holeNumber: number, note: string): Promise<boolean> => {
+    let success = true;
+    const db = await SQLite.openDatabaseAsync(dbName);
+    const statement = await db.prepareAsync(
+        'INSERT OR REPLACE INTO HoleNotes (CourseName, HoleNumber, Note, Updated_At) VALUES ($CourseName, $HoleNumber, $Note, $Updated_At);'
+    );
+    try {
+        await statement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber, $Note: note, $Updated_At: new Date().toISOString() });
+    } catch (e) {
+        success = false;
+    } finally {
+        await statement.finalizeAsync();
+    }
+    return success;
+};
+
+export const deleteHoleNote = async (courseName: string, holeNumber: number): Promise<boolean> => {
+    let success = true;
+    const db = await SQLite.openDatabaseAsync(dbName);
+    const statement = await db.prepareAsync(
+        'DELETE FROM HoleNotes WHERE CourseName = $CourseName AND HoleNumber = $HoleNumber;'
+    );
+    try {
+        await statement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber });
+    } catch (e) {
+        success = false;
+    } finally {
+        await statement.finalizeAsync();
+    }
+    return success;
 };
 
 export const getDistinctPlayerNames = () => {

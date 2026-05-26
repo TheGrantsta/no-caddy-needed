@@ -22,6 +22,8 @@ import {
     saveSettingsService,
     getHolesPlayedForRoundService,
     getCourseHoleParsService,
+    loadCourseNotesService,
+    saveHoleNoteService,
     getParAveragesService,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
@@ -60,6 +62,8 @@ jest.mock('../../service/DbService', () => ({
     getRecentPlayerNamesService: jest.fn(),
     getHolesPlayedForRoundService: jest.fn().mockReturnValue(0),
     getCourseHoleParsService: jest.fn().mockReturnValue({}),
+    loadCourseNotesService: jest.fn().mockReturnValue({}),
+    saveHoleNoteService: jest.fn().mockResolvedValue(true),
     getParAveragesService: jest.fn().mockReturnValue({ par3: null, par4: null, par5: null }),
     getSettingsService: jest.fn().mockReturnValue({
         theme: 'dark',
@@ -158,6 +162,8 @@ const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
 const mockGetHolesPlayedForRound = getHolesPlayedForRoundService as jest.Mock;
 const mockGetCourseHolePars = getCourseHoleParsService as jest.Mock;
+const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
+const mockSaveHoleNote = saveHoleNoteService as jest.Mock;
 const mockGetParAverages = getParAveragesService as jest.Mock;
 const mockHapticsImpact = Haptics.impactAsync as jest.Mock;
 
@@ -172,6 +178,7 @@ describe('Play screen', () => {
         mockGetMultiplayerScorecard.mockReturnValue(null);
         mockGetRecentCourseNames.mockReturnValue([]);
         mockGetRecentPlayerNames.mockReturnValue([]);
+        mockLoadCourseNotes.mockReturnValue({});
     });
 
     describe('Idle state', () => {
@@ -627,6 +634,59 @@ describe('Play screen', () => {
             });
         });
 
+        it('callsLoadCourseNotesServiceWithCourseNameOnRoundStart', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(mockLoadCourseNotes).toHaveBeenCalledWith('St Andrews');
+            });
+        });
+
+        it('showsExistingNoteForCurrentHole', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockLoadCourseNotes.mockReturnValue({ 1: 'aim left of bunker' });
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('hole-note-text')).toHaveTextContent('aim left of bunker');
+            });
+        });
+
+        it('callsSaveHoleNoteServiceWhenAdvancingToNextHole', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => expect(getByTestId('add-note-button')).toBeTruthy());
+
+            fireEvent.press(getByTestId('add-note-button'));
+            fireEvent.changeText(getByTestId('hole-note-input'), 'aim left');
+            fireEvent.press(getByTestId('next-hole-button'));
+
+            await waitFor(() => {
+                expect(mockSaveHoleNote).toHaveBeenCalledWith('St Andrews', 1, 'aim left');
+            });
+        });
+
         it('starts round with additional players', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1, 2]);
@@ -886,6 +946,31 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('previous-hole-button'));
 
             expect(getByText('#1')).toBeTruthy();
+        });
+
+        it('showsCorrectNoteWhenNavigatingBackward', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+            mockLoadCourseNotes.mockReturnValue({ 1: 'hole 1 note', 2: 'hole 2 note' });
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => expect(getByTestId('hole-note-text')).toHaveTextContent('hole 1 note'));
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            await waitFor(() => expect(getByTestId('hole-note-text')).toHaveTextContent('hole 2 note'));
+
+            fireEvent.press(getByTestId('previous-hole-button'));
+
+            expect(getByTestId('hole-note-text')).toHaveTextContent('hole 1 note');
         });
     });
 

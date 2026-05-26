@@ -5,6 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import HoleScoreInput from '../../components/HoleScoreInput';
+import HoleNoteInput from '../../components/HoleNoteInput';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
 import DeadlySinsChart from '../../components/DeadlySinsChart';
 import SubMenu from '../../components/SubMenu';
@@ -29,6 +30,8 @@ import {
     hidePlayerFromRecentsService,
     getHolesPlayedForRoundService,
     getCourseHoleParsService,
+    loadCourseNotesService,
+    saveHoleNoteService,
     getSettingsService,
     saveSettingsService,
     getParAveragesService,
@@ -90,6 +93,9 @@ export default function Play() {
     const [historyFilter, setHistoryFilter] = useState<1 | 10 | 'all'>('all');
     const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
     const [courseHolePars, setCourseHolePars] = useState<Record<number, number>>({});
+    const [activeCourseName, setActiveCourseName] = useState<string | null>(null);
+    const [courseNotes, setCourseNotes] = useState<Record<number, string>>({});
+    const [currentNoteText, setCurrentNoteText] = useState('');
     const scrollRef = useRef<ScrollView>(null);
     const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -161,8 +167,14 @@ export default function Play() {
             await cancelAllRoundReminders();
         }
         const holesPlayed = getHolesPlayedForRoundService(incompleteRound.Id);
-        setCurrentHole(holesPlayed > 0 ? holesPlayed + 1 : 1);
+        const resumeHole = holesPlayed > 0 ? holesPlayed + 1 : 1;
+        setCurrentHole(resumeHole);
         setActiveRoundId(incompleteRound.Id);
+        const courseName = incompleteRound.CourseName ?? '';
+        setActiveCourseName(courseName);
+        const notes = loadCourseNotesService(courseName);
+        setCourseNotes(notes);
+        setCurrentNoteText(notes[resumeHole] ?? '');
         setIncompleteRound(null);
     };
 
@@ -199,6 +211,10 @@ export default function Play() {
             setCurrentHole(1);
             setHoleContributions({});
             setCourseHolePars(getCourseHoleParsService(courseName));
+            setActiveCourseName(courseName);
+            const notes = loadCourseNotesService(courseName);
+            setCourseNotes(notes);
+            setCurrentNoteText(notes[1] ?? '');
             setShowPlayerSetup(false);
             const nId = await scheduleRoundReminder();
             setNotificationId(nId);
@@ -225,6 +241,7 @@ export default function Play() {
             delete next[holeGoingBackTo];
             return next;
         });
+        setCurrentNoteText(courseNotes[holeGoingBackTo] ?? '');
         setCurrentHole(prev => prev - 1);
         setCurrentHoleData(null);
     };
@@ -236,6 +253,10 @@ export default function Play() {
         const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
         if (success) {
             await insertHoleDeadlySinsService(activeRoundId, holeNumber, deadlySinsValues);
+            if (activeCourseName !== null) {
+                await saveHoleNoteService(activeCourseName, holeNumber, currentNoteText);
+                setCourseNotes(prev => ({ ...prev, [holeNumber]: currentNoteText.trim() }));
+            }
             setDeadlySinsValues(INITIAL_SINS);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             const userScore = scores.find(s => {
@@ -249,7 +270,9 @@ export default function Play() {
             if (currentHole >= 18) {
                 setShowEndRoundConfirm(true);
             } else {
-                setCurrentHole(prev => prev + 1);
+                const nextHole = currentHole + 1;
+                setCurrentNoteText(courseNotes[nextHole] ?? '');
+                setCurrentHole(nextHole);
             }
         }
     };
@@ -286,6 +309,9 @@ export default function Play() {
         setShowEndRoundConfirm(false);
         setScorecardData(null);
         setCourseHolePars({});
+        setActiveCourseName(null);
+        setCourseNotes({});
+        setCurrentNoteText('');
         setRoundHistory(getAllRoundHistoryService());
         setDeadlySinsRounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
@@ -298,6 +324,10 @@ export default function Play() {
         logEvent('end_round');
         await cancelRoundReminder(notificationId);
         setNotificationId(null);
+
+        if (activeCourseName !== null) {
+            await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
+        }
 
         const success = await endRoundService(activeRoundId);
 
@@ -548,6 +578,12 @@ export default function Play() {
                                         })?.score}
                                     />
                                 }
+                            />
+
+                            <HoleNoteInput
+                                key={currentHole}
+                                note={currentNoteText}
+                                onNoteChange={setCurrentNoteText}
                             />
 
                             {!showEndRoundConfirm && (

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService } from '../../../service/DbService';
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService } from '../../../service/DbService';
 import { checkPremiumEntitlement } from '../../../service/SubscriptionService';
 
 jest.mock('../../../service/SubscriptionService', () => ({
@@ -44,6 +44,7 @@ jest.mock('../../../service/DbService', () => ({
     getHoleDeadlySinsService: jest.fn(),
     replaceHoleDeadlySinsService: jest.fn().mockResolvedValue(true),
     getHolesWithSinsForRoundService: jest.fn(),
+    loadCourseNotesService: jest.fn().mockReturnValue({}),
 }));
 
 jest.mock('expo-router', () => ({
@@ -78,6 +79,7 @@ const mockDeleteRound = deleteRoundService as jest.Mock;
 const mockGetHoleDeadlySinsService = getHoleDeadlySinsService as jest.Mock;
 const mockReplaceHoleDeadlySinsService = replaceHoleDeadlySinsService as jest.Mock;
 const mockGetHolesWithSinsForRoundService = getHolesWithSinsForRoundService as jest.Mock;
+const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
 
 const multiplayerData = {
     round: { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '' },
@@ -771,6 +773,31 @@ describe('Scorecard screen', () => {
             expect(queryByTestId('analyse-round-button')).toBeNull();
 
             mockExtraConfig.analyseRoundEnabled = true;
+        });
+    });
+
+    describe('Course notes section', () => {
+        const dataWithCourse = {
+            ...multiplayerData,
+            round: { ...multiplayerData.round, CourseName: 'St Andrews' },
+        };
+
+        it('showsCourseNotesWhenAvailable', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(dataWithCourse);
+            mockLoadCourseNotes.mockReturnValue({ 3: 'aim left of bunker', 7: 'back pin plays longer' });
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            expect(getByTestId('course-notes-section')).toBeTruthy();
+        });
+
+        it('hidesCourseNotesSectionWhenNoNotes', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(dataWithCourse);
+            mockLoadCourseNotes.mockReturnValue({});
+
+            const { queryByTestId } = render(<ScorecardScreen />);
+
+            expect(queryByTestId('course-notes-section')).toBeNull();
         });
     });
 });

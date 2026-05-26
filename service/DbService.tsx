@@ -46,6 +46,9 @@ import {
     insertPracticeReminder,
     deletePracticeReminder,
     getHoleParsForCourse,
+    getAllHoleNotesForCourse,
+    upsertHoleNote,
+    deleteHoleNote,
 } from '../database/db';
 
 export type WedgeChartClub = {
@@ -397,6 +400,18 @@ export const getRecentCourseNamesService = (): string[] => {
 export const getCourseHoleParsService = (courseName: string): Record<number, number> => {
     const rows = getHoleParsForCourse(courseName) as { HoleNumber: number; HolePar: number }[];
     return rows.reduce((acc, r) => ({ ...acc, [r.HoleNumber]: r.HolePar }), {} as Record<number, number>);
+};
+
+export const loadCourseNotesService = (courseName: string): Record<number, string> => {
+    const rows = getAllHoleNotesForCourse(courseName) as { HoleNumber: number; Note: string }[];
+    return rows.reduce((acc, r) => ({ ...acc, [r.HoleNumber]: r.Note }), {} as Record<number, string>);
+};
+
+export const saveHoleNoteService = async (courseName: string, holeNumber: number, note: string): Promise<boolean> => {
+    if (note.trim() === '') {
+        return deleteHoleNote(courseName, holeNumber);
+    }
+    return upsertHoleNote(courseName, holeNumber, note.trim());
 };
 
 export const getRecentPlayerNamesService = (): string[] => {

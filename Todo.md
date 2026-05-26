@@ -57,6 +57,5 @@
 - [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
 
 # Release notes
-* Bug fixes for 7 Deadly Sins
-* Remove course and player names from list
-* Make adding a drill and game into a wizard
+* Add or edit hole-specific strategy notes
+* 

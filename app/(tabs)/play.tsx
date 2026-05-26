@@ -415,7 +415,7 @@ export default function Play() {
 
                             {incompleteRound ? (
                                 <Text style={[styles.normalText, styles.marginBottom]}>
-                                    Continue, or end round
+                                    Continue or end previously started round that was not completed
                                 </Text>
                             ) : (
                                 <Text style={[styles.normalText, styles.marginBottom]}>

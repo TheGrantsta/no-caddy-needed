@@ -408,11 +408,7 @@ export const createStyles = (c: ThemeColours) => ({
 
     holeNoteInput: StyleSheet.create({
         container: {
-            marginTop: 24,
-            marginBottom: 8,
-            paddingTop: 20,
-            borderTopWidth: 0.5,
-            borderTopColor: c.primary,
+            marginBottom: 12,
         },
         label: {
             color: c.primary,

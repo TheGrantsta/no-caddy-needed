@@ -775,29 +775,4 @@ describe('Scorecard screen', () => {
             mockExtraConfig.analyseRoundEnabled = true;
         });
     });
-
-    describe('Course notes section', () => {
-        const dataWithCourse = {
-            ...multiplayerData,
-            round: { ...multiplayerData.round, CourseName: 'St Andrews' },
-        };
-
-        it('showsCourseNotesWhenAvailable', () => {
-            mockGetMultiplayerScorecard.mockReturnValue(dataWithCourse);
-            mockLoadCourseNotes.mockReturnValue({ 3: 'aim left of bunker', 7: 'back pin plays longer' });
-
-            const { getByTestId } = render(<ScorecardScreen />);
-
-            expect(getByTestId('course-notes-section')).toBeTruthy();
-        });
-
-        it('hidesCourseNotesSectionWhenNoNotes', () => {
-            mockGetMultiplayerScorecard.mockReturnValue(dataWithCourse);
-            mockLoadCourseNotes.mockReturnValue({});
-
-            const { queryByTestId } = render(<ScorecardScreen />);
-
-            expect(queryByTestId('course-notes-section')).toBeNull();
-        });
-    });
 });

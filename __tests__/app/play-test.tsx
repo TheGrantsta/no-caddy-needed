@@ -25,6 +25,8 @@ import {
     loadCourseNotesService,
     saveHoleNoteService,
     getParAveragesService,
+    getHoleDeadlySinsService,
+    getHolesWithSinsForRoundService,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
@@ -65,6 +67,8 @@ jest.mock('../../service/DbService', () => ({
     loadCourseNotesService: jest.fn().mockReturnValue({}),
     saveHoleNoteService: jest.fn().mockResolvedValue(true),
     getParAveragesService: jest.fn().mockReturnValue({ par3: null, par4: null, par5: null }),
+    getHoleDeadlySinsService: jest.fn().mockReturnValue(null),
+    getHolesWithSinsForRoundService: jest.fn().mockReturnValue(new Set()),
     getSettingsService: jest.fn().mockReturnValue({
         theme: 'dark',
         notificationsEnabled: true,
@@ -165,6 +169,8 @@ const mockGetCourseHolePars = getCourseHoleParsService as jest.Mock;
 const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
 const mockSaveHoleNote = saveHoleNoteService as jest.Mock;
 const mockGetParAverages = getParAveragesService as jest.Mock;
+const mockGetHoleDeadlySins = getHoleDeadlySinsService as jest.Mock;
+const mockGetHolesWithSinsForRound = getHolesWithSinsForRoundService as jest.Mock;
 const mockHapticsImpact = Haptics.impactAsync as jest.Mock;
 
 describe('Play screen', () => {
@@ -179,6 +185,7 @@ describe('Play screen', () => {
         mockGetRecentCourseNames.mockReturnValue([]);
         mockGetRecentPlayerNames.mockReturnValue([]);
         mockLoadCourseNotes.mockReturnValue({});
+        mockGetHolesWithSinsForRound.mockReturnValue(new Set());
     });
 
     describe('Idle state', () => {
@@ -1812,6 +1819,55 @@ describe('Play screen', () => {
                 expect(queryByTestId('scorecard-analyse-button')).toBeNull();
 
                 mockExtraConfig.analyseRoundEnabled = true;
+            });
+        });
+
+        describe('7 Deadly Sins on complete scorecard', () => {
+            it('showsDeadlySinsTallyWhenUserHoleSelectedOnCompleteScorecard', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockEndRound.mockResolvedValue(true);
+                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
+                mockGetHoleDeadlySins.mockReturnValue({
+                    threePutts: true, doubleBogeys: false, bogeysPar5: false,
+                    bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false,
+                });
+
+                const { getByTestId } = render(<Play />);
+                await startAndEndRound(getByTestId);
+
+                await waitFor(() => getByTestId('scorecard-done-button'));
+                fireEvent.press(getByTestId('score-cell-1-1'));
+
+                await waitFor(() => expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy());
+            });
+
+            it('doesNotShowDeadlySinsTallyWhenOpponentHoleSelected', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockEndRound.mockResolvedValue(true);
+                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
+
+                const { getByTestId, queryByTestId } = render(<Play />);
+                await startAndEndRound(getByTestId);
+
+                await waitFor(() => getByTestId('scorecard-done-button'));
+                fireEvent.press(getByTestId('score-cell-1-2'));
+
+                expect(queryByTestId('7deadly-sins-toggle-three-putts')).toBeNull();
+            });
+
+            it('showsSinHoleDotsOnCompleteScorecard', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockEndRound.mockResolvedValue(true);
+                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
+                mockGetHolesWithSinsForRound.mockReturnValue(new Set([1]));
+
+                const { getByTestId } = render(<Play />);
+                await startAndEndRound(getByTestId);
+
+                await waitFor(() => expect(getByTestId('sin-indicator-1')).toBeTruthy());
             });
         });
     });

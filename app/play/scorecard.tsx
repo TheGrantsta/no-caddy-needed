@@ -251,26 +251,13 @@ export default function ScorecardScreen() {
                         {isEditing && selectedScore && editedSins && (
                             <DeadlySinsTally
                                 key={selectedScore.holeNumber}
-                                onEndRound={() => {}}
+                                onEndRound={() => { }}
                                 roundControlled
                                 onValuesChange={handleSinsChange}
                                 initialValues={editedSins}
                                 holePar={editedScores.find(s => s.HoleNumber === selectedScore.holeNumber)?.HolePar}
                                 userScore={editedScores.find(s => s.HoleNumber === selectedScore.holeNumber && s.RoundPlayerId === multiplayerScorecard?.players.find(p => p.IsUser === 1)?.Id)?.Score}
                             />
-                        )}
-
-                        {Object.keys(courseNotes).length > 0 && (
-                            <View testID="course-notes-section" style={{ paddingHorizontal: 15, paddingTop: 12 }}>
-                                <Text style={styles.subHeaderText}>Course notes</Text>
-                                {Object.entries(courseNotes)
-                                    .sort(([a], [b]) => Number(a) - Number(b))
-                                    .map(([hole, note]) => (
-                                        <Text key={hole} style={styles.normalText}>
-                                            Hole {hole}: {note}
-                                        </Text>
-                                    ))}
-                            </View>
                         )}
 
                         {!isEditing && !showDeleteConfirm && (

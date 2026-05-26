@@ -20,6 +20,8 @@ import {
     getActiveRoundService,
     getAllRoundHistoryService,
     insertHoleDeadlySinsService,
+    getHoleDeadlySinsService,
+    getHolesWithSinsForRoundService,
     getAllDeadlySinsRoundsService,
     addRoundPlayersService,
     getRoundPlayersService,
@@ -94,6 +96,9 @@ export default function Play() {
     const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
     const [courseHolePars, setCourseHolePars] = useState<Record<number, number>>({});
     const [activeCourseName, setActiveCourseName] = useState<string | null>(null);
+    const [scorecardSinHoles, setScorecardSinHoles] = useState<Set<number>>(new Set());
+    const [selectedScorecardScore, setSelectedScorecardScore] = useState<{ holeNumber: number; playerId: number } | null>(null);
+    const [scorecardDisplaySins, setScorecardDisplaySins] = useState<DeadlySinsValues | null>(null);
     const [courseNotes, setCourseNotes] = useState<Record<number, string>>({});
     const [currentNoteText, setCurrentNoteText] = useState('');
     const scrollRef = useRef<ScrollView>(null);
@@ -308,6 +313,9 @@ export default function Play() {
         setCurrentHoleData(null);
         setShowEndRoundConfirm(false);
         setScorecardData(null);
+        setScorecardSinHoles(new Set());
+        setSelectedScorecardScore(null);
+        setScorecardDisplaySins(null);
         setCourseHolePars({});
         setActiveCourseName(null);
         setCourseNotes({});
@@ -336,9 +344,21 @@ export default function Play() {
         const scorecard = getMultiplayerScorecardService(activeRoundId);
         if (scorecard) {
             setScorecardData(scorecard);
+            setScorecardSinHoles(getHolesWithSinsForRoundService(activeRoundId));
             setShowEndRoundConfirm(false);
         } else {
             resetToIdle();
+        }
+    };
+
+    const handleScorecardScoreSelect = (holeNumber: number, playerId: number) => {
+        setSelectedScorecardScore({ holeNumber, playerId });
+        const isUserPlayer = scorecardData?.players.find(p => p.Id === playerId)?.IsUser === 1;
+        if (isUserPlayer && activeRoundId !== null) {
+            const existing = getHoleDeadlySinsService(activeRoundId, holeNumber);
+            setScorecardDisplaySins(existing ?? INITIAL_SINS);
+        } else {
+            setScorecardDisplaySins(null);
         }
     };
 
@@ -650,7 +670,22 @@ export default function Play() {
                         <Scorecard
                             players={scorecardData.players}
                             holeScores={scorecardData.holeScores}
+                            editable
+                            selectedScore={selectedScorecardScore}
+                            onScoreSelect={handleScorecardScoreSelect}
+                            sinHoles={scorecardSinHoles}
                         />
+
+                        {selectedScorecardScore && scorecardDisplaySins && (
+                            <DeadlySinsTally
+                                key={selectedScorecardScore.holeNumber}
+                                onEndRound={() => {}}
+                                roundControlled
+                                initialValues={scorecardDisplaySins}
+                                holePar={scorecardData.holeScores.find(s => s.HoleNumber === selectedScorecardScore.holeNumber)?.HolePar}
+                                userScore={scorecardData.holeScores.find(s => s.HoleNumber === selectedScorecardScore.holeNumber && s.RoundPlayerId === scorecardData.players.find(p => p.IsUser === 1)?.Id)?.Score}
+                            />
+                        )}
                         <TouchableOpacity
                             testID="scorecard-done-button"
                             onPress={handleScorecardDone}

@@ -467,7 +467,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         nineSection: {
-            marginTop: 15,
+            marginTop: 5,
         },
         nineHeader: {
             color: c.primary,

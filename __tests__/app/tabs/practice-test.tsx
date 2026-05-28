@@ -95,7 +95,7 @@ describe('Practice', () => {
 
     it('showsShortGameSectionByDefault', () => {
         const { getByText } = render(<Practice />);
-        expect(getByText('Short game practice')).toBeTruthy();
+        expect(getByText('Practice areas')).toBeTruthy();
     });
 
     it('displaysPuttingInShortGameSection', () => {

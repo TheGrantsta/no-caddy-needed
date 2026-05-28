@@ -133,11 +133,11 @@ export default function Practice() {
           <View style={styles.divider} />
         </View>
 
-        {/* Short game */}
+        {/* Practice areas */}
         {displaySection('short-game') && (
           <View>
             <Text style={[styles.subHeaderText, styles.marginTop]}>
-              Short game practice
+              Practice areas
             </Text>
 
             <View style={styles.navGrid}>
@@ -174,6 +174,16 @@ export default function Practice() {
                       <MaterialIcons name="beach-access" size={36} color={colours.white} />
                     </View>
                     <Text style={styles.navCardLabel}>Bunker play</Text>
+                  </View>
+                </Link>
+              </View>
+              <View style={styles.navRow}>
+                <Link href="../short-game/full-swing" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="sports-golf" size={36} color={colours.white} />
+                    </View>
+                    <Text style={styles.navCardLabel}>Full swing</Text>
                   </View>
                 </Link>
               </View>

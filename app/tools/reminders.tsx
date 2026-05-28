@@ -7,8 +7,17 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
-import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, PracticeReminder } from '@/service/DbService';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, getTopSinsForPracticePlanService, PracticeReminder } from '@/service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder } from '../../service/NotificationService';
+
+const getNextMonday = (): Date => {
+    const d = new Date();
+    d.setHours(9, 0, 0, 0);
+    const day = d.getDay();
+    const daysUntilNextMonday = day === 1 ? 7 : (8 - day) % 7;
+    d.setDate(d.getDate() + daysUntilNextMonday);
+    return d;
+};
 
 export default function Reminders() {
     const styles = useStyles();
@@ -30,6 +39,7 @@ export default function Reminders() {
     const [refreshing, setRefreshing] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const [swipedOpen, setSwipedOpen] = useState<Set<number>>(new Set());
+    const [noSinData, setNoSinData] = useState(false);
 
     const loadReminders = () => {
         setReminders(sortBySoonest(getPracticeRemindersService()));
@@ -64,6 +74,23 @@ export default function Reminders() {
         }, 750);
     };
 
+    const handleGeneratePracticePlan = async () => {
+        const topSins = getTopSinsForPracticePlanService();
+        if (topSins.length === 0) {
+            setNoSinData(true);
+            return;
+        }
+        setNoSinData(false);
+        const startMonday = getNextMonday();
+        for (let i = 0; i < topSins.length; i++) {
+            const scheduledDate = new Date(startMonday);
+            scheduledDate.setDate(scheduledDate.getDate() + i * 7);
+            const notifId = await schedulePracticeReminder(topSins[i].reminderLabel, scheduledDate);
+            await addPracticeReminderService(topSins[i].reminderLabel, scheduledDate.toISOString(), notifId);
+        }
+        loadReminders();
+    };
+
     const handleDeleteReminder = async (reminder: PracticeReminder) => {
         await cancelPracticeReminder(reminder.NotificationId);
         await deletePracticeReminderService(reminder.Id);
@@ -87,6 +114,18 @@ export default function Reminders() {
                 </View>
 
                 <View style={styles.divider} />
+
+                <View style={styles.headerContainer}>
+                    <TouchableOpacity testID="generate-practice-plan-button" onPress={handleGeneratePracticePlan} style={styles.largeButton}>
+                        <Text style={styles.buttonText}>Generate practice plan</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {noSinData && (
+                    <View style={styles.contentSection}>
+                        <Text testID="no-sin-data-message" style={styles.normalText}>No round data yet — play some rounds first</Text>
+                    </View>
+                )}
 
                 {reminders.length === 0 && !showAddForm && (
                     <View style={styles.contentSection}>

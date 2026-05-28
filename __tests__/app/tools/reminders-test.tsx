@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Reminders from '../../../app/tools/reminders';
-import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService } from '../../../service/DbService';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, getTopSinsForPracticePlanService } from '../../../service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder } from '../../../service/NotificationService';
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -61,6 +61,7 @@ jest.mock('../../../service/DbService', () => ({
     getPracticeRemindersService: jest.fn().mockReturnValue([]),
     addPracticeReminderService: jest.fn().mockResolvedValue(true),
     deletePracticeReminderService: jest.fn().mockResolvedValue(true),
+    getTopSinsForPracticePlanService: jest.fn().mockReturnValue([]),
 }));
 
 const mockGetPracticeRemindersService = getPracticeRemindersService as jest.Mock;
@@ -68,6 +69,7 @@ const mockAddPracticeReminderService = addPracticeReminderService as jest.Mock;
 const mockDeletePracticeReminderService = deletePracticeReminderService as jest.Mock;
 const mockSchedulePracticeReminder = schedulePracticeReminder as jest.Mock;
 const mockCancelPracticeReminder = cancelPracticeReminder as jest.Mock;
+const mockGetTopSinsForPracticePlanService = getTopSinsForPracticePlanService as jest.Mock;
 
 describe('Reminders screen', () => {
     beforeEach(() => {
@@ -264,6 +266,52 @@ describe('Reminders screen', () => {
             });
 
             expect(getByText('Evening chipping')).toBeTruthy();
+        });
+    });
+
+    describe('generate practice plan', () => {
+        it('showsGeneratePracticePlanButton', () => {
+            const { getByTestId } = render(<Reminders />);
+            expect(getByTestId('generate-practice-plan-button')).toBeTruthy();
+        });
+
+        it('createsOneReminderPerTopSinWhenGenerated', async () => {
+            mockGetTopSinsForPracticePlanService.mockReturnValue([
+                { reminderLabel: 'Putting practice — reduce 3-putts', count: 5 },
+                { reminderLabel: 'Chipping practice — eliminate double chips', count: 3 },
+                { reminderLabel: 'Full swing practice — hit more fairways', count: 2 },
+            ]);
+            mockSchedulePracticeReminder.mockResolvedValue('notif-id');
+            const { getByTestId } = render(<Reminders />);
+            await act(async () => {
+                fireEvent.press(getByTestId('generate-practice-plan-button'));
+            });
+            expect(mockAddPracticeReminderService).toHaveBeenCalledTimes(3);
+        });
+
+        it('schedulesRemindersOneWeekApart', async () => {
+            mockGetTopSinsForPracticePlanService.mockReturnValue([
+                { reminderLabel: 'Putting practice — reduce 3-putts', count: 5 },
+                { reminderLabel: 'Chipping practice — eliminate double chips', count: 3 },
+            ]);
+            mockSchedulePracticeReminder.mockResolvedValue('notif-id');
+            const { getByTestId } = render(<Reminders />);
+            await act(async () => {
+                fireEvent.press(getByTestId('generate-practice-plan-button'));
+            });
+            const firstDate = new Date(mockSchedulePracticeReminder.mock.calls[0][1]);
+            const secondDate = new Date(mockSchedulePracticeReminder.mock.calls[1][1]);
+            const diffDays = (secondDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24);
+            expect(diffDays).toBe(7);
+        });
+
+        it('showsNoDataMessageWhenNoSinData', async () => {
+            mockGetTopSinsForPracticePlanService.mockReturnValue([]);
+            const { getByTestId } = render(<Reminders />);
+            await act(async () => {
+                fireEvent.press(getByTestId('generate-practice-plan-button'));
+            });
+            expect(getByTestId('no-sin-data-message')).toBeTruthy();
         });
     });
 });

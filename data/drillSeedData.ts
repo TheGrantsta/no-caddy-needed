@@ -121,4 +121,32 @@ export const drillSeedData: DrillSeedRecord[] = [
         setUp: 'hit the sand without a ball, focusing on splashing the sand onto the green',
         howToPlay: 'splash sand onto the green. Repeat until you hit the target',
     },
+    // Full swing
+    {
+        category: 'full-swing',
+        label: 'Gate',
+        iconName: 'data-array',
+        target: '7 / 10',
+        objective: 'improve accuracy and ball flight control off the tee',
+        setUp: 'place two alignment sticks just wider than a driver head on your target line',
+        howToPlay: 'hit 10 drives through the gate. Repeat until you hit the target',
+    },
+    {
+        category: 'full-swing',
+        label: 'Tempo',
+        iconName: 'speed',
+        target: '8 / 10',
+        objective: 'build a consistent swing tempo to find more fairways',
+        setUp: 'select a fairway target and place an alignment stick along your feet',
+        howToPlay: 'count 1 (backswing) 2 (downswing) on each shot. Repeat until you hit the target',
+    },
+    {
+        category: 'full-swing',
+        label: 'Rehearsal',
+        iconName: 'replay',
+        target: '3 / 3',
+        objective: 'groove a reliable pre-shot routine to reduce penalty shots',
+        setUp: 'select a target and stand behind the ball',
+        howToPlay: 'take 2 practice swings then step in and hit. Three shots in a row on target wins',
+    },
 ];

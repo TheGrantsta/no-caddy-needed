@@ -18,7 +18,7 @@ export type GameData = {
     howToPlay: string;
 };
 
-export type ShortGameCategory = 'putting' | 'chipping' | 'pitching' | 'bunker';
+export type ShortGameCategory = 'putting' | 'chipping' | 'pitching' | 'bunker' | 'full-swing';
 
 export type ShortGameConfig = {
     category: ShortGameCategory;

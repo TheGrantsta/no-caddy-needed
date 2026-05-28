@@ -701,7 +701,7 @@ describe('Drills table seeding', () => {
         );
         const sql = seedCall![0] as string;
         const rowSeparators = (sql.match(/\), \(/g) || []).length;
-        expect(rowSeparators).toBe(11);
+        expect(rowSeparators).toBe(14);
     });
 
     it('does not seed when Drills table already has rows', async () => {

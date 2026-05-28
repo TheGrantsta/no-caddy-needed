@@ -49,6 +49,7 @@ import {
     getAllHoleNotesForCourse,
     upsertHoleNote,
     deleteHoleNote,
+    getSinFrequenciesSync,
 } from '../database/db';
 
 export type WedgeChartClub = {
@@ -587,6 +588,35 @@ export const getParAveragesService = (rounds: Round[]): ParAverages => {
         totals[par]?.count > 0 ? totals[par].sum / totals[par].count : null;
 
     return { par3: avg(3), par4: avg(4), par5: avg(5) };
+};
+
+const SIN_TO_PRACTICE: Record<string, { category: string; reminderLabel: string }> = {
+    ThreePutts: { category: 'Putting', reminderLabel: 'Putting practice — reduce 3-putts' },
+    DoubleChips: { category: 'Chipping', reminderLabel: 'Chipping practice — eliminate double chips' },
+    DoubleBogeys: { category: 'Chipping', reminderLabel: 'Chipping practice — reduce double bogeys' },
+    BogeysInside9Iron: { category: 'Pitching', reminderLabel: 'Pitching practice — sharpen approach shots' },
+    BogeysPar5: { category: 'Pitching', reminderLabel: 'Pitching practice — improve par 5 approaches' },
+    TroubleOffTee: { category: 'Full swing', reminderLabel: 'Full swing practice — hit more fairways' },
+    Penalties: { category: 'Full swing', reminderLabel: 'Full swing practice — improve course management' },
+};
+
+export type PracticePlanItem = { reminderLabel: string; count: number };
+
+export const getTopSinsForPracticePlanService = (): PracticePlanItem[] => {
+    const freqs = getSinFrequenciesSync();
+    const entries = (Object.keys(SIN_TO_PRACTICE) as string[])
+        .map(key => ({ ...SIN_TO_PRACTICE[key], count: (freqs as any)[key] as number }))
+        .filter(e => e.count > 0)
+        .sort((a, b) => b.count - a.count);
+
+    const seen = new Set<string>();
+    return entries.reduce<PracticePlanItem[]>((acc, e) => {
+        if (!seen.has(e.category)) {
+            seen.add(e.category);
+            acc.push({ reminderLabel: e.reminderLabel, count: e.count });
+        }
+        return acc;
+    }, []);
 };
 
 export const updateScorecardService = async (roundId: number, updatedScores: { id: number; score: number }[]): Promise<boolean> => {

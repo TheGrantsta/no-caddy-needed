@@ -23,3 +23,9 @@ export const bunkerConfig: ShortGameConfig = {
     drillsFooter: 'Practicing different techniques & improving your feel will increase your confidence & reduce missed opportunities',
     gamesFooter: 'Games are designed to replicate game pressure, so only use ONE ball',
 };
+
+export const fullSwingConfig: ShortGameConfig = {
+    category: 'full-swing',
+    drillsFooter: 'Consistent tempo and a reliable pre-shot routine are the foundations of hitting more fairways',
+    gamesFooter: 'Games are designed to replicate game pressure, so only use ONE ball',
+};

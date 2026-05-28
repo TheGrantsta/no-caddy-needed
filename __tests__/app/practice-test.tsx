@@ -80,7 +80,7 @@ describe('Practice page ', () => {
 
         expect(getByText('Practice')).toBeTruthy();
         expect(getByText('Make your practice time more effective')).toBeTruthy();
-        expect(getByText('Short game practice')).toBeTruthy();
+        expect(getByText('Practice areas')).toBeTruthy();
     });
 
     it('renders correctly short game options', () => {
@@ -263,5 +263,15 @@ describe('Practice page ', () => {
         expect(saveSettingsService).toHaveBeenCalledWith(
             expect.objectContaining({ practiceOnboardingSeen: true })
         );
+    });
+
+    it('practiceAreasSectionIsLabelledPracticeAreas', () => {
+        const { getByText } = render(<View />);
+        expect(getByText('Practice areas')).toBeTruthy();
+    });
+
+    it('showsFullSwingTileInPracticeAreas', () => {
+        const { getByText } = render(<View />);
+        expect(getByText('Full swing')).toBeTruthy();
     });
 });

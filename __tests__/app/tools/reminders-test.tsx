@@ -275,34 +275,52 @@ describe('Reminders screen', () => {
             expect(getByTestId('generate-practice-plan-button')).toBeTruthy();
         });
 
-        it('createsOneReminderPerTopSinWhenGenerated', async () => {
+        it('createsThreeRemindersForTopSinOnly', async () => {
             mockGetTopSinsForPracticePlanService.mockReturnValue([
-                { reminderLabel: 'Putting practice — reduce 3-putts', count: 5 },
-                { reminderLabel: 'Chipping practice — eliminate double chips', count: 3 },
-                { reminderLabel: 'Full swing practice — hit more fairways', count: 2 },
+                { reminderLabel: 'Putting practice — reduce 3-putts', drillLabel: 'Ladder', count: 5 },
+                { reminderLabel: 'Chipping practice — eliminate double chips', drillLabel: 'Hoop', count: 3 },
             ]);
             mockSchedulePracticeReminder.mockResolvedValue('notif-id');
             const { getByTestId } = render(<Reminders />);
             await act(async () => {
                 fireEvent.press(getByTestId('generate-practice-plan-button'));
             });
+            // only the top sin — 3 sessions, not 6
             expect(mockAddPracticeReminderService).toHaveBeenCalledTimes(3);
         });
 
-        it('schedulesRemindersOneWeekApart', async () => {
+        it('schedulesSessionsAtDays0And7And14', async () => {
             mockGetTopSinsForPracticePlanService.mockReturnValue([
-                { reminderLabel: 'Putting practice — reduce 3-putts', count: 5 },
-                { reminderLabel: 'Chipping practice — eliminate double chips', count: 3 },
+                { reminderLabel: 'Putting practice — reduce 3-putts', drillLabel: 'Ladder', count: 5 },
             ]);
             mockSchedulePracticeReminder.mockResolvedValue('notif-id');
             const { getByTestId } = render(<Reminders />);
             await act(async () => {
                 fireEvent.press(getByTestId('generate-practice-plan-button'));
             });
-            const firstDate = new Date(mockSchedulePracticeReminder.mock.calls[0][1]);
-            const secondDate = new Date(mockSchedulePracticeReminder.mock.calls[1][1]);
-            const diffDays = (secondDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24);
-            expect(diffDays).toBe(7);
+            expect(mockSchedulePracticeReminder).toHaveBeenCalledTimes(3);
+            const d0 = new Date(mockSchedulePracticeReminder.mock.calls[0][1]);
+            const d7 = new Date(mockSchedulePracticeReminder.mock.calls[1][1]);
+            const d14 = new Date(mockSchedulePracticeReminder.mock.calls[2][1]);
+            expect((d7.getTime() - d0.getTime()) / (1000 * 60 * 60 * 24)).toBe(7);
+            expect((d14.getTime() - d0.getTime()) / (1000 * 60 * 60 * 24)).toBe(14);
+        });
+
+        it('labelsEachReminderWithSessionNumber', async () => {
+            mockGetTopSinsForPracticePlanService.mockReturnValue([
+                { reminderLabel: 'Putting practice — reduce 3-putts', drillLabel: 'Ladder', count: 5 },
+            ]);
+            mockSchedulePracticeReminder.mockResolvedValue('notif-id');
+            const { getByTestId } = render(<Reminders />);
+            await act(async () => {
+                fireEvent.press(getByTestId('generate-practice-plan-button'));
+            });
+            expect(mockAddPracticeReminderService).toHaveBeenNthCalledWith(1,
+                'Putting practice — reduce 3-putts: Ladder drill (Session 1 of 3)', expect.any(String), expect.anything());
+            expect(mockAddPracticeReminderService).toHaveBeenNthCalledWith(2,
+                'Putting practice — reduce 3-putts: Ladder drill (Session 2 of 3)', expect.any(String), expect.anything());
+            expect(mockAddPracticeReminderService).toHaveBeenNthCalledWith(3,
+                'Putting practice — reduce 3-putts: Ladder drill (Session 3 of 3)', expect.any(String), expect.anything());
         });
 
         it('showsNoDataMessageWhenNoSinData', async () => {
@@ -314,25 +332,19 @@ describe('Reminders screen', () => {
             expect(getByTestId('no-sin-data-message')).toBeTruthy();
         });
 
-        it('doesNotCreateDuplicateRemindersForAlreadyExistingLabels', async () => {
+        it('doesNotRegenerateWhenAnySessionLabelAlreadyExists', async () => {
             mockGetPracticeRemindersService.mockReturnValue([
-                { Id: 1, Label: 'Putting practice — reduce 3-putts', ScheduledFor: new Date().toISOString(), NotificationId: 'n1', Created_At: new Date().toISOString() },
+                { Id: 1, Label: 'Putting practice — reduce 3-putts: Ladder drill (Session 1 of 3)', ScheduledFor: new Date().toISOString(), NotificationId: 'n1', Created_At: new Date().toISOString() },
             ]);
             mockGetTopSinsForPracticePlanService.mockReturnValue([
-                { reminderLabel: 'Putting practice — reduce 3-putts', count: 5 },
-                { reminderLabel: 'Chipping practice — eliminate double chips', count: 3 },
+                { reminderLabel: 'Putting practice — reduce 3-putts', drillLabel: 'Ladder', count: 5 },
             ]);
             mockSchedulePracticeReminder.mockResolvedValue('notif-id');
             const { getByTestId } = render(<Reminders />);
             await act(async () => {
                 fireEvent.press(getByTestId('generate-practice-plan-button'));
             });
-            expect(mockAddPracticeReminderService).toHaveBeenCalledTimes(1);
-            expect(mockAddPracticeReminderService).toHaveBeenCalledWith(
-                'Chipping practice — eliminate double chips',
-                expect.any(String),
-                expect.anything()
-            );
+            expect(mockAddPracticeReminderService).not.toHaveBeenCalled();
         });
     });
 });

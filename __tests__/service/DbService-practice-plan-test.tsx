@@ -53,4 +53,10 @@ describe('getTopSinsForPracticePlanService', () => {
         const result = getTopSinsForPracticePlanService();
         expect(result[0].reminderLabel).toBe('Putting practice — reduce 3-putts');
     });
+
+    it('includesDrillLabelInResult', () => {
+        mockGetSinFrequenciesSync.mockReturnValue({ ...allZeros, ThreePutts: 4 });
+        const result = getTopSinsForPracticePlanService();
+        expect(result[0].drillLabel).toBe('Ladder');
+    });
 });

@@ -81,14 +81,21 @@ export default function Reminders() {
             return;
         }
         setNoSinData(false);
+        const topSin = topSins[0];
+        const baseLabel = `${topSin.reminderLabel}: ${topSin.drillLabel} drill`;
         const existingLabels = new Set(reminders.map(r => r.Label));
-        const newSins = topSins.filter(s => !existingLabels.has(s.reminderLabel));
+        const alreadyScheduled = [1, 2, 3].some(n => existingLabels.has(`${baseLabel} (Session ${n} of 3)`));
+        if (alreadyScheduled) {
+            loadReminders();
+            return;
+        }
         const startMonday = getNextMonday();
-        for (let i = 0; i < newSins.length; i++) {
+        for (let session = 1; session <= 3; session++) {
+            const sessionLabel = `${baseLabel} (Session ${session} of 3)`;
             const scheduledDate = new Date(startMonday);
-            scheduledDate.setDate(scheduledDate.getDate() + i * 7);
-            const notifId = await schedulePracticeReminder(newSins[i].reminderLabel, scheduledDate);
-            await addPracticeReminderService(newSins[i].reminderLabel, scheduledDate.toISOString(), notifId);
+            scheduledDate.setDate(scheduledDate.getDate() + (session - 1) * 7);
+            const notifId = await schedulePracticeReminder(sessionLabel, scheduledDate);
+            await addPracticeReminderService(sessionLabel, scheduledDate.toISOString(), notifId);
         }
         loadReminders();
     };

@@ -151,6 +151,7 @@ describe('getSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
+            practiceFrequencyDays: 7,
         });
     });
 
@@ -166,6 +167,7 @@ describe('getSettingsService', () => {
             PlayOnboardingSeen: 0,
             HomeOnboardingSeen: 0,
             PracticeOnboardingSeen: 0,
+            PracticeFrequencyDays: 7,
         });
 
         const result = getSettingsService();
@@ -179,6 +181,7 @@ describe('getSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
+            practiceFrequencyDays: 7,
         });
     });
 
@@ -194,6 +197,7 @@ describe('getSettingsService', () => {
             PlayOnboardingSeen: 0,
             HomeOnboardingSeen: 0,
             PracticeOnboardingSeen: 0,
+            PracticeFrequencyDays: 7,
         });
 
         const result = getSettingsService();
@@ -207,6 +211,7 @@ describe('getSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
+            practiceFrequencyDays: 7,
         });
     });
 
@@ -222,6 +227,7 @@ describe('getSettingsService', () => {
             PlayOnboardingSeen: 0,
             HomeOnboardingSeen: 0,
             PracticeOnboardingSeen: 0,
+            PracticeFrequencyDays: 7,
         });
 
         const result = getSettingsService();
@@ -235,6 +241,7 @@ describe('getSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
+            practiceFrequencyDays: 7,
         });
     });
 
@@ -250,6 +257,7 @@ describe('getSettingsService', () => {
             PlayOnboardingSeen: 1,
             HomeOnboardingSeen: 0,
             PracticeOnboardingSeen: 0,
+            PracticeFrequencyDays: 7,
         });
 
         const result = getSettingsService();
@@ -263,6 +271,7 @@ describe('getSettingsService', () => {
             playOnboardingSeen: true,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
+            practiceFrequencyDays: 7,
         });
     });
 });
@@ -344,12 +353,13 @@ describe('saveSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
+            practiceFrequencyDays: 7,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7);
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
@@ -364,12 +374,13 @@ describe('saveSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
+            practiceFrequencyDays: 7,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 7);
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
@@ -384,11 +395,12 @@ describe('saveSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
+            practiceFrequencyDays: 7,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 7);
     });
 });

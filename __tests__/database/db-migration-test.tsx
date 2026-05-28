@@ -318,6 +318,7 @@ describe('Settings table column migration', () => {
                 { name: 'PlayOnboardingSeen' },
                 { name: 'HomeOnboardingSeen' },
                 { name: 'PracticeOnboardingSeen' },
+                { name: 'PracticeFrequencyDays' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },
@@ -408,7 +409,7 @@ describe('old Drills to DrillHistory rename migration', () => {
         { name: 'Voice' }, { name: 'SoundsEnabled' },
         { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
         { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
-        { name: 'PracticeOnboardingSeen' },
+        { name: 'PracticeOnboardingSeen' }, { name: 'PracticeFrequencyDays' },
     ];
     const allDeadlySinsCols = [
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
@@ -559,7 +560,7 @@ describe('DrillHistory DrillId column migration', () => {
         { name: 'Voice' }, { name: 'SoundsEnabled' },
         { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
         { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
-        { name: 'PracticeOnboardingSeen' },
+        { name: 'PracticeOnboardingSeen' }, { name: 'PracticeFrequencyDays' },
     ];
     const allDeadlySinsCols = [
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
@@ -625,7 +626,7 @@ describe('Drills table seeding', () => {
         { name: 'Voice' }, { name: 'SoundsEnabled' },
         { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
         { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
-        { name: 'PracticeOnboardingSeen' },
+        { name: 'PracticeOnboardingSeen' }, { name: 'PracticeFrequencyDays' },
     ];
     const allDeadlySinsCols = [
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },

@@ -26,23 +26,23 @@ describe('getSettingsService', () => {
 
         const result = getSettingsService();
 
-        expect(result).toEqual({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        expect(result).toEqual({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
     });
 
     it('returns settings from database', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'male', SoundsEnabled: 1, WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0 });
+        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'male', SoundsEnabled: 1, WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0, PracticeFrequencyDays: 7 });
 
         const result = getSettingsService();
 
-        expect(result).toEqual({ notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        expect(result).toEqual({ notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
     });
 
     it('maps NotificationsEnabled 0 to false', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 0, Voice: 'neutral', SoundsEnabled: 0, WedgeChartOnboardingSeen: 1, DistancesOnboardingSeen: 1, PlayOnboardingSeen: 1, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0 });
+        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 0, Voice: 'neutral', SoundsEnabled: 0, WedgeChartOnboardingSeen: 1, DistancesOnboardingSeen: 1, PlayOnboardingSeen: 1, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0, PracticeFrequencyDays: 7 });
 
         const result = getSettingsService();
 
-        expect(result).toEqual({ notificationsEnabled: false, voice: 'neutral', soundsEnabled: false, wedgeChartOnboardingSeen: true, distancesOnboardingSeen: true, playOnboardingSeen: true, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        expect(result).toEqual({ notificationsEnabled: false, voice: 'neutral', soundsEnabled: false, wedgeChartOnboardingSeen: true, distancesOnboardingSeen: true, playOnboardingSeen: true, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
     });
 
     it('maps SoundsEnabled 0 to false', () => {
@@ -126,80 +126,80 @@ describe('saveSettingsService', () => {
     it('saves settings to database', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
-        const settings: AppSettings = { notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
+        const settings: AppSettings = { notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 };
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 0, 7);
     });
 
     it('maps notificationsEnabled true to 1', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
-        const settings: AppSettings = { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
+        const settings: AppSettings = { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 };
         await saveSettingsService(settings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7);
     });
 
     it('maps wedgeChartOnboardingSeen true to 1', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
-        const settings: AppSettings = { notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: true, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
+        const settings: AppSettings = { notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: true, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 };
         await saveSettingsService(settings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 7);
     });
 
     it('maps playOnboardingSeen true to 1', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
-        const settings: AppSettings = { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: true, homeOnboardingSeen: false, practiceOnboardingSeen: false };
+        const settings: AppSettings = { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: true, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 };
         await saveSettingsService(settings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 1, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 1, 0, 0, 7);
     });
 
     it('maps homeOnboardingSeen true to 1', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
-        const settings: AppSettings = { notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: true, practiceOnboardingSeen: false };
+        const settings: AppSettings = { notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: true, practiceOnboardingSeen: false, practiceFrequencyDays: 7 };
         await saveSettingsService(settings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 1, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 1, 0, 7);
     });
 
     it('maps practiceOnboardingSeen true to 1', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
-        const settings: AppSettings = { notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: true };
+        const settings: AppSettings = { notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: true, practiceFrequencyDays: 7 };
         await saveSettingsService(settings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 1, 7);
     });
 
     it('passes voice male to saveSettings', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
-        const settings: AppSettings = { notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
+        const settings: AppSettings = { notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 };
         await saveSettingsService(settings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'male', 1, 0, 0, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'male', 1, 0, 0, 0, 0, 0, 7);
     });
 
     it('passes voice neutral to saveSettings', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
-        const settings: AppSettings = { notificationsEnabled: true, voice: 'neutral', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
+        const settings: AppSettings = { notificationsEnabled: true, voice: 'neutral', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 };
         await saveSettingsService(settings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'neutral', 1, 0, 0, 0, 0, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'neutral', 1, 0, 0, 0, 0, 0, 7);
     });
 
     it('returns false when save fails', async () => {
         mockSaveSettings.mockResolvedValue(false);
 
-        const result = await saveSettingsService({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        const result = await saveSettingsService({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
 
         expect(result).toBe(false);
     });

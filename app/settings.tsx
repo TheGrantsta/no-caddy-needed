@@ -58,6 +58,16 @@ export default function Settings() {
     showResult(success, 'Settings saved', 'Failed to save settings');
   };
 
+  const handleFrequencyChange = async (delta: number) => {
+    const next = Math.max(1, settings.practiceFrequencyDays + delta);
+    const updated: AppSettings = { ...settings, practiceFrequencyDays: next };
+    setSettings(updated);
+
+    const success = await saveSettingsService(updated);
+
+    showResult(success, 'Settings saved', 'Failed to save settings');
+  };
+
   const voiceButtonStyles = useMemo(() => ({
     base: {
       flex: 1,
@@ -157,6 +167,32 @@ export default function Settings() {
                 </TouchableOpacity>
               );
             })}
+          </View>
+        </View>
+
+        <View style={styles.contentSection}>
+          <View style={styles.headerContainer}>
+            <Text style={[styles.subHeaderText, styles.marginTop]}>Practice</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, gap: 16 }}>
+            <Text style={styles.normalText}>Practice every</Text>
+            <TouchableOpacity
+              testID="practice-frequency-decrement"
+              onPress={() => handleFrequencyChange(-1)}
+              style={[voiceButtonStyles.base, { flex: 0, paddingHorizontal: 16 }]}
+            >
+              <Text style={voiceButtonStyles.unselectedText}>−</Text>
+            </TouchableOpacity>
+            <Text testID="practice-frequency-value" style={styles.normalText}>{settings.practiceFrequencyDays}</Text>
+            <TouchableOpacity
+              testID="practice-frequency-increment"
+              onPress={() => handleFrequencyChange(1)}
+              style={[voiceButtonStyles.base, { flex: 0, paddingHorizontal: 16 }]}
+            >
+              <Text style={voiceButtonStyles.unselectedText}>+</Text>
+            </TouchableOpacity>
+            <Text style={styles.normalText}>days</Text>
           </View>
         </View>
 

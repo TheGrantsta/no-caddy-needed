@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Reminders from '../../../app/tools/reminders';
-import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, getTopSinsForPracticePlanService } from '../../../service/DbService';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, getTopSinsForPracticePlanService, getSettingsService } from '../../../service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder } from '../../../service/NotificationService';
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -62,6 +62,7 @@ jest.mock('../../../service/DbService', () => ({
     addPracticeReminderService: jest.fn().mockResolvedValue(true),
     deletePracticeReminderService: jest.fn().mockResolvedValue(true),
     getTopSinsForPracticePlanService: jest.fn().mockReturnValue([]),
+    getSettingsService: jest.fn().mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 }),
 }));
 
 const mockGetPracticeRemindersService = getPracticeRemindersService as jest.Mock;
@@ -70,12 +71,14 @@ const mockDeletePracticeReminderService = deletePracticeReminderService as jest.
 const mockSchedulePracticeReminder = schedulePracticeReminder as jest.Mock;
 const mockCancelPracticeReminder = cancelPracticeReminder as jest.Mock;
 const mockGetTopSinsForPracticePlanService = getTopSinsForPracticePlanService as jest.Mock;
+const mockGetSettingsService = getSettingsService as jest.Mock;
 
 describe('Reminders screen', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockGetPracticeRemindersService.mockReturnValue([]);
         mockSchedulePracticeReminder.mockResolvedValue('notif-id-1');
+        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
     });
 
     it('renders the screen heading', () => {
@@ -330,6 +333,21 @@ describe('Reminders screen', () => {
                 fireEvent.press(getByTestId('generate-practice-plan-button'));
             });
             expect(getByTestId('no-sin-data-message')).toBeTruthy();
+        });
+
+        it('usesSettingsPracticeFrequencyForSpacing', async () => {
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 3 });
+            mockGetTopSinsForPracticePlanService.mockReturnValue([
+                { reminderLabel: 'Putting practice — reduce 3-putts', drillLabel: 'Ladder', count: 5 },
+            ]);
+            mockSchedulePracticeReminder.mockResolvedValue('notif-id');
+            const { getByTestId } = render(<Reminders />);
+            await act(async () => {
+                fireEvent.press(getByTestId('generate-practice-plan-button'));
+            });
+            const d0 = new Date(mockSchedulePracticeReminder.mock.calls[0][1]);
+            const d1 = new Date(mockSchedulePracticeReminder.mock.calls[1][1]);
+            expect((d1.getTime() - d0.getTime()) / (1000 * 60 * 60 * 24)).toBe(3);
         });
 
         it('doesNotRegenerateWhenAnySessionLabelAlreadyExists', async () => {

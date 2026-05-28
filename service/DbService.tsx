@@ -519,13 +519,14 @@ export type AppSettings = {
     playOnboardingSeen: boolean;
     homeOnboardingSeen: boolean;
     practiceOnboardingSeen: boolean;
+    practiceFrequencyDays: number;
 };
 
 export const getSettingsService = (): AppSettings => {
-    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number } | null;
+    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; PracticeFrequencyDays: number } | null;
 
     if (!row) {
-        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false };
+        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 };
     }
 
     return {
@@ -537,11 +538,12 @@ export const getSettingsService = (): AppSettings => {
         playOnboardingSeen: row.PlayOnboardingSeen === 1,
         homeOnboardingSeen: row.HomeOnboardingSeen === 1,
         practiceOnboardingSeen: row.PracticeOnboardingSeen === 1,
+        practiceFrequencyDays: row.PracticeFrequencyDays ?? 7,
     };
 };
 
 export const saveSettingsService = async (settings: AppSettings): Promise<boolean> => {
-    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0);
+    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0, settings.practiceFrequencyDays);
 };
 
 export type PracticeReminder = {

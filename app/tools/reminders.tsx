@@ -7,7 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
-import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, getTopSinsForPracticePlanService, PracticeReminder } from '@/service/DbService';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, getTopSinsForPracticePlanService, getSettingsService, PracticeReminder } from '@/service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder } from '../../service/NotificationService';
 
 const getNextMonday = (): Date => {
@@ -90,10 +90,11 @@ export default function Reminders() {
             return;
         }
         const startMonday = getNextMonday();
+        const { practiceFrequencyDays } = getSettingsService();
         for (let session = 1; session <= 3; session++) {
             const sessionLabel = `${baseLabel} (Session ${session} of 3)`;
             const scheduledDate = new Date(startMonday);
-            scheduledDate.setDate(scheduledDate.getDate() + (session - 1) * 7);
+            scheduledDate.setDate(scheduledDate.getDate() + (session - 1) * practiceFrequencyDays);
             const notifId = await schedulePracticeReminder(sessionLabel, scheduledDate);
             await addPracticeReminderService(sessionLabel, scheduledDate.toISOString(), notifId);
         }

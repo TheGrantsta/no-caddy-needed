@@ -57,6 +57,6 @@
 - [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
 
 # Release notes
-* Add or edit hole-specific strategy notes
+* Add "Generate practice plan" to Reminder section to prioritise areas for practice based on 7 Deadly Sins
 * Amend 7 Deadly Sins to auto-select options based on the score
-* Enable adding strategy notes for each hole
+* Enable adding strategy notes for each hole to play more strategically

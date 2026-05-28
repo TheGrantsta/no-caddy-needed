@@ -313,5 +313,26 @@ describe('Reminders screen', () => {
             });
             expect(getByTestId('no-sin-data-message')).toBeTruthy();
         });
+
+        it('doesNotCreateDuplicateRemindersForAlreadyExistingLabels', async () => {
+            mockGetPracticeRemindersService.mockReturnValue([
+                { Id: 1, Label: 'Putting practice — reduce 3-putts', ScheduledFor: new Date().toISOString(), NotificationId: 'n1', Created_At: new Date().toISOString() },
+            ]);
+            mockGetTopSinsForPracticePlanService.mockReturnValue([
+                { reminderLabel: 'Putting practice — reduce 3-putts', count: 5 },
+                { reminderLabel: 'Chipping practice — eliminate double chips', count: 3 },
+            ]);
+            mockSchedulePracticeReminder.mockResolvedValue('notif-id');
+            const { getByTestId } = render(<Reminders />);
+            await act(async () => {
+                fireEvent.press(getByTestId('generate-practice-plan-button'));
+            });
+            expect(mockAddPracticeReminderService).toHaveBeenCalledTimes(1);
+            expect(mockAddPracticeReminderService).toHaveBeenCalledWith(
+                'Chipping practice — eliminate double chips',
+                expect.any(String),
+                expect.anything()
+            );
+        });
     });
 });

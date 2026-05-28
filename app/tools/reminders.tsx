@@ -81,12 +81,14 @@ export default function Reminders() {
             return;
         }
         setNoSinData(false);
+        const existingLabels = new Set(reminders.map(r => r.Label));
+        const newSins = topSins.filter(s => !existingLabels.has(s.reminderLabel));
         const startMonday = getNextMonday();
-        for (let i = 0; i < topSins.length; i++) {
+        for (let i = 0; i < newSins.length; i++) {
             const scheduledDate = new Date(startMonday);
             scheduledDate.setDate(scheduledDate.getDate() + i * 7);
-            const notifId = await schedulePracticeReminder(topSins[i].reminderLabel, scheduledDate);
-            await addPracticeReminderService(topSins[i].reminderLabel, scheduledDate.toISOString(), notifId);
+            const notifId = await schedulePracticeReminder(newSins[i].reminderLabel, scheduledDate);
+            await addPracticeReminderService(newSins[i].reminderLabel, scheduledDate.toISOString(), notifId);
         }
         loadReminders();
     };

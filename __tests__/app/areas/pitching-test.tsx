@@ -1,6 +1,6 @@
 import React, { act } from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import View from '../../../app/short-game/bunker';
+import View from '../../../app/areas/pitching';
 import { insertDrillResultService } from '@/service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -27,9 +27,10 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
+const mockShow = jest.fn();
 jest.mock('react-native-toast-notifications', () => ({
     useToast: () => ({
-        show: jest.fn(),
+        show: mockShow,
     }),
 }));
 
@@ -40,14 +41,14 @@ jest.mock('react-native-safe-area-context', () => ({
 jest.mock('@/service/DbService', () => ({
     insertDrillResultService: jest.fn().mockResolvedValue(true),
     getDrillsByCategoryService: jest.fn().mockReturnValue([
-        { id: 10, label: 'Line', iconName: 'linear-scale', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
-        { id: 11, label: 'Dollar bill', iconName: 'money', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
-        { id: 12, label: 'No ball', iconName: 'sports-golf', target: '10 / 12', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 7, label: 'Three ball', iconName: 'track-changes', target: '3 / 3', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 8, label: 'Wedge', iconName: 'av-timer', target: '3 / 3', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 9, label: 'Ladder', iconName: 'sort', target: '10 / 12', objective: 'o', setup: 's', howToPlay: 'h' },
     ]),
     getGamesByCategoryService: jest.fn().mockReturnValue([
-        { id: 10, header: 'Up and down challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
-        { id: 11, header: 'Worst lie challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
-        { id: 12, header: '10-Point game!', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 7, header: 'Three club!', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 8, header: 'Target challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 9, header: '5-ball game!', objective: 'o', setup: 's', howToPlay: 'h' },
     ]),
     insertGameService: jest.fn().mockResolvedValue(true),
     deleteGameService: jest.fn().mockResolvedValue(true),
@@ -56,59 +57,66 @@ jest.mock('@/service/DbService', () => ({
     restoreDrillService: jest.fn().mockResolvedValue(true),
 }));
 
+const mockInsertDrillResultService = insertDrillResultService as jest.Mock;
+
 jest.useFakeTimers();
 
-describe('Bunker page ', () => {
+describe('Pitching page ', () => {
+    beforeEach(() => {
+        mockShow.mockClear();
+        mockInsertDrillResultService.mockClear();
+        mockInsertDrillResultService.mockResolvedValue(true);
+    });
     it('renders correctly with the default text', () => {
         const { getByText } = render(<View />);
 
-        expect(getByText('Bunker drills')).toBeTruthy();
+        expect(getByText('Pitching drills')).toBeTruthy();
     });
 
-    it('renders correctly the bunker drills', () => {
+    it('renders correctly the pitching drills', () => {
         const { getByText } = render(<View />);
 
-        expect(getByText('Line')).toBeTruthy();
-        expect(getByText('Dollar bill')).toBeTruthy();
-        expect(getByText('No ball')).toBeTruthy();
+        expect(getByText('Three ball')).toBeTruthy();
+        expect(getByText('Wedge')).toBeTruthy();
+        expect(getByText('Ladder')).toBeTruthy();
     });
 
     it('renders correctly with the games heading', () => {
         const { getByText, getByTestId } = render(<View />);
 
-        const subMenuItem = getByTestId('bunker-sub-menu-bunker-games');
+        const subMenuItem = getByTestId('pitching-sub-menu-pitching-games');
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Bunker games')).toBeTruthy();
+        expect(getByText('Pitching games')).toBeTruthy();
     });
 
     it('renders correctly with the games', () => {
         const { getByText, getByTestId } = render(<View />);
 
-        const subMenuItem = getByTestId('bunker-sub-menu-bunker-games');
+        const subMenuItem = getByTestId('pitching-sub-menu-pitching-games');
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Up and down challenge!')).toBeTruthy();
-        expect(getByText('Worst lie challenge!')).toBeTruthy();
-        expect(getByText('10-Point game!')).toBeTruthy();
+        expect(getByText('Three club!')).toBeTruthy();
+        expect(getByText('Target challenge!')).toBeTruthy();
+        expect(getByText('5-ball game!')).toBeTruthy();
     });
 
     it('switches back to drills section when SubMenu is used', () => {
         const { getByTestId, getByText } = render(<View />);
 
-        let subMenuItem = getByTestId('bunker-sub-menu-bunker-games');
+        let subMenuItem = getByTestId('pitching-sub-menu-pitching-games');
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Bunker games')).toBeTruthy();
+        expect(getByText('Pitching games')).toBeTruthy();
 
-        subMenuItem = getByTestId('bunker-sub-menu-bunker-drills');
+        subMenuItem = getByTestId('pitching-sub-menu-pitching-drills');
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Bunker drills')).toBeTruthy();
+        expect(getByText('Pitching drills')).toBeTruthy();
     });
 
     it('calls insert button when saving drill result', () => {
@@ -123,7 +131,24 @@ describe('Bunker page ', () => {
             jest.runOnlyPendingTimers();
             jest.advanceTimersByTime(1000);
 
-            expect(insertDrillResultService).toHaveBeenCalledTimes(1);
+            expect(mockInsertDrillResultService).toHaveBeenCalledTimes(1);
         });
+    });
+
+    it('shows error toast when saving drill result fails', async () => {
+        mockInsertDrillResultService.mockResolvedValueOnce(false);
+        mockShow.mockClear();
+
+        const { getAllByTestId } = render(<View />);
+
+        const saveButtons = getAllByTestId('save-drill-result-button');
+
+        await act(async () => {
+            fireEvent.press(saveButtons[0]);
+            jest.runOnlyPendingTimers();
+            jest.advanceTimersByTime(1000);
+        });
+
+        expect(mockShow).toHaveBeenCalledWith(expect.stringContaining('not saved'), expect.any(Object));
     });
 });

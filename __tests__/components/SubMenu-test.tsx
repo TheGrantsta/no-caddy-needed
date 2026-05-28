@@ -22,17 +22,17 @@ describe('SubMenu component', () => {
     describe('Practice sub menu', () => {
         it('renders practice menu items', () => {
             const { getByText } = render(
-                <SubMenu showSubMenu="practice" selectedItem="short-game" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="practice" selectedItem="areas" handleSubMenu={mockHandleSubMenu} />
             );
 
-            expect(getByText('Short game')).toBeTruthy();
+            expect(getByText('Areas')).toBeTruthy();
             expect(getByText('Tools')).toBeTruthy();
             expect(getByText('History')).toBeTruthy();
         });
 
         it('calls handleSubMenu when Tools is pressed', () => {
             const { getByTestId } = render(
-                <SubMenu showSubMenu="practice" selectedItem="short-game" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="practice" selectedItem="areas" handleSubMenu={mockHandleSubMenu} />
             );
 
             fireEvent.press(getByTestId('practice-sub-menu-tools'));
@@ -42,7 +42,7 @@ describe('SubMenu component', () => {
 
         it('calls handleSubMenu when History is pressed', () => {
             const { getByTestId } = render(
-                <SubMenu showSubMenu="practice" selectedItem="short-game" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="practice" selectedItem="areas" handleSubMenu={mockHandleSubMenu} />
             );
 
             fireEvent.press(getByTestId('practice-sub-menu-history'));

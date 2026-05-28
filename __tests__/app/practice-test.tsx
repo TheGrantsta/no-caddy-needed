@@ -83,7 +83,7 @@ describe('Practice page ', () => {
         expect(getByText('Practice areas')).toBeTruthy();
     });
 
-    it('renders correctly short game options', () => {
+    it('renders correctly practice area options', () => {
         const { getByText } = render(<View />);
 
         expect(getByText('Putting')).toBeTruthy();

@@ -28,7 +28,7 @@ export default function Practice() {
   const { landscapePadding } = useOrientation();
   const [showOnboarding, setShowOnboarding] = useState(() => !getSettingsService().practiceOnboardingSeen);
   const [refreshing, setRefreshing] = useState(false);
-  const [section, setSection] = useState('short-game');
+  const [section, setSection] = useState('areas');
   const [loading, setLoading] = useState(true);
   const [drillHistoryIndex, setDrillHistoryIndex] = useState(0);
   const [drillHistory, setDrillHistory] = useState<any[]>([]);
@@ -49,7 +49,7 @@ export default function Practice() {
 
   const handleSubMenu = (sectionName: string) => {
     setSection(sectionName);
-    if (sectionName === 'short-game') logEvent('view_short_game');
+    if (sectionName === 'areas') logEvent('view_areas');
     if (sectionName === 'tools') logEvent('view_tools');
     if (sectionName === 'history') logEvent('view_history');
   };
@@ -134,7 +134,7 @@ export default function Practice() {
         </View>
 
         {/* Practice areas */}
-        {displaySection('short-game') && (
+        {displaySection('areas') && (
           <View>
             <Text style={[styles.subHeaderText, styles.marginTop]}>
               Practice areas
@@ -142,7 +142,7 @@ export default function Practice() {
 
             <View style={styles.navGrid}>
               <View style={styles.navRow}>
-                <Link href="../short-game/putting" style={styles.navCardLink}>
+                <Link href="../areas/putting" style={styles.navCardLink}>
                   <View style={styles.navCard}>
                     <View style={styles.iconCircle}>
                       <MaterialIcons name="adjust" size={36} color={colours.white} />
@@ -150,7 +150,7 @@ export default function Practice() {
                     <Text style={styles.navCardLabel}>Putting</Text>
                   </View>
                 </Link>
-                <Link href="../short-game/chipping" style={styles.navCardLink}>
+                <Link href="../areas/chipping" style={styles.navCardLink}>
                   <View style={styles.navCard}>
                     <View style={styles.iconCircle}>
                       <MaterialIcons name="filter-tilt-shift" size={36} color={colours.white} />
@@ -160,7 +160,7 @@ export default function Practice() {
                 </Link>
               </View>
               <View style={styles.navRow}>
-                <Link href="../short-game/pitching" style={styles.navCardLink}>
+                <Link href="../areas/pitching" style={styles.navCardLink}>
                   <View style={styles.navCard}>
                     <View style={styles.iconCircle}>
                       <MaterialIcons name="golf-course" size={36} color={colours.white} />
@@ -168,7 +168,7 @@ export default function Practice() {
                     <Text style={styles.navCardLabel}>Pitching</Text>
                   </View>
                 </Link>
-                <Link href="../short-game/bunker" style={styles.navCardLink}>
+                <Link href="../areas/bunker" style={styles.navCardLink}>
                   <View style={styles.navCard}>
                     <View style={styles.iconCircle}>
                       <MaterialIcons name="beach-access" size={36} color={colours.white} />
@@ -178,7 +178,7 @@ export default function Practice() {
                 </Link>
               </View>
               <View style={styles.navRow}>
-                <Link href="../short-game/full-swing" style={styles.navCardLink}>
+                <Link href="../areas/full-swing" style={styles.navCardLink}>
                   <View style={styles.navCard}>
                     <View style={styles.iconCircle}>
                       <MaterialIcons name="sports-golf" size={36} color={colours.white} />

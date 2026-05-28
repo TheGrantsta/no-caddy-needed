@@ -1,6 +1,6 @@
 import React, { act } from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import View from '../../../app/short-game/putting';
+import View from '../../../app/areas/bunker';
 import { insertDrillResultService } from '@/service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -40,14 +40,14 @@ jest.mock('react-native-safe-area-context', () => ({
 jest.mock('@/service/DbService', () => ({
     insertDrillResultService: jest.fn().mockResolvedValue(true),
     getDrillsByCategoryService: jest.fn().mockReturnValue([
-        { id: 1, label: 'Gate', iconName: 'data-array', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
-        { id: 2, label: 'Clock', iconName: 'schedule', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
-        { id: 3, label: 'Ladder', iconName: 'sort', target: '10 / 12', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 10, label: 'Line', iconName: 'linear-scale', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 11, label: 'Dollar bill', iconName: 'money', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 12, label: 'No ball', iconName: 'sports-golf', target: '10 / 12', objective: 'o', setup: 's', howToPlay: 'h' },
     ]),
     getGamesByCategoryService: jest.fn().mockReturnValue([
-        { id: 1, header: 'Around the world!', objective: 'o', setup: 's', howToPlay: 'h' },
-        { id: 2, header: 'Ladder challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
-        { id: 3, header: 'Par 18!', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 10, header: 'Up and down challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 11, header: 'Worst lie challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 12, header: '10-Point game!', objective: 'o', setup: 's', howToPlay: 'h' },
     ]),
     insertGameService: jest.fn().mockResolvedValue(true),
     deleteGameService: jest.fn().mockResolvedValue(true),
@@ -58,39 +58,57 @@ jest.mock('@/service/DbService', () => ({
 
 jest.useFakeTimers();
 
-describe('Putting page ', () => {
+describe('Bunker page ', () => {
     it('renders correctly with the default text', () => {
         const { getByText } = render(<View />);
 
-        expect(getByText('Putting drills')).toBeTruthy();
+        expect(getByText('Bunker drills')).toBeTruthy();
     });
 
-    it('renders correctly the putting drills', () => {
+    it('renders correctly the bunker drills', () => {
         const { getByText } = render(<View />);
 
-        expect(getByText('Clock')).toBeTruthy();
+        expect(getByText('Line')).toBeTruthy();
+        expect(getByText('Dollar bill')).toBeTruthy();
+        expect(getByText('No ball')).toBeTruthy();
     });
 
     it('renders correctly with the games heading', () => {
         const { getByText, getByTestId } = render(<View />);
 
-        const subMenuItem = getByTestId('putting-sub-menu-putting-games');
+        const subMenuItem = getByTestId('bunker-sub-menu-bunker-games');
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Putting games')).toBeTruthy();
+        expect(getByText('Bunker games')).toBeTruthy();
     });
 
     it('renders correctly with the games', () => {
         const { getByText, getByTestId } = render(<View />);
 
-        const subMenuItem = getByTestId('putting-sub-menu-putting-games');
+        const subMenuItem = getByTestId('bunker-sub-menu-bunker-games');
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Around the world!')).toBeTruthy();
-        expect(getByText('Ladder challenge!')).toBeTruthy();
-        expect(getByText('Par 18!')).toBeTruthy();
+        expect(getByText('Up and down challenge!')).toBeTruthy();
+        expect(getByText('Worst lie challenge!')).toBeTruthy();
+        expect(getByText('10-Point game!')).toBeTruthy();
+    });
+
+    it('switches back to drills section when SubMenu is used', () => {
+        const { getByTestId, getByText } = render(<View />);
+
+        let subMenuItem = getByTestId('bunker-sub-menu-bunker-games');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Bunker games')).toBeTruthy();
+
+        subMenuItem = getByTestId('bunker-sub-menu-bunker-drills');
+
+        fireEvent.press(subMenuItem);
+
+        expect(getByText('Bunker drills')).toBeTruthy();
     });
 
     it('calls insert button when saving drill result', () => {

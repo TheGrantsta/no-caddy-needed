@@ -2,7 +2,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
-    showSubMenu: 'practice' | 'play' | 'perform' | 'putting' | 'chipping' | 'bunker' | 'pitching';
+    showSubMenu: 'practice' | 'play' | 'perform' | 'putting' | 'chipping' | 'bunker' | 'pitching' | 'full-swing';
     selectedItem: string;
     handleSubMenu: (arg: string) => void;
 }
@@ -11,7 +11,7 @@ const allSubMenuItems = [
     { testId: 'play-sub-menu-score', name: 'play-score', title: 'Play' },
     { testId: 'play-sub-menu-distances', name: 'play-distances', title: 'Distances' },
     { testId: 'play-sub-menu-wedge-chart', name: 'play-wedge-chart', title: 'Wedge chart' },
-    { testId: 'practice-sub-menu-short-game', name: 'short-game', title: 'Short game' },
+    { testId: 'practice-sub-menu-areas', name: 'areas', title: 'Areas' },
     { testId: 'practice-sub-menu-tools', name: 'tools', title: 'Tools' },
     { testId: 'practice-sub-menu-history', name: 'history', title: 'History' },
     { testId: 'perform-sub-menu-approach', name: 'approach', title: 'Approach' },
@@ -24,6 +24,8 @@ const allSubMenuItems = [
     { testId: 'pitching-sub-menu-pitching-games', name: 'pitching-games', title: 'Games' },
     { testId: 'bunker-sub-menu-bunker-drills', name: 'bunker-drills', title: 'Drills' },
     { testId: 'bunker-sub-menu-bunker-games', name: 'bunker-games', title: 'Games' },
+    { testId: 'full-swing-sub-menu-full-swing-drills', name: 'full-swing-drills', title: 'Drills' },
+    { testId: 'full-swing-sub-menu-full-swing-games', name: 'full-swing-games', title: 'Games' },
 ]
 
 const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {

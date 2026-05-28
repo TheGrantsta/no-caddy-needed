@@ -92,7 +92,7 @@ function ThemedApp() {
             },
           }} />
         <Stack.Screen
-          name="short-game/putting"
+          name="areas/putting"
           options={{
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
@@ -103,7 +103,7 @@ function ThemedApp() {
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen
-          name="short-game/chipping"
+          name="areas/chipping"
           options={{
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
@@ -114,7 +114,7 @@ function ThemedApp() {
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen
-          name="short-game/pitching"
+          name="areas/pitching"
           options={{
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
@@ -125,7 +125,18 @@ function ThemedApp() {
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen
-          name="short-game/bunker"
+          name="areas/bunker"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.primary,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
+          name="areas/full-swing"
           options={{
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",

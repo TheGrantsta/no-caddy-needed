@@ -1,6 +1,6 @@
 import React, { act } from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import View from '../../../app/short-game/chipping';
+import View from '../../../app/areas/putting';
 import { insertDrillResultService } from '@/service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -40,14 +40,14 @@ jest.mock('react-native-safe-area-context', () => ({
 jest.mock('@/service/DbService', () => ({
     insertDrillResultService: jest.fn().mockResolvedValue(true),
     getDrillsByCategoryService: jest.fn().mockReturnValue([
-        { id: 4, label: 'Gate', iconName: 'horizontal-distribute', target: '10 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
-        { id: 5, label: 'Hoop', iconName: 'adjust', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
-        { id: 6, label: 'One hand', iconName: 'back-hand', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 1, label: 'Gate', iconName: 'data-array', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 2, label: 'Clock', iconName: 'schedule', target: '8 / 10', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 3, label: 'Ladder', iconName: 'sort', target: '10 / 12', objective: 'o', setup: 's', howToPlay: 'h' },
     ]),
     getGamesByCategoryService: jest.fn().mockReturnValue([
-        { id: 4, header: 'Up & down challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
-        { id: 5, header: 'Ladder challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
-        { id: 6, header: 'Par 18!', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 1, header: 'Around the world!', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 2, header: 'Ladder challenge!', objective: 'o', setup: 's', howToPlay: 'h' },
+        { id: 3, header: 'Par 18!', objective: 'o', setup: 's', howToPlay: 'h' },
     ]),
     insertGameService: jest.fn().mockResolvedValue(true),
     deleteGameService: jest.fn().mockResolvedValue(true),
@@ -58,39 +58,37 @@ jest.mock('@/service/DbService', () => ({
 
 jest.useFakeTimers();
 
-describe('Chipping page ', () => {
+describe('Putting page ', () => {
     it('renders correctly with the default text', () => {
         const { getByText } = render(<View />);
 
-        expect(getByText('Chipping drills')).toBeTruthy();
+        expect(getByText('Putting drills')).toBeTruthy();
     });
 
-    it('renders correctly the chipping drills', () => {
+    it('renders correctly the putting drills', () => {
         const { getByText } = render(<View />);
 
-        expect(getByText('Gate')).toBeTruthy();
-        expect(getByText('Hoop')).toBeTruthy();
-        expect(getByText('One hand')).toBeTruthy();
+        expect(getByText('Clock')).toBeTruthy();
     });
 
     it('renders correctly with the games heading', () => {
         const { getByText, getByTestId } = render(<View />);
 
-        const subMenuItem = getByTestId('chipping-sub-menu-chipping-games');
+        const subMenuItem = getByTestId('putting-sub-menu-putting-games');
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Chipping games')).toBeTruthy();
+        expect(getByText('Putting games')).toBeTruthy();
     });
 
     it('renders correctly with the games', () => {
         const { getByText, getByTestId } = render(<View />);
 
-        const subMenuItem = getByTestId('chipping-sub-menu-chipping-games');
+        const subMenuItem = getByTestId('putting-sub-menu-putting-games');
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Up & down challenge!')).toBeTruthy();
+        expect(getByText('Around the world!')).toBeTruthy();
         expect(getByText('Ladder challenge!')).toBeTruthy();
         expect(getByText('Par 18!')).toBeTruthy();
     });

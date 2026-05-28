@@ -61,7 +61,7 @@ const ShortGameScreen = ({ config }: Props) => {
         return () => clearTimeout(timer);
     }, [lastDeletedDrillId]);
 
-    const categoryCapitalized = category.charAt(0).toUpperCase() + category.slice(1);
+    const categoryCapitalized = category.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
     const handleSubMenu = (sectionName: string) => {
         setSection(sectionName);

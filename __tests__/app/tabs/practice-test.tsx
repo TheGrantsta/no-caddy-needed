@@ -249,15 +249,15 @@ describe('Practice', () => {
             expect(mockLogEvent).toHaveBeenCalledWith('view_history');
         });
 
-        it('logs view_short_game when Short game sub-menu tab pressed', () => {
+        it('logs view_areas when Areas sub-menu tab pressed', () => {
             const { getByTestId } = render(<Practice />);
 
             fireEvent.press(getByTestId('practice-sub-menu-tools'));
             mockLogEvent.mockClear();
 
-            fireEvent.press(getByTestId('practice-sub-menu-short-game'));
+            fireEvent.press(getByTestId('practice-sub-menu-areas'));
 
-            expect(mockLogEvent).toHaveBeenCalledWith('view_short_game');
+            expect(mockLogEvent).toHaveBeenCalledWith('view_areas');
         });
     });
 

@@ -39,6 +39,7 @@ const ShortGameScreen = ({ config }: Props) => {
     const [lastDeletedGameId, setLastDeletedGameId] = useState<number | null>(null);
     const [lastDeletedDrillId, setLastDeletedDrillId] = useState<number | null>(null);
     const flatListRef = useRef(null);
+    const isSavingDrillRef = useRef(false);
 
     useEffect(() => {
         setDrills(getDrillsByCategoryService(category));
@@ -72,8 +73,11 @@ const ShortGameScreen = ({ config }: Props) => {
     };
 
     const saveDrillResultHandle = (label: string, result: boolean, drillId: number | null) => {
+        if (isSavingDrillRef.current) return;
+        isSavingDrillRef.current = true;
         insertDrillResultService(`${categoryCapitalized} - ${label}`, result, drillId).then((success) => {
             showResult(success, "Drill result saved", "Drill result not saved");
+            isSavingDrillRef.current = false;
         });
     };
 

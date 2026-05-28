@@ -40,28 +40,35 @@ export default function Reminders() {
     const [refreshKey, setRefreshKey] = useState(0);
     const [swipedOpen, setSwipedOpen] = useState<Set<number>>(new Set());
     const [noSinData, setNoSinData] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const loadReminders = () => {
         setReminders(sortBySoonest(getPracticeRemindersService()));
     };
 
     const handleSaveReminder = async () => {
+        if (isSaving) return;
         if (!reminderLabel.trim()) {
             setLabelError('Reminder label is required');
             return;
         }
-        const scheduledDate = new Date(reminderDate);
-        scheduledDate.setHours(9, 0, 0, 0);
-        const notificationId = await schedulePracticeReminder(reminderLabel, scheduledDate);
-        await addPracticeReminderService(reminderLabel, scheduledDate.toISOString(), notificationId);
-        loadReminders();
-        setShowAddForm(false);
-        setReminderLabel('');
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(12, 0, 0, 0);
-        setReminderDate(tomorrow);
-        setLabelError('');
+        setIsSaving(true);
+        try {
+            const scheduledDate = new Date(reminderDate);
+            scheduledDate.setHours(9, 0, 0, 0);
+            const notificationId = await schedulePracticeReminder(reminderLabel, scheduledDate);
+            await addPracticeReminderService(reminderLabel, scheduledDate.toISOString(), notificationId);
+            loadReminders();
+            setShowAddForm(false);
+            setReminderLabel('');
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(12, 0, 0, 0);
+            setReminderDate(tomorrow);
+            setLabelError('');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const onRefresh = () => {

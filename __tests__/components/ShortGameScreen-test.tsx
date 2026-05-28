@@ -172,6 +172,24 @@ describe('ShortGameScreen', () => {
         expect(mockInsertDrillResultService).toHaveBeenCalledWith('Chipping - Hoop', true, 2);
     });
 
+    it('doesNotSaveDrillResultTwiceWhenSaveButtonPressedRapidly', async () => {
+        const resolvers: (() => void)[] = [];
+        mockInsertDrillResultService.mockImplementation(() => new Promise(resolve => {
+            resolvers.push(() => resolve(true));
+        }));
+
+        const { getAllByTestId } = render(<ShortGameScreen config={config} />);
+        const saveButtons = getAllByTestId('save-drill-result-button');
+
+        // Tap save twice before first resolves
+        fireEvent.press(saveButtons[0]);
+        fireEvent.press(saveButtons[0]);
+
+        await act(async () => { resolvers.forEach(r => r()); });
+
+        expect(mockInsertDrillResultService).toHaveBeenCalledTimes(1);
+    });
+
     it('loadsDrillsFromServiceOnMount', () => {
         render(<ShortGameScreen config={config} />);
 

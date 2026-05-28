@@ -37,6 +37,7 @@ jest.mock('../../../assets/random-number', () => ({
 
 jest.mock('expo-speech', () => ({
     speak: jest.fn(),
+    stop: jest.fn(),
     getAvailableVoicesAsync: jest.fn(),
 }));
 
@@ -369,6 +370,17 @@ describe('Random number generator page', () => {
         render(<Random />);
 
         expect(() => act(() => capturedResultHandler!({ results: [{ transcript: null }] }))).not.toThrow();
+    });
+
+    it('stopsPreviousSpeechBeforeGeneratingNewNumber', async () => {
+        mockGetSettingsService.mockReturnValue({ ...defaultSettings, soundsEnabled: true });
+        mockGetAvailableVoicesAsync.mockResolvedValue([]);
+        const { getByTestId } = render(<Random />);
+
+        await act(async () => { fireEvent.press(getByTestId('save-button')); });
+        await act(async () => { fireEvent.press(getByTestId('save-button')); });
+
+        expect(Speech.stop).toHaveBeenCalled();
     });
 
     describe('onRefresh', () => {

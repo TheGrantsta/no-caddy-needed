@@ -112,6 +112,27 @@ describe('Reminders screen', () => {
         expect(picker.props.minimumDate.toDateString()).toBe(today.toDateString());
     });
 
+    it('doesNotSaveTwiceIfSaveButtonPressedWhileSaveInProgress', async () => {
+        const resolvers: (() => void)[] = [];
+        mockSchedulePracticeReminder.mockImplementation(() => new Promise(resolve => {
+            resolvers.push(() => resolve('notif-id'));
+        }));
+
+        const { getByTestId } = render(<Reminders />);
+        fireEvent.press(getByTestId('add-reminder-button'));
+        fireEvent.changeText(getByTestId('reminder-label-input'), 'Test reminder');
+
+        // Tap Save twice before first resolves
+        fireEvent.press(getByTestId('save-reminder-button'));
+        fireEvent.press(getByTestId('save-reminder-button'));
+
+        // Resolve all pending saves
+        await act(async () => { resolvers.forEach(r => r()); });
+
+        // Should only save once despite two taps
+        expect(mockAddPracticeReminderService).toHaveBeenCalledTimes(1);
+    });
+
     it('shouldShowErrorWhenSavingWithEmptyLabel', () => {
         const { getByTestId, getByText } = render(<Reminders />);
         fireEvent.press(getByTestId('add-reminder-button'));

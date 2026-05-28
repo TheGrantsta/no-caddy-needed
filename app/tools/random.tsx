@@ -97,6 +97,7 @@ export default function Random() {
             setRandomNumber(number);
             const settings = getSettingsService();
             if (number > 0 && settings.soundsEnabled) {
+                Speech.stop();
                 const options = await getVoiceOptions(settings.voice);
                 Speech.speak(String(number), options);
             }

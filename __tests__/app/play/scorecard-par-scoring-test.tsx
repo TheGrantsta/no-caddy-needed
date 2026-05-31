@@ -234,4 +234,43 @@ describe('Scorecard par scoring', () => {
             expect(getByTestId('player-total-1')).toHaveTextContent('(-1)');
         });
     });
+
+    describe('Scoring bogeys on all par 3 and par 5 holes', () => {
+        const enterBogeyOnAllSpecialHoles = (getByTestId: ReturnType<typeof render>['getByTestId']) => {
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            for (const hole of [7, 9, 10, 13, 14]) {
+                fireEvent.press(getByTestId(`score-cell-${hole}-1`));
+                fireEvent.press(getByTestId('score-editor-increment'));
+            }
+        };
+
+        it('shouldShowGross76WhenBogeyOnAllPar3AndPar5Holes', () => {
+            const { getByTestId } = render(<ScorecardScreen />);
+            enterBogeyOnAllSpecialHoles(getByTestId);
+            expect(getByTestId('round-player-1-total')).toHaveTextContent('76');
+        });
+
+        it('shouldShowPlusFiveWhenBogeyOnAllPar3AndPar5Holes', () => {
+            const { getByTestId } = render(<ScorecardScreen />);
+            enterBogeyOnAllSpecialHoles(getByTestId);
+            expect(getByTestId('player-total-1')).toHaveTextContent('(+5)');
+        });
+
+        it('shouldSaveAllBogeyChangesWhenBogeyOnAllPar3AndPar5Holes', async () => {
+            const { getByTestId } = render(<ScorecardScreen />);
+            enterBogeyOnAllSpecialHoles(getByTestId);
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [
+                    { id: 106, score: 4 },
+                    { id: 108, score: 6 },
+                    { id: 109, score: 4 },
+                    { id: 112, score: 6 },
+                    { id: 113, score: 4 },
+                ]);
+            });
+        });
+    });
 });

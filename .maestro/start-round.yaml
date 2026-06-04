@@ -1,0 +1,244 @@
+appId: com.grantsta.golf.nocaddyneeded
+---
+# E2E: Start Round — par 72 (par-3s: 3,6,12,15 | par-5s: 5,8,13,16)
+
+# Launch fresh — clears DB and app state
+- launchApp:
+    clearState: true
+
+# Wait for home onboarding (first-launch)
+- extendedWaitUntil:
+    visible:
+      id: "next-button"
+    timeout: 90000
+
+# Complete home onboarding (3 steps)
+- tapOn:
+    id: "next-button"
+- tapOn:
+    id: "next-button"
+- tapOn:
+    id: "done-button"
+
+# Wait for home screen
+- extendedWaitUntil:
+    visible: "No caddy needed!"
+    timeout: 15000
+
+# Navigate to Play screen
+- tapOn:
+    id: "home-play-link"
+
+# Complete play onboarding (first-launch)
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+- tapOn:
+    text: ".*Done.*"
+    index: 0
+
+# Wait for Start Round button
+- extendedWaitUntil:
+    visible:
+      id: "start-round-button"
+    timeout: 10000
+
+# Open player setup
+- tapOn:
+    id: "start-round-button"
+
+# Wait for course name input
+- extendedWaitUntil:
+    visible:
+      id: "course-name-input"
+    timeout: 5000
+
+# Enter course name and start
+- tapOn:
+    id: "course-name-input"
+- inputText: "E2E Test Course"
+- tapOn:
+    id: "start-button"
+
+# ------- Hole-by-hole scoring -------
+# Par 4: 1,2,4,7,9,10,11,14,17,18
+# Par 3: 3,6,12,15
+# Par 5: 5,8,13,16
+
+# Hole 1 — Par 4
+- extendedWaitUntil:
+    visible: "#1"
+    timeout: 10000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 2 — Par 4
+- extendedWaitUntil:
+    visible: "#2"
+    timeout: 5000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 3 — Par 3
+- extendedWaitUntil:
+    visible: "#3"
+    timeout: 5000
+- tapOn:
+    id: "par-3-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 4 — Par 4
+- extendedWaitUntil:
+    visible: "#4"
+    timeout: 5000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 5 — Par 5
+- extendedWaitUntil:
+    visible: "#5"
+    timeout: 5000
+- tapOn:
+    id: "par-5-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 6 — Par 3
+- extendedWaitUntil:
+    visible: "#6"
+    timeout: 5000
+- tapOn:
+    id: "par-3-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 7 — Par 4
+- extendedWaitUntil:
+    visible: "#7"
+    timeout: 5000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 8 — Par 5
+- extendedWaitUntil:
+    visible: "#8"
+    timeout: 5000
+- tapOn:
+    id: "par-5-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 9 — Par 4
+- extendedWaitUntil:
+    visible: "#9"
+    timeout: 5000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 10 — Par 4
+- extendedWaitUntil:
+    visible: "#10"
+    timeout: 5000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 11 — Par 4
+- extendedWaitUntil:
+    visible: "#11"
+    timeout: 5000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 12 — Par 3
+- extendedWaitUntil:
+    visible: "#12"
+    timeout: 5000
+- tapOn:
+    id: "par-3-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 13 — Par 5
+- extendedWaitUntil:
+    visible: "#13"
+    timeout: 5000
+- tapOn:
+    id: "par-5-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 14 — Par 4
+- extendedWaitUntil:
+    visible: "#14"
+    timeout: 5000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 15 — Par 3
+- extendedWaitUntil:
+    visible: "#15"
+    timeout: 5000
+- tapOn:
+    id: "par-3-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 16 — Par 5
+- extendedWaitUntil:
+    visible: "#16"
+    timeout: 5000
+- tapOn:
+    id: "par-5-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 17 — Par 4
+- extendedWaitUntil:
+    visible: "#17"
+    timeout: 5000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 18 — Par 4 (next-hole-button triggers end-round confirmation)
+- extendedWaitUntil:
+    visible: "#18"
+    timeout: 5000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# ------- End round -------
+- extendedWaitUntil:
+    visible:
+      id: "confirm-end-round-button"
+    timeout: 5000
+- tapOn:
+    id: "confirm-end-round-button"
+
+# Assert scorecard is displayed
+- extendedWaitUntil:
+    visible: "Scorecard"
+    timeout: 10000

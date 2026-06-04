@@ -34,6 +34,14 @@ describe('HoleScoreInput', () => {
         expect(getByText('#1')).toBeTruthy();
     });
 
+    it('shouldExposeHoleNumberViaTestId', () => {
+        const { getByTestId } = render(
+            <HoleScoreInput holeNumber={5} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+        );
+
+        expect(getByTestId('hole-number-text')).toHaveTextContent('#5');
+    });
+
     it('shows par selector with 3, 4, 5 options', () => {
         const { getByTestId } = render(
             <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />

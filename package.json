@@ -13,6 +13,7 @@
     "test:coverage": "jest --coverage",
     "test:changed": "jest --onlyChanged",
     "lint": "expo lint",
+    "test:e2e": "maestro test .maestro/start-round.yaml",
     "ui:check": "node scripts/ui-diff.js",
     "ui:update": "node scripts/ui-update.js",
     "metrics": "node scripts/metrics.js",

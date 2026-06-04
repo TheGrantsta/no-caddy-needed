@@ -60,6 +60,7 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "course-name-input"
 - inputText: "E2E Test Course"
+- hideKeyboard
 - tapOn:
     id: "start-button"
 

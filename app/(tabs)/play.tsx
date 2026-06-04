@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as Haptics from 'expo-haptics';
-import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import HoleScoreInput from '../../components/HoleScoreInput';
 import HoleNoteInput from '../../components/HoleNoteInput';
@@ -71,6 +71,14 @@ export default function Play() {
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
+    // Mirror of screenOptions.tabBarStyle in app/(tabs)/_layout.tsx — needed to restore after hiding
+    const defaultTabBarStyle = useMemo(
+        () => Platform.select({
+            ios: { position: 'absolute' as const, backgroundColor: colours.background, height: 80 },
+            default: { backgroundColor: colours.background, height: 80 },
+        }),
+        [colours.background]
+    );
     const [refreshing, setRefreshing] = useState(false);
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
     const [currentHole, setCurrentHole] = useState(1);
@@ -90,6 +98,7 @@ export default function Play() {
     const [recentPlayerNames, setRecentPlayerNames] = useState<string[]>([]);
     const { showError, showResult } = useAppToast();
     const router = useRouter();
+    const navigation = useNavigation();
     const [settings, setSettings] = useState(getSettingsService());
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [historyFilter, setHistoryFilter] = useState<1 | 10 | 'all'>('all');
@@ -147,6 +156,17 @@ export default function Play() {
             if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
         };
     }, []);
+
+    const tabBarHidden = useRef(false);
+    useEffect(() => {
+        if (activeRoundId !== null) {
+            tabBarHidden.current = true;
+            navigation.setOptions({ tabBarStyle: { display: 'none' } });
+        } else if (tabBarHidden.current) {
+            tabBarHidden.current = false;
+            navigation.setOptions({ tabBarStyle: defaultTabBarStyle });
+        }
+    }, [activeRoundId, navigation, defaultTabBarStyle]);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);

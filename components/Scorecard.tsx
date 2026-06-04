@@ -74,7 +74,7 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                         </View>
                     ))}
                     <View style={s.holeCell}>
-                        <Text style={s.holeNumberText}>Tot</Text>
+                        <Text style={s.holeNumberText}>T</Text>
                     </View>
                 </View>
 

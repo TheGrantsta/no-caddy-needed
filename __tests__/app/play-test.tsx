@@ -983,6 +983,89 @@ describe('Play screen', () => {
 
             expect(getByTestId('hole-note-text')).toHaveTextContent('hole 1 note');
         });
+
+        describe('Par score amendment from pre-selected value', () => {
+            it('savesAmendedParWhenChangedFrom3To4', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+                mockGetCourseHolePars.mockReturnValue({ 1: 3 });
+
+                const { getByTestId } = render(<Play />);
+
+                fireEvent.press(getByTestId('start-round-button'));
+                fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+                fireEvent.press(getByTestId('start-button'));
+
+                await waitFor(() => expect(getByTestId('par-4-button')).toBeTruthy());
+                fireEvent.press(getByTestId('par-4-button'));
+
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+
+                await waitFor(() => {
+                    expect(mockAddMultiplayerHoleScores).toHaveBeenCalledWith(1, 1, 4, [
+                        { playerId: 1, playerName: 'You', score: 4 },
+                    ]);
+                    expect(mockAddMultiplayerHoleScores).not.toHaveBeenCalledWith(1, 1, 3, expect.anything());
+                });
+            });
+
+            it('savesAmendedParWhenChangedFrom4To5', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+                mockGetCourseHolePars.mockReturnValue({ 1: 4 });
+
+                const { getByTestId } = render(<Play />);
+
+                fireEvent.press(getByTestId('start-round-button'));
+                fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+                fireEvent.press(getByTestId('start-button'));
+
+                await waitFor(() => expect(getByTestId('par-5-button')).toBeTruthy());
+                fireEvent.press(getByTestId('par-5-button'));
+
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+
+                await waitFor(() => {
+                    expect(mockAddMultiplayerHoleScores).toHaveBeenCalledWith(1, 1, 5, [
+                        { playerId: 1, playerName: 'You', score: 5 },
+                    ]);
+                    expect(mockAddMultiplayerHoleScores).not.toHaveBeenCalledWith(1, 1, 4, expect.anything());
+                });
+            });
+
+            it('savesAmendedParWhenChangedFrom5To4', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+                mockGetCourseHolePars.mockReturnValue({ 1: 5 });
+
+                const { getByTestId } = render(<Play />);
+
+                fireEvent.press(getByTestId('start-round-button'));
+                fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+                fireEvent.press(getByTestId('start-button'));
+
+                await waitFor(() => expect(getByTestId('par-4-button')).toBeTruthy());
+                fireEvent.press(getByTestId('par-4-button'));
+
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+
+                await waitFor(() => {
+                    expect(mockAddMultiplayerHoleScores).toHaveBeenCalledWith(1, 1, 4, [
+                        { playerId: 1, playerName: 'You', score: 4 },
+                    ]);
+                    expect(mockAddMultiplayerHoleScores).not.toHaveBeenCalledWith(1, 1, 5, expect.anything());
+                });
+            });
+        });
     });
 
     describe('Ending a round', () => {

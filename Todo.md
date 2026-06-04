@@ -60,3 +60,4 @@
 * Add "Generate practice plan" to Reminder section to prioritise areas for practice based on 7 Deadly Sins
 * Amend 7 Deadly Sins to auto-select options based on the score
 * Enable adding strategy notes for each hole to play more strategically
+* Auto-hide bottom toolbar when in score card mode to increase available vertical space

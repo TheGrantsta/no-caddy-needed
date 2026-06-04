@@ -242,3 +242,49 @@ appId: com.grantsta.golf.nocaddyneeded
 - extendedWaitUntil:
     visible: "Scorecard"
     timeout: 10000
+
+# Assert par-3 holes are recorded correctly
+- assertVisible:
+    id: "hole-par-3"
+    text: "3"
+- assertVisible:
+    id: "hole-par-6"
+    text: "3"
+- assertVisible:
+    id: "hole-par-12"
+    text: "3"
+- assertVisible:
+    id: "hole-par-15"
+    text: "3"
+
+# Assert par-5 holes are recorded correctly
+- assertVisible:
+    id: "hole-par-5"
+    text: "5"
+- assertVisible:
+    id: "hole-par-8"
+    text: "5"
+- assertVisible:
+    id: "hole-par-13"
+    text: "5"
+- assertVisible:
+    id: "hole-par-16"
+    text: "5"
+
+# Assert a sample par-4 hole
+- assertVisible:
+    id: "hole-par-1"
+    text: "4"
+
+# Assert nine-hole par totals (front 36 + back 36 = 72)
+- assertVisible:
+    id: "front9-par-total"
+    text: "36"
+- assertVisible:
+    id: "back9-par-total"
+    text: "36"
+
+# Assert player stroke total = 72 (scores reset to par on each hole)
+- assertVisible:
+    id: "round-player-1-total"
+    text: "72"

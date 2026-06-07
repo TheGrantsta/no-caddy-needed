@@ -15,6 +15,12 @@ import { useTheme } from '@/context/ThemeContext';
 
 LogBox.ignoreAllLogs();
 
+const _warn = console.warn;
+console.warn = (...args: Parameters<typeof console.warn>) => {
+    if (typeof args[0] === 'string' && args[0].includes('SafeAreaView has been deprecated')) return;
+    _warn(...args);
+};
+
 let Notifications: typeof import('expo-notifications') | null = null;
 try {
   Notifications = require('expo-notifications');

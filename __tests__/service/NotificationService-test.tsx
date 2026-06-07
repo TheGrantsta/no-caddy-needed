@@ -4,6 +4,7 @@ import {
     cancelAllRoundReminders,
     schedulePracticeReminder,
     cancelPracticeReminder,
+    scheduleDailyOverdueReminder,
 } from '../../service/NotificationService';
 import * as Notifications from 'expo-notifications';
 
@@ -119,6 +120,38 @@ describe('NotificationService', () => {
             await cancelAllRoundReminders();
 
             expect(mockCancel).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('scheduleDailyOverdueReminder', () => {
+        it('schedulesRepeatingCalendarNotificationAt7am', async () => {
+            mockSchedule.mockResolvedValue('daily-notif-id-1');
+
+            const result = await scheduleDailyOverdueReminder('Putting practice — reduce 3-putts');
+
+            expect(mockSchedule).toHaveBeenCalledWith({
+                content: {
+                    title: 'Practice reminder',
+                    body: 'Putting practice — reduce 3-putts',
+                },
+                trigger: {
+                    type: 'calendar',
+                    repeats: true,
+                    hour: 7,
+                    minute: 0,
+                },
+            });
+            expect(result).toBe('daily-notif-id-1');
+        });
+
+        it('returnsNullWhenSchedulingFails', async () => {
+            const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+            mockSchedule.mockRejectedValue(new Error('failed'));
+
+            const result = await scheduleDailyOverdueReminder('Test reminder');
+
+            expect(result).toBeNull();
+            consoleSpy.mockRestore();
         });
     });
 

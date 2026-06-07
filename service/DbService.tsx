@@ -46,6 +46,7 @@ import {
     getAllPracticeReminders,
     insertPracticeReminder,
     deletePracticeReminder,
+    updatePracticeReminderNotificationId,
     getHoleParsForCourse,
     getAllHoleNotesForCourse,
     upsertHoleNote,
@@ -561,6 +562,9 @@ export const addPracticeReminderService = (label: string, scheduledFor: string, 
     insertPracticeReminder(label, scheduledFor, notificationId);
 
 export const deletePracticeReminderService = (id: number) => deletePracticeReminder(id);
+
+export const updatePracticeReminderNotificationIdService = (id: number, notificationId: string | null) =>
+    updatePracticeReminderNotificationId(id, notificationId);
 
 export type ParAverages = {
     par3: number | null;

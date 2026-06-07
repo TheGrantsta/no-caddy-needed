@@ -842,6 +842,18 @@ export const deletePracticeReminder = async (id: number): Promise<boolean> => {
     return success;
 };
 
+export const updatePracticeReminderNotificationId = async (id: number, notificationId: string | null): Promise<void> => {
+    const db = await SQLite.openDatabaseAsync(dbName);
+    const statement = await db.prepareAsync(
+        'UPDATE PracticeReminders SET NotificationId = $NotificationId WHERE Id = $Id;'
+    );
+    try {
+        await statement.executeAsync({ $NotificationId: notificationId, $Id: id });
+    } finally {
+        await statement.finalizeAsync();
+    }
+};
+
 export const getAllRoundsWithPlayersAndScores = () => {
     const sql = `
         SELECT

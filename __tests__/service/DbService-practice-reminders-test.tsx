@@ -1,15 +1,17 @@
-import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService } from '../../service/DbService';
-import { getAllPracticeReminders, insertPracticeReminder, deletePracticeReminder } from '../../database/db';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, updatePracticeReminderNotificationIdService } from '../../service/DbService';
+import { getAllPracticeReminders, insertPracticeReminder, deletePracticeReminder, updatePracticeReminderNotificationId } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
     getAllPracticeReminders: jest.fn(),
     insertPracticeReminder: jest.fn(),
     deletePracticeReminder: jest.fn(),
+    updatePracticeReminderNotificationId: jest.fn(),
 }));
 
 const mockGetAllPracticeReminders = getAllPracticeReminders as jest.Mock;
 const mockInsertPracticeReminder = insertPracticeReminder as jest.Mock;
 const mockDeletePracticeReminder = deletePracticeReminder as jest.Mock;
+const mockUpdatePracticeReminderNotificationId = updatePracticeReminderNotificationId as jest.Mock;
 
 describe('getPracticeRemindersService', () => {
     beforeEach(() => {
@@ -55,6 +57,28 @@ describe('addPracticeReminderService', () => {
         await addPracticeReminderService('Test', '2026-03-15T08:00:00.000Z', null);
 
         expect(mockInsertPracticeReminder).toHaveBeenCalledWith('Test', '2026-03-15T08:00:00.000Z', null);
+    });
+});
+
+describe('updatePracticeReminderNotificationIdService', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('updatesNotificationIdForReminder', async () => {
+        mockUpdatePracticeReminderNotificationId.mockResolvedValue(undefined);
+
+        await updatePracticeReminderNotificationIdService(3, 'daily-notif-id-99');
+
+        expect(mockUpdatePracticeReminderNotificationId).toHaveBeenCalledWith(3, 'daily-notif-id-99');
+    });
+
+    it('passesNullNotificationId', async () => {
+        mockUpdatePracticeReminderNotificationId.mockResolvedValue(undefined);
+
+        await updatePracticeReminderNotificationIdService(7, null);
+
+        expect(mockUpdatePracticeReminderNotificationId).toHaveBeenCalledWith(7, null);
     });
 });
 

@@ -1,6 +1,4 @@
 # To do
-- [ ] Deprecation warning in debugger
-- [ ] Expo-notifications warning message
 - [ ] Support playing 6 x 3 hole 'courses'
 - [ ] Subscriptions flow and layout
 
@@ -51,14 +49,13 @@
 - [X] Add build version to bottom of Settings page
 - [X] Add test coverage tool and include in pre-hook push
 - [X] SafeAreaView has been deprecation warning message
+- [X] Expo-notifications warning message
 
 # Ignored
 - [-] Change tempo speed (faster or slower) using voice command ('caddy: faster / slower')
 - [-] Create 'skill' to run screen shots on remote push
 
 # Release notes
-* Add "Generate practice plan" to Reminder section to prioritise areas for practice based on 7 Deadly Sins
-* Amend 7 Deadly Sins to auto-select options based on the score
-* Enable adding strategy notes for each hole to play more strategically
-* Auto-hide bottom toolbar when in score card mode to increase available vertical space
 * Enable editing of the par score when editing score card
+* Enable repeat daily notifications for overdue reminders
+* Improved practice planner to give more emphasis to recent issues and alternative drills

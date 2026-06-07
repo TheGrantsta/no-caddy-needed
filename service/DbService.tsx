@@ -51,7 +51,8 @@ import {
     getAllHoleNotesForCourse,
     upsertHoleNote,
     deleteHoleNote,
-    getSinFrequenciesSync,
+    getSinFrequenciesForRoundsSync,
+    getCompletedRoundIdsSync,
 } from '../database/db';
 
 export type WedgeChartClub = {
@@ -597,20 +598,21 @@ export const getParAveragesService = (rounds: Round[]): ParAverages => {
     return { par3: avg(3), par4: avg(4), par5: avg(5) };
 };
 
-const SIN_TO_PRACTICE: Record<string, { category: string; reminderLabel: string; drillLabel: string }> = {
-    ThreePutts: { category: 'Putting', reminderLabel: 'Putting practice — reduce 3-putts', drillLabel: 'Ladder' },
-    DoubleChips: { category: 'Chipping', reminderLabel: 'Chipping practice — eliminate double chips', drillLabel: 'Hoop' },
-    DoubleBogeys: { category: 'Chipping', reminderLabel: 'Chipping practice — reduce double bogeys', drillLabel: 'Gate' },
-    BogeysInside9Iron: { category: 'Pitching', reminderLabel: 'Pitching practice — sharpen approach shots', drillLabel: 'Three ball' },
-    BogeysPar5: { category: 'Pitching', reminderLabel: 'Pitching practice — improve par 5 approaches', drillLabel: 'Ladder' },
-    TroubleOffTee: { category: 'Full swing', reminderLabel: 'Full swing practice — hit more fairways', drillLabel: 'Gate' },
-    Penalties: { category: 'Full swing', reminderLabel: 'Full swing practice — improve course management', drillLabel: 'Tempo' },
+const SIN_TO_PRACTICE: Record<string, { category: string; reminderLabel: string; drillLabels: string[] }> = {
+    ThreePutts:        { category: 'Putting',    reminderLabel: 'Putting practice — reduce 3-putts',                drillLabels: ['Ladder', 'Clock', 'Gate'] },
+    DoubleChips:       { category: 'Chipping',   reminderLabel: 'Chipping practice — eliminate double chips',       drillLabels: ['Hoop', 'Gate', 'Ladder'] },
+    DoubleBogeys:      { category: 'Chipping',   reminderLabel: 'Chipping practice — reduce double bogeys',         drillLabels: ['Gate', 'Clock', 'Hoop'] },
+    BogeysInside9Iron: { category: 'Pitching',   reminderLabel: 'Pitching practice — sharpen approach shots',       drillLabels: ['Three ball', 'Ladder', 'Gate'] },
+    BogeysPar5:        { category: 'Pitching',   reminderLabel: 'Pitching practice — improve par 5 approaches',     drillLabels: ['Ladder', 'Three ball', 'Gate'] },
+    TroubleOffTee:     { category: 'Full swing', reminderLabel: 'Full swing practice — hit more fairways',          drillLabels: ['Gate', 'Tempo', 'Ladder'] },
+    Penalties:         { category: 'Full swing', reminderLabel: 'Full swing practice — improve course management',  drillLabels: ['Tempo', 'Gate', 'Three ball'] },
 };
 
-export type PracticePlanItem = { reminderLabel: string; drillLabel: string; count: number };
+export type PracticePlanItem = { reminderLabel: string; drillLabels: string[]; count: number };
 
 export const getTopSinsForPracticePlanService = (): PracticePlanItem[] => {
-    const freqs = getSinFrequenciesSync();
+    const recentIds = getCompletedRoundIdsSync(10);
+    const freqs = getSinFrequenciesForRoundsSync(recentIds);
     const entries = (Object.keys(SIN_TO_PRACTICE) as string[])
         .map(key => ({ ...SIN_TO_PRACTICE[key], count: (freqs as any)[key] as number }))
         .filter(e => e.count > 0)
@@ -620,7 +622,7 @@ export const getTopSinsForPracticePlanService = (): PracticePlanItem[] => {
     return entries.reduce<PracticePlanItem[]>((acc, e) => {
         if (!seen.has(e.category)) {
             seen.add(e.category);
-            acc.push({ reminderLabel: e.reminderLabel, drillLabel: e.drillLabel, count: e.count });
+            acc.push({ reminderLabel: e.reminderLabel, drillLabels: e.drillLabels, count: e.count });
         }
         return acc;
     }, []);

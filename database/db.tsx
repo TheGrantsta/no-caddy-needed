@@ -905,3 +905,42 @@ export const getSinFrequenciesSync = (): {
         Penalties: row.Penalties ?? 0,
     };
 };
+
+type SinFrequencies = {
+    ThreePutts: number; DoubleBogeys: number; BogeysPar5: number;
+    BogeysInside9Iron: number; DoubleChips: number; TroubleOffTee: number; Penalties: number;
+};
+
+const ZERO_SIN_FREQUENCIES: SinFrequencies = {
+    ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0,
+    BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0,
+};
+
+export const getSinFrequenciesForRoundsSync = (roundIds: number[]): SinFrequencies => {
+    if (roundIds.length === 0) return { ...ZERO_SIN_FREQUENCIES };
+    const rows = getSyncDb().getAllSync(
+        `SELECT SUM(ThreePutts) as ThreePutts, SUM(DoubleBogeys) as DoubleBogeys,
+                SUM(BogeysPar5) as BogeysPar5, SUM(BogeysInside9Iron) as BogeysInside9Iron,
+                SUM(DoubleChips) as DoubleChips, SUM(TroubleOffTee) as TroubleOffTee,
+                SUM(Penalties) as Penalties
+         FROM HoleDeadlySins WHERE RoundId IN (${roundIds.join(',')})`
+    ) as any[];
+    const row = rows[0] ?? {};
+    return {
+        ThreePutts: row.ThreePutts ?? 0,
+        DoubleBogeys: row.DoubleBogeys ?? 0,
+        BogeysPar5: row.BogeysPar5 ?? 0,
+        BogeysInside9Iron: row.BogeysInside9Iron ?? 0,
+        DoubleChips: row.DoubleChips ?? 0,
+        TroubleOffTee: row.TroubleOffTee ?? 0,
+        Penalties: row.Penalties ?? 0,
+    };
+};
+
+export const getCompletedRoundIdsSync = (limit: number): number[] => {
+    const rows = getSyncDb().getAllSync(
+        'SELECT Id FROM Rounds WHERE IsCompleted = 1 ORDER BY Created_At DESC LIMIT ?',
+        [limit]
+    ) as { Id: number }[];
+    return rows.map(r => r.Id);
+};

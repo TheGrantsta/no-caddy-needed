@@ -2,7 +2,7 @@
   "expo": {
     "name": "No caddy needed",
     "slug": "no-caddy-needed",
-    "version": "2.0.15",
+    "version": "2.0.16",
     "orientation": "default",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
@@ -22,7 +22,9 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "This app does not access your photo library unless you choose to select a photo.",
-        "UIBackgroundModes": ["fetch"]
+        "UIBackgroundModes": [
+          "fetch"
+        ]
       },
       "icon": "./assets/images/adaptive-icon-green-background.png"
     },

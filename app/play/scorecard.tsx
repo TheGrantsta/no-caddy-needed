@@ -122,6 +122,21 @@ export default function ScorecardScreen() {
         return player ? player.PlayerName : '';
     };
 
+    const getSelectedHolePar = (): number => {
+        if (!selectedScore) return 4;
+        const score = editedScores.find(s => s.HoleNumber === selectedScore.holeNumber);
+        return score ? score.HolePar : 4;
+    };
+
+    const handleParChange = (holePar: number) => {
+        if (!selectedScore) return;
+        setEditedScores(prev =>
+            prev.map(s =>
+                s.HoleNumber === selectedScore.holeNumber ? { ...s, HolePar: holePar } : s
+            )
+        );
+    };
+
     const handleIncrement = () => {
         if (!selectedScore) return;
         setEditedScores(prev =>
@@ -159,7 +174,17 @@ export default function ScorecardScreen() {
             }
         });
 
-        const success = await updateScorecardService(Number(roundId), changes);
+        const parChanges: { holeNumber: number; holePar: number }[] = [];
+        const processedHoles = new Set<number>();
+        editedScores.forEach(edited => {
+            const original = multiplayerScorecard.holeScores.find(o => o.Id === edited.Id);
+            if (original && original.HolePar !== edited.HolePar && !processedHoles.has(edited.HoleNumber)) {
+                parChanges.push({ holeNumber: edited.HoleNumber, holePar: edited.HolePar });
+                processedHoles.add(edited.HoleNumber);
+            }
+        });
+
+        const success = await updateScorecardService(Number(roundId), changes, parChanges);
 
         if (success) {
             if (sinsHoleNumber !== null && editedSins !== null) {
@@ -243,8 +268,10 @@ export default function ScorecardScreen() {
                                 holeNumber={selectedScore.holeNumber}
                                 playerName={getSelectedPlayerName()}
                                 score={getSelectedScoreValue()}
+                                holePar={getSelectedHolePar()}
                                 onIncrement={handleIncrement}
                                 onDecrement={handleDecrement}
+                                onParChange={handleParChange}
                             />
                         )}
 

@@ -762,6 +762,28 @@ export const createStyles = (c: ThemeColours) => ({
             minWidth: 30,
             textAlign: 'center',
         },
+        parRow: {
+            flexDirection: 'row',
+            marginBottom: 12,
+            gap: 8,
+        },
+        parButton: {
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 6,
+            borderWidth: 1,
+            borderColor: c.primary,
+        },
+        parButtonActive: {
+            backgroundColor: c.primary,
+        },
+        parButtonText: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+        },
+        parButtonTextActive: {
+            color: c.background,
+        },
     }),
 
     playerSetup: StyleSheet.create({

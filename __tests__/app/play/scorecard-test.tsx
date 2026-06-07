@@ -331,7 +331,7 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('confirm-save-button'));
 
             await waitFor(() => {
-                expect(mockUpdateScorecard).toHaveBeenCalledWith(1, [{ id: 10, score: 6 }]);
+                expect(mockUpdateScorecard).toHaveBeenCalledWith(1, [{ id: 10, score: 6 }], []);
             });
         });
 
@@ -692,6 +692,56 @@ describe('Scorecard screen', () => {
 
             expect(queryByTestId('confirm-delete-button')).toBeNull();
             expect(getByTestId('delete-round-button')).toBeTruthy();
+        });
+    });
+
+    describe('Par editing', () => {
+        it('showsParButtonsInScoreEditorWhenScoreCellSelected', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+
+            expect(getByTestId('score-editor-par-3')).toBeTruthy();
+            expect(getByTestId('score-editor-par-4')).toBeTruthy();
+            expect(getByTestId('score-editor-par-5')).toBeTruthy();
+        });
+
+        it('callsUpdateScorecardServiceWithParChangesOnConfirmSave', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(true);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('score-editor-par-3'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(mockUpdateScorecard).toHaveBeenCalledWith(
+                    1,
+                    [],
+                    [{ holeNumber: 1, holePar: 3 }]
+                );
+            });
+        });
+
+        it('doesNotSendParChangeWhenParUnchanged', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(true);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('score-editor-par-4')); // unchanged par
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(mockUpdateScorecard).toHaveBeenCalledWith(1, [], []);
+            });
         });
     });
 

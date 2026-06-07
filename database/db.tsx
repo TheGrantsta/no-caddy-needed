@@ -644,6 +644,27 @@ export const updateRoundHoleScore = async (id: number, score: number): Promise<b
     return success;
 };
 
+export const updateRoundHoleParForHole = async (roundId: number, holeNumber: number, holePar: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+
+        const statement = await db.prepareAsync(
+            'UPDATE RoundHoleScores SET HolePar = $HolePar WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
+        );
+
+        try {
+            await statement.executeAsync({ $HolePar: holePar, $RoundId: roundId, $HoleNumber: holeNumber });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+
+    return success;
+};
+
 export const updateRoundTotalScore = async (roundId: number, totalScore: number): Promise<boolean> => {
     let success = true;
     try {

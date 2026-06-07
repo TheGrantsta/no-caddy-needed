@@ -1,6 +1,7 @@
 import { updateScorecardService, getDeadlySinsForRoundService } from '../../service/DbService';
 import {
     updateRoundHoleScore,
+    updateRoundHoleParForHole,
     updateRoundTotalScore,
     getRoundHoleScores,
     getRoundPlayers,
@@ -10,6 +11,7 @@ import {
 
 jest.mock('../../database/db', () => ({
     updateRoundHoleScore: jest.fn(),
+    updateRoundHoleParForHole: jest.fn(),
     updateRoundTotalScore: jest.fn(),
     getRoundHoleScores: jest.fn(),
     getRoundPlayers: jest.fn(),
@@ -18,6 +20,7 @@ jest.mock('../../database/db', () => ({
 }));
 
 const mockUpdateRoundHoleScore = updateRoundHoleScore as jest.Mock;
+const mockUpdateRoundHoleParForHole = updateRoundHoleParForHole as jest.Mock;
 const mockUpdateRoundTotalScore = updateRoundTotalScore as jest.Mock;
 const mockGetRoundHoleScores = getRoundHoleScores as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayers as jest.Mock;
@@ -106,6 +109,54 @@ describe('updateScorecardService', () => {
         const result = await updateScorecardService(1, [{ id: 10, score: 5 }]);
 
         expect(result).toBe(false);
+    });
+
+    it('callsUpdateRoundHoleParForHoleForEachParChange', async () => {
+        mockUpdateRoundHoleScore.mockResolvedValue(true);
+        mockUpdateRoundHoleParForHole.mockResolvedValue(true);
+        mockGetRoundPlayers.mockReturnValue([
+            { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+        ]);
+        mockGetRoundHoleScores.mockReturnValue([
+            { Id: 10, RoundId: 1, RoundPlayerId: 1, HoleNumber: 1, HolePar: 3, Score: 4 },
+            { Id: 11, RoundId: 1, RoundPlayerId: 1, HoleNumber: 2, HolePar: 5, Score: 5 },
+        ]);
+        mockUpdateRoundTotalScore.mockResolvedValue(true);
+
+        await updateScorecardService(1, [], [
+            { holeNumber: 1, holePar: 3 },
+            { holeNumber: 2, holePar: 5 },
+        ]);
+
+        expect(mockUpdateRoundHoleParForHole).toHaveBeenCalledWith(1, 1, 3);
+        expect(mockUpdateRoundHoleParForHole).toHaveBeenCalledWith(1, 2, 5);
+    });
+
+    it('returnsfalseWhenParUpdateFails', async () => {
+        mockUpdateRoundHoleScore.mockResolvedValue(true);
+        mockUpdateRoundHoleParForHole.mockResolvedValue(false);
+
+        const result = await updateScorecardService(1, [], [{ holeNumber: 1, holePar: 3 }]);
+
+        expect(result).toBe(false);
+    });
+
+    it('recalculatesTotalScoreUsingUpdatedParAfterParChange', async () => {
+        mockUpdateRoundHoleScore.mockResolvedValue(true);
+        mockUpdateRoundHoleParForHole.mockResolvedValue(true);
+        mockGetRoundPlayers.mockReturnValue([
+            { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+        ]);
+        // After par update, DB returns the new par value
+        mockGetRoundHoleScores.mockReturnValue([
+            { Id: 10, RoundId: 1, RoundPlayerId: 1, HoleNumber: 1, HolePar: 3, Score: 4 },
+        ]);
+        mockUpdateRoundTotalScore.mockResolvedValue(true);
+
+        await updateScorecardService(1, [], [{ holeNumber: 1, holePar: 3 }]);
+
+        // (4 - 3) = +1
+        expect(mockUpdateRoundTotalScore).toHaveBeenCalledWith(1, 1);
     });
 
     it('usesTotalScoreOfZeroWhenNoUserPlayerFound', async () => {

@@ -156,7 +156,7 @@ describe('Scorecard par scoring', () => {
             fireEvent.press(getByTestId('confirm-save-button'));
 
             await waitFor(() => {
-                expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [{ id: 106, score: 4 }]);
+                expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [{ id: 106, score: 4 }], []);
             });
         });
 
@@ -170,7 +170,7 @@ describe('Scorecard par scoring', () => {
             fireEvent.press(getByTestId('confirm-save-button'));
 
             await waitFor(() => {
-                expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [{ id: 106, score: 2 }]);
+                expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [{ id: 106, score: 2 }], []);
             });
         });
 
@@ -206,7 +206,7 @@ describe('Scorecard par scoring', () => {
             fireEvent.press(getByTestId('confirm-save-button'));
 
             await waitFor(() => {
-                expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [{ id: 108, score: 6 }]);
+                expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [{ id: 108, score: 6 }], []);
             });
         });
 
@@ -220,7 +220,7 @@ describe('Scorecard par scoring', () => {
             fireEvent.press(getByTestId('confirm-save-button'));
 
             await waitFor(() => {
-                expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [{ id: 108, score: 4 }]);
+                expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [{ id: 108, score: 4 }], []);
             });
         });
 
@@ -269,7 +269,7 @@ describe('Scorecard par scoring', () => {
                     { id: 109, score: 4 },
                     { id: 112, score: 6 },
                     { id: 113, score: 4 },
-                ]);
+                ], []);
             });
         });
     });

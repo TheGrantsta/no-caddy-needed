@@ -32,6 +32,7 @@ import {
     insertRoundHoleScore,
     getRoundHoleScores,
     updateRoundHoleScore,
+    updateRoundHoleParForHole,
     deleteRoundHoleScoresByHole,
     updateRoundTotalScore,
     deleteRound,
@@ -621,9 +622,18 @@ export const getTopSinsForPracticePlanService = (): PracticePlanItem[] => {
     }, []);
 };
 
-export const updateScorecardService = async (roundId: number, updatedScores: { id: number; score: number }[]): Promise<boolean> => {
+export const updateScorecardService = async (
+    roundId: number,
+    updatedScores: { id: number; score: number }[],
+    parChanges: { holeNumber: number; holePar: number }[] = []
+): Promise<boolean> => {
     for (const s of updatedScores) {
         const success = await updateRoundHoleScore(s.id, s.score);
+        if (!success) return false;
+    }
+
+    for (const p of parChanges) {
+        const success = await updateRoundHoleParForHole(roundId, p.holeNumber, p.holePar);
         if (!success) return false;
     }
 

@@ -2,8 +2,8 @@ import React from 'react';
 import { ScrollView } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Reminders from '../../../app/tools/reminders';
-import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, getTopSinsForPracticePlanService, getSettingsService, updatePracticeReminderNotificationIdService } from '../../../service/DbService';
-import { schedulePracticeReminder, cancelPracticeReminder, scheduleDailyOverdueReminder } from '../../../service/NotificationService';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, getTopSinsForPracticePlanService, getSettingsService } from '../../../service/DbService';
+import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService } from '../../../service/NotificationService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -55,14 +55,13 @@ jest.mock('react-native-gesture-handler/ReanimatedSwipeable', () => {
 jest.mock('../../../service/NotificationService', () => ({
     schedulePracticeReminder: jest.fn(),
     cancelPracticeReminder: jest.fn(),
-    scheduleDailyOverdueReminder: jest.fn(),
+    upgradeOverdueRemindersService: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('../../../service/DbService', () => ({
     getPracticeRemindersService: jest.fn().mockReturnValue([]),
     addPracticeReminderService: jest.fn().mockResolvedValue(true),
     deletePracticeReminderService: jest.fn().mockResolvedValue(true),
-    updatePracticeReminderNotificationIdService: jest.fn().mockResolvedValue(undefined),
     getTopSinsForPracticePlanService: jest.fn().mockReturnValue([]),
     getSettingsService: jest.fn().mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 }),
 }));
@@ -70,10 +69,9 @@ jest.mock('../../../service/DbService', () => ({
 const mockGetPracticeRemindersService = getPracticeRemindersService as jest.Mock;
 const mockAddPracticeReminderService = addPracticeReminderService as jest.Mock;
 const mockDeletePracticeReminderService = deletePracticeReminderService as jest.Mock;
-const mockUpdatePracticeReminderNotificationIdService = updatePracticeReminderNotificationIdService as jest.Mock;
 const mockSchedulePracticeReminder = schedulePracticeReminder as jest.Mock;
 const mockCancelPracticeReminder = cancelPracticeReminder as jest.Mock;
-const mockScheduleDailyOverdueReminder = scheduleDailyOverdueReminder as jest.Mock;
+const mockUpgradeOverdueRemindersService = upgradeOverdueRemindersService as jest.Mock;
 const mockGetTopSinsForPracticePlanService = getTopSinsForPracticePlanService as jest.Mock;
 const mockGetSettingsService = getSettingsService as jest.Mock;
 
@@ -392,64 +390,11 @@ describe('Reminders screen', () => {
     });
 
     describe('Overdue reminder daily upgrade', () => {
-        const overdueReminder = {
-            Id: 1,
-            Label: 'Putting practice',
-            ScheduledFor: new Date(Date.now() - 1000).toISOString(),
-            NotificationId: 'old-notif-id',
-            Created_At: new Date().toISOString(),
-        };
-        const futureReminder = {
-            Id: 2,
-            Label: 'Chipping practice',
-            ScheduledFor: new Date(Date.now() + 86400000).toISOString(),
-            NotificationId: 'future-notif-id',
-            Created_At: new Date().toISOString(),
-        };
-
-        it('schedulesDelayNotificationForOverdueReminderOnMount', async () => {
-            mockGetPracticeRemindersService.mockReturnValue([overdueReminder]);
-            mockScheduleDailyOverdueReminder.mockResolvedValue('daily-notif-id');
-
+        it('callsUpgradeOverdueRemindersServiceOnMount', async () => {
             render(<Reminders />);
 
             await waitFor(() => {
-                expect(mockScheduleDailyOverdueReminder).toHaveBeenCalledWith('Putting practice');
-            });
-        });
-
-        it('cancelsOldNotificationBeforeSchedulingDailyOne', async () => {
-            mockGetPracticeRemindersService.mockReturnValue([overdueReminder]);
-            mockScheduleDailyOverdueReminder.mockResolvedValue('daily-notif-id');
-
-            render(<Reminders />);
-
-            await waitFor(() => {
-                expect(mockCancelPracticeReminder).toHaveBeenCalledWith('old-notif-id');
-            });
-        });
-
-        it('updatesNotificationIdInDbAfterSchedulingDailyReminder', async () => {
-            mockGetPracticeRemindersService.mockReturnValue([overdueReminder]);
-            mockScheduleDailyOverdueReminder.mockResolvedValue('daily-notif-id');
-
-            render(<Reminders />);
-
-            await waitFor(() => {
-                expect(mockUpdatePracticeReminderNotificationIdService).toHaveBeenCalledWith(1, 'daily-notif-id');
-            });
-        });
-
-        it('doesNotUpgradeNonOverdueReminders', async () => {
-            mockGetPracticeRemindersService.mockReturnValue([futureReminder]);
-            mockScheduleDailyOverdueReminder.mockResolvedValue('daily-notif-id');
-
-            render(<Reminders />);
-
-            await waitFor(() => {
-                expect(mockScheduleDailyOverdueReminder).not.toHaveBeenCalled();
-                expect(mockCancelPracticeReminder).not.toHaveBeenCalled();
-                expect(mockUpdatePracticeReminderNotificationIdService).not.toHaveBeenCalled();
+                expect(mockUpgradeOverdueRemindersService).toHaveBeenCalled();
             });
         });
     });

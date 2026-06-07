@@ -8,6 +8,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { initialize } from '@/database/db';
 import { initializeRevenueCat } from '@/service/SubscriptionService';
+import '../service/BackgroundTaskService'; // registers OVERDUE_REMINDER_UPGRADE task at module scope
+import { registerOverdueReminderTask } from '../service/BackgroundTaskService';
 import { ToastProvider } from 'react-native-toast-notifications';
 import NetworkStatus from '@/components/NetworkStatus';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -290,6 +292,7 @@ export default function RootLayout() {
         // Initialize database first
         await initialize();
         await initializeRevenueCat();
+        await registerOverdueReminderTask();
 
         // Request notification permissions if available
         if (Notifications) {

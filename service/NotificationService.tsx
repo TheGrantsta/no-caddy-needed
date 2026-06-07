@@ -1,3 +1,5 @@
+import { getPracticeRemindersService, updatePracticeReminderNotificationIdService } from './DbService';
+
 let Notifications: typeof import('expo-notifications') | null = null;
 
 try {
@@ -74,6 +76,18 @@ export const scheduleDailyOverdueReminder = async (label: string): Promise<strin
     } catch (e) {
         console.log(e);
         return null;
+    }
+};
+
+export const upgradeOverdueRemindersService = async (): Promise<void> => {
+    const reminders = getPracticeRemindersService();
+    const now = new Date();
+    for (const reminder of reminders) {
+        if (new Date(reminder.ScheduledFor) < now) {
+            await cancelPracticeReminder(reminder.NotificationId);
+            const newId = await scheduleDailyOverdueReminder(reminder.Label);
+            await updatePracticeReminderNotificationIdService(reminder.Id, newId);
+        }
     }
 };
 

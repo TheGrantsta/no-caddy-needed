@@ -7,8 +7,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
-import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, updatePracticeReminderNotificationIdService, getTopSinsForPracticePlanService, getSettingsService, PracticeReminder } from '@/service/DbService';
-import { schedulePracticeReminder, cancelPracticeReminder, scheduleDailyOverdueReminder } from '../../service/NotificationService';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, getTopSinsForPracticePlanService, getSettingsService, PracticeReminder } from '@/service/DbService';
+import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService } from '../../service/NotificationService';
 
 const getNextMonday = (): Date => {
     const d = new Date();
@@ -46,20 +46,8 @@ export default function Reminders() {
         setReminders(sortBySoonest(getPracticeRemindersService()));
     };
 
-    const upgradeOverdueReminders = async (current: PracticeReminder[]) => {
-        const now = new Date();
-        for (const reminder of current) {
-            if (new Date(reminder.ScheduledFor) < now) {
-                await cancelPracticeReminder(reminder.NotificationId);
-                const newId = await scheduleDailyOverdueReminder(reminder.Label);
-                await updatePracticeReminderNotificationIdService(reminder.Id, newId);
-            }
-        }
-        loadReminders();
-    };
-
     useEffect(() => {
-        upgradeOverdueReminders(reminders);
+        upgradeOverdueRemindersService().then(loadReminders);
     }, []);
 
     const handleSaveReminder = async () => {

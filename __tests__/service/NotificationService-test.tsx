@@ -5,8 +5,18 @@ import {
     schedulePracticeReminder,
     cancelPracticeReminder,
     scheduleDailyOverdueReminder,
+    upgradeOverdueRemindersService,
 } from '../../service/NotificationService';
+import { getPracticeRemindersService, updatePracticeReminderNotificationIdService } from '../../service/DbService';
 import * as Notifications from 'expo-notifications';
+
+jest.mock('../../service/DbService', () => ({
+    getPracticeRemindersService: jest.fn(),
+    updatePracticeReminderNotificationIdService: jest.fn().mockResolvedValue(undefined),
+}));
+
+const mockGetPracticeReminders = getPracticeRemindersService as jest.Mock;
+const mockUpdateNotificationId = updatePracticeReminderNotificationIdService as jest.Mock;
 
 jest.mock('expo-notifications', () => ({
     scheduleNotificationAsync: jest.fn(),
@@ -152,6 +162,61 @@ describe('NotificationService', () => {
 
             expect(result).toBeNull();
             consoleSpy.mockRestore();
+        });
+    });
+
+    describe('upgradeOverdueRemindersService', () => {
+        const overdueReminder = {
+            Id: 1, Label: 'Putting practice', NotificationId: 'old-id',
+            ScheduledFor: new Date(Date.now() - 1000).toISOString(), Created_At: '',
+        };
+        const futureReminder = {
+            Id: 2, Label: 'Chipping practice', NotificationId: 'future-id',
+            ScheduledFor: new Date(Date.now() + 86400000).toISOString(), Created_At: '',
+        };
+
+        beforeEach(() => {
+            mockGetPracticeReminders.mockReturnValue([]);
+            mockUpdateNotificationId.mockResolvedValue(undefined);
+        });
+
+        it('schedulesDailyReminderForEachOverdueReminder', async () => {
+            mockGetPracticeReminders.mockReturnValue([overdueReminder]);
+            mockSchedule.mockResolvedValue('daily-id');
+
+            await upgradeOverdueRemindersService();
+
+            expect(mockSchedule).toHaveBeenCalledWith(expect.objectContaining({
+                trigger: expect.objectContaining({ type: 'calendar', repeats: true, hour: 7 }),
+            }));
+        });
+
+        it('cancelsOldNotificationBeforeSchedulingNewOne', async () => {
+            mockGetPracticeReminders.mockReturnValue([overdueReminder]);
+            mockSchedule.mockResolvedValue('daily-id');
+
+            await upgradeOverdueRemindersService();
+
+            expect(mockCancel).toHaveBeenCalledWith('old-id');
+        });
+
+        it('updatesNotificationIdInDb', async () => {
+            mockGetPracticeReminders.mockReturnValue([overdueReminder]);
+            mockSchedule.mockResolvedValue('daily-id');
+
+            await upgradeOverdueRemindersService();
+
+            expect(mockUpdateNotificationId).toHaveBeenCalledWith(1, 'daily-id');
+        });
+
+        it('doesNotTouchFutureReminders', async () => {
+            mockGetPracticeReminders.mockReturnValue([futureReminder]);
+
+            await upgradeOverdueRemindersService();
+
+            expect(mockSchedule).not.toHaveBeenCalled();
+            expect(mockCancel).not.toHaveBeenCalled();
+            expect(mockUpdateNotificationId).not.toHaveBeenCalled();
         });
     });
 

@@ -21,7 +21,8 @@
       "bundleIdentifier": "com.grantsta.golf.nocaddyneeded",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSPhotoLibraryUsageDescription": "This app does not access your photo library unless you choose to select a photo."
+        "NSPhotoLibraryUsageDescription": "This app does not access your photo library unless you choose to select a photo.",
+        "UIBackgroundModes": ["fetch"]
       },
       "icon": "./assets/images/adaptive-icon-green-background.png"
     },

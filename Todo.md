@@ -59,4 +59,5 @@
 * Enable editing of the par score when editing score card
 * Enable repeat daily notifications for overdue reminders
 * Improved practice planner to give more emphasis to recent issues and alternative drills
-* Indicator wind speeed and direction
+* Indicator wind speeed and direction based on your phone's orientation
+* Enable clicking the row for 7 Deadly Sins rather than just the circle

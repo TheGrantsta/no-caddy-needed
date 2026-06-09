@@ -133,18 +133,20 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                     );
                 }
                 return (
-                    <View key={field.slug} style={s.row}>
+                    <TouchableOpacity
+                        key={field.slug}
+                        testID={`7deadly-sins-toggle-${field.slug}`}
+                        onPress={() => handleToggle(field.key)}
+                        activeOpacity={0.6}
+                        style={s.row}
+                    >
                         <Text style={s.label}>{field.label}</Text>
                         <View style={s.controls}>
-                            <TouchableOpacity
-                                testID={`7deadly-sins-toggle-${field.slug}`}
-                                onPress={() => handleToggle(field.key)}
-                                style={s.button}
-                            >
+                            <View testID={`7deadly-sins-indicator-${field.slug}`} style={s.button}>
                                 <Text style={s.buttonText}>{values[field.key] ? '✓' : '○'}</Text>
-                            </TouchableOpacity>
+                            </View>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 );
             })}
 

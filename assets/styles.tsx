@@ -960,16 +960,16 @@ export const createStyles = (c: ThemeColours) => ({
 
     deadlySinsTally: StyleSheet.create({
         container: {
-            paddingTop: 5,
+            paddingTop: 0,
             paddingLeft: 20,
             paddingRight: 20,
-            paddingBottom: 20,
+            paddingBottom: 10,
         },
         row: {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            paddingVertical: 6,
+            paddingVertical: 8,
             borderBottomWidth: 0.5,
             borderColor: c.primary,
         },
@@ -984,15 +984,15 @@ export const createStyles = (c: ThemeColours) => ({
         },
         button: {
             backgroundColor: c.primary,
-            width: 32,
-            height: 32,
-            borderRadius: 16,
+            width: 26,
+            height: 26,
+            borderRadius: 13,
             justifyContent: 'center',
             alignItems: 'center',
         },
         buttonText: {
             color: c.background,
-            fontSize: fontSizes.tableHeader,
+            fontSize: fontSizes.smallText,
             fontWeight: 'bold',
             textAlign: 'center',
         },
@@ -1024,12 +1024,12 @@ export const createStyles = (c: ThemeColours) => ({
         },
         toggleLabel: {
             color: c.text,
-            fontSize: fontSizes.smallText,
+            fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
         chevron: {
             color: c.primary,
-            fontSize: fontSizes.subHeader,
+            fontSize: fontSizes.normal,
         },
     }),
 

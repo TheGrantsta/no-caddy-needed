@@ -52,6 +52,8 @@ import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
+import { useWind } from '../../hooks/useWind';
+import WindIndicator from '../../components/WindIndicator';
 import fontSizes from '../../assets/font-sizes';
 import DistancesScreen from '../play/distances';
 
@@ -97,6 +99,7 @@ export default function Play() {
     const [recentCourseNames, setRecentCourseNames] = useState<string[]>([]);
     const [recentPlayerNames, setRecentPlayerNames] = useState<string[]>([]);
     const { showError, showResult } = useAppToast();
+    const { wind, heading, refreshWind } = useWind();
     const router = useRouter();
     const navigation = useNavigation();
     const [settings, setSettings] = useState(getSettingsService());
@@ -167,6 +170,13 @@ export default function Play() {
             navigation.setOptions({ tabBarStyle: defaultTabBarStyle });
         }
     }, [activeRoundId, navigation, defaultTabBarStyle]);
+
+    // Refresh wind whenever a hole loads during an active round.
+    useEffect(() => {
+        if (activeRoundId !== null) {
+            refreshWind();
+        }
+    }, [currentHole, activeRoundId, refreshWind]);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);
@@ -604,6 +614,13 @@ export default function Play() {
                                 initialPar={courseHolePars[currentHole] ?? 4}
                                 players={players}
                                 onScoresChange={handleScoresChange}
+                                headerAccessory={
+                                    <WindIndicator
+                                        directionFrom={wind?.directionFrom ?? null}
+                                        speedMph={wind?.speedMph ?? null}
+                                        heading={heading}
+                                    />
+                                }
                                 renderAfterUser={
                                     <DeadlySinsTally
                                         key={`tally-${currentHole}`}
@@ -699,7 +716,7 @@ export default function Play() {
                         {selectedScorecardScore && scorecardDisplaySins && (
                             <DeadlySinsTally
                                 key={selectedScorecardScore.holeNumber}
-                                onEndRound={() => {}}
+                                onEndRound={() => { }}
                                 roundControlled
                                 initialValues={scorecardDisplaySins}
                                 holePar={scorecardData.holeScores.find(s => s.HoleNumber === selectedScorecardScore.holeNumber)?.HolePar}

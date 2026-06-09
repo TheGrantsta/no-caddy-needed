@@ -42,6 +42,19 @@ describe('HoleScoreInput', () => {
         expect(getByTestId('hole-number-text')).toHaveTextContent('#5');
     });
 
+    it('rendersHeaderAccessoryInParRow', () => {
+        const { getByText } = render(
+            <HoleScoreInput
+                holeNumber={1}
+                players={mockPlayers}
+                onScoresChange={mockOnScoresChange}
+                headerAccessory={<Text>WIND-ACCESSORY</Text>}
+            />
+        );
+
+        expect(getByText('WIND-ACCESSORY')).toBeTruthy();
+    });
+
     it('shows par selector with 3, 4, 5 options', () => {
         const { getByTestId } = render(
             <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />

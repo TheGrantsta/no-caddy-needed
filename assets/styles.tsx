@@ -340,20 +340,21 @@ export const createStyles = (c: ThemeColours) => ({
         },
         holeText: {
             color: c.primary,
-            fontSize: fontSizes.header,
-            paddingEnd: 10,
+            fontSize: fontSizes.subHeader,
+            paddingEnd: 6,
         },
         parRow: {
             flexDirection: 'row',
             justifyContent: 'center',
+            alignItems: 'center',
             marginBottom: 10,
         },
         parButton: {
-            paddingVertical: 8,
-            paddingHorizontal: 16,
+            paddingVertical: 6,
+            paddingHorizontal: 10,
             borderWidth: 1,
             borderColor: c.primary,
-            marginHorizontal: 5,
+            marginHorizontal: 3,
             borderRadius: 4,
         },
         parButtonActive: {
@@ -361,7 +362,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         parButtonText: {
             color: c.primary,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.smallText,
             fontWeight: 'bold',
         },
         parButtonTextActive: {

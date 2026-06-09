@@ -138,6 +138,12 @@ jest.mock('expo-router', () => {
     };
 });
 
+const mockRefreshWind = jest.fn();
+let mockWindValue: { directionFrom: number; speedMph: number } | null = { directionFrom: 270, speedMph: 12 };
+jest.mock('../../hooks/useWind', () => ({
+    useWind: () => ({ wind: mockWindValue, heading: 0, refreshWind: mockRefreshWind }),
+}));
+
 jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
     return {
@@ -2480,6 +2486,60 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('filter-button-all'));
             const callsAfterAll = mockGetParAverages.mock.calls;
             expect(callsAfterAll[callsAfterAll.length - 1][0]).toHaveLength(3);
+        });
+    });
+
+    describe('Wind indicator', () => {
+        beforeEach(() => {
+            mockRefreshWind.mockClear();
+            mockWindValue = { directionFrom: 270, speedMph: 12 };
+        });
+
+        it('showsWindIndicatorWithSpeedDuringActiveRound', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId } = render(<Play />);
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => expect(getByTestId('wind-indicator')).toBeTruthy());
+            expect(getByTestId('wind-speed-text')).toHaveTextContent('12 mph');
+        });
+
+        it('refreshesWindWhenAdvancingHole', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+            const { getByTestId } = render(<Play />);
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
+            const callsBefore = mockRefreshWind.mock.calls.length;
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            await waitFor(() => expect(mockRefreshWind.mock.calls.length).toBeGreaterThan(callsBefore));
+        });
+
+        it('hidesWindIndicatorWhenNoWindData', async () => {
+            mockWindValue = null;
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
+            expect(queryByTestId('wind-indicator')).toBeNull();
         });
     });
 

@@ -9,6 +9,7 @@ type Props = {
     onScoresChange: (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => void;
     renderAfterUser?: ReactNode;
     initialPar?: number;
+    headerAccessory?: ReactNode;
 };
 
 const parOptions = [3, 4, 5];
@@ -21,7 +22,7 @@ const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>
     }));
 };
 
-const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser, initialPar }: Props) => {
+const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser, initialPar, headerAccessory }: Props) => {
     const styles = useStyles();
     const [state, setState] = useState<{ par: number; scores: Record<number, number> }>({ par: 4, scores: {} });
 
@@ -69,6 +70,7 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser, 
                         </Text>
                     </TouchableOpacity>
                 ))}
+                {headerAccessory}
             </View>
 
             <View testID="players-container">

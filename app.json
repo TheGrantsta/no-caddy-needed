@@ -74,6 +74,12 @@
       "expo-notifications",
       "expo-background-task",
       [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow No Caddy Needed to use your location to show local wind direction and speed."
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "android": {

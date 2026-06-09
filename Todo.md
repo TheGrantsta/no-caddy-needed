@@ -59,3 +59,4 @@
 * Enable editing of the par score when editing score card
 * Enable repeat daily notifications for overdue reminders
 * Improved practice planner to give more emphasis to recent issues and alternative drills
+* Indicator wind speeed and direction

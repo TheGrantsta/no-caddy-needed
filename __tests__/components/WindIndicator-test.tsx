@@ -19,7 +19,7 @@ describe('WindIndicator', () => {
 
     it('showsRoundedMph', () => {
         const { getByTestId } = render(<WindIndicator directionFrom={100} speedMph={10.6} heading={0} />);
-        expect(getByTestId('wind-speed-text')).toHaveTextContent('11 mph');
+        expect(getByTestId('wind-speed-text')).toHaveTextContent('11 m/h');
     });
 
     it('appliesDownwindCompassRotationToArrow', () => {

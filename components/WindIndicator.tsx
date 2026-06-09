@@ -19,15 +19,16 @@ const WindIndicator = ({ directionFrom, speedMph, heading }: Props) => {
 
     return (
         <View testID="wind-indicator" style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 6 }}>
-            <View testID="wind-arrow" style={{ transform: [{ rotate: `${rotation}deg` }] }}>
-                <MaterialIcons name="navigation" size={18} color={colours.primary} />
-            </View>
+
             <Text
                 testID="wind-speed-text"
                 style={{ color: colours.primary, fontSize: fontSizes.smallText, fontWeight: 'bold', marginLeft: 2 }}
             >
-                {Math.round(speedMph)} mph
+                {Math.round(speedMph)} m/h
             </Text>
+            <View testID="wind-arrow" style={{ transform: [{ rotate: `${rotation}deg` }] }}>
+                <MaterialIcons name="navigation" size={18} color={colours.primary} />
+            </View>
         </View>
     );
 };

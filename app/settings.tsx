@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getSettingsService, saveSettingsService, AppSettings } from '../service/DbService';
+import { openStoreReviewService } from '../service/ReviewService';
 import { useStyles } from '../hooks/useStyles';
 import { useTheme } from '../context/ThemeContext';
 import { useOrientation } from '../hooks/useOrientation';
@@ -194,6 +195,16 @@ export default function Settings() {
             </TouchableOpacity>
             <Text style={styles.normalText}>days</Text>
           </View>
+        </View>
+
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            testID="rate-app-button"
+            style={styles.largeButton}
+            onPress={openStoreReviewService}
+          >
+            <Text style={styles.buttonText}>Rate my app</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={{ alignItems: 'center', paddingVertical: 20, marginTop: 'auto' }}>

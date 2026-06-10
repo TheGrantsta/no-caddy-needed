@@ -2,6 +2,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import Settings from '../../app/settings';
 import { getSettingsService, saveSettingsService } from '../../service/DbService';
+import { openStoreReviewService } from '../../service/ReviewService';
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -19,8 +20,13 @@ jest.mock('../../service/DbService', () => ({
     saveSettingsService: jest.fn(() => Promise.resolve(true)),
 }));
 
+jest.mock('../../service/ReviewService', () => ({
+    openStoreReviewService: jest.fn(),
+}));
+
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
+const mockOpenStoreReview = openStoreReviewService as jest.Mock;
 
 jest.mock('react-native-toast-notifications', () => ({
     useToast: () => ({
@@ -54,6 +60,21 @@ describe('Settings page', () => {
         const { getByText } = render(<Settings />);
 
         expect(getByText('Settings')).toBeTruthy();
+    });
+
+    it('renders Rate my app button', () => {
+        const { getByTestId, getByText } = render(<Settings />);
+
+        expect(getByTestId('rate-app-button')).toBeTruthy();
+        expect(getByText('Rate my app')).toBeTruthy();
+    });
+
+    it('calls openStoreReviewService when Rate my app pressed', () => {
+        const { getByTestId } = render(<Settings />);
+
+        fireEvent.press(getByTestId('rate-app-button'));
+
+        expect(mockOpenStoreReview).toHaveBeenCalled();
     });
 
     it('renders notifications heading', () => {

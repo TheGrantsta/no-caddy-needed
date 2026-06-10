@@ -46,6 +46,7 @@ import {
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
+import { maybeRequestRoundReviewService } from '../../service/ReviewService';
 import Constants from 'expo-constants';
 import { checkPremiumEntitlement } from '../../service/SubscriptionService';
 import { useStyles } from '../../hooks/useStyles';
@@ -392,8 +393,15 @@ export default function Play() {
         }
     };
 
-    const handleScorecardDone = () => {
+    const handleScorecardDone = async () => {
         resetToIdle();
+        const currentSettings = getSettingsService();
+        const roundCount = getAllRoundHistoryService().length;
+        const prompted = await maybeRequestRoundReviewService(roundCount, currentSettings.reviewPromptShown);
+        if (prompted) {
+            await saveSettingsService({ ...currentSettings, reviewPromptShown: true });
+            logEvent('review_requested', { roundNumber: roundCount });
+        }
     };
 
     const analyseRoundEnabled = Constants.expoConfig?.extra?.analyseRoundEnabled ?? false;

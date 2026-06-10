@@ -19,6 +19,7 @@
         "backgroundColor": "#2D5A3D"
       },
       "bundleIdentifier": "com.grantsta.golf.nocaddyneeded",
+      "appStoreUrl": "https://apps.apple.com/app/id6759523224?action=write-review",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "This app does not access your photo library unless you choose to select a photo.",
@@ -38,7 +39,8 @@
         "foregroundImage": "./assets/images/full-white-logo-transparent.png",
         "backgroundColor": "#2D5A3D"
       },
-      "package": "com.grantsta.golf.nocaddyneeded"
+      "package": "com.grantsta.golf.nocaddyneeded",
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.grantsta.golf.nocaddyneeded"
     },
     "web": {
       "bundler": "metro",

@@ -30,6 +30,7 @@ import {
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
+import { maybeRequestRoundReviewService } from '../../service/ReviewService';
 import { checkPremiumEntitlement } from '../../service/SubscriptionService';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -77,8 +78,13 @@ jest.mock('../../service/DbService', () => ({
         playOnboardingSeen: true,
         homeOnboardingSeen: true,
         practiceOnboardingSeen: true,
+        reviewPromptShown: false,
     }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
+}));
+
+jest.mock('../../service/ReviewService', () => ({
+    maybeRequestRoundReviewService: jest.fn().mockResolvedValue(false),
 }));
 
 jest.mock('../../database/db', () => ({
@@ -174,6 +180,7 @@ const mockGetRecentCourseNames = getRecentCourseNamesService as jest.Mock;
 const mockGetRecentPlayerNames = getRecentPlayerNamesService as jest.Mock;
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
+const mockMaybeRequestReview = maybeRequestRoundReviewService as jest.Mock;
 const mockGetHolesPlayedForRound = getHolesPlayedForRoundService as jest.Mock;
 const mockGetCourseHolePars = getCourseHoleParsService as jest.Mock;
 const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
@@ -2540,6 +2547,74 @@ describe('Play screen', () => {
 
             await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
             expect(queryByTestId('wind-indicator')).toBeNull();
+        });
+    });
+
+    describe('Review prompt', () => {
+        const completeRoundToScorecard = async (getByTestId: (id: string) => unknown) => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+            mockEndRound.mockResolvedValue(true);
+            mockGetMultiplayerScorecard.mockReturnValue({
+                players: [{ Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 }],
+                holeScores: [],
+            });
+
+            fireEvent.press(getByTestId('start-round-button') as never);
+            fireEvent.changeText(getByTestId('course-name-input') as never, 'Test Course');
+            fireEvent.press(getByTestId('start-button') as never);
+            await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
+            fireEvent.press(getByTestId('end-round-button') as never);
+            await waitFor(() => expect(getByTestId('confirm-end-round-button')).toBeTruthy());
+            fireEvent.press(getByTestId('confirm-end-round-button') as never);
+            await waitFor(() => expect(getByTestId('scorecard-done-button')).toBeTruthy());
+        };
+
+        beforeEach(() => {
+            mockMaybeRequestReview.mockResolvedValue(false);
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true, playOnboardingSeen: true, homeOnboardingSeen: true,
+                practiceOnboardingSeen: true, reviewPromptShown: false,
+            });
+        });
+
+        it('checksReviewPromptWithRoundCountWhenScorecardDonePressed', async () => {
+            mockGetAllRoundHistory.mockReturnValue([{ Id: 1 }]);
+            const { getByTestId } = render(<Play />);
+            await completeRoundToScorecard(getByTestId);
+
+            await act(async () => { fireEvent.press(getByTestId('scorecard-done-button')); });
+
+            await waitFor(() => expect(mockMaybeRequestReview).toHaveBeenCalledWith(1, false));
+        });
+
+        it('persistsFlagAndLogsWhenReviewPrompted', async () => {
+            mockGetAllRoundHistory.mockReturnValue([{ Id: 1 }]);
+            mockMaybeRequestReview.mockResolvedValue(true);
+            const { getByTestId } = render(<Play />);
+            await completeRoundToScorecard(getByTestId);
+
+            await act(async () => { fireEvent.press(getByTestId('scorecard-done-button')); });
+
+            await waitFor(() => {
+                expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ reviewPromptShown: true }));
+                expect(mockLogEvent).toHaveBeenCalledWith('review_requested', expect.objectContaining({ roundNumber: 1 }));
+            });
+        });
+
+        it('doesNotLogReviewEventWhenNotPrompted', async () => {
+            mockGetAllRoundHistory.mockReturnValue([{ Id: 1 }]);
+            mockMaybeRequestReview.mockResolvedValue(false);
+            const { getByTestId } = render(<Play />);
+            await completeRoundToScorecard(getByTestId);
+            mockLogEvent.mockClear();
+
+            await act(async () => { fireEvent.press(getByTestId('scorecard-done-button')); });
+
+            await waitFor(() => expect(mockMaybeRequestReview).toHaveBeenCalled());
+            expect(mockLogEvent).not.toHaveBeenCalledWith('review_requested', expect.anything());
         });
     });
 

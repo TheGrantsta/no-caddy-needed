@@ -104,7 +104,7 @@ export default function Settings() {
 
         <View style={styles.contentSection}>
           <View style={styles.headerContainer}>
-            <Text style={[styles.subHeaderText, styles.marginTop]}>Notifications</Text>
+            <Text style={[styles.subHeaderText, { padding: 0 }]}>Notifications</Text>
           </View>
 
           <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
@@ -127,7 +127,7 @@ export default function Settings() {
 
         <View style={styles.contentSection}>
           <View style={styles.headerContainer}>
-            <Text style={[styles.subHeaderText, styles.marginTop]}>Sounds</Text>
+            <Text style={[styles.subHeaderText, { padding: 0 }]}>Sounds</Text>
           </View>
 
           <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
@@ -150,7 +150,7 @@ export default function Settings() {
 
         <View style={styles.contentSection}>
           <View style={styles.headerContainer}>
-            <Text style={[styles.subHeaderText, styles.marginTop]}>Voice</Text>
+            <Text style={[styles.subHeaderText, { padding: 0 }]}>Voice</Text>
           </View>
 
           <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
@@ -173,7 +173,7 @@ export default function Settings() {
 
         <View style={styles.contentSection}>
           <View style={styles.headerContainer}>
-            <Text style={[styles.subHeaderText, styles.marginTop]}>Practice</Text>
+            <Text style={[styles.subHeaderText, { padding: 0 }]}>Practice</Text>
           </View>
 
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, gap: 16 }}>
@@ -197,7 +197,7 @@ export default function Settings() {
           </View>
         </View>
 
-        <View style={styles.headerContainer}>
+        <View style={{ alignItems: 'center', paddingVertical: 20, marginTop: 'auto' }}>
           <TouchableOpacity
             testID="rate-app-button"
             style={styles.largeButton}

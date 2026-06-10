@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import WindIndicator from '../../components/WindIndicator';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -36,5 +36,44 @@ describe('WindIndicator', () => {
         expect(getByTestId('wind-arrow').props.style).toEqual(
             expect.objectContaining({ transform: [{ rotate: '90deg' }] })
         );
+    });
+
+    describe('expand / collapse overlay', () => {
+        it('expandsOnSingleTap', () => {
+            const { getByTestId } = render(
+                <WindIndicator directionFrom={100} speedMph={10.6} heading={0} />
+            );
+
+            fireEvent.press(getByTestId('wind-indicator'));
+
+            expect(getByTestId('wind-overlay-backdrop')).toBeTruthy();
+            expect(getByTestId('wind-speed-text-large')).toHaveTextContent('11 m/h');
+        });
+
+        it('expandedArrowUsesSameDownwindRotation', () => {
+            const { getByTestId } = render(
+                <WindIndicator directionFrom={0} speedMph={5} heading={0} />
+            );
+
+            fireEvent.press(getByTestId('wind-indicator'));
+
+            expect(getByTestId('wind-arrow-large').props.style).toEqual(
+                expect.objectContaining({ transform: [{ rotate: '180deg' }] })
+            );
+        });
+
+        it('collapsesWhenOverlayTapped', () => {
+            const { getByTestId, queryByTestId } = render(
+                <WindIndicator directionFrom={100} speedMph={12} heading={0} />
+            );
+
+            fireEvent.press(getByTestId('wind-indicator'));
+            expect(getByTestId('wind-overlay-backdrop')).toBeTruthy();
+
+            fireEvent.press(getByTestId('wind-overlay-backdrop'));
+
+            expect(queryByTestId('wind-overlay-backdrop')).toBeNull();
+            expect(getByTestId('wind-indicator')).toBeTruthy();
+        });
     });
 });

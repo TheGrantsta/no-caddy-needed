@@ -37,6 +37,9 @@ const WindIndicator = ({ directionFrom, speedMph, heading }: Props) => {
                 <View testID="wind-arrow" style={{ transform: [{ rotate: `${rotation}deg` }] }}>
                     <MaterialIcons name="navigation" size={18} color={colours.primary} />
                 </View>
+                <View testID="wind-expand-hint" style={{ marginLeft: 4, opacity: 0.6 }}>
+                    <MaterialIcons name="open-in-full" size={12} color={colours.primary} />
+                </View>
             </TouchableOpacity>
 
             {expanded && (

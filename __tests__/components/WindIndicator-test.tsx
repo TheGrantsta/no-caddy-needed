@@ -38,6 +38,11 @@ describe('WindIndicator', () => {
         );
     });
 
+    it('showsExpandAffordanceWhenWindPresent', () => {
+        const { getByTestId } = render(<WindIndicator directionFrom={100} speedMph={12} heading={0} />);
+        expect(getByTestId('wind-expand-hint')).toBeTruthy();
+    });
+
     describe('expand / collapse overlay', () => {
         it('expandsOnSingleTap', () => {
             const { getByTestId } = render(

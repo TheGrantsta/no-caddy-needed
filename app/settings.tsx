@@ -176,7 +176,7 @@ export default function Settings() {
           </View>
 
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, gap: 16 }}>
-            <Text style={styles.normalText}>Practice every</Text>
+            <Text style={styles.normalText}>Every</Text>
             <TouchableOpacity
               testID="practice-frequency-decrement"
               onPress={() => handleFrequencyChange(-1)}

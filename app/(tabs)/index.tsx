@@ -146,7 +146,7 @@ export default function HomeScreen() {
       <OnboardingOverlay
         visible={showWhatsNew}
         onDismiss={handleDismissWhatsNew}
-        title={`What's new in v${APP_VERSION}`}
+        title="What's new"
         steps={[{ text: WHATS_NEW.map((c) => `•  ${c}`).join('\n\n') }]}
       />
     </GestureHandlerRootView>

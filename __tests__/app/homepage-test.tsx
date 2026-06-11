@@ -183,7 +183,7 @@ describe('renders homepage', () => {
 
             const { getByText } = render(<Homepage />);
 
-            expect(getByText("What's new in v2.0.17")).toBeTruthy();
+            expect(getByText("What's new")).toBeTruthy();
         });
 
         it('does not show What\'s new when the current version was already seen', () => {
@@ -191,7 +191,7 @@ describe('renders homepage', () => {
 
             const { queryByText } = render(<Homepage />);
 
-            expect(queryByText("What's new in v2.0.17")).toBeNull();
+            expect(queryByText("What's new")).toBeNull();
         });
 
         it('does not show What\'s new to a brand-new user (onboarding shows instead)', () => {
@@ -199,7 +199,7 @@ describe('renders homepage', () => {
 
             const { queryByText, getByTestId } = render(<Homepage />);
 
-            expect(queryByText("What's new in v2.0.17")).toBeNull();
+            expect(queryByText("What's new")).toBeNull();
             expect(getByTestId('onboarding-overlay')).toBeTruthy();
         });
 
@@ -207,11 +207,11 @@ describe('renders homepage', () => {
             mockGetSettingsService.mockReturnValue(homeSettings({ homeOnboardingSeen: true, whatsNewVersionSeen: '2.0.10' }));
 
             const { getByTestId, queryByText } = render(<Homepage />);
-            expect(queryByText("What's new in v2.0.17")).toBeTruthy();
+            expect(queryByText("What's new")).toBeTruthy();
 
             fireEvent.press(getByTestId('done-button'));
 
-            expect(queryByText("What's new in v2.0.17")).toBeNull();
+            expect(queryByText("What's new")).toBeNull();
             expect(mockSaveSettingsService).toHaveBeenCalledWith(
                 expect.objectContaining({ whatsNewVersionSeen: '2.0.17' })
             );

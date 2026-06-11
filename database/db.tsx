@@ -83,7 +83,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
-        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0, ReviewPromptShown INTEGER NOT NULL DEFAULT 0);
+        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0, ReviewPromptShown INTEGER NOT NULL DEFAULT 0, PreShotReminderEnabled INTEGER NOT NULL DEFAULT 1, PreShotRoutineText TEXT NOT NULL DEFAULT '');
         CREATE TABLE IF NOT EXISTS Games (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Header TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsDeleted INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS PracticeReminders (Id INTEGER PRIMARY KEY AUTOINCREMENT, Label TEXT NOT NULL, ScheduledFor TEXT NOT NULL, NotificationId TEXT, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS HiddenRecents (Id INTEGER PRIMARY KEY AUTOINCREMENT, Type TEXT NOT NULL, Name TEXT NOT NULL, UNIQUE(Type, Name));
@@ -103,6 +103,8 @@ export const initialize = async () => {
                 'SoundsEnabled INTEGER NOT NULL DEFAULT 1',
                 'PracticeFrequencyDays INTEGER NOT NULL DEFAULT 7',
                 'ReviewPromptShown INTEGER NOT NULL DEFAULT 0',
+                'PreShotReminderEnabled INTEGER NOT NULL DEFAULT 1',
+                "PreShotRoutineText TEXT NOT NULL DEFAULT ''",
             ],
             columnsToRemove: [],
         },
@@ -710,17 +712,17 @@ export const getSettings = () => {
     return rows.length > 0 ? rows[0] : null;
 };
 
-export const saveSettings = async (notificationsEnabled: number, voice: string, soundsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number, homeOnboardingSeen: number, practiceOnboardingSeen: number, practiceFrequencyDays: number, reviewPromptShown: number): Promise<boolean> => {
+export const saveSettings = async (notificationsEnabled: number, voice: string, soundsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number, homeOnboardingSeen: number, practiceOnboardingSeen: number, practiceFrequencyDays: number, reviewPromptShown: number, preShotReminderEnabled: number, preShotRoutineText: string): Promise<boolean> => {
     let success = true;
     try {
         getSyncDb().execSync('DELETE FROM Settings');
 
         const statement = getSyncDb().prepareSync(
-            'INSERT INTO Settings (NotificationsEnabled, Voice, SoundsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen, HomeOnboardingSeen, PracticeOnboardingSeen, PracticeFrequencyDays, ReviewPromptShown) VALUES ($NotificationsEnabled, $Voice, $SoundsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen, $HomeOnboardingSeen, $PracticeOnboardingSeen, $PracticeFrequencyDays, $ReviewPromptShown)'
+            'INSERT INTO Settings (NotificationsEnabled, Voice, SoundsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen, HomeOnboardingSeen, PracticeOnboardingSeen, PracticeFrequencyDays, ReviewPromptShown, PreShotReminderEnabled, PreShotRoutineText) VALUES ($NotificationsEnabled, $Voice, $SoundsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen, $HomeOnboardingSeen, $PracticeOnboardingSeen, $PracticeFrequencyDays, $ReviewPromptShown, $PreShotReminderEnabled, $PreShotRoutineText)'
         );
 
         try {
-            await statement.executeAsync({ $NotificationsEnabled: notificationsEnabled, $Voice: voice, $SoundsEnabled: soundsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen, $PracticeFrequencyDays: practiceFrequencyDays, $ReviewPromptShown: reviewPromptShown });
+            await statement.executeAsync({ $NotificationsEnabled: notificationsEnabled, $Voice: voice, $SoundsEnabled: soundsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen, $PracticeFrequencyDays: practiceFrequencyDays, $ReviewPromptShown: reviewPromptShown, $PreShotReminderEnabled: preShotReminderEnabled, $PreShotRoutineText: preShotRoutineText });
         } finally {
             await statement.finalizeAsync();
         }

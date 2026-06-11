@@ -513,6 +513,8 @@ export const getDeadlySinsForRoundService = (roundId: number): DeadlySinsRound |
 };
 
 // Settings services
+export const DEFAULT_PRESHOT_ROUTINE = 'Pick a specific target\nSee the shot\nOne smooth practice swing\nCommit, breathe, go';
+
 export type AppSettings = {
     notificationsEnabled: boolean;
     voice: 'female' | 'male' | 'neutral';
@@ -524,13 +526,15 @@ export type AppSettings = {
     practiceOnboardingSeen: boolean;
     practiceFrequencyDays: number;
     reviewPromptShown: boolean;
+    preShotReminderEnabled: boolean;
+    preShotRoutineText: string;
 };
 
 export const getSettingsService = (): AppSettings => {
-    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; PracticeFrequencyDays: number; ReviewPromptShown: number } | null;
+    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; PracticeFrequencyDays: number; ReviewPromptShown: number; PreShotReminderEnabled: number; PreShotRoutineText: string } | null;
 
     if (!row) {
-        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false };
+        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: DEFAULT_PRESHOT_ROUTINE };
     }
 
     return {
@@ -544,11 +548,13 @@ export const getSettingsService = (): AppSettings => {
         practiceOnboardingSeen: row.PracticeOnboardingSeen === 1,
         practiceFrequencyDays: row.PracticeFrequencyDays ?? 7,
         reviewPromptShown: row.ReviewPromptShown === 1,
+        preShotReminderEnabled: (row.PreShotReminderEnabled ?? 1) === 1,
+        preShotRoutineText: row.PreShotRoutineText || DEFAULT_PRESHOT_ROUTINE,
     };
 };
 
 export const saveSettingsService = async (settings: AppSettings): Promise<boolean> => {
-    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0, settings.practiceFrequencyDays, settings.reviewPromptShown ? 1 : 0);
+    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0, settings.practiceFrequencyDays, settings.reviewPromptShown ? 1 : 0, settings.preShotReminderEnabled ? 1 : 0, settings.preShotRoutineText);
 };
 
 export type PracticeReminder = {

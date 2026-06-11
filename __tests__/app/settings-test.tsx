@@ -378,4 +378,65 @@ describe('Settings page', () => {
             );
         });
     });
+
+    describe('Pre-shot routine', () => {
+        const preShotSettings = (overrides: Record<string, unknown> = {}) => ({
+            notificationsEnabled: true, voice: 'female', soundsEnabled: true,
+            wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false,
+            homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7,
+            reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: 'Target, breathe, go', ...overrides,
+        });
+
+        it('renders the Pre-shot routine heading and On/Off buttons', () => {
+            mockGetSettingsService.mockReturnValue(preShotSettings());
+            const { getByText, getByTestId } = render(<Settings />);
+
+            expect(getByText('Pre-shot routine')).toBeTruthy();
+            expect(getByTestId('preshot-on')).toBeTruthy();
+            expect(getByTestId('preshot-off')).toBeTruthy();
+        });
+
+        it('shows On selected and the routine text input when enabled', () => {
+            mockGetSettingsService.mockReturnValue(preShotSettings());
+            const { getByTestId } = render(<Settings />);
+
+            expect(getByTestId('preshot-on-selected')).toBeTruthy();
+            expect(getByTestId('preshot-routine-input').props.value).toBe('Target, breathe, go');
+        });
+
+        it('hides the routine text input when disabled', () => {
+            mockGetSettingsService.mockReturnValue(preShotSettings({ preShotReminderEnabled: false }));
+            const { getByTestId, queryByTestId } = render(<Settings />);
+
+            expect(getByTestId('preshot-off-selected')).toBeTruthy();
+            expect(queryByTestId('preshot-routine-input')).toBeNull();
+        });
+
+        it('saves preShotReminderEnabled false when Off pressed', async () => {
+            mockGetSettingsService.mockReturnValue(preShotSettings());
+            const { getByTestId } = render(<Settings />);
+
+            fireEvent.press(getByTestId('preshot-off'));
+
+            await waitFor(() => {
+                expect(mockSaveSettingsService).toHaveBeenCalledWith(
+                    expect.objectContaining({ preShotReminderEnabled: false })
+                );
+            });
+        });
+
+        it('saves the edited routine text on end editing', async () => {
+            mockGetSettingsService.mockReturnValue(preShotSettings());
+            const { getByTestId } = render(<Settings />);
+
+            fireEvent.changeText(getByTestId('preshot-routine-input'), 'My new routine');
+            fireEvent(getByTestId('preshot-routine-input'), 'endEditing');
+
+            await waitFor(() => {
+                expect(mockSaveSettingsService).toHaveBeenCalledWith(
+                    expect.objectContaining({ preShotRoutineText: 'My new routine' })
+                );
+            });
+        });
+    });
 });

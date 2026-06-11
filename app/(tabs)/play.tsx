@@ -55,6 +55,7 @@ import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
 import { useWind } from '../../hooks/useWind';
 import WindIndicator from '../../components/WindIndicator';
+import PreShotReminder from '../../components/PreShotReminder';
 import fontSizes from '../../assets/font-sizes';
 import DistancesScreen from '../play/distances';
 
@@ -114,6 +115,8 @@ export default function Play() {
     const [scorecardDisplaySins, setScorecardDisplaySins] = useState<DeadlySinsValues | null>(null);
     const [courseNotes, setCourseNotes] = useState<Record<number, string>>({});
     const [currentNoteText, setCurrentNoteText] = useState('');
+    const [showPreShotReminder, setShowPreShotReminder] = useState(false);
+    const [preShotText, setPreShotText] = useState('');
     const scrollRef = useRef<ScrollView>(null);
     const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -178,6 +181,16 @@ export default function Play() {
             refreshWind();
         }
     }, [currentHole, activeRoundId, refreshWind]);
+
+    // Show the pre-shot routine reminder before the first hole and between holes.
+    useEffect(() => {
+        if (activeRoundId === null) return;
+        const currentSettings = getSettingsService();
+        if (currentSettings.preShotReminderEnabled) {
+            setPreShotText(currentSettings.preShotRoutineText);
+            setShowPreShotReminder(true);
+        }
+    }, [currentHole, activeRoundId]);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);
@@ -776,6 +789,12 @@ export default function Play() {
                 onDismiss={handleDismissOnboarding}
                 title="Play"
                 steps={ONBOARDING_STEPS}
+            />
+
+            <PreShotReminder
+                visible={showPreShotReminder}
+                text={preShotText}
+                onDismiss={() => setShowPreShotReminder(false)}
             />
         </GestureHandlerRootView>
     );

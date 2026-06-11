@@ -320,6 +320,8 @@ describe('Settings table column migration', () => {
                 { name: 'PracticeOnboardingSeen' },
                 { name: 'PracticeFrequencyDays' },
                 { name: 'ReviewPromptShown' },
+                { name: 'PreShotReminderEnabled' },
+                { name: 'PreShotRoutineText' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },

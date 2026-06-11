@@ -1,4 +1,4 @@
-import { getDrillStatsByTypeService, getSettingsService, saveSettingsService, AppSettings, deleteDrillService, restoreDrillService } from '../../service/DbService';
+import { getDrillStatsByTypeService, getSettingsService, saveSettingsService, AppSettings, DEFAULT_PRESHOT_ROUTINE, deleteDrillService, restoreDrillService } from '../../service/DbService';
 import { getAllDrillHistory, getSettings, saveSettings, softDeleteDrill, restoreDrill } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
@@ -153,6 +153,8 @@ describe('getSettingsService', () => {
             practiceOnboardingSeen: false,
             practiceFrequencyDays: 7,
             reviewPromptShown: false,
+            preShotReminderEnabled: true,
+            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
         });
     });
 
@@ -184,6 +186,8 @@ describe('getSettingsService', () => {
             practiceOnboardingSeen: false,
             practiceFrequencyDays: 7,
             reviewPromptShown: false,
+            preShotReminderEnabled: true,
+            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
         });
     });
 
@@ -215,6 +219,8 @@ describe('getSettingsService', () => {
             practiceOnboardingSeen: false,
             practiceFrequencyDays: 7,
             reviewPromptShown: false,
+            preShotReminderEnabled: true,
+            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
         });
     });
 
@@ -246,6 +252,8 @@ describe('getSettingsService', () => {
             practiceOnboardingSeen: false,
             practiceFrequencyDays: 7,
             reviewPromptShown: false,
+            preShotReminderEnabled: true,
+            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
         });
     });
 
@@ -277,6 +285,8 @@ describe('getSettingsService', () => {
             practiceOnboardingSeen: false,
             practiceFrequencyDays: 7,
             reviewPromptShown: false,
+            preShotReminderEnabled: true,
+            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
         });
     });
 });
@@ -360,12 +370,14 @@ describe('saveSettingsService', () => {
             practiceOnboardingSeen: false,
             practiceFrequencyDays: 7,
             reviewPromptShown: false,
+            preShotReminderEnabled: true,
+            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE);
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
@@ -382,12 +394,14 @@ describe('saveSettingsService', () => {
             practiceOnboardingSeen: false,
             practiceFrequencyDays: 7,
             reviewPromptShown: false,
+            preShotReminderEnabled: true,
+            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 7, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE);
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
@@ -404,11 +418,13 @@ describe('saveSettingsService', () => {
             practiceOnboardingSeen: false,
             practiceFrequencyDays: 7,
             reviewPromptShown: false,
+            preShotReminderEnabled: true,
+            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 7, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE);
     });
 });

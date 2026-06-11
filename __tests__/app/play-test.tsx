@@ -2618,4 +2618,52 @@ describe('Play screen', () => {
         });
     });
 
+    describe('Pre-shot routine reminder', () => {
+        const settingsWith = (overrides: Record<string, unknown>) => ({
+            theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: true,
+            distancesOnboardingSeen: true, playOnboardingSeen: true, homeOnboardingSeen: true,
+            practiceOnboardingSeen: true, reviewPromptShown: false, ...overrides,
+        });
+
+        const startRound = (getByTestId: (id: string) => unknown) => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            fireEvent.press(getByTestId('start-round-button') as never);
+            fireEvent.changeText(getByTestId('course-name-input') as never, 'Test Course');
+            fireEvent.press(getByTestId('start-button') as never);
+        };
+
+        it('showsReminderWithRoutineTextWhenRoundStarts', async () => {
+            mockGetSettingsService.mockReturnValue(settingsWith({ preShotReminderEnabled: true, preShotRoutineText: 'Target, breathe, go' }));
+
+            const { getByTestId, getByText } = render(<Play />);
+            startRound(getByTestId);
+
+            await waitFor(() => expect(getByTestId('preshot-reminder')).toBeTruthy());
+            expect(getByText('Target, breathe, go')).toBeTruthy();
+        });
+
+        it('dismissesReminderWhenGotItPressed', async () => {
+            mockGetSettingsService.mockReturnValue(settingsWith({ preShotReminderEnabled: true, preShotRoutineText: 'Routine' }));
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+            startRound(getByTestId);
+
+            await waitFor(() => expect(getByTestId('preshot-reminder')).toBeTruthy());
+            fireEvent.press(getByTestId('preshot-reminder-dismiss'));
+
+            await waitFor(() => expect(queryByTestId('preshot-reminder')).toBeNull());
+        });
+
+        it('doesNotShowReminderWhenDisabled', async () => {
+            mockGetSettingsService.mockReturnValue(settingsWith({ preShotReminderEnabled: false, preShotRoutineText: 'Routine' }));
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+            startRound(getByTestId);
+
+            await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
+            expect(queryByTestId('preshot-reminder')).toBeNull();
+        });
+    });
+
 });

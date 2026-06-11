@@ -2,6 +2,7 @@ import {
     getSettingsService,
     saveSettingsService,
     AppSettings,
+    DEFAULT_PRESHOT_ROUTINE,
 } from '../../service/DbService';
 import {
     getSettings,
@@ -16,6 +17,20 @@ jest.mock('../../database/db', () => ({
 const mockGetSettings = getSettings as jest.Mock;
 const mockSaveSettings = saveSettings as jest.Mock;
 
+const fullRow = (overrides: Record<string, unknown> = {}) => ({
+    Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', SoundsEnabled: 1,
+    WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0,
+    HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0, PracticeFrequencyDays: 7,
+    ReviewPromptShown: 0, PreShotReminderEnabled: 1, PreShotRoutineText: '', ...overrides,
+});
+
+const defaultExpected: AppSettings = {
+    notificationsEnabled: true, voice: 'female', soundsEnabled: true,
+    wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false,
+    homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7,
+    reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
+};
+
 describe('getSettingsService', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -24,113 +39,89 @@ describe('getSettingsService', () => {
     it('returns default settings when no settings exist', () => {
         mockGetSettings.mockReturnValue(null);
 
-        const result = getSettingsService();
-
-        expect(result).toEqual({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false });
+        expect(getSettingsService()).toEqual(defaultExpected);
     });
 
     it('returns settings from database', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'male', SoundsEnabled: 1, WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0, PracticeFrequencyDays: 7, ReviewPromptShown: 0 });
+        mockGetSettings.mockReturnValue(fullRow({ Voice: 'male' }));
 
-        const result = getSettingsService();
-
-        expect(result).toEqual({ notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false });
+        expect(getSettingsService()).toEqual({ ...defaultExpected, voice: 'male' });
     });
 
     it('maps NotificationsEnabled 0 to false', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 0, Voice: 'neutral', SoundsEnabled: 0, WedgeChartOnboardingSeen: 1, DistancesOnboardingSeen: 1, PlayOnboardingSeen: 1, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0, PracticeFrequencyDays: 7, ReviewPromptShown: 0 });
+        mockGetSettings.mockReturnValue(fullRow({ NotificationsEnabled: 0, Voice: 'neutral', SoundsEnabled: 0, WedgeChartOnboardingSeen: 1, DistancesOnboardingSeen: 1, PlayOnboardingSeen: 1 }));
 
-        const result = getSettingsService();
-
-        expect(result).toEqual({ notificationsEnabled: false, voice: 'neutral', soundsEnabled: false, wedgeChartOnboardingSeen: true, distancesOnboardingSeen: true, playOnboardingSeen: true, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false });
+        expect(getSettingsService()).toEqual({
+            ...defaultExpected,
+            notificationsEnabled: false, voice: 'neutral', soundsEnabled: false,
+            wedgeChartOnboardingSeen: true, distancesOnboardingSeen: true, playOnboardingSeen: true,
+        });
     });
 
     it('maps SoundsEnabled 0 to false', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', SoundsEnabled: 0, WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0 });
+        mockGetSettings.mockReturnValue(fullRow({ SoundsEnabled: 0 }));
 
-        const result = getSettingsService();
-
-        expect(result.soundsEnabled).toBe(false);
+        expect(getSettingsService().soundsEnabled).toBe(false);
     });
 
     it('defaults soundsEnabled to true when SoundsEnabled column is missing', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', SoundsEnabled: 1, WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0 });
+        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0 });
 
-        const result = getSettingsService();
-
-        expect(result.soundsEnabled).toBe(true);
+        expect(getSettingsService().soundsEnabled).toBe(true);
     });
 
     it('maps playOnboardingSeen true to 1', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 1, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0 });
+        mockGetSettings.mockReturnValue(fullRow({ PlayOnboardingSeen: 1 }));
 
-        const result = getSettingsService();
-
-        expect(result.playOnboardingSeen).toBe(true);
-    });
-
-    it('maps homeOnboardingSeen true to 1', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 1, PracticeOnboardingSeen: 0 });
-
-        const result = getSettingsService();
-
-        expect(result.homeOnboardingSeen).toBe(true);
-    });
-
-    it('maps practiceOnboardingSeen true to 1', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 1 });
-
-        const result = getSettingsService();
-
-        expect(result.practiceOnboardingSeen).toBe(true);
+        expect(getSettingsService().playOnboardingSeen).toBe(true);
     });
 
     it('maps ReviewPromptShown 1 to true', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0, ReviewPromptShown: 1 });
+        mockGetSettings.mockReturnValue(fullRow({ ReviewPromptShown: 1 }));
 
-        const result = getSettingsService();
-
-        expect(result.reviewPromptShown).toBe(true);
+        expect(getSettingsService().reviewPromptShown).toBe(true);
     });
 
     it('defaults reviewPromptShown to false when column missing', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0 });
+        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', PracticeOnboardingSeen: 0 });
 
-        const result = getSettingsService();
-
-        expect(result.reviewPromptShown).toBe(false);
+        expect(getSettingsService().reviewPromptShown).toBe(false);
     });
 
-    it('maps Voice female from database', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', SoundsEnabled: 1, WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0 });
+    it('maps PreShotReminderEnabled 0 to false', () => {
+        mockGetSettings.mockReturnValue(fullRow({ PreShotReminderEnabled: 0 }));
 
-        const result = getSettingsService();
+        expect(getSettingsService().preShotReminderEnabled).toBe(false);
+    });
 
-        expect(result.voice).toBe('female');
+    it('defaults preShotReminderEnabled to true when column missing', () => {
+        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', PracticeOnboardingSeen: 0 });
+
+        expect(getSettingsService().preShotReminderEnabled).toBe(true);
+    });
+
+    it('returns the stored pre-shot routine text', () => {
+        mockGetSettings.mockReturnValue(fullRow({ PreShotRoutineText: 'My own routine' }));
+
+        expect(getSettingsService().preShotRoutineText).toBe('My own routine');
+    });
+
+    it('falls back to the default routine when text is empty', () => {
+        mockGetSettings.mockReturnValue(fullRow({ PreShotRoutineText: '' }));
+
+        expect(getSettingsService().preShotRoutineText).toBe(DEFAULT_PRESHOT_ROUTINE);
     });
 
     it('maps Voice male from database', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'male', WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0 });
+        mockGetSettings.mockReturnValue(fullRow({ Voice: 'male' }));
 
-        const result = getSettingsService();
-
-        expect(result.voice).toBe('male');
-    });
-
-    it('maps Voice neutral from database', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'neutral', WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0 });
-
-        const result = getSettingsService();
-
-        expect(result.voice).toBe('neutral');
+        expect(getSettingsService().voice).toBe('male');
     });
 
     it('defaultsVoiceToFemaleWhenVoiceColumnIsNull', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: null, SoundsEnabled: 1, WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0, HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0 });
+        mockGetSettings.mockReturnValue(fullRow({ Voice: null }));
 
-        const result = getSettingsService();
-
-        expect(result.voice).toBe('female');
+        expect(getSettingsService().voice).toBe('female');
     });
 });
 
@@ -146,6 +137,8 @@ describe('saveSettingsService', () => {
         practiceOnboardingSeen: false,
         practiceFrequencyDays: 7,
         reviewPromptShown: false,
+        preShotReminderEnabled: true,
+        preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
     };
 
     beforeEach(() => {
@@ -158,7 +151,7 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService({ ...baseSettings, notificationsEnabled: false });
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 0, 7, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE);
     });
 
     it('maps notificationsEnabled true to 1', async () => {
@@ -166,39 +159,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService(baseSettings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0);
-    });
-
-    it('maps wedgeChartOnboardingSeen true to 1', async () => {
-        mockSaveSettings.mockResolvedValue(true);
-
-        await saveSettingsService({ ...baseSettings, notificationsEnabled: false, wedgeChartOnboardingSeen: true });
-
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 7, 0);
-    });
-
-    it('maps playOnboardingSeen true to 1', async () => {
-        mockSaveSettings.mockResolvedValue(true);
-
-        await saveSettingsService({ ...baseSettings, playOnboardingSeen: true });
-
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 1, 0, 0, 7, 0);
-    });
-
-    it('maps homeOnboardingSeen true to 1', async () => {
-        mockSaveSettings.mockResolvedValue(true);
-
-        await saveSettingsService({ ...baseSettings, notificationsEnabled: false, homeOnboardingSeen: true });
-
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 1, 0, 7, 0);
-    });
-
-    it('maps practiceOnboardingSeen true to 1', async () => {
-        mockSaveSettings.mockResolvedValue(true);
-
-        await saveSettingsService({ ...baseSettings, notificationsEnabled: false, practiceOnboardingSeen: true });
-
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 1, 7, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE);
     });
 
     it('maps reviewPromptShown true to 1', async () => {
@@ -206,15 +167,23 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, reviewPromptShown: true });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 1, 1, DEFAULT_PRESHOT_ROUTINE);
     });
 
-    it('passes voice male to saveSettings', async () => {
+    it('maps preShotReminderEnabled false to 0', async () => {
         mockSaveSettings.mockResolvedValue(true);
 
-        await saveSettingsService({ ...baseSettings, voice: 'male' });
+        await saveSettingsService({ ...baseSettings, preShotReminderEnabled: false });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'male', 1, 0, 0, 0, 0, 0, 7, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 0, DEFAULT_PRESHOT_ROUTINE);
+    });
+
+    it('passes the edited pre-shot routine text', async () => {
+        mockSaveSettings.mockResolvedValue(true);
+
+        await saveSettingsService({ ...baseSettings, preShotRoutineText: 'Target, breathe, go' });
+
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, 'Target, breathe, go');
     });
 
     it('passes voice neutral to saveSettings', async () => {
@@ -222,14 +191,12 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, voice: 'neutral' });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'neutral', 1, 0, 0, 0, 0, 0, 7, 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'neutral', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE);
     });
 
     it('returns false when save fails', async () => {
         mockSaveSettings.mockResolvedValue(false);
 
-        const result = await saveSettingsService(baseSettings);
-
-        expect(result).toBe(false);
+        expect(await saveSettingsService(baseSettings)).toBe(false);
     });
 });

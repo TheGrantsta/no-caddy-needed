@@ -247,7 +247,7 @@ export default function Settings() {
             <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
               <TextInput
                 testID="preshot-routine-input"
-                style={[styles.textInput, { minHeight: 90, textAlignVertical: 'top', paddingVertical: 10 }]}
+                style={[styles.textInput, { height: undefined, minHeight: 110, textAlignVertical: 'top', paddingVertical: 10 }]}
                 value={routineText}
                 onChangeText={setRoutineText}
                 onEndEditing={handleRoutineTextChange}

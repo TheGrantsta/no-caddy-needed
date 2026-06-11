@@ -25,6 +25,11 @@ jest.mock('../../hooks/useOrientation', () => ({
     }),
 }));
 
+jest.mock('expo-constants', () => ({
+    __esModule: true,
+    default: { expoConfig: { version: '2.0.17' } },
+}));
+
 jest.mock('../../service/DbService', () => ({
     getSettingsService: jest.fn().mockReturnValue({
         theme: 'dark',
@@ -34,6 +39,7 @@ jest.mock('../../service/DbService', () => ({
         playOnboardingSeen: true,
         homeOnboardingSeen: true,
         practiceOnboardingSeen: true,
+        whatsNewVersionSeen: '2.0.17',
     }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
 }));
@@ -49,19 +55,24 @@ jest.mock('react-native-gesture-handler', () => {
 });
 
 const mockGetSettingsService = getSettingsService as jest.Mock;
+const mockSaveSettingsService = saveSettingsService as jest.Mock;
+
+const homeSettings = (overrides: Record<string, unknown> = {}) => ({
+    theme: 'dark',
+    notificationsEnabled: true,
+    wedgeChartOnboardingSeen: true,
+    distancesOnboardingSeen: true,
+    playOnboardingSeen: true,
+    homeOnboardingSeen: true,
+    practiceOnboardingSeen: true,
+    whatsNewVersionSeen: '2.0.17',
+    ...overrides,
+});
 
 describe('renders homepage', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        mockGetSettingsService.mockReturnValue({
-            theme: 'dark',
-            notificationsEnabled: true,
-            wedgeChartOnboardingSeen: true,
-            distancesOnboardingSeen: true,
-            playOnboardingSeen: true,
-            homeOnboardingSeen: true,
-            practiceOnboardingSeen: true,
-        });
+        mockGetSettingsService.mockReturnValue(homeSettings());
     });
 
     it('shows title', () => {
@@ -162,7 +173,48 @@ describe('renders homepage', () => {
 
         expect(queryByTestId('onboarding-overlay')).toBeNull();
         expect(saveSettingsService).toHaveBeenCalledWith(
-            expect.objectContaining({ homeOnboardingSeen: true })
+            expect.objectContaining({ homeOnboardingSeen: true, whatsNewVersionSeen: '2.0.17' })
         );
+    });
+
+    describe("What's new overlay", () => {
+        it('shows What\'s new for an existing user on a new version', () => {
+            mockGetSettingsService.mockReturnValue(homeSettings({ homeOnboardingSeen: true, whatsNewVersionSeen: '2.0.10' }));
+
+            const { getByText } = render(<Homepage />);
+
+            expect(getByText("What's new in v2.0.17")).toBeTruthy();
+        });
+
+        it('does not show What\'s new when the current version was already seen', () => {
+            mockGetSettingsService.mockReturnValue(homeSettings({ homeOnboardingSeen: true, whatsNewVersionSeen: '2.0.17' }));
+
+            const { queryByText } = render(<Homepage />);
+
+            expect(queryByText("What's new in v2.0.17")).toBeNull();
+        });
+
+        it('does not show What\'s new to a brand-new user (onboarding shows instead)', () => {
+            mockGetSettingsService.mockReturnValue(homeSettings({ homeOnboardingSeen: false, whatsNewVersionSeen: '' }));
+
+            const { queryByText, getByTestId } = render(<Homepage />);
+
+            expect(queryByText("What's new in v2.0.17")).toBeNull();
+            expect(getByTestId('onboarding-overlay')).toBeTruthy();
+        });
+
+        it('saves the current version and hides the overlay when dismissed', () => {
+            mockGetSettingsService.mockReturnValue(homeSettings({ homeOnboardingSeen: true, whatsNewVersionSeen: '2.0.10' }));
+
+            const { getByTestId, queryByText } = render(<Homepage />);
+            expect(queryByText("What's new in v2.0.17")).toBeTruthy();
+
+            fireEvent.press(getByTestId('done-button'));
+
+            expect(queryByText("What's new in v2.0.17")).toBeNull();
+            expect(mockSaveSettingsService).toHaveBeenCalledWith(
+                expect.objectContaining({ whatsNewVersionSeen: '2.0.17' })
+            );
+        });
     });
 });

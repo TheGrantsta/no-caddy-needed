@@ -322,6 +322,7 @@ describe('Settings table column migration', () => {
                 { name: 'ReviewPromptShown' },
                 { name: 'PreShotReminderEnabled' },
                 { name: 'PreShotRoutineText' },
+                { name: 'WhatsNewVersionSeen' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },

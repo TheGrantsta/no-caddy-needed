@@ -35,6 +35,11 @@ jest.mock('@expo/vector-icons', () => ({
     MaterialIcons: () => null,
 }));
 
+jest.mock('expo-constants', () => ({
+    __esModule: true,
+    default: { expoConfig: { version: '2.0.17' } },
+}));
+
 jest.mock('../../../service/DbService', () => ({
     getSettingsService: jest.fn(),
     saveSettingsService: jest.fn().mockResolvedValue(true),
@@ -53,6 +58,7 @@ const defaultSettings = {
     playOnboardingSeen: false,
     homeOnboardingSeen: false,
     practiceOnboardingSeen: false,
+    whatsNewVersionSeen: '2.0.17',
 };
 
 describe('HomeScreen', () => {

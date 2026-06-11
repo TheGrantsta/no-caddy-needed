@@ -3,6 +3,7 @@ import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Link } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
@@ -18,18 +19,38 @@ const ONBOARDING_STEPS = [
   { text: 'Pull down to refresh at any time. Tap the info icon to see this guide again.' },
 ];
 
+// What's new for the current version — shown once per version to existing users.
+const WHATS_NEW = [
+  'On-course wind direction & speed indicator — tap it to enlarge',
+  'Pre-shot routine reminder between holes (editable in Settings)',
+  'Rate the app from Settings',
+];
+
+const APP_VERSION = Constants.expoConfig?.version ?? '';
+
 export default function HomeScreen() {
   const styles = useStyles();
   const colours = useThemeColours();
   const { landscapePadding } = useOrientation();
   const settings = getSettingsService();
   const [showOnboarding, setShowOnboarding] = useState(!settings.homeOnboardingSeen);
+  // Existing users (already past onboarding) see "What's new" once per version.
+  const [showWhatsNew, setShowWhatsNew] = useState(
+    settings.homeOnboardingSeen && settings.whatsNewVersionSeen !== APP_VERSION
+  );
   const [refreshing, setRefreshing] = useState(false);
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
     const currentSettings = getSettingsService();
-    await saveSettingsService({ ...currentSettings, homeOnboardingSeen: true });
+    // Mark the current version's "What's new" as seen too, so new users aren't shown it straight after onboarding.
+    await saveSettingsService({ ...currentSettings, homeOnboardingSeen: true, whatsNewVersionSeen: APP_VERSION });
+  };
+
+  const handleDismissWhatsNew = async () => {
+    setShowWhatsNew(false);
+    const currentSettings = getSettingsService();
+    await saveSettingsService({ ...currentSettings, whatsNewVersionSeen: APP_VERSION });
   };
 
   const handleShowOnboarding = () => {
@@ -120,6 +141,13 @@ export default function HomeScreen() {
         onDismiss={handleDismissOnboarding}
         title="No Caddy Needed"
         steps={ONBOARDING_STEPS}
+      />
+
+      <OnboardingOverlay
+        visible={showWhatsNew}
+        onDismiss={handleDismissWhatsNew}
+        title={`What's new in v${APP_VERSION}`}
+        steps={[{ text: WHATS_NEW.map((c) => `•  ${c}`).join('\n\n') }]}
       />
     </GestureHandlerRootView>
   );

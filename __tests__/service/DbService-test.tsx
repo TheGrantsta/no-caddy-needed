@@ -155,6 +155,7 @@ describe('getSettingsService', () => {
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
+            whatsNewVersionSeen: '',
         });
     });
 
@@ -188,6 +189,7 @@ describe('getSettingsService', () => {
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
+            whatsNewVersionSeen: '',
         });
     });
 
@@ -221,6 +223,7 @@ describe('getSettingsService', () => {
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
+            whatsNewVersionSeen: '',
         });
     });
 
@@ -254,6 +257,7 @@ describe('getSettingsService', () => {
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
+            whatsNewVersionSeen: '',
         });
     });
 
@@ -287,6 +291,7 @@ describe('getSettingsService', () => {
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
+            whatsNewVersionSeen: '',
         });
     });
 });
@@ -372,12 +377,13 @@ describe('saveSettingsService', () => {
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
+            whatsNewVersionSeen: '',
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '');
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
@@ -396,12 +402,13 @@ describe('saveSettingsService', () => {
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
+            whatsNewVersionSeen: '',
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '');
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
@@ -420,11 +427,12 @@ describe('saveSettingsService', () => {
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
+            whatsNewVersionSeen: '',
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '');
     });
 });

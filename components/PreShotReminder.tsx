@@ -1,5 +1,7 @@
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
+import { useThemeColours } from '@/context/ThemeContext';
 
 type Props = {
     visible: boolean;
@@ -9,6 +11,7 @@ type Props = {
 
 const PreShotReminder = ({ visible, text, onDismiss }: Props) => {
     const styles = useStyles();
+    const colours = useThemeColours();
     const s = styles.onboardingOverlay;
 
     if (!visible) return null;
@@ -30,7 +33,12 @@ const PreShotReminder = ({ visible, text, onDismiss }: Props) => {
                         onPress={onDismiss}
                         style={s.primaryButton}
                     >
-                        <Text style={s.primaryButtonText}>Got it</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                            <Text style={s.primaryButtonText}>Got it</Text>
+                            <View testID="preshot-thumbs-up">
+                                <MaterialIcons name="thumb-up" size={20} color={colours.background} />
+                            </View>
+                        </View>
                     </TouchableOpacity>
                 </View>
             </View>

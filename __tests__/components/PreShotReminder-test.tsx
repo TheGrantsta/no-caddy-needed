@@ -27,6 +27,7 @@ describe('PreShotReminder', () => {
         expect(getByTestId('preshot-reminder')).toBeTruthy();
         expect(getByText('Target, breathe, go')).toBeTruthy();
         expect(getByTestId('preshot-reminder-dismiss')).toBeTruthy();
+        expect(getByTestId('preshot-thumbs-up')).toBeTruthy();
     });
 
     it('callsOnDismissWhenGotItPressed', () => {

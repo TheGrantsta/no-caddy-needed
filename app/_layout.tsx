@@ -57,20 +57,30 @@ function ThemedToastProvider({ children }: { children: React.ReactNode }) {
       style={{ maxWidth: '100%' }}
       renderType={{
         success: (toast) => (
-          <View style={[{ backgroundColor: colours.primary, borderLeftColor: colours.green }, toastStyles.container]}>
+          <TouchableOpacity
+            testID="toast-success"
+            activeOpacity={0.9}
+            onPress={toast.onHide}
+            style={[{ backgroundColor: colours.primary, borderLeftColor: colours.green }, toastStyles.container]}
+          >
             <Text style={[toastStyles.message, { color: colours.background }]}>{toast.message}</Text>
-            <TouchableOpacity testID="toast-close-button" onPress={toast.onHide} style={toastStyles.closeButton}>
-              <Text style={[toastStyles.closeText, { color: colours.background }]}>✕</Text>
-            </TouchableOpacity>
-          </View>
+            <View testID="toast-thumbs-up" style={toastStyles.closeButton}>
+              <MaterialIcons name="thumb-up" size={20} color={colours.background} />
+            </View>
+          </TouchableOpacity>
         ),
         danger: (toast) => (
-          <View style={[{ backgroundColor: colours.primary, borderLeftColor: colours.red }, toastStyles.container]}>
+          <TouchableOpacity
+            testID="toast-danger"
+            activeOpacity={0.9}
+            onPress={toast.onHide}
+            style={[{ backgroundColor: colours.primary, borderLeftColor: colours.red }, toastStyles.container]}
+          >
             <Text style={[toastStyles.message, { color: colours.background }]}>{toast.message}</Text>
-            <TouchableOpacity testID="toast-close-button" onPress={toast.onHide} style={toastStyles.closeButton}>
-              <Text style={[toastStyles.closeText, { color: colours.background }]}>✕</Text>
-            </TouchableOpacity>
-          </View>
+            <View testID="toast-thumbs-up" style={toastStyles.closeButton}>
+              <MaterialIcons name="thumb-up" size={20} color={colours.background} />
+            </View>
+          </TouchableOpacity>
         ),
       }}
     >
@@ -342,8 +352,5 @@ const toastStyles = StyleSheet.create({
   closeButton: {
     marginLeft: 12,
     padding: 4,
-  },
-  closeText: {
-    fontSize: 16,
   },
 });

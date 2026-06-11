@@ -252,31 +252,31 @@ describe('RootLayout', () => {
             expect(getByText('Test message')).toBeTruthy();
         });
 
-        it('successRenderTypeShowsCloseButton', async () => {
+        it('successRenderTypeShowsThumbsUp', async () => {
             const renderType = await getToastRenderType();
             const { getByTestId } = render(renderType.success({ message: 'Test', onHide: jest.fn() }));
-            expect(getByTestId('toast-close-button')).toBeTruthy();
+            expect(getByTestId('toast-thumbs-up')).toBeTruthy();
         });
 
-        it('successCloseButtonCallsOnHide', async () => {
+        it('pressingSuccessToastCallsOnHide', async () => {
             const renderType = await getToastRenderType();
             const mockOnHide = jest.fn();
             const { getByTestId } = render(renderType.success({ message: 'Test', onHide: mockOnHide }));
-            fireEvent.press(getByTestId('toast-close-button'));
+            fireEvent.press(getByTestId('toast-success'));
             expect(mockOnHide).toHaveBeenCalled();
         });
 
-        it('dangerRenderTypeShowsCloseButton', async () => {
+        it('dangerRenderTypeShowsThumbsUp', async () => {
             const renderType = await getToastRenderType();
             const { getByTestId } = render(renderType.danger({ message: 'Error', onHide: jest.fn() }));
-            expect(getByTestId('toast-close-button')).toBeTruthy();
+            expect(getByTestId('toast-thumbs-up')).toBeTruthy();
         });
 
-        it('dangerCloseButtonCallsOnHide', async () => {
+        it('pressingDangerToastCallsOnHide', async () => {
             const renderType = await getToastRenderType();
             const mockOnHide = jest.fn();
             const { getByTestId } = render(renderType.danger({ message: 'Error', onHide: mockOnHide }));
-            fireEvent.press(getByTestId('toast-close-button'));
+            fireEvent.press(getByTestId('toast-danger'));
             expect(mockOnHide).toHaveBeenCalled();
         });
     });

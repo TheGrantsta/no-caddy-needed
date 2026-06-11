@@ -2639,7 +2639,7 @@ describe('Play screen', () => {
             const { getByTestId, getByText } = render(<Play />);
             startRound(getByTestId);
 
-            await waitFor(() => expect(getByTestId('preshot-reminder')).toBeTruthy());
+            await waitFor(() => expect(getByTestId('acknowledge-overlay')).toBeTruthy());
             expect(getByText('Target, breathe, go')).toBeTruthy();
         });
 
@@ -2649,10 +2649,10 @@ describe('Play screen', () => {
             const { getByTestId, queryByTestId } = render(<Play />);
             startRound(getByTestId);
 
-            await waitFor(() => expect(getByTestId('preshot-reminder')).toBeTruthy());
-            fireEvent.press(getByTestId('preshot-reminder-dismiss'));
+            await waitFor(() => expect(getByTestId('acknowledge-overlay')).toBeTruthy());
+            fireEvent.press(getByTestId('acknowledge-dismiss'));
 
-            await waitFor(() => expect(queryByTestId('preshot-reminder')).toBeNull());
+            await waitFor(() => expect(queryByTestId('acknowledge-overlay')).toBeNull());
         });
 
         it('doesNotShowReminderWhenDisabled', async () => {
@@ -2662,7 +2662,7 @@ describe('Play screen', () => {
             startRound(getByTestId);
 
             await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
-            expect(queryByTestId('preshot-reminder')).toBeNull();
+            expect(queryByTestId('acknowledge-overlay')).toBeNull();
         });
     });
 

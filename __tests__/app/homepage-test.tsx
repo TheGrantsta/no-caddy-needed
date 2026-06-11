@@ -209,7 +209,7 @@ describe('renders homepage', () => {
             const { getByTestId, queryByText } = render(<Homepage />);
             expect(queryByText("What's new")).toBeTruthy();
 
-            fireEvent.press(getByTestId('done-button'));
+            fireEvent.press(getByTestId('acknowledge-dismiss'));
 
             expect(queryByText("What's new")).toBeNull();
             expect(mockSaveSettingsService).toHaveBeenCalledWith(

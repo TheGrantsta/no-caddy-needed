@@ -10,6 +10,7 @@ import { useOrientation } from '@/hooks/useOrientation';
 import { getSettingsService, saveSettingsService } from '@/service/DbService';
 import Chevrons from '@/components/Chevrons';
 import OnboardingOverlay from '@/components/OnboardingOverlay';
+import AcknowledgeOverlay from '@/components/AcknowledgeOverlay';
 
 const points = ['In a nutshell: hit it, find it & hit it again', 'Point: get the ball in the hole with the fewest shots', 'Have fun: golf is a game, so for goodness sake enjoy it!'];
 
@@ -143,11 +144,12 @@ export default function HomeScreen() {
         steps={ONBOARDING_STEPS}
       />
 
-      <OnboardingOverlay
+      <AcknowledgeOverlay
         visible={showWhatsNew}
-        onDismiss={handleDismissWhatsNew}
         title="What's new"
-        steps={[{ text: WHATS_NEW.map((c) => `•  ${c}`).join('\n\n') }]}
+        text={WHATS_NEW.map((c) => `•  ${c}`).join('\n\n')}
+        textAlign="left"
+        onDismiss={handleDismissWhatsNew}
       />
     </GestureHandlerRootView>
   );

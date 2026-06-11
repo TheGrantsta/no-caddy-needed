@@ -55,7 +55,7 @@ import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
 import { useWind } from '../../hooks/useWind';
 import WindIndicator from '../../components/WindIndicator';
-import PreShotReminder from '../../components/PreShotReminder';
+import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import fontSizes from '../../assets/font-sizes';
 import DistancesScreen from '../play/distances';
 
@@ -791,8 +791,9 @@ export default function Play() {
                 steps={ONBOARDING_STEPS}
             />
 
-            <PreShotReminder
+            <AcknowledgeOverlay
                 visible={showPreShotReminder}
+                title="Pre-shot routine"
                 text={preShotText}
                 onDismiss={() => setShowPreShotReminder(false)}
             />

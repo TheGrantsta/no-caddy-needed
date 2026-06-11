@@ -223,7 +223,7 @@ export default function Settings() {
 
         <View style={styles.contentSection}>
           <View style={styles.headerContainer}>
-            <Text style={[styles.subHeaderText, { padding: 0 }]}>Pre-shot routine</Text>
+            <Text style={[styles.subHeaderText, { padding: 0 }]}>Show pre-shot routine</Text>
           </View>
 
           <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>

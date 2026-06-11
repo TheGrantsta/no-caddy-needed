@@ -391,7 +391,7 @@ describe('Settings page', () => {
             mockGetSettingsService.mockReturnValue(preShotSettings());
             const { getByText, getByTestId } = render(<Settings />);
 
-            expect(getByText('Pre-shot routine')).toBeTruthy();
+            expect(getByText('Show pre-shot routine')).toBeTruthy();
             expect(getByTestId('preshot-on')).toBeTruthy();
             expect(getByTestId('preshot-off')).toBeTruthy();
         });

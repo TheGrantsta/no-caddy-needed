@@ -2,12 +2,38 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import View from '../../app/(tabs)/perform';
 import { logEvent } from '../../service/FirebaseService';
+import { getSettingsService, saveSettingsService } from '../../service/DbService';
 
 jest.mock('../../service/FirebaseService', () => ({
     logEvent: jest.fn().mockResolvedValue(true),
 }));
 
+jest.mock('../../service/DbService', () => ({
+    getSettingsService: jest.fn(),
+    saveSettingsService: jest.fn().mockResolvedValue(true),
+}));
+
 const mockLogEvent = logEvent as jest.Mock;
+const mockGetSettingsService = getSettingsService as jest.Mock;
+const mockSaveSettingsService = saveSettingsService as jest.Mock;
+
+const baseSettings = {
+    notificationsEnabled: true,
+    voice: 'female',
+    soundsEnabled: true,
+    wedgeChartOnboardingSeen: false,
+    distancesOnboardingSeen: false,
+    playOnboardingSeen: false,
+    homeOnboardingSeen: false,
+    practiceOnboardingSeen: false,
+    practiceFrequencyDays: 7,
+    reviewPromptShown: false,
+    preShotReminderEnabled: true,
+    preShotRoutineText: '',
+    whatsNewVersionSeen: '',
+    settingsOnboardingSeen: true,
+    performOnboardingSeen: true,
+};
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -42,6 +68,8 @@ jest.mock('react-native-gesture-handler', () => {
 describe('Perform page ', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        mockGetSettingsService.mockReturnValue(baseSettings);
+        mockSaveSettingsService.mockResolvedValue(true);
     });
 
     describe('Approach section', () => {
@@ -144,6 +172,53 @@ describe('Perform page ', () => {
             expect(getByText('Feet')).toBeTruthy();
             expect(getByText('Make rate')).toBeTruthy();
             expect(getByText(/Source:/)).toBeTruthy();
+        });
+    });
+
+    describe('Onboarding', () => {
+        it('shows the onboarding overlay when not seen before', () => {
+            mockGetSettingsService.mockReturnValue({ ...baseSettings, performOnboardingSeen: false });
+
+            const { getByTestId, getByText } = render(<View />);
+
+            expect(getByTestId('onboarding-overlay')).toBeTruthy();
+            expect(getByText('Perform guide')).toBeTruthy();
+        });
+
+        it('hides the onboarding overlay when already seen', () => {
+            mockGetSettingsService.mockReturnValue({ ...baseSettings, performOnboardingSeen: true });
+
+            const { queryByTestId } = render(<View />);
+
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+        });
+
+        it('shows the onboarding overlay when the info button is pressed', () => {
+            mockGetSettingsService.mockReturnValue({ ...baseSettings, performOnboardingSeen: true });
+
+            const { getByTestId, queryByTestId } = render(<View />);
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+
+            fireEvent.press(getByTestId('perform-info-button'));
+
+            expect(getByTestId('onboarding-overlay')).toBeTruthy();
+        });
+
+        it('saves performOnboardingSeen true when dismissed', async () => {
+            mockGetSettingsService.mockReturnValue({ ...baseSettings, performOnboardingSeen: false });
+
+            const { getByTestId, queryByTestId } = render(<View />);
+
+            fireEvent.press(getByTestId('next-button'));
+            fireEvent.press(getByTestId('next-button'));
+            fireEvent.press(getByTestId('done-button'));
+
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+            await waitFor(() => {
+                expect(mockSaveSettingsService).toHaveBeenCalledWith(
+                    expect.objectContaining({ performOnboardingSeen: true })
+                );
+            });
         });
     });
 });

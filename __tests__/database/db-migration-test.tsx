@@ -324,6 +324,7 @@ describe('Settings table column migration', () => {
                 { name: 'PreShotRoutineText' },
                 { name: 'WhatsNewVersionSeen' },
                 { name: 'SettingsOnboardingSeen' },
+                { name: 'PerformOnboardingSeen' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },

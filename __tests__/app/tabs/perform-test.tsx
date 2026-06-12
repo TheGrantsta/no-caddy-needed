@@ -31,6 +31,11 @@ jest.mock('../../../service/FirebaseService', () => ({
     logEvent: jest.fn().mockResolvedValue(true),
 }));
 
+jest.mock('../../../service/DbService', () => ({
+    getSettingsService: jest.fn().mockReturnValue({ performOnboardingSeen: true }),
+    saveSettingsService: jest.fn().mockResolvedValue(true),
+}));
+
 describe('Perform', () => {
     it('rendersWithoutCrashing', () => {
         const { toJSON } = render(<Perform />);

@@ -21,7 +21,7 @@ const fullRow = (overrides: Record<string, unknown> = {}) => ({
     Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', SoundsEnabled: 1,
     WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0,
     HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0, PracticeFrequencyDays: 7,
-    ReviewPromptShown: 0, PreShotReminderEnabled: 1, PreShotRoutineText: '', WhatsNewVersionSeen: '', SettingsOnboardingSeen: 0, ...overrides,
+    ReviewPromptShown: 0, PreShotReminderEnabled: 1, PreShotRoutineText: '', WhatsNewVersionSeen: '', SettingsOnboardingSeen: 0, PerformOnboardingSeen: 0, ...overrides,
 });
 
 const defaultExpected: AppSettings = {
@@ -29,7 +29,7 @@ const defaultExpected: AppSettings = {
     wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false,
     homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7,
     reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
-    whatsNewVersionSeen: '', settingsOnboardingSeen: false,
+    whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false,
 };
 
 describe('getSettingsService', () => {
@@ -178,7 +178,7 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService({ ...baseSettings, notificationsEnabled: false });
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0);
     });
 
     it('maps notificationsEnabled true to 1', async () => {
@@ -186,7 +186,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService(baseSettings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0);
     });
 
     it('maps reviewPromptShown true to 1', async () => {
@@ -194,7 +194,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, reviewPromptShown: true });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 1, 1, DEFAULT_PRESHOT_ROUTINE, '', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 1, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0);
     });
 
     it('maps preShotReminderEnabled false to 0', async () => {
@@ -202,7 +202,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, preShotReminderEnabled: false });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 0, DEFAULT_PRESHOT_ROUTINE, '', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 0, DEFAULT_PRESHOT_ROUTINE, '', 0, 0);
     });
 
     it('passes the edited pre-shot routine text', async () => {
@@ -210,7 +210,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, preShotRoutineText: 'Target, breathe, go' });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, 'Target, breathe, go', '', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, 'Target, breathe, go', '', 0, 0);
     });
 
     it('passes voice neutral to saveSettings', async () => {
@@ -218,7 +218,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, voice: 'neutral' });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'neutral', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'neutral', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0);
     });
 
     it('returns false when save fails', async () => {

@@ -1,14 +1,23 @@
 import { useCallback, useRef, useState } from 'react';
-import { Dimensions, FlatList, ScrollView, Text, View } from 'react-native';
+import { Dimensions, FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
+import { MaterialIcons } from '@expo/vector-icons';
 import Chevrons from '../../components/Chevrons';
 import SubMenu from '../../components/SubMenu';
+import OnboardingOverlay from '../../components/OnboardingOverlay';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { logEvent } from '../../service/FirebaseService';
+import { getSettingsService, saveSettingsService, AppSettings } from '../../service/DbService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+const ONBOARDING_STEPS = [
+  { text: 'Perform helps you make smarter decisions and set realistic expectations on the course.' },
+  { text: 'The Approach tab shares concepts for choosing better targets and playing for your shot dispersion.' },
+  { text: 'The Pro stats tab shows tour-level proximity and putting make rates so you can manage your expectations.' },
+];
 
 export default function Perform() {
   const styles = useStyles();
@@ -18,6 +27,19 @@ export default function Perform() {
   const [section, setSection] = useState('approach');
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef(null);
+  const [settings, setSettings] = useState<AppSettings>(getSettingsService());
+  const [showOnboarding, setShowOnboarding] = useState(!settings.performOnboardingSeen);
+
+  const handleDismissOnboarding = async () => {
+    setShowOnboarding(false);
+    const updated: AppSettings = { ...settings, performOnboardingSeen: true };
+    setSettings(updated);
+    await saveSettingsService(updated);
+  };
+
+  const handleShowOnboarding = () => {
+    setShowOnboarding(true);
+  };
 
   const points = ['Target: play for your shot dispersion', 'Aim: think shotgun pattern', 'Strategy: favour the "fat" side', 'Eliminate:  big numbers by playing away from water & severe hazards'];
 
@@ -130,6 +152,12 @@ export default function Perform() {
           onRefresh={onRefresh}
           tintColor={colours.primary} />
       }>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingTop: 10 }}>
+          <TouchableOpacity testID="perform-info-button" onPress={handleShowOnboarding}>
+            <MaterialIcons name="info-outline" size={26} color={colours.primary} />
+          </TouchableOpacity>
+        </View>
 
         {/* Approach */}
         {displaySection('approach') && (
@@ -244,6 +272,13 @@ export default function Perform() {
           </View>
         )}
       </ScrollView>
+
+      <OnboardingOverlay
+        visible={showOnboarding}
+        onDismiss={handleDismissOnboarding}
+        title="Perform guide"
+        steps={ONBOARDING_STEPS}
+      />
     </GestureHandlerRootView>
   )
 };

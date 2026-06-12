@@ -153,17 +153,18 @@ export default function Perform() {
           tintColor={colours.primary} />
       }>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingTop: 10 }}>
-          <TouchableOpacity testID="perform-info-button" onPress={handleShowOnboarding}>
-            <MaterialIcons name="info-outline" size={26} color={colours.primary} />
-          </TouchableOpacity>
-        </View>
-
         {/* Approach */}
         {displaySection('approach') && (
           <View style={styles.container}>
             <View style={styles.header}>
               <View style={styles.titleRow}>
+                <TouchableOpacity
+                  testID="perform-info-button"
+                  onPress={handleShowOnboarding}
+                  style={{ padding: 4 }}
+                >
+                  <MaterialIcons name="info-outline" size={24} color={colours.primary} />
+                </TouchableOpacity>
                 <Text style={[styles.headerText, styles.marginTop]}>
                   Approach shots
                 </Text>

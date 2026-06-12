@@ -7,16 +7,17 @@ try {
     // Native module not available (e.g. Expo Go without a dev build)
 }
 
-/** Show the in-app review prompt once the user has finished at least this many rounds. */
-const REVIEW_AFTER_ROUNDS = 1;
+/** Re-ask for a review every this many completed rounds (after the first). */
+const REVIEW_EVERY_ROUNDS = 6;
 
 /**
- * Requests the native in-app review prompt after a "signature interaction" (a completed round),
- * gated so it is only asked once. Returns true only when it actually triggered the prompt so the
- * caller can persist the shown-flag and log the event.
+ * Decides whether to request the native in-app review prompt after a completed round.
+ * Shown after the 1st round and then every {@link REVIEW_EVERY_ROUNDS} rounds (1, 7, 13, …).
+ * The OS additionally rate-limits how often the prompt actually appears.
+ * Returns true only when it actually triggered the prompt so the caller can log the event.
  */
-export const maybeRequestRoundReviewService = async (roundCount: number, alreadyShown: boolean): Promise<boolean> => {
-    if (alreadyShown || roundCount < REVIEW_AFTER_ROUNDS || !StoreReview) return false;
+export const maybeRequestRoundReviewService = async (roundCount: number): Promise<boolean> => {
+    if (roundCount < 1 || (roundCount - 1) % REVIEW_EVERY_ROUNDS !== 0 || !StoreReview) return false;
     try {
         if (!(await StoreReview.isAvailableAsync())) return false;
         await StoreReview.requestReview();

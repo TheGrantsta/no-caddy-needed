@@ -20,34 +20,42 @@ describe('maybeRequestRoundReviewService', () => {
         mockRequestReview.mockResolvedValue(undefined);
     });
 
-    it('returnsFalseWhenAlreadyShown', async () => {
-        const result = await maybeRequestRoundReviewService(5, true);
+    it('returnsFalseWhenNoRoundsCompleted', async () => {
+        const result = await maybeRequestRoundReviewService(0);
         expect(result).toBe(false);
         expect(mockRequestReview).not.toHaveBeenCalled();
     });
 
-    it('returnsFalseWhenBelowThreshold', async () => {
-        const result = await maybeRequestRoundReviewService(0, false);
-        expect(result).toBe(false);
-        expect(mockRequestReview).not.toHaveBeenCalled();
-    });
-
-    it('requestsReviewAndReturnsTrueAfterFirstRound', async () => {
-        const result = await maybeRequestRoundReviewService(1, false);
+    it('requestsReviewAfterTheFirstRound', async () => {
+        const result = await maybeRequestRoundReviewService(1);
         expect(mockRequestReview).toHaveBeenCalled();
         expect(result).toBe(true);
     });
 
+    it('requestsReviewEverySixthRoundAfterTheFirst', async () => {
+        expect(await maybeRequestRoundReviewService(7)).toBe(true);
+        expect(await maybeRequestRoundReviewService(13)).toBe(true);
+        expect(await maybeRequestRoundReviewService(19)).toBe(true);
+    });
+
+    it('doesNotRequestReviewOnInterveningRounds', async () => {
+        for (const count of [2, 3, 4, 5, 6, 8, 12]) {
+            mockRequestReview.mockClear();
+            expect(await maybeRequestRoundReviewService(count)).toBe(false);
+            expect(mockRequestReview).not.toHaveBeenCalled();
+        }
+    });
+
     it('returnsFalseWhenStoreReviewUnavailable', async () => {
         mockIsAvailable.mockResolvedValue(false);
-        const result = await maybeRequestRoundReviewService(1, false);
+        const result = await maybeRequestRoundReviewService(1);
         expect(mockRequestReview).not.toHaveBeenCalled();
         expect(result).toBe(false);
     });
 
     it('returnsFalseWhenRequestReviewThrows', async () => {
         mockRequestReview.mockRejectedValue(new Error('fail'));
-        const result = await maybeRequestRoundReviewService(1, false);
+        const result = await maybeRequestRoundReviewService(1);
         expect(result).toBe(false);
     });
 });

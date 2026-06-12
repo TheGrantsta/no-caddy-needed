@@ -408,11 +408,10 @@ export default function Play() {
 
     const handleScorecardDone = async () => {
         resetToIdle();
-        const currentSettings = getSettingsService();
+        // Ask for a review after the 1st completed round, then every 6th (1, 7, 13, …).
         const roundCount = getAllRoundHistoryService().length;
-        const prompted = await maybeRequestRoundReviewService(roundCount, currentSettings.reviewPromptShown);
+        const prompted = await maybeRequestRoundReviewService(roundCount);
         if (prompted) {
-            await saveSettingsService({ ...currentSettings, reviewPromptShown: true });
             logEvent('review_requested', { roundNumber: roundCount });
         }
     };

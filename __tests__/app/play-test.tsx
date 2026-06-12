@@ -2587,10 +2587,10 @@ describe('Play screen', () => {
 
             await act(async () => { fireEvent.press(getByTestId('scorecard-done-button')); });
 
-            await waitFor(() => expect(mockMaybeRequestReview).toHaveBeenCalledWith(1, false));
+            await waitFor(() => expect(mockMaybeRequestReview).toHaveBeenCalledWith(1));
         });
 
-        it('persistsFlagAndLogsWhenReviewPrompted', async () => {
+        it('logsReviewEventWhenPrompted', async () => {
             mockGetAllRoundHistory.mockReturnValue([{ Id: 1 }]);
             mockMaybeRequestReview.mockResolvedValue(true);
             const { getByTestId } = render(<Play />);
@@ -2599,7 +2599,6 @@ describe('Play screen', () => {
             await act(async () => { fireEvent.press(getByTestId('scorecard-done-button')); });
 
             await waitFor(() => {
-                expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ reviewPromptShown: true }));
                 expect(mockLogEvent).toHaveBeenCalledWith('review_requested', expect.objectContaining({ roundNumber: 1 }));
             });
         });

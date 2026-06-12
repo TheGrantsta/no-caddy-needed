@@ -24,7 +24,7 @@ const ONBOARDING_STEPS = [
 const WHATS_NEW = [
   'On-course wind direction & speed indicator — tap it to enlarge',
   'Pre-shot routine reminder between holes (editable in Settings)',
-  'Rate the app from Settings',
+  'Rate the app after a completed round and from Settings',
 ];
 
 const APP_VERSION = Constants.expoConfig?.version ?? '';

@@ -718,6 +718,13 @@ export const getSettings = () => {
 export const saveSettings = async (notificationsEnabled: number, voice: string, soundsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number, homeOnboardingSeen: number, practiceOnboardingSeen: number, practiceFrequencyDays: number, reviewPromptShown: number, preShotReminderEnabled: number, preShotRoutineText: string, whatsNewVersionSeen: string, settingsOnboardingSeen: number, performOnboardingSeen: number): Promise<boolean> => {
     let success = true;
     try {
+        // Guard: the Settings row is rewritten via DELETE + INSERT on every save, so a
+        // blank incoming routine would wipe a routine the user previously customised.
+        // Preserve the stored routine unless a non-blank replacement is supplied.
+        const existingRows = getSyncDb().getAllSync('SELECT PreShotRoutineText FROM Settings LIMIT 1;') as { PreShotRoutineText: string }[];
+        const existingRoutine = existingRows.length > 0 ? existingRows[0].PreShotRoutineText : '';
+        const routineToStore = preShotRoutineText.trim().length > 0 ? preShotRoutineText : existingRoutine;
+
         getSyncDb().execSync('DELETE FROM Settings');
 
         const statement = getSyncDb().prepareSync(
@@ -725,7 +732,7 @@ export const saveSettings = async (notificationsEnabled: number, voice: string, 
         );
 
         try {
-            await statement.executeAsync({ $NotificationsEnabled: notificationsEnabled, $Voice: voice, $SoundsEnabled: soundsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen, $PracticeFrequencyDays: practiceFrequencyDays, $ReviewPromptShown: reviewPromptShown, $PreShotReminderEnabled: preShotReminderEnabled, $PreShotRoutineText: preShotRoutineText, $WhatsNewVersionSeen: whatsNewVersionSeen, $SettingsOnboardingSeen: settingsOnboardingSeen, $PerformOnboardingSeen: performOnboardingSeen });
+            await statement.executeAsync({ $NotificationsEnabled: notificationsEnabled, $Voice: voice, $SoundsEnabled: soundsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen, $PracticeFrequencyDays: practiceFrequencyDays, $ReviewPromptShown: reviewPromptShown, $PreShotReminderEnabled: preShotReminderEnabled, $PreShotRoutineText: routineToStore, $WhatsNewVersionSeen: whatsNewVersionSeen, $SettingsOnboardingSeen: settingsOnboardingSeen, $PerformOnboardingSeen: performOnboardingSeen });
         } finally {
             await statement.finalizeAsync();
         }

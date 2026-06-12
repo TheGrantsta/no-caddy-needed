@@ -101,7 +101,7 @@ function ThemedApp() {
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerRight: () => (
-              <Link href='../settings'>
+              <Link href='../settings' testID="home-settings-link" accessibilityLabel="Settings">
                 <MaterialIcons name="settings" size={24} color={colours.background} style={{ marginRight: 15 }} />
               </Link>
             ),

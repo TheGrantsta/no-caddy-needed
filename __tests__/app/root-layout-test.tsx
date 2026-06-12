@@ -218,6 +218,15 @@ describe('RootLayout', () => {
         expect(result).toBeTruthy();
     });
 
+    it('tabsHeaderRightSettingsLinkExposesTestID', async () => {
+        const { Stack } = require('expo-router');
+        await renderReady();
+
+        const tabsCall = Stack.Screen.mock.calls.find((call: any[]) => call[0].name === '(tabs)');
+        const result = tabsCall[0].options.headerRight();
+        expect(result.props.testID).toBe('home-settings-link');
+    });
+
     it('logsWarningWhenPrepareAppFails', async () => {
         mockInitialize.mockRejectedValueOnce(new Error('init failed'));
         const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });

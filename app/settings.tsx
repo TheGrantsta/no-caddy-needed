@@ -2,12 +2,20 @@ import Constants from 'expo-constants';
 import { useMemo, useState } from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { MaterialIcons } from '@expo/vector-icons';
 import { getSettingsService, saveSettingsService, AppSettings } from '../service/DbService';
 import { openStoreReviewService } from '../service/ReviewService';
 import { useStyles } from '../hooks/useStyles';
 import { useTheme } from '../context/ThemeContext';
 import { useOrientation } from '../hooks/useOrientation';
 import { useAppToast } from '../hooks/useAppToast';
+import OnboardingOverlay from '../components/OnboardingOverlay';
+
+const ONBOARDING_STEPS = [
+  { text: 'Settings let you tailor No Caddy Needed to how you like to play.' },
+  { text: 'Turn notifications and sounds on or off, and choose the voice for the random number generator.' },
+  { text: 'Set how often you are reminded to practise, edit your pre-shot routine, and rate the app.' },
+];
 
 const VOICES: { key: AppSettings['voice']; label: string }[] = [
   { key: 'female', label: 'Female' },
@@ -37,6 +45,18 @@ export default function Settings() {
   const { showSuccess, showResult } = useAppToast();
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [routineText, setRoutineText] = useState(settings.preShotRoutineText);
+  const [showOnboarding, setShowOnboarding] = useState(!settings.settingsOnboardingSeen);
+
+  const handleDismissOnboarding = async () => {
+    setShowOnboarding(false);
+    const updated: AppSettings = { ...settings, settingsOnboardingSeen: true };
+    setSettings(updated);
+    await saveSettingsService(updated);
+  };
+
+  const handleShowOnboarding = () => {
+    setShowOnboarding(true);
+  };
 
   const handleNotificationsChange = async (value: boolean) => {
     const updated: AppSettings = { ...settings, notificationsEnabled: value };
@@ -123,7 +143,12 @@ export default function Settings() {
     <GestureHandlerRootView style={styles.flexOne}>
       <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding, { flexGrow: 1 }]}>
         <View style={styles.headerContainer}>
-          <Text style={[styles.headerText, styles.marginTop]}>Settings</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <TouchableOpacity testID="settings-info-button" onPress={handleShowOnboarding}>
+              <MaterialIcons name="info-outline" size={26} color={colours.primary} />
+            </TouchableOpacity>
+            <Text style={[styles.headerText, styles.marginTop]}>Settings</Text>
+          </View>
         </View>
 
         <View style={styles.contentSection}>
@@ -275,6 +300,13 @@ export default function Settings() {
           </Text>
         </View>
       </ScrollView>
+
+      <OnboardingOverlay
+        visible={showOnboarding}
+        onDismiss={handleDismissOnboarding}
+        title="Settings guide"
+        steps={ONBOARDING_STEPS}
+      />
     </GestureHandlerRootView >
   );
 }

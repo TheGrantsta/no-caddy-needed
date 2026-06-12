@@ -439,4 +439,51 @@ describe('Settings page', () => {
             });
         });
     });
+
+    describe('Onboarding', () => {
+        it('shows the onboarding overlay when not seen before', () => {
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, settingsOnboardingSeen: false });
+
+            const { getByTestId, getByText } = render(<Settings />);
+
+            expect(getByTestId('onboarding-overlay')).toBeTruthy();
+            expect(getByText('Settings guide')).toBeTruthy();
+        });
+
+        it('hides the onboarding overlay when already seen', () => {
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, settingsOnboardingSeen: true });
+
+            const { queryByTestId } = render(<Settings />);
+
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+        });
+
+        it('shows the onboarding overlay when the info button is pressed', () => {
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, settingsOnboardingSeen: true });
+
+            const { getByTestId, queryByTestId } = render(<Settings />);
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+
+            fireEvent.press(getByTestId('settings-info-button'));
+
+            expect(getByTestId('onboarding-overlay')).toBeTruthy();
+        });
+
+        it('saves settingsOnboardingSeen true when dismissed', async () => {
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, settingsOnboardingSeen: false });
+
+            const { getByTestId, queryByTestId } = render(<Settings />);
+
+            fireEvent.press(getByTestId('next-button'));
+            fireEvent.press(getByTestId('next-button'));
+            fireEvent.press(getByTestId('done-button'));
+
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+            await waitFor(() => {
+                expect(mockSaveSettingsService).toHaveBeenCalledWith(
+                    expect.objectContaining({ settingsOnboardingSeen: true })
+                );
+            });
+        });
+    });
 });

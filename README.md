@@ -72,25 +72,13 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    eas configure
    ```
 
-3. Build for Android and iOS
+3. Amend project for submission
 
-   ```bash
-   eas build --platform android
+* Increment the App Version in the app.json
 
-   eas build --platform ios
-   ```
+* Update the 'WHATS_NEW' array with what is new in this release
 
-   iOS requires Apple developer account
-
-4. Submit for Android and iOS
-
-   ```bash
-   eas submit --platform android
-
-   eas submit --platform ios
-   ```
-
-5. Single CLI command
+4. Single CLI command - build and submit
 
    ```bash
    eas build --platform android; eas submit --platform android --profile production --latest

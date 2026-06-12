@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { fetchWind, Wind } from '@/service/WeatherService';
 
+// Dev-only diagnostic logging — silent in production builds.
+const devWarn = (...args: unknown[]) => {
+    if (__DEV__) {
+        console.warn('[useWind]', ...args);
+    }
+};
+
 let Location: typeof import('expo-location') | null = null;
 try {
     Location = require('expo-location');
@@ -24,15 +31,22 @@ export const useWind = () => {
         let cancelled = false;
 
         (async () => {
-            if (!Location) return;
+            if (!Location) {
+                devWarn('expo-location module unavailable — wind indicator disabled');
+                return;
+            }
             try {
                 const { status } = await Location.requestForegroundPermissionsAsync();
-                if (status !== 'granted' || cancelled) return;
+                if (status !== 'granted') {
+                    devWarn(`location permission not granted (status: ${status}) — wind indicator hidden`);
+                    return;
+                }
+                if (cancelled) return;
                 subscription = await Location.watchHeadingAsync((h) => {
                     setHeading(h.trueHeading >= 0 ? h.trueHeading : h.magHeading);
                 });
-            } catch {
-                // ignore — heading simply stays at its last value
+            } catch (e) {
+                devWarn('failed to start compass heading watch:', e);
             }
         })();
 
@@ -48,8 +62,9 @@ export const useWind = () => {
             const position = await Location.getCurrentPositionAsync();
             const next = await fetchWind(position.coords.latitude, position.coords.longitude);
             setWind(next);
-        } catch {
+        } catch (e) {
             // keep the previous wind value until a fetch succeeds again
+            devWarn('could not refresh wind (no GPS fix, offline, or weather API error):', e);
         }
     }, []);
 

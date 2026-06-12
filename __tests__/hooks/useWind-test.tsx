@@ -19,11 +19,18 @@ const mockGetPosition = Location.getCurrentPositionAsync as jest.Mock;
 const mockFetchWind = fetchWind as jest.Mock;
 
 describe('useWind', () => {
+    let warnSpy: jest.SpyInstance;
+
     beforeEach(() => {
         jest.clearAllMocks();
+        warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
         mockRequestPermission.mockResolvedValue({ status: 'granted' });
         mockWatchHeading.mockResolvedValue({ remove: jest.fn() });
         mockGetPosition.mockResolvedValue({ coords: { latitude: 52.5, longitude: 13.4 } });
+    });
+
+    afterEach(() => {
+        warnSpy.mockRestore();
     });
 
     it('startsWithNullWindAndZeroHeading', () => {
@@ -102,5 +109,30 @@ describe('useWind', () => {
         await act(async () => { await result.current.refreshWind(); });
 
         expect(result.current.wind).toEqual({ directionFrom: 90, speedMph: 8 });
+    });
+
+    describe('dev diagnostics', () => {
+        it('warnsWhenLocationPermissionNotGranted', async () => {
+            mockRequestPermission.mockResolvedValue({ status: 'denied' });
+
+            renderHook(() => useWind());
+
+            await waitFor(() =>
+                expect(warnSpy).toHaveBeenCalledWith('[useWind]', expect.stringContaining('permission not granted'))
+            );
+        });
+
+        it('warnsWhenRefreshWindFails', async () => {
+            mockGetPosition.mockRejectedValueOnce(new Error('no gps fix'));
+
+            const { result } = renderHook(() => useWind());
+            await act(async () => { await result.current.refreshWind(); });
+
+            expect(warnSpy).toHaveBeenCalledWith(
+                '[useWind]',
+                expect.stringContaining('could not refresh wind'),
+                expect.any(Error)
+            );
+        });
     });
 });

@@ -84,17 +84,20 @@ describe('Tempo training page', () => {
         expect(getByTestId('tempo-slider')).toBeTruthy();
     });
 
+    it('configuresSliderForSixBeatsPerMinuteStops', () => {
+        const { getByTestId } = render(<Tempo />);
+        const slider = getByTestId('tempo-slider');
+
+        expect(slider.props.minimumValue).toBe(60);
+        expect(slider.props.maximumValue).toBe(120);
+        expect(slider.props.step).toBe(6);
+    });
+
     it('renders slow and fast labels', () => {
         const { getByText } = render(<Tempo />);
 
         expect(getByText('slow')).toBeTruthy();
         expect(getByText('fast')).toBeTruthy();
-    });
-
-    it('renders the explanation text', () => {
-        const { getByText } = render(<Tempo />);
-
-        expect(getByText(/John Garrity's work/)).toBeTruthy();
     });
 
     it('renders the chevrons section with heading', () => {

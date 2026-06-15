@@ -131,19 +131,19 @@ export default function Tempo() {
                             style={[localStyles.slider]}
                             minimumValue={60}
                             maximumValue={120}
-                            step={12}
+                            step={6}
                             value={tempo}
                             onValueChange={tempoValueChange}
-                            minimumTrackTintColor={colours.primary}
+                            minimumTrackTintColor={colours.tertiary}
                             maximumTrackTintColor={colours.primary}
                             thumbTintColor={colours.primary}
                         />
 
                         {/* Labels */}
                         <View style={localStyles.labelsContainer}>
-                            {[1, 2, 3, 4, 5, 6].map((num) => (
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
                                 <Text key={num} style={[localStyles.label]}>
-                                    {num === 1 ? 'slow' : num === 6 ? 'fast' : '|'}
+                                    {num === 1 ? 'slow' : num === 12 ? 'fast' : ' '}
                                 </Text>
                             ))}
                         </View>
@@ -157,11 +157,6 @@ export default function Tempo() {
                         <TouchableOpacity style={styles.largeButton} onPress={toggleStartStop}>
                             <Text style={styles.buttonText}>{isPlaying ? 'Stop' : 'Play'}</Text>
                         </TouchableOpacity>
-                        <View>
-                            <Text style={[styles.smallestText, styles.marginTop]}>
-                                Based on John Garrity's work, long game tempo (start, take away, top & impact) is 3:1 & short game tempo is 2:1
-                            </Text>
-                        </View>
 
                         <View style={styles.contentSection}>
                             <Chevrons heading='Why tempo is important' points={points} />

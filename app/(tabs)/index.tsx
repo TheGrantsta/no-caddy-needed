@@ -22,9 +22,9 @@ const ONBOARDING_STEPS = [
 
 // What's new for the current version — shown once per version to existing users.
 const WHATS_NEW = [
-  'On-course wind direction & speed indicator — tap it to enlarge',
-  'Pre-shot routine reminder between holes (editable in Settings)',
-  'Rate the app after a completed round and from Settings',
+  'Improved on-course wind direction & speed indicator — tap it to enlarge',
+  'Increased number of options for tempo training',
+  'Reverted hiding the bottom navigation bar when entering the score card',
 ];
 
 const APP_VERSION = Constants.expoConfig?.version ?? '';

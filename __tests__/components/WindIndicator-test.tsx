@@ -38,9 +38,10 @@ describe('WindIndicator', () => {
         );
     });
 
-    it('showsExpandAffordanceWhenWindPresent', () => {
-        const { getByTestId } = render(<WindIndicator directionFrom={100} speedMph={12} heading={0} />);
-        expect(getByTestId('wind-expand-hint')).toBeTruthy();
+    it('showsWindLabelIconWhenWindPresent', () => {
+        const { getByTestId, queryByTestId } = render(<WindIndicator directionFrom={100} speedMph={12} heading={0} />);
+        expect(getByTestId('wind-pill-icon')).toBeTruthy();
+        expect(queryByTestId('wind-expand-hint')).toBeNull();
     });
 
     describe('expand / collapse overlay', () => {

@@ -37,17 +37,17 @@ const WindIndicator = ({ directionFrom, speedMph, heading }: Props) => {
                 activeOpacity={0.7}
                 style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 6 }}
             >
+                <View testID="wind-pill-icon">
+                    <MaterialIcons name="air" size={18} color={colours.primary} />
+                </View>
                 <Text
                     testID="wind-speed-text"
                     style={{ color: colours.primary, fontSize: fontSizes.smallText, fontWeight: 'bold', marginLeft: 2 }}
                 >
                     {speed} mph
                 </Text>
-                <View testID="wind-arrow" style={{ transform: [{ rotate: `${rotation}deg` }] }}>
+                <View testID="wind-arrow" style={{ marginLeft: 2, transform: [{ rotate: `${rotation}deg` }] }}>
                     <MaterialIcons name="straight" size={18} color={colours.primary} />
-                </View>
-                <View testID="wind-expand-hint" style={{ marginLeft: 4, opacity: 0.6 }}>
-                    <MaterialIcons name="open-in-full" size={12} color={colours.primary} />
                 </View>
             </TouchableOpacity>
 

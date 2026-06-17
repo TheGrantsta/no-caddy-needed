@@ -82,6 +82,20 @@ describe('WindIndicator', () => {
         });
     });
 
+    describe('target reference', () => {
+        it('showsTargetMarkerOnlyWhenOverlayOpen', () => {
+            const { getByTestId, queryByTestId } = render(
+                <WindIndicator directionFrom={100} speedMph={12} heading={0} />
+            );
+
+            expect(queryByTestId('wind-target-marker')).toBeNull();
+
+            fireEvent.press(getByTestId('wind-indicator'));
+
+            expect(getByTestId('wind-target-marker')).toBeTruthy();
+        });
+    });
+
     describe('distance effect in overlay', () => {
         it('showsPlaysLongerForAHeadwind', () => {
             // wind FROM 0 (north), facing north → straight into the wind

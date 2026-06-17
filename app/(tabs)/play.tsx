@@ -532,12 +532,11 @@ export default function Play() {
                                         const val = parAverages[`par${par}` as keyof ParAverages];
                                         return (
                                             <View key={par} style={styles.parAverages.cell}>
-                                                <Text style={styles.parAverages.parLabel}>Par {par}</Text>
                                                 <Text
                                                     testID={`par-averages-par${par}`}
                                                     style={styles.parAverages.value}
                                                 >
-                                                    {val !== null ? val.toFixed(2) : '-'}
+                                                    Par {par}: {val !== null ? val.toFixed(2) : '-'}
                                                 </Text>
                                             </View>
                                         );

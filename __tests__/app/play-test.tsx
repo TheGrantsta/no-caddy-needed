@@ -2417,7 +2417,7 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            expect(getByTestId('par-averages-par3').props.children).toBe('3.50');
+            expect(getByTestId('par-averages-par3').props.children).toContain('3.50');
         });
 
         it('shows dash for par type with no data', () => {
@@ -2428,7 +2428,7 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            expect(getByTestId('par-averages-par5').props.children).toBe('-');
+            expect(getByTestId('par-averages-par5').props.children).toContain('-');
         });
 
         it('passes filteredRoundHistory to getParAveragesService', () => {

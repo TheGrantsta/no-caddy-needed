@@ -142,12 +142,14 @@ export default function Settings() {
   return (
     <GestureHandlerRootView style={styles.flexOne}>
       <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding, { flexGrow: 1 }]}>
-        <View style={styles.headerContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <TouchableOpacity testID="settings-info-button" onPress={handleShowOnboarding}>
-              <MaterialIcons name="info-outline" size={26} color={colours.primary} />
-            </TouchableOpacity>
-            <Text style={[styles.headerText, styles.marginTop]}>Settings</Text>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <View style={styles.titleRow}>
+              <TouchableOpacity testID="settings-info-button" onPress={handleShowOnboarding}>
+                <MaterialIcons name="info-outline" size={26} color={colours.primary} />
+              </TouchableOpacity>
+              <Text style={[styles.headerText, styles.marginTop]}>Settings</Text>
+            </View>
           </View>
         </View>
 

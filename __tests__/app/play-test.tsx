@@ -2369,30 +2369,9 @@ describe('Play screen', () => {
     });
 
     describe('Tab bar visibility', () => {
-        it('shouldHideTabBarWhenRoundIsActive', async () => {
+        it('shouldKeepTabBarVisibleWhenRoundIsActive', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
-
-            const { getByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-            fireEvent.press(getByTestId('start-button'));
-
-            await waitFor(() => {
-                expect(mockSetOptions).toHaveBeenCalledWith({ tabBarStyle: { display: 'none' } });
-            });
-        });
-
-        it('shouldRestoreTabBarWhenRoundEnds', async () => {
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-            mockAddMultiplayerHoleScores.mockResolvedValue(true);
-            mockEndRound.mockResolvedValue(true);
-            mockGetMultiplayerScorecard.mockReturnValue({
-                players: [{ Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 }],
-                holeScores: [],
-            });
 
             const { getByTestId } = render(<Play />);
 
@@ -2401,24 +2380,13 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
-            fireEvent.press(getByTestId('end-round-button'));
-            await waitFor(() => expect(getByTestId('confirm-end-round-button')).toBeTruthy());
-            fireEvent.press(getByTestId('confirm-end-round-button'));
 
-            await waitFor(() => expect(getByTestId('scorecard-done-button')).toBeTruthy());
-            fireEvent.press(getByTestId('scorecard-done-button'));
-
-            await waitFor(() => {
-                const lastCall = mockSetOptions.mock.calls[mockSetOptions.mock.calls.length - 1][0];
-                expect(lastCall.tabBarStyle).not.toEqual({ display: 'none' });
-                expect(lastCall.tabBarStyle).toHaveProperty('backgroundColor');
-            });
+            expect(mockSetOptions).not.toHaveBeenCalledWith({ tabBarStyle: { display: 'none' } });
         });
 
-        it('shouldNotCallSetOptionsOnInitialRenderWhenIdle', () => {
+        it('shouldNeverHideTabBarOnInitialRender', () => {
             render(<Play />);
             expect(mockSetOptions).not.toHaveBeenCalledWith({ tabBarStyle: { display: 'none' } });
-            expect(mockSetOptions).not.toHaveBeenCalledWith({ tabBarStyle: undefined });
         });
     });
 

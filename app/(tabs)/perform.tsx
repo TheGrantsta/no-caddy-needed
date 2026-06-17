@@ -124,7 +124,7 @@ export default function Perform() {
               <View key={colIndex} style={{
                 flex: 1, padding: 3, alignItems: "center", justifyContent: "center",
               }}>
-                <Text style={[rowIndex === 0 ? styles.subHeaderText : styles.normalText, { padding: 5 }]}>
+                <Text style={[rowIndex === 0 ? [styles.normalText, { fontWeight: 'bold' }] : styles.normalText, { padding: 5 }]}>
                   {cell}
                 </Text>
               </View>

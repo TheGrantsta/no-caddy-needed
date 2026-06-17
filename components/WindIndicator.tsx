@@ -3,7 +3,7 @@ import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
-import { getWindArrowRotation } from '@/service/WeatherService';
+import { getWindArrowRotation, getWindEffect } from '@/service/WeatherService';
 
 type Props = {
     directionFrom: number | null;
@@ -19,6 +19,15 @@ const WindIndicator = ({ directionFrom, speedMph, heading }: Props) => {
 
     const rotation = getWindArrowRotation(directionFrom, heading);
     const speed = Math.round(speedMph);
+
+    const effect = getWindEffect(directionFrom, speedMph, heading);
+    const pct = Math.round(effect.playsLongerPercent);
+    const effectText =
+        effect.category === 'calm' || pct === 0
+            ? 'Minimal distance effect'
+            : pct > 0
+                ? `Plays ~${pct}% longer`
+                : `Plays ~${Math.abs(pct)}% shorter`;
 
     return (
         <>
@@ -77,6 +86,26 @@ const WindIndicator = ({ directionFrom, speedMph, heading }: Props) => {
                                 style={{ color: colours.primary, fontSize: fontSizes.header, fontWeight: 'bold', marginTop: 16 }}
                             >
                                 {speed} m/h
+                            </Text>
+                            <Text
+                                testID="wind-effect-text"
+                                style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: 12 }}
+                            >
+                                {effectText}
+                            </Text>
+                            {effect.crossDirection && (
+                                <Text
+                                    testID="wind-cross-text"
+                                    style={{ color: colours.primary, fontSize: fontSizes.smallText, marginTop: 4 }}
+                                >
+                                    Crosswind from the {effect.crossDirection}
+                                </Text>
+                            )}
+                            <Text
+                                testID="wind-aim-hint"
+                                style={{ color: colours.primary, fontSize: fontSizes.smallestText, opacity: 0.6, marginTop: 12 }}
+                            >
+                                Aim your phone at the target
                             </Text>
                         </View>
                     </TouchableOpacity>

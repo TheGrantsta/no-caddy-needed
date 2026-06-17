@@ -81,4 +81,41 @@ describe('WindIndicator', () => {
             expect(getByTestId('wind-indicator')).toBeTruthy();
         });
     });
+
+    describe('distance effect in overlay', () => {
+        it('showsPlaysLongerForAHeadwind', () => {
+            // wind FROM 0 (north), facing north → straight into the wind
+            const { getByTestId } = render(<WindIndicator directionFrom={0} speedMph={10} heading={0} />);
+
+            fireEvent.press(getByTestId('wind-indicator'));
+
+            expect(getByTestId('wind-effect-text')).toHaveTextContent(/longer/i);
+        });
+
+        it('showsPlaysShorterForATailwind', () => {
+            // wind FROM 180 (south), facing north → straight downwind
+            const { getByTestId } = render(<WindIndicator directionFrom={180} speedMph={10} heading={0} />);
+
+            fireEvent.press(getByTestId('wind-indicator'));
+
+            expect(getByTestId('wind-effect-text')).toHaveTextContent(/shorter/i);
+        });
+
+        it('showsCrosswindSideForACrosswind', () => {
+            // wind FROM 90 (east), facing north → from the right
+            const { getByTestId } = render(<WindIndicator directionFrom={90} speedMph={10} heading={0} />);
+
+            fireEvent.press(getByTestId('wind-indicator'));
+
+            expect(getByTestId('wind-cross-text')).toHaveTextContent(/right/i);
+        });
+
+        it('showsMinimalEffectWhenCalm', () => {
+            const { getByTestId } = render(<WindIndicator directionFrom={0} speedMph={2} heading={0} />);
+
+            fireEvent.press(getByTestId('wind-indicator'));
+
+            expect(getByTestId('wind-effect-text')).toHaveTextContent(/minimal/i);
+        });
+    });
 });

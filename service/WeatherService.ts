@@ -37,3 +37,60 @@ export const normalize360 = (deg: number): number => ((deg % 360) + 360) % 360;
  */
 export const getWindArrowRotation = (directionFrom: number, heading: number): number =>
     normalize360(directionFrom + 180 - heading);
+
+// Rule-of-thumb coefficients: a headwind hurts more than a tailwind helps.
+export const HEAD_PCT_PER_MPH = 1.0;
+export const TAIL_PCT_PER_MPH = 0.5;
+// Cap the adjustment so high winds don't produce absurd figures.
+export const MAX_PLAYS_LONGER_PCT = 25;
+// Below this speed the effect is treated as negligible.
+export const CALM_MPH = 3;
+// Lateral component below this (mph) isn't worth flagging as a crosswind.
+const CROSS_THRESHOLD_MPH = 1;
+
+export type WindEffect = {
+    alongComponentMph: number;    // + tailwind (helps), - headwind (hurts)
+    crossComponentMph: number;    // signed lateral component
+    playsLongerPercent: number;   // + plays longer (into wind), - shorter (downwind), clamped
+    category: 'headwind' | 'tailwind' | 'crosswind' | 'calm';
+    crossDirection: 'left' | 'right' | null;
+};
+
+const clamp = (value: number, min: number, max: number): number =>
+    Math.max(min, Math.min(max, value));
+
+/**
+ * Rough, trajectory-agnostic estimate of how the wind plays, derived from the
+ * along-shot component (`speed × cos(rotation)`). Assumes the player points the
+ * top of the phone at the target so `heading` approximates the shot line. The
+ * figure is a guide, not a precise number.
+ */
+export const getWindEffect = (directionFrom: number, speedMph: number, heading: number): WindEffect => {
+    const rotationRad = (getWindArrowRotation(directionFrom, heading) * Math.PI) / 180;
+    const alongComponentMph = speedMph * Math.cos(rotationRad);   // + tailwind
+    const crossComponentMph = speedMph * Math.sin(rotationRad);   // + pushes ball right
+
+    const coeff = alongComponentMph >= 0 ? TAIL_PCT_PER_MPH : HEAD_PCT_PER_MPH;
+    const playsLongerPercent = clamp(
+        -alongComponentMph * coeff,
+        -MAX_PLAYS_LONGER_PCT,
+        MAX_PLAYS_LONGER_PCT
+    );
+
+    // Positive cross pushes the ball right, i.e. the wind comes from the left.
+    const crossDirection =
+        Math.abs(crossComponentMph) < CROSS_THRESHOLD_MPH
+            ? null
+            : crossComponentMph > 0 ? 'left' : 'right';
+
+    let category: WindEffect['category'];
+    if (speedMph < CALM_MPH) {
+        category = 'calm';
+    } else if (Math.abs(crossComponentMph) > Math.abs(alongComponentMph)) {
+        category = 'crosswind';
+    } else {
+        category = alongComponentMph >= 0 ? 'tailwind' : 'headwind';
+    }
+
+    return { alongComponentMph, crossComponentMph, playsLongerPercent, category, crossDirection };
+};

@@ -19,7 +19,7 @@ describe('WindIndicator', () => {
 
     it('showsRoundedMph', () => {
         const { getByTestId } = render(<WindIndicator directionFrom={100} speedMph={10.6} heading={0} />);
-        expect(getByTestId('wind-speed-text')).toHaveTextContent('11 m/h');
+        expect(getByTestId('wind-speed-text')).toHaveTextContent('11 mph');
     });
 
     it('appliesDownwindCompassRotationToArrow', () => {
@@ -52,7 +52,7 @@ describe('WindIndicator', () => {
             fireEvent.press(getByTestId('wind-indicator'));
 
             expect(getByTestId('wind-overlay-backdrop')).toBeTruthy();
-            expect(getByTestId('wind-speed-text-large')).toHaveTextContent('11 m/h');
+            expect(getByTestId('wind-speed-text-large')).toHaveTextContent('11 mph');
         });
 
         it('expandedArrowUsesSameDownwindRotation', () => {
@@ -124,12 +124,22 @@ describe('WindIndicator', () => {
             expect(getByTestId('wind-cross-text')).toHaveTextContent(/right/i);
         });
 
-        it('showsMinimalEffectWhenCalm', () => {
+        it('showsAboutTheSameWhenCalm', () => {
             const { getByTestId } = render(<WindIndicator directionFrom={0} speedMph={2} heading={0} />);
 
             fireEvent.press(getByTestId('wind-indicator'));
 
-            expect(getByTestId('wind-effect-text')).toHaveTextContent(/minimal/i);
+            expect(getByTestId('wind-effect-text')).toHaveTextContent(/about the same/i);
+        });
+
+        it('showsAboutTheSameForSubThresholdEffect', () => {
+            // directionFrom 210 / heading 0 → rotation 30°: a light tailwind that
+            // works out to ~2% (below the 3% notable threshold), not calm.
+            const { getByTestId } = render(<WindIndicator directionFrom={210} speedMph={5} heading={0} />);
+
+            fireEvent.press(getByTestId('wind-indicator'));
+
+            expect(getByTestId('wind-effect-text')).toHaveTextContent(/about the same/i);
         });
     });
 });

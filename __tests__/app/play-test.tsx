@@ -2480,7 +2480,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => expect(getByTestId('wind-indicator')).toBeTruthy());
-            expect(getByTestId('wind-speed-text')).toHaveTextContent('12 m/h');
+            expect(getByTestId('wind-speed-text')).toHaveTextContent('12 mph');
         });
 
         it('refreshesWindWhenAdvancingHole', async () => {

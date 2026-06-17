@@ -3,7 +3,7 @@ import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
-import { getWindArrowRotation, getWindEffect } from '@/service/WeatherService';
+import { getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/WeatherService';
 
 type Props = {
     directionFrom: number | null;
@@ -22,12 +22,12 @@ const WindIndicator = ({ directionFrom, speedMph, heading }: Props) => {
 
     const effect = getWindEffect(directionFrom, speedMph, heading);
     const pct = Math.round(effect.playsLongerPercent);
-    const effectText =
-        effect.category === 'calm' || pct === 0
-            ? 'Minimal distance effect'
-            : pct > 0
-                ? `Plays ~${pct}% longer`
-                : `Plays ~${Math.abs(pct)}% shorter`;
+    const negligible = effect.category === 'calm' || Math.abs(pct) < MIN_NOTABLE_PCT;
+    const effectText = negligible
+        ? 'Plays about the same'
+        : pct > 0
+            ? `Plays ~${pct}% longer`
+            : `Plays ~${Math.abs(pct)}% shorter`;
 
     return (
         <>
@@ -41,10 +41,10 @@ const WindIndicator = ({ directionFrom, speedMph, heading }: Props) => {
                     testID="wind-speed-text"
                     style={{ color: colours.primary, fontSize: fontSizes.smallText, fontWeight: 'bold', marginLeft: 2 }}
                 >
-                    {speed} m/h
+                    {speed} mph
                 </Text>
                 <View testID="wind-arrow" style={{ transform: [{ rotate: `${rotation}deg` }] }}>
-                    <MaterialIcons name="navigation" size={18} color={colours.primary} />
+                    <MaterialIcons name="straight" size={18} color={colours.primary} />
                 </View>
                 <View testID="wind-expand-hint" style={{ marginLeft: 4, opacity: 0.6 }}>
                     <MaterialIcons name="open-in-full" size={12} color={colours.primary} />
@@ -85,13 +85,13 @@ const WindIndicator = ({ directionFrom, speedMph, heading }: Props) => {
                                 </Text>
                             </View>
                             <View testID="wind-arrow-large" style={{ transform: [{ rotate: `${rotation}deg` }] }}>
-                                <MaterialIcons name="navigation" size={120} color={colours.primary} />
+                                <MaterialIcons name="straight" size={120} color={colours.primary} />
                             </View>
                             <Text
                                 testID="wind-speed-text-large"
                                 style={{ color: colours.primary, fontSize: fontSizes.header, fontWeight: 'bold', marginTop: 16 }}
                             >
-                                {speed} m/h
+                                {speed} mph
                             </Text>
                             <Text
                                 testID="wind-effect-text"

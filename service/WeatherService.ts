@@ -45,6 +45,9 @@ export const TAIL_PCT_PER_MPH = 0.5;
 export const MAX_PLAYS_LONGER_PCT = 25;
 // Below this speed the effect is treated as negligible.
 export const CALM_MPH = 3;
+// Distance adjustments smaller than this (%) are within the model's noise, so
+// they're reported as "about the same" rather than a precise figure.
+export const MIN_NOTABLE_PCT = 3;
 // Lateral component below this (mph) isn't worth flagging as a crosswind.
 const CROSS_THRESHOLD_MPH = 1;
 

@@ -76,7 +76,7 @@ const WindIndicator = ({ directionFrom, speedMph, heading }: Props) => {
                             }}
                         >
                             <Text style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginBottom: 12 }}>
-                                Wind
+                                Wind direction / speed
                             </Text>
                             <View testID="wind-arrow-large" style={{ transform: [{ rotate: `${rotation}deg` }] }}>
                                 <MaterialIcons name="navigation" size={120} color={colours.primary} />

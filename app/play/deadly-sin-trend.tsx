@@ -32,6 +32,49 @@ function rollingAverage(values: number[], window: number): number[] {
     });
 }
 
+const mean = (xs: number[]) => xs.reduce((sum, v) => sum + v, 0) / xs.length;
+
+// Plain-language read of what the (chronological) series suggests for this fault.
+function buildTrendNarrative(values: number[], label: string): string {
+    const noun = label.toLowerCase();
+    const n = values.length;
+    if (n === 0) return '';
+
+    const total = values.reduce((sum, v) => sum + v, 0);
+    const cleanCount = values.filter(v => v === 0).length;
+
+    if (n === 1) {
+        return total === 0
+            ? `A clean round — no ${noun} in your most recent round.`
+            : `${total} ${noun} in your most recent round.`;
+    }
+
+    if (total === 0) {
+        return `No ${noun} across your last ${n} rounds — keep it up.`;
+    }
+
+    const half = Math.floor(n / 2);
+    const earlier = mean(values.slice(0, half));
+    const later = mean(values.slice(n - half));
+    const delta = later - earlier;
+
+    let direction: string;
+    if (delta <= -0.5) {
+        direction = `is trending down — your recent rounds are cleaner than earlier ones`;
+    } else if (delta >= 0.5) {
+        direction = `is creeping up — recent rounds are worse than earlier ones`;
+    } else {
+        direction = `is holding steady`;
+    }
+
+    const avgText = (total / n).toFixed(1);
+    const cleanText = cleanCount > 0
+        ? ` You kept it clean in ${cleanCount} of ${n} rounds.`
+        : '';
+
+    return `Your ${noun} ${direction}, averaging ${avgText} per round over the last ${n}.${cleanText}`;
+}
+
 type BarChartProps = {
     rounds: DeadlySinsRound[];
     sinKey: keyof DeadlySinsRound;
@@ -188,6 +231,9 @@ export default function DeadlySinTrendScreen() {
     const limit = filter === '1' ? 1 : filter === '10' ? 10 : MAX_ROUNDS;
     const rounds = allRounds.slice().reverse().slice(-limit);
 
+    const key = sinKey as keyof DeadlySinsRound;
+    const narrative = buildTrendNarrative(rounds.map(r => r[key] as number), label);
+
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>
             <ScrollView contentContainerStyle={styles.scrollContentContainer}>
@@ -197,7 +243,12 @@ export default function DeadlySinTrendScreen() {
                         No rounds recorded yet
                     </Text>
                 ) : (
-                    <BarChart rounds={rounds} sinKey={sinKey as keyof DeadlySinsRound} />
+                    <>
+                        <BarChart rounds={rounds} sinKey={key} />
+                        <Text testID="deadly-sin-trend-narrative" style={s.narrative}>
+                            {narrative}
+                        </Text>
+                    </>
                 )}
             </ScrollView>
         </GestureHandlerRootView>

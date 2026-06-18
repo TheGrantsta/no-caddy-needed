@@ -1189,6 +1189,14 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'center',
             padding: 20,
         },
+        narrative: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            lineHeight: 22,
+            marginTop: 32,
+            marginHorizontal: 16,
+            textAlign: 'center',
+        },
     }),
 
     drillStatsChart: StyleSheet.create({

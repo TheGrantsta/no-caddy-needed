@@ -239,6 +239,72 @@ describe('DeadlySinTrendScreen', () => {
         });
     });
 
+    describe('narrative summary', () => {
+        // Service returns newest-first; the screen reverses to chronological order,
+        // so build the mock from a chronological series reversed.
+        function newestFirst(chronological: number[]) {
+            return chronological
+                .map((v, i) => makeRound(i + 1, v, `D${i}`))
+                .reverse();
+        }
+
+        it('renders a narrative summary when rounds exist', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([1, 2, 1]));
+
+            const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getByTestId('deadly-sin-trend-narrative')).toBeTruthy();
+        });
+
+        it('says trouble is trending down when recent rounds improve', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([3, 3, 1, 0]));
+
+            const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getByTestId('deadly-sin-trend-narrative').props.children).toContain('trending down');
+        });
+
+        it('says trouble is creeping up when recent rounds worsen', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([0, 0, 2, 3]));
+
+            const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getByTestId('deadly-sin-trend-narrative').props.children).toContain('creeping up');
+        });
+
+        it('says trouble is holding steady when flat', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([1, 1, 1, 1]));
+
+            const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getByTestId('deadly-sin-trend-narrative').props.children).toContain('holding steady');
+        });
+
+        it('celebrates a clean streak when there are no incidents', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([0, 0, 0]));
+
+            const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getByTestId('deadly-sin-trend-narrative').props.children).toContain('keep it up');
+        });
+
+        it('reports the count of clean rounds', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([0, 3, 0, 1]));
+
+            const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getByTestId('deadly-sin-trend-narrative').props.children).toContain('clean in 2 of 4');
+        });
+
+        it('summarises a single round', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([2]));
+
+            const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getByTestId('deadly-sin-trend-narrative').props.children).toContain('most recent round');
+        });
+    });
+
     describe('x-axis date label thinning', () => {
         it('thins date labels when there are many rounds', () => {
             const rounds = Array.from({ length: 20 }, (_, i) =>

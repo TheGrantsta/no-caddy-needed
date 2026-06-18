@@ -1110,9 +1110,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         yAxisLabels: {
             width: 30,
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            paddingRight: 6,
+            position: 'relative',
         },
         axisLabel: {
             color: c.text,
@@ -1147,6 +1145,23 @@ export const createStyles = (c: ThemeColours) => ({
             height: 2,
             backgroundColor: c.primary,
         },
+        gridline: {
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            height: 1,
+            backgroundColor: c.text,
+            opacity: 0.12,
+        },
+        averageLine: {
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            height: 0,
+            borderTopWidth: 1,
+            borderTopColor: c.green,
+            borderStyle: 'dashed',
+        },
         valueLabel: {
             position: 'absolute',
             width: 24,
@@ -1163,8 +1178,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         dateRow: {
             flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
+            position: 'relative',
         },
         dateLabel: {
             color: c.text,

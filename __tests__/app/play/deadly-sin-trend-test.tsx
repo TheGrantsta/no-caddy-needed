@@ -160,6 +160,88 @@ describe('DeadlySinTrendScreen', () => {
         expect(getByTestId('deadly-sin-trend-x-axis')).toBeTruthy();
     });
 
+    describe('y-axis value labels', () => {
+        it('renders an integer tick label for zero and the max value', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([
+                makeRound(3, 3, '03/06'),
+                makeRound(2, 1, '02/06'),
+                makeRound(1, 0, '01/06'),
+            ]);
+
+            const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getByTestId('deadly-sin-trend-y-label-0').props.children).toBe(0);
+            expect(getByTestId('deadly-sin-trend-y-label-3').props.children).toBe(3);
+        });
+
+        it('renders one y-label per integer up to the max value', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([
+                makeRound(2, 2, '02/06'),
+                makeRound(1, 0, '01/06'),
+            ]);
+
+            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+
+            // values 0, 1, 2
+            expect(getAllByTestId(/deadly-sin-trend-y-label-/)).toHaveLength(3);
+        });
+    });
+
+    describe('gridlines', () => {
+        it('renders a horizontal gridline per integer tick', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([
+                makeRound(2, 2, '02/06'),
+                makeRound(1, 0, '01/06'),
+            ]);
+
+            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+
+            // ticks at 0, 1, 2
+            expect(getAllByTestId(/deadly-sin-trend-gridline-/)).toHaveLength(3);
+        });
+    });
+
+    describe('average reference line', () => {
+        it('renders an average reference line when rounds exist', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([
+                makeRound(2, 2, '02/06'),
+                makeRound(1, 0, '01/06'),
+            ]);
+
+            const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getByTestId('deadly-sin-trend-average-line')).toBeTruthy();
+        });
+    });
+
+    describe('x-axis date label thinning', () => {
+        it('thins date labels when there are many rounds', () => {
+            const rounds = Array.from({ length: 20 }, (_, i) =>
+                makeRound(20 - i, i % 3, `${String(20 - i).padStart(2, '0')}/06`)
+            );
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
+
+            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+
+            const labels = getAllByTestId(/deadly-sin-trend-date-/);
+            expect(labels.length).toBeLessThan(20);
+            expect(labels.length).toBeGreaterThanOrEqual(2);
+        });
+
+        it('always shows the first and most recent date labels', () => {
+            const rounds = Array.from({ length: 20 }, (_, i) =>
+                makeRound(20 - i, i % 3, `D${i}`)
+            );
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
+
+            const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+            // oldest (index 0) and newest (index 19) must be present
+            expect(getByTestId('deadly-sin-trend-date-0')).toBeTruthy();
+            expect(getByTestId('deadly-sin-trend-date-19')).toBeTruthy();
+        });
+    });
+
     describe('filter param', () => {
         beforeEach(() => {
             mockUseLocalSearchParams.mockReturnValue({ sinKey: 'ThreePutts', label: '3-putts' });

@@ -1076,6 +1076,14 @@ export const createStyles = (c: ThemeColours) => ({
             width: 40,
             alignItems: 'flex-end',
         },
+        disclosure: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+            lineHeight: fontSizes.normal,
+            textAlignVertical: 'center',
+            includeFontPadding: false,
+            marginLeft: 6,
+        },
         countText: {
             color: c.primary,
             fontSize: fontSizes.smallText,

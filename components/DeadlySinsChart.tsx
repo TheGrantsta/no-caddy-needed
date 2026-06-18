@@ -113,6 +113,10 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
                                     {category.count}
                                 </Text>
                             </View>
+
+                            <Text testID="7deadly-sins-chart-disclosure" style={s.disclosure}>
+                                ›
+                            </Text>
                         </TouchableOpacity>
                     ))}
                 </>

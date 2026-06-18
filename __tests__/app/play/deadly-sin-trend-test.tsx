@@ -309,6 +309,26 @@ describe('DeadlySinTrendScreen', () => {
             expect(labels.length).toBeGreaterThanOrEqual(2);
         });
 
+        it('never overlaps date labels at 20 points', () => {
+            const rounds = Array.from({ length: 20 }, (_, i) =>
+                makeRound(20 - i, i % 3, `D${i}`)
+            );
+            mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
+
+            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+
+            const spans = getAllByTestId(/deadly-sin-trend-date-/)
+                .map((node) => {
+                    const flat = Object.assign({}, ...node.props.style);
+                    return { left: flat.left, right: flat.left + flat.width };
+                })
+                .sort((a, b) => a.left - b.left);
+
+            for (let i = 1; i < spans.length; i++) {
+                expect(spans[i].left).toBeGreaterThanOrEqual(spans[i - 1].right);
+            }
+        });
+
         it('always shows the first and most recent date labels', () => {
             const rounds = Array.from({ length: 20 }, (_, i) =>
                 makeRound(20 - i, i % 3, `D${i}`)

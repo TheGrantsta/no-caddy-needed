@@ -200,6 +200,14 @@ describe('DeadlySinsChart component', () => {
         });
     });
 
+    describe('drill-in affordance', () => {
+        it('renders a disclosure chevron on every category row', () => {
+            const { getAllByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
+
+            expect(getAllByTestId('7deadly-sins-chart-disclosure')).toHaveLength(7);
+        });
+    });
+
     describe('open/close toggle', () => {
         it('shows toggle header when rounds are provided', () => {
             const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);

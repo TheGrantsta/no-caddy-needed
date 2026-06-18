@@ -9,7 +9,6 @@ const CHART_HEIGHT = 200;
 const CHART_PADDING_TOP = 24;
 const CHART_PADDING_BOTTOM = 32;
 const MAX_ROUNDS = 20;
-const MAX_DATE_LABELS = 8;
 const DATE_LABEL_WIDTH = 40;
 const DOT_RADIUS = 4;
 
@@ -23,6 +22,31 @@ function buildTicks(maxValue: number): number[] {
 }
 
 const mean = (xs: number[]) => xs.reduce((sum, v) => sum + v, 0) / xs.length;
+
+// Choose which date labels to render so no two overlap. The most recent round
+// is always kept (clamped to the right edge); earlier labels are kept greedily
+// only when they clear both the previous shown label and the reserved final one.
+function selectDateLabelIndices(
+    n: number,
+    slotCentre: (i: number) => number,
+    chartWidth: number,
+    labelWidth: number,
+): Set<number> {
+    if (n <= 1) return new Set(n === 1 ? [0] : []);
+    const leftFor = (i: number) =>
+        Math.max(0, Math.min(slotCentre(i) - labelWidth / 2, chartWidth - labelWidth));
+    const shown = new Set<number>([n - 1]);
+    const lastLeft = leftFor(n - 1);
+    let prevRight = -Infinity;
+    for (let i = 0; i < n - 1; i++) {
+        const left = leftFor(i);
+        if (left >= prevRight && left + labelWidth <= lastLeft) {
+            shown.add(i);
+            prevRight = left + labelWidth;
+        }
+    }
+    return shown;
+}
 
 // Plain-language read of what the (chronological) series suggests for this fault.
 function buildTrendNarrative(values: number[], label: string): string {
@@ -89,9 +113,8 @@ function BarChart({ rounds, sinKey }: BarChartProps) {
 
     const ticks = buildTicks(maxValue);
 
-    // Show at most MAX_DATE_LABELS dates, always keeping the first and most recent.
-    const labelStep = Math.max(1, Math.ceil(rounds.length / MAX_DATE_LABELS));
-    const showDateLabel = (i: number) => i % labelStep === 0 || i === rounds.length - 1;
+    // Render only as many date labels as fit without overlapping.
+    const shownDateLabels = selectDateLabelIndices(rounds.length, slotCentre, chartWidth, DATE_LABEL_WIDTH);
 
     return (
         <View testID="deadly-sin-trend-chart" style={s.chartWrapper}>
@@ -163,7 +186,7 @@ function BarChart({ rounds, sinKey }: BarChartProps) {
                 <View style={s.yAxisLabelSpacer} />
                 <View style={[s.dateRow, { height: 16 }]}>
                     {rounds.map((r, i) => {
-                        if (!showDateLabel(i)) return null;
+                        if (!shownDateLabels.has(i)) return null;
                         const centered = slotCentre(i) - DATE_LABEL_WIDTH / 2;
                         const left = Math.max(0, Math.min(centered, chartWidth - DATE_LABEL_WIDTH));
                         return (

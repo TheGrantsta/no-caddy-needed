@@ -8,10 +8,11 @@ import { useStyles } from '../../hooks/useStyles';
 const CHART_HEIGHT = 200;
 const CHART_PADDING_TOP = 24;
 const CHART_PADDING_BOTTOM = 32;
-const DOT_RADIUS = 5;
 const MAX_ROUNDS = 20;
 const MAX_DATE_LABELS = 8;
 const DATE_LABEL_WIDTH = 40;
+const DOT_RADIUS = 4;
+const ROLLING_WINDOW = 3;
 
 // Integer tick values from 0..maxValue, stepping so we never show more than ~7 ticks.
 function buildTicks(maxValue: number): number[] {
@@ -22,29 +23,39 @@ function buildTicks(maxValue: number): number[] {
     return ticks;
 }
 
-type LineChartProps = {
+// Trailing rolling average over the last ROLLING_WINDOW rounds (fewer early on).
+function rollingAverage(values: number[], window: number): number[] {
+    return values.map((_, i) => {
+        const start = Math.max(0, i - window + 1);
+        const slice = values.slice(start, i + 1);
+        return slice.reduce((sum, v) => sum + v, 0) / slice.length;
+    });
+}
+
+type BarChartProps = {
     rounds: DeadlySinsRound[];
     sinKey: keyof DeadlySinsRound;
 };
 
-function LineChart({ rounds, sinKey }: LineChartProps) {
+function BarChart({ rounds, sinKey }: BarChartProps) {
     const [chartWidth, setChartWidth] = useState(Dimensions.get('window').width - 62);
     const styles = useStyles();
     const s = styles.deadlySinTrend;
 
     const plotHeight = CHART_HEIGHT - CHART_PADDING_TOP - CHART_PADDING_BOTTOM;
+    const baseline = CHART_PADDING_TOP + plotHeight;
     const values = rounds.map(r => r[sinKey] as number);
     const maxValue = Math.max(...values, 0);
     const yScale = maxValue > 0 ? plotHeight / (maxValue + 1) : 1;
-    const xStep = chartWidth / Math.max(rounds.length - 1, 1);
 
-    const xPos = (i: number) => i * xStep;
-    const yPos = (i: number) => CHART_PADDING_TOP + plotHeight - values[i] * yScale;
-    // Map an arbitrary value (e.g. a tick or the average) to a vertical position.
+    // Each round occupies an equal-width slot; the lollipop is centred within it.
+    const slotWidth = chartWidth / rounds.length;
+    const slotCentre = (i: number) => slotWidth * (i + 0.5);
+    // Map an arbitrary value (e.g. a tick or the rolling average) to a vertical position.
     const yForValue = (v: number) => CHART_PADDING_TOP + plotHeight - v * yScale;
 
     const ticks = buildTicks(maxValue);
-    const average = values.reduce((sum, v) => sum + v, 0) / values.length;
+    const trend = rollingAverage(values, ROLLING_WINDOW);
 
     // Show at most MAX_DATE_LABELS dates, always keeping the first and most recent.
     const labelStep = Math.max(1, Math.ceil(rounds.length / MAX_DATE_LABELS));
@@ -81,11 +92,6 @@ function LineChart({ rounds, sinKey }: LineChartProps) {
                     ))}
 
                     <View
-                        testID="deadly-sin-trend-average-line"
-                        style={[s.averageLine, { top: yForValue(average) }]}
-                    />
-
-                    <View
                         testID="deadly-sin-trend-y-axis"
                         style={[s.yAxis, { top: CHART_PADDING_TOP, height: plotHeight }]}
                     />
@@ -94,18 +100,23 @@ function LineChart({ rounds, sinKey }: LineChartProps) {
                         style={[s.xAxis, { top: CHART_PADDING_TOP + plotHeight }]}
                     />
 
-                    {rounds.slice(0, -1).map((_, i) => {
-                        const dx = xPos(i + 1) - xPos(i);
-                        const dy = yPos(i + 1) - yPos(i);
+                    {/* Rolling-average trend line, drawn beneath the lollipops. */}
+                    {trend.slice(0, -1).map((_, i) => {
+                        const x1 = slotCentre(i);
+                        const x2 = slotCentre(i + 1);
+                        const y1 = yForValue(trend[i]);
+                        const y2 = yForValue(trend[i + 1]);
+                        const dx = x2 - x1;
+                        const dy = y2 - y1;
                         const length = Math.sqrt(dx * dx + dy * dy);
                         const angle = Math.atan2(dy, dx);
                         return (
                             <View
-                                key={`line-${i}`}
-                                testID={`deadly-sin-trend-line-${i}`}
-                                style={[s.line, {
-                                    left: (xPos(i) + xPos(i + 1)) / 2 - length / 2,
-                                    top: (yPos(i) + yPos(i + 1)) / 2 - 1,
+                                key={`trend-${i}`}
+                                testID={`deadly-sin-trend-trend-${i}`}
+                                style={[s.trendLine, {
+                                    left: (x1 + x2) / 2 - length / 2,
+                                    top: (y1 + y2) / 2 - 1,
                                     width: length,
                                     transform: [{ rotate: `${angle}rad` }],
                                 }]}
@@ -113,17 +124,30 @@ function LineChart({ rounds, sinKey }: LineChartProps) {
                         );
                     })}
 
-                    {rounds.map((_, i) => (
-                        <React.Fragment key={`point-${i}`}>
-                            <View
-                                testID={`deadly-sin-trend-dot-${i}`}
-                                style={[s.dot, {
-                                    left: xPos(i) - DOT_RADIUS,
-                                    top: yPos(i) - DOT_RADIUS,
-                                }]}
-                            />
-                        </React.Fragment>
-                    ))}
+                    {/* Lollipops: a thin stem topped by a dot for each round. */}
+                    {values.map((v, i) => {
+                        const stemHeight = v * yScale;
+                        const cx = slotCentre(i);
+                        return (
+                            <React.Fragment key={`point-${i}`}>
+                                <View
+                                    testID={`deadly-sin-trend-stem-${i}`}
+                                    style={[s.stem, {
+                                        left: cx - 1,
+                                        top: baseline - stemHeight,
+                                        height: stemHeight,
+                                    }]}
+                                />
+                                <View
+                                    testID={`deadly-sin-trend-dot-${i}`}
+                                    style={[s.dot, {
+                                        left: cx - DOT_RADIUS,
+                                        top: yForValue(v) - DOT_RADIUS,
+                                    }]}
+                                />
+                            </React.Fragment>
+                        );
+                    })}
                 </View>
             </View>
 
@@ -132,7 +156,7 @@ function LineChart({ rounds, sinKey }: LineChartProps) {
                 <View style={[s.dateRow, { height: 16 }]}>
                     {rounds.map((r, i) => {
                         if (!showDateLabel(i)) return null;
-                        const centered = xPos(i) - DATE_LABEL_WIDTH / 2;
+                        const centered = slotCentre(i) - DATE_LABEL_WIDTH / 2;
                         const left = Math.max(0, Math.min(centered, chartWidth - DATE_LABEL_WIDTH));
                         return (
                             <Text
@@ -173,7 +197,7 @@ export default function DeadlySinTrendScreen() {
                         No rounds recorded yet
                     </Text>
                 ) : (
-                    <LineChart rounds={rounds} sinKey={sinKey as keyof DeadlySinsRound} />
+                    <BarChart rounds={rounds} sinKey={sinKey as keyof DeadlySinsRound} />
                 )}
             </ScrollView>
         </GestureHandlerRootView>

@@ -1133,17 +1133,24 @@ export const createStyles = (c: ThemeColours) => ({
             height: 1,
             backgroundColor: c.primary,
         },
+        stem: {
+            position: 'absolute',
+            width: 2,
+            backgroundColor: c.tertiary,
+        },
         dot: {
             position: 'absolute',
-            width: 10,
-            height: 10,
-            borderRadius: 5,
+            width: 8,
+            height: 8,
+            borderRadius: 4,
             backgroundColor: c.primary,
         },
-        line: {
+        trendLine: {
             position: 'absolute',
-            height: 2,
-            backgroundColor: c.primary,
+            height: 0,
+            borderTopWidth: 2,
+            borderTopColor: c.green,
+            borderStyle: 'dashed',
         },
         gridline: {
             position: 'absolute',
@@ -1152,15 +1159,6 @@ export const createStyles = (c: ThemeColours) => ({
             height: 1,
             backgroundColor: c.text,
             opacity: 0.12,
-        },
-        averageLine: {
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            height: 0,
-            borderTopWidth: 1,
-            borderTopColor: c.green,
-            borderStyle: 'dashed',
         },
         valueLabel: {
             position: 'absolute',

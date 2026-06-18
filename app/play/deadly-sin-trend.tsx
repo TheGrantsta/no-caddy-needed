@@ -12,7 +12,6 @@ const MAX_ROUNDS = 20;
 const MAX_DATE_LABELS = 8;
 const DATE_LABEL_WIDTH = 40;
 const DOT_RADIUS = 4;
-const ROLLING_WINDOW = 3;
 
 // Integer tick values from 0..maxValue, stepping so we never show more than ~7 ticks.
 function buildTicks(maxValue: number): number[] {
@@ -21,15 +20,6 @@ function buildTicks(maxValue: number): number[] {
     const ticks: number[] = [];
     for (let v = 0; v <= maxValue; v += step) ticks.push(v);
     return ticks;
-}
-
-// Trailing rolling average over the last ROLLING_WINDOW rounds (fewer early on).
-function rollingAverage(values: number[], window: number): number[] {
-    return values.map((_, i) => {
-        const start = Math.max(0, i - window + 1);
-        const slice = values.slice(start, i + 1);
-        return slice.reduce((sum, v) => sum + v, 0) / slice.length;
-    });
 }
 
 const mean = (xs: number[]) => xs.reduce((sum, v) => sum + v, 0) / xs.length;
@@ -98,7 +88,6 @@ function BarChart({ rounds, sinKey }: BarChartProps) {
     const yForValue = (v: number) => CHART_PADDING_TOP + plotHeight - v * yScale;
 
     const ticks = buildTicks(maxValue);
-    const trend = rollingAverage(values, ROLLING_WINDOW);
 
     // Show at most MAX_DATE_LABELS dates, always keeping the first and most recent.
     const labelStep = Math.max(1, Math.ceil(rounds.length / MAX_DATE_LABELS));
@@ -142,30 +131,6 @@ function BarChart({ rounds, sinKey }: BarChartProps) {
                         testID="deadly-sin-trend-x-axis"
                         style={[s.xAxis, { top: CHART_PADDING_TOP + plotHeight }]}
                     />
-
-                    {/* Rolling-average trend line, drawn beneath the lollipops. */}
-                    {trend.slice(0, -1).map((_, i) => {
-                        const x1 = slotCentre(i);
-                        const x2 = slotCentre(i + 1);
-                        const y1 = yForValue(trend[i]);
-                        const y2 = yForValue(trend[i + 1]);
-                        const dx = x2 - x1;
-                        const dy = y2 - y1;
-                        const length = Math.sqrt(dx * dx + dy * dy);
-                        const angle = Math.atan2(dy, dx);
-                        return (
-                            <View
-                                key={`trend-${i}`}
-                                testID={`deadly-sin-trend-trend-${i}`}
-                                style={[s.trendLine, {
-                                    left: (x1 + x2) / 2 - length / 2,
-                                    top: (y1 + y2) / 2 - 1,
-                                    width: length,
-                                    transform: [{ rotate: `${angle}rad` }],
-                                }]}
-                            />
-                        );
-                    })}
 
                     {/* Lollipops: a thin stem topped by a dot for each round. */}
                     {values.map((v, i) => {

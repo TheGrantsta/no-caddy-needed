@@ -1145,13 +1145,6 @@ export const createStyles = (c: ThemeColours) => ({
             borderRadius: 4,
             backgroundColor: c.primary,
         },
-        trendLine: {
-            position: 'absolute',
-            height: 0,
-            borderTopWidth: 2,
-            borderTopColor: c.green,
-            borderStyle: 'dashed',
-        },
         gridline: {
             position: 'absolute',
             left: 0,

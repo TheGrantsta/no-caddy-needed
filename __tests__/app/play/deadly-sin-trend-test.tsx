@@ -215,27 +215,17 @@ describe('DeadlySinTrendScreen', () => {
         });
     });
 
-    describe('rolling-average trend line', () => {
-        it('renders N-1 trend segments connecting the rolling average', () => {
+    describe('trend line', () => {
+        it('does not render a trend line', () => {
             mockGetAllDeadlySinsRoundsService.mockReturnValue([
                 makeRound(3, 3, '03/06'),
                 makeRound(2, 2, '02/06'),
                 makeRound(1, 1, '01/06'),
             ]);
 
-            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+            const { queryAllByTestId } = render(<DeadlySinTrendScreen />);
 
-            expect(getAllByTestId(/deadly-sin-trend-trend-/)).toHaveLength(2);
-        });
-
-        it('renders no trend segment for a single round', () => {
-            mockGetAllDeadlySinsRoundsService.mockReturnValue([
-                makeRound(1, 2, '01/06'),
-            ]);
-
-            const { queryByTestId } = render(<DeadlySinTrendScreen />);
-
-            expect(queryByTestId('deadly-sin-trend-trend-0')).toBeNull();
+            expect(queryAllByTestId(/deadly-sin-trend-trend-/)).toHaveLength(0);
         });
     });
 

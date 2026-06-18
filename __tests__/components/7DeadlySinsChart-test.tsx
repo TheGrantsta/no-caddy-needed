@@ -209,6 +209,20 @@ describe('DeadlySinsChart component', () => {
     });
 
     describe('open/close toggle', () => {
+        it('shows a minus icon when open (distinct from the row drill-in chevron)', () => {
+            const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
+
+            expect(getByTestId('7deadly-sins-chart-toggle-icon').props.children).toBe('−');
+        });
+
+        it('shows a plus icon when collapsed', () => {
+            const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-chart-toggle'));
+
+            expect(getByTestId('7deadly-sins-chart-toggle-icon').props.children).toBe('+');
+        });
+
         it('shows toggle header when rounds are provided', () => {
             const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
 

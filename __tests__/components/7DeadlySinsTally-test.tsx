@@ -548,6 +548,23 @@ describe('DeadlySinsTally component', () => {
             expect(queryByTestId('7deadly-sins-toggle')).toBeNull();
         });
 
+        it('shows a minus icon when open (matching the Play home screen)', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-start-round'));
+
+            expect(getByTestId('7deadly-sins-toggle-icon').props.children).toBe('−');
+        });
+
+        it('shows a plus icon when collapsed', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-start-round'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle'));
+
+            expect(getByTestId('7deadly-sins-toggle-icon').props.children).toBe('+');
+        });
+
         it('sin toggles are visible by default when round is active', () => {
             const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
 

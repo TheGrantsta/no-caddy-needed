@@ -100,7 +100,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                 style={s.toggleHeader}
             >
                 <Text style={s.toggleLabel}>7 Deadly Sins</Text>
-                <Text style={s.chevron}>{isOpen ? '▾' : '▴'}</Text>
+                <Text testID="7deadly-sins-toggle-icon" style={s.chevron}>{isOpen ? '−' : '+'}</Text>
             </TouchableOpacity>
 
             {isOpen && sinFields.map((field) => {

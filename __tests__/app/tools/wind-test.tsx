@@ -58,4 +58,10 @@ describe('Wind tool screen', () => {
         render(<Wind />);
         expect(mockRefreshWind).toHaveBeenCalled();
     });
+
+    it('renders the display in compact mode (no duplicated title or aim hint)', () => {
+        const { queryByTestId } = render(<Wind />);
+        expect(queryByTestId('wind-display-title')).toBeNull();
+        expect(queryByTestId('wind-aim-hint')).toBeNull();
+    });
 });

@@ -2,26 +2,35 @@ import { Text, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
-import { getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/WeatherService';
+import { degreesToCompass, getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/WeatherService';
 
 type Props = {
     directionFrom: number | null;
     speedMph: number | null;
     heading: number;
+    /**
+     * Compact mode for embedding in a page that already provides a heading:
+     * drops the inner title, the "aim your phone" hint, and the modal-style card
+     * border so the read-out sits directly on the page. Defaults to the full
+     * (modal overlay) presentation.
+     */
+    compact?: boolean;
 };
 
 /**
  * The wind read-out panel: target marker, a large compass arrow pointing downwind
- * relative to the device heading, the speed, and the distance/cross effect.
- * Shared by the WindIndicator modal overlay and the standalone Wind tool screen.
+ * relative to the device heading, the speed, the source compass direction, and the
+ * distance/cross effect. Shared by the WindIndicator modal overlay and the
+ * standalone Wind tool screen (via `compact`).
  */
-const WindDisplay = ({ directionFrom, speedMph, heading }: Props) => {
+const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Props) => {
     const colours = useThemeColours();
 
     if (directionFrom === null || speedMph === null) return null;
 
     const rotation = getWindArrowRotation(directionFrom, heading);
     const speed = Math.round(speedMph);
+    const fromCompass = degreesToCompass(directionFrom);
 
     const effect = getWindEffect(directionFrom, speedMph, heading);
     const pct = Math.round(effect.playsLongerPercent);
@@ -34,37 +43,49 @@ const WindDisplay = ({ directionFrom, speedMph, heading }: Props) => {
 
     return (
         <View
+            testID="wind-display-container"
             style={{
                 backgroundColor: colours.background,
                 borderRadius: 16,
-                paddingVertical: 32,
-                paddingHorizontal: 48,
+                paddingVertical: compact ? 8 : 32,
+                paddingHorizontal: compact ? 0 : 48,
                 alignItems: 'center',
-                borderWidth: 1,
+                borderWidth: compact ? 0 : 1,
                 borderColor: colours.primary,
             }}
         >
-            <Text style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginBottom: 12 }}>
-                Wind direction / speed
-            </Text>
+            {!compact && (
+                <Text
+                    testID="wind-display-title"
+                    style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginBottom: 12 }}
+                >
+                    Wind direction / speed
+                </Text>
+            )}
             <View testID="wind-target-marker" style={{ alignItems: 'center', marginBottom: 2 }}>
                 <MaterialIcons name="golf-course" size={22} color={colours.primary} />
                 <Text style={{ color: colours.primary, fontSize: fontSizes.smallestText, fontWeight: 'bold', opacity: 0.7 }}>
                     Target
                 </Text>
             </View>
-            <View testID="wind-arrow-large" style={{ transform: [{ rotate: `${rotation}deg` }] }}>
-                <MaterialIcons name="straight" size={120} color={colours.primary} />
+            <View testID="wind-arrow-large" style={{ marginTop: 4, transform: [{ rotate: `${rotation}deg` }] }}>
+                <MaterialIcons name="straight" size={110} color={colours.primary} />
             </View>
             <Text
                 testID="wind-speed-text-large"
-                style={{ color: colours.primary, fontSize: fontSizes.header, fontWeight: 'bold', marginTop: 16 }}
+                style={{ color: colours.primary, fontSize: fontSizes.header, fontWeight: 'bold', marginTop: 8 }}
             >
                 {speed} mph
             </Text>
             <Text
+                testID="wind-direction-compass"
+                style={{ color: colours.primary, fontSize: fontSizes.smallText, fontWeight: 'bold', opacity: 0.8, marginTop: 2 }}
+            >
+                From the {fromCompass}
+            </Text>
+            <Text
                 testID="wind-effect-text"
-                style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: 12 }}
+                style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: 10 }}
             >
                 {effectText}
             </Text>
@@ -76,12 +97,14 @@ const WindDisplay = ({ directionFrom, speedMph, heading }: Props) => {
                     Crosswind from the {effect.crossDirection}
                 </Text>
             )}
-            <Text
-                testID="wind-aim-hint"
-                style={{ color: colours.primary, fontSize: fontSizes.smallestText, opacity: 0.6, marginTop: 12 }}
-            >
-                Aim your phone at the target
-            </Text>
+            {!compact && (
+                <Text
+                    testID="wind-aim-hint"
+                    style={{ color: colours.primary, fontSize: fontSizes.smallestText, opacity: 0.6, marginTop: 12 }}
+                >
+                    Aim your phone at the target
+                </Text>
+            )}
         </View>
     );
 };

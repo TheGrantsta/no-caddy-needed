@@ -62,4 +62,41 @@ describe('WindDisplay', () => {
         const { getByTestId } = render(<WindDisplay directionFrom={0} speedMph={2} heading={0} />);
         expect(getByTestId('wind-effect-text')).toHaveTextContent(/about the same/i);
     });
+
+    it('showsTheCompassDirectionTheWindComesFrom', () => {
+        const { getByTestId } = render(<WindDisplay directionFrom={270} speedMph={10} heading={0} />);
+        expect(getByTestId('wind-direction-compass')).toHaveTextContent(/from the W\b/i);
+    });
+
+    describe('compact mode (embedded in a page)', () => {
+        it('showsTitleAndAimHintByDefault', () => {
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
+            expect(getByTestId('wind-display-title')).toBeTruthy();
+            expect(getByTestId('wind-aim-hint')).toBeTruthy();
+        });
+
+        it('hidesTitleAndAimHintWhenCompact', () => {
+            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} compact />);
+            expect(queryByTestId('wind-display-title')).toBeNull();
+            expect(queryByTestId('wind-aim-hint')).toBeNull();
+        });
+
+        it('dropsTheModalCardBorderWhenCompact', () => {
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} compact />);
+            const container = getByTestId('wind-display-container');
+            const flat = Array.isArray(container.props.style)
+                ? Object.assign({}, ...container.props.style)
+                : container.props.style;
+            expect(flat.borderWidth).toBeFalsy();
+        });
+
+        it('keepsTheCardBorderWhenNotCompact', () => {
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
+            const container = getByTestId('wind-display-container');
+            const flat = Array.isArray(container.props.style)
+                ? Object.assign({}, ...container.props.style)
+                : container.props.style;
+            expect(flat.borderWidth).toBe(1);
+        });
+    });
 });

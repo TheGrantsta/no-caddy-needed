@@ -29,6 +29,15 @@ export const fetchWind = async (latitude: number, longitude: number): Promise<Wi
 /** Normalises an angle in degrees into the [0, 360) range. */
 export const normalize360 = (deg: number): number => ((deg % 360) + 360) % 360;
 
+const COMPASS_16 = [
+    'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+    'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW',
+];
+
+/** Converts a bearing in degrees to its nearest 16-point compass label (e.g. 247.5 → "WSW"). */
+export const degreesToCompass = (deg: number): string =>
+    COMPASS_16[Math.round(normalize360(deg) / 22.5) % 16];
+
 /**
  * Rotation (degrees) for an arrow that points the way the wind blows TOward,
  * oriented to the device compass. `directionFrom` is where wind comes from;

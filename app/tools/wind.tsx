@@ -38,7 +38,7 @@ export default function Wind() {
                         <Text style={[styles.headerText, styles.marginTop]}>
                             Wind
                         </Text>
-                        <Text style={[styles.normalText, { margin: 5 }]}>
+                        <Text style={[styles.normalText, { margin: 5, textAlign: 'center' }]}>
                             Point your phone at your target to read the wind
                         </Text>
                     </View>
@@ -49,6 +49,7 @@ export default function Wind() {
                                 directionFrom={wind.directionFrom}
                                 speedMph={wind.speedMph}
                                 heading={heading}
+                                compact
                             />
                         ) : (
                             <Text

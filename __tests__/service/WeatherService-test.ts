@@ -1,4 +1,4 @@
-import { fetchWind } from '../../service/WeatherService';
+import { fetchWind, degreesToCompass } from '../../service/WeatherService';
 
 const mockFetchResponse = (body: object, ok = true, status = 200) => {
     global.fetch = jest.fn().mockResolvedValue({
@@ -50,5 +50,29 @@ describe('fetchWind', () => {
         global.fetch = jest.fn().mockRejectedValue(new Error('network down'));
 
         await expect(fetchWind(1, 2)).rejects.toThrow('network down');
+    });
+});
+
+describe('degreesToCompass', () => {
+    it('mapsCardinalPoints', () => {
+        expect(degreesToCompass(0)).toBe('N');
+        expect(degreesToCompass(90)).toBe('E');
+        expect(degreesToCompass(180)).toBe('S');
+        expect(degreesToCompass(270)).toBe('W');
+    });
+
+    it('mapsIntercardinalPoints', () => {
+        expect(degreesToCompass(45)).toBe('NE');
+        expect(degreesToCompass(247.5)).toBe('WSW');
+    });
+
+    it('roundsToNearestSixteenthAndWraps', () => {
+        expect(degreesToCompass(11)).toBe('N');   // < 11.25 rounds down to N
+        expect(degreesToCompass(349)).toBe('N');  // wraps past 360 back to N
+    });
+
+    it('normalisesOutOfRangeDegrees', () => {
+        expect(degreesToCompass(360)).toBe('N');
+        expect(degreesToCompass(-90)).toBe('W');
     });
 });

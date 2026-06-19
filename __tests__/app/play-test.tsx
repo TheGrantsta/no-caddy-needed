@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Play from '../../app/(tabs)/play';
 import * as Haptics from 'expo-haptics';
@@ -203,6 +203,7 @@ describe('Play screen', () => {
         mockGetMultiplayerScorecard.mockReturnValue(null);
         mockGetRecentCourseNames.mockReturnValue([]);
         mockGetRecentPlayerNames.mockReturnValue([]);
+        mockGetHolesPlayedForRound.mockReturnValue(0);
         mockLoadCourseNotes.mockReturnValue({});
         mockGetHolesWithSinsForRound.mockReturnValue(new Set());
     });
@@ -458,12 +459,12 @@ describe('Play screen', () => {
                 expect(queryByTestId('round-history-scroll')).toBeNull();
             });
 
-            it('shouldStyleEndRoundLinkWithRedColour', () => {
+            it('shouldStyleEndRoundLinkWithPrimaryColour', () => {
                 const { UNSAFE_getByProps } = render(<Play />);
                 const endRoundText = UNSAFE_getByProps({ testID: 'end-incomplete-round-link' });
                 const textChild = endRoundText.findByProps({ children: 'End round' });
                 const colours = require('../../assets/colours').default;
-                expect(textChild.props.style).toEqual(expect.objectContaining({ color: colours.red }));
+                expect(textChild.props.style).toEqual(expect.objectContaining({ color: colours.primary }));
             });
         });
     });
@@ -766,6 +767,88 @@ describe('Play screen', () => {
         });
     });
 
+    describe('hole navigation controls', () => {
+        const startRound = async (utils: ReturnType<typeof render>) => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            fireEvent.press(utils.getByTestId('start-round-button'));
+            fireEvent.changeText(utils.getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(utils.getByTestId('start-button'));
+            await waitFor(() => expect(utils.getByText('#1')).toBeTruthy());
+        };
+
+        // Resume an in-progress round to land directly on hole (holesPlayed + 1).
+        const resumeAtHole = async (holesPlayed: number) => {
+            mockGetActiveRound.mockReturnValue({
+                Id: 5, TotalScore: 0, IsCompleted: 0,
+                StartTime: '2025-06-15T10:00:00.000Z', EndTime: null, Created_At: '2025-06-15T10:00:00.000Z',
+            });
+            mockGetRoundPlayers.mockReturnValue([
+                { Id: 1, RoundId: 5, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+            ]);
+            mockGetHolesPlayedForRound.mockReturnValue(holesPlayed);
+            const utils = render(<Play />);
+            await act(async () => {
+                fireEvent.press(utils.getByTestId('continue-round-button'));
+            });
+            return utils;
+        };
+
+        it('shows a strong skip-next icon on the Next hole button', async () => {
+            const utils = render(<Play />);
+            await startRound(utils);
+
+            const button = utils.UNSAFE_getByProps({ testID: 'next-hole-button' });
+            expect(button.findByProps({ name: 'skip-next' })).toBeTruthy();
+        });
+
+        it('gives the Next hole button a background-coloured border', async () => {
+            const colours = require('../../assets/colours').default;
+            const utils = render(<Play />);
+            await startRound(utils);
+
+            const style = StyleSheet.flatten(utils.getByTestId('next-hole-button').props.style);
+            expect(style.borderWidth).toBeGreaterThan(0);
+            expect(style.borderColor).toBe(colours.background);
+        });
+
+        it('renders End round in the primary colour, not red', async () => {
+            const colours = require('../../assets/colours').default;
+            const utils = render(<Play />);
+            await startRound(utils);
+
+            const endRoundText = utils.UNSAFE_getByProps({ testID: 'end-round-button' })
+                .findByProps({ children: 'End round' });
+            expect(endRoundText.props.style).toEqual(expect.objectContaining({ color: colours.primary }));
+            expect(endRoundText.props.style).not.toEqual(expect.objectContaining({ color: colours.red }));
+        });
+
+        it('hides the Previous hole button on the first hole', async () => {
+            const utils = render(<Play />);
+            await startRound(utils);
+
+            expect(utils.queryByTestId('previous-hole-button')).toBeNull();
+        });
+
+        it('renders Previous hole as a green-bordered button with a skip-previous icon after hole 1', async () => {
+            const colours = require('../../assets/colours').default;
+            const utils = await resumeAtHole(1); // resumes on hole 2
+
+            const button = utils.UNSAFE_getByProps({ testID: 'previous-hole-button' });
+            const style = StyleSheet.flatten(button.props.style);
+            expect(style.borderColor).toBe(colours.primary);
+            expect(button.findByProps({ name: 'skip-previous' })).toBeTruthy();
+        });
+
+        it('turns Next into "Finish round" with a flag icon on the last hole', async () => {
+            const utils = await resumeAtHole(17); // resumes on hole 18
+
+            const button = utils.UNSAFE_getByProps({ testID: 'next-hole-button' });
+            expect(button.findByProps({ children: 'Finish round' })).toBeTruthy();
+            expect(button.findByProps({ name: 'sports-score' })).toBeTruthy();
+        });
+    });
+
     describe('Active round', () => {
         it('resumes active round on mount', async () => {
             mockGetActiveRound.mockReturnValue({
@@ -920,11 +1003,11 @@ describe('Play screen', () => {
             expect(queryByText('Round in progress')).toBeNull();
         });
 
-        it('pressing previous #button on #1 does not navigate below #1', async () => {
+        it('does not show the previous #button on #1 (cannot go below #1)', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
-            const { getByTestId, getByText } = render(<Play />);
+            const { getByTestId, getByText, queryByTestId } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
@@ -934,8 +1017,7 @@ describe('Play screen', () => {
                 expect(getByText('#1')).toBeTruthy();
             });
 
-            fireEvent.press(getByTestId('previous-hole-button'));
-
+            expect(queryByTestId('previous-hole-button')).toBeNull();
             expect(getByText('#1')).toBeTruthy();
         });
 

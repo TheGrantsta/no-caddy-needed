@@ -117,6 +117,7 @@ export default function Play() {
     );
 
     const localStyles = styles.playScreen;
+    const isLastHole = currentHole >= 18;
 
     useEffect(() => {
         const activeRound = getActiveRoundService();
@@ -499,7 +500,7 @@ export default function Play() {
                                     onPress={handleEndIncompleteRound}
                                     style={{ padding: 12, alignItems: 'center', marginTop: 4 }}
                                 >
-                                    <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>End round</Text>
+                                    <Text style={localStyles.endRoundLink}>End round</Text>
                                 </TouchableOpacity>
                             </>
                         ) : (
@@ -658,16 +659,22 @@ export default function Play() {
                                         onPress={handleNextHole}
                                         style={localStyles.nextHoleButton}
                                     >
-                                        <Text style={localStyles.nextHoleButtonText}>Next hole</Text>
+                                        <View style={{ width: 24 }} />
+                                        <Text style={localStyles.nextHoleButtonText}>{isLastHole ? 'Finish round' : 'Next hole'}</Text>
+                                        <MaterialIcons name={isLastHole ? 'sports-score' : 'skip-next'} size={24} color={colours.background} />
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity
-                                        testID="previous-hole-button"
-                                        onPress={handlePreviousHole}
-                                        style={{ padding: 12, alignItems: 'center', marginTop: 4 }}
-                                    >
-                                        <Text style={{ color: colours.primary, fontSize: fontSizes.normal }}>Previous hole</Text>
-                                    </TouchableOpacity>
+                                    {currentHole > 1 && (
+                                        <TouchableOpacity
+                                            testID="previous-hole-button"
+                                            onPress={handlePreviousHole}
+                                            style={localStyles.previousHoleButton}
+                                        >
+                                            <MaterialIcons name="skip-previous" size={24} color={colours.primary} />
+                                            <Text style={localStyles.previousHoleButtonText}>Previous hole</Text>
+                                            <View style={{ width: 24 }} />
+                                        </TouchableOpacity>
+                                    )}
 
                                     <View style={styles.contentSection}>
                                         <Text style={styles.normalText}>
@@ -683,7 +690,7 @@ export default function Play() {
                                     onPress={handleEndRoundPress}
                                     style={{ padding: 12, alignItems: 'center', marginTop: 20 }}
                                 >
-                                    <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>End round</Text>
+                                    <Text style={localStyles.endRoundLink}>End round</Text>
                                 </TouchableOpacity>
                             )}
 

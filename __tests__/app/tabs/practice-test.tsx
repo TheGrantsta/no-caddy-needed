@@ -141,6 +141,12 @@ describe('Practice', () => {
         expect(getByText('Random')).toBeTruthy();
     });
 
+    it('displaysWindInToolsSection', () => {
+        const { getByTestId, getByText } = render(<Practice />);
+        fireEvent.press(getByTestId('practice-sub-menu-tools'));
+        expect(getByText('Wind')).toBeTruthy();
+    });
+
     it('showsNoDrillHistoryWhenEmpty', () => {
         const { getByTestId, getByText } = render(<Practice />);
         fireEvent.press(getByTestId('practice-sub-menu-history'));

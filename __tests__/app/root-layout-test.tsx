@@ -168,6 +168,7 @@ describe('RootLayout', () => {
         expect(names).toContain('areas/full-swing');
         expect(names).toContain('tools/random');
         expect(names).toContain('tools/tempo');
+        expect(names).toContain('tools/wind');
         expect(names).toContain('play/distances');
         expect(names).toContain('play/wedge-chart');
         expect(names).toContain('play/deadly-sin-trend');

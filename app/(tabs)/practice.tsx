@@ -230,6 +230,14 @@ export default function Practice() {
                     <Text style={styles.navCardLabel}>Reminders</Text>
                   </View>
                 </Link>
+                <Link href="../tools/wind" style={styles.navCardLink}>
+                  <View style={styles.navCard}>
+                    <View style={styles.iconCircle}>
+                      <MaterialIcons name="air" size={36} color={colours.white} />
+                    </View>
+                    <Text style={styles.navCardLabel}>Wind</Text>
+                  </View>
+                </Link>
               </View>
             </View>
           </View>

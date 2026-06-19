@@ -200,22 +200,23 @@ describe('DeadlySinsTally component', () => {
             }));
         });
 
-        it('toggle indicator has primary background when value is false', () => {
+        it('toggle indicator is unfilled when value is false', () => {
             const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
 
             const indicator = getByTestId('7deadly-sins-indicator-three-putts');
             const style = StyleSheet.flatten(indicator.props.style);
-            expect(style.backgroundColor).toBe('#2D5A3D'); // c.primary
+            expect(style.backgroundColor).toBe('transparent');
         });
 
-        it('toggle indicator has primary background when value is true', () => {
+        it('toggle indicator is red with a cross when value is true', () => {
             const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
 
             fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
 
             const indicator = getByTestId('7deadly-sins-indicator-three-putts');
             const style = StyleSheet.flatten(indicator.props.style);
-            expect(style.backgroundColor).toBe('#2D5A3D'); // c.primary
+            expect(style.backgroundColor).toBe('#fd0303'); // c.red
+            expect(indicator).toHaveTextContent('✗');
         });
     });
 
@@ -546,6 +547,15 @@ describe('DeadlySinsTally component', () => {
             const { queryByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
 
             expect(queryByTestId('7deadly-sins-toggle')).toBeNull();
+        });
+
+        it('titles the section "Deadly Sins" (no leading number)', () => {
+            const { getByTestId, getByText, queryByText } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-start-round'));
+
+            expect(getByText('Deadly Sins')).toBeTruthy();
+            expect(queryByText('7 Deadly Sins')).toBeNull();
         });
 
         it('shows a minus icon when open (matching the Play home screen)', () => {

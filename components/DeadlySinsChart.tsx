@@ -67,7 +67,7 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
                 onPress={() => setIsOpen(prev => !prev)}
                 style={s.toggleHeader}
             >
-                <Text style={styles.subHeaderText}>7 Deadly Sins</Text>
+                <Text style={styles.subHeaderText}>Deadly Sins</Text>
                 <Text testID="7deadly-sins-chart-toggle-icon" style={s.chevron}>{isOpen ? '−' : '+'}</Text>
             </TouchableOpacity>
 

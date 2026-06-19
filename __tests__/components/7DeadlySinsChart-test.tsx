@@ -28,7 +28,7 @@ describe('DeadlySinsChart component', () => {
     it('returns null when rounds array is empty', () => {
         const { queryByText } = render(<DeadlySinsChart rounds={[]} />);
 
-        expect(queryByText('7 Deadly Sins')).toBeNull();
+        expect(queryByText('Deadly Sins')).toBeNull();
     });
 
     it('returns null when rounds total score is zero', () => {
@@ -37,13 +37,13 @@ describe('DeadlySinsChart component', () => {
         ];
         const { queryByText } = render(<DeadlySinsChart rounds={emptyRound} />);
 
-        expect(queryByText('7 Deadly Sins')).toBeNull();
+        expect(queryByText('Deadly Sins')).toBeNull();
     });
 
     it('renders the title', () => {
         const { getByText } = render(<DeadlySinsChart rounds={mockRounds} />);
 
-        expect(getByText('7 Deadly Sins')).toBeTruthy();
+        expect(getByText('Deadly Sins')).toBeTruthy();
     });
 
     it('renders all 7 category labels', () => {

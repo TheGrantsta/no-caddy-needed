@@ -518,11 +518,12 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('score-cell-1-1'));
 
-            expect(getByTestId('7deadly-sins-indicator-three-putts')).toHaveTextContent('✓');
+            expect(getByTestId('7deadly-sins-indicator-three-putts')).toHaveTextContent('✗');
 
             fireEvent.press(getByTestId('score-cell-2-1'));
 
-            expect(getByTestId('7deadly-sins-indicator-three-putts')).toHaveTextContent('○');
+            // Unselected sins render an empty outline (no cross).
+            expect(getByTestId('7deadly-sins-indicator-three-putts')).not.toHaveTextContent('✗');
         });
 
         it('clears sins editor when cancel edit pressed', () => {

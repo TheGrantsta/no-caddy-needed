@@ -99,7 +99,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                 onPress={() => setIsOpen(prev => !prev)}
                 style={s.toggleHeader}
             >
-                <Text style={s.toggleLabel}>7 Deadly Sins</Text>
+                <Text style={s.toggleLabel}>Deadly Sins</Text>
                 <Text testID="7deadly-sins-toggle-icon" style={s.chevron}>{isOpen ? '−' : '+'}</Text>
             </TouchableOpacity>
 
@@ -111,8 +111,8 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                             <View key={field.slug} style={s.row}>
                                 <Text style={s.label}>{field.label}</Text>
                                 <View style={s.controls}>
-                                    <View testID="7deadly-sins-auto-bogeys-par5" style={s.button}>
-                                        <Text style={s.buttonText}>✓</Text>
+                                    <View testID="7deadly-sins-auto-bogeys-par5" style={[s.button, s.buttonActive]}>
+                                        <Text style={s.buttonText}>✗</Text>
                                     </View>
                                 </View>
                             </View>
@@ -125,8 +125,8 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                         <View key={field.slug} style={s.row}>
                             <Text style={s.label}>{field.label}</Text>
                             <View style={s.controls}>
-                                <View testID="7deadly-sins-auto-double-bogeys" style={s.button}>
-                                    <Text style={s.buttonText}>✓</Text>
+                                <View testID="7deadly-sins-auto-double-bogeys" style={[s.button, s.buttonActive]}>
+                                    <Text style={s.buttonText}>✗</Text>
                                 </View>
                             </View>
                         </View>
@@ -142,8 +142,11 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                     >
                         <Text style={s.label}>{field.label}</Text>
                         <View style={s.controls}>
-                            <View testID={`7deadly-sins-indicator-${field.slug}`} style={s.button}>
-                                <Text style={s.buttonText}>{values[field.key] ? '✓' : '○'}</Text>
+                            <View
+                                testID={`7deadly-sins-indicator-${field.slug}`}
+                                style={[s.button, values[field.key] ? s.buttonActive : s.buttonInactive]}
+                            >
+                                {values[field.key] ? <Text style={s.buttonText}>✗</Text> : null}
                             </View>
                         </View>
                     </TouchableOpacity>

@@ -2158,7 +2158,7 @@ describe('Play screen', () => {
 
             const { queryByText } = render(<Play />);
 
-            expect(queryByText('7 Deadly Sins')).toBeNull();
+            expect(queryByText('Deadly Sins')).toBeNull();
         });
 
         it('renders chart in idle state when data exists', () => {
@@ -2166,7 +2166,7 @@ describe('Play screen', () => {
 
             const { getByText } = render(<Play />);
 
-            expect(getByText('7 Deadly Sins')).toBeTruthy();
+            expect(getByText('Deadly Sins')).toBeTruthy();
         });
 
         it('does not render chart during active round', async () => {

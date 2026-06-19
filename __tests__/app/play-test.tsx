@@ -128,6 +128,7 @@ jest.mock('expo-haptics', () => ({
 
 const mockPush = jest.fn();
 const mockSetOptions = jest.fn();
+let capturedFocusEffect: () => void = () => {};
 jest.mock('expo-router', () => {
     const React = require('react');
     const { View } = require('react-native');
@@ -138,6 +139,7 @@ jest.mock('expo-router', () => {
         useNavigation: () => ({
             setOptions: mockSetOptions,
         }),
+        useFocusEffect: (cb: () => void) => { capturedFocusEffect = cb; },
         Link: ({ children, href }: { children: React.ReactNode; href: string }) => (
             <View testID={`link-${href}`}>{children}</View>
         ),
@@ -253,6 +255,23 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             expect(getByTestId('round-history-row-35')).toBeTruthy();
+        });
+
+        it('shouldRemoveDeletedRoundFromListOnRefocus', () => {
+            const roundA = { Id: 1, TotalScore: 3, StrokeTotal: 75, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' };
+            const roundB = { Id: 2, TotalScore: 1, StrokeTotal: 73, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '16/06' };
+            mockGetAllRoundHistory.mockReturnValue([roundA, roundB]);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+
+            expect(getByTestId('round-history-row-2')).toBeTruthy();
+
+            // Simulate deleting round 2 elsewhere then returning to this screen.
+            mockGetAllRoundHistory.mockReturnValue([roundA]);
+            act(() => { capturedFocusEffect(); });
+
+            expect(queryByTestId('round-history-row-2')).toBeNull();
+            expect(getByTestId('round-history-row-1')).toBeTruthy();
         });
 
         it('renders round history in a scrollable container', () => {

@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import HoleScoreInput from '../../components/HoleScoreInput';
 import HoleNoteInput from '../../components/HoleNoteInput';
@@ -154,6 +154,15 @@ export default function Play() {
             if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
         };
     }, []);
+
+    // Re-read the history list whenever the screen regains focus (e.g. after a
+    // round is deleted on the scorecard screen and we navigate back here).
+    const refreshHistoryData = useCallback(() => {
+        setRoundHistory(getAllRoundHistoryService());
+        setDeadlySinsRounds(getAllDeadlySinsRoundsService());
+    }, []);
+
+    useFocusEffect(refreshHistoryData);
 
     // Refresh wind whenever a hole loads during an active round.
     useEffect(() => {

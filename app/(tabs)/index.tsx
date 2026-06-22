@@ -22,9 +22,9 @@ const ONBOARDING_STEPS = [
 
 // What's new for the current version — shown once per version to existing users.
 const WHATS_NEW = [
-  'Improved on-course wind direction & speed indicator — tap it to enlarge',
-  'Increased number of options for tempo training',
-  'Reverted hiding the bottom navigation bar when entering the score card',
+  'Add wind indicator to Practice tools so it can be used at the range',
+  'Improved discoverability and readability of 7 Deadly Sins charts',
+  'Persist Tempo settings to avoid having to re-select beats per minute everytime',
 ];
 
 const APP_VERSION = Constants.expoConfig?.version ?? '';

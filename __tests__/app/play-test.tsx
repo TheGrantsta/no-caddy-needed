@@ -830,6 +830,15 @@ describe('Play screen', () => {
             expect(utils.queryByTestId('previous-hole-button')).toBeNull();
         });
 
+        it('reserves the Previous-hole space with a placeholder on the first hole', async () => {
+            const utils = render(<Play />);
+            await startRound(utils);
+
+            // Real button gone, but an invisible placeholder keeps the layout from shifting up.
+            expect(utils.queryByTestId('previous-hole-button')).toBeNull();
+            expect(utils.getByTestId('previous-hole-placeholder')).toBeTruthy();
+        });
+
         it('renders Previous hole as a green-bordered button with a skip-previous icon after hole 1', async () => {
             const colours = require('../../assets/colours').default;
             const utils = await resumeAtHole(1); // resumes on hole 2
@@ -838,6 +847,7 @@ describe('Play screen', () => {
             const style = StyleSheet.flatten(button.props.style);
             expect(style.borderColor).toBe(colours.primary);
             expect(button.findByProps({ name: 'skip-previous' })).toBeTruthy();
+            expect(utils.queryByTestId('previous-hole-placeholder')).toBeNull();
         });
 
         it('turns Next into "Finish round" with a flag icon on the last hole', async () => {

@@ -56,6 +56,6 @@
 - [-] Create 'skill' to run screen shots on remote push
 
 # Release notes
-* Increased number of options for tempo
-* Reverted hiding the bottom navigation bar when entering the score card
-* Clearer wind indicator and additional support for distance adjustments
+* Add wind indicator to Practice tools so it can be used at the range
+* Improved discoverability and readability of 7 Deadly Sins charts
+* Persist Tempo settings to avoid having to re-select beats per minute everytime

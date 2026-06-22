@@ -664,7 +664,7 @@ export default function Play() {
                                         <MaterialIcons name={isLastHole ? 'sports-score' : 'skip-next'} size={24} color={colours.background} />
                                     </TouchableOpacity>
 
-                                    {currentHole > 1 && (
+                                    {currentHole > 1 ? (
                                         <TouchableOpacity
                                             testID="previous-hole-button"
                                             onPress={handlePreviousHole}
@@ -674,6 +674,18 @@ export default function Play() {
                                             <Text style={localStyles.previousHoleButtonText}>Previous hole</Text>
                                             <View style={{ width: 24 }} />
                                         </TouchableOpacity>
+                                    ) : (
+                                        // Invisible same-sized placeholder so hiding Previous on hole 1
+                                        // doesn't pull the content below it upwards.
+                                        <View
+                                            testID="previous-hole-placeholder"
+                                            style={[localStyles.previousHoleButton, { opacity: 0 }]}
+                                            pointerEvents="none"
+                                        >
+                                            <MaterialIcons name="skip-previous" size={24} color={colours.primary} />
+                                            <Text style={localStyles.previousHoleButtonText}>Previous hole</Text>
+                                            <View style={{ width: 24 }} />
+                                        </View>
                                     )}
 
                                     <View style={styles.contentSection}>

@@ -32,9 +32,9 @@ beforeAll(async () => {
 // notificationsEnabled, voice, soundsEnabled, wedgeChartOnboardingSeen, distancesOnboardingSeen,
 // playOnboardingSeen, homeOnboardingSeen, practiceOnboardingSeen, practiceFrequencyDays,
 // reviewPromptShown, preShotReminderEnabled, preShotRoutineText, whatsNewVersionSeen,
-// settingsOnboardingSeen, performOnboardingSeen
+// settingsOnboardingSeen, performOnboardingSeen, tempoBpm
 const callSaveWithRoutine = (routine: string) =>
-    saveSettings(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, routine, '', 0, 0);
+    saveSettings(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, routine, '', 0, 0, 60);
 
 describe('saveSettings pre-shot routine guard', () => {
     beforeEach(() => {
@@ -99,6 +99,15 @@ describe('saveSettings pre-shot routine guard', () => {
         const result = await callSaveWithRoutine('a routine');
 
         expect(result).toBe(true);
+    });
+
+    it('persistsTempoBpm', async () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        await saveSettings(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, '', '', 0, 0, 84);
+
+        const [params] = mockStatementExecuteAsync.mock.calls[0];
+        expect(params.$TempoBpm).toBe(84);
     });
 });
 

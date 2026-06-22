@@ -194,6 +194,27 @@ describe('Settings table column migration', () => {
         );
     });
 
+    it('should add TempoBpm column when missing', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Settings)') return [
+                { name: 'Id' },
+                { name: 'Theme' },
+                { name: 'NotificationsEnabled' },
+            ];
+            if (sql === 'PRAGMA table_info(Rounds)') return [
+                { name: 'Id' },
+                { name: 'CoursePar' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE Settings ADD COLUMN TempoBpm INTEGER NOT NULL DEFAULT 60'
+        );
+    });
+
     it('should add DistancesOnboardingSeen column when missing', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
@@ -325,6 +346,7 @@ describe('Settings table column migration', () => {
                 { name: 'WhatsNewVersionSeen' },
                 { name: 'SettingsOnboardingSeen' },
                 { name: 'PerformOnboardingSeen' },
+                { name: 'TempoBpm' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },

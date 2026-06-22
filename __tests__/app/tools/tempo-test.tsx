@@ -3,6 +3,16 @@ import { ScrollView } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
 import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import Tempo from '../../../app/tools/tempo';
+import { getSettingsService, saveSettingsService } from '../../../service/DbService';
+
+jest.mock('../../../service/DbService', () => ({
+    getSettingsService: jest.fn(),
+    saveSettingsService: jest.fn().mockResolvedValue(true),
+}));
+
+const mockGetSettings = getSettingsService as jest.Mock;
+const mockSaveSettings = saveSettingsService as jest.Mock;
+const settingsWith = (tempoBpm: number) => ({ tempoBpm });
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -53,6 +63,8 @@ describe('Tempo training page', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         jest.clearAllTimers();
+        mockGetSettings.mockReturnValue(settingsWith(60));
+        mockSaveSettings.mockResolvedValue(true);
         mockUseAudioPlayer.mockReturnValue({
             play: jest.fn(),
             pause: jest.fn(),
@@ -72,10 +84,40 @@ describe('Tempo training page', () => {
         expect(getByText('Swing with tempo to self organise')).toBeTruthy();
     });
 
-    it('renders default beats per minute', () => {
+    it('renders default beats per minute when none saved', () => {
+        mockGetSettings.mockReturnValue(settingsWith(60));
         const { getByText } = render(<Tempo />);
 
         expect(getByText('Beats per minute: 60')).toBeTruthy();
+    });
+
+    it('initialises beats per minute from the saved tempo', () => {
+        mockGetSettings.mockReturnValue(settingsWith(84));
+        const { getByText } = render(<Tempo />);
+
+        expect(getByText('Beats per minute: 84')).toBeTruthy();
+    });
+
+    it('saves the current tempo when Play is pressed', () => {
+        mockGetSettings.mockReturnValue(settingsWith(96));
+        const { getByText } = render(<Tempo />);
+
+        fireEvent.press(getByText('Play'));
+
+        expect(mockSaveSettings).toHaveBeenCalledWith(
+            expect.objectContaining({ tempoBpm: 96 })
+        );
+    });
+
+    it('does not save the tempo when Stop is pressed', () => {
+        mockGetSettings.mockReturnValue(settingsWith(96));
+        const { getByText } = render(<Tempo />);
+
+        fireEvent.press(getByText('Play'));
+        mockSaveSettings.mockClear();
+        fireEvent.press(getByText('Stop'));
+
+        expect(mockSaveSettings).not.toHaveBeenCalled();
     });
 
     it('renders the tempo slider', () => {

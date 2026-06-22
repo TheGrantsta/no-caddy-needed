@@ -7,6 +7,7 @@ import Slider from '@react-native-community/slider';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { useOrientation } from '@/hooks/useOrientation';
+import { getSettingsService, saveSettingsService } from '@/service/DbService';
 
 export default function Tempo() {
     const colours = useThemeColours();
@@ -14,7 +15,7 @@ export default function Tempo() {
     const { landscapePadding } = useOrientation();
     const [refreshing, setRefreshing] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [tempo, setTempo] = useState(60);
+    const [tempo, setTempo] = useState(() => getSettingsService().tempoBpm);
     const player = useAudioPlayer(require('../../assets/single-beep.wav'));
     const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
@@ -71,6 +72,8 @@ export default function Tempo() {
         if (isPlaying) {
             await stopLoop();
         } else {
+            // Persist the chosen tempo so it's restored next time the screen opens.
+            saveSettingsService({ ...getSettingsService(), tempoBpm: tempo });
             await startLoop();
         }
     };
@@ -88,7 +91,7 @@ export default function Tempo() {
         setRefreshing(true);
 
         setTimeout(() => {
-            setTempo(60);
+            setTempo(getSettingsService().tempoBpm);
             setIsPlaying(false);
             stopLoop();
             setRefreshing(false);

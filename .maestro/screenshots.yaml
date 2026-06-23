@@ -260,6 +260,10 @@ appId: com.grantsta.golf.nocaddyneeded
     text: ".*Done.*"
     index: 0
 
+# Tap the System tab to show Notifications
+- tapOn:
+    id: "settings-tab-system"
+
 - extendedWaitUntil:
     visible: "Notifications"
     timeout: 5000

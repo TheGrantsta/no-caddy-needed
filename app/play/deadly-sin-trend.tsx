@@ -242,7 +242,6 @@ function SinTrendPage({ category, rounds, width }: { category: DeadlySinCategory
 export default function DeadlySinTrendScreen() {
     const { sinKey, filter } = useLocalSearchParams<{ sinKey: string; label: string; filter?: string }>();
     const styles = useStyles();
-    const s = styles.deadlySinTrend;
     const width = Dimensions.get('window').width;
 
     const allRounds = getAllDeadlySinsRoundsService();
@@ -277,12 +276,12 @@ export default function DeadlySinTrendScreen() {
                     <SinTrendPage category={item} rounds={rounds} width={width} />
                 )}
             />
-            <View testID="deadly-sin-trend-indicators" style={s.indicatorRow}>
+            <View testID="deadly-sin-trend-indicators" style={styles.pagerDotRow}>
                 {categories.map((c, i) => (
                     <View
                         key={c.key as string}
                         testID={`deadly-sin-trend-indicator-${i}`}
-                        style={[s.indicatorDot, i === activeIndex && s.indicatorDotActive]}
+                        style={[styles.pagerDot, i === activeIndex && styles.pagerDotActive]}
                     />
                 ))}
             </View>

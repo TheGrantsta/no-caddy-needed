@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { render, fireEvent, waitFor, within } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
 import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService, getAllRoundHistoryService } from '../../../service/DbService';
@@ -112,7 +113,7 @@ describe('Scorecard screen', () => {
         mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(1)]);
     });
 
-    it('renders scorecard heading', () => {
+    it('renders the scorecard page without a top heading', () => {
         mockGetRoundScorecard.mockReturnValue({
             round: { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '' },
             holes: [
@@ -122,9 +123,10 @@ describe('Scorecard screen', () => {
             ],
         });
 
-        const { getByText } = render(<ScorecardScreen />);
+        const { getByTestId, queryByText } = render(<ScorecardScreen />);
 
-        expect(getByText('Scorecard')).toBeTruthy();
+        expect(getByTestId('scorecard-page-1')).toBeTruthy();
+        expect(queryByText('Scorecard')).toBeNull();
     });
 
     it('shows course name when present on multiplayer scorecard', () => {
@@ -205,9 +207,8 @@ describe('Scorecard screen', () => {
     it('renders multiplayer scorecard when multiplayer data exists', () => {
         mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
-        const { getByText, getByTestId } = render(<ScorecardScreen />);
+        const { getByTestId } = render(<ScorecardScreen />);
 
-        expect(getByText('Scorecard')).toBeTruthy();
         expect(getByTestId('player-total-1')).toBeTruthy();
         expect(getByTestId('player-total-2')).toBeTruthy();
     });
@@ -865,6 +866,30 @@ describe('Scorecard screen', () => {
             const { getByTestId } = render(<ScorecardScreen />);
 
             expect(getByTestId('scorecard-page-1')).toBeTruthy();
+        });
+
+        it('renders one bottom indicator dot per round', () => {
+            mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getAllByTestId } = render(<ScorecardScreen />);
+
+            expect(getAllByTestId(/scorecard-indicator-/)).toHaveLength(3);
+        });
+
+        it('uses a red active dot and hollow (non-black-filled) inactive dots', () => {
+            const colours = require('../../../assets/colours').default;
+            mockParams = { roundId: '1' };
+            mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            // round '1' is at index 2 → the active dot
+            const active = StyleSheet.flatten(getByTestId('scorecard-indicator-2').props.style);
+            const inactive = StyleSheet.flatten(getByTestId('scorecard-indicator-0').props.style);
+
+            expect(active.backgroundColor).toBe(colours.red);
+            expect(inactive.backgroundColor).not.toBe(colours.black);
         });
 
         it('locks horizontal swiping while editing and unlocks on cancel', () => {

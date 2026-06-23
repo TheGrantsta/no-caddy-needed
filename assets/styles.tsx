@@ -225,7 +225,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 10,
             height: 10,
             borderRadius: 5,
-            backgroundColor: c.black,
+            backgroundColor: 'transparent',
             marginHorizontal: 5,
             borderColor: c.black,
             borderWidth: 1,
@@ -233,6 +233,28 @@ export const createStyles = (c: ThemeColours) => ({
         scrollActiveDot: {
             backgroundColor: c.red,
             borderColor: c.red,
+        },
+        // Shared swipe-pager dot indicators (used by the Deadly Sins trend pager and
+        // the scorecard pager) — hollow black-outlined dots with a filled red active dot.
+        pagerDotRow: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 14,
+        },
+        pagerDot: {
+            width: 10,
+            height: 10,
+            borderRadius: 5,
+            marginHorizontal: 5,
+            backgroundColor: 'transparent',
+            borderColor: c.black,
+            borderWidth: 1,
+        },
+        pagerDotActive: {
+            backgroundColor: c.red,
+            borderColor: c.red,
+            borderWidth: 1,
         },
         navGrid: {
             paddingHorizontal: 8,
@@ -1205,24 +1227,6 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 32,
             marginHorizontal: 16,
             textAlign: 'center',
-        },
-        indicatorRow: {
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingVertical: 14,
-        },
-        indicatorDot: {
-            width: 8,
-            height: 8,
-            borderRadius: 4,
-            marginHorizontal: 5,
-            backgroundColor: c.tertiary,
-            opacity: 0.4,
-        },
-        indicatorDotActive: {
-            backgroundColor: c.primary,
-            opacity: 1,
         },
     }),
 

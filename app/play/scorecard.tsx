@@ -439,17 +439,10 @@ export default function ScorecardScreen() {
     };
 
     return (
-        <GestureHandlerRootView style={styles.flexOne}>
-            <View style={styles.headerContainer}>
-                <Text style={[styles.headerText, styles.marginTop]}>Scorecard</Text>
-                {rounds.length > 0 && (
-                    <Text testID="scorecard-position" style={styles.subHeaderText}>
-                        Round {activeIndex + 1} of {rounds.length}
-                    </Text>
-                )}
-            </View>
+        <GestureHandlerRootView style={styles.scrollContainer}>
             <FlatList<Round>
                 testID="scorecard-pager"
+                style={styles.flexOne}
                 data={rounds}
                 keyExtractor={(r) => String(r.Id)}
                 horizontal
@@ -466,6 +459,17 @@ export default function ScorecardScreen() {
                     <ScorecardPage roundId={String(item.Id)} width={width} onEditingChange={handleEditingChange} />
                 )}
             />
+            {rounds.length > 1 && (
+                <View style={styles.pagerDotRow}>
+                    {rounds.map((r, i) => (
+                        <View
+                            key={String(r.Id)}
+                            testID={`scorecard-indicator-${i}`}
+                            style={[styles.pagerDot, i === activeIndex && styles.pagerDotActive]}
+                        />
+                    ))}
+                </View>
+            )}
         </GestureHandlerRootView>
     );
 }

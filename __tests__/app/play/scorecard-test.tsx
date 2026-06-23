@@ -941,6 +941,45 @@ describe('Scorecard screen', () => {
             expect(getAllByTestId(/scorecard-indicator-/)).toHaveLength(3);
         });
 
+        // History is newest-first; the pager covers only the most recent 10 rounds.
+        const fifteenRoundsNewestFirst = () =>
+            Array.from({ length: 15 }, (_, i) => makeHistoryRound(15 - i));
+
+        it('caps the pager to the 10 most recent rounds', () => {
+            mockParams = { roundId: '15' }; // newest, within the recent window
+            mockGetAllRoundHistory.mockReturnValue(fifteenRoundsNewestFirst());
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            const ids = getByTestId('scorecard-pager').props.data.map((r: { Id: number }) => r.Id);
+
+            expect(ids).toHaveLength(10);
+            expect(ids[0]).toBe(15); // newest
+            expect(ids[9]).toBe(6);  // 10th most recent
+        });
+
+        it('renders at most 10 indicator dots', () => {
+            mockParams = { roundId: '15' };
+            mockGetAllRoundHistory.mockReturnValue(fifteenRoundsNewestFirst());
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getAllByTestId } = render(<ScorecardScreen />);
+
+            expect(getAllByTestId(/scorecard-indicator-/)).toHaveLength(10);
+        });
+
+        it('opens an older round (beyond the recent 10) on its own with no dots', () => {
+            mockParams = { roundId: '1' }; // oldest, outside the recent window
+            mockGetAllRoundHistory.mockReturnValue(fifteenRoundsNewestFirst());
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, queryAllByTestId } = render(<ScorecardScreen />);
+
+            expect(getByTestId('scorecard-page-1')).toBeTruthy();
+            expect(getByTestId('scorecard-pager').props.data).toHaveLength(1);
+            expect(queryAllByTestId(/scorecard-indicator-/)).toHaveLength(0);
+        });
+
         it('uses a red active dot and hollow (non-black-filled) inactive dots', () => {
             const colours = require('../../../assets/colours').default;
             mockParams = { roundId: '1' };

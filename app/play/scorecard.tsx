@@ -39,6 +39,9 @@ const INITIAL_SINS: DeadlySinsValues = {
     penalties: false,
 };
 
+// The swipe pager covers the most recent rounds only (keeps the dot row readable).
+const MAX_PAGER_ROUNDS = 10;
+
 const SIN_LABELS: { key: keyof DeadlySinsValues; label: string }[] = [
     { key: 'troubleOffTee', label: 'Trouble off tee' },
     { key: 'penalties', label: 'Penalty' },
@@ -438,9 +441,9 @@ export default function ScorecardScreen() {
     const { roundId } = useLocalSearchParams<{ roundId: string }>();
     const width = Dimensions.get('window').width;
 
-    // Page across the round-history list, starting on the requested round. If that
-    // round isn't in the list (stale/empty history), fall back to showing it alone.
-    const history = getAllRoundHistoryService() ?? [];
+    // Page across only the most recent rounds (history is newest-first). Older rounds
+    // are rarely revisited, so tapping one from the history list opens it on its own.
+    const history = (getAllRoundHistoryService() ?? []).slice(0, MAX_PAGER_ROUNDS);
     const foundIndex = history.findIndex(r => String(r.Id) === roundId);
     const rounds: Round[] = foundIndex >= 0 ? history : [{ Id: Number(roundId) } as Round];
     const initialIndex = foundIndex >= 0 ? foundIndex : 0;

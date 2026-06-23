@@ -128,6 +128,31 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             margin: 5,
         },
+        largeButtonSecondary: {
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            borderColor: c.primary,
+            padding: 8,
+            borderRadius: 8,
+            width: '90%',
+            alignItems: 'center',
+            margin: 5,
+        },
+        buttonTextSecondary: {
+            color: c.primary,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        tertiaryLink: {
+            paddingVertical: 12,
+            alignItems: 'center',
+            margin: 5,
+        },
+        tertiaryLinkText: {
+            color: c.red,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
         mediumButton: {
             backgroundColor: c.primary,
             padding: 10,
@@ -491,6 +516,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         nineSection: {
             marginTop: 5,
+            marginBottom: 14,
         },
         nineHeader: {
             color: c.primary,

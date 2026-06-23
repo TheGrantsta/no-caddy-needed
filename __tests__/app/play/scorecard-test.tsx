@@ -838,6 +838,50 @@ describe('Scorecard screen', () => {
         });
     });
 
+    describe('Action button hierarchy', () => {
+        const colours = require('../../../assets/colours').default;
+
+        it('renders Analyse as the primary (green) action', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            const style = StyleSheet.flatten(getByTestId('analyse-round-button').props.style);
+
+            expect(style.backgroundColor).toBe(colours.primary);
+        });
+
+        it('renders Edit as a secondary outlined button when Analyse is shown', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            const style = StyleSheet.flatten(getByTestId('edit-scorecard-button').props.style);
+
+            expect(style.backgroundColor).not.toBe(colours.primary);
+            expect(style.borderWidth).toBeGreaterThan(0);
+        });
+
+        it('renders Delete as a quiet link, not a filled red block', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            const style = StyleSheet.flatten(getByTestId('delete-round-button').props.style);
+
+            expect(style.backgroundColor).not.toBe(colours.red);
+        });
+
+        it('makes Edit the primary action when Analyse is disabled', () => {
+            mockExtraConfig.analyseRoundEnabled = false;
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            const style = StyleSheet.flatten(getByTestId('edit-scorecard-button').props.style);
+
+            expect(style.backgroundColor).toBe(colours.primary);
+
+            mockExtraConfig.analyseRoundEnabled = true;
+        });
+    });
+
     describe('Round pager', () => {
         it('configures the pager with every round in history order', () => {
             mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);

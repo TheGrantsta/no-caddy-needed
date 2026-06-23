@@ -255,7 +255,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
 
     return (
         <View testID={`scorecard-page-${roundId}`} style={{ width }}>
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding, { flexGrow: 1, paddingBottom: 24 }]}>
                 {courseName && (
                     <View style={styles.headerContainer}>
                         <Text testID="scorecard-course-name" style={styles.subHeaderText}>
@@ -298,35 +298,14 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                             />
                         )}
 
-                        {!isEditing && !showDeleteConfirm && (
-                            <View style={styles.headerContainer}>
-                                <TouchableOpacity
-                                    testID="edit-scorecard-button"
-                                    style={styles.largeButton}
-                                    onPress={handleEdit}
-                                >
-                                    <Text style={styles.buttonText}>Edit</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-
-                        {!isEditing && !showDeleteConfirm && (
-                            <View style={styles.headerContainer}>
-                                <TouchableOpacity
-                                    testID="delete-round-button"
-                                    style={[styles.largeButton, { backgroundColor: colours.red }]}
-                                    onPress={handleDelete}
-                                >
-                                    <Text style={styles.buttonText}>Delete round</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
+                        {/* Action buttons sit at the bottom of the page (spacer fills the gap). */}
+                        {!isEditing && !showDeleteConfirm && <View style={{ flexGrow: 1 }} />}
 
                         {analyseRoundEnabled && !isEditing && !showDeleteConfirm && (
                             <View style={styles.headerContainer}>
                                 <TouchableOpacity
                                     testID="analyse-round-button"
-                                    style={[styles.largeButton, { backgroundColor: colours.tertiary }]}
+                                    style={styles.largeButton}
                                     onPress={async () => {
                                         const isPremium = await checkPremiumEntitlement();
                                         if (isPremium) {
@@ -337,6 +316,30 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                     }}
                                 >
                                     <Text style={styles.buttonText}>Analyse your round</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {!isEditing && !showDeleteConfirm && (
+                            <View style={styles.headerContainer}>
+                                <TouchableOpacity
+                                    testID="edit-scorecard-button"
+                                    style={analyseRoundEnabled ? styles.largeButtonSecondary : styles.largeButton}
+                                    onPress={handleEdit}
+                                >
+                                    <Text style={analyseRoundEnabled ? styles.buttonTextSecondary : styles.buttonText}>Edit</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {!isEditing && !showDeleteConfirm && (
+                            <View style={styles.headerContainer}>
+                                <TouchableOpacity
+                                    testID="delete-round-button"
+                                    style={styles.tertiaryLink}
+                                    onPress={handleDelete}
+                                >
+                                    <Text style={styles.tertiaryLinkText}>Delete round</Text>
                                 </TouchableOpacity>
                             </View>
                         )}

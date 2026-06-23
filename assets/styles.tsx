@@ -1206,6 +1206,24 @@ export const createStyles = (c: ThemeColours) => ({
             marginHorizontal: 16,
             textAlign: 'center',
         },
+        indicatorRow: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 14,
+        },
+        indicatorDot: {
+            width: 8,
+            height: 8,
+            borderRadius: 4,
+            marginHorizontal: 5,
+            backgroundColor: c.tertiary,
+            opacity: 0.4,
+        },
+        indicatorDotActive: {
+            backgroundColor: c.primary,
+            opacity: 1,
+        },
     }),
 
     drillStatsChart: StyleSheet.create({

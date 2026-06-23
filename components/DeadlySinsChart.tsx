@@ -3,28 +3,13 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColours } from '@/context/ThemeContext';
 import { DeadlySinsRound } from '@/service/DbService';
+import { sortDeadlySinsByFrequency } from '@/service/deadlySinCategories';
 import { useStyles } from '@/hooks/useStyles';
-
-type CategoryTotal = {
-    label: string;
-    key: keyof DeadlySinsRound;
-    count: number;
-};
 
 type Props = {
     rounds: DeadlySinsRound[];
     filter?: 'all' | 1 | 10;
 };
-
-const CATEGORY_LABELS: { key: keyof DeadlySinsRound; label: string }[] = [
-    { key: 'TroubleOffTee', label: 'Trouble off tee' },
-    { key: 'Penalties', label: 'Penalties' },
-    { key: 'ThreePutts', label: '3-putts' },
-    { key: 'BogeysInside9Iron', label: 'Bogeys inside 9-iron' },
-    { key: 'DoubleChips', label: 'Double chips' },
-    { key: 'DoubleBogeys', label: 'Double bogeys' },
-    { key: 'BogeysPar5', label: 'Bogeys on par 5' },
-];
 
 export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
     const styles = useStyles();
@@ -33,15 +18,7 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
     const [isOpen, setIsOpen] = useState(true);
     const router = useRouter();
 
-    const categories = useMemo((): CategoryTotal[] => {
-        const cats = CATEGORY_LABELS.map(({ key, label }) => ({
-            label,
-            key,
-            count: rounds.reduce((sum, round) => sum + (round[key] as number), 0),
-        }));
-        cats.sort((a, b) => b.count - a.count);
-        return cats;
-    }, [rounds]);
+    const categories = useMemo(() => sortDeadlySinsByFrequency(rounds), [rounds]);
 
     const maxCount = useMemo(() => Math.max(...categories.map(c => c.count)), [categories]);
 

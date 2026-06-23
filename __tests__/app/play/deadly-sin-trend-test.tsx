@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, within } from '@testing-library/react-native';
 import DeadlySinTrendScreen from '../../../app/play/deadly-sin-trend';
 import { getAllDeadlySinsRoundsService, DeadlySinsRound } from '../../../service/DbService';
 
@@ -37,6 +37,14 @@ jest.mock('expo-router', () => ({
 
 const mockGetAllDeadlySinsRoundsService = getAllDeadlySinsRoundsService as jest.Mock;
 
+// The screen is now a horizontal pager of all 7 sins; every page renders the same
+// chart testIDs. Scope the per-page assertions to the active sin's page so they stay
+// unambiguous. Defaults to the ThreePutts page (the default useLocalSearchParams mock).
+const renderPage = (pageKey = 'ThreePutts') => {
+    const utils = render(<DeadlySinTrendScreen />);
+    return within(utils.getByTestId(`deadly-sin-trend-page-${pageKey}`));
+};
+
 function makeRound(id: number, threePutts: number, date: string): DeadlySinsRound {
     return {
         Id: id,
@@ -61,7 +69,7 @@ describe('DeadlySinTrendScreen', () => {
     it('renders the sin label as heading', () => {
         mockGetAllDeadlySinsRoundsService.mockReturnValue([]);
 
-        const { getByTestId } = render(<DeadlySinTrendScreen />);
+        const { getByTestId } = renderPage();
 
         expect(getByTestId('deadly-sin-trend-heading').props.children).toBe('3-putts');
     });
@@ -69,7 +77,7 @@ describe('DeadlySinTrendScreen', () => {
     it('renders empty state when no rounds', () => {
         mockGetAllDeadlySinsRoundsService.mockReturnValue([]);
 
-        const { getByTestId } = render(<DeadlySinTrendScreen />);
+        const { getByTestId } = renderPage();
 
         expect(getByTestId('deadly-sin-trend-empty')).toBeTruthy();
     });
@@ -79,7 +87,7 @@ describe('DeadlySinTrendScreen', () => {
             makeRound(1, 2, '01/06'),
         ]);
 
-        const { getByTestId } = render(<DeadlySinTrendScreen />);
+        const { getByTestId } = renderPage();
 
         expect(getByTestId('deadly-sin-trend-chart')).toBeTruthy();
     });
@@ -91,7 +99,7 @@ describe('DeadlySinTrendScreen', () => {
             makeRound(1, 1, '01/06'),
         ]);
 
-        const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+        const { getAllByTestId } = renderPage();
 
         expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(3);
     });
@@ -103,7 +111,7 @@ describe('DeadlySinTrendScreen', () => {
             makeRound(1, 1, '01/06'),
         ]);
 
-        const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+        const { getAllByTestId } = renderPage();
 
         expect(getAllByTestId(/deadly-sin-trend-stem-/)).toHaveLength(3);
     });
@@ -115,7 +123,7 @@ describe('DeadlySinTrendScreen', () => {
             makeRound(1, 0, '01/06'),
         ]);
 
-        const { getByTestId } = render(<DeadlySinTrendScreen />);
+        const { getByTestId } = renderPage();
 
         expect(getByTestId('deadly-sin-trend-stem-0').props.style).toEqual(
             expect.arrayContaining([expect.objectContaining({ height: 0 })])
@@ -128,7 +136,7 @@ describe('DeadlySinTrendScreen', () => {
         );
         mockGetAllDeadlySinsRoundsService.mockReturnValue(manyRounds);
 
-        const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+        const { getAllByTestId } = renderPage();
 
         expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(20);
     });
@@ -139,7 +147,7 @@ describe('DeadlySinTrendScreen', () => {
             makeRound(1, 1, '01/06'),
         ]);
 
-        const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+        const { getAllByTestId } = renderPage();
 
         expect(getAllByTestId(/deadly-sin-trend-date-/)).toHaveLength(2);
     });
@@ -149,7 +157,7 @@ describe('DeadlySinTrendScreen', () => {
             makeRound(1, 2, '01/06'),
         ]);
 
-        const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+        const { getAllByTestId } = renderPage();
 
         expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(1);
     });
@@ -159,7 +167,7 @@ describe('DeadlySinTrendScreen', () => {
             makeRound(1, 2, '01/06'),
         ]);
 
-        const { getByTestId } = render(<DeadlySinTrendScreen />);
+        const { getByTestId } = renderPage();
 
         expect(getByTestId('deadly-sin-trend-y-axis')).toBeTruthy();
     });
@@ -169,7 +177,7 @@ describe('DeadlySinTrendScreen', () => {
             makeRound(1, 2, '01/06'),
         ]);
 
-        const { getByTestId } = render(<DeadlySinTrendScreen />);
+        const { getByTestId } = renderPage();
 
         expect(getByTestId('deadly-sin-trend-x-axis')).toBeTruthy();
     });
@@ -182,7 +190,7 @@ describe('DeadlySinTrendScreen', () => {
                 makeRound(1, 0, '01/06'),
             ]);
 
-            const { getByTestId } = render(<DeadlySinTrendScreen />);
+            const { getByTestId } = renderPage();
 
             expect(getByTestId('deadly-sin-trend-y-label-0').props.children).toBe(0);
             expect(getByTestId('deadly-sin-trend-y-label-3').props.children).toBe(3);
@@ -194,7 +202,7 @@ describe('DeadlySinTrendScreen', () => {
                 makeRound(1, 0, '01/06'),
             ]);
 
-            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+            const { getAllByTestId } = renderPage();
 
             // values 0, 1, 2
             expect(getAllByTestId(/deadly-sin-trend-y-label-/)).toHaveLength(3);
@@ -208,7 +216,7 @@ describe('DeadlySinTrendScreen', () => {
                 makeRound(1, 0, '01/06'),
             ]);
 
-            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+            const { getAllByTestId } = renderPage();
 
             // ticks at 0, 1, 2
             expect(getAllByTestId(/deadly-sin-trend-gridline-/)).toHaveLength(3);
@@ -223,7 +231,7 @@ describe('DeadlySinTrendScreen', () => {
                 makeRound(1, 1, '01/06'),
             ]);
 
-            const { queryAllByTestId } = render(<DeadlySinTrendScreen />);
+            const { queryAllByTestId } = renderPage();
 
             expect(queryAllByTestId(/deadly-sin-trend-trend-/)).toHaveLength(0);
         });
@@ -241,7 +249,7 @@ describe('DeadlySinTrendScreen', () => {
         it('renders a narrative summary when rounds exist', () => {
             mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([1, 2, 1]));
 
-            const { getByTestId } = render(<DeadlySinTrendScreen />);
+            const { getByTestId } = renderPage();
 
             expect(getByTestId('deadly-sin-trend-narrative')).toBeTruthy();
         });
@@ -249,7 +257,7 @@ describe('DeadlySinTrendScreen', () => {
         it('says trouble is trending down when recent rounds improve', () => {
             mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([3, 3, 1, 0]));
 
-            const { getByTestId } = render(<DeadlySinTrendScreen />);
+            const { getByTestId } = renderPage();
 
             expect(getByTestId('deadly-sin-trend-narrative').props.children).toContain('trending down');
         });
@@ -257,7 +265,7 @@ describe('DeadlySinTrendScreen', () => {
         it('says trouble is creeping up when recent rounds worsen', () => {
             mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([0, 0, 2, 3]));
 
-            const { getByTestId } = render(<DeadlySinTrendScreen />);
+            const { getByTestId } = renderPage();
 
             expect(getByTestId('deadly-sin-trend-narrative').props.children).toContain('creeping up');
         });
@@ -265,7 +273,7 @@ describe('DeadlySinTrendScreen', () => {
         it('says trouble is holding steady when flat', () => {
             mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([1, 1, 1, 1]));
 
-            const { getByTestId } = render(<DeadlySinTrendScreen />);
+            const { getByTestId } = renderPage();
 
             expect(getByTestId('deadly-sin-trend-narrative').props.children).toContain('holding steady');
         });
@@ -273,7 +281,7 @@ describe('DeadlySinTrendScreen', () => {
         it('celebrates a clean streak when there are no incidents', () => {
             mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([0, 0, 0]));
 
-            const { getByTestId } = render(<DeadlySinTrendScreen />);
+            const { getByTestId } = renderPage();
 
             expect(getByTestId('deadly-sin-trend-narrative').props.children).toContain('keep it up');
         });
@@ -281,7 +289,7 @@ describe('DeadlySinTrendScreen', () => {
         it('reports the count of clean rounds', () => {
             mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([0, 3, 0, 1]));
 
-            const { getByTestId } = render(<DeadlySinTrendScreen />);
+            const { getByTestId } = renderPage();
 
             expect(getByTestId('deadly-sin-trend-narrative').props.children).toContain('clean in 2 of 4');
         });
@@ -289,7 +297,7 @@ describe('DeadlySinTrendScreen', () => {
         it('summarises a single round', () => {
             mockGetAllDeadlySinsRoundsService.mockReturnValue(newestFirst([2]));
 
-            const { getByTestId } = render(<DeadlySinTrendScreen />);
+            const { getByTestId } = renderPage();
 
             expect(getByTestId('deadly-sin-trend-narrative').props.children).toContain('most recent round');
         });
@@ -302,7 +310,7 @@ describe('DeadlySinTrendScreen', () => {
             );
             mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
 
-            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+            const { getAllByTestId } = renderPage();
 
             const labels = getAllByTestId(/deadly-sin-trend-date-/);
             expect(labels.length).toBeLessThan(20);
@@ -315,7 +323,7 @@ describe('DeadlySinTrendScreen', () => {
             );
             mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
 
-            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+            const { getAllByTestId } = renderPage();
 
             const spans = getAllByTestId(/deadly-sin-trend-date-/)
                 .map((node) => {
@@ -335,7 +343,7 @@ describe('DeadlySinTrendScreen', () => {
             );
             mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
 
-            const { getByTestId } = render(<DeadlySinTrendScreen />);
+            const { getByTestId } = renderPage();
 
             // oldest (index 0) and newest (index 19) must be present
             expect(getByTestId('deadly-sin-trend-date-0')).toBeTruthy();
@@ -353,7 +361,7 @@ describe('DeadlySinTrendScreen', () => {
             const rounds = Array.from({ length: 5 }, (_, i) => makeRound(5 - i, i + 1, `${String(5 - i).padStart(2, '0')}/06`));
             mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
 
-            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+            const { getAllByTestId } = renderPage();
 
             expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(1);
         });
@@ -363,7 +371,7 @@ describe('DeadlySinTrendScreen', () => {
             const rounds = Array.from({ length: 15 }, (_, i) => makeRound(15 - i, i + 1, `${String(15 - i).padStart(2, '0')}/06`));
             mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
 
-            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+            const { getAllByTestId } = renderPage();
 
             expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(10);
         });
@@ -373,7 +381,7 @@ describe('DeadlySinTrendScreen', () => {
             const rounds = Array.from({ length: 25 }, (_, i) => makeRound(25 - i, i + 1, `${String(25 - i).padStart(2, '0')}/06`));
             mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
 
-            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+            const { getAllByTestId } = renderPage();
 
             expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(20);
         });
@@ -382,9 +390,55 @@ describe('DeadlySinTrendScreen', () => {
             const rounds = Array.from({ length: 25 }, (_, i) => makeRound(25 - i, i + 1, `${String(25 - i).padStart(2, '0')}/06`));
             mockGetAllDeadlySinsRoundsService.mockReturnValue(rounds);
 
-            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+            const { getAllByTestId } = renderPage();
 
             expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(20);
+        });
+    });
+
+    describe('swipe pager', () => {
+        it('renders one page per sin', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([makeRound(1, 2, '01/06')]);
+
+            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getAllByTestId(/deadly-sin-trend-page-/)).toHaveLength(7);
+        });
+
+        it('renders one indicator dot per sin', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([makeRound(1, 2, '01/06')]);
+
+            const { getAllByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getAllByTestId(/deadly-sin-trend-indicator-/)).toHaveLength(7);
+        });
+
+        it('starts on the page for the sinKey param', () => {
+            // Penalties highest, ThreePutts second → ThreePutts is at sorted index 1.
+            mockUseLocalSearchParams.mockReturnValue({ sinKey: 'ThreePutts', label: '3-putts' });
+            const round: DeadlySinsRound = {
+                Id: 1, ThreePutts: 2, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0,
+                DoubleChips: 0, TroubleOffTee: 0, Penalties: 5, Total: 7, RoundId: 1, Created_At: '01/06',
+            };
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([round]);
+
+            const { getByTestId } = render(<DeadlySinTrendScreen />);
+
+            expect(getByTestId('deadly-sin-trend-pager').props.initialScrollIndex).toBe(1);
+        });
+
+        it('orders pages by sin frequency (matching the bar chart)', () => {
+            const round: DeadlySinsRound = {
+                Id: 1, ThreePutts: 2, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0,
+                DoubleChips: 0, TroubleOffTee: 0, Penalties: 5, Total: 7, RoundId: 1, Created_At: '01/06',
+            };
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([round]);
+
+            const { getByTestId } = render(<DeadlySinTrendScreen />);
+            const orderedKeys = getByTestId('deadly-sin-trend-pager').props.data.map((c: { key: string }) => c.key);
+
+            expect(orderedKeys[0]).toBe('Penalties');
+            expect(orderedKeys[1]).toBe('ThreePutts');
         });
     });
 });

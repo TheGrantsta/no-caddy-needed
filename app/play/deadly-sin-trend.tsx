@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Dimensions, ScrollView, Text, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useLocalSearchParams } from 'expo-router';
 import { getAllDeadlySinsRoundsService, DeadlySinsRound } from '../../service/DbService';
+import { DeadlySinCategory, sortDeadlySinsByFrequency } from '../../service/deadlySinCategories';
 import { useStyles } from '../../hooks/useStyles';
 
 const CHART_HEIGHT = 200;
@@ -210,22 +211,17 @@ function BarChart({ rounds, sinKey }: BarChartProps) {
     );
 }
 
-export default function DeadlySinTrendScreen() {
-    const { sinKey, label, filter } = useLocalSearchParams<{ sinKey: string; label: string; filter?: string }>();
+// One full-screen-width page: heading + chart (or empty state) + narrative for a single sin.
+function SinTrendPage({ category, rounds, width }: { category: DeadlySinCategory; rounds: DeadlySinsRound[]; width: number }) {
     const styles = useStyles();
     const s = styles.deadlySinTrend;
-
-    const allRounds = getAllDeadlySinsRoundsService();
-    const limit = filter === '1' ? 1 : filter === '10' ? 10 : MAX_ROUNDS;
-    const rounds = allRounds.slice().reverse().slice(-limit);
-
-    const key = sinKey as keyof DeadlySinsRound;
-    const narrative = buildTrendNarrative(rounds.map(r => r[key] as number), label);
+    const key = category.key;
+    const narrative = buildTrendNarrative(rounds.map(r => r[key] as number), category.label);
 
     return (
-        <GestureHandlerRootView style={styles.scrollContainer}>
+        <View testID={`deadly-sin-trend-page-${key}`} style={{ width }}>
             <ScrollView contentContainerStyle={styles.scrollContentContainer}>
-                <Text testID="deadly-sin-trend-heading" style={s.heading}>{label}</Text>
+                <Text testID="deadly-sin-trend-heading" style={s.heading}>{category.label}</Text>
                 {rounds.length === 0 ? (
                     <Text testID="deadly-sin-trend-empty" style={s.emptyText}>
                         No rounds recorded yet
@@ -239,6 +235,57 @@ export default function DeadlySinTrendScreen() {
                     </>
                 )}
             </ScrollView>
+        </View>
+    );
+}
+
+export default function DeadlySinTrendScreen() {
+    const { sinKey, filter } = useLocalSearchParams<{ sinKey: string; label: string; filter?: string }>();
+    const styles = useStyles();
+    const s = styles.deadlySinTrend;
+    const width = Dimensions.get('window').width;
+
+    const allRounds = getAllDeadlySinsRoundsService();
+    const limit = filter === '1' ? 1 : filter === '10' ? 10 : MAX_ROUNDS;
+    const rounds = allRounds.slice().reverse().slice(-limit);
+
+    // Pages follow the same frequency order shown in the Deadly Sins bar chart.
+    const categories = sortDeadlySinsByFrequency(rounds);
+    const initialIndex = Math.max(0, categories.findIndex(c => c.key === sinKey));
+    const [activeIndex, setActiveIndex] = useState(initialIndex);
+    const listRef = useRef<FlatList<typeof categories[number]>>(null);
+
+    const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const index = Math.round(e.nativeEvent.contentOffset.x / width);
+        if (index !== activeIndex) setActiveIndex(index);
+    };
+
+    return (
+        <GestureHandlerRootView style={styles.scrollContainer}>
+            <FlatList
+                testID="deadly-sin-trend-pager"
+                ref={listRef}
+                data={categories}
+                keyExtractor={(c) => c.key as string}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                initialScrollIndex={initialIndex}
+                getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
+                onMomentumScrollEnd={onScroll}
+                renderItem={({ item }) => (
+                    <SinTrendPage category={item} rounds={rounds} width={width} />
+                )}
+            />
+            <View testID="deadly-sin-trend-indicators" style={s.indicatorRow}>
+                {categories.map((c, i) => (
+                    <View
+                        key={c.key as string}
+                        testID={`deadly-sin-trend-indicator-${i}`}
+                        style={[s.indicatorDot, i === activeIndex && s.indicatorDotActive]}
+                    />
+                ))}
+            </View>
         </GestureHandlerRootView>
     );
 }

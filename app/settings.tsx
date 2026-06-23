@@ -152,23 +152,26 @@ export default function Settings() {
           </View>
         </View>
 
-        <View style={styles.subMenu.subMenuContainer}>
-          {(['golf', 'system'] as const).map((g) => {
-            const isSelected = group === g;
-            const label = g === 'golf' ? 'Golf' : 'System';
-            return (
-              <View
-                key={g}
-                style={[styles.subMenu.subMenuItemContainer, isSelected ? styles.subMenu.subMenuItemContainerSelected : null]}
-              >
-                <TouchableOpacity testID={`settings-tab-${g}`} onPress={() => setGroup(g)}>
-                  <Text style={[styles.subMenu.subMenuItem, isSelected ? styles.subMenu.subMenuItemSelected : null]}>
-                    {label}
-                  </Text>
+        <View style={styles.segmentedControlWrapper}>
+          <View style={styles.segmentedControl}>
+            {([
+              { key: 'golf', label: 'Golf', icon: 'golf-course' },
+              { key: 'system', label: 'System', icon: 'phone-iphone' },
+            ] as const).map(({ key, label, icon }) => {
+              const isSelected = group === key;
+              return (
+                <TouchableOpacity
+                  key={key}
+                  testID={`settings-tab-${key}`}
+                  onPress={() => setGroup(key)}
+                  style={[styles.segment, isSelected ? styles.segmentSelected : null]}
+                >
+                  <MaterialIcons name={icon} size={22} color={isSelected ? colours.white : colours.tertiary} />
+                  <Text style={isSelected ? styles.segmentTextSelected : styles.segmentText}>{label}</Text>
                 </TouchableOpacity>
-              </View>
-            );
-          })}
+              );
+            })}
+          </View>
         </View>
 
         {group === 'system' && (<>

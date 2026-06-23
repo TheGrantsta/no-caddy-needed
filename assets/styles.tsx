@@ -114,6 +114,38 @@ export const createStyles = (c: ThemeColours) => ({
             borderWidth: 1,
             borderColor: c.primary + '33',
         },
+        // Segmented section switcher: full-width track with two equal segments, each an
+        // icon above its label; the selected segment is a filled green pill.
+        segmentedControlWrapper: {
+            paddingHorizontal: 16,
+            marginTop: 8,
+            marginBottom: 8,
+        },
+        segmentedControl: {
+            flexDirection: 'row',
+            backgroundColor: c.tertiary + '33',
+            borderRadius: 12,
+            padding: 4,
+        },
+        segment: {
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 10,
+            borderRadius: 9,
+            gap: 4,
+        },
+        segmentSelected: {
+            backgroundColor: c.primary,
+        },
+        segmentText: {
+            color: c.tertiary,
+            fontWeight: 'bold',
+        },
+        segmentTextSelected: {
+            color: c.white,
+            fontWeight: 'bold',
+        },
         buttonContainer: {
             margin: 8,
             alignItems: 'center',

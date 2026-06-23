@@ -839,7 +839,7 @@ describe('Scorecard screen', () => {
     });
 
     describe('Deadly sin dot', () => {
-        it('shows the actual sin name as a success-styled toast when tapped', () => {
+        it('shows the actual sin name as a danger-styled toast when tapped', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
             mockGetHolesWithSinsForRoundService.mockReturnValue(new Set([1]));
             mockGetHoleDeadlySinsService.mockReturnValue({
@@ -849,11 +849,11 @@ describe('Scorecard screen', () => {
 
             const { getByTestId } = render(<ScorecardScreen />);
 
-            fireEvent.press(getByTestId('sin-indicator-1'));
+            fireEvent.press(getByTestId('sin-cell-1-1'));
 
             expect(mockShow).toHaveBeenCalledWith(
                 expect.stringMatching(/3-putt/i),
-                expect.objectContaining({ type: 'success' })
+                expect.objectContaining({ type: 'danger' })
             );
         });
     });

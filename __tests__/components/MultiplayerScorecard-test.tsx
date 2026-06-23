@@ -638,7 +638,7 @@ describe('sin indicator dots', () => {
     });
 
     describe('sin dot meaning', () => {
-        it('calls onSinPress with the hole number when tapped (read-only)', () => {
+        it('calls onSinPress when the score cell (number + dot) is tapped in read-only mode', () => {
             const onSinPress = jest.fn();
             const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
 
@@ -646,19 +646,19 @@ describe('sin indicator dots', () => {
                 <Scorecard players={mockPlayers} holeScores={holeScores} sinHoles={new Set([1])} onSinPress={onSinPress} />
             );
 
-            fireEvent.press(getByTestId('sin-indicator-1'));
+            fireEvent.press(getByTestId('sin-cell-1-1'));
 
             expect(onSinPress).toHaveBeenCalledWith(1);
         });
 
-        it('labels the sin dot for accessibility', () => {
+        it('labels the tappable sin cell for accessibility', () => {
             const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
 
             const { getByTestId } = render(
                 <Scorecard players={mockPlayers} holeScores={holeScores} sinHoles={new Set([1])} />
             );
 
-            expect(getByTestId('sin-indicator-1').props.accessibilityLabel).toMatch(/deadly sin/i);
+            expect(getByTestId('sin-cell-1-1').props.accessibilityLabel).toMatch(/deadly sin/i);
         });
     });
 });

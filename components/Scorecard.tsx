@@ -126,22 +126,9 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                 );
 
                                 const hasSin = player.IsUser === 1 && sinHoles?.has(h);
-                                // Tappable in read-only mode (reveals which sin); plain dot while editing
-                                // so it doesn't fight score-cell selection.
-                                const sinDot = !hasSin
-                                    ? null
-                                    : editable
-                                        ? <View testID={`sin-indicator-${h}`} style={s.sinIndicatorDot} />
-                                        : (
-                                            <TouchableOpacity
-                                                testID={`sin-indicator-${h}`}
-                                                accessibilityLabel={SIN_HINT}
-                                                accessibilityRole="button"
-                                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                                                onPress={() => onSinPress?.(h)}
-                                                style={s.sinIndicatorDot}
-                                            />
-                                        );
+                                const sinDot = hasSin
+                                    ? <View testID={`sin-indicator-${h}`} style={s.sinIndicatorDot} />
+                                    : null;
 
                                 if (editable) {
                                     return (
@@ -150,6 +137,23 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                             testID={`score-cell-${h}-${player.Id}`}
                                             style={[s.holeCell, isSelected && s.selectedCell]}
                                             onPress={() => onScoreSelect?.(h, player.Id)}
+                                        >
+                                            {cellContent}
+                                            {sinDot}
+                                        </TouchableOpacity>
+                                    );
+                                }
+
+                                // Read-only: the whole cell (score + dot) reveals which sin was logged.
+                                if (hasSin) {
+                                    return (
+                                        <TouchableOpacity
+                                            key={h}
+                                            testID={`sin-cell-${h}-${player.Id}`}
+                                            accessibilityLabel={SIN_HINT}
+                                            accessibilityRole="button"
+                                            style={s.holeCell}
+                                            onPress={() => onSinPress?.(h)}
                                         >
                                             {cellContent}
                                             {sinDot}

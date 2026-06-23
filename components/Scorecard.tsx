@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
 import { RoundPlayer, RoundHoleScore } from '../service/DbService';
 import { useStyles } from '@/hooks/useStyles';
 
@@ -13,6 +12,7 @@ type Props = {
     selectedScore?: { holeNumber: number; playerId: number } | null;
     onScoreSelect?: (holeNumber: number, playerId: number) => void;
     sinHoles?: Set<number>;
+    onSinPress?: (holeNumber: number) => void;
 };
 
 const formatScore = (score: number): string => {
@@ -21,10 +21,9 @@ const formatScore = (score: number): string => {
     return `${score}`;
 };
 
-const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect, sinHoles }: Props) => {
+const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect, sinHoles, onSinPress }: Props) => {
     const styles = useStyles();
     const s = styles.scorecard;
-    const toast = useToast();
 
     const holeNumbers = useMemo(
         () => [...new Set(holeScores.map(sc => sc.HoleNumber))].sort((a, b) => a - b),
@@ -126,18 +125,23 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                     </View>
                                 );
 
-                                const sinDot = player.IsUser === 1 && sinHoles?.has(h)
-                                    ? (
-                                        <TouchableOpacity
-                                            testID={`sin-indicator-${h}`}
-                                            accessibilityLabel={SIN_HINT}
-                                            accessibilityRole="button"
-                                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                                            onPress={() => toast.show(SIN_HINT)}
-                                            style={s.sinIndicatorDot}
-                                        />
-                                    )
-                                    : null;
+                                const hasSin = player.IsUser === 1 && sinHoles?.has(h);
+                                // Tappable in read-only mode (reveals which sin); plain dot while editing
+                                // so it doesn't fight score-cell selection.
+                                const sinDot = !hasSin
+                                    ? null
+                                    : editable
+                                        ? <View testID={`sin-indicator-${h}`} style={s.sinIndicatorDot} />
+                                        : (
+                                            <TouchableOpacity
+                                                testID={`sin-indicator-${h}`}
+                                                accessibilityLabel={SIN_HINT}
+                                                accessibilityRole="button"
+                                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                                onPress={() => onSinPress?.(h)}
+                                                style={s.sinIndicatorDot}
+                                            />
+                                        );
 
                                 if (editable) {
                                     return (

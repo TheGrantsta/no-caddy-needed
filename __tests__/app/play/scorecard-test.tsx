@@ -838,6 +838,26 @@ describe('Scorecard screen', () => {
         });
     });
 
+    describe('Deadly sin dot', () => {
+        it('shows the actual sin name as a success-styled toast when tapped', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetHolesWithSinsForRoundService.mockReturnValue(new Set([1]));
+            mockGetHoleDeadlySinsService.mockReturnValue({
+                threePutts: true, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false,
+                doubleChips: false, troubleOffTee: false, penalties: false,
+            });
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('sin-indicator-1'));
+
+            expect(mockShow).toHaveBeenCalledWith(
+                expect.stringMatching(/3-putt/i),
+                expect.objectContaining({ type: 'success' })
+            );
+        });
+    });
+
     describe('Action button hierarchy', () => {
         const colours = require('../../../assets/colours').default;
 

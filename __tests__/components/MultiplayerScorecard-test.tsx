@@ -14,10 +14,6 @@ jest.mock('../../context/ThemeContext', () => ({
     }),
 }));
 
-const mockToastShow = jest.fn();
-jest.mock('react-native-toast-notifications', () => ({
-    useToast: () => ({ show: mockToastShow }),
-}));
 
 const mockRound: Round = {
     Id: 1,
@@ -241,7 +237,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('hole-number-1')).toHaveStyle({ fontSize: 20 });
+            expect(getByTestId('hole-number-1')).toHaveStyle({ fontSize: 17 });
         });
 
         it('uses same font size for par values as player scores', () => {
@@ -253,7 +249,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('hole-par-1')).toHaveStyle({ fontSize: 20 });
+            expect(getByTestId('hole-par-1')).toHaveStyle({ fontSize: 17 });
         });
     });
 
@@ -642,20 +638,17 @@ describe('sin indicator dots', () => {
     });
 
     describe('sin dot meaning', () => {
-        beforeEach(() => {
-            mockToastShow.mockClear();
-        });
-
-        it('shows what the red dot means when tapped', () => {
+        it('calls onSinPress with the hole number when tapped (read-only)', () => {
+            const onSinPress = jest.fn();
             const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
 
             const { getByTestId } = render(
-                <Scorecard players={mockPlayers} holeScores={holeScores} sinHoles={new Set([1])} />
+                <Scorecard players={mockPlayers} holeScores={holeScores} sinHoles={new Set([1])} onSinPress={onSinPress} />
             );
 
             fireEvent.press(getByTestId('sin-indicator-1'));
 
-            expect(mockToastShow).toHaveBeenCalledWith(expect.stringMatching(/deadly sin/i));
+            expect(onSinPress).toHaveBeenCalledWith(1);
         });
 
         it('labels the sin dot for accessibility', () => {

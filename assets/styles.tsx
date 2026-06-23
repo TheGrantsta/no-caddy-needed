@@ -539,33 +539,33 @@ export const createStyles = (c: ThemeColours) => ({
         },
         holeNumberText: {
             color: c.text,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.smallText,
         },
         nineLabel: {
             color: c.primary,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.smallText,
             fontWeight: 'bold',
         },
         parText: {
             color: c.text,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.smallText,
         },
         labelText: {
             color: c.text,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.smallText,
         },
         playerNameText: {
             color: c.text,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.smallText,
         },
         scoreText: {
             color: c.text,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.smallText,
             fontWeight: 'bold',
         },
         scoreMarker: {
-            width: 26,
-            height: 26,
+            width: 22,
+            height: 22,
             alignItems: 'center',
             justifyContent: 'center',
         },

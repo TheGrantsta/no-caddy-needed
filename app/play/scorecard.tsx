@@ -39,6 +39,16 @@ const INITIAL_SINS: DeadlySinsValues = {
     penalties: false,
 };
 
+const SIN_LABELS: { key: keyof DeadlySinsValues; label: string }[] = [
+    { key: 'troubleOffTee', label: 'Trouble off tee' },
+    { key: 'penalties', label: 'Penalty' },
+    { key: 'threePutts', label: '3-putt' },
+    { key: 'bogeysInside9Iron', label: 'Bogey inside 9-iron' },
+    { key: 'doubleChips', label: 'Double chip' },
+    { key: 'doubleBogeys', label: 'Double bogey' },
+    { key: 'bogeysPar5', label: 'Bogey on a par 5' },
+];
+
 type ScorecardPageProps = {
     roundId: string;
     width: number;
@@ -50,7 +60,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const { showResult } = useAppToast();
+    const { showResult, showSuccess } = useAppToast();
     const router = useRouter();
 
     const [multiplayerScorecard, setMultiplayerScorecard] = useState<MultiplayerRoundScorecard | null>(null);
@@ -119,6 +129,15 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     };
 
     const handleSinsChange = (values: DeadlySinsValues) => setEditedSins(values);
+
+    // Reveal which deadly sin(s) were logged on a hole when its dot is tapped.
+    const handleSinPress = (holeNumber: number) => {
+        const sins = getHoleDeadlySinsService(Number(roundId), holeNumber);
+        const names = sins ? SIN_LABELS.filter(({ key }) => sins[key]).map(({ label }) => label) : [];
+        showSuccess(names.length > 0
+            ? `Hole ${holeNumber}: ${names.join(', ')}`
+            : `Hole ${holeNumber}: deadly sin logged`);
+    };
 
     const getSelectedScoreValue = (): number => {
         if (!selectedScore) return 0;
@@ -272,6 +291,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                             selectedScore={selectedScore}
                             onScoreSelect={handleScoreSelect}
                             sinHoles={sinHoles}
+                            onSinPress={handleSinPress}
                         />
 
                         {isEditing && selectedScore && (

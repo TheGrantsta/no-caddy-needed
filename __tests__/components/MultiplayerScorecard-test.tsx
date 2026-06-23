@@ -652,7 +652,7 @@ describe('sin indicator dots', () => {
             expect(getByTestId('grid-player-2').props.numberOfLines).toBe(1);
         });
 
-        it('aligns the stroke and relative totals in fixed columns', () => {
+        it('right-aligns the stroke total and keeps the relative score in a fixed column', () => {
             const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
 
             const { getByTestId } = render(
@@ -661,8 +661,9 @@ describe('sin indicator dots', () => {
             const stroke = StyleSheet.flatten(getByTestId('round-player-1-total').props.style);
             const relative = StyleSheet.flatten(getByTestId('player-total-1').props.style);
 
-            expect(stroke.textAlign).toBe('center');
+            expect(stroke.textAlign).toBe('right');
             expect(relative.textAlign).toBe('right');
+            expect(typeof relative.width).toBe('number'); // fixed-width column
         });
     });
 

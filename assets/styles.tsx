@@ -516,11 +516,11 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         totalStrokeCol: {
-            flex: 1,
-            textAlign: 'center',
+            width: 56,
+            textAlign: 'right',
         },
         totalRelativeCol: {
-            width: 70,
+            width: 56,
             textAlign: 'right',
         },
         nineSection: {

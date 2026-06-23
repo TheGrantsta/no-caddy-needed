@@ -85,7 +85,7 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
 
                 <View style={s.gridRow}>
                     <View style={s.labelCell}>
-                        <Text style={s.labelText}>Par</Text>
+                        {/* <Text style={s.labelText}>Par</Text> */}
                     </View>
                     {holes.map(h => (
                         <View key={h} style={s.holeCell}>
@@ -209,13 +209,13 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                 <Text style={s.totalPlayerName}>{player.PlayerName}</Text>
                                 <Text
                                     testID={`round-player-${player.Id}-total`}
-                                    style={[s.totalScore, getScoreColor(strokeTotal, parTotal)]}
+                                    style={[s.totalScore, getScoreColor(strokeTotal, parTotal), { textAlign: 'right' }]}
                                 >
                                     {strokeTotal}
                                 </Text>
                                 <Text
                                     testID={`player-total-${player.Id}`}
-                                    style={[s.totalScore, getScoreColor(relativeTotal, 0)]}
+                                    style={[s.totalScore, getScoreColor(relativeTotal, 0), { textAlign: 'right' }]}
                                 >
                                     ({formatScore(relativeTotal)})
                                 </Text>

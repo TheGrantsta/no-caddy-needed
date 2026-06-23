@@ -78,7 +78,6 @@ export default function Play() {
     const [refreshing, setRefreshing] = useState(false);
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
     const [currentHole, setCurrentHole] = useState(1);
-    const [holeContributions, setHoleContributions] = useState<Record<number, number>>({});
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
     const [deadlySinsRounds, setDeadlySinsRounds] = useState<DeadlySinsRound[]>([]);
     const [section, setSection] = useState('play-score');
@@ -110,12 +109,6 @@ export default function Play() {
     const [preShotText, setPreShotText] = useState('');
     const scrollRef = useRef<ScrollView>(null);
     const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const runningTotal = useMemo(
-        () => Object.values(holeContributions).reduce((sum, c) => sum + c, 0),
-        [holeContributions]
-    );
-
     const localStyles = styles.playScreen;
     const isLastHole = currentHole >= 18;
 
@@ -248,7 +241,6 @@ export default function Play() {
             setActiveRoundId(roundId);
             setPlayers(roundPlayers);
             setCurrentHole(1);
-            setHoleContributions({});
             setCourseHolePars(getCourseHoleParsService(courseName));
             setActiveCourseName(courseName);
             const notes = loadCourseNotesService(courseName);
@@ -275,11 +267,6 @@ export default function Play() {
     const handlePreviousHole = () => {
         if (currentHole <= 1) return;
         const holeGoingBackTo = currentHole - 1;
-        setHoleContributions(prev => {
-            const next = { ...prev };
-            delete next[holeGoingBackTo];
-            return next;
-        });
         setCurrentNoteText(courseNotes[holeGoingBackTo] ?? '');
         setCurrentHole(prev => prev - 1);
         setCurrentHoleData(null);
@@ -298,12 +285,7 @@ export default function Play() {
             }
             setDeadlySinsValues(INITIAL_SINS);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            const userScore = scores.find(s => {
-                const player = players.find(p => p.Id === s.playerId);
-                return player && player.IsUser === 1;
-            });
-            const contribution = userScore ? userScore.score - holePar : 0;
-            setHoleContributions(prev => ({ ...prev, [holeNumber]: contribution }));
+
             setCurrentHoleData(null);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
             if (currentHole >= 18) {
@@ -339,7 +321,6 @@ export default function Play() {
     const resetToIdle = () => {
         setActiveRoundId(null);
         setCurrentHole(1);
-        setHoleContributions({});
         setSection('play-score');
         setDeadlySinsValues(INITIAL_SINS);
         setPlayers([]);

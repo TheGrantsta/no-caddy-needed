@@ -22,9 +22,9 @@ const ONBOARDING_STEPS = [
 
 // What's new for the current version — shown once per version to existing users.
 const WHATS_NEW = [
-  'Add wind indicator to Practice tools so it can be used at the range',
-  'Improved discoverability and readability of 7 Deadly Sins charts',
-  'Persist Tempo settings to avoid having to re-select beats per minute everytime',
+  'Enable swipping left and right through the 7 Deadly Sins charts',
+  'Enable swipping left and right through previously completed rounds',
+  'Clean up Settings page to group settings by type',
 ];
 
 const APP_VERSION = Constants.expoConfig?.version ?? '';

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
+import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import RoundScorecard from '../../components/RoundScorecard';
@@ -16,17 +16,18 @@ import {
     replaceHoleDeadlySinsService,
     getHolesWithSinsForRoundService,
     loadCourseNotesService,
+    getAllRoundHistoryService,
     RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
     DeadlySinsValues,
+    Round,
 } from '../../service/DbService';
 import Constants from 'expo-constants';
 import { checkPremiumEntitlement } from '../../service/SubscriptionService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
-import fontSizes from '@/assets/font-sizes';
 
 const INITIAL_SINS: DeadlySinsValues = {
     threePutts: false,
@@ -38,17 +39,23 @@ const INITIAL_SINS: DeadlySinsValues = {
     penalties: false,
 };
 
-export default function ScorecardScreen() {
+type ScorecardPageProps = {
+    roundId: string;
+    width: number;
+    onEditingChange: (roundId: string, isEditing: boolean) => void;
+};
+
+// One full-width page: a single round's scorecard, with its own edit/delete state.
+function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) {
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const { roundId } = useLocalSearchParams<{ roundId: string }>();
     const { showResult } = useAppToast();
     const router = useRouter();
 
     const [multiplayerScorecard, setMultiplayerScorecard] = useState<MultiplayerRoundScorecard | null>(null);
     const [scorecard, setScorecard] = useState<RoundScorecardType | null>(null);
-    const [courseNotes, setCourseNotes] = useState<Record<number, string>>({});
+    const [, setCourseNotes] = useState<Record<number, string>>({});
     const [isEditing, setIsEditing] = useState(false);
     const [editedScores, setEditedScores] = useState<RoundHoleScore[]>([]);
     const [selectedScore, setSelectedScore] = useState<{ holeNumber: number; playerId: number } | null>(null);
@@ -62,6 +69,11 @@ export default function ScorecardScreen() {
     useEffect(() => {
         loadData();
     }, []);
+
+    // Report edit state up so the pager can lock horizontal swiping during edits.
+    useEffect(() => {
+        onEditingChange(roundId, isEditing);
+    }, [isEditing, roundId, onEditingChange]);
 
     const loadData = () => {
         const mp = getMultiplayerScorecardService(Number(roundId));
@@ -231,27 +243,26 @@ export default function ScorecardScreen() {
 
     if (!multiplayerScorecard && !scorecard) {
         return (
-            <GestureHandlerRootView style={styles.flexOne}>
+            <View testID={`scorecard-page-${roundId}`} style={{ width }}>
                 <View style={styles.headerContainer}>
                     <Text style={[styles.headerText, styles.marginTop]}>Round not found</Text>
                 </View>
-            </GestureHandlerRootView>
+            </View>
         );
     }
 
     const displayScores = isEditing ? editedScores : multiplayerScorecard?.holeScores || [];
 
     return (
-        <GestureHandlerRootView style={styles.flexOne}>
+        <View testID={`scorecard-page-${roundId}`} style={{ width }}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
-                <View style={styles.headerContainer}>
-                    <Text style={[styles.headerText, styles.marginTop]}>Scorecard</Text>
-                    {courseName && (
+                {courseName && (
+                    <View style={styles.headerContainer}>
                         <Text testID="scorecard-course-name" style={styles.subHeaderText}>
                             {round?.Created_At ? `${courseName} (${round.Created_At})` : courseName}
                         </Text>
-                    )}
-                </View>
+                    </View>
+                )}
                 {multiplayerScorecard && (
                     <>
                         <Scorecard
@@ -395,6 +406,66 @@ export default function ScorecardScreen() {
                     />
                 )}
             </ScrollView>
+        </View>
+    );
+}
+
+export default function ScorecardScreen() {
+    const styles = useStyles();
+    const { roundId } = useLocalSearchParams<{ roundId: string }>();
+    const width = Dimensions.get('window').width;
+
+    // Page across the round-history list, starting on the requested round. If that
+    // round isn't in the list (stale/empty history), fall back to showing it alone.
+    const history = getAllRoundHistoryService() ?? [];
+    const foundIndex = history.findIndex(r => String(r.Id) === roundId);
+    const rounds: Round[] = foundIndex >= 0 ? history : [{ Id: Number(roundId) } as Round];
+    const initialIndex = foundIndex >= 0 ? foundIndex : 0;
+    const [activeIndex, setActiveIndex] = useState(initialIndex);
+    const [editingIds, setEditingIds] = useState<Set<string>>(() => new Set());
+
+    const handleEditingChange = useCallback((id: string, isEditing: boolean) => {
+        setEditingIds(prev => {
+            if (isEditing === prev.has(id)) return prev;
+            const next = new Set(prev);
+            if (isEditing) next.add(id); else next.delete(id);
+            return next;
+        });
+    }, []);
+
+    const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const index = Math.round(e.nativeEvent.contentOffset.x / width);
+        if (index !== activeIndex) setActiveIndex(index);
+    };
+
+    return (
+        <GestureHandlerRootView style={styles.flexOne}>
+            <View style={styles.headerContainer}>
+                <Text style={[styles.headerText, styles.marginTop]}>Scorecard</Text>
+                {rounds.length > 0 && (
+                    <Text testID="scorecard-position" style={styles.subHeaderText}>
+                        Round {activeIndex + 1} of {rounds.length}
+                    </Text>
+                )}
+            </View>
+            <FlatList<Round>
+                testID="scorecard-pager"
+                data={rounds}
+                keyExtractor={(r) => String(r.Id)}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                scrollEnabled={editingIds.size === 0}
+                initialScrollIndex={initialIndex}
+                getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
+                initialNumToRender={1}
+                maxToRenderPerBatch={2}
+                windowSize={3}
+                onMomentumScrollEnd={onScroll}
+                renderItem={({ item }) => (
+                    <ScorecardPage roundId={String(item.Id)} width={width} onEditingChange={handleEditingChange} />
+                )}
+            />
         </GestureHandlerRootView>
     );
 }

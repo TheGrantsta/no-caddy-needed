@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, within } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService } from '../../../service/DbService';
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService, getAllRoundHistoryService } from '../../../service/DbService';
 import { checkPremiumEntitlement } from '../../../service/SubscriptionService';
 
 jest.mock('../../../service/SubscriptionService', () => ({
@@ -45,10 +45,12 @@ jest.mock('../../../service/DbService', () => ({
     replaceHoleDeadlySinsService: jest.fn().mockResolvedValue(true),
     getHolesWithSinsForRoundService: jest.fn(),
     loadCourseNotesService: jest.fn().mockReturnValue({}),
+    getAllRoundHistoryService: jest.fn(),
 }));
 
+let mockParams: { roundId: string } = { roundId: '1' };
 jest.mock('expo-router', () => ({
-    useLocalSearchParams: () => ({ roundId: '1' }),
+    useLocalSearchParams: () => mockParams,
     useRouter: () => ({
         back: mockBack,
         push: mockPush,
@@ -80,6 +82,11 @@ const mockGetHoleDeadlySinsService = getHoleDeadlySinsService as jest.Mock;
 const mockReplaceHoleDeadlySinsService = replaceHoleDeadlySinsService as jest.Mock;
 const mockGetHolesWithSinsForRoundService = getHolesWithSinsForRoundService as jest.Mock;
 const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
+const mockGetAllRoundHistory = getAllRoundHistoryService as jest.Mock;
+
+const makeHistoryRound = (id: number) => ({
+    Id: id, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '',
+});
 
 const multiplayerData = {
     round: { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '' },
@@ -96,10 +103,13 @@ const multiplayerData = {
 describe('Scorecard screen', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        mockParams = { roundId: '1' };
         mockGetMultiplayerScorecard.mockReturnValue(null);
         mockGetHoleDeadlySinsService.mockReturnValue(null);
         mockReplaceHoleDeadlySinsService.mockResolvedValue(true);
         mockGetHolesWithSinsForRoundService.mockReturnValue(new Set());
+        // Default to a single round (= the param round) so each existing test renders one page.
+        mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(1)]);
     });
 
     it('renders scorecard heading', () => {
@@ -824,6 +834,50 @@ describe('Scorecard screen', () => {
             expect(queryByTestId('analyse-round-button')).toBeNull();
 
             mockExtraConfig.analyseRoundEnabled = true;
+        });
+    });
+
+    describe('Round pager', () => {
+        it('configures the pager with every round in history order', () => {
+            mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            const ids = getByTestId('scorecard-pager').props.data.map((r: { Id: number }) => r.Id);
+
+            expect(ids).toEqual([3, 2, 1]);
+        });
+
+        it('starts on the page for the roundId param', () => {
+            mockParams = { roundId: '2' };
+            mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            // round 2 is at index 1 in the history list
+            expect(getByTestId('scorecard-pager').props.initialScrollIndex).toBe(1);
+        });
+
+        it('renders the active round as a page', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            expect(getByTestId('scorecard-page-1')).toBeTruthy();
+        });
+
+        it('locks horizontal swiping while editing and unlocks on cancel', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            expect(getByTestId('scorecard-pager').props.scrollEnabled).toBe(true);
+
+            fireEvent.press(within(getByTestId('scorecard-page-1')).getByTestId('edit-scorecard-button'));
+            expect(getByTestId('scorecard-pager').props.scrollEnabled).toBe(false);
+
+            fireEvent.press(within(getByTestId('scorecard-page-1')).getByTestId('cancel-edit-button'));
+            expect(getByTestId('scorecard-pager').props.scrollEnabled).toBe(true);
         });
     });
 });

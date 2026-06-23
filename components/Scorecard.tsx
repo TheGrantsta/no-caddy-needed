@@ -1,7 +1,10 @@
 import { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
 import { RoundPlayer, RoundHoleScore } from '../service/DbService';
 import { useStyles } from '@/hooks/useStyles';
+
+const SIN_HINT = 'Deadly sin logged on this hole';
 
 type Props = {
     players: RoundPlayer[];
@@ -21,6 +24,7 @@ const formatScore = (score: number): string => {
 const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect, sinHoles }: Props) => {
     const styles = useStyles();
     const s = styles.scorecard;
+    const toast = useToast();
 
     const holeNumbers = useMemo(
         () => [...new Set(holeScores.map(sc => sc.HoleNumber))].sort((a, b) => a - b),
@@ -105,17 +109,34 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                 const score = getPlayerScoreForHole(player.Id, h);
                                 const par = getHolePar(h);
                                 const isSelected = selectedScore?.holeNumber === h && selectedScore?.playerId === player.Id;
+                                const diff = score !== null ? score - par : null;
+                                // Circle birdies/eagles, square bogeys+ — a standard scorecard convention
+                                // that also encodes the result by shape, not colour alone.
+                                const markerStyle = diff === null || diff === 0
+                                    ? null
+                                    : diff < 0 ? s.birdieMarker : s.bogeyMarker;
                                 const cellContent = (
-                                    <Text
-                                        testID={`hole-${h}-player-${player.Id}-score`}
-                                        style={[s.scoreText, score !== null ? getScoreColor(score, par) : undefined]}
-                                    >
-                                        {score !== null ? score : '-'}
-                                    </Text>
+                                    <View testID={`score-marker-${h}-${player.Id}`} style={[s.scoreMarker, markerStyle]}>
+                                        <Text
+                                            testID={`hole-${h}-player-${player.Id}-score`}
+                                            style={[s.scoreText, score !== null ? getScoreColor(score, par) : undefined]}
+                                        >
+                                            {score !== null ? score : '-'}
+                                        </Text>
+                                    </View>
                                 );
 
                                 const sinDot = player.IsUser === 1 && sinHoles?.has(h)
-                                    ? <View testID={`sin-indicator-${h}`} style={s.sinIndicatorDot} />
+                                    ? (
+                                        <TouchableOpacity
+                                            testID={`sin-indicator-${h}`}
+                                            accessibilityLabel={SIN_HINT}
+                                            accessibilityRole="button"
+                                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                            onPress={() => toast.show(SIN_HINT)}
+                                            style={s.sinIndicatorDot}
+                                        />
+                                    )
                                     : null;
 
                                 if (editable) {
@@ -195,6 +216,7 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                     })}
                 </View>
             )}
+
         </View>
     );
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
 import Scorecard from '../../components/Scorecard';
 import { Round, RoundPlayer, RoundHoleScore } from '../../service/DbService';
@@ -11,6 +12,11 @@ jest.mock('../../context/ThemeContext', () => ({
         toggleTheme: jest.fn(),
         setTheme: jest.fn(),
     }),
+}));
+
+const mockToastShow = jest.fn();
+jest.mock('react-native-toast-notifications', () => ({
+    useToast: () => ({ show: mockToastShow }),
 }));
 
 const mockRound: Round = {
@@ -583,5 +589,83 @@ describe('sin indicator dots', () => {
 
         expect(queryByTestId('sin-indicator-1')).toBeNull();
         expect(queryByTestId('sin-indicator-2')).toBeNull();
+    });
+
+    describe('score markers (birdie/bogey shapes)', () => {
+        it('draws a circle around an under-par score', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [3, 4] }]);
+
+            const { getByTestId } = render(
+                <Scorecard players={mockPlayers} holeScores={holeScores} />
+            );
+            const style = StyleSheet.flatten(getByTestId('score-marker-1-1').props.style);
+
+            expect(style.borderWidth).toBeGreaterThan(0);
+            expect(style.borderRadius).toBeGreaterThanOrEqual(style.width / 2); // full circle
+        });
+
+        it('draws a square around an over-par score', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [5, 4] }]);
+
+            const { getByTestId } = render(
+                <Scorecard players={mockPlayers} holeScores={holeScores} />
+            );
+            const style = StyleSheet.flatten(getByTestId('score-marker-1-1').props.style);
+
+            expect(style.borderWidth).toBeGreaterThan(0);
+            expect(style.borderRadius).toBeLessThan(style.width / 2); // square (not a circle)
+        });
+
+        it('draws no marker around a par score', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+
+            const { getByTestId } = render(
+                <Scorecard players={mockPlayers} holeScores={holeScores} />
+            );
+            const style = StyleSheet.flatten(getByTestId('score-marker-1-1').props.style);
+
+            expect(style.borderWidth).toBeFalsy();
+        });
+    });
+
+    describe('no legend', () => {
+        it('does not render a birdie/bogey legend', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+
+            const { queryByText } = render(
+                <Scorecard players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(queryByText('Birdie+')).toBeNull();
+            expect(queryByText('Bogey+')).toBeNull();
+        });
+    });
+
+    describe('sin dot meaning', () => {
+        beforeEach(() => {
+            mockToastShow.mockClear();
+        });
+
+        it('shows what the red dot means when tapped', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+
+            const { getByTestId } = render(
+                <Scorecard players={mockPlayers} holeScores={holeScores} sinHoles={new Set([1])} />
+            );
+
+            fireEvent.press(getByTestId('sin-indicator-1'));
+
+            expect(mockToastShow).toHaveBeenCalledWith(expect.stringMatching(/deadly sin/i));
+        });
+
+        it('labels the sin dot for accessibility', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+
+            const { getByTestId } = render(
+                <Scorecard players={mockPlayers} holeScores={holeScores} sinHoles={new Set([1])} />
+            );
+
+            expect(getByTestId('sin-indicator-1').props.accessibilityLabel).toMatch(/deadly sin/i);
+        });
     });
 });

@@ -563,6 +563,22 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
+        scoreMarker: {
+            width: 26,
+            height: 26,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        birdieMarker: {
+            borderWidth: 1.5,
+            borderColor: c.green,
+            borderRadius: 13,
+        },
+        bogeyMarker: {
+            borderWidth: 1.5,
+            borderColor: c.errorText,
+            borderRadius: 3,
+        },
         underParText: {
             color: c.green,
         },

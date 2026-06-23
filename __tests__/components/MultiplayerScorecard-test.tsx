@@ -85,7 +85,7 @@ describe('Scorecard', () => {
             <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
-        expect(getByText('Front 9')).toBeTruthy();
+        expect(getByText('Out')).toBeTruthy();
     });
 
     it('shows back 9 section when holes > 9 exist', () => {
@@ -97,7 +97,7 @@ describe('Scorecard', () => {
             <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
         );
 
-        expect(getByText('Back 9')).toBeTruthy();
+        expect(getByText('In')).toBeTruthy();
     });
 
     it('shows hole numbers in grid', () => {
@@ -208,8 +208,8 @@ describe('Scorecard', () => {
             <Scorecard round={mockRound} players={mockPlayers} holeScores={[]} />
         );
 
-        expect(queryByText('Front 9')).toBeNull();
-        expect(queryByText('Back 9')).toBeNull();
+        expect(queryByText('Out')).toBeNull();
+        expect(queryByText('In')).toBeNull();
     });
 
     it('shows even par total as E', () => {

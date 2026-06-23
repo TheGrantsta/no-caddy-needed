@@ -515,6 +515,11 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.text,
             fontSize: fontSizes.normal,
         },
+        nineLabel: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
         parText: {
             color: c.text,
             fontSize: fontSizes.normal,

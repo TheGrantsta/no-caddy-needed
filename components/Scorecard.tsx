@@ -61,13 +61,15 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
         return holes.reduce((sum, h) => sum + getHolePar(h), 0);
     };
 
-    const renderHoleGrid = (holes: number[], nineLabel: string) => {
+    const renderHoleGrid = (holes: number[], nineLabel: string, title: string) => {
         const parTotal = getParTotalForHoles(holes);
 
         return (
             <View>
                 <View style={s.gridRow}>
-                    <View style={s.labelCell} />
+                    <View style={s.labelCell}>
+                        <Text style={s.nineLabel}>{title}</Text>
+                    </View>
                     {holes.map(h => (
                         <View key={h} style={s.holeCell}>
                             <Text testID={`hole-number-${h}`} style={s.holeNumberText}>{h}</Text>
@@ -156,15 +158,13 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
         <View style={s.container}>
             {front9Holes.length > 0 && (
                 <View style={s.nineSection}>
-                    <Text style={s.nineHeader}>Front 9</Text>
-                    {renderHoleGrid(front9Holes, 'front9')}
+                    {renderHoleGrid(front9Holes, 'front9', 'Out')}
                 </View>
             )}
 
             {back9Holes.length > 0 && (
                 <View style={s.nineSection}>
-                    <Text style={s.nineHeader}>Back 9</Text>
-                    {renderHoleGrid(back9Holes, 'back9')}
+                    {renderHoleGrid(back9Holes, 'back9', 'In')}
                 </View>
             )}
 

@@ -1495,7 +1495,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         endRoundLink: {
-            color: c.primary,
+            color: c.red,
             fontSize: fontSizes.normal,
         },
         confirmContainer: {

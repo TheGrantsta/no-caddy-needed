@@ -128,7 +128,7 @@ jest.mock('expo-haptics', () => ({
 
 const mockPush = jest.fn();
 const mockSetOptions = jest.fn();
-let capturedFocusEffect: () => void = () => {};
+let capturedFocusEffect: () => void = () => { };
 jest.mock('expo-router', () => {
     const React = require('react');
     const { View } = require('react-native');
@@ -464,7 +464,7 @@ describe('Play screen', () => {
                 const endRoundText = UNSAFE_getByProps({ testID: 'end-incomplete-round-link' });
                 const textChild = endRoundText.findByProps({ children: 'End round' });
                 const colours = require('../../assets/colours').default;
-                expect(textChild.props.style).toEqual(expect.objectContaining({ color: colours.primary }));
+                expect(textChild.props.style).toEqual(expect.objectContaining({ color: colours.red }));
             });
         });
     });
@@ -812,15 +812,14 @@ describe('Play screen', () => {
             expect(style.borderColor).toBe(colours.background);
         });
 
-        it('renders End round in the primary colour, not red', async () => {
+        it('renders End round in red', async () => {
             const colours = require('../../assets/colours').default;
             const utils = render(<Play />);
             await startRound(utils);
 
             const endRoundText = utils.UNSAFE_getByProps({ testID: 'end-round-button' })
                 .findByProps({ children: 'End round' });
-            expect(endRoundText.props.style).toEqual(expect.objectContaining({ color: colours.primary }));
-            expect(endRoundText.props.style).not.toEqual(expect.objectContaining({ color: colours.red }));
+            expect(endRoundText.props.style).toEqual(expect.objectContaining({ color: colours.red }));
         });
 
         it('hides the Previous hole button on the first hole', async () => {

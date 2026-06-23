@@ -46,6 +46,7 @@ export default function Settings() {
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [routineText, setRoutineText] = useState(settings.preShotRoutineText);
   const [showOnboarding, setShowOnboarding] = useState(!settings.settingsOnboardingSeen);
+  const [group, setGroup] = useState<'golf' | 'system'>('golf');
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -142,17 +143,35 @@ export default function Settings() {
   return (
     <GestureHandlerRootView style={styles.flexOne}>
       <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding, { flexGrow: 1 }]}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <View style={styles.titleRow}>
-              <TouchableOpacity testID="settings-info-button" onPress={handleShowOnboarding}>
-                <MaterialIcons name="info-outline" size={26} color={colours.primary} />
-              </TouchableOpacity>
-              <Text style={[styles.headerText, styles.marginTop]}>Settings</Text>
-            </View>
+        <View style={styles.header}>
+          <View style={styles.titleRow}>
+            <TouchableOpacity testID="settings-info-button" onPress={handleShowOnboarding}>
+              <MaterialIcons name="info-outline" size={26} color={colours.primary} />
+            </TouchableOpacity>
+            <Text style={[styles.headerText, styles.marginTop]}>Settings</Text>
           </View>
         </View>
 
+        <View style={styles.subMenu.subMenuContainer}>
+          {(['golf', 'system'] as const).map((g) => {
+            const isSelected = group === g;
+            const label = g === 'golf' ? 'Golf' : 'System';
+            return (
+              <View
+                key={g}
+                style={[styles.subMenu.subMenuItemContainer, isSelected ? styles.subMenu.subMenuItemContainerSelected : null]}
+              >
+                <TouchableOpacity testID={`settings-tab-${g}`} onPress={() => setGroup(g)}>
+                  <Text style={[styles.subMenu.subMenuItem, isSelected ? styles.subMenu.subMenuItemSelected : null]}>
+                    {label}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            );
+          })}
+        </View>
+
+        {group === 'system' && (<>
         <View style={styles.contentSection}>
           <View style={styles.headerContainer}>
             <Text style={[styles.subHeaderText, { padding: 0 }]}>Notifications</Text>
@@ -221,7 +240,9 @@ export default function Settings() {
             })}
           </View>
         </View>
+        </>)}
 
+        {group === 'golf' && (<>
         <View style={styles.contentSection}>
           <View style={styles.headerContainer}>
             <Text style={[styles.subHeaderText, { padding: 0 }]}>Practice</Text>
@@ -285,8 +306,11 @@ export default function Settings() {
             </View>
           )}
         </View>
+        </>)}
 
-        <View style={{ alignItems: 'center', paddingVertical: 20, marginTop: 'auto' }}>
+        <View style={[styles.divider, { marginTop: 'auto' }]} />
+
+        <View style={{ alignItems: 'center', paddingVertical: 20 }}>
           <TouchableOpacity
             testID="rate-app-button"
             style={styles.largeButton}
@@ -296,7 +320,7 @@ export default function Settings() {
           </TouchableOpacity>
         </View>
 
-        <View style={{ alignItems: 'center', paddingVertical: 20, marginTop: 'auto' }}>
+        <View style={{ alignItems: 'center', paddingBottom: 20 }}>
           <Text style={styles.normalText}>
             Version {Constants.expoConfig?.version}
           </Text>

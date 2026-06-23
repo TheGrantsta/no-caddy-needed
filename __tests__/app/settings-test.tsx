@@ -56,6 +56,13 @@ describe('Settings page', () => {
         mockSaveSettingsService.mockResolvedValue(true);
     });
 
+    // System settings live behind the "System" tab (the page defaults to Golf).
+    const renderSystem = () => {
+        const utils = render(<Settings />);
+        fireEvent.press(utils.getByTestId('settings-tab-system'));
+        return utils;
+    };
+
     it('renders page title', () => {
         const { getByText } = render(<Settings />);
 
@@ -69,6 +76,42 @@ describe('Settings page', () => {
         expect(getByText('Rate my app')).toBeTruthy();
     });
 
+    it('renders the Golf and System group tabs', () => {
+        const { getByTestId } = render(<Settings />);
+
+        expect(getByTestId('settings-tab-golf')).toBeTruthy();
+        expect(getByTestId('settings-tab-system')).toBeTruthy();
+    });
+
+    it('defaults to the Golf group (Practice visible, System settings hidden)', () => {
+        const { getByText, queryByText } = render(<Settings />);
+
+        expect(getByText('Practice')).toBeTruthy();
+        expect(queryByText('Notifications')).toBeNull();
+    });
+
+    it('switches to the System group when its tab is pressed', () => {
+        const { getByTestId, getByText, queryByText } = render(<Settings />);
+
+        fireEvent.press(getByTestId('settings-tab-system'));
+
+        expect(getByText('Notifications')).toBeTruthy();
+        expect(queryByText('Practice')).toBeNull();
+    });
+
+    it('keeps Rate my app and version outside the groups (visible on both tabs)', () => {
+        const { getByTestId, getByText } = render(<Settings />);
+
+        // Golf (default)
+        expect(getByText('Rate my app')).toBeTruthy();
+        expect(getByText('Version 1.2.3')).toBeTruthy();
+
+        // System
+        fireEvent.press(getByTestId('settings-tab-system'));
+        expect(getByText('Rate my app')).toBeTruthy();
+        expect(getByText('Version 1.2.3')).toBeTruthy();
+    });
+
     it('calls openStoreReviewService when Rate my app pressed', () => {
         const { getByTestId } = render(<Settings />);
 
@@ -78,25 +121,25 @@ describe('Settings page', () => {
     });
 
     it('renders notifications heading', () => {
-        const { getByText } = render(<Settings />);
+        const { getByText } = renderSystem();
 
         expect(getByText('Notifications')).toBeTruthy();
     });
 
     it('renders notifications On button', () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('notifications-on')).toBeTruthy();
     });
 
     it('renders notifications Off button', () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('notifications-off')).toBeTruthy();
     });
 
     it('shows On as selected when notifications enabled', () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('notifications-on-selected')).toBeTruthy();
     });
@@ -104,13 +147,13 @@ describe('Settings page', () => {
     it('shows Off as selected when notifications disabled', () => {
         mockGetSettingsService.mockReturnValue({ notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
 
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('notifications-off-selected')).toBeTruthy();
     });
 
     it('calls saveSettingsService with notificationsEnabled false when Off is pressed', async () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         fireEvent.press(getByTestId('notifications-off'));
 
@@ -132,7 +175,7 @@ describe('Settings page', () => {
     it('calls saveSettingsService with notificationsEnabled true when On is pressed', async () => {
         mockGetSettingsService.mockReturnValue({ notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
 
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         fireEvent.press(getByTestId('notifications-on'));
 
@@ -152,25 +195,25 @@ describe('Settings page', () => {
     });
 
     it('renders Sounds heading', () => {
-        const { getByText } = render(<Settings />);
+        const { getByText } = renderSystem();
 
         expect(getByText('Sounds')).toBeTruthy();
     });
 
     it('renders sounds On button', () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('sounds-on')).toBeTruthy();
     });
 
     it('renders sounds Off button', () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('sounds-off')).toBeTruthy();
     });
 
     it('shows On as selected by default for sounds', () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('sounds-on-selected')).toBeTruthy();
     });
@@ -178,13 +221,13 @@ describe('Settings page', () => {
     it('shows Off as selected when sounds disabled', () => {
         mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: false, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
 
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('sounds-off-selected')).toBeTruthy();
     });
 
     it('calls saveSettingsService with soundsEnabled false when sounds Off is pressed', async () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         fireEvent.press(getByTestId('sounds-off'));
 
@@ -198,7 +241,7 @@ describe('Settings page', () => {
     it('calls saveSettingsService with soundsEnabled true when sounds On is pressed', async () => {
         mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: false, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
 
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         fireEvent.press(getByTestId('sounds-on'));
 
@@ -210,31 +253,31 @@ describe('Settings page', () => {
     });
 
     it('renders Voice heading', () => {
-        const { getByText } = render(<Settings />);
+        const { getByText } = renderSystem();
 
         expect(getByText('Voice')).toBeTruthy();
     });
 
     it('renders Female voice option', () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('voice-female')).toBeTruthy();
     });
 
     it('renders Male voice option', () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('voice-male')).toBeTruthy();
     });
 
     it('renders Neutral voice option', () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('voice-neutral')).toBeTruthy();
     });
 
     it('shows Female as selected by default', () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('voice-female-selected')).toBeTruthy();
     });
@@ -242,7 +285,7 @@ describe('Settings page', () => {
     it('shows Male as selected when settings voice is male', () => {
         mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
 
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('voice-male-selected')).toBeTruthy();
     });
@@ -250,13 +293,13 @@ describe('Settings page', () => {
     it('shows Neutral as selected when settings voice is neutral', () => {
         mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'neutral', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
 
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         expect(getByTestId('voice-neutral-selected')).toBeTruthy();
     });
 
     it('calls saveSettingsService with voice male when Male is pressed', async () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         fireEvent.press(getByTestId('voice-male'));
 
@@ -276,7 +319,7 @@ describe('Settings page', () => {
     });
 
     it('calls saveSettingsService with voice neutral when Neutral is pressed', async () => {
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         fireEvent.press(getByTestId('voice-neutral'));
 
@@ -303,7 +346,7 @@ describe('Settings page', () => {
     it('calls saveSettingsService with voice female when Female is pressed', async () => {
         mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
 
-        const { getByTestId } = render(<Settings />);
+        const { getByTestId } = renderSystem();
 
         fireEvent.press(getByTestId('voice-female'));
 

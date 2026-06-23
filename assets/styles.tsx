@@ -502,10 +502,11 @@ export const createStyles = (c: ThemeColours) => ({
         },
         totalRow: {
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            alignItems: 'center',
             paddingVertical: 4,
         },
         totalPlayerName: {
+            flex: 1,
             color: c.text,
             fontSize: fontSizes.normal,
         },
@@ -513,6 +514,14 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
+        },
+        totalStrokeCol: {
+            flex: 1,
+            textAlign: 'center',
+        },
+        totalRelativeCol: {
+            width: 70,
+            textAlign: 'right',
         },
         nineSection: {
             marginTop: 5,

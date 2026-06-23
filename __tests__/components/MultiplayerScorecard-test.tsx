@@ -637,6 +637,35 @@ describe('sin indicator dots', () => {
         });
     });
 
+    describe('layout', () => {
+        it('does not wrap player names in the grid', () => {
+            const players = [
+                { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+                { Id: 2, RoundId: 1, PlayerName: 'James M', IsUser: 0, SortOrder: 1 },
+            ];
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+
+            const { getByTestId } = render(
+                <Scorecard players={players} holeScores={holeScores} />
+            );
+
+            expect(getByTestId('grid-player-2').props.numberOfLines).toBe(1);
+        });
+
+        it('aligns the stroke and relative totals in fixed columns', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+
+            const { getByTestId } = render(
+                <Scorecard players={mockPlayers} holeScores={holeScores} />
+            );
+            const stroke = StyleSheet.flatten(getByTestId('round-player-1-total').props.style);
+            const relative = StyleSheet.flatten(getByTestId('player-total-1').props.style);
+
+            expect(stroke.textAlign).toBe('center');
+            expect(relative.textAlign).toBe('right');
+        });
+    });
+
     describe('sin dot meaning', () => {
         it('calls onSinPress when the score cell (number + dot) is tapped in read-only mode', () => {
             const onSinPress = jest.fn();

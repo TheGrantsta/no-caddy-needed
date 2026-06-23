@@ -102,7 +102,7 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                     return (
                         <View key={player.Id} style={s.gridRow}>
                             <View style={s.labelCell}>
-                                <Text style={s.playerNameText}>{player.PlayerName}</Text>
+                                <Text testID={`grid-player-${player.Id}`} style={s.playerNameText} numberOfLines={1}>{player.PlayerName}</Text>
                             </View>
                             {holes.map(h => {
                                 const score = getPlayerScoreForHole(player.Id, h);
@@ -206,16 +206,16 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                         const relativeTotal = getPlayerTotal(player.Id);
                         return (
                             <View key={player.Id} style={s.totalRow}>
-                                <Text style={s.totalPlayerName}>{player.PlayerName}</Text>
+                                <Text style={s.totalPlayerName} numberOfLines={1}>{player.PlayerName}</Text>
                                 <Text
                                     testID={`round-player-${player.Id}-total`}
-                                    style={[s.totalScore, getScoreColor(strokeTotal, parTotal), { textAlign: 'right' }]}
+                                    style={[s.totalScore, s.totalStrokeCol, getScoreColor(strokeTotal, parTotal)]}
                                 >
                                     {strokeTotal}
                                 </Text>
                                 <Text
                                     testID={`player-total-${player.Id}`}
-                                    style={[s.totalScore, getScoreColor(relativeTotal, 0), { textAlign: 'right' }]}
+                                    style={[s.totalScore, s.totalRelativeCol, getScoreColor(relativeTotal, 0)]}
                                 >
                                     ({formatScore(relativeTotal)})
                                 </Text>

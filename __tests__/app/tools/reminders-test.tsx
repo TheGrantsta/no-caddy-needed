@@ -83,30 +83,38 @@ describe('Reminders screen', () => {
         mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
     });
 
-    it('renders the screen heading', () => {
-        const { getByText } = render(<Reminders />);
+    // Renders and flushes the mount effect (upgradeOverdueRemindersService().then(loadReminders))
+    // inside act, so its async state update doesn't warn outside act.
+    const renderReminders = async () => {
+        const utils = render(<Reminders />);
+        await act(async () => { await Promise.resolve(); });
+        return utils;
+    };
+
+    it('renders the screen heading', async () => {
+        const { getByText } = await renderReminders();
         expect(getByText('Practice reminders')).toBeTruthy();
     });
 
-    it('shows no reminders message when list is empty', () => {
-        const { getByText } = render(<Reminders />);
+    it('shows no reminders message when list is empty', async () => {
+        const { getByText } = await renderReminders();
         expect(getByText('No reminders set')).toBeTruthy();
     });
 
-    it('shouldShowAddReminderButtonInRemindersSection', () => {
-        const { getByTestId } = render(<Reminders />);
+    it('shouldShowAddReminderButtonInRemindersSection', async () => {
+        const { getByTestId } = await renderReminders();
         expect(getByTestId('add-reminder-button')).toBeTruthy();
     });
 
-    it('shouldShowAddFormWhenAddReminderPressed', () => {
-        const { getByTestId } = render(<Reminders />);
+    it('shouldShowAddFormWhenAddReminderPressed', async () => {
+        const { getByTestId } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         expect(getByTestId('reminder-label-input')).toBeTruthy();
         expect(getByTestId('reminder-date-picker')).toBeTruthy();
     });
 
-    it('shouldSetTodayAsMinimumDateOnDatePicker', () => {
-        const { getByTestId } = render(<Reminders />);
+    it('shouldSetTodayAsMinimumDateOnDatePicker', async () => {
+        const { getByTestId } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         const picker = getByTestId('reminder-date-picker');
         const today = new Date();
@@ -120,7 +128,7 @@ describe('Reminders screen', () => {
             resolvers.push(() => resolve('notif-id'));
         }));
 
-        const { getByTestId } = render(<Reminders />);
+        const { getByTestId } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Test reminder');
 
@@ -135,39 +143,39 @@ describe('Reminders screen', () => {
         expect(mockAddPracticeReminderService).toHaveBeenCalledTimes(1);
     });
 
-    it('shouldShowErrorWhenSavingWithEmptyLabel', () => {
-        const { getByTestId, getByText } = render(<Reminders />);
+    it('shouldShowErrorWhenSavingWithEmptyLabel', async () => {
+        const { getByTestId, getByText } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.press(getByTestId('save-reminder-button'));
         expect(getByText('Reminder label is required')).toBeTruthy();
     });
 
-    it('shouldNotSaveWhenLabelIsEmpty', () => {
-        const { getByTestId } = render(<Reminders />);
+    it('shouldNotSaveWhenLabelIsEmpty', async () => {
+        const { getByTestId } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.press(getByTestId('save-reminder-button'));
         expect(mockSchedulePracticeReminder).not.toHaveBeenCalled();
         expect(mockAddPracticeReminderService).not.toHaveBeenCalled();
     });
 
-    it('shouldShowOverdueLabelForPastReminder', () => {
+    it('shouldShowOverdueLabelForPastReminder', async () => {
         mockGetPracticeRemindersService.mockReturnValue([
             { Id: 1, Label: 'Morning putting', ScheduledFor: '2020-01-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2019-12-31T09:00:00.000Z' }
         ]);
-        const { getByText } = render(<Reminders />);
+        const { getByText } = await renderReminders();
         expect(getByText('Overdue')).toBeTruthy();
     });
 
-    it('shouldNotShowOverdueLabelForFutureReminder', () => {
+    it('shouldNotShowOverdueLabelForFutureReminder', async () => {
         mockGetPracticeRemindersService.mockReturnValue([
             { Id: 1, Label: 'Morning putting', ScheduledFor: '2099-01-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }
         ]);
-        const { queryByText } = render(<Reminders />);
+        const { queryByText } = await renderReminders();
         expect(queryByText('Overdue')).toBeNull();
     });
 
     it('shouldSaveReminderAndHideFormOnSave', async () => {
-        const { getByTestId, queryByTestId } = render(<Reminders />);
+        const { getByTestId, queryByTestId } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
         fireEvent.press(getByTestId('save-reminder-button'));
@@ -179,7 +187,7 @@ describe('Reminders screen', () => {
     });
 
     it('shouldScheduleNotificationAt9amOnDueDate', async () => {
-        const { getByTestId } = render(<Reminders />);
+        const { getByTestId } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
         fireEvent(getByTestId('reminder-date-picker'), 'onChange', {}, new Date('2099-06-15T14:30:00.000Z'));
@@ -197,7 +205,7 @@ describe('Reminders screen', () => {
             .mockReturnValueOnce([])
             .mockReturnValue([{ Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }]);
 
-        const { getByTestId, getByText } = render(<Reminders />);
+        const { getByTestId, getByText } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
         fireEvent.press(getByTestId('save-reminder-button'));
@@ -212,7 +220,7 @@ describe('Reminders screen', () => {
             { Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'notif-1', Created_At: '2026-03-12T09:00:00.000Z' }
         ]);
 
-        const { getByTestId } = render(<Reminders />);
+        const { getByTestId } = await renderReminders();
         fireEvent.press(getByTestId('delete-reminder-1'));
 
         await waitFor(() => {
@@ -221,19 +229,19 @@ describe('Reminders screen', () => {
         });
     });
 
-    it('shouldDisplayRemindersSortedSoonestFirst', () => {
+    it('shouldDisplayRemindersSortedSoonestFirst', async () => {
         mockGetPracticeRemindersService.mockReturnValue([
             { Id: 1, Label: 'Far future', ScheduledFor: '2099-06-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-01-01T00:00:00.000Z' },
             { Id: 2, Label: 'Near future', ScheduledFor: '2026-04-01T08:00:00.000Z', NotificationId: 'n2', Created_At: '2026-01-01T00:00:00.000Z' },
             { Id: 3, Label: 'Medium future', ScheduledFor: '2050-01-01T08:00:00.000Z', NotificationId: 'n3', Created_At: '2026-01-01T00:00:00.000Z' },
         ]);
-        const { getAllByText } = render(<Reminders />);
+        const { getAllByText } = await renderReminders();
         const labels = getAllByText(/Near future|Medium future|Far future/).map(el => el.props.children);
         expect(labels).toEqual(['Near future', 'Medium future', 'Far future']);
     });
 
-    it('hides add form when cancel is pressed', () => {
-        const { getByTestId, queryByTestId, getByText } = render(<Reminders />);
+    it('hides add form when cancel is pressed', async () => {
+        const { getByTestId, queryByTestId, getByText } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         expect(getByTestId('reminder-label-input')).toBeTruthy();
         fireEvent.press(getByText('Cancel'));
@@ -250,8 +258,8 @@ describe('Reminders screen', () => {
             jest.useRealTimers();
         });
 
-        it('onRefreshShowsRefreshingOverlay', () => {
-            const { UNSAFE_getByType, getByText } = render(<Reminders />);
+        it('onRefreshShowsRefreshingOverlay', async () => {
+            const { UNSAFE_getByType, getByText } = await renderReminders();
             const scrollView = UNSAFE_getByType(ScrollView);
 
             act(() => {
@@ -261,8 +269,8 @@ describe('Reminders screen', () => {
             expect(getByText('Release to update')).toBeTruthy();
         });
 
-        it('onRefreshHidesOverlayAfterTimeout', () => {
-            const { UNSAFE_getByType, queryByText } = render(<Reminders />);
+        it('onRefreshHidesOverlayAfterTimeout', async () => {
+            const { UNSAFE_getByType, queryByText } = await renderReminders();
             const scrollView = UNSAFE_getByType(ScrollView);
 
             act(() => {
@@ -275,7 +283,7 @@ describe('Reminders screen', () => {
             expect(queryByText('Release to update')).toBeNull();
         });
 
-        it('onRefreshReloadsReminders', () => {
+        it('onRefreshReloadsReminders', async () => {
             const updatedReminders = [
                 { Id: 1, Label: 'Evening chipping', ScheduledFor: '2026-03-15T18:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }
             ];
@@ -283,7 +291,7 @@ describe('Reminders screen', () => {
                 .mockReturnValueOnce([])
                 .mockReturnValue(updatedReminders);
 
-            const { UNSAFE_getByType, getByText } = render(<Reminders />);
+            const { UNSAFE_getByType, getByText } = await renderReminders();
             const scrollView = UNSAFE_getByType(ScrollView);
 
             act(() => {
@@ -296,8 +304,8 @@ describe('Reminders screen', () => {
     });
 
     describe('generate practice plan', () => {
-        it('showsGeneratePracticePlanButton', () => {
-            const { getByTestId } = render(<Reminders />);
+        it('showsGeneratePracticePlanButton', async () => {
+            const { getByTestId } = await renderReminders();
             expect(getByTestId('generate-practice-plan-button')).toBeTruthy();
         });
 
@@ -307,7 +315,7 @@ describe('Reminders screen', () => {
                 { reminderLabel: 'Chipping practice — eliminate double chips', drillLabels: ['Hoop', 'Gate', 'Ladder'], count: 3 },
             ]);
             mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = render(<Reminders />);
+            const { getByTestId } = await renderReminders();
             await act(async () => {
                 fireEvent.press(getByTestId('generate-practice-plan-button'));
             });
@@ -319,7 +327,7 @@ describe('Reminders screen', () => {
                 { reminderLabel: 'Putting practice — reduce 3-putts', drillLabels: ['Ladder', 'Clock', 'Gate'], count: 5 },
             ]);
             mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = render(<Reminders />);
+            const { getByTestId } = await renderReminders();
             await act(async () => {
                 fireEvent.press(getByTestId('generate-practice-plan-button'));
             });
@@ -332,7 +340,7 @@ describe('Reminders screen', () => {
                 { reminderLabel: 'Chipping practice — eliminate double chips', drillLabels: ['Hoop', 'Gate', 'Ladder'], count: 3 },
             ]);
             mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = render(<Reminders />);
+            const { getByTestId } = await renderReminders();
             await act(async () => {
                 fireEvent.press(getByTestId('generate-practice-plan-button'));
             });
@@ -350,7 +358,7 @@ describe('Reminders screen', () => {
                 { reminderLabel: 'Putting practice — reduce 3-putts', drillLabels: ['Ladder', 'Clock', 'Gate'], count: 5 },
             ]);
             mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = render(<Reminders />);
+            const { getByTestId } = await renderReminders();
             await act(async () => {
                 fireEvent.press(getByTestId('generate-practice-plan-button'));
             });
@@ -365,7 +373,7 @@ describe('Reminders screen', () => {
                 { reminderLabel: 'Putting practice — reduce 3-putts', drillLabels: ['Ladder', 'Clock', 'Gate'], count: 5 },
             ]);
             mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = render(<Reminders />);
+            const { getByTestId } = await renderReminders();
             await act(async () => {
                 fireEvent.press(getByTestId('generate-practice-plan-button'));
             });
@@ -379,7 +387,7 @@ describe('Reminders screen', () => {
 
         it('showsNoDataMessageWhenNoSinData', async () => {
             mockGetTopSinsForPracticePlanService.mockReturnValue([]);
-            const { getByTestId } = render(<Reminders />);
+            const { getByTestId } = await renderReminders();
             await act(async () => {
                 fireEvent.press(getByTestId('generate-practice-plan-button'));
             });
@@ -392,7 +400,7 @@ describe('Reminders screen', () => {
                 { reminderLabel: 'Putting practice — reduce 3-putts', drillLabels: ['Ladder', 'Clock', 'Gate'], count: 5 },
             ]);
             mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = render(<Reminders />);
+            const { getByTestId } = await renderReminders();
             await act(async () => {
                 fireEvent.press(getByTestId('generate-practice-plan-button'));
             });
@@ -409,7 +417,7 @@ describe('Reminders screen', () => {
                 { reminderLabel: 'Putting practice — reduce 3-putts', drillLabels: ['Ladder', 'Clock', 'Gate'], count: 5 },
             ]);
             mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = render(<Reminders />);
+            const { getByTestId } = await renderReminders();
             await act(async () => {
                 fireEvent.press(getByTestId('generate-practice-plan-button'));
             });
@@ -419,7 +427,7 @@ describe('Reminders screen', () => {
 
     describe('Overdue reminder daily upgrade', () => {
         it('callsUpgradeOverdueRemindersServiceOnMount', async () => {
-            render(<Reminders />);
+            await renderReminders();
 
             await waitFor(() => {
                 expect(mockUpgradeOverdueRemindersService).toHaveBeenCalled();

@@ -83,10 +83,13 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         loadData();
     }, []);
 
-    // Report edit state up so the pager can lock horizontal swiping during edits.
-    useEffect(() => {
-        onEditingChange(roundId, isEditing);
-    }, [isEditing, roundId, onEditingChange]);
+    // Report edit state up so the pager can lock horizontal swiping. Called from the
+    // edit/cancel/save handlers (user actions) rather than an effect, so it never fires
+    // on mount (which would schedule a pager state update outside test act() blocks).
+    const setEditing = (editing: boolean) => {
+        setIsEditing(editing);
+        onEditingChange(roundId, editing);
+    };
 
     const loadData = () => {
         const mp = getMultiplayerScorecardService(Number(roundId));
@@ -103,14 +106,14 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const handleEdit = () => {
         if (multiplayerScorecard) {
             setEditedScores([...multiplayerScorecard.holeScores.map(s => ({ ...s }))]);
-            setIsEditing(true);
+            setEditing(true);
             setSelectedScore(null);
             setShowSaveConfirm(false);
         }
     };
 
     const handleCancelEdit = () => {
-        setIsEditing(false);
+        setEditing(false);
         setEditedScores([]);
         setSelectedScore(null);
         setShowSaveConfirm(false);
@@ -226,7 +229,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             }
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
             loadData();
-            setIsEditing(false);
+            setEditing(false);
             setEditedScores([]);
             setSelectedScore(null);
             setShowSaveConfirm(false);
@@ -475,7 +478,7 @@ export default function ScorecardScreen() {
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 scrollEnabled={editingIds.size === 0}
-                initialScrollIndex={initialIndex}
+                initialScrollIndex={initialIndex > 0 ? initialIndex : undefined}
                 getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
                 initialNumToRender={1}
                 maxToRenderPerBatch={2}

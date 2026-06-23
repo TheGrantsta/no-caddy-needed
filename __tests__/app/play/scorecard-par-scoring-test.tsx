@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { act, render, fireEvent, waitFor } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
 import {
     getRoundScorecardService,
@@ -102,53 +102,61 @@ describe('Scorecard par scoring', () => {
         mockUpdateScorecard.mockResolvedValue(true);
     });
 
+    const renderScorecard = async () => render(<ScorecardScreen />);
+
+    // The FlatList pager schedules deferred cell-render timers; flush any pending ones
+    // inside act after each test so they don't fire (and warn) during the next test.
+    afterEach(async () => {
+        await act(async () => { await new Promise(resolve => setTimeout(resolve, 0)); });
+    });
+
     describe('Par value display', () => {
-        it('shouldDisplayParThreeForHoleSeven', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldDisplayParThreeForHoleSeven', async () => {
+            const { getByTestId } = await renderScorecard();
             expect(getByTestId('hole-par-7')).toHaveTextContent('3');
         });
 
-        it('shouldDisplayParThreeForHoleTen', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldDisplayParThreeForHoleTen', async () => {
+            const { getByTestId } = await renderScorecard();
             expect(getByTestId('hole-par-10')).toHaveTextContent('3');
         });
 
-        it('shouldDisplayParThreeForHoleFourteen', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldDisplayParThreeForHoleFourteen', async () => {
+            const { getByTestId } = await renderScorecard();
             expect(getByTestId('hole-par-14')).toHaveTextContent('3');
         });
 
-        it('shouldDisplayParFiveForHoleNine', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldDisplayParFiveForHoleNine', async () => {
+            const { getByTestId } = await renderScorecard();
             expect(getByTestId('hole-par-9')).toHaveTextContent('5');
         });
 
-        it('shouldDisplayParFiveForHoleThirteen', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldDisplayParFiveForHoleThirteen', async () => {
+            const { getByTestId } = await renderScorecard();
             expect(getByTestId('hole-par-13')).toHaveTextContent('5');
         });
 
-        it('shouldDisplayParFourForStandardHoles', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldDisplayParFourForStandardHoles', async () => {
+            const { getByTestId } = await renderScorecard();
             expect(getByTestId('hole-par-1')).toHaveTextContent('4');
             expect(getByTestId('hole-par-6')).toHaveTextContent('4');
             expect(getByTestId('hole-par-18')).toHaveTextContent('4');
         });
 
-        it('shouldDisplayCorrectFrontNineParTotal', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldDisplayCorrectFrontNineParTotal', async () => {
+            const { getByTestId } = await renderScorecard();
             expect(getByTestId('front9-par-total')).toHaveTextContent('36');
         });
 
-        it('shouldDisplayCorrectBackNineParTotal', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldDisplayCorrectBackNineParTotal', async () => {
+            const { getByTestId } = await renderScorecard();
             expect(getByTestId('back9-par-total')).toHaveTextContent('35');
         });
     });
 
     describe('Score input on par 3 holes', () => {
         it('shouldSaveIncrementedScoreOnParThreeHole', async () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+            const { getByTestId } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('score-cell-7-1'));
@@ -162,7 +170,7 @@ describe('Scorecard par scoring', () => {
         });
 
         it('shouldSaveDecrementedScoreOnParThreeHole', async () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+            const { getByTestId } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('score-cell-7-1'));
@@ -175,8 +183,8 @@ describe('Scorecard par scoring', () => {
             });
         });
 
-        it('shouldShowBogeyRelativeScoreAfterScoringOverParOnParThreeHole', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldShowBogeyRelativeScoreAfterScoringOverParOnParThreeHole', async () => {
+            const { getByTestId } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('score-cell-7-1'));
@@ -185,8 +193,8 @@ describe('Scorecard par scoring', () => {
             expect(getByTestId('player-total-1')).toHaveTextContent('(+1)');
         });
 
-        it('shouldShowBirdieRelativeScoreAfterScoringUnderParOnParThreeHole', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldShowBirdieRelativeScoreAfterScoringUnderParOnParThreeHole', async () => {
+            const { getByTestId } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('score-cell-7-1'));
@@ -198,7 +206,7 @@ describe('Scorecard par scoring', () => {
 
     describe('Score input on par 5 holes', () => {
         it('shouldSaveIncrementedScoreOnParFiveHole', async () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+            const { getByTestId } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('score-cell-9-1'));
@@ -212,7 +220,7 @@ describe('Scorecard par scoring', () => {
         });
 
         it('shouldSaveDecrementedScoreOnParFiveHole', async () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+            const { getByTestId } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('score-cell-9-1'));
@@ -225,8 +233,8 @@ describe('Scorecard par scoring', () => {
             });
         });
 
-        it('shouldShowBirdieRelativeScoreAfterScoringUnderParOnParFiveHole', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldShowBirdieRelativeScoreAfterScoringUnderParOnParFiveHole', async () => {
+            const { getByTestId } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('score-cell-9-1'));
@@ -245,20 +253,20 @@ describe('Scorecard par scoring', () => {
             }
         };
 
-        it('shouldShowGross76WhenBogeyOnAllPar3AndPar5Holes', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldShowGross76WhenBogeyOnAllPar3AndPar5Holes', async () => {
+            const { getByTestId } = await renderScorecard();
             enterBogeyOnAllSpecialHoles(getByTestId);
             expect(getByTestId('round-player-1-total')).toHaveTextContent('76');
         });
 
-        it('shouldShowPlusFiveWhenBogeyOnAllPar3AndPar5Holes', () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+        it('shouldShowPlusFiveWhenBogeyOnAllPar3AndPar5Holes', async () => {
+            const { getByTestId } = await renderScorecard();
             enterBogeyOnAllSpecialHoles(getByTestId);
             expect(getByTestId('player-total-1')).toHaveTextContent('(+5)');
         });
 
         it('shouldSaveAllBogeyChangesWhenBogeyOnAllPar3AndPar5Holes', async () => {
-            const { getByTestId } = render(<ScorecardScreen />);
+            const { getByTestId } = await renderScorecard();
             enterBogeyOnAllSpecialHoles(getByTestId);
             fireEvent.press(getByTestId('save-scorecard-button'));
             fireEvent.press(getByTestId('confirm-save-button'));

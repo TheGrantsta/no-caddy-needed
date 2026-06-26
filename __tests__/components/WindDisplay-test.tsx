@@ -182,7 +182,7 @@ describe('WindDisplay', () => {
             expect(queryAllByText(/Listening/i).length).toBeGreaterThan(0);
         });
 
-        it('shows Say yardage text when isListening is false', () => {
+        it('shows Say the yardage text when isListening is false', () => {
             mockUseWindVoice.mockReturnValue({
                 isAvailable: true,
                 isListening: false,
@@ -192,7 +192,7 @@ describe('WindDisplay', () => {
 
             const { getByTestId, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
             expect(getByTestId('wind-voice-button')).toBeTruthy();
-            expect(queryAllByText(/Say yardage/i).length).toBeGreaterThan(0);
+            expect(queryAllByText(/Say the yardage/i).length).toBeGreaterThan(0);
         });
     });
 });

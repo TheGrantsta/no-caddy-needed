@@ -122,6 +122,33 @@ describe('useWindVoice', () => {
 		});
 	});
 
+	it('should stop listening when a number is recognised to prevent TTS feedback loop', () => {
+		let resultHandler: ((event: any) => void) | null = null;
+
+		mockUseSpeechRecognitionEvent.mockClear();
+		mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+			if (eventName === 'result') {
+				resultHandler = handler;
+			}
+		});
+
+		mockStop.mockClear();
+
+		const { result } = renderHook(() => useWindVoice(0));
+
+		expect(resultHandler).toBeTruthy();
+
+		act(() => {
+			resultHandler?.({
+				results: [{ transcript: '97 yards' }],
+			});
+		});
+
+		// After recognizing a number, mic should stop and isListening should be false
+		expect(mockStop).toHaveBeenCalled();
+		expect(result.current.isListening).toBe(false);
+	});
+
 	it('should compute adjustedYards when a number is recognized with tailwind', async () => {
 		let resultHandler: ((event: any) => void) | null = null;
 
@@ -195,7 +222,7 @@ describe('useWindVoice', () => {
 		expect(mockSpeak).not.toHaveBeenCalled();
 	});
 
-	it('should reset adjustedYards when mic is turned off', async () => {
+	it('should reset adjustedYards when mic is turned off by user', async () => {
 		let resultHandler: ((event: any) => void) | null = null;
 
 		mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
@@ -206,9 +233,32 @@ describe('useWindVoice', () => {
 
 		const { result } = renderHook(() => useWindVoice(0));
 
+		// Turn mic on
 		await act(async () => {
 			await result.current.toggleListening();
 		});
+
+		// Don't speak; just turn mic off manually
+		expect(result.current.adjustedYards).toBeNull();
+
+		await act(async () => {
+			await result.current.toggleListening();
+		});
+
+		expect(result.current.isListening).toBe(false);
+		expect(result.current.adjustedYards).toBeNull();
+	});
+
+	it('should reset adjustedYards after auto-stop when number is recognised', async () => {
+		let resultHandler: ((event: any) => void) | null = null;
+
+		mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+			if (eventName === 'result') {
+				resultHandler = handler;
+			}
+		});
+
+		const { result } = renderHook(() => useWindVoice(0));
 
 		act(() => {
 			resultHandler?.({
@@ -216,13 +266,17 @@ describe('useWindVoice', () => {
 			});
 		});
 
+		// After recognizing a number, adjusted yards is set
 		expect(result.current.adjustedYards).toBe(50);
+		// But listening should be stopped
+		expect(result.current.isListening).toBe(false);
 
+		// Tapping the button again should turn listening back on
 		await act(async () => {
 			await result.current.toggleListening();
 		});
 
-		expect(result.current.adjustedYards).toBeNull();
+		expect(result.current.isListening).toBe(true);
 	});
 
 	it('should speak using the user voice preference', async () => {

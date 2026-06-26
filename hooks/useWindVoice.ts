@@ -54,6 +54,12 @@ export function useWindVoice(playsLongerPercent: number): {
 		if (match) {
 			const yards = parseInt(match[1], 10);
 			const adjusted = Math.round(yards * (1 + playsLongerPercent / 100));
+
+			// Stop listening before speaking to prevent TTS output looping back into recognition
+			isStoppingRef.current = true;
+			ExpoSpeechRecognitionModule?.stop();
+			setIsListening(false);
+
 			setAdjustedYards(adjusted);
 
 			const settings = getSettingsService();

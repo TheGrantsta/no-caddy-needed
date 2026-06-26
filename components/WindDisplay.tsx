@@ -113,7 +113,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Prop
                                 fontWeight: 'bold',
                             }}
                         >
-                            {isListening ? 'Listening...' : 'Say yardage'}
+                            {isListening ? 'Listening...' : 'Say the yardage'}
                         </Text>
                     </TouchableOpacity>
                 )}

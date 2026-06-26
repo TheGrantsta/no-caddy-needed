@@ -16,6 +16,10 @@ type Props = {
      * (modal overlay) presentation.
      */
     compact?: boolean;
+    /**
+     * Disable the voice distance adjuster feature.
+     */
+    disableVoice?: boolean;
 };
 
 /**
@@ -24,7 +28,7 @@ type Props = {
  * distance/cross effect. Shared by the WindIndicator modal overlay and the
  * standalone Wind tool screen (via `compact`).
  */
-const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Props) => {
+const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disableVoice = false }: Props) => {
     const colours = useThemeColours();
 
     const effect = directionFrom !== null && speedMph !== null
@@ -32,6 +36,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Prop
         : null;
 
     const { isAvailable: voiceAvailable, isListening, adjustedYards, toggleListening } = useWindVoice(effect?.playsLongerPercent ?? 0);
+    const voiceEnabled = voiceAvailable && !disableVoice;
 
     if (directionFrom === null || speedMph === null) return null;
 
@@ -83,7 +88,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Prop
                 {speed} mph
             </Text>
             <View style={{ marginTop: 16, width: '100%', alignItems: 'center' }}>
-                {voiceAvailable && (
+                {voiceEnabled && (
                     <TouchableOpacity
                         testID="wind-voice-button"
                         style={{
@@ -119,7 +124,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Prop
                 )}
                 <Text
                     testID="wind-effect-text"
-                    style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: voiceAvailable ? 12 : 0 }}
+                    style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: voiceEnabled ? 12 : 0 }}
                 >
                     {effectText}
                 </Text>

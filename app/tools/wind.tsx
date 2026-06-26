@@ -50,6 +50,7 @@ export default function Wind() {
                                 speedMph={wind.speedMph}
                                 heading={heading}
                                 compact
+                                disableVoice
                             />
                         ) : (
                             <Text

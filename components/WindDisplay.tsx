@@ -123,14 +123,19 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Prop
                 >
                     {effectText}
                 </Text>
-                {adjustedYards !== null && (
-                    <Text
-                        testID="wind-adjusted-yards"
-                        style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: 8 }}
-                    >
-                        Play it as {adjustedYards} yards
-                    </Text>
-                )}
+                <Text
+                    testID="wind-adjusted-yards"
+                    style={{
+                        color: colours.primary,
+                        fontSize: fontSizes.normal,
+                        fontWeight: 'bold',
+                        marginTop: 8,
+                        opacity: adjustedYards !== null ? 1 : 0,
+                        minHeight: fontSizes.normal * 1.5,
+                    }}
+                >
+                    {adjustedYards !== null ? `Play it as ${adjustedYards} yards` : ' '}
+                </Text>
             </View>
             {!compact && (
                 <Text

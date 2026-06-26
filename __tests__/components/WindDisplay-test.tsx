@@ -165,8 +165,10 @@ describe('WindDisplay', () => {
                 toggleListening: jest.fn(),
             });
 
-            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
-            expect(queryByTestId('wind-adjusted-yards')).toBeNull();
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            const element = getByTestId('wind-adjusted-yards');
+            // Element is rendered but with opacity 0 to reserve space
+            expect(element.props.style.opacity).toBe(0);
         });
 
         it('shows Listening text when isListening is true', () => {

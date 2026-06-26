@@ -1,8 +1,9 @@
-import { Text, View } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 import { degreesToCompass, getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/WeatherService';
+import { useWindVoice } from '@/hooks/useWindVoice';
 
 type Props = {
     directionFrom: number | null;
@@ -26,15 +27,19 @@ type Props = {
 const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Props) => {
     const colours = useThemeColours();
 
+    const effect = directionFrom !== null && speedMph !== null
+        ? getWindEffect(directionFrom, speedMph, heading)
+        : null;
+
+    const { isAvailable: voiceAvailable, isListening, adjustedYards, toggleListening } = useWindVoice(effect?.playsLongerPercent ?? 0);
+
     if (directionFrom === null || speedMph === null) return null;
 
     const rotation = getWindArrowRotation(directionFrom, heading);
     const speed = Math.round(speedMph);
     const fromCompass = degreesToCompass(directionFrom);
-
-    const effect = getWindEffect(directionFrom, speedMph, heading);
-    const pct = Math.round(effect.playsLongerPercent);
-    const negligible = effect.category === 'calm' || Math.abs(pct) < MIN_NOTABLE_PCT;
+    const pct = Math.round(effect!.playsLongerPercent);
+    const negligible = effect!.category === 'calm' || Math.abs(pct) < MIN_NOTABLE_PCT;
     const effectText = negligible
         ? 'Plays about the same'
         : pct > 0
@@ -89,12 +94,54 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Prop
             >
                 {effectText}
             </Text>
-            {effect.crossDirection && (
+            {effect!.crossDirection && (
                 <Text
                     testID="wind-cross-text"
                     style={{ color: colours.primary, fontSize: fontSizes.smallText, marginTop: 4 }}
                 >
-                    Crosswind from the {effect.crossDirection}
+                    Crosswind from the {effect!.crossDirection}
+                </Text>
+            )}
+            {voiceAvailable && (
+                <TouchableOpacity
+                    testID="wind-voice-button"
+                    style={{
+                        marginTop: 12,
+                        paddingVertical: 8,
+                        paddingHorizontal: 12,
+                        backgroundColor: isListening ? colours.primary : 'transparent',
+                        borderRadius: 8,
+                        borderWidth: 1,
+                        borderColor: colours.primary,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                    }}
+                    onPress={toggleListening}
+                >
+                    <MaterialIcons
+                        name={isListening ? 'mic' : 'mic-off'}
+                        size={20}
+                        color={isListening ? colours.background : colours.primary}
+                    />
+                    <Text
+                        style={{
+                            color: isListening ? colours.background : colours.primary,
+                            fontSize: fontSizes.smallText,
+                            fontWeight: 'bold',
+                        }}
+                    >
+                        {isListening ? 'Listening...' : 'Say yardage'}
+                    </Text>
+                </TouchableOpacity>
+            )}
+            {adjustedYards !== null && (
+                <Text
+                    testID="wind-adjusted-yards"
+                    style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: 8 }}
+                >
+                    Play it as {adjustedYards} yards
                 </Text>
             )}
             {!compact && (

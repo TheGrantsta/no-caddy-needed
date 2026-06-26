@@ -1,12 +1,28 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import WindDisplay from '../../components/WindDisplay';
 
+import { useWindVoice } from '../../hooks/useWindVoice';
+
 jest.mock('../../context/ThemeContext', () => ({
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     useThemeColours: () => require('../../assets/colours').default,
 }));
 
+jest.mock('../../hooks/useWindVoice');
+
+const mockUseWindVoice = useWindVoice as jest.Mock;
+
 describe('WindDisplay', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockUseWindVoice.mockReturnValue({
+            isAvailable: false,
+            isListening: false,
+            adjustedYards: null,
+            toggleListening: jest.fn(),
+        });
+    });
     it('rendersNothingWhenDirectionNull', () => {
         const { queryByTestId } = render(<WindDisplay directionFrom={null} speedMph={null} heading={0} />);
         expect(queryByTestId('wind-arrow-large')).toBeNull();
@@ -97,6 +113,96 @@ describe('WindDisplay', () => {
                 ? Object.assign({}, ...container.props.style)
                 : container.props.style;
             expect(flat.borderWidth).toBe(1);
+        });
+    });
+
+    describe('voice distance adjuster', () => {
+        it('does not render mic button when speech recognition is unavailable', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: false,
+                isListening: false,
+                adjustedYards: null,
+                toggleListening: jest.fn(),
+            });
+
+            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByTestId('wind-voice-button')).toBeNull();
+        });
+
+        it('renders mic button when speech recognition is available', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                toggleListening: jest.fn(),
+            });
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByTestId('wind-voice-button')).toBeTruthy();
+        });
+
+        it('calls toggleListening when mic button is pressed', () => {
+            const mockToggleListen = jest.fn();
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                toggleListening: mockToggleListen,
+            });
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            fireEvent.press(getByTestId('wind-voice-button'));
+            expect(mockToggleListen).toHaveBeenCalled();
+        });
+
+        it('shows adjusted yards when value is not null', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: 94,
+                toggleListening: jest.fn(),
+            });
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByTestId('wind-adjusted-yards')).toHaveTextContent('Play it as 94 yards');
+        });
+
+        it('does not show adjusted yards when value is null', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                toggleListening: jest.fn(),
+            });
+
+            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByTestId('wind-adjusted-yards')).toBeNull();
+        });
+
+        it('shows Listening text when isListening is true', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: true,
+                adjustedYards: null,
+                toggleListening: jest.fn(),
+            });
+
+            const { getByTestId, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByTestId('wind-voice-button')).toBeTruthy();
+            expect(queryAllByText(/Listening/i).length).toBeGreaterThan(0);
+        });
+
+        it('shows Say yardage text when isListening is false', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                toggleListening: jest.fn(),
+            });
+
+            const { getByTestId, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByTestId('wind-voice-button')).toBeTruthy();
+            expect(queryAllByText(/Say yardage/i).length).toBeGreaterThan(0);
         });
     });
 });

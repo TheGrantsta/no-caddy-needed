@@ -88,12 +88,6 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Prop
             >
                 From the {fromCompass}
             </Text>
-            <Text
-                testID="wind-effect-text"
-                style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: 10 }}
-            >
-                {effectText}
-            </Text>
             {effect!.crossDirection && (
                 <Text
                     testID="wind-cross-text"
@@ -102,48 +96,57 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Prop
                     Crosswind from the {effect!.crossDirection}
                 </Text>
             )}
-            {voiceAvailable && (
-                <TouchableOpacity
-                    testID="wind-voice-button"
-                    style={{
-                        marginTop: 12,
-                        paddingVertical: 8,
-                        paddingHorizontal: 12,
-                        backgroundColor: isListening ? colours.primary : 'transparent',
-                        borderRadius: 8,
-                        borderWidth: 1,
-                        borderColor: colours.primary,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 6,
-                    }}
-                    onPress={toggleListening}
-                >
-                    <MaterialIcons
-                        name={isListening ? 'mic' : 'mic-off'}
-                        size={20}
-                        color={isListening ? colours.background : colours.primary}
-                    />
-                    <Text
-                        style={{
-                            color: isListening ? colours.background : colours.primary,
-                            fontSize: fontSizes.smallText,
-                            fontWeight: 'bold',
-                        }}
-                    >
-                        {isListening ? 'Listening...' : 'Say yardage'}
-                    </Text>
-                </TouchableOpacity>
-            )}
-            {adjustedYards !== null && (
+            <View style={{ marginTop: 16, width: '100%', alignItems: 'center' }}>
                 <Text
-                    testID="wind-adjusted-yards"
-                    style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: 8 }}
+                    testID="wind-effect-text"
+                    style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold' }}
                 >
-                    Play it as {adjustedYards} yards
+                    {effectText}
                 </Text>
-            )}
+                {voiceAvailable && (
+                    <TouchableOpacity
+                        testID="wind-voice-button"
+                        style={{
+                            marginTop: 12,
+                            paddingVertical: 8,
+                            paddingHorizontal: 12,
+                            backgroundColor: isListening ? colours.primary : 'transparent',
+                            borderRadius: 8,
+                            borderWidth: 1,
+                            borderColor: colours.primary,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 6,
+                            opacity: isListening ? 0.9 : 1,
+                        }}
+                        onPress={toggleListening}
+                    >
+                        <MaterialIcons
+                            name={isListening ? 'mic' : 'mic-off'}
+                            size={20}
+                            color={isListening ? colours.background : colours.primary}
+                        />
+                        <Text
+                            style={{
+                                color: isListening ? colours.background : colours.primary,
+                                fontSize: fontSizes.smallText,
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            {isListening ? 'Listening...' : 'Say yardage'}
+                        </Text>
+                    </TouchableOpacity>
+                )}
+                {adjustedYards !== null && (
+                    <Text
+                        testID="wind-adjusted-yards"
+                        style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: 8 }}
+                    >
+                        Play it as {adjustedYards} yards
+                    </Text>
+                )}
+            </View>
             {!compact && (
                 <Text
                     testID="wind-aim-hint"

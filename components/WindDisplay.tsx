@@ -82,32 +82,11 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Prop
             >
                 {speed} mph
             </Text>
-            <Text
-                testID="wind-direction-compass"
-                style={{ color: colours.primary, fontSize: fontSizes.smallText, fontWeight: 'bold', opacity: 0.8, marginTop: 2 }}
-            >
-                From the {fromCompass}
-            </Text>
-            {effect!.crossDirection && (
-                <Text
-                    testID="wind-cross-text"
-                    style={{ color: colours.primary, fontSize: fontSizes.smallText, marginTop: 4 }}
-                >
-                    Crosswind from the {effect!.crossDirection}
-                </Text>
-            )}
             <View style={{ marginTop: 16, width: '100%', alignItems: 'center' }}>
-                <Text
-                    testID="wind-effect-text"
-                    style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold' }}
-                >
-                    {effectText}
-                </Text>
                 {voiceAvailable && (
                     <TouchableOpacity
                         testID="wind-voice-button"
                         style={{
-                            marginTop: 12,
                             paddingVertical: 8,
                             paddingHorizontal: 12,
                             backgroundColor: isListening ? colours.primary : 'transparent',
@@ -138,6 +117,12 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false }: Prop
                         </Text>
                     </TouchableOpacity>
                 )}
+                <Text
+                    testID="wind-effect-text"
+                    style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: voiceAvailable ? 12 : 0 }}
+                >
+                    {effectText}
+                </Text>
                 {adjustedYards !== null && (
                     <Text
                         testID="wind-adjusted-yards"

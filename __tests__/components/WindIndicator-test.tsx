@@ -116,15 +116,6 @@ describe('WindIndicator', () => {
             expect(getByTestId('wind-effect-text')).toHaveTextContent(/shorter/i);
         });
 
-        it('showsCrosswindSideForACrosswind', () => {
-            // wind FROM 90 (east), facing north → from the right
-            const { getByTestId } = render(<WindIndicator directionFrom={90} speedMph={10} heading={0} />);
-
-            fireEvent.press(getByTestId('wind-indicator'));
-
-            expect(getByTestId('wind-cross-text')).toHaveTextContent(/right/i);
-        });
-
         it('showsAboutTheSameWhenCalm', () => {
             const { getByTestId } = render(<WindIndicator directionFrom={0} speedMph={2} heading={0} />);
 

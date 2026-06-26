@@ -69,19 +69,9 @@ describe('WindDisplay', () => {
         expect(getByTestId('wind-effect-text')).toHaveTextContent(/shorter/i);
     });
 
-    it('showsCrosswindSideForACrosswind', () => {
-        const { getByTestId } = render(<WindDisplay directionFrom={90} speedMph={10} heading={0} />);
-        expect(getByTestId('wind-cross-text')).toHaveTextContent(/right/i);
-    });
-
     it('showsAboutTheSameWhenCalm', () => {
         const { getByTestId } = render(<WindDisplay directionFrom={0} speedMph={2} heading={0} />);
         expect(getByTestId('wind-effect-text')).toHaveTextContent(/about the same/i);
-    });
-
-    it('showsTheCompassDirectionTheWindComesFrom', () => {
-        const { getByTestId } = render(<WindDisplay directionFrom={270} speedMph={10} heading={0} />);
-        expect(getByTestId('wind-direction-compass')).toHaveTextContent(/from the W\b/i);
     });
 
     describe('compact mode (embedded in a page)', () => {

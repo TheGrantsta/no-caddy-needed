@@ -2,7 +2,7 @@ import { Text, View, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
-import { degreesToCompass, getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/WeatherService';
+import { getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/WeatherService';
 import { useWindVoice } from '@/hooks/useWindVoice';
 import { getWedgeChartService } from '@/service/DbService';
 import { findClubSuggestions } from '@/service/ClubSuggestionService';
@@ -48,7 +48,6 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
 
     const rotation = getWindArrowRotation(directionFrom, heading);
     const speed = Math.round(speedMph);
-    const fromCompass = degreesToCompass(directionFrom);
     const pct = Math.round(effect!.playsLongerPercent);
     const negligible = effect!.category === 'calm' || Math.abs(pct) < MIN_NOTABLE_PCT;
     const effectText = negligible
@@ -128,19 +127,21 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                         </Text>
                     </TouchableOpacity>
                 )}
-                <Text
-                    testID="wind-effect-text"
-                    style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: voiceEnabled ? 12 : 0 }}
-                >
-                    {effectText}
-                </Text>
+                {!adjustedYards && (
+                    <Text
+                        testID="wind-effect-text"
+                        style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: voiceEnabled ? 12 : 0 }}
+                    >
+                        {effectText}
+                    </Text>
+                )}
                 <Text
                     testID="wind-adjusted-yards"
                     style={{
                         color: colours.primary,
                         fontSize: fontSizes.normal,
                         fontWeight: 'bold',
-                        marginTop: 8,
+                        marginTop: 12,
                         opacity: adjustedYards !== null ? 1 : 0,
                         minHeight: fontSizes.normal * 1.5,
                     }}

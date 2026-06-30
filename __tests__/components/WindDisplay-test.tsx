@@ -152,7 +152,7 @@ describe('WindDisplay', () => {
             expect(mockToggleListen).toHaveBeenCalled();
         });
 
-        it('shows adjusted yards when value is not null', () => {
+        it('shows adjusted yards when value is not null and the estimated effect is hidden', () => {
             mockUseWindVoice.mockReturnValue({
                 isAvailable: true,
                 isListening: false,
@@ -160,8 +160,9 @@ describe('WindDisplay', () => {
                 toggleListening: jest.fn(),
             });
 
-            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            const { getByTestId, queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
             expect(getByTestId('wind-adjusted-yards')).toHaveTextContent('Play it as 94 yards');
+            expect(queryByTestId('wind-effect-text')).toBeNull();
         });
 
         it('does not show adjusted yards when value is null', () => {

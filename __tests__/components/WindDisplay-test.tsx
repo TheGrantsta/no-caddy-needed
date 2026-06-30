@@ -3,6 +3,7 @@ import { render, fireEvent } from '@testing-library/react-native';
 import WindDisplay from '../../components/WindDisplay';
 
 import { useWindVoice } from '../../hooks/useWindVoice';
+import { getWedgeChartService } from '../../service/DbService';
 
 jest.mock('../../context/ThemeContext', () => ({
     // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -10,8 +11,10 @@ jest.mock('../../context/ThemeContext', () => ({
 }));
 
 jest.mock('../../hooks/useWindVoice');
+jest.mock('../../service/DbService');
 
 const mockUseWindVoice = useWindVoice as jest.Mock;
+const mockGetWedgeChartService = getWedgeChartService as jest.Mock;
 
 describe('WindDisplay', () => {
     beforeEach(() => {
@@ -21,6 +24,10 @@ describe('WindDisplay', () => {
             isListening: false,
             adjustedYards: null,
             toggleListening: jest.fn(),
+        });
+        mockGetWedgeChartService.mockReturnValue({
+            distanceNames: [],
+            clubs: [],
         });
     });
     it('rendersNothingWhenDirectionNull', () => {
@@ -195,6 +202,112 @@ describe('WindDisplay', () => {
             const { getByTestId, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
             expect(getByTestId('wind-voice-button')).toBeTruthy();
             expect(queryAllByText(/Say the yardage/i).length).toBeGreaterThan(0);
+        });
+    });
+
+    describe('club suggestions', () => {
+        const mockWedgeChart = {
+            distanceNames: ['full'],
+            clubs: [
+                { club: '52°', distances: [{ name: 'full', distance: 130 }] },
+                { club: '56°', distances: [{ name: 'full', distance: 120 }] },
+                { club: '60°', distances: [{ name: 'full', distance: 110 }] },
+            ],
+        };
+
+        beforeEach(() => {
+            mockGetWedgeChartService.mockReturnValue(mockWedgeChart);
+        });
+
+        it('does not render suggested clubs when adjustedYards is null', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                toggleListening: jest.fn(),
+            });
+
+            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByTestId('wind-club-suggestions')).toBeNull();
+        });
+
+        it('renders suggested clubs when adjustedYards is available', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: 130,
+                toggleListening: jest.fn(),
+            });
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByTestId('wind-club-suggestions')).toBeTruthy();
+        });
+
+        it('displays single club for exact match', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: 130,
+                toggleListening: jest.fn(),
+            });
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByTestId('wind-club-suggestions')).toBeTruthy();
+            const text = JSON.stringify(getByTestId('wind-club-suggestions').props.children);
+            expect(text).toMatch(/52/);
+        });
+
+        it('displays both clubs when yardage falls between them', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: 125,
+                toggleListening: jest.fn(),
+            });
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            const text = JSON.stringify(getByTestId('wind-club-suggestions').props.children);
+            expect(text).toMatch(/52/);
+            expect(text).toMatch(/56/);
+        });
+
+        it('hides suggestions when wedge chart is empty', () => {
+            mockGetWedgeChartService.mockReturnValue({ distanceNames: [], clubs: [] });
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: 130,
+                toggleListening: jest.fn(),
+            });
+
+            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByTestId('wind-club-suggestions')).toBeNull();
+        });
+
+        it('hides suggestions when no clubs match the yardage', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: 200,
+                toggleListening: jest.fn(),
+            });
+
+            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByTestId('wind-club-suggestions')).toBeNull();
+        });
+
+        it('does not render when disableVoice is true', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: 130,
+                toggleListening: jest.fn(),
+            });
+
+            const { queryByTestId } = render(
+                <WindDisplay directionFrom={100} speedMph={10} heading={0} disableVoice />
+            );
+            expect(queryByTestId('wind-club-suggestions')).toBeNull();
         });
     });
 });

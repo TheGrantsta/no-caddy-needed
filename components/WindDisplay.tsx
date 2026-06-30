@@ -4,6 +4,8 @@ import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 import { degreesToCompass, getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/WeatherService';
 import { useWindVoice } from '@/hooks/useWindVoice';
+import { getWedgeChartService } from '@/service/DbService';
+import { findClubSuggestions } from '@/service/ClubSuggestionService';
 
 type Props = {
     directionFrom: number | null;
@@ -37,6 +39,10 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
 
     const { isAvailable: voiceAvailable, isListening, adjustedYards, toggleListening } = useWindVoice(effect?.playsLongerPercent ?? 0);
     const voiceEnabled = voiceAvailable && !disableVoice;
+
+    const suggestedClubs = voiceEnabled && adjustedYards !== null
+        ? findClubSuggestions(adjustedYards, getWedgeChartService())
+        : [];
 
     if (directionFrom === null || speedMph === null) return null;
 
@@ -141,6 +147,19 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                 >
                     {adjustedYards !== null ? `Play it as ${adjustedYards} yards` : ' '}
                 </Text>
+                {suggestedClubs.length > 0 && (
+                    <Text
+                        testID="wind-club-suggestions"
+                        style={{
+                            color: colours.primary,
+                            fontSize: fontSizes.normal,
+                            fontWeight: 'bold',
+                            marginTop: 8,
+                        }}
+                    >
+                        Try {suggestedClubs.map(c => c.club).join(' or ')}
+                    </Text>
+                )}
             </View>
             {!compact && (
                 <Text

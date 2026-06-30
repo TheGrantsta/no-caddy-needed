@@ -2,11 +2,12 @@ import { WedgeChartData } from './DbService';
 
 export type ClubSuggestion = {
     club: string;
+    name: string;
     distance: number;
-    matchType: 'exact' | 'between';
 };
 
-const TOLERANCE_YARDS = 3;
+const TOLERANCE_YARDS = 5;
+const ROLL_OUT_YARDS = 5;
 
 /**
  * Find club suggestions from wedge chart based on adjusted yardage.
@@ -17,51 +18,16 @@ export const findClubSuggestions = (adjustedYards: number, wedgeChartData: Wedge
         return [];
     }
 
-    // Flatten all club distances into a single list with club name
-    const allDistances: ClubSuggestion[] = [];
+    const clubSuggestions: ClubSuggestion[] = [];
     for (const club of wedgeChartData.clubs) {
         for (const distance of club.distances) {
-            allDistances.push({
-                club: club.club,
-                distance: distance.distance,
-                matchType: 'exact',
-            });
+            const totalDistance = distance.distance + ROLL_OUT_YARDS;
+
+            if (Math.abs(totalDistance - adjustedYards) <= TOLERANCE_YARDS) {
+                clubSuggestions.push({ club: club.club, name: distance.name, distance: distance.distance });
+            }
         }
     }
 
-    if (allDistances.length === 0) {
-        return [];
-    }
-
-    // Sort by distance descending (longest first)
-    allDistances.sort((a, b) => b.distance - a.distance);
-
-    // Find exact match within tolerance
-    const exactMatch = allDistances.find(d => Math.abs(d.distance - adjustedYards) <= TOLERANCE_YARDS);
-    if (exactMatch) {
-        return [{ ...exactMatch, matchType: 'exact' }];
-    }
-
-    // Find the closest club longer than the yardage
-    const longer = allDistances.reduce<ClubSuggestion | null>((closest, current) => {
-        if (current.distance <= adjustedYards) return closest;
-        if (!closest) return current;
-        return Math.abs(current.distance - adjustedYards) < Math.abs(closest.distance - adjustedYards) ? current : closest;
-    }, null);
-
-    // Find the closest club shorter than the yardage
-    const shorter = allDistances.reduce<ClubSuggestion | null>((closest, current) => {
-        if (current.distance >= adjustedYards) return closest;
-        if (!closest) return current;
-        return Math.abs(adjustedYards - current.distance) < Math.abs(adjustedYards - closest.distance) ? current : closest;
-    }, null);
-
-    if (longer && shorter) {
-        return [
-            { ...longer, matchType: 'between' },
-            { ...shorter, matchType: 'between' },
-        ];
-    }
-
-    return [];
+    return clubSuggestions;
 };

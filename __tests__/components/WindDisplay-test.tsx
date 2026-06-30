@@ -213,6 +213,12 @@ describe('WindDisplay', () => {
                 { club: '52°', distances: [{ name: 'full', distance: 130 }] },
                 { club: '56°', distances: [{ name: 'full', distance: 120 }] },
                 { club: '60°', distances: [{ name: 'full', distance: 110 }] },
+                { club: '52°', distances: [{ name: '3/4', distance: 110 }] },
+                { club: '56°', distances: [{ name: '3/4', distance: 100 }] },
+                { club: '60°', distances: [{ name: '3/4', distance: 90 }] },
+                { club: '52°', distances: [{ name: '1/2', distance: 90 }] },
+                { club: '56°', distances: [{ name: '1/2', distance: 80 }] },
+                { club: '60°', distances: [{ name: '1/2', distance: 70 }] },
             ],
         };
 
@@ -232,44 +238,31 @@ describe('WindDisplay', () => {
             expect(queryByTestId('wind-club-suggestions')).toBeNull();
         });
 
-        it('renders suggested clubs when adjustedYards is available', () => {
-            mockUseWindVoice.mockReturnValue({
-                isAvailable: true,
-                isListening: false,
-                adjustedYards: 130,
-                toggleListening: jest.fn(),
-            });
-
-            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
-            expect(getByTestId('wind-club-suggestions')).toBeTruthy();
-        });
-
         it('displays single club for exact match', () => {
             mockUseWindVoice.mockReturnValue({
                 isAvailable: true,
                 isListening: false,
-                adjustedYards: 130,
+                adjustedYards: 135,
                 toggleListening: jest.fn(),
             });
 
             const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
             expect(getByTestId('wind-club-suggestions')).toBeTruthy();
             const text = JSON.stringify(getByTestId('wind-club-suggestions').props.children);
-            expect(text).toMatch(/52/);
+            expect(text).toMatch("[\"Try \",\"full: 52°\"]");
         });
 
         it('displays both clubs when yardage falls between them', () => {
             mockUseWindVoice.mockReturnValue({
                 isAvailable: true,
                 isListening: false,
-                adjustedYards: 125,
+                adjustedYards: 110,
                 toggleListening: jest.fn(),
             });
 
             const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
             const text = JSON.stringify(getByTestId('wind-club-suggestions').props.children);
-            expect(text).toMatch(/52/);
-            expect(text).toMatch(/56/);
+            expect(text).toMatch("[\"Try \",\"full: 60° or 3/4: 52° or 3/4: 56°\"]");
         });
 
         it('hides suggestions when wedge chart is empty', () => {

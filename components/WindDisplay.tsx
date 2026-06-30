@@ -158,7 +158,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                             marginTop: 8,
                         }}
                     >
-                        Try {suggestedClubs.map(c => c.club).join(' or ')}
+                        Try {suggestedClubs.map(c => c.name + ': ' + c.club).join(' or ')}
                     </Text>
                 )}
             </View>

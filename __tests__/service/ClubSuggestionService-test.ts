@@ -8,68 +8,50 @@ describe('findClubSuggestions', () => {
             {
                 club: '52°',
                 distances: [
-                    { name: 'half', distance: 80 },
-                    { name: '3/4', distance: 105 },
+                    { name: 'half', distance: 102 },
+                    { name: '3/4', distance: 115 },
                     { name: 'full', distance: 130 },
                 ],
             },
             {
                 club: '56°',
                 distances: [
-                    { name: 'half', distance: 70 },
-                    { name: '3/4', distance: 95 },
-                    { name: 'full', distance: 120 },
+                    { name: 'half', distance: 98 },
+                    { name: '3/4', distance: 109 },
+                    { name: 'full', distance: 125 },
                 ],
             },
             {
                 club: '60°',
                 distances: [
                     { name: 'half', distance: 60 },
-                    { name: '3/4', distance: 85 },
+                    { name: '3/4', distance: 92 },
                     { name: 'full', distance: 110 },
                 ],
             },
         ],
     };
 
-    describe('exact match', () => {
-        it('returns single club when yardage exactly matches a distance', () => {
-            const result = findClubSuggestions(130, mockWedgeChartData);
+    describe('find clubs that could be used', () => {
+        it('returns one club suggestion when yardage plus 5 yards of roll matches a distance', () => {
+            const result = findClubSuggestions(138, mockWedgeChartData);
 
             expect(result).toHaveLength(1);
             expect(result[0].club).toBe('52°');
+            expect(result[0].name).toBe('full');
             expect(result[0].distance).toBe(130);
-            expect(result[0].matchType).toBe('exact');
         });
 
-        it('matches the closest distance within tolerance for a club', () => {
-            const result = findClubSuggestions(131, mockWedgeChartData);
-
-            expect(result).toHaveLength(1);
-            expect(result[0].club).toBe('52°');
-            expect(result[0].matchType).toBe('exact');
-        });
-    });
-
-    describe('between two clubs', () => {
-        it('returns both clubs when yardage falls between them', () => {
-            const result = findClubSuggestions(125, mockWedgeChartData);
-
-            expect(result).toHaveLength(2);
-            expect(result[0].club).toBe('52°');
-            expect(result[0].distance).toBe(130);
-            expect(result[1].club).toBe('56°');
-            expect(result[1].distance).toBe(120);
-            expect(result[0].matchType).toBe('between');
-            expect(result[1].matchType).toBe('between');
-        });
-
-        it('handles yardage between different distance types', () => {
-            const result = findClubSuggestions(115, mockWedgeChartData);
+        it('returns multiple club suggestions when yardage plus 5 yards of roll falls between two distances', () => {
+            const result = findClubSuggestions(99, mockWedgeChartData);
 
             expect(result).toHaveLength(2);
             expect(result[0].club).toBe('56°');
+            expect(result[0].name).toBe('half');
+            expect(result[0].distance).toBe(98);
             expect(result[1].club).toBe('60°');
+            expect(result[1].name).toBe('3/4');
+            expect(result[1].distance).toBe(92);
         });
     });
 
@@ -131,23 +113,6 @@ describe('findClubSuggestions', () => {
             const result = findClubSuggestions(-50, mockWedgeChartData);
 
             expect(result).toHaveLength(0);
-        });
-    });
-
-    describe('tolerance', () => {
-        it('considers yardages within 3 yards as exact match', () => {
-            const result = findClubSuggestions(133, mockWedgeChartData);
-
-            expect(result).toHaveLength(1);
-            expect(result[0].club).toBe('52°');
-            expect(result[0].matchType).toBe('exact');
-        });
-
-        it('considers yardages outside 3 yard tolerance as between', () => {
-            const result = findClubSuggestions(126, mockWedgeChartData);
-
-            expect(result).toHaveLength(2);
-            expect(result[0].matchType).toBe('between');
         });
     });
 });

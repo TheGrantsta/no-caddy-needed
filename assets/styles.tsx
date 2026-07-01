@@ -1757,6 +1757,104 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 2,
         },
     }),
+    windDisplay: StyleSheet.create({
+        card: {
+            backgroundColor: c.background,
+            borderRadius: 16,
+            alignItems: 'center',
+            borderColor: c.primary,
+        },
+        cardFull: {
+            paddingVertical: 32,
+            paddingHorizontal: 48,
+            borderWidth: 1,
+        },
+        cardCompact: {
+            paddingVertical: 8,
+        },
+        title: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+            marginBottom: 12,
+        },
+        targetMarker: {
+            alignItems: 'center',
+            marginBottom: 2,
+        },
+        targetLabel: {
+            color: c.primary,
+            fontSize: fontSizes.smallestText,
+            fontWeight: 'bold',
+            opacity: 0.7,
+        },
+        arrowWrapper: {
+            marginTop: 4,
+        },
+        speedText: {
+            color: c.primary,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            marginTop: 8,
+        },
+        bottomSection: {
+            marginTop: 16,
+            width: '100%',
+            alignItems: 'center',
+        },
+        voiceButton: {
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            borderRadius: 8,
+            borderWidth: 1,
+            borderColor: c.primary,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+        },
+        voiceButtonActive: {
+            backgroundColor: c.primary,
+            opacity: 0.9,
+        },
+        voiceButtonInactive: {
+            backgroundColor: 'transparent',
+        },
+        voiceButtonText: {
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+        },
+        voiceButtonTextActive: {
+            color: c.background,
+        },
+        voiceButtonTextInactive: {
+            color: c.primary,
+        },
+        effectText: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        adjustedYardsText: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+            marginTop: 12,
+            minHeight: fontSizes.normal * 1.5,
+        },
+        clubSuggestionsText: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+            marginTop: 8,
+        },
+        aimHint: {
+            color: c.primary,
+            fontSize: fontSizes.smallestText,
+            opacity: 0.6,
+            marginTop: 12,
+        },
+    }),
 });
 
 export default createStyles(colours);

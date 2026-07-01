@@ -1,7 +1,7 @@
 import { Text, View, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
-import fontSizes from '@/assets/font-sizes';
+import { useStyles } from '@/hooks/useStyles';
 import { getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/WeatherService';
 import { useWindVoice } from '@/hooks/useWindVoice';
 import { getWedgeChartService } from '@/service/DbService';
@@ -32,6 +32,7 @@ type Props = {
  */
 const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disableVoice = false }: Props) => {
     const colours = useThemeColours();
+    const styles = useStyles();
 
     const effect = directionFrom !== null && speedMph !== null
         ? getWindEffect(directionFrom, speedMph, heading)
@@ -59,56 +60,36 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
     return (
         <View
             testID="wind-display-container"
-            style={{
-                backgroundColor: colours.background,
-                borderRadius: 16,
-                paddingVertical: compact ? 8 : 32,
-                paddingHorizontal: compact ? 0 : 48,
-                alignItems: 'center',
-                borderWidth: compact ? 0 : 1,
-                borderColor: colours.primary,
-            }}
+            style={[styles.windDisplay.card, compact ? styles.windDisplay.cardCompact : styles.windDisplay.cardFull]}
         >
             {!compact && (
                 <Text
                     testID="wind-display-title"
-                    style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginBottom: 12 }}
+                    style={styles.windDisplay.title}
                 >
                     Wind direction / speed
                 </Text>
             )}
-            <View testID="wind-target-marker" style={{ alignItems: 'center', marginBottom: 2 }}>
+            <View testID="wind-target-marker" style={styles.windDisplay.targetMarker}>
                 <MaterialIcons name="golf-course" size={22} color={colours.primary} />
-                <Text style={{ color: colours.primary, fontSize: fontSizes.smallestText, fontWeight: 'bold', opacity: 0.7 }}>
+                <Text style={styles.windDisplay.targetLabel}>
                     Target
                 </Text>
             </View>
-            <View testID="wind-arrow-large" style={{ marginTop: 4, transform: [{ rotate: `${rotation}deg` }] }}>
+            <View testID="wind-arrow-large" style={[styles.windDisplay.arrowWrapper, { transform: [{ rotate: `${rotation}deg` }] }]}>
                 <MaterialIcons name="straight" size={110} color={colours.primary} />
             </View>
             <Text
                 testID="wind-speed-text-large"
-                style={{ color: colours.primary, fontSize: fontSizes.header, fontWeight: 'bold', marginTop: 8 }}
+                style={styles.windDisplay.speedText}
             >
                 {speed} mph
             </Text>
-            <View style={{ marginTop: 16, width: '100%', alignItems: 'center' }}>
+            <View style={styles.windDisplay.bottomSection}>
                 {voiceEnabled && (
                     <TouchableOpacity
                         testID="wind-voice-button"
-                        style={{
-                            paddingVertical: 8,
-                            paddingHorizontal: 12,
-                            backgroundColor: isListening ? colours.primary : 'transparent',
-                            borderRadius: 8,
-                            borderWidth: 1,
-                            borderColor: colours.primary,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: 6,
-                            opacity: isListening ? 0.9 : 1,
-                        }}
+                        style={[styles.windDisplay.voiceButton, isListening ? styles.windDisplay.voiceButtonActive : styles.windDisplay.voiceButtonInactive]}
                         onPress={toggleListening}
                     >
                         <MaterialIcons
@@ -117,11 +98,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                             color={isListening ? colours.background : colours.primary}
                         />
                         <Text
-                            style={{
-                                color: isListening ? colours.background : colours.primary,
-                                fontSize: fontSizes.smallText,
-                                fontWeight: 'bold',
-                            }}
+                            style={[styles.windDisplay.voiceButtonText, isListening ? styles.windDisplay.voiceButtonTextActive : styles.windDisplay.voiceButtonTextInactive]}
                         >
                             {isListening ? 'Listening...' : 'Say the yardage'}
                         </Text>
@@ -130,33 +107,21 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                 {!adjustedYards && (
                     <Text
                         testID="wind-effect-text"
-                        style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: 'bold', marginTop: voiceEnabled ? 12 : 0 }}
+                        style={[styles.windDisplay.effectText, { marginTop: voiceEnabled ? 12 : 0 }]}
                     >
                         {effectText}
                     </Text>
                 )}
                 <Text
                     testID="wind-adjusted-yards"
-                    style={{
-                        color: colours.primary,
-                        fontSize: fontSizes.normal,
-                        fontWeight: 'bold',
-                        marginTop: 12,
-                        opacity: adjustedYards !== null ? 1 : 0,
-                        minHeight: fontSizes.normal * 1.5,
-                    }}
+                    style={[styles.windDisplay.adjustedYardsText, { opacity: adjustedYards !== null ? 1 : 0 }]}
                 >
                     {adjustedYards !== null ? `Play it as ${adjustedYards} yards` : ' '}
                 </Text>
                 {suggestedClubs.length > 0 && (
                     <Text
                         testID="wind-club-suggestions"
-                        style={{
-                            color: colours.primary,
-                            fontSize: fontSizes.normal,
-                            fontWeight: 'bold',
-                            marginTop: 8,
-                        }}
+                        style={styles.windDisplay.clubSuggestionsText}
                     >
                         Try {suggestedClubs.map(c => c.name + ': ' + c.club).join(' or ')}
                     </Text>
@@ -165,7 +130,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
             {!compact && (
                 <Text
                     testID="wind-aim-hint"
-                    style={{ color: colours.primary, fontSize: fontSizes.smallestText, opacity: 0.6, marginTop: 12 }}
+                    style={styles.windDisplay.aimHint}
                 >
                     Aim your phone at the target
                 </Text>

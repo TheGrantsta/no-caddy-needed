@@ -248,10 +248,9 @@ describe('WindDisplay', () => {
                 toggleListening: jest.fn(),
             });
 
-            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
-            expect(getByTestId('wind-club-suggestions')).toBeTruthy();
-            const text = JSON.stringify(getByTestId('wind-club-suggestions').props.children);
-            expect(text).toMatch("[\"Try \",\"full: 52°\"]");
+            const { getByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByText('Try')).toBeTruthy();
+            expect(getByText('52°: 130y')).toBeTruthy();
         });
 
         it('displays both clubs when yardage falls between them', () => {
@@ -262,9 +261,11 @@ describe('WindDisplay', () => {
                 toggleListening: jest.fn(),
             });
 
-            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
-            const text = JSON.stringify(getByTestId('wind-club-suggestions').props.children);
-            expect(text).toMatch("[\"Try \",\"full: 60° or 3/4: 52° or 3/4: 56°\"]");
+            const { getByText, queryByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByText('Try')).toBeTruthy();
+            expect(queryByText(/60°: 110y/)).toBeTruthy();
+            expect(queryByText(/52°: 110y/)).toBeTruthy();
+            expect(queryByText(/56°: 100y/)).toBeTruthy();
         });
 
         it('hides suggestions when wedge chart is empty', () => {

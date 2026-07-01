@@ -119,12 +119,21 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                     {adjustedYards !== null ? `Play it as ${adjustedYards} yards` : ' '}
                 </Text>
                 {suggestedClubs.length > 0 && (
-                    <Text
-                        testID="wind-club-suggestions"
-                        style={styles.windDisplay.clubSuggestionsText}
-                    >
-                        Try {suggestedClubs.map(c => c.name + ': ' + c.club).join(' or ')}
-                    </Text>
+                    <View style={styles.windDisplay.clubSuggestionsContainer}>
+                        <Text style={styles.windDisplay.clubSuggestionsLabel}>Try</Text>
+                        {suggestedClubs.map((club, idx) => {
+                            const maxDistance = Math.max(...suggestedClubs.map(c => c.distance), 100);
+                            const barWidth = (club.distance / maxDistance) * 100;
+                            return (
+                                <View key={idx} style={styles.windDisplay.clubBar}>
+                                    <View style={[styles.windDisplay.barFill, { width: `${barWidth}%` }]} />
+                                    <Text style={styles.windDisplay.barLabel}>
+                                        {club.club}: {club.distance}y
+                                    </Text>
+                                </View>
+                            );
+                        })}
+                    </View>
                 )}
             </View>
             {!compact && (

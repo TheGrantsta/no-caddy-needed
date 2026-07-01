@@ -1801,6 +1801,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 16,
             width: '100%',
             alignItems: 'center',
+            minHeight: 124,
         },
         voiceButton: {
             paddingVertical: 8,
@@ -1846,7 +1847,7 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.primary,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
-            marginTop: 8,
+            marginTop: 12,
         },
         aimHint: {
             color: c.primary,

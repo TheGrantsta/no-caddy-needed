@@ -64,7 +64,7 @@ describe('WindIndicator', () => {
             fireEvent.press(getByTestId('wind-indicator'));
 
             expect(getByTestId('wind-arrow-large').props.style).toEqual(
-                expect.objectContaining({ transform: [{ rotate: '180deg' }] })
+                [{ "marginTop": 4 }, { "transform": [{ "rotate": "180deg" }] }]
             );
         });
 

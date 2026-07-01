@@ -53,16 +53,18 @@ describe('WindDisplay', () => {
     it('appliesDownwindCompassRotationToLargeArrow', () => {
         // wind FROM 0 → downwind 180; heading 0 → 180deg
         const { getByTestId } = render(<WindDisplay directionFrom={0} speedMph={5} heading={0} />);
+
         expect(getByTestId('wind-arrow-large').props.style).toEqual(
-            expect.objectContaining({ transform: [{ rotate: '180deg' }] })
+            [{ "marginTop": 4 }, { "transform": [{ "rotate": "180deg" }] }]
         );
     });
 
     it('reorientsLargeArrowWithDeviceHeading', () => {
         // downwind 180; phone rotated 90 → 90deg
         const { getByTestId } = render(<WindDisplay directionFrom={0} speedMph={5} heading={90} />);
+
         expect(getByTestId('wind-arrow-large').props.style).toEqual(
-            expect.objectContaining({ transform: [{ rotate: '90deg' }] })
+            [{ "marginTop": 4 }, { "transform": [{ "rotate": "90deg" }] }]
         );
     });
 
@@ -176,7 +178,7 @@ describe('WindDisplay', () => {
             const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
             const element = getByTestId('wind-adjusted-yards');
             // Element is rendered but with opacity 0 to reserve space
-            expect(element.props.style.opacity).toBe(0);
+            expect(element.props.style[1].opacity).toBe(0);
         });
 
         it('shows Listening text when isListening is true', () => {

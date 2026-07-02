@@ -86,16 +86,16 @@ export default function DistancesScreen() {
                         <TouchableOpacity
                             testID="cancel-clear-button"
                             onPress={() => setShowClearConfirm(false)}
-                            style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, borderWidth: 1, borderColor: colours.backgroundAlternate }}
+                            style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.errorText }}
                         >
-                            <Text style={{ color: colours.text, fontSize: fontSizes.normal }}>Cancel</Text>
+                            <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             testID="confirm-clear-button"
                             onPress={handleClear}
-                            style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.errorText }}
+                            style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.primary }}
                         >
-                            <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Confirm clear</Text>
+                            <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Confirm</Text>
                         </TouchableOpacity>
                     </View>
                 )}

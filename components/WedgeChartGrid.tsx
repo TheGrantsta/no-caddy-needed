@@ -27,34 +27,34 @@ const WedgeChartGrid = ({ data, suggestedClubs }: Props) => {
             showsHorizontalScrollIndicator={false}
         >
             <View style={styles.wedgeChartGrid.container}>
-                {/* Header row with club numbers */}
+                {/* Header row with swing types */}
                 <View style={styles.wedgeChartGrid.headerRow}>
                     <View style={styles.wedgeChartGrid.labelCell}>
                         <Text style={styles.wedgeChartGrid.labelText}>Club</Text>
                     </View>
-                    {data.clubs.map(club => (
-                        <View key={`header-${club.club}`} style={styles.wedgeChartGrid.clubHeaderCell}>
+                    {data.distanceNames.map(distanceName => (
+                        <View key={`header-${distanceName}`} style={styles.wedgeChartGrid.clubHeaderCell}>
                             <Text style={styles.wedgeChartGrid.clubHeaderText}>
-                                {club.club}
+                                {distanceName}
                             </Text>
                         </View>
                     ))}
                 </View>
 
-                {/* Data rows for each swing type */}
-                {data.distanceNames.map((distanceName, rowIdx) => (
-                    <View key={`row-${rowIdx}`} style={styles.wedgeChartGrid.dataRow}>
+                {/* Data rows for each club number */}
+                {data.clubs.map((club, clubIdx) => (
+                    <View key={`row-${club.club}`} style={styles.wedgeChartGrid.dataRow}>
                         <View style={styles.wedgeChartGrid.swingTypeCell}>
                             <Text style={styles.wedgeChartGrid.swingTypeText}>
-                                {distanceName}
+                                {club.club}
                             </Text>
                         </View>
-                        {data.clubs.map(club => {
-                            const distance = club.distances[rowIdx];
+                        {data.distanceNames.map((distanceName, distIdx) => {
+                            const distance = club.distances[distIdx];
                             const isHighlighted = suggestedSet.has(`${club.club}-${distanceName}`);
                             return (
                                 <View
-                                    key={`${club.club}-${rowIdx}`}
+                                    key={`${club.club}-${distanceName}`}
                                     style={[
                                         styles.wedgeChartGrid.dataCell,
                                         isHighlighted && styles.wedgeChartGrid.highlightedCell,

@@ -1760,12 +1760,14 @@ export const createStyles = (c: ThemeColours) => ({
     wedgeChartGrid: StyleSheet.create({
         container: {
             marginTop: 12,
-            paddingHorizontal: 8,
+            paddingHorizontal: 0,
             borderWidth: 1,
             borderColor: c.primary + '44',
             borderRadius: 8,
             overflow: 'hidden',
             backgroundColor: c.primary + '11',
+            alignSelf: 'center',
+            width: '90%',
         },
         row: {
             flexDirection: 'row',
@@ -1774,18 +1776,22 @@ export const createStyles = (c: ThemeColours) => ({
         },
         cell: {
             flex: 1,
-            paddingVertical: 6,
-            paddingHorizontal: 4,
+            minWidth: 36,
+            paddingVertical: 8,
+            paddingHorizontal: 2,
             justifyContent: 'center',
             alignItems: 'center',
         },
         headerCell: {
             backgroundColor: c.primary + '22',
             fontWeight: 'bold',
+            minHeight: 32,
         },
         labelCell: {
-            flex: 0.8,
+            flex: 0,
+            minWidth: 38,
             backgroundColor: c.primary + '11',
+            paddingHorizontal: 4,
         },
         dataCell: {
             backgroundColor: c.background,

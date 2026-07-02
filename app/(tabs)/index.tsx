@@ -22,9 +22,9 @@ const ONBOARDING_STEPS = [
 
 // What's new for the current version — shown once per version to existing users.
 const WHATS_NEW = [
-  'Enable swipping left and right through the 7 Deadly Sins charts',
-  'Enable swipping left and right through previously completed rounds',
-  'Clean up Settings page to group settings by type',
+  'Add voice support for calculating adjusted distances based on wind strength / direction',
+  'Add suggested clubs from wedge chart to wind direction indicator',
+  'Amend the "Clear all" flow for wedge chart & distances',
 ];
 
 const APP_VERSION = Constants.expoConfig?.version ?? '';

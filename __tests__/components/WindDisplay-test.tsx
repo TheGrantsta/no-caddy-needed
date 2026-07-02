@@ -245,12 +245,11 @@ describe('WindDisplay', () => {
             });
 
             const { getByText, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
-            expect(getByText('Club')).toBeTruthy();
             expect(getByText('54°')).toBeTruthy();
             expect(queryAllByText('130').length).toBeGreaterThan(0);
         });
 
-        it('displays both clubs when yardage falls between them', () => {
+        it('displays single club when yardage matches', () => {
             mockUseWindVoice.mockReturnValue({
                 isAvailable: true,
                 isListening: false,
@@ -259,8 +258,7 @@ describe('WindDisplay', () => {
             });
 
             const { getByText, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
-            expect(getByText('Club')).toBeTruthy();
-            expect(getByText('54°')).toBeTruthy();
+            expect(getByText('58°')).toBeTruthy();
             expect(queryAllByText('110').length).toBeGreaterThan(0);
         });
 

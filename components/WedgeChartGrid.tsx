@@ -29,9 +29,7 @@ const WedgeChartGrid = ({ data, suggestedClubs }: Props) => {
             <View style={styles.wedgeChartGrid.container}>
                 {/* Header row with swing types */}
                 <View style={styles.wedgeChartGrid.headerRow}>
-                    <View style={styles.wedgeChartGrid.labelCell}>
-                        <Text style={styles.wedgeChartGrid.labelText}>Club</Text>
-                    </View>
+                    <View style={styles.wedgeChartGrid.labelCell} />
                     {data.distanceNames.map(distanceName => (
                         <View key={`header-${distanceName}`} style={styles.wedgeChartGrid.clubHeaderCell}>
                             <Text style={styles.wedgeChartGrid.clubHeaderText}>
@@ -49,8 +47,8 @@ const WedgeChartGrid = ({ data, suggestedClubs }: Props) => {
                                 {club.club}
                             </Text>
                         </View>
-                        {data.distanceNames.map((distanceName, distIdx) => {
-                            const distance = club.distances[distIdx];
+                        {data.distanceNames.map((distanceName) => {
+                            const distance = club.distances.find(d => d.name === distanceName);
                             const isHighlighted = suggestedSet.has(`${club.club}-${distanceName}`);
                             return (
                                 <View

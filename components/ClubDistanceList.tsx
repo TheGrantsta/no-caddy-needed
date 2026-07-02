@@ -58,8 +58,12 @@ const ClubDistanceList = ({ distances, onSave }: Props) => {
     return (
         <View style={s.container}>
             <View style={s.headerRow}>
-                <Text style={[s.headerCell, s.clubCell]}>Club</Text>
-                <Text style={[s.headerCell, s.distanceCell]}>Distance</Text>
+                <View style={[s.headerCell, s.clubCell]}>
+                    <Text style={s.headerCell}>Club</Text>
+                </View>
+                <View style={[s.headerCell, s.distanceCell]}>
+                    <Text style={s.headerCell}>Distance</Text>
+                </View>
             </View>
             {rows.map((row, index) => (
                 <View key={index} style={s.row}>
@@ -68,7 +72,7 @@ const ClubDistanceList = ({ distances, onSave }: Props) => {
                         style={[s.input, s.clubCell]}
                         value={row.club}
                         onChangeText={(v) => handleUpdateRow(index, 'club', v)}
-                        placeholder="Club name"
+                        placeholder="Club"
                         placeholderTextColor={colours.backgroundAlternate}
                     />
                     <TextInput

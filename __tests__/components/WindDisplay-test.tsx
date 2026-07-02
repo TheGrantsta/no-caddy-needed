@@ -210,17 +210,13 @@ describe('WindDisplay', () => {
 
     describe('club suggestions', () => {
         const mockWedgeChart = {
-            distanceNames: ['full'],
+            distanceNames: ['54°', '58°'],
             clubs: [
-                { club: '52°', distances: [{ name: 'full', distance: 130 }] },
-                { club: '56°', distances: [{ name: 'full', distance: 120 }] },
-                { club: '60°', distances: [{ name: 'full', distance: 110 }] },
-                { club: '52°', distances: [{ name: '3/4', distance: 110 }] },
-                { club: '56°', distances: [{ name: '3/4', distance: 100 }] },
-                { club: '60°', distances: [{ name: '3/4', distance: 90 }] },
-                { club: '52°', distances: [{ name: '1/2', distance: 90 }] },
-                { club: '56°', distances: [{ name: '1/2', distance: 80 }] },
-                { club: '60°', distances: [{ name: '1/2', distance: 70 }] },
+                { club: '2', distances: [{ name: '54°', distance: 130 }, { name: '58°', distance: 110 }] },
+                { club: '3', distances: [{ name: '54°', distance: 130 }, { name: '58°', distance: 110 }] },
+                { club: '4', distances: [{ name: '54°', distance: 130 }, { name: '58°', distance: 110 }] },
+                { club: '5', distances: [{ name: '54°', distance: 130 }, { name: '58°', distance: 110 }] },
+                { club: '6', distances: [{ name: '54°', distance: 130 }, { name: '58°', distance: 110 }] },
             ],
         };
 
@@ -236,8 +232,8 @@ describe('WindDisplay', () => {
                 toggleListening: jest.fn(),
             });
 
-            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
-            expect(queryByTestId('wind-club-suggestions')).toBeNull();
+            const { queryByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByText('Club')).toBeNull();
         });
 
         it('displays single club for exact match', () => {
@@ -248,9 +244,10 @@ describe('WindDisplay', () => {
                 toggleListening: jest.fn(),
             });
 
-            const { getByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
-            expect(getByText('Try')).toBeTruthy();
-            expect(getByText('52°: 130y')).toBeTruthy();
+            const { getByText, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByText('Club')).toBeTruthy();
+            expect(getByText('54°')).toBeTruthy();
+            expect(queryAllByText('130').length).toBeGreaterThan(0);
         });
 
         it('displays both clubs when yardage falls between them', () => {
@@ -261,11 +258,10 @@ describe('WindDisplay', () => {
                 toggleListening: jest.fn(),
             });
 
-            const { getByText, queryByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
-            expect(getByText('Try')).toBeTruthy();
-            expect(queryByText(/60°: 110y/)).toBeTruthy();
-            expect(queryByText(/52°: 110y/)).toBeTruthy();
-            expect(queryByText(/56°: 100y/)).toBeTruthy();
+            const { getByText, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByText('Club')).toBeTruthy();
+            expect(getByText('54°')).toBeTruthy();
+            expect(queryAllByText('110').length).toBeGreaterThan(0);
         });
 
         it('hides suggestions when wedge chart is empty', () => {
@@ -277,8 +273,8 @@ describe('WindDisplay', () => {
                 toggleListening: jest.fn(),
             });
 
-            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
-            expect(queryByTestId('wind-club-suggestions')).toBeNull();
+            const { queryByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByText('Club')).toBeNull();
         });
 
         it('hides suggestions when no clubs match the yardage', () => {

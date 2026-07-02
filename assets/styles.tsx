@@ -1757,6 +1757,55 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 2,
         },
     }),
+    wedgeChartGrid: StyleSheet.create({
+        container: {
+            marginTop: 12,
+            paddingHorizontal: 8,
+            borderWidth: 1,
+            borderColor: c.primary + '44',
+            borderRadius: 8,
+            overflow: 'hidden',
+            backgroundColor: c.primary + '11',
+        },
+        row: {
+            flexDirection: 'row',
+            borderBottomWidth: 0.5,
+            borderBottomColor: c.primary + '33',
+        },
+        cell: {
+            flex: 1,
+            paddingVertical: 6,
+            paddingHorizontal: 4,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        headerCell: {
+            backgroundColor: c.primary + '22',
+            fontWeight: 'bold',
+        },
+        labelCell: {
+            flex: 0.8,
+            backgroundColor: c.primary + '11',
+        },
+        dataCell: {
+            backgroundColor: c.background,
+            borderLeftWidth: 0.5,
+            borderLeftColor: c.primary + '33',
+        },
+        highlightedCell: {
+            backgroundColor: c.primary + '33',
+        },
+        dataText: {
+            color: c.text,
+            fontSize: fontSizes.smallestText,
+            fontWeight: '600',
+        },
+        highlightedText: {
+            color: c.primary,
+            fontWeight: 'bold',
+        },
+    }),
+
     windDisplay: StyleSheet.create({
         card: {
             backgroundColor: c.background,
@@ -1842,45 +1891,6 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
             marginTop: 12,
             minHeight: fontSizes.normal * 1.5,
-        },
-        clubSuggestionsText: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-            marginTop: 12,
-        },
-        clubSuggestionsContainer: {
-            marginTop: 12,
-            width: '100%',
-            paddingHorizontal: 16,
-            gap: 6,
-        },
-        clubSuggestionsLabel: {
-            color: c.primary,
-            fontSize: fontSizes.smallText,
-            fontWeight: 'bold',
-            marginBottom: 4,
-        },
-        clubBar: {
-            position: 'relative',
-            height: 28,
-            borderRadius: 6,
-            backgroundColor: c.primary + '22',
-            justifyContent: 'center',
-            overflow: 'hidden',
-        },
-        barFill: {
-            position: 'absolute',
-            height: '100%',
-            backgroundColor: c.primary + '44',
-            borderRadius: 6,
-        },
-        barLabel: {
-            color: c.primary,
-            fontSize: fontSizes.smallText,
-            fontWeight: 'bold',
-            marginLeft: 8,
-            zIndex: 1,
         },
         aimHint: {
             color: c.primary,

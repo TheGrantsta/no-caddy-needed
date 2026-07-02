@@ -6,6 +6,7 @@ import { getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/
 import { useWindVoice } from '@/hooks/useWindVoice';
 import { getWedgeChartService } from '@/service/DbService';
 import { findClubSuggestions } from '@/service/ClubSuggestionService';
+import WedgeChartGrid from './WedgeChartGrid';
 
 type Props = {
     directionFrom: number | null;
@@ -41,8 +42,9 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
     const { isAvailable: voiceAvailable, isListening, adjustedYards, toggleListening } = useWindVoice(effect?.playsLongerPercent ?? 0);
     const voiceEnabled = voiceAvailable && !disableVoice;
 
-    const suggestedClubs = voiceEnabled && adjustedYards !== null
-        ? findClubSuggestions(adjustedYards, getWedgeChartService())
+    const wedgeChartData = voiceEnabled && adjustedYards !== null ? getWedgeChartService() : null;
+    const suggestedClubs = wedgeChartData
+        ? findClubSuggestions(adjustedYards, wedgeChartData)
         : [];
 
     if (directionFrom === null || speedMph === null) return null;
@@ -118,22 +120,8 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                 >
                     {adjustedYards !== null ? `Play it as ${adjustedYards} yards` : ' '}
                 </Text>
-                {suggestedClubs.length > 0 && (
-                    <View style={styles.windDisplay.clubSuggestionsContainer}>
-                        <Text style={styles.windDisplay.clubSuggestionsLabel}>Try</Text>
-                        {suggestedClubs.map((club, idx) => {
-                            const maxDistance = Math.max(...suggestedClubs.map(c => c.distance), 100);
-                            const barWidth = (club.distance / maxDistance) * 100;
-                            return (
-                                <View key={idx} style={styles.windDisplay.clubBar}>
-                                    <View style={[styles.windDisplay.barFill, { width: `${barWidth}%` }]} />
-                                    <Text style={styles.windDisplay.barLabel}>
-                                        {club.club}: {club.distance}y
-                                    </Text>
-                                </View>
-                            );
-                        })}
-                    </View>
+                {suggestedClubs.length > 0 && wedgeChartData && (
+                    <WedgeChartGrid data={wedgeChartData} suggestedClubs={suggestedClubs} />
                 )}
             </View>
             {!compact && (

@@ -95,7 +95,7 @@ export default function WedgeChartScreen() {
                             onPress={handleClear}
                             style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.primary }}
                         >
-                            <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Confirm clear</Text>
+                            <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Confirm</Text>
                         </TouchableOpacity>
                     </View>
                 )}

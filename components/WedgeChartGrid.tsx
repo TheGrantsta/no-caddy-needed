@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { Text, View, ScrollView } from 'react-native';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { WedgeChartData } from '@/service/DbService';
@@ -10,6 +10,7 @@ type Props = {
 
 /**
  * Renders a mini wedge chart grid with suggested club/swing-type combinations highlighted.
+ * Layout: clubs across top (columns), swing types down side (rows).
  */
 const WedgeChartGrid = ({ data, suggestedClubs }: Props) => {
     const colours = useThemeColours();
@@ -20,54 +21,60 @@ const WedgeChartGrid = ({ data, suggestedClubs }: Props) => {
     const suggestedSet = new Set(suggestedClubs.map(c => `${c.club}-${c.name}`));
 
     return (
-        <View style={styles.wedgeChartGrid.container}>
-            {/* Header row with club numbers */}
-            <View style={styles.wedgeChartGrid.row}>
-                <Text style={[styles.wedgeChartGrid.cell, styles.wedgeChartGrid.headerCell]}>
-                    Club
-                </Text>
-                {data.clubs.map(club => (
-                    <Text
-                        key={club.club}
-                        style={[styles.wedgeChartGrid.cell, styles.wedgeChartGrid.headerCell]}
-                    >
-                        {club.club}
-                    </Text>
-                ))}
-            </View>
+        <ScrollView
+            horizontal
+            style={styles.wedgeChartGrid.scrollContainer}
+            showsHorizontalScrollIndicator={false}
+        >
+            <View style={styles.wedgeChartGrid.container}>
+                {/* Header row with club numbers */}
+                <View style={styles.wedgeChartGrid.headerRow}>
+                    <View style={styles.wedgeChartGrid.labelCell}>
+                        <Text style={styles.wedgeChartGrid.labelText}>Club</Text>
+                    </View>
+                    {data.clubs.map(club => (
+                        <View key={`header-${club.club}`} style={styles.wedgeChartGrid.clubHeaderCell}>
+                            <Text style={styles.wedgeChartGrid.clubHeaderText}>
+                                {club.club}
+                            </Text>
+                        </View>
+                    ))}
+                </View>
 
-            {/* Data rows for each swing type */}
-            {data.distanceNames.map((distanceName, rowIdx) => (
-                <View key={`row-${rowIdx}`} style={styles.wedgeChartGrid.row}>
-                    <Text style={[styles.wedgeChartGrid.cell, styles.wedgeChartGrid.labelCell]}>
-                        {distanceName}
-                    </Text>
-                    {data.clubs.map(club => {
-                        const distance = club.distances[rowIdx];
-                        const isHighlighted = suggestedSet.has(`${club.club}-${distanceName}`);
-                        return (
-                            <View
-                                key={`${club.club}-${rowIdx}`}
-                                style={[
-                                    styles.wedgeChartGrid.cell,
-                                    styles.wedgeChartGrid.dataCell,
-                                    isHighlighted && styles.wedgeChartGrid.highlightedCell,
-                                ]}
-                            >
-                                <Text
+                {/* Data rows for each swing type */}
+                {data.distanceNames.map((distanceName, rowIdx) => (
+                    <View key={`row-${rowIdx}`} style={styles.wedgeChartGrid.dataRow}>
+                        <View style={styles.wedgeChartGrid.swingTypeCell}>
+                            <Text style={styles.wedgeChartGrid.swingTypeText}>
+                                {distanceName}
+                            </Text>
+                        </View>
+                        {data.clubs.map(club => {
+                            const distance = club.distances[rowIdx];
+                            const isHighlighted = suggestedSet.has(`${club.club}-${distanceName}`);
+                            return (
+                                <View
+                                    key={`${club.club}-${rowIdx}`}
                                     style={[
-                                        styles.wedgeChartGrid.dataText,
-                                        isHighlighted && styles.wedgeChartGrid.highlightedText,
+                                        styles.wedgeChartGrid.dataCell,
+                                        isHighlighted && styles.wedgeChartGrid.highlightedCell,
                                     ]}
                                 >
-                                    {distance?.distance ?? '—'}
-                                </Text>
-                            </View>
-                        );
-                    })}
-                </View>
-            ))}
-        </View>
+                                    <Text
+                                        style={[
+                                            styles.wedgeChartGrid.dataText,
+                                            isHighlighted && styles.wedgeChartGrid.highlightedText,
+                                        ]}
+                                    >
+                                        {distance?.distance ?? '—'}
+                                    </Text>
+                                </View>
+                            );
+                        })}
+                    </View>
+                ))}
+            </View>
+        </ScrollView>
     );
 };
 

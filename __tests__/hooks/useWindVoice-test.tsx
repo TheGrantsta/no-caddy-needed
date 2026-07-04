@@ -32,7 +32,7 @@ const mockGetAvailableVoices = Speech.getAvailableVoicesAsync as jest.Mock;
 const mockGetSettings = getSettingsService as jest.Mock;
 
 describe('useWindVoice', () => {
-	const defaultSettings = { voice: 'male', soundsEnabled: true };
+	const defaultSettings = { voice: 'male', soundsEnabled: true, units: 'yards' as const };
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -57,6 +57,16 @@ describe('useWindVoice', () => {
 		it('should return adjustedYards as null initially', () => {
 			const { result } = renderHook(() => useWindVoice(0));
 			expect(result.current.adjustedYards).toBeNull();
+		});
+
+		it('should return adjustedDisplayValue as null initially', () => {
+			const { result } = renderHook(() => useWindVoice(0));
+			expect(result.current.adjustedDisplayValue).toBeNull();
+		});
+
+		it('should return distanceUnit as yards initially', () => {
+			const { result } = renderHook(() => useWindVoice(0));
+			expect(result.current.distanceUnit).toBe('yards');
 		});
 
 		it('should request permission and start recognition on toggleListening', async () => {
@@ -301,6 +311,117 @@ describe('useWindVoice', () => {
 		});
 
 		expect(mockSpeak).toHaveBeenCalled();
+	});
+
+	it('does not stop listening when a bare number is heard without a unit word', () => {
+		let resultHandler: ((event: any) => void) | null = null;
+
+		mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+			if (eventName === 'result') {
+				resultHandler = handler;
+			}
+		});
+
+		mockStop.mockClear();
+		const { result } = renderHook(() => useWindVoice(0));
+
+		expect(resultHandler).toBeTruthy();
+
+		act(() => {
+			resultHandler?.({
+				results: [{ transcript: '97' }],
+			});
+		});
+
+		expect(mockStop).not.toHaveBeenCalled();
+		expect(result.current.adjustedYards).toBeNull();
+		expect(mockSpeak).not.toHaveBeenCalled();
+	});
+
+	it('converts heard metres to yards for wind math, then to configured metres for display', async () => {
+		let resultHandler: ((event: any) => void) | null = null;
+
+		mockUseSpeechRecognitionEvent.mockClear();
+		mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+			if (eventName === 'result') {
+				resultHandler = handler;
+			}
+		});
+
+		mockGetSettings.mockReturnValue({ voice: 'male', soundsEnabled: true, units: 'metres' });
+		mockSpeak.mockClear();
+
+		const { result } = renderHook(() => useWindVoice(0));
+
+		expect(resultHandler).toBeTruthy();
+
+		act(() => {
+			resultHandler?.({
+				results: [{ transcript: '91 metres' }],
+			});
+		});
+
+		expect(result.current.adjustedYards).toBe(100);
+		expect(result.current.adjustedDisplayValue).toBe(91);
+		expect(result.current.distanceUnit).toBe('metres');
+
+		await waitFor(() => {
+			expect(mockSpeak).toHaveBeenCalledWith(expect.stringContaining('91'), expect.any(Object));
+			expect(mockSpeak).toHaveBeenCalledWith(expect.stringContaining('metres'), expect.any(Object));
+		});
+	});
+
+	it('accepts either unit word and converts correctly', async () => {
+		let resultHandler: ((event: any) => void) | null = null;
+
+		mockUseSpeechRecognitionEvent.mockClear();
+		mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+			if (eventName === 'result') {
+				resultHandler = handler;
+			}
+		});
+
+		mockGetSettings.mockReturnValue({ voice: 'male', soundsEnabled: true, units: 'yards' });
+		mockSpeak.mockClear();
+
+		renderHook(() => useWindVoice(0));
+
+		expect(resultHandler).toBeTruthy();
+
+		act(() => {
+			resultHandler?.({
+				results: [{ transcript: '91 metres' }],
+			});
+		});
+
+		await waitFor(() => {
+			expect(mockSpeak).toHaveBeenCalledWith(expect.stringContaining('100'), expect.any(Object));
+			expect(mockSpeak).toHaveBeenCalledWith(expect.stringContaining('yards'), expect.any(Object));
+		});
+	});
+
+	it('resets adjustedDisplayValue when mic is turned off by user', async () => {
+		let resultHandler: ((event: any) => void) | null = null;
+
+		mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
+			if (eventName === 'result') {
+				resultHandler = handler;
+			}
+		});
+
+		const { result } = renderHook(() => useWindVoice(0));
+
+		await act(async () => {
+			await result.current.toggleListening();
+		});
+
+		expect(result.current.adjustedDisplayValue).toBeNull();
+
+		await act(async () => {
+			await result.current.toggleListening();
+		});
+
+		expect(result.current.adjustedDisplayValue).toBeNull();
 	});
 	});
 });

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as Speech from 'expo-speech';
 import { getSettingsService } from '@/service/DbService';
+import { extractDistanceAndUnit, yardsToDisplayUnit, displayUnitToYards } from '@/service/UnitsService';
 
 let ExpoSpeechRecognitionModule: any = null;
 let useSpeechRecognitionEvent: (eventName: string, handler: (event: any) => void) => void = () => {};
@@ -40,35 +41,43 @@ export function useWindVoice(playsLongerPercent: number): {
 	isAvailable: boolean;
 	isListening: boolean;
 	adjustedYards: number | null;
+	adjustedDisplayValue: number | null;
+	distanceUnit: 'yards' | 'metres';
 	toggleListening: () => Promise<void>;
 } {
 	const [isListening, setIsListening] = useState(false);
 	const [adjustedYards, setAdjustedYards] = useState<number | null>(null);
+	const [adjustedDisplayValue, setAdjustedDisplayValue] = useState<number | null>(null);
+	const [distanceUnit, setDistanceUnit] = useState<'yards' | 'metres'>('yards');
 	const isStoppingRef = useRef(false);
 
 	useSpeechRecognitionEvent('result', (event) => {
 		if (isStoppingRef.current) return;
 		const transcript = (event.results[0]?.transcript ?? '').toLowerCase();
-		const match = transcript.match(/\b(\d+)\b/);
+		const match = extractDistanceAndUnit(transcript);
 
-		if (match) {
-			const yards = parseInt(match[1], 10);
-			const adjusted = Math.round(yards * (1 + playsLongerPercent / 100));
+		if (!match) return;
 
-			// Stop listening before speaking to prevent TTS output looping back into recognition
-			isStoppingRef.current = true;
-			ExpoSpeechRecognitionModule?.stop();
-			setIsListening(false);
+		const heardYards = displayUnitToYards(match.value, match.unit);
+		const adjusted = Math.round(heardYards * (1 + playsLongerPercent / 100));
 
-			setAdjustedYards(adjusted);
+		// Stop listening before speaking to prevent TTS output looping back into recognition
+		isStoppingRef.current = true;
+		ExpoSpeechRecognitionModule?.stop();
+		setIsListening(false);
 
-			const settings = getSettingsService();
-			if (settings.soundsEnabled) {
-				Speech.stop();
-				getVoiceOptions(settings.voice).then(options => {
-					Speech.speak(`Play it as ${adjusted} yards`, options);
-				});
-			}
+		setAdjustedYards(adjusted);
+
+		const settings = getSettingsService();
+		const displayValue = yardsToDisplayUnit(adjusted, settings.units);
+		setAdjustedDisplayValue(displayValue);
+		setDistanceUnit(settings.units);
+
+		if (settings.soundsEnabled) {
+			Speech.stop();
+			getVoiceOptions(settings.voice).then(options => {
+				Speech.speak(`Play it as ${displayValue} ${settings.units}`, options);
+			});
 		}
 	});
 
@@ -91,6 +100,7 @@ export function useWindVoice(playsLongerPercent: number): {
 			ExpoSpeechRecognitionModule.stop();
 			setIsListening(false);
 			setAdjustedYards(null);
+			setAdjustedDisplayValue(null);
 		}
 	};
 
@@ -98,6 +108,8 @@ export function useWindVoice(playsLongerPercent: number): {
 		isAvailable: speechRecognitionAvailable,
 		isListening,
 		adjustedYards,
+		adjustedDisplayValue,
+		distanceUnit,
 		toggleListening,
 	};
 }

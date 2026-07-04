@@ -347,6 +347,7 @@ describe('Settings table column migration', () => {
                 { name: 'SettingsOnboardingSeen' },
                 { name: 'PerformOnboardingSeen' },
                 { name: 'TempoBpm' },
+                { name: 'Units' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },

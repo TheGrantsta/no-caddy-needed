@@ -39,7 +39,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
         ? getWindEffect(directionFrom, speedMph, heading)
         : null;
 
-    const { isAvailable: voiceAvailable, isListening, adjustedYards, toggleListening } = useWindVoice(effect?.playsLongerPercent ?? 0);
+    const { isAvailable: voiceAvailable, isListening, adjustedYards, adjustedDisplayValue, distanceUnit, toggleListening } = useWindVoice(effect?.playsLongerPercent ?? 0);
     const voiceEnabled = voiceAvailable && !disableVoice;
 
     const wedgeChartData = voiceEnabled && adjustedYards !== null ? getWedgeChartService() : null;
@@ -102,11 +102,11 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                         <Text
                             style={[styles.windDisplay.voiceButtonText, isListening ? styles.windDisplay.voiceButtonTextActive : styles.windDisplay.voiceButtonTextInactive]}
                         >
-                            {isListening ? 'Listening...' : 'Say the yardage'}
+                            {isListening ? 'Listening...' : 'Say the distance'}
                         </Text>
                     </TouchableOpacity>
                 )}
-                {!adjustedYards && (
+                {!adjustedDisplayValue && (
                     <Text
                         testID="wind-effect-text"
                         style={[styles.windDisplay.effectText, { marginTop: voiceEnabled ? 12 : 0 }]}
@@ -116,12 +116,12 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                 )}
                 <Text
                     testID="wind-adjusted-yards"
-                    style={[styles.windDisplay.adjustedYardsText, { opacity: adjustedYards !== null ? 1 : 0 }]}
+                    style={[styles.windDisplay.adjustedYardsText, { opacity: adjustedDisplayValue !== null ? 1 : 0 }]}
                 >
-                    {adjustedYards !== null ? `Play it as ${adjustedYards} yards` : ' '}
+                    {adjustedDisplayValue !== null ? `Play it as ${adjustedDisplayValue} ${distanceUnit}` : ' '}
                 </Text>
                 {suggestedClubs.length > 0 && wedgeChartData && (
-                    <WedgeChartGrid data={wedgeChartData} suggestedClubs={suggestedClubs} />
+                    <WedgeChartGrid data={wedgeChartData} suggestedClubs={suggestedClubs} unit={distanceUnit} />
                 )}
             </View>
             {!compact && (

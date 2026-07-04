@@ -23,6 +23,8 @@ describe('WindDisplay', () => {
             isAvailable: false,
             isListening: false,
             adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
             toggleListening: jest.fn(),
         });
         mockGetWedgeChartService.mockReturnValue({
@@ -121,6 +123,8 @@ describe('WindDisplay', () => {
                 isAvailable: false,
                 isListening: false,
                 adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
                 toggleListening: jest.fn(),
             });
 
@@ -133,6 +137,8 @@ describe('WindDisplay', () => {
                 isAvailable: true,
                 isListening: false,
                 adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
                 toggleListening: jest.fn(),
             });
 
@@ -146,6 +152,8 @@ describe('WindDisplay', () => {
                 isAvailable: true,
                 isListening: false,
                 adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
                 toggleListening: mockToggleListen,
             });
 
@@ -159,6 +167,8 @@ describe('WindDisplay', () => {
                 isAvailable: true,
                 isListening: false,
                 adjustedYards: 94,
+                adjustedDisplayValue: 94,
+                distanceUnit: 'yards',
                 toggleListening: jest.fn(),
             });
 
@@ -172,6 +182,8 @@ describe('WindDisplay', () => {
                 isAvailable: true,
                 isListening: false,
                 adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
                 toggleListening: jest.fn(),
             });
 
@@ -186,6 +198,8 @@ describe('WindDisplay', () => {
                 isAvailable: true,
                 isListening: true,
                 adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
                 toggleListening: jest.fn(),
             });
 
@@ -194,17 +208,19 @@ describe('WindDisplay', () => {
             expect(queryAllByText(/Listening/i).length).toBeGreaterThan(0);
         });
 
-        it('shows Say the yardage text when isListening is false', () => {
+        it('shows Say the distance text when isListening is false', () => {
             mockUseWindVoice.mockReturnValue({
                 isAvailable: true,
                 isListening: false,
                 adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
                 toggleListening: jest.fn(),
             });
 
             const { getByTestId, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
             expect(getByTestId('wind-voice-button')).toBeTruthy();
-            expect(queryAllByText(/Say the yardage/i).length).toBeGreaterThan(0);
+            expect(queryAllByText(/Say the distance/i).length).toBeGreaterThan(0);
         });
     });
 
@@ -229,6 +245,8 @@ describe('WindDisplay', () => {
                 isAvailable: true,
                 isListening: false,
                 adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
                 toggleListening: jest.fn(),
             });
 
@@ -241,6 +259,8 @@ describe('WindDisplay', () => {
                 isAvailable: true,
                 isListening: false,
                 adjustedYards: 135,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
                 toggleListening: jest.fn(),
             });
 
@@ -254,6 +274,8 @@ describe('WindDisplay', () => {
                 isAvailable: true,
                 isListening: false,
                 adjustedYards: 110,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
                 toggleListening: jest.fn(),
             });
 
@@ -268,6 +290,8 @@ describe('WindDisplay', () => {
                 isAvailable: true,
                 isListening: false,
                 adjustedYards: 130,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
                 toggleListening: jest.fn(),
             });
 
@@ -280,6 +304,8 @@ describe('WindDisplay', () => {
                 isAvailable: true,
                 isListening: false,
                 adjustedYards: 200,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
                 toggleListening: jest.fn(),
             });
 
@@ -292,6 +318,8 @@ describe('WindDisplay', () => {
                 isAvailable: true,
                 isListening: false,
                 adjustedYards: 130,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
                 toggleListening: jest.fn(),
             });
 

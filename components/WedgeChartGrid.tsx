@@ -2,17 +2,19 @@ import { Text, View, ScrollView } from 'react-native';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { WedgeChartData } from '@/service/DbService';
+import { yardsToDisplayUnit } from '@/service/UnitsService';
 
 type Props = {
     data: WedgeChartData;
     suggestedClubs: { club: string; name: string; distance: number }[];
+    unit?: 'yards' | 'metres';
 };
 
 /**
  * Renders a mini wedge chart grid with suggested club/swing-type combinations highlighted.
  * Layout: clubs across top (columns), swing types down side (rows).
  */
-const WedgeChartGrid = ({ data, suggestedClubs }: Props) => {
+const WedgeChartGrid = ({ data, suggestedClubs, unit = 'yards' }: Props) => {
     const colours = useThemeColours();
     const styles = useStyles();
 
@@ -64,7 +66,7 @@ const WedgeChartGrid = ({ data, suggestedClubs }: Props) => {
                                             isHighlighted && styles.wedgeChartGrid.highlightedText,
                                         ]}
                                     >
-                                        {distance?.distance ?? '—'}
+                                        {distance ? yardsToDisplayUnit(distance.distance, unit) : '—'}
                                     </Text>
                                 </View>
                             );

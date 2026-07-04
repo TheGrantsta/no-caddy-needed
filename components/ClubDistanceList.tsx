@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
+import { yardsToDisplayUnit, displayUnitToYards } from '../service/UnitsService';
 
 type ClubDistance = {
     Id: number;
@@ -20,14 +21,15 @@ type EditableRow = {
 type Props = {
     distances: ClubDistance[];
     onSave?: (distances: { Club: string; CarryDistance: number; TotalDistance: number; SortOrder: number }[]) => void;
+    units?: 'yards' | 'metres';
 };
 
-const ClubDistanceList = ({ distances, onSave }: Props) => {
+const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.clubDistanceList;
     const [rows, setRows] = useState<EditableRow[]>(
-        distances.map(d => ({ club: d.Club, distance: String(d.CarryDistance), totalDistance: d.TotalDistance }))
+        distances.map(d => ({ club: d.Club, distance: String(yardsToDisplayUnit(d.CarryDistance, units)), totalDistance: d.TotalDistance }))
     );
 
     const handleAddRow = () => {
@@ -47,7 +49,7 @@ const ClubDistanceList = ({ distances, onSave }: Props) => {
             .filter(r => r.club.trim() && r.distance.trim())
             .map((r, i) => ({
                 Club: r.club.trim(),
-                CarryDistance: parseInt(r.distance) || 0,
+                CarryDistance: displayUnitToYards(parseInt(r.distance) || 0, units),
                 TotalDistance: r.totalDistance,
                 SortOrder: i + 1,
             }));

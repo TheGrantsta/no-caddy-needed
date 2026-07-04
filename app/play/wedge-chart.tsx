@@ -69,7 +69,7 @@ export default function WedgeChartScreen() {
 
                 <View style={styles.divider} />
 
-                <WedgeChart data={data} onSave={handleSave} />
+                <WedgeChart data={data} onSave={handleSave} units={settings.units} />
 
                 {!chartIsEmpty && !showClearConfirm && (
                     <TouchableOpacity

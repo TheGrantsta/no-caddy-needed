@@ -3,10 +3,12 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import type { WedgeChartData } from '../service/DbService';
+import { yardsToDisplayUnit, displayUnitToYards } from '../service/UnitsService';
 
 type Props = {
     data: WedgeChartData;
     onSave?: (data: WedgeChartData) => void;
+    units?: 'yards' | 'metres';
 };
 
 type EditableRow = {
@@ -17,7 +19,7 @@ type EditableRow = {
 const MAX_CLUBS = 4;
 const MAX_DISTANCES = 6;
 
-const WedgeChart = ({ data, onSave }: Props) => {
+const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.wedgeChart;
@@ -27,7 +29,7 @@ const WedgeChart = ({ data, onSave }: Props) => {
     const [rows, setRows] = useState<EditableRow[]>(
         data.clubs.map(c => ({
             club: c.club,
-            distances: c.distances.map(d => String(d.distance)),
+            distances: c.distances.map(d => String(yardsToDisplayUnit(d.distance, units))),
         }))
     );
 
@@ -73,7 +75,7 @@ const WedgeChart = ({ data, onSave }: Props) => {
                 club: r.club.trim(),
                 distances: validDistanceNames.map((name, i) => ({
                     name,
-                    distance: parseInt(r.distances[i]) || 0,
+                    distance: displayUnitToYards(parseInt(r.distances[i]) || 0, units),
                 })),
             })),
         };

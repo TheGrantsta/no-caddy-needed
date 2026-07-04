@@ -69,7 +69,7 @@ export default function DistancesScreen() {
 
                 <View style={styles.divider} />
 
-                <ClubDistanceList distances={distances} onSave={handleSave} />
+                <ClubDistanceList distances={distances} onSave={handleSave} units={settings.units} />
 
                 {!distancesIsEmpty && !showClearConfirm && (
                     <TouchableOpacity

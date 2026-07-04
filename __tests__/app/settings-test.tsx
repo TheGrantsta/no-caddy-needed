@@ -16,7 +16,7 @@ jest.mock('../../hooks/useStyles', () => ({
 }));
 
 jest.mock('../../service/DbService', () => ({
-    getSettingsService: jest.fn(() => ({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 })),
+    getSettingsService: jest.fn(() => ({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards' })),
     saveSettingsService: jest.fn(() => Promise.resolve(true)),
 }));
 
@@ -525,6 +525,49 @@ describe('Settings page', () => {
             await waitFor(() => {
                 expect(mockSaveSettingsService).toHaveBeenCalledWith(
                     expect.objectContaining({ settingsOnboardingSeen: true })
+                );
+            });
+        });
+    });
+
+    describe('Units', () => {
+        it('renders Units heading in System tab', () => {
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
+
+            const { getByText, getByTestId } = render(<Settings />);
+            fireEvent.press(getByTestId('settings-tab-system'));
+
+            expect(getByText('Units')).toBeTruthy();
+        });
+
+        it('shows Yards as selected by default', () => {
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
+
+            const { getByTestId } = render(<Settings />);
+            fireEvent.press(getByTestId('settings-tab-system'));
+
+            expect(getByTestId('units-yards-selected')).toBeTruthy();
+        });
+
+        it('shows Metres as selected when units is metres', () => {
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'metres' });
+
+            const { getByTestId } = render(<Settings />);
+            fireEvent.press(getByTestId('settings-tab-system'));
+
+            expect(getByTestId('units-metres-selected')).toBeTruthy();
+        });
+
+        it('saves settings when Metres is pressed', async () => {
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
+
+            const { getByTestId } = render(<Settings />);
+            fireEvent.press(getByTestId('settings-tab-system'));
+            fireEvent.press(getByTestId('units-metres'));
+
+            await waitFor(() => {
+                expect(mockSaveSettingsService).toHaveBeenCalledWith(
+                    expect.objectContaining({ units: 'metres' })
                 );
             });
         });

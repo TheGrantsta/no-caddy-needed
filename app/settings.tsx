@@ -23,6 +23,11 @@ const VOICES: { key: AppSettings['voice']; label: string }[] = [
   { key: 'neutral', label: 'Neutral' },
 ];
 
+const UNITS: { key: AppSettings['units']; label: string }[] = [
+  { key: 'yards', label: 'Yards' },
+  { key: 'metres', label: 'Metres' },
+];
+
 const NOTIFICATIONS: { key: 'on' | 'off'; label: string; value: boolean }[] = [
   { key: 'on', label: 'On', value: true },
   { key: 'off', label: 'Off', value: false },
@@ -79,6 +84,15 @@ export default function Settings() {
 
   const handleVoiceChange = async (voice: AppSettings['voice']) => {
     const updated: AppSettings = { ...settings, voice };
+    setSettings(updated);
+
+    const success = await saveSettingsService(updated);
+
+    showResult(success, 'Settings saved', 'Failed to save settings');
+  };
+
+  const handleUnitsChange = async (units: AppSettings['units']) => {
+    const updated: AppSettings = { ...settings, units };
     setSettings(updated);
 
     const success = await saveSettingsService(updated);
@@ -237,6 +251,29 @@ export default function Settings() {
                   style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
                 >
                   {isSelected && <Text testID={`voice-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
+                  {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
+        <View style={styles.contentSection}>
+          <View style={styles.headerContainer}>
+            <Text style={[styles.subHeaderText, { padding: 0 }]}>Units</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
+            {UNITS.map(({ key, label }) => {
+              const isSelected = settings.units === key;
+              return (
+                <TouchableOpacity
+                  key={key}
+                  testID={`units-${key}`}
+                  onPress={() => handleUnitsChange(key)}
+                  style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
+                >
+                  {isSelected && <Text testID={`units-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
                   {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
                 </TouchableOpacity>
               );

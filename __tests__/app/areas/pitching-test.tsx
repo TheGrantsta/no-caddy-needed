@@ -70,7 +70,7 @@ describe('Pitching page ', () => {
     it('renders correctly with the default text', () => {
         const { getByText } = render(<View />);
 
-        expect(getByText('Pitching drills')).toBeTruthy();
+        expect(getByText('Pitching tests')).toBeTruthy();
     });
 
     it('renders correctly the pitching drills', () => {
@@ -81,42 +81,12 @@ describe('Pitching page ', () => {
         expect(getByText('Ladder')).toBeTruthy();
     });
 
-    it('renders correctly with the games heading', () => {
-        const { getByText, getByTestId } = render(<View />);
-
-        const subMenuItem = getByTestId('pitching-sub-menu-pitching-games');
-
-        fireEvent.press(subMenuItem);
-
-        expect(getByText('Pitching games')).toBeTruthy();
-    });
-
     it('renders correctly with the games', () => {
-        const { getByText, getByTestId } = render(<View />);
-
-        const subMenuItem = getByTestId('pitching-sub-menu-pitching-games');
-
-        fireEvent.press(subMenuItem);
+        const { getByText } = render(<View />);
 
         expect(getByText('Three club!')).toBeTruthy();
         expect(getByText('Target challenge!')).toBeTruthy();
         expect(getByText('5-ball game!')).toBeTruthy();
-    });
-
-    it('switches back to drills section when SubMenu is used', () => {
-        const { getByTestId, getByText } = render(<View />);
-
-        let subMenuItem = getByTestId('pitching-sub-menu-pitching-games');
-
-        fireEvent.press(subMenuItem);
-
-        expect(getByText('Pitching games')).toBeTruthy();
-
-        subMenuItem = getByTestId('pitching-sub-menu-pitching-drills');
-
-        fireEvent.press(subMenuItem);
-
-        expect(getByText('Pitching drills')).toBeTruthy();
     });
 
     it('calls insert button when saving drill result', () => {

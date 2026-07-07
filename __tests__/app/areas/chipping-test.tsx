@@ -62,7 +62,7 @@ describe('Chipping page ', () => {
     it('renders correctly with the default text', () => {
         const { getByText } = render(<View />);
 
-        expect(getByText('Chipping drills')).toBeTruthy();
+        expect(getByText('Chipping tests')).toBeTruthy();
     });
 
     it('renders correctly the chipping drills', () => {
@@ -73,22 +73,8 @@ describe('Chipping page ', () => {
         expect(getByText('One hand')).toBeTruthy();
     });
 
-    it('renders correctly with the games heading', () => {
-        const { getByText, getByTestId } = render(<View />);
-
-        const subMenuItem = getByTestId('chipping-sub-menu-chipping-games');
-
-        fireEvent.press(subMenuItem);
-
-        expect(getByText('Chipping games')).toBeTruthy();
-    });
-
     it('renders correctly with the games', () => {
-        const { getByText, getByTestId } = render(<View />);
-
-        const subMenuItem = getByTestId('chipping-sub-menu-chipping-games');
-
-        fireEvent.press(subMenuItem);
+        const { getByText } = render(<View />);
 
         expect(getByText('Up & down challenge!')).toBeTruthy();
         expect(getByText('Ladder challenge!')).toBeTruthy();

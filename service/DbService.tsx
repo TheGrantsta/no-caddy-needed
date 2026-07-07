@@ -106,8 +106,8 @@ export const saveWedgeChartService = async (data: WedgeChartData): Promise<boole
     return insertWedgeChart(distanceNames, entries);
 };
 
-export const insertDrillResultService = (name: string, result: boolean, drillId: number | null = null) => {
-    return insertDrillResult(name, result, drillId);
+export const insertDrillResultService = (name: string, result: boolean, drillId: number | null = null, score: number | null = null) => {
+    return insertDrillResult(name, result, drillId, score);
 }
 
 export const getDrillsByCategoryService = (category: string): DrillData[] => {

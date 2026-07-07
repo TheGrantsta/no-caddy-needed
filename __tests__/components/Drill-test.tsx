@@ -49,37 +49,13 @@ describe('Drill component', () => {
         expect(getByText('Save')).toBeTruthy();
     });
 
-    it('renders toggle in Met state by default', () => {
-        const { getByText } = render(<Drill {...defaultProps} />);
-
-        expect(getByText('Met')).toBeTruthy();
-    });
-
-    it('shows checkmark when toggle is in Met state', () => {
+    it('renders score input', () => {
         const { getByTestId } = render(<Drill {...defaultProps} />);
 
-        expect(getByTestId('drill-met-toggle')).toHaveTextContent('✓');
+        expect(getByTestId('test-score-input')).toBeTruthy();
     });
 
-    it('shows circle when toggle is in Not Met state', () => {
-        const { getByTestId } = render(<Drill {...defaultProps} />);
-
-        fireEvent.press(getByTestId('drill-met-toggle'));
-
-        expect(getByTestId('drill-met-toggle')).toHaveTextContent('○');
-    });
-
-    it('calls saveDrillResult with label and true when Save is pressed with Met (default)', () => {
-        const mockSave = jest.fn();
-        const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
-
-        const saveButton = getByTestId('save-drill-result-button');
-        fireEvent.press(saveButton);
-
-        expect(mockSave).toHaveBeenCalledWith('Test Drill', true);
-    });
-
-    it('calls saveDrillResult when Save button is pressed', () => {
+    it('calls saveDrillResult when Save button is pressed with empty score', () => {
         const mockSave = jest.fn();
         const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
 
@@ -87,7 +63,20 @@ describe('Drill component', () => {
         fireEvent.press(saveButton);
 
         expect(mockSave).toHaveBeenCalledTimes(1);
-        expect(mockSave).toHaveBeenCalledWith('Test Drill', expect.any(Boolean));
+        expect(mockSave).toHaveBeenCalledWith('Test Drill', 0);
+    });
+
+    it('calls saveDrillResult with entered score when Save button is pressed', () => {
+        const mockSave = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
+
+        const scoreInput = getByTestId('test-score-input');
+        const saveButton = getByTestId('save-drill-result-button');
+
+        fireEvent.changeText(scoreInput, '7');
+        fireEvent.press(saveButton);
+
+        expect(mockSave).toHaveBeenCalledWith('Test Drill', expect.any(Number));
     });
 
     it('renders Instructions component with correct props', () => {

@@ -144,7 +144,7 @@ describe('ShortGameScreen', () => {
             fireEvent.press(saveButtons[0]);
         });
 
-        expect(mockInsertDrillResultService).toHaveBeenCalledWith('Chipping - Gate', true, 1);
+        expect(mockInsertDrillResultService).toHaveBeenCalledWith('Chipping - Gate', false, 1, 0);
     });
 
     it('saveDrillResultUsesDrillLabelForEachDrill', async () => {
@@ -155,7 +155,7 @@ describe('ShortGameScreen', () => {
             fireEvent.press(saveButtons[1]);
         });
 
-        expect(mockInsertDrillResultService).toHaveBeenCalledWith('Chipping - Hoop', true, 2);
+        expect(mockInsertDrillResultService).toHaveBeenCalledWith('Chipping - Hoop', false, 2, 0);
     });
 
     it('doesNotSaveDrillResultTwiceWhenSaveButtonPressedRapidly', async () => {

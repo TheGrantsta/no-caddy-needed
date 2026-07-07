@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import Instructions from "./Instructions";
 import { useStyles } from '@/hooks/useStyles';
@@ -12,19 +12,15 @@ type Props = {
     objective: string;
     setUp: string;
     howToPlay: string;
-    saveDrillResult: (label: string, result: boolean) => void;
+    saveDrillResult: (label: string, score: number) => void;
     onDelete?: () => void;
 };
 
 export default function Drill({ label, iconName, target, objective, setUp, howToPlay, saveDrillResult, onDelete }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
-    const [isAchieved, setIsAchieved] = useState(true);
+    const [score, setScore] = useState('');
     const [pendingDelete, setPendingDelete] = useState(false);
-
-    const toggleSwitch = () => {
-        setIsAchieved((previousState) => !previousState);
-    };
 
     return (
         <View style={{ padding: 8 }}>
@@ -39,23 +35,21 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     <Text style={styles.drill.contentText}>
                         <Text style={styles.primaryText}>Aim: {target}</Text>
                     </Text>
-                    <View style={[styles.drill.toggleWrapper, { paddingTop: 10 }]}>
-                        <TouchableOpacity
-                            testID='drill-met-toggle'
-                            style={styles.deadlySinsTally.button}
-                            onPress={toggleSwitch}>
-                            <Text style={styles.deadlySinsTally.buttonText}>{isAchieved ? '✓' : '○'}</Text>
-                        </TouchableOpacity>
-
-                        <Text style={[styles.normalText, { paddingLeft: 10 }]}>
-                            {isAchieved ? 'Met' : 'Not met'}
-                        </Text>
-                    </View>
+                    <TextInput
+                        testID='test-score-input'
+                        style={[styles.normalText, { borderWidth: 1, borderColor: colours.primary, borderRadius: 4, padding: 8, marginTop: 10 }]}
+                        placeholder='Score'
+                        keyboardType='number-pad'
+                        value={score}
+                        onChangeText={setScore}
+                    />
                 </View>
                 <View style={{ flex: 1 / 3, alignItems: 'center', alignSelf: 'center' }}>
                     <TouchableOpacity testID='save-drill-result-button' style={styles.button} onPress={
                         () => {
-                            saveDrillResult(label, isAchieved);
+                            const scoreNum = parseInt(score) || 0;
+                            saveDrillResult(label, scoreNum);
+                            setScore('');
                         }}>
                         <Text style={styles.buttonText}>
                             Save

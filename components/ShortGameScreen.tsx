@@ -62,10 +62,13 @@ const ShortGameScreen = ({ config }: Props) => {
 
     const categoryCapitalized = category.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
-    const saveDrillResultHandle = (label: string, result: boolean, drillId: number | null) => {
+    const saveDrillResultHandle = (label: string, score: number, drillId: number | null, target?: string) => {
         if (isSavingDrillRef.current) return;
         isSavingDrillRef.current = true;
-        insertDrillResultService(`${categoryCapitalized} - ${label}`, result, drillId).then((success) => {
+        const goalMatch = target?.match(/(\d+)\s*\/\s*(\d+)/);
+        const goal = goalMatch ? parseInt(goalMatch[1]) : 0;
+        const result = score >= goal;
+        insertDrillResultService(`${categoryCapitalized} - ${label}`, result, drillId, score).then((success) => {
             showResult(success, "Test result saved", "Test result not saved");
             isSavingDrillRef.current = false;
         });
@@ -89,7 +92,7 @@ const ShortGameScreen = ({ config }: Props) => {
                             objective={(item.data as DrillData).objective}
                             setUp={(item.data as DrillData).setup}
                             howToPlay={(item.data as DrillData).howToPlay}
-                            saveDrillResult={(label, result) => saveDrillResultHandle(label, result, item.id ?? null)}
+                            saveDrillResult={(label, score) => saveDrillResultHandle(label, score, item.id ?? null, (item.data as DrillData).target)}
                             onDelete={() => {
                                 if (item.id !== undefined) {
                                     deleteDrillService(item.id).then(() => {

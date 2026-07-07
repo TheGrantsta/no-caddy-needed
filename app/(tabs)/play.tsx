@@ -258,11 +258,14 @@ export default function Play() {
         setCurrentHoleData({ holeNumber, holePar, scores });
     };
 
-    const buildDefaultHoleData = () => ({
-        holeNumber: currentHole,
-        holePar: 4,
-        scores: players.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: 4 })),
-    });
+    const buildDefaultHoleData = () => {
+        const par = courseHolePars[currentHole] ?? 4;
+        return {
+            holeNumber: currentHole,
+            holePar: par,
+            scores: players.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: par })),
+        };
+    };
 
     const handlePreviousHole = () => {
         if (currentHole <= 1) return;

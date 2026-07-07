@@ -184,6 +184,7 @@ export const getAllDrillHistoryService = () => {
             Id: drill.Id,
             Name: drill.Name,
             Result: drill.Result,
+            Score: drill.Score ?? null,
             Created_At: getTwoDigitDayAndMonth(drill.Created_At)
         });
     })

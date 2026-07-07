@@ -260,7 +260,7 @@ export default function Practice() {
                   padding: 6,
                   marginTop: 10
                 }}>
-                  {drillHistory.length > 0 ? "Drill History" : "No drill history yet"}
+                  {drillHistory.length > 0 ? "Test History" : "No test history yet"}
                 </Text>
 
                 <View style={styles.horizontalScrollContainer}>
@@ -276,10 +276,10 @@ export default function Practice() {
                       <View style={[styles.practiceScreen.page, styles.scrollWrapper, { margin: 10 }]}>
                         <View style={{ flexDirection: 'row' }}>
                           <Text style={[styles.subHeaderText, { flex: 9 / 12 }]}>
-                            Drill
+                            Test
                           </Text>
                           <Text style={[styles.subHeaderText, { flex: 1 / 12 }]}>
-                            Met
+                            Score
                           </Text>
                           <Text style={[styles.subHeaderText, { flex: 2 / 12 }]}>
                             Date
@@ -296,10 +296,7 @@ export default function Practice() {
                                   {item.Name}
                                 </Text>
                                 <Text style={[styles.cell, { flex: 2 / 12, borderWidth: 0 }]}>
-                                  <MaterialIcons
-                                    name={item.Result === 1 ? 'check' : 'clear'}
-                                    color={item.Result === 1 ? colours.primary : colours.errorText}
-                                    size={24} />
+                                  {item.Score ?? '—'}
                                 </Text>
                                 <Text style={[styles.cell, { flex: 3 / 12, borderWidth: 0 }]}>
                                   {item.Created_At}

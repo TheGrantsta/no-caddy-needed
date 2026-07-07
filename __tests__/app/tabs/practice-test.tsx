@@ -150,18 +150,18 @@ describe('Practice', () => {
     it('showsNoDrillHistoryWhenEmpty', () => {
         const { getByTestId, getByText } = render(<Practice />);
         fireEvent.press(getByTestId('practice-sub-menu-history'));
-        expect(getByText('No drill history yet')).toBeTruthy();
+        expect(getByText('No test history yet')).toBeTruthy();
     });
 
     it('showsDrillHistoryTextWhenDataExists', () => {
         mockGetAllDrillHistoryService.mockReturnValue([
-            { Name: 'Putting drill', Result: 1, Created_At: '2024-01-01' },
-            { Name: 'Chipping drill', Result: 0, Created_At: '2024-01-02' },
+            { Name: 'Putting drill', Result: 1, Score: 5, Created_At: '2024-01-01' },
+            { Name: 'Chipping drill', Result: 0, Score: 2, Created_At: '2024-01-02' },
         ]);
 
         const { getByTestId, getByText } = render(<Practice />);
         fireEvent.press(getByTestId('practice-sub-menu-history'));
-        expect(getByText('Drill History')).toBeTruthy();
+        expect(getByText('Test History')).toBeTruthy();
     });
 
     it('logsErrorWhenFetchDataFails', () => {

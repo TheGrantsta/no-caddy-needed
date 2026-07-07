@@ -23,42 +23,40 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
     const [pendingDelete, setPendingDelete] = useState(false);
 
     return (
-        <View style={{ padding: 12 }}>
-            <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center', marginBottom: 16 }}>
-                <View style={{ alignItems: 'center', width: 70 }}>
+        <View style={{ padding: 16 }}>
+            <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+                <View style={{ alignItems: 'center', width: 80 }}>
                     <MaterialIcons name={iconName} size={56} color={colours.primary} />
-                    <Text style={[styles.normalText, { marginTop: 8, textAlign: 'center', fontSize: 12 }]}>
+                    <Text style={[styles.normalText, { marginTop: 8, textAlign: 'center', fontSize: 13 }]}>
                         {label}
                     </Text>
                 </View>
-                <View style={{ flex: 1 }}>
-                    <TextInput
-                        testID='test-score-input'
-                        style={[
-                            {
-                                borderWidth: 2,
-                                borderColor: colours.primary,
-                                borderRadius: 12,
-                                padding: 20,
-                                fontSize: 36,
-                                fontWeight: '600',
-                                textAlign: 'center',
-                                color: colours.text,
-                                minHeight: 90,
-                            }
-                        ]}
-                        placeholder={`Aim: ${target}`}
-                        placeholderTextColor={colours.primary}
-                        keyboardType='number-pad'
-                        value={score}
-                        onChangeText={setScore}
-                        maxLength={2}
-                    />
-                </View>
-            </View>
 
-            <View style={{ flexDirection: 'row', gap: 12, justifyContent: 'flex-end', marginBottom: 16 }}>
-                <TouchableOpacity testID='save-drill-result-button' style={styles.button} onPress={
+                <TextInput
+                    testID='test-score-input'
+                    style={[
+                        {
+                            flex: 1,
+                            borderWidth: 2,
+                            borderColor: colours.primary,
+                            borderRadius: 12,
+                            padding: 16,
+                            fontSize: 24,
+                            fontWeight: '600',
+                            textAlign: 'center',
+                            color: colours.text,
+                            height: 70,
+                        }
+                    ]}
+                    placeholder={`Aim: ${target}`}
+                    placeholderTextColor={colours.primary}
+                    keyboardType='number-pad'
+                    value={score}
+                    onChangeText={setScore}
+                    maxLength={2}
+                />
+
+                <TouchableOpacity testID='save-drill-result-button' style={[styles.button, { height: 70 }]} onPress={
                     () => {
                         const scoreNum = parseInt(score) || 0;
                         saveDrillResult(label, scoreNum);

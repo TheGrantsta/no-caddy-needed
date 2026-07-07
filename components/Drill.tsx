@@ -4,6 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import Instructions from "./Instructions";
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
+import fontSizes from '@/assets/font-sizes';
 
 type Props = {
     label: string;
@@ -93,7 +94,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                         testID='delete-drill-button'
                         style={{ padding: 8 }}
                         onPress={() => setPendingDelete(true)}>
-                        <Text style={{ color: colours.primary, fontSize: 14, fontWeight: '500' }}>Delete</Text>
+                        <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>Delete</Text>
                     </TouchableOpacity>
                 )}
             </View>

@@ -91,9 +91,9 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                 ) : (
                     <TouchableOpacity
                         testID='delete-drill-button'
-                        style={styles.mediumButton}
+                        style={{ padding: 8 }}
                         onPress={() => setPendingDelete(true)}>
-                        <Text style={styles.buttonText}>Delete</Text>
+                        <Text style={{ color: colours.primary, fontSize: 14, fontWeight: '500' }}>Delete</Text>
                     </TouchableOpacity>
                 )}
             </View>

@@ -43,6 +43,9 @@ describe('getDrillStatsByTypeService', () => {
             total: 3,
             met: 2,
             successRate: 67,
+            averageScore: null,
+            minScore: null,
+            maxScore: null,
         });
     });
 
@@ -66,6 +69,9 @@ describe('getDrillStatsByTypeService', () => {
             total: 2,
             met: 2,
             successRate: 100,
+            averageScore: null,
+            minScore: null,
+            maxScore: null,
         });
 
         expect(chippingStats).toEqual({
@@ -73,6 +79,9 @@ describe('getDrillStatsByTypeService', () => {
             total: 2,
             met: 1,
             successRate: 50,
+            averageScore: null,
+            minScore: null,
+            maxScore: null,
         });
     });
 
@@ -129,6 +138,35 @@ describe('getDrillStatsByTypeService', () => {
 
         expect(result[0].successRate).toBe(100);
         expect(result[0].met).toBe(2);
+    });
+
+    it('calculates average score from numeric scores', () => {
+        mockGetAllDrillHistory.mockReturnValue([
+            { Id: 1, Name: 'Putting - Gate', Result: 1, Score: 8, Created_At: '2025-01-01' },
+            { Id: 2, Name: 'Putting - Gate', Result: 1, Score: 6, Created_At: '2025-01-02' },
+            { Id: 3, Name: 'Putting - Gate', Result: 0, Score: 4, Created_At: '2025-01-03' },
+        ]);
+
+        const result = getDrillStatsByTypeService();
+
+        expect(result[0].averageScore).toBe(6);
+        expect(result[0].minScore).toBe(4);
+        expect(result[0].maxScore).toBe(8);
+    });
+
+    it('handles mixed scores and null scores', () => {
+        mockGetAllDrillHistory.mockReturnValue([
+            { Id: 1, Name: 'Chipping - Hoop', Result: 1, Score: 7, Created_At: '2025-01-01' },
+            { Id: 2, Name: 'Chipping - Hoop', Result: 1, Created_At: '2025-01-02' },
+            { Id: 3, Name: 'Chipping - Hoop', Result: 0, Score: 3, Created_At: '2025-01-03' },
+        ]);
+
+        const result = getDrillStatsByTypeService();
+
+        // Average of 7 and 3 = 5
+        expect(result[0].averageScore).toBe(5);
+        expect(result[0].minScore).toBe(3);
+        expect(result[0].maxScore).toBe(7);
     });
 });
 

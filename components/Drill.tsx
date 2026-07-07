@@ -40,12 +40,12 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                             borderWidth: 2,
                             borderColor: colours.primary,
                             borderRadius: 12,
-                            padding: 16,
-                            fontSize: 24,
+                            padding: 12,
+                            fontSize: 20,
                             fontWeight: '600',
                             textAlign: 'center',
                             color: colours.text,
-                            height: 70,
+                            height: 60,
                         }
                     ]}
                     placeholder={`Aim: ${target}`}
@@ -56,7 +56,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     maxLength={2}
                 />
 
-                <TouchableOpacity testID='save-drill-result-button' style={[styles.button, { height: 70 }]} onPress={
+                <TouchableOpacity testID='save-drill-result-button' style={styles.button} onPress={
                     () => {
                         const scoreNum = parseInt(score) || 0;
                         saveDrillResult(label, scoreNum);

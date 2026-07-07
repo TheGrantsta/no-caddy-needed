@@ -27,7 +27,7 @@ type TestItem = {
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ShortGameScreen = ({ config }: Props) => {
-    const { category, description } = config;
+    const { category } = config;
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
@@ -195,9 +195,10 @@ const ShortGameScreen = ({ config }: Props) => {
                         <Text style={[styles.headerText, styles.marginTop]}>
                             {categoryCapitalized} tests
                         </Text>
+                        <Text style={[styles.normalText, { margin: 10 }]}>
+                            Practice with pressure to build confidence.
+                        </Text>
                     </View>
-
-                    <View style={styles.divider} />
 
                     <View>
                         {showAddDrillForm ? (
@@ -237,11 +238,6 @@ const ShortGameScreen = ({ config }: Props) => {
                                             ]}
                                         />
                                     ))}
-                                </View>
-                                <View style={styles.contentSection}>
-                                    <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
-                                        {description}
-                                    </Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', alignSelf: 'center', marginTop: 20 }}>
                                     <TouchableOpacity

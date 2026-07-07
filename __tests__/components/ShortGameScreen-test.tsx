@@ -121,7 +121,7 @@ describe('ShortGameScreen', () => {
 
     it('showsDescription', () => {
         const { getByText } = render(<ShortGameScreen config={config} />);
-        expect(getByText(/Track your progress with precision scoring/)).toBeTruthy();
+        expect(getByText(/Practice with pressure to build confidence/)).toBeTruthy();
     });
 
     it('showsGameHeaders', () => {
@@ -132,7 +132,7 @@ describe('ShortGameScreen', () => {
 
     it('showsUnifiedInterface', () => {
         const { getByText } = render(<ShortGameScreen config={config} />);
-        expect(getByText(/Track your progress with precision scoring/)).toBeTruthy();
+        expect(getByText(/Practice with pressure to build confidence/)).toBeTruthy();
     });
 
     it('saveDrillResultCallsServiceWithFormattedName', async () => {

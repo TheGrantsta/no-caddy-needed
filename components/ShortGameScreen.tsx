@@ -241,7 +241,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                         />
                                     ))}
                                 </View>
-                                <View style={{ width: '100%', marginTop: 20 }}>
+                                <View style={{ marginHorizontal: 16, marginTop: 20 }}>
                                     <TouchableOpacity
                                         testID='add-drill-button'
                                         style={[styles.button, { width: '100%' }]}

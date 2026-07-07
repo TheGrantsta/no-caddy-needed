@@ -25,6 +25,7 @@ const WHATS_NEW = [
   'Add voice support for calculating adjusted distances based on wind strength / direction',
   'Add suggested clubs from wedge chart to wind direction indicator',
   'Amend the "Clear all" flow for wedge chart & distances',
+  'Fix bug where the preselected par score per hole is not saved unless it is changed',
 ];
 
 const APP_VERSION = Constants.expoConfig?.version ?? '';

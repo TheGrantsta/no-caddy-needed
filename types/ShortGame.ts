@@ -22,6 +22,5 @@ export type ShortGameCategory = 'putting' | 'chipping' | 'pitching' | 'bunker' |
 
 export type ShortGameConfig = {
     category: ShortGameCategory;
-    drillsFooter: string;
-    gamesFooter: string;
+    description: string;
 };

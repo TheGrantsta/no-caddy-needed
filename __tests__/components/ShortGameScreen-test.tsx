@@ -90,8 +90,7 @@ const mockRestoreDrillService = restoreDrillService as jest.Mock;
 
 const config: ShortGameConfig = {
     category: 'chipping',
-    drillsFooter: 'Practice drills regularly',
-    gamesFooter: 'Play these games to improve',
+    description: 'Track your progress with precision scoring. Combine focused practice with pressure scenarios to build confidence.',
 };
 
 describe('ShortGameScreen', () => {
@@ -120,9 +119,9 @@ describe('ShortGameScreen', () => {
         expect(getByText('Hoop')).toBeTruthy();
     });
 
-    it('showsDrillsFooter', () => {
+    it('showsDescription', () => {
         const { getByText } = render(<ShortGameScreen config={config} />);
-        expect(getByText('Practice drills regularly')).toBeTruthy();
+        expect(getByText(/Track your progress with precision scoring/)).toBeTruthy();
     });
 
     it('showsGameHeaders', () => {
@@ -131,9 +130,9 @@ describe('ShortGameScreen', () => {
         expect(getByText('Par 18!')).toBeTruthy();
     });
 
-    it('showsGamesFooter', () => {
+    it('showsUnifiedInterface', () => {
         const { getByText } = render(<ShortGameScreen config={config} />);
-        expect(getByText('Practice drills regularly')).toBeTruthy();
+        expect(getByText(/Track your progress with precision scoring/)).toBeTruthy();
     });
 
     it('saveDrillResultCallsServiceWithFormattedName', async () => {

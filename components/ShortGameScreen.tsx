@@ -27,7 +27,7 @@ type TestItem = {
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ShortGameScreen = ({ config }: Props) => {
-    const { category, drillsFooter, gamesFooter } = config;
+    const { category, description } = config;
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
@@ -196,7 +196,7 @@ const ShortGameScreen = ({ config }: Props) => {
                             {categoryCapitalized} tests
                         </Text>
                         <Text style={[styles.normalText, { margin: 10 }]}>
-                            Improve your mechanics through drills and games.
+                            Master your short game with precision scoring.
                         </Text>
                     </View>
 
@@ -243,7 +243,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                 </View>
                                 <View style={styles.contentSection}>
                                     <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
-                                        {drillsFooter}
+                                        {description}
                                     </Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', alignSelf: 'center', marginTop: 20 }}>
@@ -251,13 +251,13 @@ const ShortGameScreen = ({ config }: Props) => {
                                         testID='add-drill-button'
                                         style={[styles.mediumButton]}
                                         onPress={() => setShowAddDrillForm(true)}>
-                                        <Text style={styles.buttonText}>Add drill</Text>
+                                        <Text style={styles.buttonText}>Add test</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         testID='add-game-button'
                                         style={[styles.mediumButton]}
                                         onPress={() => setShowAddGameForm(true)}>
-                                        <Text style={styles.buttonText}>Add game</Text>
+                                        <Text style={styles.buttonText}>Add challenge</Text>
                                     </TouchableOpacity>
                                 </View>
                             </>

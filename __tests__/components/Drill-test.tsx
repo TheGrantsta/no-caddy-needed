@@ -37,10 +37,11 @@ describe('Drill component', () => {
         expect(getByText('Test Drill')).toBeTruthy();
     });
 
-    it('renders the target', () => {
-        const { getByText } = render(<Drill {...defaultProps} />);
+    it('renders the target as placeholder', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} />);
 
-        expect(getByText('Aim: 5 out of 10')).toBeTruthy();
+        const scoreInput = getByTestId('test-score-input');
+        expect(scoreInput.props.placeholder).toBe('Aim: 5 out of 10');
     });
 
     it('renders the Save button', () => {

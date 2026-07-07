@@ -24,38 +24,47 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
 
     return (
         <View style={{ padding: 8 }}>
-            <View style={{ flexDirection: 'row' }}>
-                <View style={{ flex: 1 / 3, padding: 10 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
+                <View style={{ paddingTop: 10 }}>
                     <MaterialIcons name={iconName} size={48} color={colours.primary} />
-                    <Text style={styles.normalText}>
+                    <Text style={[styles.normalText, { marginTop: 8, textAlign: 'center' }]}>
                         {label}
                     </Text>
                 </View>
-                <View style={{ flex: 1 / 3 }}>
-                    <Text style={styles.drill.contentText}>
-                        <Text style={styles.primaryText}>Aim: {target}</Text>
-                    </Text>
+                <View style={{ flex: 1, minHeight: 120 }}>
                     <TextInput
                         testID='test-score-input'
-                        style={[styles.normalText, { borderWidth: 1, borderColor: colours.primary, borderRadius: 4, padding: 8, marginTop: 10 }]}
-                        placeholder='Score'
+                        style={[
+                            {
+                                borderWidth: 2,
+                                borderColor: colours.primary,
+                                borderRadius: 8,
+                                padding: 16,
+                                fontSize: 32,
+                                fontWeight: '600',
+                                textAlign: 'center',
+                                color: colours.text,
+                                minHeight: 80,
+                            }
+                        ]}
+                        placeholder={`Aim: ${target}`}
+                        placeholderTextColor={colours.primary}
                         keyboardType='number-pad'
                         value={score}
                         onChangeText={setScore}
+                        maxLength={2}
                     />
                 </View>
-                <View style={{ flex: 1 / 3, alignItems: 'center', alignSelf: 'center' }}>
-                    <TouchableOpacity testID='save-drill-result-button' style={styles.button} onPress={
-                        () => {
-                            const scoreNum = parseInt(score) || 0;
-                            saveDrillResult(label, scoreNum);
-                            setScore('');
-                        }}>
-                        <Text style={styles.buttonText}>
-                            Save
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity testID='save-drill-result-button' style={[styles.button, { marginTop: 10 }]} onPress={
+                    () => {
+                        const scoreNum = parseInt(score) || 0;
+                        saveDrillResult(label, scoreNum);
+                        setScore('');
+                    }}>
+                    <Text style={styles.buttonText}>
+                        Save
+                    </Text>
+                </TouchableOpacity>
             </View>
 
             <View>

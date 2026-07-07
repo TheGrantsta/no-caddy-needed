@@ -69,8 +69,12 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
             setCourseNameError('Course name is required');
             return;
         }
+        const existingMatch = recentCourseNames?.find(
+            name => name.trim().toLowerCase() === trimmedCourseName.toLowerCase()
+        );
+        const finalCourseName = existingMatch ?? trimmedCourseName;
         const names = additionalPlayers.filter(name => name.trim().length > 0);
-        onStartRound(names, trimmedCourseName);
+        onStartRound(names, finalCourseName);
     };
 
     return (

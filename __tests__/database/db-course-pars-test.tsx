@@ -56,4 +56,12 @@ describe('getHoleParsForCourse', () => {
         const result = getHoleParsForCourse('St Andrews');
         expect(result).toEqual(mockRows);
     });
+
+    it('matchesCourseNameCaseInsensitivelyAndTrimsWhitespace', () => {
+        mockGetAllSync.mockReturnValue([]);
+        getHoleParsForCourse('st andrews');
+        const [sql] = mockGetAllSync.mock.calls[0];
+        expect(sql).toContain('LOWER(TRIM(CourseName))');
+        expect(sql).toContain('LOWER(TRIM(?))');
+    });
 });

@@ -173,6 +173,28 @@ describe('PlayerSetup', () => {
 
             expect(mockOnStartRound).toHaveBeenCalledWith([], 'Pebble Beach');
         });
+
+        it('normalizes course name to existing recent course when case/whitespace differs', () => {
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews']} />
+            );
+
+            fireEvent.changeText(getByTestId('course-name-input'), 'st andrews');
+            fireEvent.press(getByTestId('start-button'));
+
+            expect(mockOnStartRound).toHaveBeenCalledWith([], 'St Andrews');
+        });
+
+        it('normalizes with whitespace variance when finding existing course', () => {
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['Pebble Beach']} />
+            );
+
+            fireEvent.changeText(getByTestId('course-name-input'), ' PEBBLE BEACH ');
+            fireEvent.press(getByTestId('start-button'));
+
+            expect(mockOnStartRound).toHaveBeenCalledWith([], 'Pebble Beach');
+        });
     });
 
     describe('Recent course names', () => {

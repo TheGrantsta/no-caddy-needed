@@ -460,14 +460,14 @@ export const getAllRounds = () => {
 };
 
 export const getDistinctCourseNames = () => {
-    return getSyncDb().getAllSync("SELECT DISTINCT CourseName FROM Rounds WHERE CourseName IS NOT NULL AND CourseName != '' AND CourseName NOT IN (SELECT Name FROM HiddenRecents WHERE Type = 'course') ORDER BY Id DESC;");
+    return getSyncDb().getAllSync("SELECT CourseName, MAX(Id) as Id FROM Rounds WHERE CourseName IS NOT NULL AND CourseName != '' AND LOWER(TRIM(CourseName)) NOT IN (SELECT LOWER(TRIM(Name)) FROM HiddenRecents WHERE Type = 'course') GROUP BY LOWER(TRIM(CourseName)) ORDER BY Id DESC;");
 };
 
 export const getHoleParsForCourse = (courseName: string): { HoleNumber: number; HolePar: number }[] => {
     return getSyncDb().getAllSync(
         `SELECT HoleNumber, HolePar FROM RoundHoleScores
          WHERE RoundId = (
-           SELECT Id FROM Rounds WHERE CourseName = ? AND IsCompleted = 1 ORDER BY Id DESC LIMIT 1
+           SELECT Id FROM Rounds WHERE LOWER(TRIM(CourseName)) = LOWER(TRIM(?)) AND IsCompleted = 1 ORDER BY Id DESC LIMIT 1
          )
          GROUP BY HoleNumber;`,
         [courseName]
@@ -476,7 +476,7 @@ export const getHoleParsForCourse = (courseName: string): { HoleNumber: number; 
 
 export const getAllHoleNotesForCourse = (courseName: string): { HoleNumber: number; Note: string }[] => {
     return getSyncDb().getAllSync(
-        'SELECT HoleNumber, Note FROM HoleNotes WHERE CourseName = ? ORDER BY HoleNumber ASC;',
+        'SELECT HoleNumber, Note FROM HoleNotes WHERE LOWER(TRIM(CourseName)) = LOWER(TRIM(?)) ORDER BY HoleNumber ASC;',
         [courseName]
     ) as { HoleNumber: number; Note: string }[];
 };
@@ -484,15 +484,33 @@ export const getAllHoleNotesForCourse = (courseName: string): { HoleNumber: numb
 export const upsertHoleNote = async (courseName: string, holeNumber: number, note: string): Promise<boolean> => {
     let success = true;
     const db = await SQLite.openDatabaseAsync(dbName);
-    const statement = await db.prepareAsync(
-        'INSERT OR REPLACE INTO HoleNotes (CourseName, HoleNumber, Note, Updated_At) VALUES ($CourseName, $HoleNumber, $Note, $Updated_At);'
+    const now = new Date().toISOString();
+
+    const updateStatement = await db.prepareAsync(
+        'UPDATE HoleNotes SET Note = $Note, Updated_At = $Updated_At WHERE LOWER(TRIM(CourseName)) = LOWER(TRIM($CourseName)) AND HoleNumber = $HoleNumber;'
     );
     try {
-        await statement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber, $Note: note, $Updated_At: new Date().toISOString() });
+        const result = await updateStatement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber, $Note: note, $Updated_At: now });
+        if (result.changes > 0) {
+            return true;
+        }
     } catch (e) {
         success = false;
     } finally {
-        await statement.finalizeAsync();
+        await updateStatement.finalizeAsync();
+    }
+
+    if (!success) return false;
+
+    const insertStatement = await db.prepareAsync(
+        'INSERT INTO HoleNotes (CourseName, HoleNumber, Note, Updated_At) VALUES ($CourseName, $HoleNumber, $Note, $Updated_At);'
+    );
+    try {
+        await insertStatement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber, $Note: note, $Updated_At: now });
+    } catch (e) {
+        success = false;
+    } finally {
+        await insertStatement.finalizeAsync();
     }
     return success;
 };
@@ -501,7 +519,7 @@ export const deleteHoleNote = async (courseName: string, holeNumber: number): Pr
     let success = true;
     const db = await SQLite.openDatabaseAsync(dbName);
     const statement = await db.prepareAsync(
-        'DELETE FROM HoleNotes WHERE CourseName = $CourseName AND HoleNumber = $HoleNumber;'
+        'DELETE FROM HoleNotes WHERE LOWER(TRIM(CourseName)) = LOWER(TRIM($CourseName)) AND HoleNumber = $HoleNumber;'
     );
     try {
         await statement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber });

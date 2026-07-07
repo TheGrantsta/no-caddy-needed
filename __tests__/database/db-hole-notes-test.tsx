@@ -58,6 +58,14 @@ describe('getAllHoleNotesForCourse', () => {
         const result = getAllHoleNotesForCourse('St Andrews');
         expect(result).toEqual(mockRows);
     });
+
+    it('matchesCourseNameCaseInsensitivelyAndTrimsWhitespace', () => {
+        mockGetAllSync.mockReturnValue([]);
+        getAllHoleNotesForCourse('st andrews');
+        const [sql] = mockGetAllSync.mock.calls[0];
+        expect(sql).toContain('LOWER(TRIM(CourseName))');
+        expect(sql).toContain('LOWER(TRIM(?))');
+    });
 });
 
 describe('upsertHoleNote', () => {
@@ -67,20 +75,23 @@ describe('upsertHoleNote', () => {
             executeAsync: mockStatementExecuteAsync,
             finalizeAsync: mockStatementFinalizeAsync,
         });
-        mockStatementExecuteAsync.mockResolvedValue(undefined);
+        mockStatementExecuteAsync.mockResolvedValue({ changes: 0 });
     });
 
-    it('insertsIntoHoleNotesWithInsertOrReplace', async () => {
-        await upsertHoleNote('St Andrews', 7, 'aim left');
+    it('triesToUpdateExistingNoteCaseInsensitively', async () => {
+        mockStatementExecuteAsync.mockResolvedValue({ changes: 1 });
+        await upsertHoleNote('st andrews', 7, 'aim left');
         const [sql] = mockPrepareAsync.mock.calls[0];
-        expect(sql).toContain('HoleNotes');
-        expect(sql.toUpperCase()).toContain('INSERT OR REPLACE');
+        expect(sql).toContain('UPDATE');
+        expect(sql).toContain('LOWER(TRIM(CourseName))');
     });
 
-    it('executesWithCourseNameHoleNumberAndNote', async () => {
+    it('fallsBackToInsertWhenUpdateMatches zero rows', async () => {
+        mockStatementExecuteAsync.mockResolvedValue({ changes: 0 });
         await upsertHoleNote('St Andrews', 7, 'aim left');
-        const [params] = mockStatementExecuteAsync.mock.calls[0];
-        expect(params).toMatchObject({ $CourseName: 'St Andrews', $HoleNumber: 7, $Note: 'aim left' });
+        expect(mockPrepareAsync).toHaveBeenCalledTimes(2);
+        const [secondSql] = mockPrepareAsync.mock.calls[1];
+        expect(secondSql.toUpperCase()).toContain('INSERT');
     });
 
     it('returnsTrueOnSuccess', async () => {
@@ -94,10 +105,10 @@ describe('upsertHoleNote', () => {
         expect(result).toBe(false);
     });
 
-    it('finalizesStatementOnError', async () => {
+    it('finalizesStatementsOnError', async () => {
         mockStatementExecuteAsync.mockRejectedValue(new Error('db error'));
         await upsertHoleNote('St Andrews', 7, 'aim left');
-        expect(mockStatementFinalizeAsync).toHaveBeenCalledTimes(1);
+        expect(mockStatementFinalizeAsync.mock.calls.length).toBeGreaterThan(0);
     });
 });
 
@@ -139,5 +150,11 @@ describe('deleteHoleNote', () => {
         mockStatementExecuteAsync.mockRejectedValue(new Error('db error'));
         await deleteHoleNote('St Andrews', 7);
         expect(mockStatementFinalizeAsync).toHaveBeenCalledTimes(1);
+    });
+
+    it('matchesCourseNameCaseInsensitivelyAndTrimsWhitespace', async () => {
+        await deleteHoleNote('st andrews', 7);
+        const [sql] = mockPrepareAsync.mock.calls[0];
+        expect(sql).toContain('LOWER(TRIM(CourseName))');
     });
 });

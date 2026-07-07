@@ -23,28 +23,28 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
     const [pendingDelete, setPendingDelete] = useState(false);
 
     return (
-        <View style={{ padding: 8 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
-                <View style={{ paddingTop: 10 }}>
-                    <MaterialIcons name={iconName} size={48} color={colours.primary} />
-                    <Text style={[styles.normalText, { marginTop: 8, textAlign: 'center' }]}>
+        <View style={{ padding: 12 }}>
+            <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center', marginBottom: 16 }}>
+                <View style={{ alignItems: 'center', width: 70 }}>
+                    <MaterialIcons name={iconName} size={56} color={colours.primary} />
+                    <Text style={[styles.normalText, { marginTop: 8, textAlign: 'center', fontSize: 12 }]}>
                         {label}
                     </Text>
                 </View>
-                <View style={{ flex: 1, minHeight: 120 }}>
+                <View style={{ flex: 1 }}>
                     <TextInput
                         testID='test-score-input'
                         style={[
                             {
                                 borderWidth: 2,
                                 borderColor: colours.primary,
-                                borderRadius: 8,
-                                padding: 16,
-                                fontSize: 32,
+                                borderRadius: 12,
+                                padding: 20,
+                                fontSize: 36,
                                 fontWeight: '600',
                                 textAlign: 'center',
                                 color: colours.text,
-                                minHeight: 80,
+                                minHeight: 90,
                             }
                         ]}
                         placeholder={`Aim: ${target}`}
@@ -55,7 +55,10 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                         maxLength={2}
                     />
                 </View>
-                <TouchableOpacity testID='save-drill-result-button' style={[styles.button, { marginTop: 10 }]} onPress={
+            </View>
+
+            <View style={{ flexDirection: 'row', gap: 12, justifyContent: 'flex-end', marginBottom: 16 }}>
+                <TouchableOpacity testID='save-drill-result-button' style={styles.button} onPress={
                     () => {
                         const scoreNum = parseInt(score) || 0;
                         saveDrillResult(label, scoreNum);

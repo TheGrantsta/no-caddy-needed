@@ -241,14 +241,12 @@ const ShortGameScreen = ({ config }: Props) => {
                                         />
                                     ))}
                                 </View>
-                                <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', alignSelf: 'center', marginTop: 20 }}>
-                                    <TouchableOpacity
-                                        testID='add-drill-button'
-                                        style={[styles.mediumButton]}
-                                        onPress={() => setShowAddDrillForm(true)}>
-                                        <Text style={styles.buttonText}>Add test</Text>
-                                    </TouchableOpacity>
-                                </View>
+                                <TouchableOpacity
+                                    testID='add-drill-button'
+                                    style={[styles.mediumButton, { width: '100%', alignSelf: 'stretch' }]}
+                                    onPress={() => setShowAddDrillForm(true)}>
+                                    <Text style={styles.buttonText}>Add test</Text>
+                                </TouchableOpacity>
                             </>
                         )}
                     </View>

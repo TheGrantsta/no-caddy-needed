@@ -200,6 +200,8 @@ const ShortGameScreen = ({ config }: Props) => {
                         </Text>
                     </View>
 
+                    <View style={styles.divider} />
+
                     <View>
                         {showAddDrillForm ? (
                             <AddDrillForm

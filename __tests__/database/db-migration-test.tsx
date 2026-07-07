@@ -642,7 +642,7 @@ describe('DrillHistory DrillId column migration', () => {
             if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
             if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
             if (sql === 'PRAGMA table_info(DrillHistory)') return [
-                { name: 'Id' }, { name: 'Name' }, { name: 'Result' }, { name: 'DrillId' }, { name: 'Created_At' },
+                { name: 'Id' }, { name: 'Name' }, { name: 'Result' }, { name: 'DrillId' }, { name: 'Score' }, { name: 'Created_At' },
             ];
             return [];
         });
@@ -653,6 +653,47 @@ describe('DrillHistory DrillId column migration', () => {
             (call: string[]) => call[0].includes('DrillHistory')
         );
         expect(drillHistoryAlterCalls).toHaveLength(0);
+    });
+
+    it('adds Score column to DrillHistory when missing', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
+            if (sql === 'PRAGMA table_info(Drills)') return newDrillsCols;
+            if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
+            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
+            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
+            if (sql === 'PRAGMA table_info(DrillHistory)') return [
+                { name: 'Id' }, { name: 'Name' }, { name: 'Result' }, { name: 'DrillId' }, { name: 'Created_At' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE DrillHistory ADD COLUMN Score INTEGER'
+        );
+    });
+
+    it('does not add Score when already present in DrillHistory', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
+            if (sql === 'PRAGMA table_info(Drills)') return newDrillsCols;
+            if (sql === 'PRAGMA table_info(Settings)') return allSettingsCols;
+            if (sql === 'PRAGMA table_info(Rounds)') return [{ name: 'Id' }];
+            if (sql === 'PRAGMA table_info(DeadlySinsRounds)') return allDeadlySinsCols;
+            if (sql === 'PRAGMA table_info(DrillHistory)') return [
+                { name: 'Id' }, { name: 'Name' }, { name: 'Result' }, { name: 'DrillId' }, { name: 'Score' }, { name: 'Created_At' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        const scoreAlterCalls = mockExecSync.mock.calls.filter(
+            (call: string[]) => call[0].includes('Score')
+        );
+        expect(scoreAlterCalls).toHaveLength(0);
     });
 });
 

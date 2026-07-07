@@ -37,19 +37,19 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     style={[
                         {
                             flex: 1,
-                            borderWidth: 2,
-                            borderColor: colours.primary,
-                            borderRadius: 12,
-                            padding: 12,
-                            fontSize: 20,
-                            fontWeight: '600',
+                            borderWidth: 1.5,
+                            borderColor: '#B0BCC1',
+                            borderRadius: 10,
+                            padding: 10,
+                            fontSize: 16,
+                            fontWeight: '400',
                             textAlign: 'center',
                             color: colours.text,
-                            height: 60,
+                            height: 50,
                         }
                     ]}
                     placeholder={`Aim: ${target}`}
-                    placeholderTextColor={colours.primary}
+                    placeholderTextColor='#8B9BA6'
                     keyboardType='number-pad'
                     value={score}
                     onChangeText={setScore}

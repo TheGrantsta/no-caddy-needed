@@ -8,7 +8,7 @@ import { insertDrillService } from '@/service/DbService';
 const FIXED_ICON = 'handyman';
 
 const STEPS = [
-    { question: 'What do you want to call this drill?', placeholder: 'e.g. Gate drill', multiline: false },
+    { question: 'What do you want to call this test?', placeholder: 'e.g. Gate test', multiline: false },
     { question: "What is the aim?", placeholder: 'e.g. 8/10', multiline: false },
     { question: 'What is the objective?', placeholder: 'Objective', multiline: true },
     { question: 'How do you set it up?', placeholder: 'Set up', multiline: true },
@@ -127,7 +127,7 @@ export default function AddDrillForm({ category, onSaved, onCancel }: Props) {
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
                 {step === 0 ? (
-                    <TouchableOpacity testID='drill-wizard-cancel' style={styles.button} onPress={onCancel}>
+                    <TouchableOpacity testID='drill-wizard-cancel' style={[styles.button, { backgroundColor: colours.red }]} onPress={onCancel}>
                         <Text style={styles.buttonText}>Cancel</Text>
                     </TouchableOpacity>
                 ) : (

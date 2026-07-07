@@ -50,7 +50,7 @@ describe('AddDrillForm', () => {
 
     it('showsFirstStepQuestionOnRender', () => {
         const { getByText } = render(<AddDrillForm {...defaultProps} />);
-        expect(getByText('What do you want to call this drill?')).toBeTruthy();
+        expect(getByText('What do you want to call this test?')).toBeTruthy();
     });
 
     it('showsFiveProgressDots', () => {
@@ -83,7 +83,7 @@ describe('AddDrillForm', () => {
     it('doesNotAdvanceWhenFieldEmpty', () => {
         const { getByTestId, getByText } = render(<AddDrillForm {...defaultProps} />);
         fireEvent.press(getByTestId('drill-wizard-next'));
-        expect(getByText('What do you want to call this drill?')).toBeTruthy();
+        expect(getByText('What do you want to call this test?')).toBeTruthy();
     });
 
     it('showsErrorWhenNextPressedWithEmptyField', () => {
@@ -125,7 +125,7 @@ describe('AddDrillForm', () => {
         fireEvent.changeText(getByTestId('drill-wizard-input'), 'My Drill');
         fireEvent.press(getByTestId('drill-wizard-next'));
         fireEvent.press(getByTestId('drill-wizard-back'));
-        expect(getByText('What do you want to call this drill?')).toBeTruthy();
+        expect(getByText('What do you want to call this test?')).toBeTruthy();
     });
 
     it('preservesEnteredValueWhenGoingBack', () => {

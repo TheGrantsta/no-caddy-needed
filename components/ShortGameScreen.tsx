@@ -248,12 +248,6 @@ const ShortGameScreen = ({ config }: Props) => {
                                         onPress={() => setShowAddDrillForm(true)}>
                                         <Text style={styles.buttonText}>Add test</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity
-                                        testID='add-game-button'
-                                        style={[styles.mediumButton]}
-                                        onPress={() => setShowAddGameForm(true)}>
-                                        <Text style={styles.buttonText}>Add challenge</Text>
-                                    </TouchableOpacity>
                                 </View>
                             </>
                         )}

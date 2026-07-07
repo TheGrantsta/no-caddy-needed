@@ -389,56 +389,13 @@ describe('ShortGameScreen', () => {
         expect(mockGetGamesByCategoryService).toHaveBeenCalledWith('chipping');
     });
 
-    it('showsAddGameButtonInGamesSection', () => {
-        const { getByTestId } = render(<ShortGameScreen config={config} />);
-        expect(getByTestId('add-game-button')).toBeTruthy();
-    });
 
-    it('showsAddGameFormWhenAddGameButtonPressed', () => {
-        const { getByTestId } = render(<ShortGameScreen config={config} />);
-        fireEvent.press(getByTestId('add-game-button'));
-        expect(getByTestId('add-game-form')).toBeTruthy();
-    });
 
-    it('passesCorrectCategoryToAddGameForm', () => {
-        const { getByTestId } = render(<ShortGameScreen config={config} />);
-        fireEvent.press(getByTestId('add-game-button'));
-        expect(getByTestId('add-game-form').props.accessibilityLabel).toBe('chipping');
-    });
 
-    it('hidesAddGameFormAfterSaved', () => {
-        const { getByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
-        fireEvent.press(getByTestId('add-game-button'));
-        fireEvent.press(getByTestId('mock-game-on-saved'));
-        expect(queryByTestId('add-game-form')).toBeNull();
-    });
 
-    it('hidesGamesListWhenFormIsShown', () => {
-        const { getByTestId, queryByText } = render(<ShortGameScreen config={config} />);
-        fireEvent.press(getByTestId('add-game-button'));
-        expect(queryByText('Up & down!')).toBeNull();
-    });
 
-    it('hidesAddGameButtonWhenFormIsShown', () => {
-        const { getByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
-        fireEvent.press(getByTestId('add-game-button'));
-        expect(queryByTestId('add-game-button')).toBeNull();
-    });
 
-    it('hidesGameFormWhenCancelPressed', () => {
-        const { getByTestId, queryByTestId } = render(<ShortGameScreen config={config} />);
-        fireEvent.press(getByTestId('add-game-button'));
-        fireEvent.press(getByTestId('mock-game-on-cancel'));
-        expect(queryByTestId('add-game-form')).toBeNull();
-    });
 
-    it('reloadsGamesAfterGameSaved', () => {
-        const { getByTestId } = render(<ShortGameScreen config={config} />);
-        fireEvent.press(getByTestId('add-game-button'));
-        mockGetGamesByCategoryService.mockClear();
-        fireEvent.press(getByTestId('mock-game-on-saved'));
-        expect(mockGetGamesByCategoryService).toHaveBeenCalledWith('chipping');
-    });
 
     it('callsDeleteGameServiceWhenGameDeleted', async () => {
         const { getByTestId, getAllByTestId } = render(<ShortGameScreen config={config} />);

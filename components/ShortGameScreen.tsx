@@ -195,9 +195,6 @@ const ShortGameScreen = ({ config }: Props) => {
                         <Text style={[styles.headerText, styles.marginTop]}>
                             {categoryCapitalized} tests
                         </Text>
-                        <Text style={[styles.normalText, { margin: 10 }]}>
-                            Master your short game with precision scoring.
-                        </Text>
                     </View>
 
                     <View style={styles.divider} />

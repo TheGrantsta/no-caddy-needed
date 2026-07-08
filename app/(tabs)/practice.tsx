@@ -38,6 +38,7 @@ export default function Practice() {
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const displayedHistoryRef = useRef<any[]>([]);
   const allHistoryRef = useRef<any[]>([]);
+  const loadingRef = useRef(false);
 
   const points = ['Intention: practice with a purpose!', 'Evaluate: be honest with yourself - identify the shots you avoid (or can\'t play) and give yourself time to improve', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
 
@@ -78,22 +79,25 @@ export default function Practice() {
   };
 
   const loadMoreItems = () => {
-    if (isLoadingMore || displayedHistoryRef.current.length >= allHistoryRef.current.length) {
+    if (loadingRef.current || displayedHistoryRef.current.length >= allHistoryRef.current.length) {
       return;
     }
 
+    loadingRef.current = true;
     setIsLoadingMore(true);
+
     setTimeout(() => {
       const nextBatch = displayedHistoryRef.current.length + ITEMS_PER_BATCH;
       const newDisplayed = allHistoryRef.current.slice(0, nextBatch);
       displayedHistoryRef.current = newDisplayed;
       setDisplayedDrillHistory(newDisplayed);
+      loadingRef.current = false;
       setIsLoadingMore(false);
     }, 100);
   };
 
   const handleScroll = (event: any) => {
-    if (!displaySection('history') || isLoadingMore) return;
+    if (!displaySection('history') || loadingRef.current) return;
 
     const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
 
@@ -101,7 +105,7 @@ export default function Practice() {
     const isNearBottom =
       contentSize.height - layoutMeasurement.height - contentOffset.y < 200;
 
-    if (isNearBottom && displayedDrillHistory.length < allDrillHistory.length) {
+    if (isNearBottom && displayedHistoryRef.current.length < allHistoryRef.current.length) {
       loadMoreItems();
     }
   };

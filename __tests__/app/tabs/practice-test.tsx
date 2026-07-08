@@ -183,26 +183,15 @@ describe('Practice', () => {
         consoleSpy.mockRestore();
     });
 
-    it('scrollViewScrollDoesNotThrow', () => {
+    it('rendersLoadMoreButton', () => {
         mockGetAllDrillHistoryService.mockReturnValue(
-            Array.from({ length: 6 }, (_, i) => ({ Name: `Drill ${i}`, Result: 1, Created_At: '2024-01-01' }))
+            Array.from({ length: 30 }, (_, i) => ({ Name: `Drill ${i}`, Result: 1, Score: 5, Created_At: '2024-01-01' }))
         );
 
-        const { getByTestId, UNSAFE_getByType } = render(<Practice />);
+        const { getByTestId } = render(<Practice />);
         fireEvent.press(getByTestId('practice-sub-menu-history'));
 
-        const scrollView = UNSAFE_getByType(ScrollView);
-        expect(() => {
-            act(() => {
-                scrollView.props.onScroll({
-                    nativeEvent: {
-                        contentOffset: { y: 0 },
-                        contentSize: { height: 1000 },
-                        layoutMeasurement: { height: 100 }
-                    }
-                });
-            });
-        }).not.toThrow();
+        expect(getByTestId('load-more-button')).toBeTruthy();
     });
 
     it('showsOnboardingWhenPracticeOnboardingNotSeen', () => {
@@ -332,173 +321,4 @@ describe('Practice', () => {
         });
     });
 
-    describe('Infinite scroll in history', () => {
-        it('loadsInitial10ItemsOnFirstLoad', () => {
-            const items = Array.from({ length: 50 }, (_, i) => ({
-                Name: `Drill ${i}`,
-                Result: 1,
-                Score: 5,
-                Created_At: '2024-01-01'
-            }));
-            mockGetAllDrillHistoryService.mockReturnValue(items);
-
-            const { getByTestId, queryAllByText } = render(<Practice />);
-            fireEvent.press(getByTestId('practice-sub-menu-history'));
-
-            // Check that initial 10 items are rendered
-            const drillItems = queryAllByText(/Drill \d/);
-            expect(drillItems.length).toBeGreaterThanOrEqual(10);
-        });
-
-        it('loadsMoreItemsWhenScrolledToNearBottom', () => {
-            jest.useFakeTimers();
-            const items = Array.from({ length: 50 }, (_, i) => ({
-                Name: `Drill ${i}`,
-                Result: 1,
-                Score: 5,
-                Created_At: '2024-01-01'
-            }));
-            mockGetAllDrillHistoryService.mockReturnValue(items);
-
-            const { getByTestId, UNSAFE_getByType, UNSAFE_getAllByType } = render(<Practice />);
-            fireEvent.press(getByTestId('practice-sub-menu-history'));
-
-            const scrollView = UNSAFE_getByType(ScrollView);
-
-            // Simulate scrolling to near bottom
-            act(() => {
-                scrollView.props.onScroll({
-                    nativeEvent: {
-                        contentOffset: { y: 900 },
-                        contentSize: { height: 1000 },
-                        layoutMeasurement: { height: 100 }
-                    }
-                });
-            });
-
-            act(() => {
-                jest.advanceTimersByTime(100);
-            });
-
-            // After loading more, verify items are increased
-            // (We can't easily count all rendered items, so just verify no error occurred)
-            expect(true).toBe(true);
-
-            jest.useRealTimers();
-        });
-
-        it('showsLoadingIndicatorWhileFetchingMoreItems', () => {
-            jest.useFakeTimers();
-            const items = Array.from({ length: 50 }, (_, i) => ({
-                Name: `Drill ${i}`,
-                Result: 1,
-                Score: 5,
-                Created_At: '2024-01-01'
-            }));
-            mockGetAllDrillHistoryService.mockReturnValue(items);
-
-            const { getByTestId, UNSAFE_getByType, queryByTestId } = render(<Practice />);
-            fireEvent.press(getByTestId('practice-sub-menu-history'));
-
-            const scrollView = UNSAFE_getByType(ScrollView);
-
-            act(() => {
-                scrollView.props.onScroll({
-                    nativeEvent: {
-                        contentOffset: { y: 900 },
-                        contentSize: { height: 1000 },
-                        layoutMeasurement: { height: 100 }
-                    }
-                });
-            });
-
-            // Loading indicator should be visible while loading
-            expect(queryByTestId('infinite-scroll-loader')).toBeTruthy();
-
-            jest.useRealTimers();
-        });
-
-        it('stopsLoadingWhenAllItemsAreLoaded', () => {
-            jest.useFakeTimers();
-            const items = Array.from({ length: 25 }, (_, i) => ({
-                Name: `Drill ${i}`,
-                Result: 1,
-                Score: 5,
-                Created_At: '2024-01-01'
-            }));
-            mockGetAllDrillHistoryService.mockReturnValue(items);
-
-            const { getByTestId, UNSAFE_getByType, queryByTestId } = render(<Practice />);
-            fireEvent.press(getByTestId('practice-sub-menu-history'));
-
-            const scrollView = UNSAFE_getByType(ScrollView);
-
-            act(() => {
-                scrollView.props.onScroll({
-                    nativeEvent: {
-                        contentOffset: { y: 900 },
-                        contentSize: { height: 1000 },
-                        layoutMeasurement: { height: 100 }
-                    }
-                });
-            });
-
-            act(() => {
-                jest.advanceTimersByTime(100);
-            });
-
-            // After loading, no more loader should appear
-            expect(queryByTestId('infinite-scroll-loader')).toBeNull();
-
-            jest.useRealTimers();
-        });
-
-        it('doesNotLoadMoreWhenAlreadyLoading', () => {
-            jest.useFakeTimers();
-            const items = Array.from({ length: 50 }, (_, i) => ({
-                Name: `Drill ${i}`,
-                Result: 1,
-                Score: 5,
-                Created_At: '2024-01-01'
-            }));
-            mockGetAllDrillHistoryService.mockReturnValue(items);
-
-            const { getByTestId, UNSAFE_getByType } = render(<Practice />);
-            fireEvent.press(getByTestId('practice-sub-menu-history'));
-
-            const scrollView = UNSAFE_getByType(ScrollView);
-
-            const initialCallCount = mockGetAllDrillHistoryService.mock.calls.length;
-
-            act(() => {
-                scrollView.props.onScroll({
-                    nativeEvent: {
-                        contentOffset: { y: 900 },
-                        contentSize: { height: 1000 },
-                        layoutMeasurement: { height: 100 }
-                    }
-                });
-            });
-
-            // Scroll again before the first load completes (before advancing timers)
-            act(() => {
-                scrollView.props.onScroll({
-                    nativeEvent: {
-                        contentOffset: { y: 900 },
-                        contentSize: { height: 1000 },
-                        layoutMeasurement: { height: 100 }
-                    }
-                });
-            });
-
-            act(() => {
-                jest.advanceTimersByTime(100);
-            });
-
-            // Service should only be called once (initial), since loadMoreItems prevents double-loading
-            expect(mockGetAllDrillHistoryService.mock.calls.length).toBe(initialCallCount);
-
-            jest.useRealTimers();
-        });
-    });
 });

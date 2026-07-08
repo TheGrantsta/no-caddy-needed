@@ -119,7 +119,7 @@ describe('Practice page ', () => {
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Test History')).toBeTruthy();
+        expect(getByText('Fake - ladder')).toBeTruthy();
     });
 
     it('renders correctly drill history headings with infinite scroll', () => {

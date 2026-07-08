@@ -161,7 +161,7 @@ describe('Practice', () => {
 
         const { getByTestId, getByText } = render(<Practice />);
         fireEvent.press(getByTestId('practice-sub-menu-history'));
-        expect(getByText('Test History')).toBeTruthy();
+        expect(getByText('Putting drill')).toBeTruthy();
     });
 
     it('logsErrorWhenFetchDataFails', () => {

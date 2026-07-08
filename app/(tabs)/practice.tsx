@@ -278,26 +278,27 @@ export default function Practice() {
               </View>
             ) : (
               <View>
-                <Text style={{
-                  color: colours.primary,
-                  fontSize: fontSizes.subHeader,
-                  alignItems: 'baseline',
-                  padding: 6,
-                  marginTop: 10
-                }}>
-                  {allDrillHistory.length > 0 ? "Test History" : "No test history yet"}
-                </Text>
+                {allDrillHistory.length === 0 && (
+                  <Text style={{
+                    color: colours.primary,
+                    fontSize: fontSizes.subHeader,
+                    padding: 6,
+                    marginTop: 10
+                  }}>
+                    No test history yet
+                  </Text>
+                )}
 
                 {allDrillHistory.length > 0 && (
                   <View>
-                    <View style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 10 }}>
-                      <Text style={[styles.subHeaderText, { flex: 7 / 12 }]}>
+                    <View style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 10, marginTop: 10 }}>
+                      <Text style={[styles.subHeaderText, { flex: 0.6 }]} numberOfLines={1}>
                         Test
                       </Text>
-                      <Text style={[styles.subHeaderText, { flex: 2 / 12 }]}>
+                      <Text style={[styles.subHeaderText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
                         Score
                       </Text>
-                      <Text style={[styles.subHeaderText, { flex: 3 / 12 }]}>
+                      <Text style={[styles.subHeaderText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
                         Date
                       </Text>
                     </View>
@@ -309,13 +310,13 @@ export default function Practice() {
                       scrollEnabled={false}
                       renderItem={({ item }) => (
                         <View style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 8 }}>
-                          <Text style={[styles.cell, { textAlign: 'left', flex: 7 / 12, borderWidth: 0 }]}>
+                          <Text style={[styles.cell, { textAlign: 'left', flex: 0.6, borderWidth: 0 }]} numberOfLines={1}>
                             {item.Name}
                           </Text>
-                          <Text style={[styles.cell, { flex: 2 / 12, borderWidth: 0 }]}>
+                          <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center' }]} numberOfLines={1}>
                             {item.Score ?? '—'}
                           </Text>
-                          <Text style={[styles.cell, { flex: 3 / 12, borderWidth: 0 }]}>
+                          <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center' }]} numberOfLines={1}>
                             {item.Created_At}
                           </Text>
                         </View>

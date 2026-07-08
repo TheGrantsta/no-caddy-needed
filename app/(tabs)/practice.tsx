@@ -36,6 +36,8 @@ export default function Practice() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const flatListRef = useRef(null);
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const displayedHistoryRef = useRef<any[]>([]);
+  const allHistoryRef = useRef<any[]>([]);
 
   const points = ['Intention: practice with a purpose!', 'Evaluate: be honest with yourself - identify the shots you avoid (or can\'t play) and give yourself time to improve', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
 
@@ -63,8 +65,11 @@ export default function Practice() {
   const fetchData = () => {
     try {
       const items = getAllDrillHistoryService();
+      allHistoryRef.current = items;
+      const displayed = items.slice(0, ITEMS_PER_BATCH);
+      displayedHistoryRef.current = displayed;
       setAllDrillHistory(items);
-      setDisplayedDrillHistory(items.slice(0, ITEMS_PER_BATCH));
+      setDisplayedDrillHistory(displayed);
     } catch (e) {
       console.error("Error fetching drill history:", e);
     } finally {
@@ -73,14 +78,16 @@ export default function Practice() {
   };
 
   const loadMoreItems = () => {
-    if (isLoadingMore || displayedDrillHistory.length >= allDrillHistory.length) {
+    if (isLoadingMore || displayedHistoryRef.current.length >= allHistoryRef.current.length) {
       return;
     }
 
     setIsLoadingMore(true);
     setTimeout(() => {
-      const nextBatch = displayedDrillHistory.length + ITEMS_PER_BATCH;
-      setDisplayedDrillHistory(allDrillHistory.slice(0, nextBatch));
+      const nextBatch = displayedHistoryRef.current.length + ITEMS_PER_BATCH;
+      const newDisplayed = allHistoryRef.current.slice(0, nextBatch);
+      displayedHistoryRef.current = newDisplayed;
+      setDisplayedDrillHistory(newDisplayed);
       setIsLoadingMore(false);
     }, 100);
   };

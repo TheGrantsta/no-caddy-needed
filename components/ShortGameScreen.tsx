@@ -29,6 +29,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ShortGameScreen = ({ config }: Props) => {
     const { category } = config;
     const styles = useStyles();
+    const s = styles.deadlySinsTally;
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
     const { bottom: bottomInset } = useSafeAreaInsets();
@@ -241,12 +242,12 @@ const ShortGameScreen = ({ config }: Props) => {
                                         />
                                     ))}
                                 </View>
-                                <View style={{ paddingHorizontal: 16, marginTop: 20 }}>
+                                <View style={s.container}>
                                     <TouchableOpacity
                                         testID='add-drill-button'
-                                        style={styles.button}
+                                        style={s.saveButton}
                                         onPress={() => setShowAddDrillForm(true)}>
-                                        <Text style={styles.buttonText}>Add test</Text>
+                                        <Text style={s.saveButtonText}>Add test</Text>
                                     </TouchableOpacity>
                                 </View>
                             </>

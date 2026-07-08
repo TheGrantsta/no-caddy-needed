@@ -102,6 +102,26 @@ describe('Drill component', () => {
         expect(mockSave).not.toHaveBeenCalled();
     });
 
+    it('onlyAllowsNumericCharactersInScoreInput', () => {
+        const mockSave = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
+
+        const scoreInput = getByTestId('test-score-input');
+
+        // Try to enter non-numeric characters
+        fireEvent.changeText(scoreInput, '9a');
+        expect(scoreInput.props.value).toBe('9');
+
+        fireEvent.changeText(scoreInput, 'a9');
+        expect(scoreInput.props.value).toBe('9');
+
+        fireEvent.changeText(scoreInput, '5@3');
+        expect(scoreInput.props.value).toBe('53');
+
+        fireEvent.changeText(scoreInput, 'abc');
+        expect(scoreInput.props.value).toBe('');
+    });
+
     it('calls saveDrillResult with entered score when Save button is pressed', () => {
         const mockSave = jest.fn();
         const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);

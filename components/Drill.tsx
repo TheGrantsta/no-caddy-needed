@@ -26,6 +26,11 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
     const scoreNum = parseInt(score) || 0;
     const isScoreValid = score !== '' && scoreNum > 0;
 
+    const handleScoreChange = (text: string) => {
+        const numericOnly = text.replace(/[^0-9]/g, '');
+        setScore(numericOnly);
+    };
+
     return (
         <View style={{ padding: 16 }}>
             <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
@@ -56,7 +61,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     placeholderTextColor='#8B9BA6'
                     keyboardType='number-pad'
                     value={score}
-                    onChangeText={setScore}
+                    onChangeText={handleScoreChange}
                     maxLength={2}
                 />
 

@@ -30,6 +30,13 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
+jest.mock('@react-navigation/native', () => ({
+    useFocusEffect: jest.fn((callback) => {
+        // In tests, don't call the callback to avoid infinite re-renders
+        // The callback is still set up, just not executed
+    }),
+}));
+
 jest.mock('expo-router', () => ({
     Link: ({ children }: any) => {
         const { View } = require('react-native');

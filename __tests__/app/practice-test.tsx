@@ -59,6 +59,19 @@ jest.mock('../../service/FirebaseService', () => ({
     logEvent: jest.fn().mockResolvedValue(true),
 }));
 
+jest.mock('@react-navigation/native', () => ({
+    useFocusEffect: jest.fn((callback) => {
+        // In tests, don't call the callback to avoid infinite re-renders
+    }),
+}));
+
+jest.mock('expo-router', () => ({
+    Link: ({ children }: any) => {
+        const { View } = require('react-native');
+        return <View>{children}</View>;
+    },
+}));
+
 describe('Practice page ', () => {
     beforeEach(() => {
         jest.clearAllMocks();

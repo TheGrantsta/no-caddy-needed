@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useFocusEffect } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
@@ -112,6 +113,12 @@ export default function Practice() {
       if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
     };
   }, []);
+
+  useFocusEffect(() => {
+    if (section === 'history') {
+      fetchData();
+    }
+  });
 
   return (
     <GestureHandlerRootView style={styles.flexOne}>

@@ -115,7 +115,7 @@ export default function Practice() {
   }, []);
 
   useFocusEffect(() => {
-    if (section === 'history') {
+    if (section === 'history' && !refreshing && !loading) {
       fetchData();
     }
   });

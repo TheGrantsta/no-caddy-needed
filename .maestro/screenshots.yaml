@@ -157,7 +157,7 @@ appId: com.grantsta.golf.nocaddyneeded
 
 # Screenshot 5: Practice
 - extendedWaitUntil:
-    visible: "Make your practice time more effective"
+    visible: "Making practice time effective"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/03-practice-options
 
@@ -172,7 +172,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Screenshot 7: History
 - tapOn: "History"
 - extendedWaitUntil:
-    visible: "No drill history yet"
+    visible: "No test history yet"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/03C-practice-history
 

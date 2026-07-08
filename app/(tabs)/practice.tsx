@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
@@ -20,7 +20,7 @@ const ONBOARDING_STEPS = [
   { text: 'Check your history to track drill results over time and spot areas for improvement.' },
 ];
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const ITEMS_PER_BATCH = 20;
 
 export default function Practice() {
   const styles = useStyles();
@@ -30,8 +30,9 @@ export default function Practice() {
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('areas');
   const [loading, setLoading] = useState(true);
-  const [drillHistoryIndex, setDrillHistoryIndex] = useState(0);
-  const [drillHistory, setDrillHistory] = useState<any[]>([]);
+  const [allDrillHistory, setAllDrillHistory] = useState<any[]>([]);
+  const [displayedDrillHistory, setDisplayedDrillHistory] = useState<any[]>([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const flatListRef = useRef(null);
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -61,9 +62,8 @@ export default function Practice() {
   const fetchData = () => {
     try {
       const items = getAllDrillHistoryService();
-      const pages = items.length > 0 ? [items.slice(0, 10), items.slice(10)] : [];
-
-      setDrillHistory(pages);
+      setAllDrillHistory(items);
+      setDisplayedDrillHistory(items.slice(0, ITEMS_PER_BATCH));
     } catch (e) {
       console.error("Error fetching drill history:", e);
     } finally {
@@ -71,11 +71,31 @@ export default function Practice() {
     }
   };
 
-  const handleScroll = (event: any) => {
-    const scrollPosition = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollPosition / SCREEN_WIDTH);
+  const loadMoreItems = () => {
+    if (isLoadingMore || displayedDrillHistory.length >= allDrillHistory.length) {
+      return;
+    }
 
-    setDrillHistoryIndex(index);
+    setIsLoadingMore(true);
+    setTimeout(() => {
+      const nextBatch = displayedDrillHistory.length + ITEMS_PER_BATCH;
+      setDisplayedDrillHistory(allDrillHistory.slice(0, nextBatch));
+      setIsLoadingMore(false);
+    }, 100);
+  };
+
+  const handleScroll = (event: any) => {
+    if (!displaySection('history')) return;
+
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+    const paddingToBottom = 100;
+
+    if (
+      contentSize.height - layoutMeasurement.height - contentOffset.y <
+      paddingToBottom
+    ) {
+      loadMoreItems();
+    }
   };
 
   const onRefresh = () => {
@@ -105,12 +125,18 @@ export default function Practice() {
         </View>
       )}
 
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={colours.primary} />
-      }>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colours.primary} />
+        }
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      >
 
         <View style={styles.container}>
           <View style={styles.header}>
@@ -252,7 +278,6 @@ export default function Practice() {
               </View>
             ) : (
               <View>
-
                 <Text style={{
                   color: colours.primary,
                   fontSize: fontSizes.subHeader,
@@ -260,67 +285,53 @@ export default function Practice() {
                   padding: 6,
                   marginTop: 10
                 }}>
-                  {drillHistory.length > 0 ? "Test History" : "No test history yet"}
+                  {allDrillHistory.length > 0 ? "Test History" : "No test history yet"}
                 </Text>
 
-                <View style={styles.horizontalScrollContainer}>
-                  <FlatList
-                    ref={flatListRef}
-                    data={drillHistory}
-                    keyExtractor={(_, index) => index.toString()}
-                    horizontal
-                    pagingEnabled
-                    showsHorizontalScrollIndicator={false}
-                    onScroll={handleScroll}
-                    renderItem={({ item }) => (
-                      <View style={[styles.practiceScreen.page, styles.scrollWrapper, { margin: 10 }]}>
-                        <View style={{ flexDirection: 'row' }}>
-                          <Text style={[styles.subHeaderText, { flex: 9 / 12 }]}>
-                            Test
+                {allDrillHistory.length > 0 && (
+                  <View>
+                    <View style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 10 }}>
+                      <Text style={[styles.subHeaderText, { flex: 7 / 12 }]}>
+                        Test
+                      </Text>
+                      <Text style={[styles.subHeaderText, { flex: 2 / 12 }]}>
+                        Score
+                      </Text>
+                      <Text style={[styles.subHeaderText, { flex: 3 / 12 }]}>
+                        Date
+                      </Text>
+                    </View>
+
+                    <FlatList
+                      ref={flatListRef}
+                      data={displayedDrillHistory}
+                      keyExtractor={(_, index) => index.toString()}
+                      scrollEnabled={false}
+                      renderItem={({ item }) => (
+                        <View style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 8 }}>
+                          <Text style={[styles.cell, { textAlign: 'left', flex: 7 / 12, borderWidth: 0 }]}>
+                            {item.Name}
                           </Text>
-                          <Text style={[styles.subHeaderText, { flex: 1 / 12 }]}>
-                            Score
+                          <Text style={[styles.cell, { flex: 2 / 12, borderWidth: 0 }]}>
+                            {item.Score ?? '—'}
                           </Text>
-                          <Text style={[styles.subHeaderText, { flex: 2 / 12 }]}>
-                            Date
+                          <Text style={[styles.cell, { flex: 3 / 12, borderWidth: 0 }]}>
+                            {item.Created_At}
                           </Text>
                         </View>
-                        <FlatList
-                          data={item}
-                          keyExtractor={(_, index) => index.toString()}
-                          renderItem={({ item }) => (
-                            <View style={[styles.horizontalScrollContainer, { width: SCREEN_WIDTH - 50 }]}>
-                              <View style={[{ flexDirection: 'row' }]}>
+                      )}
+                    />
 
-                                <Text style={[styles.cell, { textAlign: 'left', flex: 7 / 12, borderWidth: 0 }]}>
-                                  {item.Name}
-                                </Text>
-                                <Text style={[styles.cell, { flex: 2 / 12, borderWidth: 0 }]}>
-                                  {item.Score ?? '—'}
-                                </Text>
-                                <Text style={[styles.cell, { flex: 3 / 12, borderWidth: 0 }]}>
-                                  {item.Created_At}
-                                </Text>
-                              </View>
-                            </View>
-                          )}
-                        />
+                    {isLoadingMore && (
+                      <View
+                        testID="infinite-scroll-loader"
+                        style={{ paddingVertical: 10 }}
+                      >
+                        <ActivityIndicator size="small" color={colours.primary} />
                       </View>
                     )}
-                  />
-                </View>
-
-                <View style={styles.scrollIndicatorContainer}>
-                  {drillHistory.map((_, index) => (
-                    <View
-                      key={index}
-                      style={[
-                        styles.scrollIndicatorDot,
-                        drillHistoryIndex === index && styles.scrollActiveDot,
-                      ]}
-                    />
-                  ))}
-                </View>
+                  </View>
+                )}
               </View>
             )}
           </View>

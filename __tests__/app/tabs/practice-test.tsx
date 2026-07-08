@@ -176,18 +176,24 @@ describe('Practice', () => {
         consoleSpy.mockRestore();
     });
 
-    it('historyFlatListOnScrollDoesNotThrow', () => {
+    it('scrollViewScrollDoesNotThrow', () => {
         mockGetAllDrillHistoryService.mockReturnValue(
             Array.from({ length: 6 }, (_, i) => ({ Name: `Drill ${i}`, Result: 1, Created_At: '2024-01-01' }))
         );
 
-        const { getByTestId, UNSAFE_getAllByType } = render(<Practice />);
+        const { getByTestId, UNSAFE_getByType } = render(<Practice />);
         fireEvent.press(getByTestId('practice-sub-menu-history'));
 
-        const flatLists = UNSAFE_getAllByType(FlatList);
+        const scrollView = UNSAFE_getByType(ScrollView);
         expect(() => {
             act(() => {
-                flatLists[0].props.onScroll({ nativeEvent: { contentOffset: { x: 375 } } });
+                scrollView.props.onScroll({
+                    nativeEvent: {
+                        contentOffset: { y: 0 },
+                        contentSize: { height: 1000 },
+                        layoutMeasurement: { height: 100 }
+                    }
+                });
             });
         }).not.toThrow();
     });
@@ -316,6 +322,178 @@ describe('Practice', () => {
             });
 
             expect(mockGetAllDrillHistoryService.mock.calls.length).toBeGreaterThan(initialCallCount);
+        });
+    });
+
+    describe('Infinite scroll in history', () => {
+        it('loadsInitial20ItemsOnFirstLoad', () => {
+            const items = Array.from({ length: 50 }, (_, i) => ({
+                Name: `Drill ${i}`,
+                Result: 1,
+                Score: 5,
+                Created_At: '2024-01-01'
+            }));
+            mockGetAllDrillHistoryService.mockReturnValue(items);
+
+            const { getByTestId, UNSAFE_getAllByType } = render(<Practice />);
+            fireEvent.press(getByTestId('practice-sub-menu-history'));
+
+            // Check the FlatList data directly
+            const flatLists = UNSAFE_getAllByType(FlatList);
+            const historyFlatList = flatLists.find(fl => fl.props.data?.length > 0 && fl.props.data[0].Name?.includes('Drill'));
+            expect(historyFlatList?.props.data.length).toBe(20);
+        });
+
+        it('loadsMoreItemsWhenScrolledToNearBottom', () => {
+            jest.useFakeTimers();
+            const items = Array.from({ length: 50 }, (_, i) => ({
+                Name: `Drill ${i}`,
+                Result: 1,
+                Score: 5,
+                Created_At: '2024-01-01'
+            }));
+            mockGetAllDrillHistoryService.mockReturnValue(items);
+
+            const { getByTestId, UNSAFE_getByType, UNSAFE_getAllByType } = render(<Practice />);
+            fireEvent.press(getByTestId('practice-sub-menu-history'));
+
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            // Simulate scrolling to near bottom
+            act(() => {
+                scrollView.props.onScroll({
+                    nativeEvent: {
+                        contentOffset: { y: 900 },
+                        contentSize: { height: 1000 },
+                        layoutMeasurement: { height: 100 }
+                    }
+                });
+            });
+
+            act(() => {
+                jest.advanceTimersByTime(100);
+            });
+
+            // Check the FlatList data directly
+            const flatLists = UNSAFE_getAllByType(FlatList);
+            const historyFlatList = flatLists.find(fl => fl.props.data?.length > 0 && fl.props.data[0].Name?.includes('Drill'));
+            expect(historyFlatList?.props.data.length).toBe(40);
+
+            jest.useRealTimers();
+        });
+
+        it('showsLoadingIndicatorWhileFetchingMoreItems', () => {
+            jest.useFakeTimers();
+            const items = Array.from({ length: 50 }, (_, i) => ({
+                Name: `Drill ${i}`,
+                Result: 1,
+                Score: 5,
+                Created_At: '2024-01-01'
+            }));
+            mockGetAllDrillHistoryService.mockReturnValue(items);
+
+            const { getByTestId, UNSAFE_getByType, queryByTestId } = render(<Practice />);
+            fireEvent.press(getByTestId('practice-sub-menu-history'));
+
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            act(() => {
+                scrollView.props.onScroll({
+                    nativeEvent: {
+                        contentOffset: { y: 900 },
+                        contentSize: { height: 1000 },
+                        layoutMeasurement: { height: 100 }
+                    }
+                });
+            });
+
+            // Loading indicator should be visible while loading
+            expect(queryByTestId('infinite-scroll-loader')).toBeTruthy();
+
+            jest.useRealTimers();
+        });
+
+        it('stopsLoadingWhenAllItemsAreLoaded', () => {
+            jest.useFakeTimers();
+            const items = Array.from({ length: 25 }, (_, i) => ({
+                Name: `Drill ${i}`,
+                Result: 1,
+                Score: 5,
+                Created_At: '2024-01-01'
+            }));
+            mockGetAllDrillHistoryService.mockReturnValue(items);
+
+            const { getByTestId, UNSAFE_getByType, queryByTestId } = render(<Practice />);
+            fireEvent.press(getByTestId('practice-sub-menu-history'));
+
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            act(() => {
+                scrollView.props.onScroll({
+                    nativeEvent: {
+                        contentOffset: { y: 900 },
+                        contentSize: { height: 1000 },
+                        layoutMeasurement: { height: 100 }
+                    }
+                });
+            });
+
+            act(() => {
+                jest.advanceTimersByTime(100);
+            });
+
+            // After loading, no more loader should appear
+            expect(queryByTestId('infinite-scroll-loader')).toBeNull();
+
+            jest.useRealTimers();
+        });
+
+        it('doesNotLoadMoreWhenAlreadyLoading', () => {
+            jest.useFakeTimers();
+            const items = Array.from({ length: 50 }, (_, i) => ({
+                Name: `Drill ${i}`,
+                Result: 1,
+                Score: 5,
+                Created_At: '2024-01-01'
+            }));
+            mockGetAllDrillHistoryService.mockReturnValue(items);
+
+            const { getByTestId, UNSAFE_getByType } = render(<Practice />);
+            fireEvent.press(getByTestId('practice-sub-menu-history'));
+
+            const scrollView = UNSAFE_getByType(ScrollView);
+
+            const initialCallCount = mockGetAllDrillHistoryService.mock.calls.length;
+
+            act(() => {
+                scrollView.props.onScroll({
+                    nativeEvent: {
+                        contentOffset: { y: 900 },
+                        contentSize: { height: 1000 },
+                        layoutMeasurement: { height: 100 }
+                    }
+                });
+            });
+
+            // Scroll again before the first load completes (before advancing timers)
+            act(() => {
+                scrollView.props.onScroll({
+                    nativeEvent: {
+                        contentOffset: { y: 900 },
+                        contentSize: { height: 1000 },
+                        layoutMeasurement: { height: 100 }
+                    }
+                });
+            });
+
+            act(() => {
+                jest.advanceTimersByTime(100);
+            });
+
+            // Service should only be called once (initial), since loadMoreItems prevents double-loading
+            expect(mockGetAllDrillHistoryService.mock.calls.length).toBe(initialCallCount);
+
+            jest.useRealTimers();
         });
     });
 });

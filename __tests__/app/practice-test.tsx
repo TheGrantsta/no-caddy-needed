@@ -122,16 +122,27 @@ describe('Practice page ', () => {
         expect(getByText('Test History')).toBeTruthy();
     });
 
-    it('renders correctly drill history headings on each page', () => {
+    it('renders correctly drill history headings with infinite scroll', () => {
+        const drills = Array.from({ length: 25 }, (_, i) => ({
+            Id: i + 1,
+            Name: `Drill - ${i + 1}`,
+            Result: 1,
+            Score: 5 + i,
+            Created_At: '2025-03-17T13:01:00.684Z'
+        }));
+
+        mockedGetAllDrillHistoryService.mockReturnValue(drills);
+
         const { getAllByText, getByTestId } = render(<View />);
 
         const subMenuItem = getByTestId('practice-sub-menu-history');
 
         fireEvent.press(subMenuItem);
 
-        expect(getAllByText('Test').length).toBeGreaterThanOrEqual(2);
-        expect(getAllByText('Score').length).toBeGreaterThanOrEqual(2);
-        expect(getAllByText('Date').length).toBeGreaterThanOrEqual(2);
+        // With infinite scroll, there's one header row with these labels
+        expect(getAllByText('Test').length).toBeGreaterThanOrEqual(1);
+        expect(getAllByText('Score').length).toBeGreaterThanOrEqual(1);
+        expect(getAllByText('Date').length).toBeGreaterThanOrEqual(1);
     });
 
     it('renders correctly when drill history is empty', () => {

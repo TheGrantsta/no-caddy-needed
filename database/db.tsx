@@ -122,7 +122,7 @@ export const initialize = async () => {
         },
         {
             table: 'DrillHistory',
-            columnsToAdd: ['DrillId INTEGER'],
+            columnsToAdd: ['DrillId INTEGER', 'Score INTEGER'],
             columnsToRemove: [],
         },
         {
@@ -165,16 +165,16 @@ export const initialize = async () => {
     }
 };
 
-export const insertDrillResult = async (name: string, result: boolean, drillId: number | null = null) => {
+export const insertDrillResult = async (name: string, result: boolean, drillId: number | null = null, score: number | null = null) => {
     let success = true;
     const db = await SQLite.openDatabaseAsync(dbName);
 
     const statement = await db.prepareAsync(
-        'INSERT INTO DrillHistory (Name, Result, DrillId, Created_At) VALUES ($Name, $Result, $DrillId, $Created_At);'
+        'INSERT INTO DrillHistory (Name, Result, DrillId, Score, Created_At) VALUES ($Name, $Result, $DrillId, $Score, $Created_At);'
     );
 
     try {
-        await statement.executeAsync({ $Name: name, $Result: result, $DrillId: drillId, $Created_At: new Date().toISOString() });
+        await statement.executeAsync({ $Name: name, $Result: result, $DrillId: drillId, $Score: score, $Created_At: new Date().toISOString() });
     } catch (e) {
         success = false;
     } finally {

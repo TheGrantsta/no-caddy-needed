@@ -37,10 +37,11 @@ describe('Drill component', () => {
         expect(getByText('Test Drill')).toBeTruthy();
     });
 
-    it('renders the target', () => {
-        const { getByText } = render(<Drill {...defaultProps} />);
+    it('renders the target as placeholder', () => {
+        const { getByTestId } = render(<Drill {...defaultProps} />);
 
-        expect(getByText('Aim: 5 out of 10')).toBeTruthy();
+        const scoreInput = getByTestId('test-score-input');
+        expect(scoreInput.props.placeholder).toBe('Aim: 5 out of 10');
     });
 
     it('renders the Save button', () => {
@@ -49,45 +50,89 @@ describe('Drill component', () => {
         expect(getByText('Save')).toBeTruthy();
     });
 
-    it('renders toggle in Met state by default', () => {
-        const { getByText } = render(<Drill {...defaultProps} />);
-
-        expect(getByText('Met')).toBeTruthy();
-    });
-
-    it('shows checkmark when toggle is in Met state', () => {
+    it('renders score input', () => {
         const { getByTestId } = render(<Drill {...defaultProps} />);
 
-        expect(getByTestId('drill-met-toggle')).toHaveTextContent('✓');
+        expect(getByTestId('test-score-input')).toBeTruthy();
     });
 
-    it('shows circle when toggle is in Not Met state', () => {
-        const { getByTestId } = render(<Drill {...defaultProps} />);
-
-        fireEvent.press(getByTestId('drill-met-toggle'));
-
-        expect(getByTestId('drill-met-toggle')).toHaveTextContent('○');
-    });
-
-    it('calls saveDrillResult with label and true when Save is pressed with Met (default)', () => {
+    it('disablesSaveButtonWhenScoreIsEmpty', () => {
         const mockSave = jest.fn();
         const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
 
         const saveButton = getByTestId('save-drill-result-button');
         fireEvent.press(saveButton);
 
-        expect(mockSave).toHaveBeenCalledWith('Test Drill', true);
+        expect(mockSave).not.toHaveBeenCalled();
     });
 
-    it('calls saveDrillResult when Save button is pressed', () => {
+    it('disablesSaveButtonWhenScoreIsZero', () => {
+        const mockSave = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
+
+        const scoreInput = getByTestId('test-score-input');
+        const saveButton = getByTestId('save-drill-result-button');
+
+        fireEvent.changeText(scoreInput, '0');
+        fireEvent.press(saveButton);
+
+        expect(mockSave).not.toHaveBeenCalled();
+    });
+
+    it('enablesSaveButtonWhenScoreIsValid', () => {
+        const mockSave = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
+
+        const scoreInput = getByTestId('test-score-input');
+        const saveButton = getByTestId('save-drill-result-button');
+
+        fireEvent.changeText(scoreInput, '5');
+        fireEvent.press(saveButton);
+
+        expect(mockSave).toHaveBeenCalledWith('Test Drill', 5);
+    });
+
+    it('doesNotCallSaveDrillResultWhenScoreIsEmpty', () => {
         const mockSave = jest.fn();
         const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
 
         const saveButton = getByTestId('save-drill-result-button');
         fireEvent.press(saveButton);
 
-        expect(mockSave).toHaveBeenCalledTimes(1);
-        expect(mockSave).toHaveBeenCalledWith('Test Drill', expect.any(Boolean));
+        expect(mockSave).not.toHaveBeenCalled();
+    });
+
+    it('onlyAllowsNumericCharactersInScoreInput', () => {
+        const mockSave = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
+
+        const scoreInput = getByTestId('test-score-input');
+
+        // Try to enter non-numeric characters
+        fireEvent.changeText(scoreInput, '9a');
+        expect(scoreInput.props.value).toBe('9');
+
+        fireEvent.changeText(scoreInput, 'a9');
+        expect(scoreInput.props.value).toBe('9');
+
+        fireEvent.changeText(scoreInput, '5@3');
+        expect(scoreInput.props.value).toBe('53');
+
+        fireEvent.changeText(scoreInput, 'abc');
+        expect(scoreInput.props.value).toBe('');
+    });
+
+    it('calls saveDrillResult with entered score when Save button is pressed', () => {
+        const mockSave = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
+
+        const scoreInput = getByTestId('test-score-input');
+        const saveButton = getByTestId('save-drill-result-button');
+
+        fireEvent.changeText(scoreInput, '7');
+        fireEvent.press(saveButton);
+
+        expect(mockSave).toHaveBeenCalledWith('Test Drill', expect.any(Number));
     });
 
     it('renders Instructions component with correct props', () => {

@@ -32,7 +32,7 @@ export default function DrillStatsChart({ stats }: Props) {
 
     return (
         <View style={s.container}>
-            <Text style={s.title}>Success Rate by Drill</Text>
+            <Text style={s.title}>Test Performance</Text>
 
             {stats.slice(0, 8).map((stat, index) => (
                 <View key={index} style={s.barContainer}>
@@ -61,6 +61,11 @@ export default function DrillStatsChart({ stats }: Props) {
                         <Text style={s.countText}>
                             ({stat.met}/{stat.total})
                         </Text>
+                        {stat.averageScore !== null && (
+                            <Text style={s.countText}>
+                                Avg: {stat.averageScore}
+                            </Text>
+                        )}
                     </View>
                 </View>
             ))}

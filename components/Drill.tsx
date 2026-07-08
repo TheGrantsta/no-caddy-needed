@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import Instructions from "./Instructions";
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
+import fontSizes from '@/assets/font-sizes';
 
 type Props = {
     label: string;
@@ -12,56 +13,72 @@ type Props = {
     objective: string;
     setUp: string;
     howToPlay: string;
-    saveDrillResult: (label: string, result: boolean) => void;
+    saveDrillResult: (label: string, score: number) => void;
     onDelete?: () => void;
 };
 
 export default function Drill({ label, iconName, target, objective, setUp, howToPlay, saveDrillResult, onDelete }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
-    const [isAchieved, setIsAchieved] = useState(true);
+    const [score, setScore] = useState('');
     const [pendingDelete, setPendingDelete] = useState(false);
 
-    const toggleSwitch = () => {
-        setIsAchieved((previousState) => !previousState);
+    const scoreNum = parseInt(score) || 0;
+    const isScoreValid = score !== '' && scoreNum > 0;
+
+    const handleScoreChange = (text: string) => {
+        const numericOnly = text.replace(/[^0-9]/g, '');
+        setScore(numericOnly);
     };
 
     return (
-        <View style={{ padding: 8 }}>
-            <View style={{ flexDirection: 'row' }}>
-                <View style={{ flex: 1 / 3, padding: 10 }}>
-                    <MaterialIcons name={iconName} size={48} color={colours.primary} />
-                    <Text style={styles.normalText}>
+        <View style={{ padding: 16 }}>
+            <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+                <View style={{ alignItems: 'center', width: 80 }}>
+                    <MaterialIcons name={iconName} size={56} color={colours.primary} />
+                    <Text style={[styles.normalText, { marginTop: 8, textAlign: 'center', fontSize: 13 }]}>
                         {label}
                     </Text>
                 </View>
-                <View style={{ flex: 1 / 3 }}>
-                    <Text style={styles.drill.contentText}>
-                        <Text style={styles.primaryText}>Aim: {target}</Text>
-                    </Text>
-                    <View style={[styles.drill.toggleWrapper, { paddingTop: 10 }]}>
-                        <TouchableOpacity
-                            testID='drill-met-toggle'
-                            style={styles.deadlySinsTally.button}
-                            onPress={toggleSwitch}>
-                            <Text style={styles.deadlySinsTally.buttonText}>{isAchieved ? '✓' : '○'}</Text>
-                        </TouchableOpacity>
 
-                        <Text style={[styles.normalText, { paddingLeft: 10 }]}>
-                            {isAchieved ? 'Met' : 'Not met'}
-                        </Text>
-                    </View>
-                </View>
-                <View style={{ flex: 1 / 3, alignItems: 'center', alignSelf: 'center' }}>
-                    <TouchableOpacity testID='save-drill-result-button' style={styles.button} onPress={
-                        () => {
-                            saveDrillResult(label, isAchieved);
-                        }}>
-                        <Text style={styles.buttonText}>
-                            Save
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                <TextInput
+                    testID='test-score-input'
+                    style={[
+                        {
+                            flex: 1,
+                            borderWidth: 1.5,
+                            borderColor: '#B0BCC1',
+                            borderRadius: 10,
+                            padding: 10,
+                            fontSize: 16,
+                            fontWeight: '400',
+                            textAlign: 'center',
+                            color: colours.text,
+                            height: 50,
+                        }
+                    ]}
+                    placeholder={`Aim: ${target}`}
+                    placeholderTextColor='#8B9BA6'
+                    keyboardType='number-pad'
+                    value={score}
+                    onChangeText={handleScoreChange}
+                    maxLength={2}
+                />
+
+                <TouchableOpacity
+                    testID='save-drill-result-button'
+                    style={[styles.button, !isScoreValid && { opacity: 0.5 }]}
+                    disabled={!isScoreValid}
+                    onPress={() => {
+                        if (isScoreValid) {
+                            saveDrillResult(label, scoreNum);
+                            setScore('');
+                        }
+                    }}>
+                    <Text style={styles.buttonText}>
+                        Save
+                    </Text>
+                </TouchableOpacity>
             </View>
 
             <View>
@@ -87,9 +104,9 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                 ) : (
                     <TouchableOpacity
                         testID='delete-drill-button'
-                        style={styles.mediumButton}
+                        style={{ padding: 8 }}
                         onPress={() => setPendingDelete(true)}>
-                        <Text style={styles.buttonText}>Delete</Text>
+                        <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>Delete</Text>
                     </TouchableOpacity>
                 )}
             </View>

@@ -2,30 +2,25 @@ import { ShortGameConfig } from '../types/ShortGame';
 
 export const puttingConfig: ShortGameConfig = {
     category: 'putting',
-    drillsFooter: 'Practicing different techniques & improving your feel will increase your confidence & reduce missed opportunities',
-    gamesFooter: 'Games are designed to replicate game pressure, so only use ONE ball',
+    description: 'Track your progress with precision scoring. Combine focused practice with pressure scenarios to build confidence.',
 };
 
 export const chippingConfig: ShortGameConfig = {
     category: 'chipping',
-    drillsFooter: 'Practicing different techniques & improving your feel will increase your confidence & reduce missed opportunities',
-    gamesFooter: 'Games are designed to replicate game pressure, so only use ONE ball',
+    description: 'Track your progress with precision scoring. Combine focused practice with pressure scenarios to build confidence.',
 };
 
 export const pitchingConfig: ShortGameConfig = {
     category: 'pitching',
-    drillsFooter: 'Practicing different techniques & improving your feel will increase your confidence & reduce missed opportunities',
-    gamesFooter: 'Games are designed to replicate game pressure, so only use ONE ball',
+    description: 'Track your progress with precision scoring. Combine focused practice with pressure scenarios to build confidence.',
 };
 
 export const bunkerConfig: ShortGameConfig = {
     category: 'bunker',
-    drillsFooter: 'Practicing different techniques & improving your feel will increase your confidence & reduce missed opportunities',
-    gamesFooter: 'Games are designed to replicate game pressure, so only use ONE ball',
+    description: 'Track your progress with precision scoring. Combine focused practice with pressure scenarios to build confidence.',
 };
 
 export const fullSwingConfig: ShortGameConfig = {
     category: 'full-swing',
-    drillsFooter: 'Consistent tempo and a reliable pre-shot routine are the foundations of hitting more fairways',
-    gamesFooter: 'Games are designed to replicate game pressure, so only use ONE ball',
+    description: 'Consistent tempo and reliable pre-shot routines build course confidence. Track every shot.',
 };

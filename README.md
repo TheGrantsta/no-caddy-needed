@@ -78,6 +78,12 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 * Update the 'WHATS_NEW' array with what is new in this release
 
+* Tag the commit
+
+   ```bash
+   git tag -a '<annotation>' -m '<message>'
+   ```
+
 4. Single CLI command - build and submit
 
    ```bash

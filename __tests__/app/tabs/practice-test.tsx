@@ -30,6 +30,13 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
+jest.mock('@react-navigation/native', () => ({
+    useFocusEffect: jest.fn((callback) => {
+        // In tests, don't call the callback to avoid infinite re-renders
+        // The callback is still set up, just not executed
+    }),
+}));
+
 jest.mock('expo-router', () => ({
     Link: ({ children }: any) => {
         const { View } = require('react-native');
@@ -90,7 +97,7 @@ describe('Practice', () => {
 
     it('displaysSubheaderText', () => {
         const { getByText } = render(<Practice />);
-        expect(getByText('Make your practice time more effective')).toBeTruthy();
+        expect(getByText('Making practice time effective')).toBeTruthy();
     });
 
     it('showsShortGameSectionByDefault', () => {
@@ -150,18 +157,18 @@ describe('Practice', () => {
     it('showsNoDrillHistoryWhenEmpty', () => {
         const { getByTestId, getByText } = render(<Practice />);
         fireEvent.press(getByTestId('practice-sub-menu-history'));
-        expect(getByText('No drill history yet')).toBeTruthy();
+        expect(getByText('No test history yet')).toBeTruthy();
     });
 
     it('showsDrillHistoryTextWhenDataExists', () => {
         mockGetAllDrillHistoryService.mockReturnValue([
-            { Name: 'Putting drill', Result: 1, Created_At: '2024-01-01' },
-            { Name: 'Chipping drill', Result: 0, Created_At: '2024-01-02' },
+            { Name: 'Putting drill', Result: 1, Score: 5, Created_At: '2024-01-01' },
+            { Name: 'Chipping drill', Result: 0, Score: 2, Created_At: '2024-01-02' },
         ]);
 
         const { getByTestId, getByText } = render(<Practice />);
         fireEvent.press(getByTestId('practice-sub-menu-history'));
-        expect(getByText('Drill History')).toBeTruthy();
+        expect(getByText('Putting drill')).toBeTruthy();
     });
 
     it('logsErrorWhenFetchDataFails', () => {
@@ -176,20 +183,15 @@ describe('Practice', () => {
         consoleSpy.mockRestore();
     });
 
-    it('historyFlatListOnScrollDoesNotThrow', () => {
+    it('rendersLoadMoreButton', () => {
         mockGetAllDrillHistoryService.mockReturnValue(
-            Array.from({ length: 6 }, (_, i) => ({ Name: `Drill ${i}`, Result: 1, Created_At: '2024-01-01' }))
+            Array.from({ length: 30 }, (_, i) => ({ Name: `Drill ${i}`, Result: 1, Score: 5, Created_At: '2024-01-01' }))
         );
 
-        const { getByTestId, UNSAFE_getAllByType } = render(<Practice />);
+        const { getByTestId } = render(<Practice />);
         fireEvent.press(getByTestId('practice-sub-menu-history'));
 
-        const flatLists = UNSAFE_getAllByType(FlatList);
-        expect(() => {
-            act(() => {
-                flatLists[0].props.onScroll({ nativeEvent: { contentOffset: { x: 375 } } });
-            });
-        }).not.toThrow();
+        expect(getByTestId('load-more-button')).toBeTruthy();
     });
 
     it('showsOnboardingWhenPracticeOnboardingNotSeen', () => {
@@ -318,4 +320,5 @@ describe('Practice', () => {
             expect(mockGetAllDrillHistoryService.mock.calls.length).toBeGreaterThan(initialCallCount);
         });
     });
+
 });

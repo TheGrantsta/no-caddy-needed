@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
@@ -20,7 +20,7 @@ const ONBOARDING_STEPS = [
   { text: 'Check your history to track drill results over time and spot areas for improvement.' },
 ];
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const ITEMS_PER_BATCH = 10;
 
 export default function Practice() {
   const styles = useStyles();
@@ -30,9 +30,9 @@ export default function Practice() {
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('areas');
   const [loading, setLoading] = useState(true);
-  const [drillHistoryIndex, setDrillHistoryIndex] = useState(0);
-  const [drillHistory, setDrillHistory] = useState<any[]>([]);
-  const flatListRef = useRef(null);
+  const [allDrillHistory, setAllDrillHistory] = useState<any[]>([]);
+  const [displayedDrillHistory, setDisplayedDrillHistory] = useState<any[]>([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const points = ['Intention: practice with a purpose!', 'Evaluate: be honest with yourself - identify the shots you avoid (or can\'t play) and give yourself time to improve', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
@@ -61,9 +61,8 @@ export default function Practice() {
   const fetchData = () => {
     try {
       const items = getAllDrillHistoryService();
-      const pages = items.length > 0 ? [items.slice(0, 10), items.slice(10)] : [];
-
-      setDrillHistory(pages);
+      setAllDrillHistory(items);
+      setDisplayedDrillHistory(items.slice(0, ITEMS_PER_BATCH));
     } catch (e) {
       console.error("Error fetching drill history:", e);
     } finally {
@@ -71,11 +70,17 @@ export default function Practice() {
     }
   };
 
-  const handleScroll = (event: any) => {
-    const scrollPosition = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollPosition / SCREEN_WIDTH);
+  const loadMoreItems = () => {
+    if (isLoadingMore || displayedDrillHistory.length >= allDrillHistory.length) {
+      return;
+    }
 
-    setDrillHistoryIndex(index);
+    setIsLoadingMore(true);
+    setTimeout(() => {
+      const nextBatch = displayedDrillHistory.length + ITEMS_PER_BATCH;
+      setDisplayedDrillHistory(allDrillHistory.slice(0, nextBatch));
+      setIsLoadingMore(false);
+    }, 100);
   };
 
   const onRefresh = () => {
@@ -105,12 +110,16 @@ export default function Practice() {
         </View>
       )}
 
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={colours.primary} />
-      }>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colours.primary} />
+        }
+      >
 
         <View style={styles.container}>
           <View style={styles.header}>
@@ -126,7 +135,7 @@ export default function Practice() {
               </Text>
             </View>
             <Text style={[styles.normalText, styles.marginBottom]}>
-              Make your practice time more effective
+              Making practice time effective
             </Text>
           </View>
 
@@ -252,78 +261,74 @@ export default function Practice() {
               </View>
             ) : (
               <View>
+                {allDrillHistory.length === 0 && (
+                  <Text style={{
+                    color: colours.primary,
+                    fontSize: fontSizes.subHeader,
+                    padding: 6,
+                    marginTop: 10
+                  }}>
+                    No test history yet
+                  </Text>
+                )}
 
-                <Text style={{
-                  color: colours.primary,
-                  fontSize: fontSizes.subHeader,
-                  alignItems: 'baseline',
-                  padding: 6,
-                  marginTop: 10
-                }}>
-                  {drillHistory.length > 0 ? "Drill History" : "No drill history yet"}
-                </Text>
+                {allDrillHistory.length > 0 && (
+                  <View>
+                    <View style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 10, marginTop: 10 }}>
+                      <Text style={[styles.subHeaderText, { flex: 0.6 }]} numberOfLines={1}>
+                        Test
+                      </Text>
+                      <Text style={[styles.subHeaderText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
+                        Score
+                      </Text>
+                      <Text style={[styles.subHeaderText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
+                        Date
+                      </Text>
+                    </View>
 
-                <View style={styles.horizontalScrollContainer}>
-                  <FlatList
-                    ref={flatListRef}
-                    data={drillHistory}
-                    keyExtractor={(_, index) => index.toString()}
-                    horizontal
-                    pagingEnabled
-                    showsHorizontalScrollIndicator={false}
-                    onScroll={handleScroll}
-                    renderItem={({ item }) => (
-                      <View style={[styles.practiceScreen.page, styles.scrollWrapper, { margin: 10 }]}>
-                        <View style={{ flexDirection: 'row' }}>
-                          <Text style={[styles.subHeaderText, { flex: 9 / 12 }]}>
-                            Drill
-                          </Text>
-                          <Text style={[styles.subHeaderText, { flex: 1 / 12 }]}>
-                            Met
-                          </Text>
-                          <Text style={[styles.subHeaderText, { flex: 2 / 12 }]}>
-                            Date
-                          </Text>
-                        </View>
-                        <FlatList
-                          data={item}
-                          keyExtractor={(_, index) => index.toString()}
-                          renderItem={({ item }) => (
-                            <View style={[styles.horizontalScrollContainer, { width: SCREEN_WIDTH - 50 }]}>
-                              <View style={[{ flexDirection: 'row' }]}>
+                    {displayedDrillHistory.map((item, index) => (
+                      <View key={index} style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 8 }}>
+                        <Text style={[styles.cell, { textAlign: 'left', flex: 0.6, borderWidth: 0, fontWeight: 'normal' }]} numberOfLines={1}>
+                          {item.Name}
+                        </Text>
+                        <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center', fontWeight: 'normal' }]} numberOfLines={1}>
+                          {item.Score ?? '—'}
+                        </Text>
+                        <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center', fontWeight: 'normal' }]} numberOfLines={1}>
+                          {item.Created_At}
+                        </Text>
+                      </View>
+                    ))}
 
-                                <Text style={[styles.cell, { textAlign: 'left', flex: 7 / 12, borderWidth: 0 }]}>
-                                  {item.Name}
-                                </Text>
-                                <Text style={[styles.cell, { flex: 2 / 12, borderWidth: 0 }]}>
-                                  <MaterialIcons
-                                    name={item.Result === 1 ? 'check' : 'clear'}
-                                    color={item.Result === 1 ? colours.primary : colours.errorText}
-                                    size={24} />
-                                </Text>
-                                <Text style={[styles.cell, { flex: 3 / 12, borderWidth: 0 }]}>
-                                  {item.Created_At}
-                                </Text>
-                              </View>
-                            </View>
-                          )}
-                        />
+                    {displayedDrillHistory.length < allDrillHistory.length && (
+                      <View style={{ paddingVertical: 15, alignItems: 'center', gap: 10 }}>
+                        {isLoadingMore && (
+                          <ActivityIndicator
+                            testID="infinite-scroll-loader"
+                            size="small"
+                            color={colours.primary}
+                          />
+                        )}
+                        <TouchableOpacity
+                          testID="load-more-button"
+                          style={{
+                            paddingHorizontal: 16,
+                            paddingVertical: 10,
+                            borderWidth: 1,
+                            borderColor: colours.primary,
+                            borderRadius: 8,
+                          }}
+                          onPress={loadMoreItems}
+                          disabled={isLoadingMore}
+                        >
+                          <Text style={{ color: colours.primary, fontSize: 14, fontWeight: '500' }}>
+                            {isLoadingMore ? 'Loading...' : 'Load more'}
+                          </Text>
+                        </TouchableOpacity>
                       </View>
                     )}
-                  />
-                </View>
-
-                <View style={styles.scrollIndicatorContainer}>
-                  {drillHistory.map((_, index) => (
-                    <View
-                      key={index}
-                      style={[
-                        styles.scrollIndicatorDot,
-                        drillHistoryIndex === index && styles.scrollActiveDot,
-                      ]}
-                    />
-                  ))}
-                </View>
+                  </View>
+                )}
               </View>
             )}
           </View>

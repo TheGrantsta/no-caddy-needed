@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { insertDrillResultService, getDrillsByCategoryService, deleteDrillService, restoreDrillService, getGamesByCategoryService, deleteGameService, restoreGameService } from "@/service/DbService";
-import SubMenu from "@/components/SubMenu";
 import Drill from "@/components/Drill";
 import Game from "@/components/Game";
 import AddDrillForm from "@/components/AddDrillForm";
@@ -19,142 +19,166 @@ type Props = {
     config: ShortGameConfig;
 };
 
+type TestItem = {
+    type: 'drill' | 'game';
+    id?: number;
+    data: DrillData | GameData;
+};
+
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ShortGameScreen = ({ config }: Props) => {
-    const { category, drillsFooter, gamesFooter } = config;
+    const { category } = config;
     const styles = useStyles();
+    const s = styles.deadlySinsTally;
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
     const { bottom: bottomInset } = useSafeAreaInsets();
     const { showResult } = useAppToast();
     const [refreshing, setRefreshing] = useState(false);
-    const [section, setSection] = useState(`${category}-drills`);
-    const [gameActiveIndex, setGameActiveIndex] = useState(0);
-    const [drillActiveIndex, setDrillActiveIndex] = useState(0);
-    const [drills, setDrills] = useState<DrillData[]>([]);
-    const [games, setGames] = useState<GameData[]>([]);
+    const [tests, setTests] = useState<TestItem[]>([]);
+    const [testActiveIndex, setTestActiveIndex] = useState(0);
     const [showAddDrillForm, setShowAddDrillForm] = useState(false);
     const [showAddGameForm, setShowAddGameForm] = useState(false);
-    const [lastDeletedGameId, setLastDeletedGameId] = useState<number | null>(null);
-    const [lastDeletedDrillId, setLastDeletedDrillId] = useState<number | null>(null);
+    const [lastDeleted, setLastDeleted] = useState<{ type: 'drill' | 'game'; id: number } | null>(null);
     const flatListRef = useRef(null);
     const isSavingDrillRef = useRef(false);
 
     useEffect(() => {
-        setDrills(getDrillsByCategoryService(category));
-        setGames(getGamesByCategoryService(category));
+        const drills = getDrillsByCategoryService(category);
+        const games = getGamesByCategoryService(category);
+        const combined: TestItem[] = [
+            ...drills.map(d => ({ type: 'drill' as const, id: d.id, data: d })),
+            ...games.map(g => ({ type: 'game' as const, id: g.id, data: g })),
+        ];
+        setTests(combined);
     }, [category]);
 
     useEffect(() => {
-        if (lastDeletedGameId === null) return;
+        if (lastDeleted === null) return;
         const timer = setTimeout(() => {
-            setLastDeletedGameId(null);
+            setLastDeleted(null);
         }, 5000);
         return () => clearTimeout(timer);
-    }, [lastDeletedGameId]);
-
-    useEffect(() => {
-        if (lastDeletedDrillId === null) return;
-        const timer = setTimeout(() => {
-            setLastDeletedDrillId(null);
-        }, 5000);
-        return () => clearTimeout(timer);
-    }, [lastDeletedDrillId]);
+    }, [lastDeleted]);
 
     const categoryCapitalized = category.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
-    const handleSubMenu = (sectionName: string) => {
-        setSection(sectionName);
-    };
-
-    const displaySection = (sectionName: string) => {
-        return section === sectionName;
-    };
-
-    const saveDrillResultHandle = (label: string, result: boolean, drillId: number | null) => {
+    const saveDrillResultHandle = (label: string, score: number, drillId: number | null, target?: string) => {
         if (isSavingDrillRef.current) return;
         isSavingDrillRef.current = true;
-        insertDrillResultService(`${categoryCapitalized} - ${label}`, result, drillId).then((success) => {
-            showResult(success, "Drill result saved", "Drill result not saved");
+        const goalMatch = target?.match(/(\d+)\s*\/\s*(\d+)/);
+        const goal = goalMatch ? parseInt(goalMatch[1]) : 0;
+        const result = score >= goal;
+        insertDrillResultService(`${categoryCapitalized} - ${label}`, result, drillId, score).then((success) => {
+            showResult(success, "Test result saved", "Test result not saved");
             isSavingDrillRef.current = false;
         });
     };
 
-    const handleGameScroll = (event: any) => {
+    const handleTestScroll = (event: any) => {
         const scrollPosition = event.nativeEvent.contentOffset.x;
         const index = Math.round(scrollPosition / SCREEN_WIDTH);
-        setGameActiveIndex(index);
+        setTestActiveIndex(index);
     };
 
-    const handleDrillScroll = (event: any) => {
-        const scrollPosition = event.nativeEvent.contentOffset.x;
-        const index = Math.round(scrollPosition / SCREEN_WIDTH);
-        setDrillActiveIndex(index);
-    };
-
-    const renderGameItem = useCallback(({ item }: { item: GameData }) => (
+    const renderTestItem = useCallback(({ item }: { item: TestItem }) => (
         <View style={styles.scrollItemContainer}>
             <View style={[styles.container, styles.scrollWrapper, { alignSelf: 'stretch' }]}>
-                <ScrollView testID='game-item-scroll' nestedScrollEnabled>
-                    <Game
-                        header={item.header}
-                        objective={item.objective}
-                        setUp={item.setup}
-                        howToPlay={item.howToPlay}
-                        onDelete={() => {
-                            if (item.id !== undefined) {
-                                deleteGameService(item.id).then(() => {
-                                    setLastDeletedGameId(item.id!);
-                                    setGames(getGamesByCategoryService(category));
-                                });
-                            }
-                        }}
-                    />
+                <ScrollView testID={item.type === 'drill' ? 'drill-item-scroll' : 'game-item-scroll'} nestedScrollEnabled>
+                    {item.type === 'drill' && item.data && 'label' in item.data ? (
+                        <Drill
+                            label={(item.data as DrillData).label}
+                            iconName={(item.data as DrillData).iconName}
+                            target={(item.data as DrillData).target}
+                            objective={(item.data as DrillData).objective}
+                            setUp={(item.data as DrillData).setup}
+                            howToPlay={(item.data as DrillData).howToPlay}
+                            saveDrillResult={(label, score) => saveDrillResultHandle(label, score, item.id ?? null, (item.data as DrillData).target)}
+                            onDelete={() => {
+                                if (item.id !== undefined) {
+                                    deleteDrillService(item.id).then(() => {
+                                        setLastDeleted({ type: 'drill', id: item.id! });
+                                        setTests(tests.filter(t => !(t.type === 'drill' && t.id === item.id)));
+                                    });
+                                }
+                            }}
+                        />
+                    ) : (
+                        <Game
+                            header={(item.data as GameData).header}
+                            objective={(item.data as GameData).objective}
+                            setUp={(item.data as GameData).setup}
+                            howToPlay={(item.data as GameData).howToPlay}
+                            onDelete={() => {
+                                if (item.id !== undefined) {
+                                    deleteGameService(item.id).then(() => {
+                                        setLastDeleted({ type: 'game', id: item.id! });
+                                        setTests(tests.filter(t => !(t.type === 'game' && t.id === item.id)));
+                                    });
+                                }
+                            }}
+                        />
+                    )}
                 </ScrollView>
             </View>
         </View>
-    ), [styles, category, setLastDeletedGameId, setGames]);
-
-    const renderDrillItem = useCallback(({ item }: { item: DrillData }) => (
-        <View style={styles.scrollItemContainer}>
-            <View style={[styles.container, styles.scrollWrapper, { alignSelf: 'stretch' }]}>
-                <ScrollView testID='drill-item-scroll' nestedScrollEnabled>
-                    <Drill
-                        label={item.label}
-                        iconName={item.iconName}
-                        target={item.target}
-                        objective={item.objective}
-                        setUp={item.setup}
-                        howToPlay={item.howToPlay}
-                        saveDrillResult={(label, result) => saveDrillResultHandle(label, result, item.id ?? null)}
-                        onDelete={() => {
-                            if (item.id !== undefined) {
-                                deleteDrillService(item.id).then(() => {
-                                    setLastDeletedDrillId(item.id!);
-                                    setDrills(getDrillsByCategoryService(category));
-                                });
-                            }
-                        }}
-                    />
-                </ScrollView>
-            </View>
-        </View>
-    ), [styles, category, saveDrillResultHandle, setLastDeletedDrillId, setDrills]);
+    ), [styles, tests, saveDrillResultHandle]);
 
     const onRefresh = () => {
         setRefreshing(true);
-        setDrills(getDrillsByCategoryService(category));
-        setGames(getGamesByCategoryService(category));
-
+        const drills = getDrillsByCategoryService(category);
+        const games = getGamesByCategoryService(category);
+        const combined: TestItem[] = [
+            ...drills.map(d => ({ type: 'drill' as const, id: d.id, data: d })),
+            ...games.map(g => ({ type: 'game' as const, id: g.id, data: g })),
+        ];
+        setTests(combined);
         setTimeout(() => {
             setRefreshing(false);
         }, 750);
     };
 
+    const handleAddFormClose = () => {
+        setShowAddDrillForm(false);
+        setShowAddGameForm(false);
+        const drills = getDrillsByCategoryService(category);
+        const games = getGamesByCategoryService(category);
+        const combined: TestItem[] = [
+            ...drills.map(d => ({ type: 'drill' as const, id: d.id, data: d })),
+            ...games.map(g => ({ type: 'game' as const, id: g.id, data: g })),
+        ];
+        setTests(combined);
+    };
+
     return (
         <GestureHandlerRootView style={styles.flexOne}>
-            <SubMenu showSubMenu={category} selectedItem={section} handleSubMenu={handleSubMenu} />
+            {lastDeleted !== null && (
+                <TouchableOpacity
+                    testID={lastDeleted.type === 'drill' ? 'undo-drill-delete' : 'undo-game-delete'}
+                    style={[{
+                        backgroundColor: colours.primary, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
+                        borderColor: colours.red, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
+                    }]}
+                    onPress={() => {
+                        if (lastDeleted.type === 'drill') {
+                            restoreDrillService(lastDeleted.id).then(() => {
+                                setLastDeleted(null);
+                                onRefresh();
+                            });
+                        } else {
+                            restoreGameService(lastDeleted.id).then(() => {
+                                setLastDeleted(null);
+                                onRefresh();
+                            });
+                        }
+                    }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Text style={[styles.updateText, { color: colours.background, fontSize: fontSizes.normal, fontWeight: 'bold' }]}>Undo delete</Text>
+                        <MaterialIcons name="undo" size={20} color={colours.background} />
+                    </View>
+                </TouchableOpacity>
+            )}
 
             {refreshing && (
                 <View style={styles.updateOverlay}>
@@ -164,40 +188,6 @@ const ShortGameScreen = ({ config }: Props) => {
                 </View>
             )}
 
-            {lastDeletedGameId !== null && (
-                <TouchableOpacity
-                    testID='undo-game-delete'
-                    style={[{
-                        backgroundColor: colours.primary, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
-                        borderColor: colours.red, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
-                    }]}
-                    onPress={() => {
-                        restoreGameService(lastDeletedGameId).then(() => {
-                            setLastDeletedGameId(null);
-                            setGames(getGamesByCategoryService(category));
-                        });
-                    }}>
-                    <Text style={[styles.updateText, { color: colours.background, fontSize: fontSizes.normal, fontWeight: 'bold' }]}>Undo delete</Text>
-                </TouchableOpacity>
-            )}
-
-            {lastDeletedDrillId !== null && (
-                <TouchableOpacity
-                    testID='undo-drill-delete'
-                    style={[{
-                        backgroundColor: colours.primary, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
-                        borderColor: colours.red, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
-                    }]}
-                    onPress={() => {
-                        restoreDrillService(lastDeletedDrillId).then(() => {
-                            setLastDeletedDrillId(null);
-                            setDrills(getDrillsByCategoryService(category));
-                        });
-                    }}>
-                    <Text style={[styles.updateText, { color: colours.background, fontSize: fontSizes.normal, fontWeight: 'bold' }]}>Undo delete</Text>
-                </TouchableOpacity>
-            )}
-
             <ScrollView testID='main-scroll-view' style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
                 <RefreshControl
                     refreshing={refreshing}
@@ -205,153 +195,70 @@ const ShortGameScreen = ({ config }: Props) => {
                     tintColor={colours.primary} />
             }>
 
-                {/* Drills */}
-                {
-                    displaySection(`${category}-drills`) && (
-                        <View style={styles.container}>
-                            <View style={styles.headerContainer}>
-                                <Text style={[styles.headerText, styles.marginTop]}>
-                                    {categoryCapitalized} drills
-                                </Text>
-                                <Text style={[styles.normalText, { margin: 10 }]}>
-                                    Improve your mechanics and accuracy through focused, repetitive actions.
-                                </Text>
-                            </View>
+                <View style={styles.container}>
+                    <View style={styles.headerContainer}>
+                        <Text style={[styles.headerText, styles.marginTop]}>
+                            {categoryCapitalized} tests
+                        </Text>
+                        <Text style={[styles.normalText, { margin: 10 }]}>
+                            Practice with pressure to build confidence.
+                        </Text>
+                    </View>
 
-                            <View style={styles.divider} />
+                    <View style={styles.divider} />
 
-                            <View>
-                                {showAddDrillForm ? (
-                                    <AddDrillForm
-                                        category={category}
-                                        onSaved={() => {
-                                            setShowAddDrillForm(false);
-                                            setDrills(getDrillsByCategoryService(category));
-                                        }}
-                                        onCancel={() => setShowAddDrillForm(false)}
+                    <View>
+                        {showAddDrillForm ? (
+                            <AddDrillForm
+                                category={category}
+                                onSaved={handleAddFormClose}
+                                onCancel={() => setShowAddDrillForm(false)}
+                            />
+                        ) : showAddGameForm ? (
+                            <AddGameForm
+                                category={category}
+                                onSaved={handleAddFormClose}
+                                onCancel={() => setShowAddGameForm(false)}
+                            />
+                        ) : (
+                            <>
+                                <View style={styles.horizontalScrollContainer}>
+                                    <FlatList
+                                        ref={flatListRef}
+                                        data={tests}
+                                        horizontal
+                                        pagingEnabled
+                                        showsHorizontalScrollIndicator={false}
+                                        onScroll={handleTestScroll}
+                                        renderItem={renderTestItem}
+                                        keyExtractor={(item, index) => `${item.type}-${item.id ?? index}`}
                                     />
-                                ) : (
-                                    <>
-                                        <View style={styles.horizontalScrollContainer}>
-                                            <FlatList
-                                                ref={flatListRef}
-                                                data={drills}
-                                                horizontal
-                                                pagingEnabled
-                                                showsHorizontalScrollIndicator={false}
-                                                onScroll={handleDrillScroll}
-                                                renderItem={renderDrillItem}
-                                                keyExtractor={(item, index) => item.id?.toString() ?? index.toString()}
-                                            />
-                                        </View>
-
-                                        <View style={styles.scrollIndicatorContainer}>
-                                            {drills.map((_, index) => (
-                                                <View
-                                                    key={index}
-                                                    style={[
-                                                        styles.scrollIndicatorDot,
-                                                        drillActiveIndex === index && styles.scrollActiveDot,
-                                                    ]}
-                                                />
-                                            ))}
-                                        </View>
-                                        <View style={styles.contentSection}>
-                                            <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
-                                                {drillsFooter}
-                                            </Text>
-                                        </View>
-                                        <TouchableOpacity
-                                            testID='add-drill-button'
-                                            style={[styles.largeButton, { padding: 12, alignItems: 'center', alignSelf: 'center', marginTop: 20 }]}
-                                            onPress={() => setShowAddDrillForm(true)}>
-                                            <Text style={styles.buttonText}>Add your own drill</Text>
-                                        </TouchableOpacity>
-                                    </>
-                                )}
-                            </View>
-                        </View>
-                    )
-                }
-
-                {/* Games */}
-                {
-                    displaySection(`${category}-games`) && (
-                        <View>
-                            <View style={styles.container}>
-                                <View style={styles.headerContainer}>
-                                    <Text style={[styles.headerText, styles.marginTop]}>
-                                        {categoryCapitalized} games
-                                    </Text>
-                                </View>
-                                <View>
-                                    <Text style={[styles.normalText, { margin: 10 }]}>
-                                        Improve your accuracy, touch, consistency, and mental focus while keeping practice engaging
-                                    </Text>
                                 </View>
 
-                                <View style={styles.divider} />
+                                <View style={styles.scrollIndicatorContainer}>
+                                    {tests.map((_, index) => (
+                                        <View
+                                            key={index}
+                                            style={[
+                                                styles.scrollIndicatorDot,
+                                                testActiveIndex === index && styles.scrollActiveDot,
+                                            ]}
+                                        />
+                                    ))}
+                                </View>
+                                <View style={s.container}>
+                                    <TouchableOpacity
+                                        testID='add-drill-button'
+                                        style={s.saveButton}
+                                        onPress={() => setShowAddDrillForm(true)}>
+                                        <Text style={s.saveButtonText}>Add test</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </>
+                        )}
+                    </View>
+                </View>
 
-                                {showAddGameForm ? (
-                                    <AddGameForm
-                                        category={category}
-                                        onSaved={() => {
-                                            setShowAddGameForm(false);
-                                            setGames(getGamesByCategoryService(category));
-                                        }}
-                                        onCancel={() => setShowAddGameForm(false)}
-                                    />
-                                ) : (
-                                    <>
-                                        {games.length === 0 ? (
-                                            <Text style={[styles.normalText, { margin: 10 }]}>
-                                                No games yet — add your own below!
-                                            </Text>
-                                        ) : (
-                                            <>
-                                                <View style={styles.horizontalScrollContainer}>
-                                                    <FlatList
-                                                        ref={flatListRef}
-                                                        data={games}
-                                                        horizontal
-                                                        pagingEnabled
-                                                        showsHorizontalScrollIndicator={false}
-                                                        onScroll={handleGameScroll}
-                                                        renderItem={renderGameItem}
-                                                        keyExtractor={(item, index) => item.id?.toString() ?? index.toString()}
-                                                    />
-                                                </View>
-
-                                                <View style={styles.scrollIndicatorContainer}>
-                                                    {games.map((_, index) => (
-                                                        <View
-                                                            key={index}
-                                                            style={[
-                                                                styles.scrollIndicatorDot,
-                                                                gameActiveIndex === index && styles.scrollActiveDot,
-                                                            ]}
-                                                        />
-                                                    ))}
-                                                </View>
-                                            </>
-                                        )}
-                                        <View style={styles.contentSection}>
-                                            <Text style={[styles.normalText, styles.marginTop, { margin: 10 }]}>
-                                                {gamesFooter}
-                                            </Text>
-                                        </View>
-                                        <TouchableOpacity
-                                            testID='add-game-button'
-                                            style={[styles.largeButton, { padding: 12, alignItems: 'center', alignSelf: 'center', marginTop: 20 }]}
-                                            onPress={() => setShowAddGameForm(true)}>
-                                            <Text style={styles.buttonText}>Add your own game</Text>
-                                        </TouchableOpacity>
-                                    </>
-                                )}
-                            </View>
-                        </View>
-                    )
-                }
             </ScrollView>
         </GestureHandlerRootView>
     );

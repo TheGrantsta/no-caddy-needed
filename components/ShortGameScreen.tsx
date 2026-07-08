@@ -174,8 +174,8 @@ const ShortGameScreen = ({ config }: Props) => {
                         }
                     }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                        <MaterialIcons name="undo" size={20} color={colours.background} />
                         <Text style={[styles.updateText, { color: colours.background, fontSize: fontSizes.normal, fontWeight: 'bold' }]}>Undo delete</Text>
+                        <MaterialIcons name="undo" size={20} color={colours.background} />
                     </View>
                 </TouchableOpacity>
             )}

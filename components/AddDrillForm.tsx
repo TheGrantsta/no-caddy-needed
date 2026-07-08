@@ -85,19 +85,6 @@ export default function AddDrillForm({ category, onSaved, onCancel }: Props) {
 
     return (
         <View style={{ padding: 16 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'center', marginBottom: 20 }}>
-                {STEPS.map((_, i) => (
-                    <View
-                        key={i}
-                        testID='drill-wizard-dot'
-                        style={[
-                            { width: 10, height: 10, borderRadius: 5, marginHorizontal: 5 },
-                            { backgroundColor: i === step ? colours.primary : colours.tertiary },
-                        ]}
-                    />
-                ))}
-            </View>
-
             <Text style={[styles.normalText, { marginBottom: 16, fontWeight: '600' }]}>
                 {currentStep.question}
             </Text>
@@ -143,6 +130,19 @@ export default function AddDrillForm({ category, onSaved, onCancel }: Props) {
                 >
                     <Text style={styles.buttonText}>{isLastStep ? 'Save' : 'Next'}</Text>
                 </TouchableOpacity>
+            </View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
+                {STEPS.map((_, i) => (
+                    <View
+                        key={i}
+                        testID='drill-wizard-dot'
+                        style={[
+                            { width: 10, height: 10, borderRadius: 5, marginHorizontal: 5 },
+                            { backgroundColor: i === step ? colours.primary : colours.tertiary },
+                        ]}
+                    />
+                ))}
             </View>
         </View>
     );

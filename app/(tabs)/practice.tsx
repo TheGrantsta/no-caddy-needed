@@ -321,25 +321,19 @@ export default function Practice() {
                       </Text>
                     </View>
 
-                    <FlatList
-                      ref={flatListRef}
-                      data={displayedDrillHistory}
-                      keyExtractor={(_, index) => index.toString()}
-                      scrollEnabled={false}
-                      renderItem={({ item }) => (
-                        <View style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 8 }}>
-                          <Text style={[styles.cell, { textAlign: 'left', flex: 0.6, borderWidth: 0, fontWeight: 'normal' }]} numberOfLines={1}>
-                            {item.Name}
-                          </Text>
-                          <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center', fontWeight: 'normal' }]} numberOfLines={1}>
-                            {item.Score ?? '—'}
-                          </Text>
-                          <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center', fontWeight: 'normal' }]} numberOfLines={1}>
-                            {item.Created_At}
-                          </Text>
-                        </View>
-                      )}
-                    />
+                    {displayedDrillHistory.map((item, index) => (
+                      <View key={index} style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 8 }}>
+                        <Text style={[styles.cell, { textAlign: 'left', flex: 0.6, borderWidth: 0, fontWeight: 'normal' }]} numberOfLines={1}>
+                          {item.Name}
+                        </Text>
+                        <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center', fontWeight: 'normal' }]} numberOfLines={1}>
+                          {item.Score ?? '—'}
+                        </Text>
+                        <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center', fontWeight: 'normal' }]} numberOfLines={1}>
+                          {item.Created_At}
+                        </Text>
+                      </View>
+                    ))}
 
                     {displayedDrillHistory.length < allDrillHistory.length && (
                       <View style={{ paddingVertical: 15, alignItems: 'center', gap: 10 }}>

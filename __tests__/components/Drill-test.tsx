@@ -56,15 +56,50 @@ describe('Drill component', () => {
         expect(getByTestId('test-score-input')).toBeTruthy();
     });
 
-    it('calls saveDrillResult when Save button is pressed with empty score', () => {
+    it('disablesSaveButtonWhenScoreIsEmpty', () => {
         const mockSave = jest.fn();
         const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
 
         const saveButton = getByTestId('save-drill-result-button');
         fireEvent.press(saveButton);
 
-        expect(mockSave).toHaveBeenCalledTimes(1);
-        expect(mockSave).toHaveBeenCalledWith('Test Drill', 0);
+        expect(mockSave).not.toHaveBeenCalled();
+    });
+
+    it('disablesSaveButtonWhenScoreIsZero', () => {
+        const mockSave = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
+
+        const scoreInput = getByTestId('test-score-input');
+        const saveButton = getByTestId('save-drill-result-button');
+
+        fireEvent.changeText(scoreInput, '0');
+        fireEvent.press(saveButton);
+
+        expect(mockSave).not.toHaveBeenCalled();
+    });
+
+    it('enablesSaveButtonWhenScoreIsValid', () => {
+        const mockSave = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
+
+        const scoreInput = getByTestId('test-score-input');
+        const saveButton = getByTestId('save-drill-result-button');
+
+        fireEvent.changeText(scoreInput, '5');
+        fireEvent.press(saveButton);
+
+        expect(mockSave).toHaveBeenCalledWith('Test Drill', 5);
+    });
+
+    it('doesNotCallSaveDrillResultWhenScoreIsEmpty', () => {
+        const mockSave = jest.fn();
+        const { getByTestId } = render(<Drill {...defaultProps} saveDrillResult={mockSave} />);
+
+        const saveButton = getByTestId('save-drill-result-button');
+        fireEvent.press(saveButton);
+
+        expect(mockSave).not.toHaveBeenCalled();
     });
 
     it('calls saveDrillResult with entered score when Save button is pressed', () => {

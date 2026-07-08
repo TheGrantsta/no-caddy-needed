@@ -23,6 +23,9 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
     const [score, setScore] = useState('');
     const [pendingDelete, setPendingDelete] = useState(false);
 
+    const scoreNum = parseInt(score) || 0;
+    const isScoreValid = score !== '' && scoreNum > 0;
+
     return (
         <View style={{ padding: 16 }}>
             <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
@@ -57,11 +60,15 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                     maxLength={2}
                 />
 
-                <TouchableOpacity testID='save-drill-result-button' style={styles.button} onPress={
-                    () => {
-                        const scoreNum = parseInt(score) || 0;
-                        saveDrillResult(label, scoreNum);
-                        setScore('');
+                <TouchableOpacity
+                    testID='save-drill-result-button'
+                    style={[styles.button, !isScoreValid && { opacity: 0.5 }]}
+                    disabled={!isScoreValid}
+                    onPress={() => {
+                        if (isScoreValid) {
+                            saveDrillResult(label, scoreNum);
+                            setScore('');
+                        }
                     }}>
                     <Text style={styles.buttonText}>
                         Save

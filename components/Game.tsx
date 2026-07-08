@@ -3,6 +3,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import Instructions from './Instructions';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
+import fontSizes from '@/assets/font-sizes';
 
 type Props = {
     header: string;
@@ -23,7 +24,7 @@ export default function Game({ header, objective, setUp, howToPlay, onDelete }: 
             <View>
                 <Instructions objective={objective} setUp={setUp} howToPlay={howToPlay} />
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingTop: 8 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: 8 }}>
                 {pendingDelete ? (
                     <>
                         <TouchableOpacity
@@ -42,9 +43,9 @@ export default function Game({ header, objective, setUp, howToPlay, onDelete }: 
                 ) : (
                     <TouchableOpacity
                         testID='delete-game-button'
-                        style={styles.mediumButton}
+                        style={{ padding: 8 }}
                         onPress={() => setPendingDelete(true)}>
-                        <Text style={styles.buttonText}>Delete</Text>
+                        <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>Delete</Text>
                     </TouchableOpacity>
                 )}
             </View>

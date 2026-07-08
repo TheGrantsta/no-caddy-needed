@@ -48,10 +48,10 @@ export default function AddDrillForm({ category, onSaved, onCancel }: Props) {
     const isLastStep = step === STEPS.length - 1;
     const currentStep = STEPS[step];
     const currentValue = fieldValues[step];
+    const isCurrentFieldValid = currentValue.trim() !== '';
 
     const handleNext = async () => {
-        if (!currentValue.trim()) {
-            setStepError('This field is required');
+        if (!isCurrentFieldValid) {
             return;
         }
         setStepError('');
@@ -135,7 +135,12 @@ export default function AddDrillForm({ category, onSaved, onCancel }: Props) {
                         <Text style={styles.buttonText}>Back</Text>
                     </TouchableOpacity>
                 )}
-                <TouchableOpacity testID='drill-wizard-next' style={styles.button} onPress={handleNext}>
+                <TouchableOpacity
+                    testID='drill-wizard-next'
+                    style={[styles.button, !isCurrentFieldValid && { opacity: 0.5 }]}
+                    onPress={handleNext}
+                    disabled={!isCurrentFieldValid}
+                >
                     <Text style={styles.buttonText}>{isLastStep ? 'Save' : 'Next'}</Text>
                 </TouchableOpacity>
             </View>

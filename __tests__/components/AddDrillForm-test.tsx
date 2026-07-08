@@ -86,17 +86,19 @@ describe('AddDrillForm', () => {
         expect(getByText('What do you want to call this test?')).toBeTruthy();
     });
 
-    it('showsErrorWhenNextPressedWithEmptyField', () => {
+    it('disablesNextButtonWhenFieldIsEmpty', () => {
         const { getByTestId, getByText } = render(<AddDrillForm {...defaultProps} />);
         fireEvent.press(getByTestId('drill-wizard-next'));
-        expect(getByText('This field is required')).toBeTruthy();
+        // Should still be on the same question since button was disabled
+        expect(getByText('What do you want to call this test?')).toBeTruthy();
     });
 
-    it('clearsErrorWhenFieldChanged', () => {
-        const { getByTestId, queryByText } = render(<AddDrillForm {...defaultProps} />);
-        fireEvent.press(getByTestId('drill-wizard-next'));
+    it('enablesNextButtonWhenFieldIsPopulated', () => {
+        const { getByTestId, getByText } = render(<AddDrillForm {...defaultProps} />);
         fireEvent.changeText(getByTestId('drill-wizard-input'), 'My Drill');
-        expect(queryByText('This field is required')).toBeNull();
+        fireEvent.press(getByTestId('drill-wizard-next'));
+        // Should advance to next question
+        expect(getByText('What is the aim?')).toBeTruthy();
     });
 
     it('advancesToNextStepWhenNextPressed', () => {

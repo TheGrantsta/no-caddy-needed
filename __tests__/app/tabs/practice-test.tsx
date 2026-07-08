@@ -90,7 +90,7 @@ describe('Practice', () => {
 
     it('displaysSubheaderText', () => {
         const { getByText } = render(<Practice />);
-        expect(getByText('Make your practice time more effective')).toBeTruthy();
+        expect(getByText('Making practice time effective')).toBeTruthy();
     });
 
     it('showsShortGameSectionByDefault', () => {

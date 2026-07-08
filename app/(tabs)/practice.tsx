@@ -152,7 +152,7 @@ export default function Practice() {
               </Text>
             </View>
             <Text style={[styles.normalText, styles.marginBottom]}>
-              Make your practice time more effective
+              Making practice time effective
             </Text>
           </View>
 
@@ -310,13 +310,13 @@ export default function Practice() {
                       scrollEnabled={false}
                       renderItem={({ item }) => (
                         <View style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 8 }}>
-                          <Text style={[styles.cell, { textAlign: 'left', flex: 0.6, borderWidth: 0 }]} numberOfLines={1}>
+                          <Text style={[styles.cell, { textAlign: 'left', flex: 0.6, borderWidth: 0, fontWeight: 'normal' }]} numberOfLines={1}>
                             {item.Name}
                           </Text>
-                          <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center' }]} numberOfLines={1}>
+                          <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center', fontWeight: 'normal' }]} numberOfLines={1}>
                             {item.Score ?? '—'}
                           </Text>
-                          <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center' }]} numberOfLines={1}>
+                          <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center', fontWeight: 'normal' }]} numberOfLines={1}>
                             {item.Created_At}
                           </Text>
                         </View>

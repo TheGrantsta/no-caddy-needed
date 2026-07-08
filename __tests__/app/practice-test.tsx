@@ -79,7 +79,7 @@ describe('Practice page ', () => {
         const { getByText } = render(<View />);
 
         expect(getByText('Practice')).toBeTruthy();
-        expect(getByText('Make your practice time more effective')).toBeTruthy();
+        expect(getByText('Making practice time effective')).toBeTruthy();
         expect(getByText('Practice areas')).toBeTruthy();
     });
 

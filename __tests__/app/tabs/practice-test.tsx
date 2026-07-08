@@ -333,7 +333,7 @@ describe('Practice', () => {
     });
 
     describe('Infinite scroll in history', () => {
-        it('loadsInitial20ItemsOnFirstLoad', () => {
+        it('loadsInitial10ItemsOnFirstLoad', () => {
             const items = Array.from({ length: 50 }, (_, i) => ({
                 Name: `Drill ${i}`,
                 Result: 1,
@@ -348,7 +348,7 @@ describe('Practice', () => {
             // Check the FlatList data directly
             const flatLists = UNSAFE_getAllByType(FlatList);
             const historyFlatList = flatLists.find(fl => fl.props.data?.length > 0 && fl.props.data[0].Name?.includes('Drill'));
-            expect(historyFlatList?.props.data.length).toBe(20);
+            expect(historyFlatList?.props.data.length).toBe(10);
         });
 
         it('loadsMoreItemsWhenScrolledToNearBottom', () => {
@@ -384,7 +384,7 @@ describe('Practice', () => {
             // Check the FlatList data directly
             const flatLists = UNSAFE_getAllByType(FlatList);
             const historyFlatList = flatLists.find(fl => fl.props.data?.length > 0 && fl.props.data[0].Name?.includes('Drill'));
-            expect(historyFlatList?.props.data.length).toBe(40);
+            expect(historyFlatList?.props.data.length).toBe(20);
 
             jest.useRealTimers();
         });

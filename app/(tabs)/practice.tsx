@@ -21,7 +21,7 @@ const ONBOARDING_STEPS = [
   { text: 'Check your history to track drill results over time and spot areas for improvement.' },
 ];
 
-const ITEMS_PER_BATCH = 20;
+const ITEMS_PER_BATCH = 10;
 
 export default function Practice() {
   const styles = useStyles();
@@ -89,7 +89,7 @@ export default function Practice() {
     if (!displaySection('history')) return;
 
     const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
-    const paddingToBottom = 100;
+    const paddingToBottom = 50;
 
     if (
       contentSize.height - layoutMeasurement.height - contentOffset.y <

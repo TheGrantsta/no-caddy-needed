@@ -86,15 +86,15 @@ export default function Practice() {
   };
 
   const handleScroll = (event: any) => {
-    if (!displaySection('history')) return;
+    if (!displaySection('history') || isLoadingMore) return;
 
     const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
-    const paddingToBottom = 50;
 
-    if (
-      contentSize.height - layoutMeasurement.height - contentOffset.y <
-      paddingToBottom
-    ) {
+    // Check if scrolled to bottom (within 200px)
+    const isNearBottom =
+      contentSize.height - layoutMeasurement.height - contentOffset.y < 200;
+
+    if (isNearBottom && displayedDrillHistory.length < allDrillHistory.length) {
       loadMoreItems();
     }
   };
@@ -330,12 +330,31 @@ export default function Practice() {
                       )}
                     />
 
-                    {isLoadingMore && (
-                      <View
-                        testID="infinite-scroll-loader"
-                        style={{ paddingVertical: 10 }}
-                      >
-                        <ActivityIndicator size="small" color={colours.primary} />
+                    {displayedDrillHistory.length < allDrillHistory.length && (
+                      <View style={{ paddingVertical: 15, alignItems: 'center', gap: 10 }}>
+                        {isLoadingMore && (
+                          <ActivityIndicator
+                            testID="infinite-scroll-loader"
+                            size="small"
+                            color={colours.primary}
+                          />
+                        )}
+                        <TouchableOpacity
+                          testID="load-more-button"
+                          style={{
+                            paddingHorizontal: 16,
+                            paddingVertical: 10,
+                            borderWidth: 1,
+                            borderColor: colours.primary,
+                            borderRadius: 8,
+                          }}
+                          onPress={loadMoreItems}
+                          disabled={isLoadingMore}
+                        >
+                          <Text style={{ color: colours.primary, fontSize: 14, fontWeight: '500' }}>
+                            {isLoadingMore ? 'Loading...' : 'Load More'}
+                          </Text>
+                        </TouchableOpacity>
                       </View>
                     )}
                   </View>

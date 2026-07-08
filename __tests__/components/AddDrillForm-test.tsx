@@ -173,7 +173,7 @@ describe('AddDrillForm', () => {
         await act(async () => {
             fireEvent.press(getByTestId('drill-wizard-next'));
         });
-        expect(mockShowSuccess).toHaveBeenCalledWith('Drill saved');
+        expect(mockShowSuccess).toHaveBeenCalledWith('Test saved');
     });
 
     it('callsOnSavedAfterSuccessfulSave', async () => {

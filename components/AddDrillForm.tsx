@@ -67,7 +67,7 @@ export default function AddDrillForm({ category, onSaved, onCancel }: Props) {
                 howToPlay.trim()
             );
             if (success) {
-                showSuccess('Drill saved');
+                showSuccess('Test saved');
                 onSaved();
             } else {
                 setSaveError('Failed to save drill');

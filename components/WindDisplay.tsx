@@ -127,9 +127,11 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                             style={styles.windDisplay.manualEntryToggle}
                             onPress={handleToggleManualEntry}
                         >
-                            <Text style={styles.windDisplay.manualEntryToggleText}>
-                                Enter manually
-                            </Text>
+                            <MaterialIcons
+                                name="edit"
+                                size={20}
+                                color={colours.primary}
+                            />
                         </TouchableOpacity>
                     </View>
                 )}

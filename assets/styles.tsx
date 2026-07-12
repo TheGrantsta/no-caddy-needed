@@ -1972,12 +1972,8 @@ export const createStyles = (c: ThemeColours) => ({
         manualEntryToggle: {
             paddingVertical: 8,
             paddingHorizontal: 10,
-        },
-        manualEntryToggleText: {
-            color: c.primary,
-            fontSize: fontSizes.smallText,
-            fontWeight: 'bold',
-            textDecorationLine: 'underline',
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         manualEntryPanel: {
             flexDirection: 'row',

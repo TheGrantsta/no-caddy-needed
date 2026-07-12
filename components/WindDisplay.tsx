@@ -1,5 +1,6 @@
-import { Text, View, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity, TextInput } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useState } from 'react';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/WeatherService';
@@ -34,13 +35,28 @@ type Props = {
 const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disableVoice = false }: Props) => {
     const colours = useThemeColours();
     const styles = useStyles();
+    const [manualEntryOpen, setManualEntryOpen] = useState(false);
+    const [manualEntryText, setManualEntryText] = useState('');
 
     const effect = directionFrom !== null && speedMph !== null
         ? getWindEffect(directionFrom, speedMph, heading)
         : null;
 
-    const { isAvailable: voiceAvailable, isListening, adjustedYards, adjustedDisplayValue, distanceUnit, toggleListening } = useWindVoice(effect?.playsLongerPercent ?? 0);
+    const { isAvailable: voiceAvailable, isListening, adjustedYards, adjustedDisplayValue, distanceUnit, toggleListening, submitManualDistance } = useWindVoice(effect?.playsLongerPercent ?? 0);
     const voiceEnabled = voiceAvailable && !disableVoice;
+
+    const handleToggleManualEntry = () => {
+        setManualEntryOpen(open => !open);
+        setManualEntryText('');
+    };
+
+    const handleManualSubmit = () => {
+        const parsed = parseFloat(manualEntryText);
+        if (!Number.isFinite(parsed) || parsed <= 0) return;
+        submitManualDistance(parsed);
+        setManualEntryOpen(false);
+        setManualEntryText('');
+    };
 
     const wedgeChartData = voiceEnabled && adjustedYards !== null ? getWedgeChartService() : null;
     const suggestedClubs = wedgeChartData
@@ -89,22 +105,57 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
             </Text>
             <View style={styles.windDisplay.bottomSection}>
                 {voiceEnabled && (
-                    <TouchableOpacity
-                        testID="wind-voice-button"
-                        style={[styles.windDisplay.voiceButton, isListening ? styles.windDisplay.voiceButtonActive : styles.windDisplay.voiceButtonInactive]}
-                        onPress={toggleListening}
-                    >
-                        <MaterialIcons
-                            name={isListening ? 'mic' : 'mic-off'}
-                            size={20}
-                            color={isListening ? colours.background : colours.primary}
-                        />
-                        <Text
-                            style={[styles.windDisplay.voiceButtonText, isListening ? styles.windDisplay.voiceButtonTextActive : styles.windDisplay.voiceButtonTextInactive]}
+                    <View style={styles.windDisplay.voiceRow}>
+                        <TouchableOpacity
+                            testID="wind-voice-button"
+                            style={[styles.windDisplay.voiceButton, isListening ? styles.windDisplay.voiceButtonActive : styles.windDisplay.voiceButtonInactive]}
+                            onPress={toggleListening}
                         >
-                            {isListening ? 'Listening...' : 'Say the distance'}
-                        </Text>
-                    </TouchableOpacity>
+                            <MaterialIcons
+                                name={isListening ? 'mic' : 'mic-off'}
+                                size={20}
+                                color={isListening ? colours.background : colours.primary}
+                            />
+                            <Text
+                                style={[styles.windDisplay.voiceButtonText, isListening ? styles.windDisplay.voiceButtonTextActive : styles.windDisplay.voiceButtonTextInactive]}
+                            >
+                                {isListening ? 'Listening...' : 'Say the distance'}
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            testID="wind-manual-entry-toggle"
+                            style={styles.windDisplay.manualEntryToggle}
+                            onPress={handleToggleManualEntry}
+                        >
+                            <Text style={styles.windDisplay.manualEntryToggleText}>
+                                Enter manually
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+                {voiceEnabled && manualEntryOpen && (
+                    <View style={styles.windDisplay.manualEntryPanel}>
+                        <TextInput
+                            testID="wind-manual-entry-input"
+                            style={styles.windDisplay.manualEntryInput}
+                            keyboardType="decimal-pad"
+                            value={manualEntryText}
+                            onChangeText={setManualEntryText}
+                            placeholder="Distance"
+                            placeholderTextColor={colours.backgroundAlternate}
+                            onSubmitEditing={handleManualSubmit}
+                            returnKeyType="done"
+                        />
+                        <TouchableOpacity
+                            testID="wind-manual-entry-submit"
+                            style={styles.windDisplay.manualEntrySubmit}
+                            onPress={handleManualSubmit}
+                        >
+                            <Text style={styles.windDisplay.manualEntrySubmitText}>
+                                Go
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 )}
                 {!adjustedDisplayValue && (
                     <Text

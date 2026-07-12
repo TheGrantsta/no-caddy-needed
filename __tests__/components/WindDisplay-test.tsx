@@ -26,6 +26,7 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: null,
                 distanceUnit: 'yards',
             toggleListening: jest.fn(),
+            submitManualDistance: jest.fn(),
         });
         mockGetWedgeChartService.mockReturnValue({
             distanceNames: [],
@@ -126,6 +127,7 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: null,
                 distanceUnit: 'yards',
                 toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
             });
 
             const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
@@ -140,6 +142,7 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: null,
                 distanceUnit: 'yards',
                 toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
             });
 
             const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
@@ -170,6 +173,7 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: 94,
                 distanceUnit: 'yards',
                 toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
             });
 
             const { getByTestId, queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
@@ -185,6 +189,7 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: null,
                 distanceUnit: 'yards',
                 toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
             });
 
             const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
@@ -201,6 +206,7 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: null,
                 distanceUnit: 'yards',
                 toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
             });
 
             const { getByTestId, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
@@ -216,6 +222,7 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: null,
                 distanceUnit: 'yards',
                 toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
             });
 
             const { getByTestId, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
@@ -248,6 +255,7 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: null,
                 distanceUnit: 'yards',
                 toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
             });
 
             const { queryByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
@@ -262,6 +270,7 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: null,
                 distanceUnit: 'yards',
                 toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
             });
 
             const { getByText, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
@@ -277,6 +286,7 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: null,
                 distanceUnit: 'yards',
                 toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
             });
 
             const { getByText, queryAllByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
@@ -293,6 +303,7 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: null,
                 distanceUnit: 'yards',
                 toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
             });
 
             const { queryByText } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
@@ -307,6 +318,7 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: null,
                 distanceUnit: 'yards',
                 toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
             });
 
             const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
@@ -321,12 +333,220 @@ describe('WindDisplay', () => {
                 adjustedDisplayValue: null,
                 distanceUnit: 'yards',
                 toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
             });
 
             const { queryByTestId } = render(
                 <WindDisplay directionFrom={100} speedMph={10} heading={0} disableVoice />
             );
             expect(queryByTestId('wind-club-suggestions')).toBeNull();
+        });
+    });
+
+    describe('manual distance entry', () => {
+        it('does not render manual entry toggle when speech recognition is unavailable', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: false,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+
+            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByTestId('wind-manual-entry-toggle')).toBeNull();
+        });
+
+        it('renders manual entry toggle when speech recognition is available', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByTestId('wind-manual-entry-toggle')).toBeTruthy();
+        });
+
+        it('does not render manual entry toggle when disableVoice is true', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+
+            const { queryByTestId } = render(
+                <WindDisplay directionFrom={100} speedMph={10} heading={0} disableVoice />
+            );
+            expect(queryByTestId('wind-manual-entry-toggle')).toBeNull();
+        });
+
+        it('shows the manual input and submit button after pressing the toggle', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+
+            const { getByTestId, queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByTestId('wind-manual-entry-input')).toBeNull();
+
+            fireEvent.press(getByTestId('wind-manual-entry-toggle'));
+            expect(getByTestId('wind-manual-entry-input')).toBeTruthy();
+            expect(getByTestId('wind-manual-entry-submit')).toBeTruthy();
+        });
+
+        it('hides the manual input again when the toggle is pressed a second time', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+
+            const { getByTestId, queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            fireEvent.press(getByTestId('wind-manual-entry-toggle'));
+            expect(getByTestId('wind-manual-entry-input')).toBeTruthy();
+
+            fireEvent.press(getByTestId('wind-manual-entry-toggle'));
+            expect(queryByTestId('wind-manual-entry-input')).toBeNull();
+        });
+
+        it('calls submitManualDistance with the parsed number when submit is pressed', () => {
+            const mockSubmitManualDistance = jest.fn();
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: mockSubmitManualDistance,
+            });
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            fireEvent.press(getByTestId('wind-manual-entry-toggle'));
+            fireEvent.changeText(getByTestId('wind-manual-entry-input'), '97');
+            fireEvent.press(getByTestId('wind-manual-entry-submit'));
+
+            expect(mockSubmitManualDistance).toHaveBeenCalledWith(97);
+        });
+
+        it('does not call submitManualDistance and keeps the panel open when the input is empty', () => {
+            const mockSubmitManualDistance = jest.fn();
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: mockSubmitManualDistance,
+            });
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            fireEvent.press(getByTestId('wind-manual-entry-toggle'));
+            fireEvent.press(getByTestId('wind-manual-entry-submit'));
+
+            expect(mockSubmitManualDistance).not.toHaveBeenCalled();
+            expect(getByTestId('wind-manual-entry-input')).toBeTruthy();
+        });
+
+        it('does not call submitManualDistance for non-numeric input', () => {
+            const mockSubmitManualDistance = jest.fn();
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: mockSubmitManualDistance,
+            });
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            fireEvent.press(getByTestId('wind-manual-entry-toggle'));
+            fireEvent.changeText(getByTestId('wind-manual-entry-input'), 'abc');
+            fireEvent.press(getByTestId('wind-manual-entry-submit'));
+
+            expect(mockSubmitManualDistance).not.toHaveBeenCalled();
+        });
+
+        it('does not call submitManualDistance for zero', () => {
+            const mockSubmitManualDistance = jest.fn();
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: mockSubmitManualDistance,
+            });
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            fireEvent.press(getByTestId('wind-manual-entry-toggle'));
+            fireEvent.changeText(getByTestId('wind-manual-entry-input'), '0');
+            fireEvent.press(getByTestId('wind-manual-entry-submit'));
+
+            expect(mockSubmitManualDistance).not.toHaveBeenCalled();
+        });
+
+        it('accepts decimal input and calls submitManualDistance with the decimal value', () => {
+            const mockSubmitManualDistance = jest.fn();
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: mockSubmitManualDistance,
+            });
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            fireEvent.press(getByTestId('wind-manual-entry-toggle'));
+            fireEvent.changeText(getByTestId('wind-manual-entry-input'), '97.5');
+            fireEvent.press(getByTestId('wind-manual-entry-submit'));
+
+            expect(mockSubmitManualDistance).toHaveBeenCalledWith(97.5);
+        });
+
+        it('closes and clears the panel after a successful manual submission', () => {
+            const mockSubmitManualDistance = jest.fn();
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: mockSubmitManualDistance,
+            });
+
+            const { getByTestId, queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            fireEvent.press(getByTestId('wind-manual-entry-toggle'));
+            fireEvent.changeText(getByTestId('wind-manual-entry-input'), '97');
+            fireEvent.press(getByTestId('wind-manual-entry-submit'));
+
+            expect(queryByTestId('wind-manual-entry-input')).toBeNull();
         });
     });
 });

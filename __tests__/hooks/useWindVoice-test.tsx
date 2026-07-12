@@ -423,5 +423,126 @@ describe('useWindVoice', () => {
 
 		expect(result.current.adjustedDisplayValue).toBeNull();
 	});
+
+	describe('submitManualDistance', () => {
+		it('should compute adjustedYards from a manually entered value with headwind percent applied', () => {
+			const { result } = renderHook(() => useWindVoice(-3)); // 3% shorter
+
+			act(() => {
+				result.current.submitManualDistance(97);
+			});
+
+			expect(result.current.adjustedYards).toBe(94); // 97 * (1 - 0.03) = 94.09 → 94
+		});
+
+		it('should compute adjustedYards from a manually entered value with tailwind percent applied', async () => {
+			mockSpeak.mockClear();
+
+			const { result } = renderHook(() => useWindVoice(5)); // 5% longer
+
+			act(() => {
+				result.current.submitManualDistance(100);
+			});
+
+			expect(result.current.adjustedYards).toBe(105); // 100 * (1 + 0.05) = 105
+		});
+
+		it('should convert a manually entered metres value to yards for wind math, then back to metres for display', () => {
+			mockGetSettings.mockReturnValue({ voice: 'male', soundsEnabled: true, units: 'metres' });
+
+			const { result } = renderHook(() => useWindVoice(0));
+
+			act(() => {
+				result.current.submitManualDistance(91);
+			});
+
+			expect(result.current.adjustedYards).toBe(100);
+			expect(result.current.adjustedDisplayValue).toBe(91);
+			expect(result.current.distanceUnit).toBe('metres');
+		});
+
+		it('should not update adjustedYards when submitManualDistance receives zero', () => {
+			const { result } = renderHook(() => useWindVoice(0));
+
+			act(() => {
+				result.current.submitManualDistance(0);
+			});
+
+			expect(result.current.adjustedYards).toBeNull();
+		});
+
+		it('should not update adjustedYards when submitManualDistance receives a negative number', () => {
+			const { result } = renderHook(() => useWindVoice(0));
+
+			act(() => {
+				result.current.submitManualDistance(-10);
+			});
+
+			expect(result.current.adjustedYards).toBeNull();
+		});
+
+		it('should not update adjustedYards when submitManualDistance receives NaN', () => {
+			const { result } = renderHook(() => useWindVoice(0));
+
+			act(() => {
+				result.current.submitManualDistance(NaN);
+			});
+
+			expect(result.current.adjustedYards).toBeNull();
+		});
+
+		it('should round a decimal manually entered value', () => {
+			const { result } = renderHook(() => useWindVoice(0));
+
+			act(() => {
+				result.current.submitManualDistance(97.6);
+			});
+
+			expect(result.current.adjustedYards).toBe(98); // 97.6 rounds to 98
+		});
+
+		it('should stop listening when a manual distance is submitted while the mic is active', async () => {
+			mockStop.mockClear();
+
+			const { result } = renderHook(() => useWindVoice(0));
+
+			await act(async () => {
+				await result.current.toggleListening();
+			});
+
+			expect(result.current.isListening).toBe(true);
+
+			act(() => {
+				result.current.submitManualDistance(100);
+			});
+
+			expect(mockStop).toHaveBeenCalled();
+			expect(result.current.isListening).toBe(false);
+		});
+
+		it('should not call ExpoSpeechRecognitionModule.stop when submitting manually while not listening', () => {
+			mockStop.mockClear();
+
+			const { result } = renderHook(() => useWindVoice(0));
+
+			act(() => {
+				result.current.submitManualDistance(100);
+			});
+
+			expect(mockStop).not.toHaveBeenCalled();
+		});
+
+		it('should not call Speech.speak for a manually submitted distance', () => {
+			mockSpeak.mockClear();
+
+			const { result } = renderHook(() => useWindVoice(0));
+
+			act(() => {
+				result.current.submitManualDistance(100);
+			});
+
+			expect(mockSpeak).not.toHaveBeenCalled();
+		});
+	});
 	});
 });

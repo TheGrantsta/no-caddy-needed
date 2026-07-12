@@ -44,6 +44,7 @@ export function useWindVoice(playsLongerPercent: number): {
 	adjustedDisplayValue: number | null;
 	distanceUnit: 'yards' | 'metres';
 	toggleListening: () => Promise<void>;
+	submitManualDistance: (value: number) => void;
 } {
 	const [isListening, setIsListening] = useState(false);
 	const [adjustedYards, setAdjustedYards] = useState<number | null>(null);
@@ -104,6 +105,25 @@ export function useWindVoice(playsLongerPercent: number): {
 		}
 	};
 
+	const submitManualDistance = (value: number) => {
+		if (!Number.isFinite(value) || value <= 0) return;
+
+		if (isListening) {
+			isStoppingRef.current = true;
+			ExpoSpeechRecognitionModule?.stop();
+			setIsListening(false);
+		}
+
+		const settings = getSettingsService();
+		const heardYards = displayUnitToYards(value, settings.units);
+		const adjusted = Math.round(heardYards * (1 + playsLongerPercent / 100));
+
+		setAdjustedYards(adjusted);
+		const displayValue = yardsToDisplayUnit(adjusted, settings.units);
+		setAdjustedDisplayValue(displayValue);
+		setDistanceUnit(settings.units);
+	};
+
 	return {
 		isAvailable: speechRecognitionAvailable,
 		isListening,
@@ -111,5 +131,6 @@ export function useWindVoice(playsLongerPercent: number): {
 		adjustedDisplayValue,
 		distanceUnit,
 		toggleListening,
+		submitManualDistance,
 	};
 }

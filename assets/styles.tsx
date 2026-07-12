@@ -1944,7 +1944,6 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             justifyContent: 'center',
             gap: 6,
-            marginTop: 8,
         },
         voiceButtonActive: {
             backgroundColor: c.primary,
@@ -1962,6 +1961,51 @@ export const createStyles = (c: ThemeColours) => ({
         },
         voiceButtonTextInactive: {
             color: c.primary,
+        },
+        voiceRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 10,
+            marginTop: 8,
+        },
+        manualEntryToggle: {
+            paddingVertical: 8,
+            paddingHorizontal: 10,
+        },
+        manualEntryToggleText: {
+            color: c.primary,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+            textDecorationLine: 'underline',
+        },
+        manualEntryPanel: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            marginTop: 10,
+        },
+        manualEntryInput: {
+            borderWidth: 1,
+            borderColor: c.primary,
+            borderRadius: 8,
+            paddingVertical: 6,
+            paddingHorizontal: 10,
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            minWidth: 90,
+            textAlign: 'center',
+        },
+        manualEntrySubmit: {
+            backgroundColor: c.primary,
+            borderRadius: 8,
+            paddingVertical: 8,
+            paddingHorizontal: 14,
+        },
+        manualEntrySubmitText: {
+            color: c.background,
+            fontWeight: 'bold',
+            fontSize: fontSizes.smallText,
         },
         effectText: {
             color: c.primary,

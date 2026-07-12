@@ -1978,8 +1978,9 @@ export const createStyles = (c: ThemeColours) => ({
         manualEntryPanel: {
             flexDirection: 'row',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: 8,
-            marginTop: 10,
+            marginTop: 8,
         },
         manualEntryInput: {
             borderWidth: 1,

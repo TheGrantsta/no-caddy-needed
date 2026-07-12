@@ -104,7 +104,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                 {speed} mph
             </Text>
             <View style={styles.windDisplay.bottomSection}>
-                {voiceEnabled && (
+                {voiceEnabled && !manualEntryOpen && (
                     <View style={styles.windDisplay.voiceRow}>
                         <TouchableOpacity
                             testID="wind-voice-button"
@@ -147,6 +147,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                             placeholderTextColor={colours.backgroundAlternate}
                             onSubmitEditing={handleManualSubmit}
                             returnKeyType="done"
+                            autoFocus
                         />
                         <TouchableOpacity
                             testID="wind-manual-entry-submit"
@@ -156,6 +157,17 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                             <Text style={styles.windDisplay.manualEntrySubmitText}>
                                 Go
                             </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            testID="wind-manual-entry-cancel"
+                            onPress={handleToggleManualEntry}
+                            style={{ padding: 8 }}
+                        >
+                            <MaterialIcons
+                                name="close"
+                                size={20}
+                                color={colours.primary}
+                            />
                         </TouchableOpacity>
                     </View>
                 )}

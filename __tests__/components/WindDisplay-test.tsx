@@ -404,13 +404,16 @@ describe('WindDisplay', () => {
 
             const { getByTestId, queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
             expect(queryByTestId('wind-manual-entry-input')).toBeNull();
+            expect(getByTestId('wind-voice-button')).toBeTruthy();
 
             fireEvent.press(getByTestId('wind-manual-entry-toggle'));
             expect(getByTestId('wind-manual-entry-input')).toBeTruthy();
             expect(getByTestId('wind-manual-entry-submit')).toBeTruthy();
+            expect(queryByTestId('wind-voice-button')).toBeNull();
         });
 
-        it('hides the manual input again when the toggle is pressed a second time', () => {
+
+        it('closes the manual input when the cancel button is pressed', () => {
             mockUseWindVoice.mockReturnValue({
                 isAvailable: true,
                 isListening: false,
@@ -425,8 +428,9 @@ describe('WindDisplay', () => {
             fireEvent.press(getByTestId('wind-manual-entry-toggle'));
             expect(getByTestId('wind-manual-entry-input')).toBeTruthy();
 
-            fireEvent.press(getByTestId('wind-manual-entry-toggle'));
+            fireEvent.press(getByTestId('wind-manual-entry-cancel'));
             expect(queryByTestId('wind-manual-entry-input')).toBeNull();
+            expect(getByTestId('wind-voice-button')).toBeTruthy();
         });
 
         it('calls submitManualDistance with the parsed number when submit is pressed', () => {
@@ -547,6 +551,7 @@ describe('WindDisplay', () => {
             fireEvent.press(getByTestId('wind-manual-entry-submit'));
 
             expect(queryByTestId('wind-manual-entry-input')).toBeNull();
+            expect(getByTestId('wind-voice-button')).toBeTruthy();
         });
     });
 });

@@ -1818,7 +1818,7 @@ export const createStyles = (c: ThemeColours) => ({
             borderBottomColor: c.primary + '33',
         },
         labelCell: {
-            width: 42,
+            flex: 1,
             paddingVertical: 6,
             paddingHorizontal: 4,
             justifyContent: 'center',
@@ -1833,7 +1833,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         clubHeaderCell: {
-            width: 42,
+            flex: 1,
             paddingVertical: 6,
             paddingHorizontal: 4,
             justifyContent: 'center',
@@ -1847,7 +1847,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         swingTypeCell: {
-            width: 42,
+            flex: 1,
             paddingVertical: 4,
             paddingHorizontal: 4,
             justifyContent: 'center',
@@ -1863,7 +1863,7 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'center',
         },
         dataCell: {
-            width: 42,
+            flex: 1,
             paddingVertical: 4,
             paddingHorizontal: 4,
             justifyContent: 'center',

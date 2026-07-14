@@ -67,8 +67,6 @@ export default function WedgeChartScreen() {
                     </Text>
                 </View>
 
-                <View style={styles.divider} />
-
                 <WedgeChart data={data} onSave={handleSave} units={settings.units} />
 
                 {!chartIsEmpty && !showClearConfirm && (

@@ -714,14 +714,14 @@ export const createStyles = (c: ThemeColours) => ({
         },
         headerRow: {
             flexDirection: 'row',
-            borderBottomWidth: 1,
-            borderBottomColor: c.primary + '33',
+            borderWidth: 1,
+            borderColor: c.primary + '33',
             backgroundColor: c.primary + '22',
         },
         row: {
             flexDirection: 'row',
-            borderBottomWidth: 0.5,
-            borderBottomColor: c.primary + '33',
+            borderWidth: 0.5,
+            borderColor: c.primary + '33',
         },
         headerCell: {
             paddingVertical: 8,
@@ -729,7 +729,7 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'center',
             alignItems: 'center',
             color: c.primary,
-            fontSize: fontSizes.smallText,
+            fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
         cell: {
@@ -740,8 +740,6 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
             paddingVertical: 6,
             paddingHorizontal: 8,
-            borderRightWidth: 1,
-            borderRightColor: c.primary + '33',
         },
         distanceCell: {
             flex: 1,
@@ -756,7 +754,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         input: {
             color: c.text,
-            fontSize: fontSizes.smallestText,
+            fontSize: fontSizes.normal,
             paddingVertical: 2,
             paddingHorizontal: 2,
         },

@@ -84,9 +84,11 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
 
     return (
         <View style={s.container}>
-            {/* Header row with club names */}
+
             <View style={s.headerRow}>
-                <View style={[s.headerCell, s.labelCell]} />
+                {rows.length > 0 && (
+                    <View style={[s.headerCell, s.labelCell]} />
+                )}
                 {rows.map((row, clubIndex) => (
                     <TextInput
                         key={`club-${clubIndex}`}
@@ -147,15 +149,13 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                 )}
             </View>
 
-            {rows.length < MAX_CLUBS && distanceNames.length < MAX_DISTANCES && (
-                <TouchableOpacity
-                    testID="save-wedge-chart-button"
-                    onPress={handleSave}
-                    style={s.saveButton}
-                >
-                    <Text style={s.saveButtonText}>Save</Text>
-                </TouchableOpacity>
-            )}
+            <TouchableOpacity
+                testID="save-wedge-chart-button"
+                onPress={handleSave}
+                style={s.saveButton}
+            >
+                <Text style={s.saveButtonText}>Save</Text>
+            </TouchableOpacity>
         </View>
     );
 };

@@ -67,8 +67,6 @@ export default function DistancesScreen() {
                     </Text>
                 </View>
 
-                <View style={styles.divider} />
-
                 <ClubDistanceList distances={distances} onSave={handleSave} units={settings.units} />
 
                 {!distancesIsEmpty && !showClearConfirm && (

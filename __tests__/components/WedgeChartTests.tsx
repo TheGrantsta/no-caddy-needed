@@ -24,10 +24,10 @@ describe('WedgeChart component', () => {
         ],
     };
 
-    it('renders table header with Club label', () => {
-        const { getByText } = render(<WedgeChart data={emptyData} />);
+    it('does not render table header with Club label', () => {
+        const { queryByText } = render(<WedgeChart data={emptyData} />);
 
-        expect(getByText('Club')).toBeTruthy();
+        expect(queryByText('Club')).toBeNull();
     });
 
     it('renders distance name inputs when data has distance names', () => {

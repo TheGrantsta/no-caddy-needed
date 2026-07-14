@@ -820,7 +820,7 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'center',
             backgroundColor: c.primary + '22',
         },
-        clubCell: {
+        labelCell: {
             width: '20%',
             paddingVertical: 4,
             paddingHorizontal: 4,
@@ -831,7 +831,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
         },
-        distanceCell: {
+        columnCell: {
             width: '15%',
             // minWidth: 60,
             paddingVertical: 4,
@@ -1858,6 +1858,22 @@ export const createStyles = (c: ThemeColours) => ({
             borderRightColor: c.primary + '33',
         },
         swingTypeText: {
+            color: c.primary,
+            fontSize: fontSizes.smallestText,
+            fontWeight: 'bold',
+            textAlign: 'center',
+        },
+        distanceNameCell: {
+            flex: 1,
+            paddingVertical: 4,
+            paddingHorizontal: 4,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: c.primary + '11',
+            borderRightWidth: 1,
+            borderRightColor: c.primary + '33',
+        },
+        distanceNameText: {
             color: c.primary,
             fontSize: fontSizes.smallestText,
             fontWeight: 'bold',

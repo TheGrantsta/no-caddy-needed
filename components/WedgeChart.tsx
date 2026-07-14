@@ -84,38 +84,40 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
 
     return (
         <View style={s.container}>
+            {/* Header row with club names */}
             <View style={s.headerRow}>
-                <Text style={[s.headerCell, s.clubCell]}>Club</Text>
-                {distanceNames.map((name, i) => (
+                <View style={[s.headerCell, s.labelCell]} />
+                {rows.map((row, clubIndex) => (
                     <TextInput
-                        key={`dn-${i}`}
-                        testID={`distance-name-input-${i}`}
-                        style={[s.headerInput, s.distanceCell]}
-                        value={name}
-                        onChangeText={(v) => handleUpdateDistanceName(i, v)}
-                        placeholder="Name"
+                        key={`club-${clubIndex}`}
+                        testID={`wedge-club-input-${clubIndex}`}
+                        style={[s.headerInput, s.columnCell]}
+                        value={row.club}
+                        onChangeText={(v) => handleUpdateClub(clubIndex, v)}
+                        placeholder="Club"
                         placeholderTextColor={colours.backgroundAlternate}
                     />
                 ))}
             </View>
 
-            {rows.map((row, rowIndex) => (
-                <View key={rowIndex} style={s.row}>
+            {/* Data rows for each distance */}
+            {distanceNames.map((distanceName, distIndex) => (
+                <View key={distIndex} style={s.row}>
                     <TextInput
-                        testID={`wedge-club-input-${rowIndex}`}
-                        style={[s.input, s.clubCell]}
-                        value={row.club}
-                        onChangeText={(v) => handleUpdateClub(rowIndex, v)}
-                        placeholder="Club"
+                        testID={`distance-name-input-${distIndex}`}
+                        style={[s.input, s.labelCell]}
+                        value={distanceName}
+                        onChangeText={(v) => handleUpdateDistanceName(distIndex, v)}
+                        placeholder="Name"
                         placeholderTextColor={colours.backgroundAlternate}
                     />
-                    {row.distances.map((dist, colIndex) => (
+                    {rows.map((row, clubIndex) => (
                         <TextInput
-                            key={`${rowIndex}-${colIndex}`}
-                            testID={`wedge-distance-input-${rowIndex}-${colIndex}`}
-                            style={[s.input, s.distanceCell]}
-                            value={dist}
-                            onChangeText={(v) => handleUpdateDistance(rowIndex, colIndex, v)}
+                            key={`${clubIndex}-${distIndex}`}
+                            testID={`wedge-distance-input-${clubIndex}-${distIndex}`}
+                            style={[s.input, s.columnCell]}
+                            value={row.distances[distIndex]}
+                            onChangeText={(v) => handleUpdateDistance(clubIndex, distIndex, v)}
                             keyboardType="number-pad"
                             placeholder="0"
                             placeholderTextColor={colours.backgroundAlternate}

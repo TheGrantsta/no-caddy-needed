@@ -68,7 +68,7 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
                 </View>
             </View>
             {rows.map((row, index) => (
-                <View key={index} style={s.row}>
+                <View key={index} style={[s.row, index === rows.length - 1 && { borderBottomWidth: 0.5 }]}>
                     <TextInput
                         testID={`club-input-${index}`}
                         style={[s.input, s.clubCell]}

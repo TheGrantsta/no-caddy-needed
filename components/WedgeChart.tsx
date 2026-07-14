@@ -147,13 +147,15 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                 )}
             </View>
 
-            <TouchableOpacity
-                testID="save-wedge-chart-button"
-                onPress={handleSave}
-                style={s.saveButton}
-            >
-                <Text style={s.saveButtonText}>Save</Text>
-            </TouchableOpacity>
+            {rows.length < MAX_CLUBS && distanceNames.length < MAX_DISTANCES && (
+                <TouchableOpacity
+                    testID="save-wedge-chart-button"
+                    onPress={handleSave}
+                    style={s.saveButton}
+                >
+                    <Text style={s.saveButtonText}>Save</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

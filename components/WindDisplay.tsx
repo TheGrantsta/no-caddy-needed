@@ -64,7 +64,11 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
         ? findClubSuggestions(adjustedYards, wedgeChartData)
         : [];
 
-    const fallbackSuggestion = voiceEnabled && adjustedYards !== null && suggestedClubs.length === 0
+    const minWedgeDistance = wedgeChartData && wedgeChartData.clubs.length > 0
+        ? Math.min(...wedgeChartData.clubs.flatMap(c => c.distances.map(d => d.distance)))
+        : null;
+
+    const fallbackSuggestion = voiceEnabled && adjustedYards !== null && suggestedClubs.length === 0 && (minWedgeDistance === null || adjustedYards >= minWedgeDistance)
         ? findNearestClubDistance(adjustedYards, getClubDistancesService())
         : null;
 

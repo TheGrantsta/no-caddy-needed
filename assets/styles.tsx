@@ -2017,6 +2017,13 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 4,
             minHeight: fontSizes.normal * 1.5,
         },
+        fallbackSuggestionText: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            fontStyle: 'italic',
+            marginTop: 8,
+            textAlign: 'center',
+        },
         aimHint: {
             color: c.primary,
             fontSize: fontSizes.smallestText,

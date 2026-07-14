@@ -5,8 +5,9 @@ import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/WeatherService';
 import { useWindVoice } from '@/hooks/useWindVoice';
-import { getWedgeChartService } from '@/service/DbService';
-import { findClubSuggestions } from '@/service/ClubSuggestionService';
+import { getWedgeChartService, getClubDistancesService } from '@/service/DbService';
+import { findClubSuggestions, findNearestClubDistance } from '@/service/ClubSuggestionService';
+import { yardsToDisplayUnit } from '@/service/UnitsService';
 import WedgeChartGrid from './WedgeChartGrid';
 
 type Props = {
@@ -62,6 +63,10 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
     const suggestedClubs = wedgeChartData
         ? findClubSuggestions(adjustedYards, wedgeChartData)
         : [];
+
+    const fallbackSuggestion = voiceEnabled && adjustedYards !== null && suggestedClubs.length === 0
+        ? findNearestClubDistance(adjustedYards, getClubDistancesService())
+        : null;
 
     if (directionFrom === null || speedMph === null) return null;
 
@@ -186,7 +191,17 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                     {adjustedDisplayValue !== null ? `Play it as ${adjustedDisplayValue} ${distanceUnit}` : ' '}
                 </Text>
                 {suggestedClubs.length > 0 && wedgeChartData && (
-                    <WedgeChartGrid data={wedgeChartData} suggestedClubs={suggestedClubs} unit={distanceUnit} />
+                    <View testID="wind-club-suggestions">
+                        <WedgeChartGrid data={wedgeChartData} suggestedClubs={suggestedClubs} unit={distanceUnit} />
+                    </View>
+                )}
+                {fallbackSuggestion && (
+                    <Text
+                        testID="wind-fallback-suggestion"
+                        style={styles.windDisplay.fallbackSuggestionText}
+                    >
+                        {`Try your ${fallbackSuggestion.club} (~${yardsToDisplayUnit(fallbackSuggestion.distance, distanceUnit)} ${distanceUnit})`}
+                    </Text>
                 )}
             </View>
             {!compact && (

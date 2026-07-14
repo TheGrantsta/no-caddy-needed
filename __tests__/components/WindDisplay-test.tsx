@@ -3,7 +3,7 @@ import { render, fireEvent } from '@testing-library/react-native';
 import WindDisplay from '../../components/WindDisplay';
 
 import { useWindVoice } from '../../hooks/useWindVoice';
-import { getWedgeChartService } from '../../service/DbService';
+import { getWedgeChartService, getClubDistancesService } from '../../service/DbService';
 
 jest.mock('../../context/ThemeContext', () => ({
     // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -15,6 +15,7 @@ jest.mock('../../service/DbService');
 
 const mockUseWindVoice = useWindVoice as jest.Mock;
 const mockGetWedgeChartService = getWedgeChartService as jest.Mock;
+const mockGetClubDistancesService = getClubDistancesService as jest.Mock;
 
 describe('WindDisplay', () => {
     beforeEach(() => {
@@ -32,6 +33,7 @@ describe('WindDisplay', () => {
             distanceNames: [],
             clubs: [],
         });
+        mockGetClubDistancesService.mockReturnValue([]);
     });
     it('rendersNothingWhenDirectionNull', () => {
         const { queryByTestId } = render(<WindDisplay directionFrom={null} speedMph={null} heading={0} />);
@@ -552,6 +554,143 @@ describe('WindDisplay', () => {
 
             expect(queryByTestId('wind-manual-entry-input')).toBeNull();
             expect(getByTestId('wind-voice-button')).toBeTruthy();
+        });
+    });
+
+    describe('distance chart fallback suggestion', () => {
+        it('does not show fallback suggestion when wedge chart has a match', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: 138,
+                adjustedDisplayValue: 138,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+            mockGetWedgeChartService.mockReturnValue({
+                distanceNames: ['full'],
+                clubs: [
+                    { club: '52°', distances: [{ name: 'full', distance: 130 }] },
+                ],
+            });
+            mockGetClubDistancesService.mockReturnValue([
+                { Id: 1, Club: '7 Iron', CarryDistance: 150, TotalDistance: undefined as any, SortOrder: undefined as any },
+            ]);
+
+            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByTestId('wind-fallback-suggestion')).toBeNull();
+            expect(mockGetClubDistancesService).not.toHaveBeenCalled();
+        });
+
+        it('shows fallback suggestion when wedge chart has no match and distance chart has data', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: 150,
+                adjustedDisplayValue: 150,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+            mockGetWedgeChartService.mockReturnValue({
+                distanceNames: [],
+                clubs: [],
+            });
+            mockGetClubDistancesService.mockReturnValue([
+                { Id: 1, Club: '7 Iron', CarryDistance: 150, TotalDistance: undefined as any, SortOrder: undefined as any },
+                { Id: 2, Club: 'PW', CarryDistance: 110, TotalDistance: undefined as any, SortOrder: undefined as any },
+            ]);
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByTestId('wind-fallback-suggestion')).toBeTruthy();
+            expect(getByTestId('wind-fallback-suggestion')).toHaveTextContent(/Try your 7 Iron.*150/);
+        });
+
+        it('shows fallback suggestion respecting the distanceUnit conversion', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: 137,
+                adjustedDisplayValue: 125,
+                distanceUnit: 'metres',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+            mockGetWedgeChartService.mockReturnValue({
+                distanceNames: [],
+                clubs: [],
+            });
+            mockGetClubDistancesService.mockReturnValue([
+                { Id: 1, Club: '7 Iron', CarryDistance: 150, TotalDistance: undefined as any, SortOrder: undefined as any },
+            ]);
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(getByTestId('wind-fallback-suggestion')).toHaveTextContent(/Try your 7 Iron.*137/);
+        });
+
+        it('does not show fallback suggestion when both wedge chart and distance chart are empty', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: 150,
+                adjustedDisplayValue: 150,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+            mockGetWedgeChartService.mockReturnValue({
+                distanceNames: [],
+                clubs: [],
+            });
+            mockGetClubDistancesService.mockReturnValue([]);
+
+            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByTestId('wind-fallback-suggestion')).toBeNull();
+            expect(queryByTestId('wind-club-suggestions')).toBeNull();
+        });
+
+        it('does not show fallback suggestion when voiceEnabled is false', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: false,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+            mockGetClubDistancesService.mockReturnValue([
+                { Id: 1, Club: '7 Iron', CarryDistance: 150, TotalDistance: undefined as any, SortOrder: undefined as any },
+            ]);
+
+            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByTestId('wind-fallback-suggestion')).toBeNull();
+        });
+
+        it('ensures wedge chart grid and fallback text are mutually exclusive', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: 138,
+                adjustedDisplayValue: 138,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+            mockGetWedgeChartService.mockReturnValue({
+                distanceNames: ['full'],
+                clubs: [
+                    { club: '52°', distances: [{ name: 'full', distance: 130 }] },
+                ],
+            });
+            mockGetClubDistancesService.mockReturnValue([
+                { Id: 1, Club: '7 Iron', CarryDistance: 150, TotalDistance: undefined as any, SortOrder: undefined as any },
+            ]);
+
+            const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            expect(queryByTestId('wind-club-suggestions')).toBeTruthy();
+            expect(queryByTestId('wind-fallback-suggestion')).toBeNull();
         });
     });
 });

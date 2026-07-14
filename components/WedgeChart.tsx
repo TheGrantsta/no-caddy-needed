@@ -102,7 +102,7 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
 
             {/* Data rows for each distance */}
             {distanceNames.map((distanceName, distIndex) => (
-                <View key={distIndex} style={s.row}>
+                <View key={distIndex} style={[s.row, distIndex === distanceNames.length - 1 && { borderBottomWidth: 1, borderBottomColor: colours.primary + '33' }]}>
                     <TextInput
                         testID={`distance-name-input-${distIndex}`}
                         style={[s.input, s.labelCell]}

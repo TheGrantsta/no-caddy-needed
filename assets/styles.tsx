@@ -792,7 +792,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingVertical: 16,
             marginLeft: 'auto',
             marginRight: 'auto',
-            overflow: 'hidden',
+            // overflow: 'hidden',
         },
         headerRow: {
             flexDirection: 'row',
@@ -801,7 +801,7 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
         },
         headerCell: {
-            width: 55,
+            // width: 55,
             paddingVertical: 6,
             paddingHorizontal: 4,
             justifyContent: 'center',
@@ -821,7 +821,7 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.primary + '22',
         },
         clubCell: {
-            width: 55,
+            width: '20%',
             paddingVertical: 4,
             paddingHorizontal: 4,
             justifyContent: 'center',
@@ -832,7 +832,8 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         distanceCell: {
-            width: 55,
+            width: '15%',
+            // minWidth: 60,
             paddingVertical: 4,
             paddingHorizontal: 4,
             justifyContent: 'center',

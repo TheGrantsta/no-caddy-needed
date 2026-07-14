@@ -22,7 +22,7 @@ export default function DistancesScreen() {
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
     const { showResult } = useAppToast();
-    const distances = getClubDistancesService();
+    const [distances, setDistances] = useState(getClubDistancesService());
     const settings = getSettingsService();
     const distancesIsEmpty = distances.length === 0;
     const [showOnboarding, setShowOnboarding] = useState(!settings.distancesOnboardingSeen && distancesIsEmpty);
@@ -40,12 +40,18 @@ export default function DistancesScreen() {
 
     const handleSave = async (distances: { Club: string; CarryDistance: number; TotalDistance: number; SortOrder: number }[]) => {
         const saved = await saveClubDistancesService(distances);
+        if (saved) {
+            setDistances(distances.map((d, i) => ({ ...d, Id: i + 1 })));
+        }
         showResult(saved, 'Clubs saved', 'Failed to save clubs');
     };
 
     const handleClear = async () => {
         const saved = await saveClubDistancesService([]);
         setShowClearConfirm(false);
+        if (saved) {
+            setDistances([]);
+        }
         showResult(saved, 'Distances cleared', 'Failed to clear distances');
     };
 
@@ -67,7 +73,7 @@ export default function DistancesScreen() {
                     </Text>
                 </View>
 
-                <ClubDistanceList distances={distances} onSave={handleSave} units={settings.units} />
+                <ClubDistanceList key={distances.length} distances={distances} onSave={handleSave} units={settings.units} />
 
                 {!distancesIsEmpty && !showClearConfirm && (
                     <TouchableOpacity

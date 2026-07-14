@@ -1,7 +1,7 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import DistancesScreen from '../../../app/play/distances';
-import { getClubDistancesService } from '../../../service/DbService';
+import { getClubDistancesService, saveClubDistancesService } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -28,6 +28,7 @@ jest.mock('../../../service/DbService', () => ({
         playOnboardingSeen: true,
         homeOnboardingSeen: true,
         practiceOnboardingSeen: true,
+        units: 'yards',
     }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
 }));
@@ -40,9 +41,9 @@ jest.mock('../../../hooks/useOrientation', () => ({
     }),
 }));
 
-jest.mock('react-native-toast-notifications', () => ({
-    useToast: () => ({
-        show: jest.fn(),
+jest.mock('../../../hooks/useAppToast', () => ({
+    useAppToast: () => ({
+        showResult: jest.fn(),
     }),
 }));
 
@@ -57,6 +58,7 @@ jest.mock('react-native-gesture-handler', () => {
 });
 
 const mockGetClubDistances = getClubDistancesService as jest.Mock;
+const mockSaveClubDistances = saveClubDistancesService as jest.Mock;
 
 describe('Distances screen', () => {
     beforeEach(() => {
@@ -105,5 +107,35 @@ describe('Distances screen', () => {
         const { getByTestId } = render(<DistancesScreen />);
 
         expect(getByTestId('save-distances-button')).toBeTruthy();
+    });
+
+    it('should clear all distances from UI when clear is confirmed', async () => {
+        mockGetClubDistances.mockReturnValue([
+            { Id: 1, Club: 'Driver', CarryDistance: 250, TotalDistance: 270, SortOrder: 1 },
+            { Id: 2, Club: '3 Wood', CarryDistance: 220, TotalDistance: 240, SortOrder: 2 },
+        ]);
+        mockSaveClubDistances.mockResolvedValue(true);
+
+        const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+
+        // Verify distances are shown
+        expect(getByTestId('club-input-0').props.value).toBe('Driver');
+        expect(getByTestId('club-input-1').props.value).toBe('3 Wood');
+
+        // Click clear button
+        fireEvent.press(getByTestId('clear-button'));
+
+        // Wait for confirm button to appear
+        await waitFor(() => {
+            expect(getByTestId('confirm-clear-button')).toBeTruthy();
+        });
+
+        // Confirm clear
+        fireEvent.press(getByTestId('confirm-clear-button'));
+
+        await waitFor(() => {
+            expect(queryByTestId('club-input-0')).toBeFalsy();
+            expect(queryByTestId('club-input-1')).toBeFalsy();
+        });
     });
 });

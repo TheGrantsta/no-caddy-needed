@@ -2014,7 +2014,6 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
             marginTop: 4,
-            minHeight: fontSizes.normal * 1.5,
         },
         fallbackSuggestionText: {
             color: c.tertiary,

@@ -1,4 +1,4 @@
-import { Text, View, TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -108,7 +108,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
             >
                 {speed} mph
             </Text>
-            <View style={styles.windDisplay.bottomSection}>
+            <ScrollView style={styles.windDisplay.bottomSection} scrollEnabled contentContainerStyle={{ alignItems: 'center' }}>
                 {voiceEnabled && !manualEntryOpen && (
                     <View style={styles.windDisplay.voiceRow}>
                         <TouchableOpacity
@@ -203,7 +203,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                         {`Try your ${fallbackSuggestion.club} (~${yardsToDisplayUnit(fallbackSuggestion.distance, distanceUnit)} ${distanceUnit})`}
                     </Text>
                 )}
-            </View>
+            </ScrollView>
             {!compact && (
                 <Text
                     testID="wind-aim-hint"

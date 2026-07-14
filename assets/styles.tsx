@@ -1894,6 +1894,7 @@ export const createStyles = (c: ThemeColours) => ({
             borderWidth: 1,
             borderColor: c.primary,
             width: 330,
+            maxHeight: '85%',
         },
         cardFull: {
             paddingVertical: 12,
@@ -1931,8 +1932,8 @@ export const createStyles = (c: ThemeColours) => ({
         bottomSection: {
             marginTop: 8,
             width: '100%',
-            alignItems: 'center',
             minHeight: 124,
+            maxHeight: 300,
         },
         voiceButton: {
             paddingVertical: 8,

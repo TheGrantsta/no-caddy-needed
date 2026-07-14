@@ -87,7 +87,9 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
 
             <View style={s.headerRow}>
                 {rows.length > 0 && (
-                    <View style={[s.headerCell, s.labelCell]} />
+                    <View style={[s.headerCell, s.labelCell]}>
+                        <Text style={s.input}>X</Text>
+                    </View>
                 )}
                 {rows.map((row, clubIndex) => (
                     <TextInput

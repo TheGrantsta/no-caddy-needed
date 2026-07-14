@@ -1,5 +1,5 @@
 import React, { act } from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import WedgeChartScreen from '../../../app/play/wedge-chart';
 import {
     getSettingsService,
@@ -37,6 +37,12 @@ jest.mock('../../../hooks/useOrientation', () => ({
     }),
 }));
 
+jest.mock('../../../hooks/useAppToast', () => ({
+    useAppToast: () => ({
+        showResult: jest.fn(),
+    }),
+}));
+
 jest.mock('react-native-toast-notifications', () => ({
     useToast: () => ({
         show: jest.fn(),
@@ -64,6 +70,7 @@ const defaultSettings = {
     playOnboardingSeen: true,
     homeOnboardingSeen: true,
     practiceOnboardingSeen: true,
+    units: 'yards' as const,
 };
 
 const nonEmptyChart = {
@@ -222,6 +229,28 @@ describe('Wedge Chart screen', () => {
             });
 
             expect(queryByTestId('confirm-clear-button')).toBeNull();
+        });
+
+        it('pressingConfirmClearUpdatesUIToEmpty', async () => {
+            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+
+            // Verify chart has data
+            expect(getByTestId('clear-button')).toBeTruthy();
+
+            fireEvent.press(getByTestId('clear-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('confirm-clear-button')).toBeTruthy();
+            });
+
+            await act(async () => {
+                fireEvent.press(getByTestId('confirm-clear-button'));
+            });
+
+            // After clearing, the clear button should not be visible
+            await waitFor(() => {
+                expect(queryByTestId('clear-button')).toBeNull();
+            });
         });
     });
 

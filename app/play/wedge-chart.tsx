@@ -22,7 +22,7 @@ export default function WedgeChartScreen() {
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
     const { showResult } = useAppToast();
-    const data = getWedgeChartService();
+    const [data, setData] = useState(getWedgeChartService());
     const settings = getSettingsService();
     const chartIsEmpty = data.clubs.length === 0;
     const [showOnboarding, setShowOnboarding] = useState(!settings.wedgeChartOnboardingSeen && chartIsEmpty);
@@ -40,12 +40,19 @@ export default function WedgeChartScreen() {
 
     const handleSave = async (chartData: WedgeChartData) => {
         const saved = await saveWedgeChartService(chartData);
+        if (saved) {
+            setData(chartData);
+        }
         showResult(saved, 'Wedge chart saved', 'Failed to save wedge chart');
     };
 
     const handleClear = async () => {
-        const saved = await saveWedgeChartService({ distanceNames: [], clubs: [] });
+        const emptyData = { distanceNames: [], clubs: [] };
+        const saved = await saveWedgeChartService(emptyData);
         setShowClearConfirm(false);
+        if (saved) {
+            setData(emptyData);
+        }
         showResult(saved, 'Wedge chart cleared', 'Failed to clear wedge chart');
     };
 
@@ -67,7 +74,7 @@ export default function WedgeChartScreen() {
                     </Text>
                 </View>
 
-                <WedgeChart data={data} onSave={handleSave} units={settings.units} />
+                <WedgeChart key={data.clubs.length} data={data} onSave={handleSave} units={settings.units} />
 
                 {!chartIsEmpty && !showClearConfirm && (
                     <TouchableOpacity

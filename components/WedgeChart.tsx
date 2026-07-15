@@ -106,10 +106,10 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
 
             {/* Data rows for each distance */}
             {distanceNames.map((distanceName, distIndex) => (
-                <View key={distIndex} style={[s.row, distIndex === distanceNames.length - 1 && { borderBottomWidth: 0.5 }]}>
+                <View key={distIndex} style={s.row}>
                     <TextInput
                         testID={`distance-name-input-${distIndex}`}
-                        style={[s.input, s.labelCell]}
+                        style={[s.input, s.labelCell, distIndex === distanceNames.length - 1 && { borderBottomWidth: 0.5, borderBottomColor: colours.primary + '33' }]}
                         value={distanceName}
                         onChangeText={(v) => handleUpdateDistanceName(distIndex, v)}
                         placeholder="Name"
@@ -119,7 +119,7 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                         <TextInput
                             key={`${clubIndex}-${distIndex}`}
                             testID={`wedge-distance-input-${clubIndex}-${distIndex}`}
-                            style={[s.input, s.columnCell]}
+                            style={[s.input, s.columnCell, distIndex === distanceNames.length - 1 && { borderBottomWidth: 0.5, borderBottomColor: colours.primary + '33' }]}
                             value={row.distances[distIndex]}
                             onChangeText={(v) => handleUpdateDistance(clubIndex, distIndex, v)}
                             keyboardType="number-pad"

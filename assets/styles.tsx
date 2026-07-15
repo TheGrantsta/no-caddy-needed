@@ -792,6 +792,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         row: {
             flexDirection: 'row',
+            borderBottomColor: c.primary + '33',
         },
         headerCell: {
             paddingVertical: 6,

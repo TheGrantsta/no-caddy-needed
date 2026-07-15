@@ -21,7 +21,7 @@ const WedgeChartGrid = ({ data, suggestedClubs, unit = 'yards' }: Props) => {
     const suggestedSet = new Set(suggestedClubs.map(c => `${c.club}-${c.name}`));
 
     return (
-        <View style={styles.wedgeChartGrid.container}>
+        <View style={[styles.wedgeChartGrid.container, { alignItems: 'flex-start' }]}>
             {/* Header row with distance names */}
             <View style={styles.wedgeChartGrid.headerRow}>
                 <View style={styles.wedgeChartGrid.labelCell} />

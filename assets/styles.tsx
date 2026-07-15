@@ -1788,15 +1788,15 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
     wedgeChartGrid: StyleSheet.create({
-        scrollContainer: {
-            marginTop: 12,
-            marginHorizontal: 0,
-        },
+        // scrollContainer: {
+        //     marginTop: 12,
+        //     marginHorizontal: 0,
+        // },
         container: {
-            // borderWidth: 1,
-            // borderColor: c.primary + '44',
-            // borderRadius: 8,
-            // overflow: 'hidden',
+            borderWidth: 1,
+            borderColor: c.primary + '44',
+            borderRadius: 8,
+            overflow: 'hidden',
             backgroundColor: c.primary + '11',
             width: '100%',
         },

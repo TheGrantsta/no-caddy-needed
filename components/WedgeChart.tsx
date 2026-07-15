@@ -140,7 +140,7 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                         <Text style={s.addButtonText}>+ Add club</Text>
                     </TouchableOpacity>
                 )}
-                {distanceNames.length < MAX_DISTANCES && (
+                {rows.length > 0 && distanceNames.length < MAX_DISTANCES && (
                     <TouchableOpacity
                         testID="add-wedge-distance-button"
                         onPress={handleAddDistance}

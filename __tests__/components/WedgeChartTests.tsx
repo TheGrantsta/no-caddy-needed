@@ -75,16 +75,27 @@ describe('WedgeChart component', () => {
         expect(queryByTestId('add-wedge-club-button')).toBeNull();
     });
 
-    it('shows add distance button when fewer than 6 distances', () => {
-        const { getByTestId } = render(<WedgeChart data={emptyData} />);
+    it('shows add distance button when fewer than 6 distances and at least one club', () => {
+        const dataWithOneClub: WedgeChartData = {
+            distanceNames: [],
+            clubs: [{ club: 'PW', distances: [] }],
+        };
+
+        const { getByTestId } = render(<WedgeChart data={dataWithOneClub} />);
 
         expect(getByTestId('add-wedge-distance-button')).toBeTruthy();
+    });
+
+    it('hides add distance button when no clubs exist', () => {
+        const { queryByTestId } = render(<WedgeChart data={emptyData} />);
+
+        expect(queryByTestId('add-wedge-distance-button')).toBeNull();
     });
 
     it('hides add distance button when 6 distances exist', () => {
         const sixDistances: WedgeChartData = {
             distanceNames: ['1', '2', '3', '4', '5', '6'],
-            clubs: [],
+            clubs: [{ club: 'PW', distances: [{ name: '1', distance: 100 }, { name: '2', distance: 100 }, { name: '3', distance: 100 }, { name: '4', distance: 100 }, { name: '5', distance: 100 }, { name: '6', distance: 100 }] }],
         };
 
         const { queryByTestId } = render(<WedgeChart data={sixDistances} />);

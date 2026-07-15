@@ -1798,7 +1798,7 @@ export const createStyles = (c: ThemeColours) => ({
             borderRadius: 8,
             overflow: 'hidden',
             backgroundColor: c.primary + '11',
-            alignSelf: 'center',
+            width: '100%',
         },
         headerRow: {
             flexDirection: 'row',

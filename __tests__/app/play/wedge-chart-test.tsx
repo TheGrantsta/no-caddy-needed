@@ -108,7 +108,26 @@ describe('Wedge Chart screen', () => {
     });
 
     it('shows add distance button', () => {
+        mockGetWedgeChartService.mockReturnValue(nonEmptyChart);
         const { getByTestId } = render(<WedgeChartScreen />);
+        expect(getByTestId('add-wedge-distance-button')).toBeTruthy();
+    });
+
+    it('does not show add distance button when chart is empty', () => {
+        const { queryByTestId } = render(<WedgeChartScreen />);
+        expect(queryByTestId('add-wedge-distance-button')).toBeNull();
+    });
+
+    it('shows add distance button after adding a club', () => {
+        const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+
+        // Initially, add distance button should not be visible
+        expect(queryByTestId('add-wedge-distance-button')).toBeNull();
+
+        // Add a club
+        fireEvent.press(getByTestId('add-wedge-club-button'));
+
+        // Now add distance button should be visible
         expect(getByTestId('add-wedge-distance-button')).toBeTruthy();
     });
 

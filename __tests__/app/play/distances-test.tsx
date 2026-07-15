@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { act } from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import DistancesScreen from '../../../app/play/distances';
 import { getClubDistancesService, saveClubDistancesService } from '../../../service/DbService';
@@ -123,7 +123,9 @@ describe('Distances screen', () => {
         expect(getByTestId('club-input-1').props.value).toBe('3 Wood');
 
         // Click clear button
-        fireEvent.press(getByTestId('clear-button'));
+        await act(async () => {
+            fireEvent.press(getByTestId('clear-button'));
+        });
 
         // Wait for confirm button to appear
         await waitFor(() => {
@@ -131,7 +133,9 @@ describe('Distances screen', () => {
         });
 
         // Confirm clear
-        fireEvent.press(getByTestId('confirm-clear-button'));
+        await act(async () => {
+            fireEvent.press(getByTestId('confirm-clear-button'));
+        });
 
         await waitFor(() => {
             expect(queryByTestId('club-input-0')).toBeFalsy();

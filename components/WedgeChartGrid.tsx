@@ -22,7 +22,7 @@ const WedgeChartGrid = ({ data, suggestedClubs, unit = 'yards' }: Props) => {
 
     return (
         <View style={styles.wedgeChartGrid.container}>
-            {/* Header row with swing types */}
+            {/* Header row with distance names */}
             <View style={styles.wedgeChartGrid.headerRow}>
                 <View style={styles.wedgeChartGrid.labelCell} />
                 {data.distanceNames.map(distanceName => (

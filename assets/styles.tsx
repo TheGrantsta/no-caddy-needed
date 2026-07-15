@@ -803,6 +803,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.smallText,
             borderTopWidth: 0.5,
             borderBottomWidth: 0.5,
+            borderColor: c.primary + '33',
         },
         headerInput: {
             paddingVertical: 6,
@@ -813,6 +814,7 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.primary + '22',
             borderTopWidth: 0.5,
             borderBottomWidth: 0.5,
+            borderColor: c.primary + '33',
         },
         labelCell: {
             width: '20%',
@@ -825,6 +827,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             borderLeftWidth: 0.5,
             borderRightWidth: 0.5,
+            borderColor: c.primary + '33',
         },
         columnCell: {
             width: '20%',
@@ -833,6 +836,7 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'center',
             alignItems: 'center',
             borderRightWidth: 0.5,
+            borderColor: c.primary + '33',
             textAlign: 'center',
         },
         input: {

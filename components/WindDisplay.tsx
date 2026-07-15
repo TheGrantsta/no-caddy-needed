@@ -137,7 +137,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                             onPress={handleToggleManualEntry}
                         >
                             <MaterialIcons
-                                name="edit"
+                                name="straighten"
                                 size={20}
                                 color={colours.primary}
                             />

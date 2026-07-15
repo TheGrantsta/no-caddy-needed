@@ -56,7 +56,6 @@
 - [-] Create 'skill' to run screen shots on remote push
 
 # Release notes
-* Add voice support for calculating adjusted distances based on wind strength / direction - and suggested clubs from wedge chart
+* Add manual entry backup support for the microphone
 * Amend the "Clear all" flow for wedge chart & distances
-* Consolidated drills and games into one practice type
-* Fix bug where the preselected par score per hole is not saved unless it is changed
+* Reorientate the wedge chart to show clubs across the top and swing types down the side

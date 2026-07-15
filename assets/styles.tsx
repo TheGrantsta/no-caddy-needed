@@ -740,6 +740,8 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
             paddingVertical: 6,
             paddingHorizontal: 8,
+            borderRightWidth: 0.5,
+            borderRightColor: c.primary + '33',
         },
         distanceCell: {
             flex: 1,

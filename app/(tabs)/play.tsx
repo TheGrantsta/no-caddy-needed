@@ -747,22 +747,26 @@ export default function Play() {
                                         </TouchableOpacity>
                                     )}
 
-                                    <View style={styles.contentSection}>
-                                        <Text style={styles.normalText}>
-                                            Golf is a game; have fun & be kind to yourself!
-                                        </Text>
-                                    </View>
-                                </View>
-                            )}
+                                    {holePhase === 'score' && (
+                                        <>
+                                            <View style={styles.contentSection}>
+                                                <Text style={styles.normalText}>
+                                                    Golf is a game; have fun & be kind to yourself!
+                                                </Text>
+                                            </View>
 
-                            {!showEndRoundConfirm && (
-                                <TouchableOpacity
-                                    testID="end-round-button"
-                                    onPress={handleEndRoundPress}
-                                    style={{ padding: 12, alignItems: 'center', marginTop: 20 }}
-                                >
-                                    <Text style={localStyles.endRoundLink}>End round</Text>
-                                </TouchableOpacity>
+                                            {!showEndRoundConfirm && (
+                                                <TouchableOpacity
+                                                    testID="end-round-button"
+                                                    onPress={handleEndRoundPress}
+                                                    style={{ padding: 12, alignItems: 'center', marginTop: 20 }}
+                                                >
+                                                    <Text style={localStyles.endRoundLink}>End round</Text>
+                                                </TouchableOpacity>
+                                            )}
+                                        </>
+                                    )}
+                                </View>
                             )}
 
                             {showEndRoundConfirm && (

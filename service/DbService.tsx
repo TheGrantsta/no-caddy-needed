@@ -17,6 +17,7 @@ import {
     getHoleDeadlySins,
     deleteHoleDeadlySinsByHole,
     getHolesWithSinsForRound,
+    getRoundHoleScoresByHole,
     insertRound,
     updateRound,
     getRoundById,
@@ -281,6 +282,15 @@ export const getHoleDeadlySinsService = (roundId: number, holeNumber: number): D
         doubleChips: row.DoubleChips === 1,
         troubleOffTee: row.TroubleOffTee === 1,
         penalties: row.Penalties === 1,
+    };
+};
+
+export const getHoleScoresService = (roundId: number, holeNumber: number): { holePar: number; scores: Record<number, number> } | null => {
+    const rows = getRoundHoleScoresByHole(roundId, holeNumber) as RoundHoleScore[];
+    if (rows.length === 0) return null;
+    return {
+        holePar: rows[0].HolePar,
+        scores: Object.fromEntries(rows.map(r => [r.RoundPlayerId, r.Score])),
     };
 };
 

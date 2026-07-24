@@ -26,6 +26,7 @@ import {
     saveHoleNoteService,
     getParAveragesService,
     getHoleDeadlySinsService,
+    getHoleScoresService,
     getHolesWithSinsForRoundService,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
@@ -69,6 +70,7 @@ jest.mock('../../service/DbService', () => ({
     saveHoleNoteService: jest.fn().mockResolvedValue(true),
     getParAveragesService: jest.fn().mockReturnValue({ par3: null, par4: null, par5: null }),
     getHoleDeadlySinsService: jest.fn().mockReturnValue(null),
+    getHoleScoresService: jest.fn().mockReturnValue(null),
     getHolesWithSinsForRoundService: jest.fn().mockReturnValue(new Set()),
     getSettingsService: jest.fn().mockReturnValue({
         theme: 'dark',
@@ -189,6 +191,7 @@ const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
 const mockSaveHoleNote = saveHoleNoteService as jest.Mock;
 const mockGetParAverages = getParAveragesService as jest.Mock;
 const mockGetHoleDeadlySins = getHoleDeadlySinsService as jest.Mock;
+const mockGetHoleScores = getHoleScoresService as jest.Mock;
 const mockGetHolesWithSinsForRound = getHolesWithSinsForRoundService as jest.Mock;
 const mockHapticsImpact = Haptics.impactAsync as jest.Mock;
 
@@ -899,6 +902,14 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
+                expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
+            });
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            await waitFor(() => {
                 expect(getByText('#2')).toBeTruthy();
             });
         });
@@ -1059,6 +1070,7 @@ describe('Play screen', () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
+            mockInsertHoleDeadlySins.mockResolvedValue(true);
 
             const { getByTestId, getByText } = render(<Play />);
 
@@ -1075,10 +1087,20 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
+                expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
+            });
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            await waitFor(() => {
                 expect(getByText('#2')).toBeTruthy();
             });
 
-            fireEvent.press(getByTestId('previous-hole-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('previous-hole-button'));
+            });
 
             expect(getByText('#1')).toBeTruthy();
         });
@@ -1087,6 +1109,7 @@ describe('Play screen', () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
+            mockInsertHoleDeadlySins.mockResolvedValue(true);
             mockLoadCourseNotes.mockReturnValue({ 1: 'hole 1 note', 2: 'hole 2 note' });
 
             const { getByTestId } = render(<Play />);
@@ -1491,6 +1514,7 @@ describe('Play screen', () => {
         it('shows 7 Deadly Sins tally when round starts', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
 
             const { getByTestId, getByText, queryByText } = render(<Play />);
 
@@ -1500,6 +1524,14 @@ describe('Play screen', () => {
 
             await waitFor(() => {
                 expect(getByTestId('next-hole-button')).toBeTruthy();
+            });
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            await waitFor(() => {
+                expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
             });
 
             expect(getByText('3-putts')).toBeTruthy();
@@ -1533,6 +1565,7 @@ describe('Play screen', () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
+            mockInsertHoleDeadlySins.mockResolvedValue(true);
 
             const { getByTestId } = render(<Play />);
 
@@ -1543,6 +1576,16 @@ describe('Play screen', () => {
             await waitFor(() => {
                 expect(getByTestId('next-hole-button')).toBeTruthy();
             });
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            await waitFor(() => {
+                expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
+            });
+
+            mockInsertHoleDeadlySins.mockClear();
 
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));
@@ -1870,10 +1913,19 @@ describe('Play screen', () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
+            mockInsertHoleDeadlySins.mockResolvedValue(true);
 
             const { getByTestId, getByText, queryByText } = render(<Play />);
 
             await startRoundAndAdvanceToHole(getByTestId, getByText, 18);
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            await waitFor(() => {
+                expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
+            });
 
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));

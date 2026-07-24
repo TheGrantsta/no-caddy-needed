@@ -309,6 +309,13 @@ export const getHoleDeadlySins = (roundId: number, holeNumber: number) => {
     return rows.length > 0 ? rows[0] : null;
 };
 
+export const getRoundHoleScoresByHole = (roundId: number, holeNumber: number) => {
+    return getSyncDb().getAllSync(
+        'SELECT * FROM RoundHoleScores WHERE RoundId = ? AND HoleNumber = ?;',
+        [roundId, holeNumber]
+    );
+};
+
 export const deleteHoleDeadlySinsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
     let success = true;
     try {

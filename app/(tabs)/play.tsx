@@ -21,6 +21,7 @@ import {
     getAllRoundHistoryService,
     insertHoleDeadlySinsService,
     getHoleDeadlySinsService,
+    getHoleScoresService,
     getHolesWithSinsForRoundService,
     getAllDeadlySinsRoundsService,
     addRoundPlayersService,
@@ -78,6 +79,7 @@ export default function Play() {
     const [refreshing, setRefreshing] = useState(false);
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
     const [currentHole, setCurrentHole] = useState(1);
+    const [holePhase, setHolePhase] = useState<'score' | 'stats'>('score');
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
     const [deadlySinsRounds, setDeadlySinsRounds] = useState<DeadlySinsRound[]>([]);
     const [section, setSection] = useState('play-score');
@@ -201,12 +203,15 @@ export default function Play() {
         const holesPlayed = getHolesPlayedForRoundService(incompleteRound.Id);
         const resumeHole = holesPlayed > 0 ? holesPlayed + 1 : 1;
         setCurrentHole(resumeHole);
+        setHolePhase('score');
         setActiveRoundId(incompleteRound.Id);
         const courseName = incompleteRound.CourseName ?? '';
         setActiveCourseName(courseName);
         const notes = loadCourseNotesService(courseName);
         setCourseNotes(notes);
         setCurrentNoteText(notes[resumeHole] ?? '');
+        const holeData = loadHoleForScore(resumeHole);
+        setCurrentHoleData(holeData);
         setIncompleteRound(null);
     };
 
@@ -241,11 +246,14 @@ export default function Play() {
             setActiveRoundId(roundId);
             setPlayers(roundPlayers);
             setCurrentHole(1);
+            setHolePhase('score');
             setCourseHolePars(getCourseHoleParsService(courseName));
             setActiveCourseName(courseName);
             const notes = loadCourseNotesService(courseName);
             setCourseNotes(notes);
             setCurrentNoteText(notes[1] ?? '');
+            const holeData = loadHoleForScore(1);
+            setCurrentHoleData(holeData);
             setShowPlayerSetup(false);
             const nId = await scheduleRoundReminder();
             setNotificationId(nId);
@@ -267,28 +275,81 @@ export default function Play() {
         };
     };
 
-    const handlePreviousHole = () => {
-        if (currentHole <= 1) return;
-        const holeGoingBackTo = currentHole - 1;
-        setCurrentNoteText(courseNotes[holeGoingBackTo] ?? '');
-        setCurrentHole(prev => prev - 1);
-        setCurrentHoleData(null);
+    const loadHoleForScore = (holeNumber: number) => {
+        if (!activeRoundId) return buildDefaultHoleData();
+        const saved = getHoleScoresService(activeRoundId, holeNumber);
+        if (!saved) {
+            const par = courseHolePars[holeNumber] ?? 4;
+            return {
+                holeNumber,
+                holePar: par,
+                scores: players.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: p.Id in (saved?.scores ?? {}) ? saved!.scores[p.Id] : par })),
+            };
+        }
+        return {
+            holeNumber,
+            holePar: saved.holePar,
+            scores: players.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: saved.scores[p.Id] ?? saved.holePar })),
+        };
+    };
+
+    const loadHoleSins = (holeNumber: number): DeadlySinsValues => {
+        if (!activeRoundId) return INITIAL_SINS;
+        const saved = getHoleDeadlySinsService(activeRoundId, holeNumber);
+        return saved ?? INITIAL_SINS;
+    };
+
+    const handlePreviousHole = async () => {
+        if (holePhase === 'score') {
+            if (currentHole <= 1) return;
+            const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
+            await addMultiplayerHoleScoresService(activeRoundId!, holeNumber, holePar, scores);
+            const prevHole = currentHole - 1;
+            setCurrentNoteText(courseNotes[prevHole] ?? '');
+            setCurrentHole(prevHole);
+            const holeData = loadHoleForScore(prevHole);
+            setCurrentHoleData(holeData);
+        } else {
+            await insertHoleDeadlySinsService(activeRoundId!, currentHole, deadlySinsValues);
+            if (activeCourseName !== null) {
+                await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
+                setCourseNotes(prev => ({ ...prev, [currentHole]: currentNoteText.trim() }));
+            }
+            if (currentHole === 1) {
+                setHolePhase('score');
+                const holeData = loadHoleForScore(1);
+                setCurrentHoleData(holeData);
+            } else {
+                const prevHole = currentHole - 1;
+                setCurrentNoteText(courseNotes[prevHole] ?? '');
+                setCurrentHole(prevHole);
+                setHolePhase('score');
+                const holeData = loadHoleForScore(prevHole);
+                setCurrentHoleData(holeData);
+            }
+        }
     };
 
     const handleNextHole = async () => {
         if (!activeRoundId) return;
 
-        const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
-        const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
-        if (success) {
-            await insertHoleDeadlySinsService(activeRoundId, holeNumber, deadlySinsValues);
-            if (activeCourseName !== null) {
-                await saveHoleNoteService(activeCourseName, holeNumber, currentNoteText);
-                setCourseNotes(prev => ({ ...prev, [holeNumber]: currentNoteText.trim() }));
+        if (holePhase === 'score') {
+            const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
+            const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
+            if (success) {
+                const sins = loadHoleSins(holeNumber);
+                setDeadlySinsValues(sins);
+                setHolePhase('stats');
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                scrollRef.current?.scrollTo({ y: 0, animated: true });
             }
-            setDeadlySinsValues(INITIAL_SINS);
+        } else {
+            await insertHoleDeadlySinsService(activeRoundId, currentHole, deadlySinsValues);
+            if (activeCourseName !== null) {
+                await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
+                setCourseNotes(prev => ({ ...prev, [currentHole]: currentNoteText.trim() }));
+            }
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
             setCurrentHoleData(null);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
             if (currentHole >= 18) {
@@ -297,6 +358,9 @@ export default function Play() {
                 const nextHole = currentHole + 1;
                 setCurrentNoteText(courseNotes[nextHole] ?? '');
                 setCurrentHole(nextHole);
+                setHolePhase('score');
+                const holeData = loadHoleForScore(nextHole);
+                setCurrentHoleData(holeData);
             }
         }
     };
@@ -324,6 +388,7 @@ export default function Play() {
     const resetToIdle = () => {
         setActiveRoundId(null);
         setCurrentHole(1);
+        setHolePhase('score');
         setSection('play-score');
         setDeadlySinsValues(INITIAL_SINS);
         setPlayers([]);
@@ -602,19 +667,37 @@ export default function Play() {
                 {isRoundActive && !scorecardData && displaySection('play-score') && (
                     <View style={styles.container}>
                         <View>
-                            <HoleScoreInput
-                                holeNumber={currentHole}
-                                initialPar={courseHolePars[currentHole] ?? 4}
-                                players={players}
-                                onScoresChange={handleScoresChange}
-                                headerAccessory={
-                                    <WindIndicator
-                                        directionFrom={wind?.directionFrom ?? null}
-                                        speedMph={wind?.speedMph ?? null}
-                                        heading={heading}
+                            {holePhase === 'score' && (
+                                <>
+                                    <HoleScoreInput
+                                        key={`score-${currentHole}`}
+                                        holeNumber={currentHole}
+                                        initialPar={courseHolePars[currentHole] ?? 4}
+                                        initialScores={currentHoleData?.scores.reduce((acc, s) => ({ ...acc, [s.playerId]: s.score }), {}) ?? undefined}
+                                        players={players}
+                                        onScoresChange={handleScoresChange}
+                                        headerAccessory={
+                                            <WindIndicator
+                                                directionFrom={wind?.directionFrom ?? null}
+                                                speedMph={wind?.speedMph ?? null}
+                                                heading={heading}
+                                            />
+                                        }
                                     />
-                                }
-                                renderAfterUser={
+
+                                    <HoleNoteInput
+                                        key={`note-${currentHole}`}
+                                        note={currentNoteText}
+                                        onNoteChange={setCurrentNoteText}
+                                    />
+                                </>
+                            )}
+
+                            {holePhase === 'stats' && (
+                                <>
+                                    <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                                        <Text style={styles.normalText}>Hole {currentHole} — 7 Deadly Sins</Text>
+                                    </View>
                                     <DeadlySinsTally
                                         key={`tally-${currentHole}`}
                                         onEndRound={() => { }}
@@ -627,14 +710,8 @@ export default function Play() {
                                             return player && player.IsUser === 1;
                                         })?.score}
                                     />
-                                }
-                            />
-
-                            <HoleNoteInput
-                                key={currentHole}
-                                note={currentNoteText}
-                                onNoteChange={setCurrentNoteText}
-                            />
+                                </>
+                            )}
 
                             {!showEndRoundConfirm && (
                                 <View>
@@ -644,23 +721,11 @@ export default function Play() {
                                         style={localStyles.nextHoleButton}
                                     >
                                         <View style={{ width: 24 }} />
-                                        <Text style={localStyles.nextHoleButtonText}>{isLastHole ? 'Finish round' : 'Next hole'}</Text>
-                                        <MaterialIcons name={isLastHole ? 'sports-score' : 'skip-next'} size={24} color={colours.background} />
+                                        <Text style={localStyles.nextHoleButtonText}>{holePhase === 'stats' && isLastHole ? 'Finish round' : 'Next hole'}</Text>
+                                        <MaterialIcons name={holePhase === 'stats' && isLastHole ? 'sports-score' : 'skip-next'} size={24} color={colours.background} />
                                     </TouchableOpacity>
 
-                                    {currentHole > 1 ? (
-                                        <TouchableOpacity
-                                            testID="previous-hole-button"
-                                            onPress={handlePreviousHole}
-                                            style={localStyles.previousHoleButton}
-                                        >
-                                            <MaterialIcons name="skip-previous" size={24} color={colours.primary} />
-                                            <Text style={localStyles.previousHoleButtonText}>Previous hole</Text>
-                                            <View style={{ width: 24 }} />
-                                        </TouchableOpacity>
-                                    ) : (
-                                        // Invisible same-sized placeholder so hiding Previous on hole 1
-                                        // doesn't pull the content below it upwards.
+                                    {holePhase === 'score' && currentHole <= 1 ? (
                                         <View
                                             testID="previous-hole-placeholder"
                                             style={[localStyles.previousHoleButton, { opacity: 0 }]}
@@ -670,6 +735,16 @@ export default function Play() {
                                             <Text style={localStyles.previousHoleButtonText}>Previous hole</Text>
                                             <View style={{ width: 24 }} />
                                         </View>
+                                    ) : (
+                                        <TouchableOpacity
+                                            testID="previous-hole-button"
+                                            onPress={handlePreviousHole}
+                                            style={localStyles.previousHoleButton}
+                                        >
+                                            <MaterialIcons name="skip-previous" size={24} color={colours.primary} />
+                                            <Text style={localStyles.previousHoleButtonText}>Previous hole</Text>
+                                            <View style={{ width: 24 }} />
+                                        </TouchableOpacity>
                                     )}
 
                                     <View style={styles.contentSection}>

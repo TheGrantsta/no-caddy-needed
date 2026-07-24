@@ -88,6 +88,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS PracticeReminders (Id INTEGER PRIMARY KEY AUTOINCREMENT, Label TEXT NOT NULL, ScheduledFor TEXT NOT NULL, NotificationId TEXT, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS HiddenRecents (Id INTEGER PRIMARY KEY AUTOINCREMENT, Type TEXT NOT NULL, Name TEXT NOT NULL, UNIQUE(Type, Name));
         CREATE TABLE IF NOT EXISTS HoleNotes (Id INTEGER PRIMARY KEY AUTOINCREMENT, CourseName TEXT NOT NULL, HoleNumber INTEGER NOT NULL, Note TEXT NOT NULL, Updated_At TEXT NOT NULL, UNIQUE(CourseName, HoleNumber));
+        CREATE TABLE IF NOT EXISTS PuttingStats (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, FirstPuttDistance INTEGER NOT NULL, SecondPuttDistance INTEGER NOT NULL, SecondPuttIsLong INTEGER NOT NULL DEFAULT 0, ThirdPuttDistance INTEGER, ThirdPuttIsLong INTEGER, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
     `);
 
     const migrations: TableAmendment[] = [
@@ -314,6 +315,57 @@ export const getRoundHoleScoresByHole = (roundId: number, holeNumber: number) =>
         'SELECT * FROM RoundHoleScores WHERE RoundId = ? AND HoleNumber = ?;',
         [roundId, holeNumber]
     );
+};
+
+export const insertPuttingStats = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync(
+            'INSERT INTO PuttingStats (RoundId, HoleNumber, FirstPuttDistance, SecondPuttDistance, SecondPuttIsLong, ThirdPuttDistance, ThirdPuttIsLong) VALUES ($RoundId, $HoleNumber, $FirstPuttDistance, $SecondPuttDistance, $SecondPuttIsLong, $ThirdPuttDistance, $ThirdPuttIsLong);'
+        );
+        try {
+            await statement.executeAsync({
+                $RoundId: roundId,
+                $HoleNumber: holeNumber,
+                $FirstPuttDistance: firstPuttDistance,
+                $SecondPuttDistance: secondPuttDistance,
+                $SecondPuttIsLong: secondPuttIsLong ? 1 : 0,
+                $ThirdPuttDistance: thirdPuttDistance ?? null,
+                $ThirdPuttIsLong: thirdPuttIsLong ? 1 : 0,
+            });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+    return success;
+};
+
+export const getPuttingStats = (roundId: number, holeNumber: number) => {
+    return getSyncDb().getAllSync(
+        'SELECT * FROM PuttingStats WHERE RoundId = ? AND HoleNumber = ? LIMIT 1;',
+        [roundId, holeNumber]
+    );
+};
+
+export const deletePuttingStatsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync(
+            'DELETE FROM PuttingStats WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
+        );
+        try {
+            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+    return success;
 };
 
 export const deleteHoleDeadlySinsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {

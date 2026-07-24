@@ -7,6 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import HoleScoreInput from '../../components/HoleScoreInput';
 import HoleNoteInput from '../../components/HoleNoteInput';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
+import PuttingStatsInput from '../../components/PuttingStatsInput';
 import DeadlySinsChart from '../../components/DeadlySinsChart';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
@@ -24,6 +25,8 @@ import {
     getHoleScoresService,
     getHolesWithSinsForRoundService,
     getAllDeadlySinsRoundsService,
+    insertPuttingStatsService,
+    getPuttingStatsService,
     addRoundPlayersService,
     getRoundPlayersService,
     getMultiplayerScorecardService,
@@ -44,6 +47,7 @@ import {
     DeadlySinsValues,
     MultiplayerRoundScorecard,
     ParAverages,
+    PuttingStats,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
@@ -79,12 +83,13 @@ export default function Play() {
     const [refreshing, setRefreshing] = useState(false);
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
     const [currentHole, setCurrentHole] = useState(1);
-    const [holePhase, setHolePhase] = useState<'score' | 'stats'>('score');
+    const [holePhase, setHolePhase] = useState<'score' | 'stats' | 'putting'>('score');
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
     const [deadlySinsRounds, setDeadlySinsRounds] = useState<DeadlySinsRound[]>([]);
     const [section, setSection] = useState('play-score');
     const INITIAL_SINS: DeadlySinsValues = { threePutts: false, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false };
     const [deadlySinsValues, setDeadlySinsValues] = useState<DeadlySinsValues>(INITIAL_SINS);
+    const [puttingStats, setPuttingStats] = useState<{ firstPutt: number; secondPutt: number; secondIsLong: boolean; thirdPutt?: number; thirdIsLong?: boolean } | null>(null);
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
@@ -309,7 +314,7 @@ export default function Play() {
             setCurrentHole(prevHole);
             const holeData = loadHoleForScore(prevHole);
             setCurrentHoleData(holeData);
-        } else {
+        } else if (holePhase === 'stats') {
             await insertHoleDeadlySinsService(activeRoundId!, currentHole, deadlySinsValues);
             if (activeCourseName !== null) {
                 await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
@@ -327,6 +332,8 @@ export default function Play() {
                 const holeData = loadHoleForScore(prevHole);
                 setCurrentHoleData(holeData);
             }
+        } else if (holePhase === 'putting') {
+            setHolePhase('stats');
         }
     };
 
@@ -343,15 +350,23 @@ export default function Play() {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 scrollRef.current?.scrollTo({ y: 0, animated: true });
             }
-        } else {
+        } else if (holePhase === 'stats') {
             await insertHoleDeadlySinsService(activeRoundId, currentHole, deadlySinsValues);
-            if (activeCourseName !== null) {
-                await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
-                setCourseNotes(prev => ({ ...prev, [currentHole]: currentNoteText.trim() }));
-            }
+            setHolePhase('putting');
+            const saved = getPuttingStatsService(activeRoundId, currentHole);
+            setPuttingStats(saved ? {
+                firstPutt: saved.FirstPuttDistance,
+                secondPutt: saved.SecondPuttDistance,
+                secondIsLong: saved.SecondPuttIsLong === 1,
+                thirdPutt: saved.ThirdPuttDistance ?? undefined,
+                thirdIsLong: saved.ThirdPuttIsLong ? saved.ThirdPuttIsLong === 1 : undefined,
+            } : null);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            setCurrentHoleData(null);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
+        } else if (holePhase === 'putting') {
+            if (puttingStats) {
+                await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt, puttingStats.secondIsLong, puttingStats.thirdPutt, puttingStats.thirdIsLong);
+            }
             if (currentHole >= 18) {
                 setShowEndRoundConfirm(true);
             } else {
@@ -361,7 +376,10 @@ export default function Play() {
                 setHolePhase('score');
                 const holeData = loadHoleForScore(nextHole);
                 setCurrentHoleData(holeData);
+                setPuttingStats(null);
             }
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            scrollRef.current?.scrollTo({ y: 0, animated: true });
         }
     };
 
@@ -391,6 +409,7 @@ export default function Play() {
         setHolePhase('score');
         setSection('play-score');
         setDeadlySinsValues(INITIAL_SINS);
+        setPuttingStats(null);
         setPlayers([]);
         setShowPlayerSetup(false);
         setCurrentHoleData(null);
@@ -714,6 +733,27 @@ export default function Play() {
                                 </>
                             )}
 
+                            {holePhase === 'putting' && (
+                                <>
+                                    <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                                        <Text style={styles.normalText}>Hole {currentHole} — Putting Stats</Text>
+                                    </View>
+                                    <PuttingStatsInput
+                                        key={`putting-${currentHole}`}
+                                        holePar={currentHoleData?.holePar ?? 4}
+                                        threePuttSelected={deadlySinsValues.threePutts}
+                                        onStatsChange={(firstPutt, secondPutt, secondIsLong, thirdPutt, thirdIsLong) => {
+                                            setPuttingStats({ firstPutt, secondPutt, secondIsLong, thirdPutt, thirdIsLong });
+                                        }}
+                                        initialFirstPutt={puttingStats?.firstPutt}
+                                        initialSecondPutt={puttingStats?.secondPutt}
+                                        initialSecondIsLong={puttingStats?.secondIsLong}
+                                        initialThirdPutt={puttingStats?.thirdPutt}
+                                        initialThirdIsLong={puttingStats?.thirdIsLong}
+                                    />
+                                </>
+                            )}
+
                             {!showEndRoundConfirm && (
                                 <View>
                                     <TouchableOpacity
@@ -722,8 +762,14 @@ export default function Play() {
                                         style={localStyles.nextHoleButton}
                                     >
                                         <View style={{ width: 24 }} />
-                                        <Text style={localStyles.nextHoleButtonText}>{holePhase === 'stats' && isLastHole ? 'Finish round' : 'Next hole'}</Text>
-                                        <MaterialIcons name={holePhase === 'stats' && isLastHole ? 'sports-score' : 'skip-next'} size={24} color={colours.background} />
+                                        <Text style={localStyles.nextHoleButtonText}>
+                                            {holePhase === 'putting' ? (isLastHole ? 'Finish round' : 'Next hole') : 'Next'}
+                                        </Text>
+                                        <MaterialIcons
+                                            name={holePhase === 'putting' && isLastHole ? 'sports-score' : 'skip-next'}
+                                            size={24}
+                                            color={colours.background}
+                                        />
                                     </TouchableOpacity>
 
                                     {holePhase === 'score' && currentHole <= 1 ? (

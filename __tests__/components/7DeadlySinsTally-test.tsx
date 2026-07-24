@@ -749,4 +749,37 @@ describe('DeadlySinsTally component', () => {
             expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ threePutts: true }));
         });
     });
+
+    describe('collapsible prop', () => {
+        it('shows collapsible toggle header by default', () => {
+            const { getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} />
+            );
+
+            expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-icon')).toBeTruthy();
+        });
+
+        it('hides toggle icon when collapsible={false}', () => {
+            const { queryByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} collapsible={false} />
+            );
+
+            expect(queryByTestId('7deadly-sins-toggle-icon')).toBeNull();
+        });
+
+        it('keeps sins always visible when collapsible={false}', () => {
+            const { getByTestId } = render(
+                <DeadlySinsTally
+                    onEndRound={mockOnEndRound}
+                    roundControlled={true}
+                    collapsible={false}
+                    initialValues={allFalse}
+                />
+            );
+
+            expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
+            expect(getByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeTruthy();
+        });
+    });
 });

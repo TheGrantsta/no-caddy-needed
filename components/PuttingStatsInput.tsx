@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Text, TouchableOpacity, View, TextInput, Modal } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Text, TouchableOpacity, View, TextInput } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
@@ -33,10 +32,8 @@ const PuttingStatsInput = ({
     const [firstPutt, setFirstPutt] = useState(initialFirstPutt !== undefined ? String(initialFirstPutt) : '');
     const [secondPutt, setSecondPutt] = useState(String(initialSecondPutt ?? 0));
     const [secondIsLong, setSecondIsLong] = useState(initialSecondIsLong);
-    const [secondPuttMenuVisible, setSecondPuttMenuVisible] = useState(false);
     const [thirdPutt, setThirdPutt] = useState(String(initialThirdPutt ?? 3));
     const [thirdIsLong, setThirdIsLong] = useState(initialThirdIsLong);
-    const [thirdPuttMenuVisible, setThirdPuttMenuVisible] = useState(false);
 
     const handleFirstPuttChange = (value: string) => {
         setFirstPutt(value);
@@ -60,6 +57,12 @@ const PuttingStatsInput = ({
             const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
             const second = Math.max(0, Math.min(100, parseInt(value)));
             const third = Math.max(1, Math.min(100, parseInt(thirdPutt) || 3));
+
+            // Validation: if second putt > 0, first putt must also be > 0
+            if (second > 0 && first === undefined) {
+                return;
+            }
+
             onStatsChange(first, second, secondIsLong, threePuttSelected ? third : undefined, threePuttSelected ? thirdIsLong : undefined);
         }
     };
@@ -76,7 +79,6 @@ const PuttingStatsInput = ({
 
     const handleSecondIsLongChange = (value: boolean) => {
         setSecondIsLong(value);
-        setSecondPuttMenuVisible(false);
         const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
         const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
         const third = Math.max(1, Math.min(100, parseInt(thirdPutt) || 3));
@@ -85,7 +87,6 @@ const PuttingStatsInput = ({
 
     const handleThirdIsLongChange = (value: boolean) => {
         setThirdIsLong(value);
-        setThirdPuttMenuVisible(false);
         const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
         const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
         const third = Math.max(1, Math.min(100, parseInt(thirdPutt) || 3));
@@ -145,80 +146,44 @@ const PuttingStatsInput = ({
                         placeholder="0"
                         placeholderTextColor={colours.primary}
                     />
-                    <TouchableOpacity
-                        testID="second-putt-dropdown"
-                        onPress={() => setSecondPuttMenuVisible(!secondPuttMenuVisible)}
-                        style={{
-                            borderWidth: 1,
-                            borderColor: colours.primary,
-                            borderRadius: 8,
-                            paddingHorizontal: 12,
-                            paddingVertical: 12,
-                            minWidth: 100,
-                            alignItems: 'center',
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                        }}
-                    >
-                        <Text style={[styles.holeScoreInput.playerName, { marginBottom: 0, flex: 1 }]}>
-                            {secondIsLong ? 'Long' : 'Short'}
-                        </Text>
-                        <MaterialIcons name={secondPuttMenuVisible ? 'expand-less' : 'expand-more'} size={20} color={colours.primary} />
-                    </TouchableOpacity>
-                    <Modal visible={secondPuttMenuVisible} transparent animationType="none">
+                    <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: colours.primary, borderRadius: 8, overflow: 'hidden' }}>
                         <TouchableOpacity
-                            style={{ flex: 1 }}
-                            onPress={() => setSecondPuttMenuVisible(false)}
+                            testID="second-putt-toggle-short"
+                            onPress={() => handleSecondIsLongChange(false)}
+                            style={{
+                                paddingVertical: 10,
+                                paddingHorizontal: 12,
+                                backgroundColor: !secondIsLong ? colours.primary : colours.background,
+                            }}
                         >
-                            <View style={{ flex: 1, justifyContent: 'flex-start', paddingTop: 200 }}>
-                                <View
-                                    style={{
-                                        borderRadius: 8,
-                                        overflow: 'hidden',
-                                        marginHorizontal: 16,
-                                        backgroundColor: colours.background,
-                                        borderWidth: 1,
-                                        borderColor: colours.primary,
-                                    }}
-                                >
-                                    <TouchableOpacity
-                                        onPress={() => handleSecondIsLongChange(false)}
-                                        style={{
-                                            paddingVertical: 12,
-                                            paddingHorizontal: 16,
-                                            backgroundColor: !secondIsLong ? colours.primary : colours.background,
-                                        }}
-                                    >
-                                        <Text
-                                            style={[
-                                                styles.holeScoreInput.playerName,
-                                                { marginBottom: 0, color: !secondIsLong ? colours.background : colours.primary },
-                                            ]}
-                                        >
-                                            Short
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        onPress={() => handleSecondIsLongChange(true)}
-                                        style={{
-                                            paddingVertical: 12,
-                                            paddingHorizontal: 16,
-                                            backgroundColor: secondIsLong ? colours.primary : colours.background,
-                                        }}
-                                    >
-                                        <Text
-                                            style={[
-                                                styles.holeScoreInput.playerName,
-                                                { marginBottom: 0, color: secondIsLong ? colours.background : colours.primary },
-                                            ]}
-                                        >
-                                            Long
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
+                            <Text
+                                style={[
+                                    styles.holeScoreInput.playerName,
+                                    { marginBottom: 0, fontSize: 14, color: !secondIsLong ? colours.background : colours.primary },
+                                ]}
+                            >
+                                Short
+                            </Text>
                         </TouchableOpacity>
-                    </Modal>
+                        <TouchableOpacity
+                            testID="second-putt-toggle-long"
+                            onPress={() => handleSecondIsLongChange(true)}
+                            style={{
+                                paddingVertical: 10,
+                                paddingHorizontal: 12,
+                                backgroundColor: secondIsLong ? colours.primary : colours.background,
+                            }}
+                        >
+                            <Text
+                                style={[
+                                    styles.holeScoreInput.playerName,
+                                    { marginBottom: 0, fontSize: 14, color: secondIsLong ? colours.background : colours.primary },
+                                ]}
+                            >
+                                Long
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
 
@@ -246,80 +211,44 @@ const PuttingStatsInput = ({
                             placeholder="3"
                             placeholderTextColor={colours.primary}
                         />
-                        <TouchableOpacity
-                            testID="third-putt-dropdown"
-                            onPress={() => setThirdPuttMenuVisible(!thirdPuttMenuVisible)}
-                            style={{
-                                borderWidth: 1,
-                                borderColor: colours.primary,
-                                borderRadius: 8,
-                                paddingHorizontal: 12,
-                                paddingVertical: 12,
-                                minWidth: 100,
-                                alignItems: 'center',
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                            }}
-                        >
-                            <Text style={[styles.holeScoreInput.playerName, { marginBottom: 0, flex: 1 }]}>
-                                {thirdIsLong ? 'Long' : 'Short'}
-                            </Text>
-                            <MaterialIcons name={thirdPuttMenuVisible ? 'expand-less' : 'expand-more'} size={20} color={colours.primary} />
-                        </TouchableOpacity>
-                        <Modal visible={thirdPuttMenuVisible} transparent animationType="none">
+                        <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: colours.primary, borderRadius: 8, overflow: 'hidden' }}>
                             <TouchableOpacity
-                                style={{ flex: 1 }}
-                                onPress={() => setThirdPuttMenuVisible(false)}
+                                testID="third-putt-toggle-short"
+                                onPress={() => handleThirdIsLongChange(false)}
+                                style={{
+                                    paddingVertical: 10,
+                                    paddingHorizontal: 12,
+                                    backgroundColor: !thirdIsLong ? colours.primary : colours.background,
+                                }}
                             >
-                                <View style={{ flex: 1, justifyContent: 'flex-start', paddingTop: 360 }}>
-                                    <View
-                                        style={{
-                                            borderRadius: 8,
-                                            overflow: 'hidden',
-                                            marginHorizontal: 16,
-                                            backgroundColor: colours.background,
-                                            borderWidth: 1,
-                                            borderColor: colours.primary,
-                                        }}
-                                    >
-                                        <TouchableOpacity
-                                            onPress={() => handleThirdIsLongChange(false)}
-                                            style={{
-                                                paddingVertical: 12,
-                                                paddingHorizontal: 16,
-                                                backgroundColor: !thirdIsLong ? colours.primary : colours.background,
-                                            }}
-                                        >
-                                            <Text
-                                                style={[
-                                                    styles.holeScoreInput.playerName,
-                                                    { marginBottom: 0, color: !thirdIsLong ? colours.background : colours.primary },
-                                                ]}
-                                            >
-                                                Short
-                                            </Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() => handleThirdIsLongChange(true)}
-                                            style={{
-                                                paddingVertical: 12,
-                                                paddingHorizontal: 16,
-                                                backgroundColor: thirdIsLong ? colours.primary : colours.background,
-                                            }}
-                                        >
-                                            <Text
-                                                style={[
-                                                    styles.holeScoreInput.playerName,
-                                                    { marginBottom: 0, color: thirdIsLong ? colours.background : colours.primary },
-                                                ]}
-                                            >
-                                                Long
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
+                                <Text
+                                    style={[
+                                        styles.holeScoreInput.playerName,
+                                        { marginBottom: 0, fontSize: 14, color: !thirdIsLong ? colours.background : colours.primary },
+                                    ]}
+                                >
+                                    Short
+                                </Text>
                             </TouchableOpacity>
-                        </Modal>
+                            <TouchableOpacity
+                                testID="third-putt-toggle-long"
+                                onPress={() => handleThirdIsLongChange(true)}
+                                style={{
+                                    paddingVertical: 10,
+                                    paddingHorizontal: 12,
+                                    backgroundColor: thirdIsLong ? colours.primary : colours.background,
+                                }}
+                            >
+                                <Text
+                                    style={[
+                                        styles.holeScoreInput.playerName,
+                                        { marginBottom: 0, fontSize: 14, color: thirdIsLong ? colours.background : colours.primary },
+                                    ]}
+                                >
+                                    Long
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             ) : null}

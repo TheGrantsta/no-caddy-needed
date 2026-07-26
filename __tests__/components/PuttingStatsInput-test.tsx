@@ -137,8 +137,8 @@ describe('PuttingStatsInput', () => {
         });
     });
 
-    describe('second putt direction dropdown', () => {
-        it('shows dropdown with Short selected by default', () => {
+    describe('second putt direction toggle', () => {
+        it('shows toggle with Short selected by default', () => {
             const onStatsChange = jest.fn();
             const { getByTestId } = render(
                 <PuttingStatsInput
@@ -149,29 +149,26 @@ describe('PuttingStatsInput', () => {
                 />
             );
 
-            const dropdown = getByTestId('second-putt-dropdown');
-            expect(dropdown).toBeTruthy();
+            expect(getByTestId('second-putt-toggle-short')).toBeTruthy();
+            expect(getByTestId('second-putt-toggle-long')).toBeTruthy();
         });
 
-        it('calls onStatsChange when second putt long/short changes', () => {
+        it('calls onStatsChange when toggle changes to Long', () => {
             const onStatsChange = jest.fn();
-            const { getByTestId, getByText } = render(
+            const { getByTestId } = render(
                 <PuttingStatsInput
                     holePar={4}
                     threePuttSelected={true}
                     onStatsChange={onStatsChange}
                     initialFirstPutt={20}
-                    initialSecondPutt={5} // Saved data — show second putt
+                    initialSecondPutt={5}
                     initialSecondIsLong={false}
                 />
             );
 
             onStatsChange.mockClear();
 
-            const dropdown = getByTestId('second-putt-dropdown');
-            fireEvent.press(dropdown);
-
-            const longButton = getByText('Long');
+            const longButton = getByTestId('second-putt-toggle-long');
             fireEvent.press(longButton);
 
             expect(onStatsChange).toHaveBeenCalledWith(
@@ -181,6 +178,67 @@ describe('PuttingStatsInput', () => {
                 expect.any(Number),
                 expect.any(Boolean)
             );
+        });
+    });
+
+    describe('cross-field validation', () => {
+        it('does not update stats if second putt > 0 but first putt is empty', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            // Try to enter second putt without first putt
+            const secondPuttInput = getByTestId('second-putt-input');
+            fireEvent.changeText(secondPuttInput, '5');
+
+            // onStatsChange should not be called because first putt is empty
+            expect(onStatsChange).not.toHaveBeenCalled();
+        });
+
+        it('allows second putt = 0 even with empty first putt', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            // Second putt = 0 is allowed with empty first putt (just means no second putt)
+            const secondPuttInput = getByTestId('second-putt-input');
+            fireEvent.changeText(secondPuttInput, '0');
+
+            // Should be called because 0 is always allowed (means no second putt)
+            expect(onStatsChange).toHaveBeenCalledWith(undefined, 0, false, undefined, undefined);
+        });
+
+        it('allows second putt > 0 when first putt is filled in', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={20}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            const secondPuttInput = getByTestId('second-putt-input');
+            fireEvent.changeText(secondPuttInput, '5');
+
+            expect(onStatsChange).toHaveBeenCalledWith(20, 5, false, undefined, undefined);
         });
     });
 

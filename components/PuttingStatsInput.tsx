@@ -59,7 +59,7 @@ const PuttingStatsInput = ({
             const third = Math.max(1, Math.min(100, parseInt(thirdPutt) || 3));
 
             // Validation: if second putt > 0, first putt must also be > 0
-            if (second > 0 && first === undefined) {
+            if (second > 0 && (first === undefined || first === 0)) {
                 return;
             }
 

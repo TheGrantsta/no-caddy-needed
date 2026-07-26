@@ -202,6 +202,27 @@ describe('PuttingStatsInput', () => {
             expect(onStatsChange).not.toHaveBeenCalled();
         });
 
+        it('does not update stats if second putt > 0 but first putt is 0', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={0}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            // Try to enter second putt > 0 when first putt is 0
+            const secondPuttInput = getByTestId('second-putt-input');
+            fireEvent.changeText(secondPuttInput, '5');
+
+            // onStatsChange should not be called because first putt is 0
+            expect(onStatsChange).not.toHaveBeenCalled();
+        });
+
         it('allows second putt = 0 even with empty first putt', () => {
             const onStatsChange = jest.fn();
             const { getByTestId } = render(
@@ -220,6 +241,26 @@ describe('PuttingStatsInput', () => {
 
             // Should be called because 0 is always allowed (means no second putt)
             expect(onStatsChange).toHaveBeenCalledWith(undefined, 0, false, undefined, undefined);
+        });
+
+        it('allows second putt = 0 even with first putt = 0', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={0}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            // Second putt = 0 is allowed with first putt = 0
+            const secondPuttInput = getByTestId('second-putt-input');
+            fireEvent.changeText(secondPuttInput, '0');
+
+            expect(onStatsChange).toHaveBeenCalledWith(0, 0, false, undefined, undefined);
         });
 
         it('allows second putt > 0 when first putt is filled in', () => {

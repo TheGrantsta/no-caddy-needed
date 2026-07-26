@@ -163,6 +163,7 @@ describe('PuttingStatsInput', () => {
                     initialFirstPutt={20}
                     initialSecondPutt={5}
                     initialSecondIsLong={false}
+                    initialThirdPutt={3}
                 />
             );
 
@@ -175,7 +176,7 @@ describe('PuttingStatsInput', () => {
                 20,
                 5,
                 true, // secondIsLong is now true
-                expect.any(Number),
+                3,
                 expect.any(Boolean)
             );
         });
@@ -298,7 +299,22 @@ describe('PuttingStatsInput', () => {
             expect(queryByTestId('third-putt-input')).toBeFalsy();
         });
 
-        it('shows third putt when 3-putt selected', () => {
+        it('renders third putt input blank when no initial value given', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={true}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={20}
+                />
+            );
+
+            const input = getByTestId('third-putt-input');
+            expect(input.props.value).toBe('');
+        });
+
+        it('shows third putt when 3-putt selected with initial value', () => {
             const onStatsChange = jest.fn();
             const { getByTestId } = render(
                 <PuttingStatsInput
@@ -310,7 +326,7 @@ describe('PuttingStatsInput', () => {
                 />
             );
 
-            expect(getByTestId('third-putt-input')).toBeTruthy();
+            expect(getByTestId('third-putt-input').props.value).toBe('3');
         });
 
         it('calls onStatsChange when third putt changes', () => {

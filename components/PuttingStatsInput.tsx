@@ -32,21 +32,21 @@ const PuttingStatsInput = ({
     const [firstPutt, setFirstPutt] = useState(initialFirstPutt !== undefined ? String(initialFirstPutt) : '');
     const [secondPutt, setSecondPutt] = useState(String(initialSecondPutt ?? 0));
     const [secondIsLong, setSecondIsLong] = useState(initialSecondIsLong);
-    const [thirdPutt, setThirdPutt] = useState(String(initialThirdPutt ?? 3));
+    const [thirdPutt, setThirdPutt] = useState(initialThirdPutt !== undefined ? String(initialThirdPutt) : '');
     const [thirdIsLong, setThirdIsLong] = useState(initialThirdIsLong);
 
     const handleFirstPuttChange = (value: string) => {
         setFirstPutt(value);
         if (!value || value.trim() === '') {
             const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
-            const third = Math.max(1, Math.min(100, parseInt(thirdPutt) || 3));
+            const third = thirdPutt && !isNaN(parseInt(thirdPutt)) ? Math.max(1, Math.min(100, parseInt(thirdPutt))) : undefined;
             onStatsChange(undefined, second, secondIsLong, threePuttSelected ? third : undefined, threePuttSelected ? thirdIsLong : undefined);
             return;
         }
         if (!isNaN(parseInt(value))) {
             const first = Math.max(0, Math.min(300, parseInt(value)));
             const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
-            const third = Math.max(1, Math.min(100, parseInt(thirdPutt) || 3));
+            const third = thirdPutt && !isNaN(parseInt(thirdPutt)) ? Math.max(1, Math.min(100, parseInt(thirdPutt))) : undefined;
             onStatsChange(first, second, secondIsLong, threePuttSelected ? third : undefined, threePuttSelected ? thirdIsLong : undefined);
         }
     };
@@ -56,7 +56,7 @@ const PuttingStatsInput = ({
         if (value && !isNaN(parseInt(value))) {
             const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
             const second = Math.max(0, Math.min(100, parseInt(value)));
-            const third = Math.max(1, Math.min(100, parseInt(thirdPutt) || 3));
+            const third = thirdPutt && !isNaN(parseInt(thirdPutt)) ? Math.max(1, Math.min(100, parseInt(thirdPutt))) : undefined;
 
             // Validation: if second putt > 0, first putt must also be > 0
             if (second > 0 && (first === undefined || first === 0)) {
@@ -69,7 +69,13 @@ const PuttingStatsInput = ({
 
     const handleThirdPuttChange = (value: string) => {
         setThirdPutt(value);
-        if (value && !isNaN(parseInt(value))) {
+        if (!value || value.trim() === '') {
+            const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
+            const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
+            onStatsChange(first, second, secondIsLong, threePuttSelected ? undefined : undefined, threePuttSelected ? undefined : undefined);
+            return;
+        }
+        if (!isNaN(parseInt(value))) {
             const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
             const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
             const third = Math.max(1, Math.min(100, parseInt(value)));
@@ -81,7 +87,7 @@ const PuttingStatsInput = ({
         setSecondIsLong(value);
         const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
         const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
-        const third = Math.max(1, Math.min(100, parseInt(thirdPutt) || 3));
+        const third = thirdPutt && !isNaN(parseInt(thirdPutt)) ? Math.max(1, Math.min(100, parseInt(thirdPutt))) : undefined;
         onStatsChange(first, second, value, threePuttSelected ? third : undefined, threePuttSelected ? thirdIsLong : undefined);
     };
 
@@ -89,7 +95,7 @@ const PuttingStatsInput = ({
         setThirdIsLong(value);
         const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
         const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
-        const third = Math.max(1, Math.min(100, parseInt(thirdPutt) || 3));
+        const third = thirdPutt && !isNaN(parseInt(thirdPutt)) ? Math.max(1, Math.min(100, parseInt(thirdPutt))) : undefined;
         onStatsChange(first, second, secondIsLong, threePuttSelected ? third : undefined, threePuttSelected ? value : undefined);
     };
 
@@ -208,7 +214,7 @@ const PuttingStatsInput = ({
                                 textAlign: 'center',
                                 color: colours.primary,
                             }}
-                            placeholder="3"
+                            placeholder="e.g. 3"
                             placeholderTextColor={colours.primary}
                         />
                         <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: colours.primary, borderRadius: 8, overflow: 'hidden' }}>

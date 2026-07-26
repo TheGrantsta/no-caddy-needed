@@ -89,7 +89,8 @@ export default function Play() {
     const [section, setSection] = useState('play-score');
     const INITIAL_SINS: DeadlySinsValues = { threePutts: false, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false };
     const [deadlySinsValues, setDeadlySinsValues] = useState<DeadlySinsValues>(INITIAL_SINS);
-    const [puttingStats, setPuttingStats] = useState<{ firstPutt: number; secondPutt: number; secondIsLong: boolean; thirdPutt?: number; thirdIsLong?: boolean } | null>(null);
+    const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt: number; secondIsLong: boolean; thirdPutt?: number; thirdIsLong?: boolean } | null>(null);
+    const [puttingFirstPuttError, setPuttingFirstPuttError] = useState(false);
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
@@ -353,6 +354,7 @@ export default function Play() {
         } else if (holePhase === 'stats') {
             await insertHoleDeadlySinsService(activeRoundId, currentHole, deadlySinsValues);
             setHolePhase('putting');
+            setPuttingFirstPuttError(false);
             const saved = getPuttingStatsService(activeRoundId, currentHole);
             setPuttingStats(saved ? {
                 firstPutt: saved.FirstPuttDistance,
@@ -364,9 +366,11 @@ export default function Play() {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
         } else if (holePhase === 'putting') {
-            if (puttingStats) {
-                await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt, puttingStats.secondIsLong, puttingStats.thirdPutt, puttingStats.thirdIsLong);
+            if (!puttingStats || puttingStats.firstPutt === undefined) {
+                setPuttingFirstPuttError(true);
+                return;
             }
+            await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt, puttingStats.secondIsLong, puttingStats.thirdPutt, puttingStats.thirdIsLong);
             if (currentHole >= 18) {
                 setShowEndRoundConfirm(true);
             } else {
@@ -410,6 +414,7 @@ export default function Play() {
         setSection('play-score');
         setDeadlySinsValues(INITIAL_SINS);
         setPuttingStats(null);
+        setPuttingFirstPuttError(false);
         setPlayers([]);
         setShowPlayerSetup(false);
         setCurrentHoleData(null);
@@ -744,12 +749,14 @@ export default function Play() {
                                         threePuttSelected={deadlySinsValues.threePutts}
                                         onStatsChange={(firstPutt, secondPutt, secondIsLong, thirdPutt, thirdIsLong) => {
                                             setPuttingStats({ firstPutt, secondPutt, secondIsLong, thirdPutt, thirdIsLong });
+                                            if (firstPutt !== undefined) setPuttingFirstPuttError(false);
                                         }}
                                         initialFirstPutt={puttingStats?.firstPutt}
                                         initialSecondPutt={puttingStats?.secondPutt}
                                         initialSecondIsLong={puttingStats?.secondIsLong}
                                         initialThirdPutt={puttingStats?.thirdPutt}
                                         initialThirdIsLong={puttingStats?.thirdIsLong}
+                                        showFirstPuttError={puttingFirstPuttError}
                                     />
                                 </>
                             )}

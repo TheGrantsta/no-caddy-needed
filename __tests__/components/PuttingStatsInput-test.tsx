@@ -282,6 +282,91 @@ describe('PuttingStatsInput', () => {
 
             expect(onStatsChange).toHaveBeenCalledWith(20, 5, false, undefined, undefined);
         });
+
+        it('does not allow short second putt > first putt', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={10}
+                    initialSecondIsLong={false}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            // Try to set short 2nd putt to 15 (bigger than 1st putt of 10)
+            const secondPuttInput = getByTestId('second-putt-input');
+            fireEvent.changeText(secondPuttInput, '15');
+
+            expect(onStatsChange).not.toHaveBeenCalled();
+        });
+
+        it('allows short second putt <= first putt', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={20}
+                    initialSecondIsLong={false}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            const secondPuttInput = getByTestId('second-putt-input');
+            fireEvent.changeText(secondPuttInput, '10');
+
+            expect(onStatsChange).toHaveBeenCalledWith(20, 10, false, undefined, undefined);
+        });
+
+        it('allows long second putt > first putt', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={10}
+                    initialSecondIsLong={true}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            // Long putt can be bigger than first putt
+            const secondPuttInput = getByTestId('second-putt-input');
+            fireEvent.changeText(secondPuttInput, '25');
+
+            expect(onStatsChange).toHaveBeenCalledWith(10, 25, true, undefined, undefined);
+        });
+
+        it('does not flip toggle to Short when second putt exceeds first putt', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={10}
+                    initialSecondPutt={15}
+                    initialSecondIsLong={true}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            // Try to switch to Short when second putt (15) > first putt (10)
+            const shortButton = getByTestId('second-putt-toggle-short');
+            fireEvent.press(shortButton);
+
+            // onStatsChange should not be called, toggle press has no effect
+            expect(onStatsChange).not.toHaveBeenCalled();
+        });
     });
 
     describe('third putt', () => {
@@ -337,6 +422,7 @@ describe('PuttingStatsInput', () => {
                     threePuttSelected={true}
                     onStatsChange={onStatsChange}
                     initialFirstPutt={20}
+                    initialSecondPutt={10}
                     initialThirdPutt={3}
                 />
             );
@@ -348,11 +434,99 @@ describe('PuttingStatsInput', () => {
 
             expect(onStatsChange).toHaveBeenCalledWith(
                 20,
-                expect.any(Number),
+                10,
                 expect.any(Boolean),
                 4,
                 expect.any(Boolean)
             );
+        });
+
+        it('does not allow short third putt > second putt', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={true}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={20}
+                    initialSecondPutt={8}
+                    initialThirdIsLong={false}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            // Try to set short 3rd putt to 10 (bigger than 2nd putt of 8)
+            const thirdPuttInput = getByTestId('third-putt-input');
+            fireEvent.changeText(thirdPuttInput, '10');
+
+            expect(onStatsChange).not.toHaveBeenCalled();
+        });
+
+        it('allows short third putt <= second putt', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={true}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={20}
+                    initialSecondPutt={10}
+                    initialThirdIsLong={false}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            const thirdPuttInput = getByTestId('third-putt-input');
+            fireEvent.changeText(thirdPuttInput, '5');
+
+            expect(onStatsChange).toHaveBeenCalledWith(20, 10, expect.any(Boolean), 5, false);
+        });
+
+        it('allows long third putt > second putt', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={true}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={10}
+                    initialSecondPutt={5}
+                    initialThirdIsLong={true}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            // Long putt can be bigger than second putt
+            const thirdPuttInput = getByTestId('third-putt-input');
+            fireEvent.changeText(thirdPuttInput, '15');
+
+            expect(onStatsChange).toHaveBeenCalledWith(10, 5, expect.any(Boolean), 15, true);
+        });
+
+        it('does not flip toggle to Short when third putt exceeds second putt', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={true}
+                    onStatsChange={onStatsChange}
+                    initialSecondPutt={5}
+                    initialThirdPutt={10}
+                    initialThirdIsLong={true}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            // Try to switch to Short when third putt (10) > second putt (5)
+            const shortButton = getByTestId('third-putt-toggle-short');
+            fireEvent.press(shortButton);
+
+            // onStatsChange should not be called, toggle press has no effect
+            expect(onStatsChange).not.toHaveBeenCalled();
         });
     });
 

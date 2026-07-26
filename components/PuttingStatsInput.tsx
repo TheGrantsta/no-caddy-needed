@@ -63,6 +63,11 @@ const PuttingStatsInput = ({
                 return;
             }
 
+            // Validation: if second putt is marked Short, it cannot be bigger than first putt
+            if (!secondIsLong && first !== undefined && second > first) {
+                return;
+            }
+
             onStatsChange(first, second, secondIsLong, threePuttSelected ? third : undefined, threePuttSelected ? thirdIsLong : undefined);
         }
     };
@@ -79,23 +84,41 @@ const PuttingStatsInput = ({
             const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
             const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
             const third = Math.max(1, Math.min(100, parseInt(value)));
+
+            // Validation: if third putt is marked Short, it cannot be bigger than second putt
+            if (!thirdIsLong && third > second) {
+                return;
+            }
+
             onStatsChange(first, second, secondIsLong, threePuttSelected ? third : undefined, threePuttSelected ? thirdIsLong : undefined);
         }
     };
 
     const handleSecondIsLongChange = (value: boolean) => {
-        setSecondIsLong(value);
         const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
         const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
         const third = thirdPutt && !isNaN(parseInt(thirdPutt)) ? Math.max(1, Math.min(100, parseInt(thirdPutt))) : undefined;
+
+        // Validation: cannot switch to Short if second putt > first putt
+        if (!value && first !== undefined && second > first) {
+            return;
+        }
+
+        setSecondIsLong(value);
         onStatsChange(first, second, value, threePuttSelected ? third : undefined, threePuttSelected ? thirdIsLong : undefined);
     };
 
     const handleThirdIsLongChange = (value: boolean) => {
-        setThirdIsLong(value);
-        const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
         const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
         const third = thirdPutt && !isNaN(parseInt(thirdPutt)) ? Math.max(1, Math.min(100, parseInt(thirdPutt))) : undefined;
+
+        // Validation: cannot switch to Short if third putt > second putt
+        if (!value && third !== undefined && third > second) {
+            return;
+        }
+
+        setThirdIsLong(value);
+        const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
         onStatsChange(first, second, secondIsLong, threePuttSelected ? third : undefined, threePuttSelected ? value : undefined);
     };
 

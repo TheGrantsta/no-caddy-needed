@@ -89,7 +89,7 @@ export default function Play() {
     const [section, setSection] = useState('play-score');
     const INITIAL_SINS: DeadlySinsValues = { threePutts: false, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false };
     const [deadlySinsValues, setDeadlySinsValues] = useState<DeadlySinsValues>(INITIAL_SINS);
-    const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt: number; secondIsLong: boolean; thirdPutt?: number; thirdIsLong?: boolean } | null>(null);
+    const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt: number; secondIsLong: boolean } | null>(null);
     const [puttingFirstPuttError, setPuttingFirstPuttError] = useState(false);
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
@@ -360,8 +360,6 @@ export default function Play() {
                 firstPutt: saved.FirstPuttDistance,
                 secondPutt: saved.SecondPuttDistance,
                 secondIsLong: saved.SecondPuttIsLong === 1,
-                thirdPutt: saved.ThirdPuttDistance ?? undefined,
-                thirdIsLong: saved.ThirdPuttIsLong ? saved.ThirdPuttIsLong === 1 : undefined,
             } : null);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
@@ -370,7 +368,7 @@ export default function Play() {
                 setPuttingFirstPuttError(true);
                 return;
             }
-            await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt, puttingStats.secondIsLong, puttingStats.thirdPutt, puttingStats.thirdIsLong);
+            await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt, puttingStats.secondIsLong);
             if (currentHole >= 18) {
                 setShowEndRoundConfirm(true);
             } else {
@@ -747,15 +745,13 @@ export default function Play() {
                                         key={`putting-${currentHole}`}
                                         holePar={currentHoleData?.holePar ?? 4}
                                         threePuttSelected={deadlySinsValues.threePutts}
-                                        onStatsChange={(firstPutt, secondPutt, secondIsLong, thirdPutt, thirdIsLong) => {
-                                            setPuttingStats({ firstPutt, secondPutt, secondIsLong, thirdPutt, thirdIsLong });
+                                        onStatsChange={(firstPutt, secondPutt, secondIsLong) => {
+                                            setPuttingStats({ firstPutt, secondPutt, secondIsLong });
                                             if (firstPutt !== undefined) setPuttingFirstPuttError(false);
                                         }}
                                         initialFirstPutt={puttingStats?.firstPutt}
                                         initialSecondPutt={puttingStats?.secondPutt}
                                         initialSecondIsLong={puttingStats?.secondIsLong}
-                                        initialThirdPutt={puttingStats?.thirdPutt}
-                                        initialThirdIsLong={puttingStats?.thirdIsLong}
                                         showFirstPuttError={puttingFirstPuttError}
                                     />
                                 </>

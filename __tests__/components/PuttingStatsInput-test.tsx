@@ -64,7 +64,7 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('first-putt-input');
             fireEvent.changeText(input, '25');
 
-            expect(onStatsChange).toHaveBeenCalledWith(25, expect.any(Number), expect.any(Boolean), undefined, undefined);
+            expect(onStatsChange).toHaveBeenCalledWith(25, expect.any(Number), expect.any(Boolean));
         });
 
         it('calls onStatsChange with undefined when first putt field is cleared', () => {
@@ -83,7 +83,7 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('first-putt-input');
             fireEvent.changeText(input, '');
 
-            expect(onStatsChange).toHaveBeenCalledWith(undefined, expect.any(Number), expect.any(Boolean), undefined, undefined);
+            expect(onStatsChange).toHaveBeenCalledWith(undefined, expect.any(Number), expect.any(Boolean));
         });
     });
 
@@ -172,13 +172,7 @@ describe('PuttingStatsInput', () => {
             const longButton = getByTestId('second-putt-toggle-long');
             fireEvent.press(longButton);
 
-            expect(onStatsChange).toHaveBeenCalledWith(
-                20,
-                5,
-                true, // secondIsLong is now true
-                3,
-                expect.any(Boolean)
-            );
+            expect(onStatsChange).toHaveBeenCalledWith(20, 5, true);
         });
     });
 
@@ -241,7 +235,7 @@ describe('PuttingStatsInput', () => {
             fireEvent.changeText(secondPuttInput, '0');
 
             // Should be called because 0 is always allowed (means no second putt)
-            expect(onStatsChange).toHaveBeenCalledWith(undefined, 0, false, undefined, undefined);
+            expect(onStatsChange).toHaveBeenCalledWith(undefined, 0, false);
         });
 
         it('allows second putt = 0 even with first putt = 0', () => {
@@ -261,7 +255,7 @@ describe('PuttingStatsInput', () => {
             const secondPuttInput = getByTestId('second-putt-input');
             fireEvent.changeText(secondPuttInput, '0');
 
-            expect(onStatsChange).toHaveBeenCalledWith(0, 0, false, undefined, undefined);
+            expect(onStatsChange).toHaveBeenCalledWith(0, 0, false);
         });
 
         it('allows second putt > 0 when first putt is filled in', () => {
@@ -280,7 +274,7 @@ describe('PuttingStatsInput', () => {
             const secondPuttInput = getByTestId('second-putt-input');
             fireEvent.changeText(secondPuttInput, '5');
 
-            expect(onStatsChange).toHaveBeenCalledWith(20, 5, false, undefined, undefined);
+            expect(onStatsChange).toHaveBeenCalledWith(20, 5, false);
         });
 
         it('does not allow short second putt > first putt', () => {
@@ -321,7 +315,7 @@ describe('PuttingStatsInput', () => {
             const secondPuttInput = getByTestId('second-putt-input');
             fireEvent.changeText(secondPuttInput, '10');
 
-            expect(onStatsChange).toHaveBeenCalledWith(20, 10, false, undefined, undefined);
+            expect(onStatsChange).toHaveBeenCalledWith(20, 10, false);
         });
 
         it('allows long second putt > first putt', () => {
@@ -342,7 +336,7 @@ describe('PuttingStatsInput', () => {
             const secondPuttInput = getByTestId('second-putt-input');
             fireEvent.changeText(secondPuttInput, '25');
 
-            expect(onStatsChange).toHaveBeenCalledWith(10, 25, true, undefined, undefined);
+            expect(onStatsChange).toHaveBeenCalledWith(10, 25, true);
         });
 
         it('does not flip toggle to Short when second putt exceeds first putt', () => {
@@ -369,8 +363,8 @@ describe('PuttingStatsInput', () => {
         });
     });
 
-    describe('third putt', () => {
-        it('hides third putt when 3-putt not selected', () => {
+    describe('3-putt indicator', () => {
+        it('hides indicator when threePuttSelected is false', () => {
             const onStatsChange = jest.fn();
             const { queryByTestId } = render(
                 <PuttingStatsInput
@@ -381,10 +375,10 @@ describe('PuttingStatsInput', () => {
                 />
             );
 
-            expect(queryByTestId('third-putt-input')).toBeFalsy();
+            expect(queryByTestId('three-putt-indicator')).toBeFalsy();
         });
 
-        it('renders third putt input blank when no initial value given', () => {
+        it('shows indicator when threePuttSelected is true', () => {
             const onStatsChange = jest.fn();
             const { getByTestId } = render(
                 <PuttingStatsInput
@@ -395,140 +389,12 @@ describe('PuttingStatsInput', () => {
                 />
             );
 
-            const input = getByTestId('third-putt-input');
-            expect(input.props.value).toBe('');
-        });
-
-        it('shows third putt when 3-putt selected with initial value', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={true}
-                    onStatsChange={onStatsChange}
-                    initialFirstPutt={20}
-                    initialThirdPutt={3}
-                />
-            );
-
-            expect(getByTestId('third-putt-input').props.value).toBe('3');
-        });
-
-        it('calls onStatsChange when third putt changes', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={true}
-                    onStatsChange={onStatsChange}
-                    initialFirstPutt={20}
-                    initialSecondPutt={10}
-                    initialThirdPutt={3}
-                />
-            );
-
-            onStatsChange.mockClear();
-
-            const input = getByTestId('third-putt-input');
-            fireEvent.changeText(input, '4');
-
-            expect(onStatsChange).toHaveBeenCalledWith(
-                20,
-                10,
-                expect.any(Boolean),
-                4,
-                expect.any(Boolean)
-            );
-        });
-
-        it('does not allow short third putt > second putt', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={true}
-                    onStatsChange={onStatsChange}
-                    initialFirstPutt={20}
-                    initialSecondPutt={8}
-                    initialThirdIsLong={false}
-                />
-            );
-
-            onStatsChange.mockClear();
-
-            // Try to set short 3rd putt to 10 (bigger than 2nd putt of 8)
-            const thirdPuttInput = getByTestId('third-putt-input');
-            fireEvent.changeText(thirdPuttInput, '10');
-
-            expect(onStatsChange).not.toHaveBeenCalled();
-        });
-
-        it('allows short third putt <= second putt', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={true}
-                    onStatsChange={onStatsChange}
-                    initialFirstPutt={20}
-                    initialSecondPutt={10}
-                    initialThirdIsLong={false}
-                />
-            );
-
-            onStatsChange.mockClear();
-
-            const thirdPuttInput = getByTestId('third-putt-input');
-            fireEvent.changeText(thirdPuttInput, '5');
-
-            expect(onStatsChange).toHaveBeenCalledWith(20, 10, expect.any(Boolean), 5, false);
-        });
-
-        it('allows long third putt > second putt', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={true}
-                    onStatsChange={onStatsChange}
-                    initialFirstPutt={10}
-                    initialSecondPutt={5}
-                    initialThirdIsLong={true}
-                />
-            );
-
-            onStatsChange.mockClear();
-
-            // Long putt can be bigger than second putt
-            const thirdPuttInput = getByTestId('third-putt-input');
-            fireEvent.changeText(thirdPuttInput, '15');
-
-            expect(onStatsChange).toHaveBeenCalledWith(10, 5, expect.any(Boolean), 15, true);
-        });
-
-        it('does not flip toggle to Short when third putt exceeds second putt', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={true}
-                    onStatsChange={onStatsChange}
-                    initialSecondPutt={5}
-                    initialThirdPutt={10}
-                    initialThirdIsLong={true}
-                />
-            );
-
-            onStatsChange.mockClear();
-
-            // Try to switch to Short when third putt (10) > second putt (5)
-            const shortButton = getByTestId('third-putt-toggle-short');
-            fireEvent.press(shortButton);
-
-            // onStatsChange should not be called, toggle press has no effect
-            expect(onStatsChange).not.toHaveBeenCalled();
+            const indicator = getByTestId('three-putt-indicator');
+            expect(indicator).toBeTruthy();
+            expect(indicator.props.children).toBe('3-putt');
         });
     });
+
 
     describe('input validation', () => {
         it('clamps first putt to max 300', () => {
@@ -546,7 +412,7 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('first-putt-input');
             fireEvent.changeText(input, '500');
 
-            expect(onStatsChange).toHaveBeenCalledWith(300, expect.any(Number), expect.any(Boolean), undefined, undefined);
+            expect(onStatsChange).toHaveBeenCalledWith(300, expect.any(Number), expect.any(Boolean));
         });
 
         it('clamps first putt to min 0', () => {
@@ -564,7 +430,7 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('first-putt-input');
             fireEvent.changeText(input, '-5');
 
-            expect(onStatsChange).toHaveBeenCalledWith(0, expect.any(Number), expect.any(Boolean), undefined, undefined);
+            expect(onStatsChange).toHaveBeenCalledWith(0, expect.any(Number), expect.any(Boolean));
         });
     });
 

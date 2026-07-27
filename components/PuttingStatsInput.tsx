@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Text, TouchableOpacity, View, TextInput } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -12,6 +12,7 @@ type Props = {
     initialSecondPutt?: number;
     initialSecondIsLong?: boolean;
     showFirstPuttError?: boolean;
+    onSecondPuttErrorChange?: (hasError: boolean) => void;
 };
 
 const PuttingStatsInput = ({
@@ -22,6 +23,7 @@ const PuttingStatsInput = ({
     initialSecondPutt,
     initialSecondIsLong = false,
     showFirstPuttError = false,
+    onSecondPuttErrorChange,
 }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
@@ -38,6 +40,10 @@ const PuttingStatsInput = ({
     };
 
     const [secondPuttError, setSecondPuttError] = useState(initializeError());
+
+    useEffect(() => {
+        onSecondPuttErrorChange?.(secondPuttError);
+    }, [secondPuttError, onSecondPuttErrorChange]);
 
     const handleFirstPuttChange = (value: string) => {
         setFirstPutt(value);

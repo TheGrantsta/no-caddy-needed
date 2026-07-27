@@ -396,6 +396,40 @@ describe('PuttingStatsInput', () => {
     });
 
     describe('second putt error', () => {
+        it('calls onSecondPuttErrorChange(false) on mount when no error', () => {
+            const onStatsChange = jest.fn();
+            const onSecondPuttErrorChange = jest.fn();
+            render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={20}
+                    onSecondPuttErrorChange={onSecondPuttErrorChange}
+                />
+            );
+
+            expect(onSecondPuttErrorChange).toHaveBeenCalledWith(false);
+        });
+
+        it('calls onSecondPuttErrorChange(true) on mount when initial props have error', () => {
+            const onStatsChange = jest.fn();
+            const onSecondPuttErrorChange = jest.fn();
+            render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={10}
+                    initialSecondPutt={15}
+                    initialSecondIsLong={false}
+                    onSecondPuttErrorChange={onSecondPuttErrorChange}
+                />
+            );
+
+            expect(onSecondPuttErrorChange).toHaveBeenCalledWith(true);
+        });
+
         it('hides second putt error by default', () => {
             const onStatsChange = jest.fn();
             const { queryByTestId } = render(
@@ -455,6 +489,7 @@ describe('PuttingStatsInput', () => {
 
         it('clears second putt error once a valid short value is entered', () => {
             const onStatsChange = jest.fn();
+            const onSecondPuttErrorChange = jest.fn();
             const { getByTestId, queryByTestId } = render(
                 <PuttingStatsInput
                     holePar={4}
@@ -462,20 +497,25 @@ describe('PuttingStatsInput', () => {
                     onStatsChange={onStatsChange}
                     initialFirstPutt={20}
                     initialSecondIsLong={false}
+                    onSecondPuttErrorChange={onSecondPuttErrorChange}
                 />
             );
 
+            onSecondPuttErrorChange.mockClear();
             const secondPuttInput = getByTestId('second-putt-input');
 
             // First trigger the error
             fireEvent.changeText(secondPuttInput, '20');
             expect(queryByTestId('second-putt-error')).toBeTruthy();
+            expect(onSecondPuttErrorChange).toHaveBeenCalledWith(true);
 
             onStatsChange.mockClear();
+            onSecondPuttErrorChange.mockClear();
 
             // Then enter a valid value
             fireEvent.changeText(secondPuttInput, '10');
             expect(queryByTestId('second-putt-error')).toBeFalsy();
+            expect(onSecondPuttErrorChange).toHaveBeenCalledWith(false);
             expect(onStatsChange).toHaveBeenCalledWith(20, 10, false);
         });
 

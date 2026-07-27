@@ -91,6 +91,7 @@ export default function Play() {
     const [deadlySinsValues, setDeadlySinsValues] = useState<DeadlySinsValues>(INITIAL_SINS);
     const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt: number; secondIsLong: boolean } | null>(null);
     const [puttingFirstPuttError, setPuttingFirstPuttError] = useState(false);
+    const [puttingSecondPuttError, setPuttingSecondPuttError] = useState(false);
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
@@ -355,6 +356,7 @@ export default function Play() {
             await insertHoleDeadlySinsService(activeRoundId, currentHole, deadlySinsValues);
             setHolePhase('putting');
             setPuttingFirstPuttError(false);
+            setPuttingSecondPuttError(false);
             const saved = getPuttingStatsService(activeRoundId, currentHole);
             setPuttingStats(saved ? {
                 firstPutt: saved.FirstPuttDistance,
@@ -366,6 +368,9 @@ export default function Play() {
         } else if (holePhase === 'putting') {
             if (!puttingStats || puttingStats.firstPutt === undefined) {
                 setPuttingFirstPuttError(true);
+                return;
+            }
+            if (puttingSecondPuttError) {
                 return;
             }
             await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt, puttingStats.secondIsLong);
@@ -413,6 +418,7 @@ export default function Play() {
         setDeadlySinsValues(INITIAL_SINS);
         setPuttingStats(null);
         setPuttingFirstPuttError(false);
+        setPuttingSecondPuttError(false);
         setPlayers([]);
         setShowPlayerSetup(false);
         setCurrentHoleData(null);
@@ -753,6 +759,7 @@ export default function Play() {
                                         initialSecondPutt={puttingStats?.secondPutt}
                                         initialSecondIsLong={puttingStats?.secondIsLong}
                                         showFirstPuttError={puttingFirstPuttError}
+                                        onSecondPuttErrorChange={setPuttingSecondPuttError}
                                     />
                                 </>
                             )}

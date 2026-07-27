@@ -10,6 +10,7 @@ import DeadlySinsTally from '../../components/DeadlySinsTally';
 import PuttingStatsInput from '../../components/PuttingStatsInput';
 import DeadlySinsChart from '../../components/DeadlySinsChart';
 import { DEADLY_SIN_CATEGORIES } from '../../service/deadlySinCategories';
+import WindDisplay from '../../components/WindDisplay';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import WedgeChartScreen from '../play/wedge-chart';
@@ -60,7 +61,6 @@ import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
 import { useWind } from '../../hooks/useWind';
-import WindIndicator from '../../components/WindIndicator';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import fontSizes from '../../assets/font-sizes';
 import DistancesScreen from '../play/distances';
@@ -705,13 +705,6 @@ export default function Play() {
                                         initialScores={currentHoleData?.scores.reduce((acc, s) => ({ ...acc, [s.playerId]: s.score }), {}) ?? undefined}
                                         players={players}
                                         onScoresChange={handleScoresChange}
-                                        headerAccessory={
-                                            <WindIndicator
-                                                directionFrom={wind?.directionFrom ?? null}
-                                                speedMph={wind?.speedMph ?? null}
-                                                heading={heading}
-                                            />
-                                        }
                                     />
 
                                     <HoleNoteInput
@@ -803,6 +796,17 @@ export default function Play() {
                                             <Text style={localStyles.previousHoleButtonText}>Previous hole</Text>
                                             <View style={{ width: 24 }} />
                                         </TouchableOpacity>
+                                    )}
+
+                                    {holePhase === 'score' && (
+                                        <View style={{ alignItems: 'center', marginTop: 12 }}>
+                                            <WindDisplay
+                                                directionFrom={wind?.directionFrom ?? null}
+                                                speedMph={wind?.speedMph ?? null}
+                                                heading={heading}
+                                                compact
+                                            />
+                                        </View>
                                     )}
 
                                     {holePhase === 'score' && (

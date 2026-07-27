@@ -29,6 +29,16 @@ const PuttingStatsInput = ({
     const [secondPutt, setSecondPutt] = useState(String(initialSecondPutt ?? 0));
     const [secondIsLong, setSecondIsLong] = useState(initialSecondIsLong);
 
+    // Initialize error state: if short second putt >= first putt
+    const initializeError = () => {
+        if (!initialSecondIsLong && initialFirstPutt !== undefined && initialSecondPutt !== undefined && initialSecondPutt > 0 && initialSecondPutt >= initialFirstPutt) {
+            return true;
+        }
+        return false;
+    };
+
+    const [secondPuttError, setSecondPuttError] = useState(initializeError());
+
     const handleFirstPuttChange = (value: string) => {
         setFirstPutt(value);
         if (!value || value.trim() === '') {
@@ -56,9 +66,11 @@ const PuttingStatsInput = ({
 
             // Validation: if second putt is marked Short and > 0, it must be strictly less than first putt
             if (!secondIsLong && first !== undefined && second > 0 && second >= first) {
+                setSecondPuttError(true);
                 return;
             }
 
+            setSecondPuttError(false);
             onStatsChange(first, second, secondIsLong);
         }
     };
@@ -70,9 +82,11 @@ const PuttingStatsInput = ({
 
         // Validation: cannot switch to Short if second putt > 0 and >= first putt
         if (!value && first !== undefined && second > 0 && second >= first) {
+            setSecondPuttError(true);
             return;
         }
 
+        setSecondPuttError(false);
         setSecondIsLong(value);
         onStatsChange(first, second, value);
     };
@@ -180,6 +194,11 @@ const PuttingStatsInput = ({
                         </TouchableOpacity>
                     </View>
                 </View>
+                {secondPuttError && (
+                    <Text testID="second-putt-error" style={{ color: colours.errorText, fontSize: fontSizes.smallText, marginTop: 4 }}>
+                        Short second putt must be shorter than first putt
+                    </Text>
+                )}
             </View>
 
         </View>

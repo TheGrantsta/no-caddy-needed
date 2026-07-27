@@ -279,7 +279,7 @@ describe('PuttingStatsInput', () => {
 
         it('does not allow short second putt >= first putt', () => {
             const onStatsChange = jest.fn();
-            const { getByTestId } = render(
+            const { getByTestId, queryByTestId } = render(
                 <PuttingStatsInput
                     holePar={4}
                     threePuttSelected={false}
@@ -295,12 +295,14 @@ describe('PuttingStatsInput', () => {
             const secondPuttInput = getByTestId('second-putt-input');
             fireEvent.changeText(secondPuttInput, '15');
             expect(onStatsChange).not.toHaveBeenCalled();
+            expect(queryByTestId('second-putt-error')).toBeTruthy();
 
             onStatsChange.mockClear();
 
             // Try to set short 2nd putt to 10 (equal to 1st putt of 10)
             fireEvent.changeText(secondPuttInput, '10');
             expect(onStatsChange).not.toHaveBeenCalled();
+            expect(queryByTestId('second-putt-error')).toBeTruthy();
         });
 
         it('allows short second putt < first putt', () => {
@@ -346,7 +348,7 @@ describe('PuttingStatsInput', () => {
 
         it('does not flip toggle to Short when second putt exceeds first putt', () => {
             const onStatsChange = jest.fn();
-            const { getByTestId } = render(
+            const { getByTestId, queryByTestId } = render(
                 <PuttingStatsInput
                     holePar={4}
                     threePuttSelected={false}
@@ -365,11 +367,12 @@ describe('PuttingStatsInput', () => {
 
             // onStatsChange should not be called, toggle press has no effect
             expect(onStatsChange).not.toHaveBeenCalled();
+            expect(queryByTestId('second-putt-error')).toBeTruthy();
         });
 
         it('does not flip toggle to Short when second putt equals first putt', () => {
             const onStatsChange = jest.fn();
-            const { getByTestId } = render(
+            const { getByTestId, queryByTestId } = render(
                 <PuttingStatsInput
                     holePar={4}
                     threePuttSelected={false}
@@ -388,6 +391,118 @@ describe('PuttingStatsInput', () => {
 
             // onStatsChange should not be called, toggle press has no effect
             expect(onStatsChange).not.toHaveBeenCalled();
+            expect(queryByTestId('second-putt-error')).toBeTruthy();
+        });
+    });
+
+    describe('second putt error', () => {
+        it('hides second putt error by default', () => {
+            const onStatsChange = jest.fn();
+            const { queryByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={20}
+                />
+            );
+
+            expect(queryByTestId('second-putt-error')).toBeFalsy();
+        });
+
+        it('shows error when short second putt >= first putt (input)', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId, queryByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={10}
+                    initialSecondIsLong={false}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            const secondPuttInput = getByTestId('second-putt-input');
+            fireEvent.changeText(secondPuttInput, '10');
+
+            expect(queryByTestId('second-putt-error')).toBeTruthy();
+            expect(onStatsChange).not.toHaveBeenCalled();
+        });
+
+        it('shows error when trying to switch toggle to Short with invalid value', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId, queryByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={10}
+                    initialSecondPutt={10}
+                    initialSecondIsLong={true}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            const shortButton = getByTestId('second-putt-toggle-short');
+            fireEvent.press(shortButton);
+
+            expect(queryByTestId('second-putt-error')).toBeTruthy();
+            expect(onStatsChange).not.toHaveBeenCalled();
+        });
+
+        it('clears second putt error once a valid short value is entered', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId, queryByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={20}
+                    initialSecondIsLong={false}
+                />
+            );
+
+            const secondPuttInput = getByTestId('second-putt-input');
+
+            // First trigger the error
+            fireEvent.changeText(secondPuttInput, '20');
+            expect(queryByTestId('second-putt-error')).toBeTruthy();
+
+            onStatsChange.mockClear();
+
+            // Then enter a valid value
+            fireEvent.changeText(secondPuttInput, '10');
+            expect(queryByTestId('second-putt-error')).toBeFalsy();
+            expect(onStatsChange).toHaveBeenCalledWith(20, 10, false);
+        });
+
+        it('clears second putt error when switching to Long', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId, queryByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={10}
+                    initialSecondPutt={15}
+                    initialSecondIsLong={false}
+                />
+            );
+
+            // Error should be showing because 15 >= 10 and Short
+            expect(queryByTestId('second-putt-error')).toBeTruthy();
+
+            onStatsChange.mockClear();
+
+            // Switch to Long to clear the error
+            const longButton = getByTestId('second-putt-toggle-long');
+            fireEvent.press(longButton);
+
+            expect(queryByTestId('second-putt-error')).toBeFalsy();
+            expect(onStatsChange).toHaveBeenCalledWith(10, 15, true);
         });
     });
 

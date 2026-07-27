@@ -889,7 +889,7 @@ describe('Play screen', () => {
                 { Id: 1, RoundId: 5, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
             ]);
 
-            const { getByText, getByTestId } = render(<Play />);
+            const { getByText, getByTestId, queryByText, queryByTestId } = render(<Play />);
 
             await act(async () => {
                 fireEvent.press(getByTestId('continue-round-button'));
@@ -897,6 +897,15 @@ describe('Play screen', () => {
 
             expect(getByText(/#/)).toBeTruthy();
             expect(getByTestId('end-round-button')).toBeTruthy();
+            expect(getByTestId('deadly-sins-reminder-heading')).toBeTruthy();
+            expect(getByTestId('deadly-sins-reminder-item-0')).toBeTruthy();
+            expect(getByTestId('deadly-sins-reminder-item-1')).toBeTruthy();
+            expect(getByTestId('deadly-sins-reminder-item-2')).toBeTruthy();
+            expect(getByTestId('deadly-sins-reminder-item-3')).toBeTruthy();
+            expect(getByTestId('deadly-sins-reminder-item-4')).toBeTruthy();
+            expect(getByTestId('deadly-sins-reminder-item-5')).toBeTruthy();
+            expect(getByTestId('deadly-sins-reminder-item-6')).toBeTruthy();
+            expect(queryByText(/Golf is a game/)).toBeNull();
         });
 
         it.skip('advances to next #after scoring — To be fixed once flow is agreed', async () => {

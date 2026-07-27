@@ -9,6 +9,7 @@ import HoleNoteInput from '../../components/HoleNoteInput';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
 import PuttingStatsInput from '../../components/PuttingStatsInput';
 import DeadlySinsChart from '../../components/DeadlySinsChart';
+import { DEADLY_SIN_CATEGORIES } from '../../service/deadlySinCategories';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import WedgeChartScreen from '../play/wedge-chart';
@@ -807,9 +808,12 @@ export default function Play() {
                                     {holePhase === 'score' && (
                                         <>
                                             <View style={styles.contentSection}>
-                                                <Text style={styles.normalText}>
-                                                    Golf is a game; have fun & be kind to yourself!
-                                                </Text>
+                                                <Text style={styles.normalText} testID="deadly-sins-reminder-heading">7 Deadly Sins</Text>
+                                                {DEADLY_SIN_CATEGORIES.map((sin, index) => (
+                                                    <Text key={sin.key} testID={`deadly-sins-reminder-item-${index}`} style={styles.smallText}>
+                                                        {'•  '}{sin.label}
+                                                    </Text>
+                                                ))}
                                             </View>
 
                                             {!showEndRoundConfirm && (

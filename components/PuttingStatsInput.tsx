@@ -54,8 +54,8 @@ const PuttingStatsInput = ({
                 return;
             }
 
-            // Validation: if second putt is marked Short, it cannot be bigger than first putt
-            if (!secondIsLong && first !== undefined && second > first) {
+            // Validation: if second putt is marked Short and > 0, it must be strictly less than first putt
+            if (!secondIsLong && first !== undefined && second > 0 && second >= first) {
                 return;
             }
 
@@ -68,8 +68,8 @@ const PuttingStatsInput = ({
         const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
         const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
 
-        // Validation: cannot switch to Short if second putt > first putt
-        if (!value && first !== undefined && second > first) {
+        // Validation: cannot switch to Short if second putt > 0 and >= first putt
+        if (!value && first !== undefined && second > 0 && second >= first) {
             return;
         }
 

@@ -277,7 +277,7 @@ describe('PuttingStatsInput', () => {
             expect(onStatsChange).toHaveBeenCalledWith(20, 5, false);
         });
 
-        it('does not allow short second putt > first putt', () => {
+        it('does not allow short second putt >= first putt', () => {
             const onStatsChange = jest.fn();
             const { getByTestId } = render(
                 <PuttingStatsInput
@@ -294,11 +294,16 @@ describe('PuttingStatsInput', () => {
             // Try to set short 2nd putt to 15 (bigger than 1st putt of 10)
             const secondPuttInput = getByTestId('second-putt-input');
             fireEvent.changeText(secondPuttInput, '15');
+            expect(onStatsChange).not.toHaveBeenCalled();
 
+            onStatsChange.mockClear();
+
+            // Try to set short 2nd putt to 10 (equal to 1st putt of 10)
+            fireEvent.changeText(secondPuttInput, '10');
             expect(onStatsChange).not.toHaveBeenCalled();
         });
 
-        it('allows short second putt <= first putt', () => {
+        it('allows short second putt < first putt', () => {
             const onStatsChange = jest.fn();
             const { getByTestId } = render(
                 <PuttingStatsInput
@@ -355,6 +360,29 @@ describe('PuttingStatsInput', () => {
             onStatsChange.mockClear();
 
             // Try to switch to Short when second putt (15) > first putt (10)
+            const shortButton = getByTestId('second-putt-toggle-short');
+            fireEvent.press(shortButton);
+
+            // onStatsChange should not be called, toggle press has no effect
+            expect(onStatsChange).not.toHaveBeenCalled();
+        });
+
+        it('does not flip toggle to Short when second putt equals first putt', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={10}
+                    initialSecondPutt={10}
+                    initialSecondIsLong={true}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            // Try to switch to Short when second putt (10) == first putt (10)
             const shortButton = getByTestId('second-putt-toggle-short');
             fireEvent.press(shortButton);
 

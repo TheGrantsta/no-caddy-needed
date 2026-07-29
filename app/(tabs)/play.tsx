@@ -9,7 +9,6 @@ import HoleNoteInput from '../../components/HoleNoteInput';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
 import PuttingStatsInput from '../../components/PuttingStatsInput';
 import DeadlySinsChart from '../../components/DeadlySinsChart';
-import { DEADLY_SIN_CATEGORIES } from '../../service/deadlySinCategories';
 import WindDisplay from '../../components/WindDisplay';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
@@ -93,6 +92,7 @@ export default function Play() {
     const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt: number; secondIsLong: boolean } | null>(null);
     const [puttingFirstPuttError, setPuttingFirstPuttError] = useState(false);
     const [puttingSecondPuttError, setPuttingSecondPuttError] = useState(false);
+    const [showPuttingInfo, setShowPuttingInfo] = useState(false);
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
@@ -738,7 +738,10 @@ export default function Play() {
 
                             {holePhase === 'putting' && (
                                 <>
-                                    <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                                    <View style={{ paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                                        <TouchableOpacity testID="putting-info-button" onPress={() => setShowPuttingInfo(true)} style={{ padding: 4 }}>
+                                            <MaterialIcons name="info-outline" size={24} color={colours.primary} />
+                                        </TouchableOpacity>
                                         <Text style={styles.normalText}>Hole {currentHole} — Putting Stats</Text>
                                     </View>
                                     <PuttingStatsInput
@@ -799,7 +802,7 @@ export default function Play() {
                                     )}
 
                                     {holePhase === 'score' && (
-                                        <View style={{ alignItems: 'center', marginTop: 12 }}>
+                                        <View style={styles.contentSection}>
                                             <WindDisplay
                                                 directionFrom={wind?.directionFrom ?? null}
                                                 speedMph={wind?.speedMph ?? null}
@@ -811,15 +814,6 @@ export default function Play() {
 
                                     {holePhase === 'score' && (
                                         <>
-                                            <View style={styles.contentSection}>
-                                                <Text style={styles.normalText} testID="deadly-sins-reminder-heading">7 Deadly Sins</Text>
-                                                {DEADLY_SIN_CATEGORIES.map((sin, index) => (
-                                                    <Text key={sin.key} testID={`deadly-sins-reminder-item-${index}`} style={styles.smallText}>
-                                                        {'•  '}{sin.label}
-                                                    </Text>
-                                                ))}
-                                            </View>
-
                                             {!showEndRoundConfirm && (
                                                 <TouchableOpacity
                                                     testID="end-round-button"
@@ -930,6 +924,18 @@ export default function Play() {
                 title="Pre-shot routine"
                 text={preShotText}
                 onDismiss={() => setShowPreShotReminder(false)}
+            />
+
+            <AcknowledgeOverlay
+                visible={showPuttingInfo}
+                title="Putting Stats"
+                text={
+                    "If you 1-putted (holed out with the first putt), submit with 2nd-putt default value of 0.\n\n" +
+                    "Short and Long refer to whether your ball finished short of the hole or past it — not left or right.\n\n" +
+                    "If marked Short, your 2nd putt distance must be shorter than your 1st putt distance."
+                }
+                onDismiss={() => setShowPuttingInfo(false)}
+                textAlign="left"
             />
         </GestureHandlerRootView>
     );

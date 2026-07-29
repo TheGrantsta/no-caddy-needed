@@ -1,23 +1,11 @@
 import { render, fireEvent, getByTestId } from '@testing-library/react-native';
 import PuttingStatsInput from '../../components/PuttingStatsInput';
 
-jest.mock('@expo/vector-icons', () => ({
-    MaterialIcons: () => null,
-}));
-
 jest.mock('@/hooks/useStyles', () => ({
     useStyles: () => ({
         holeScoreInput: {
             playerName: { fontSize: 16, fontWeight: 'bold' },
             stepperButtonText: { fontSize: 14 },
-        },
-        onboardingOverlay: {
-            overlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.85)' },
-            container: { backgroundColor: '#25292e', borderRadius: 16 },
-            title: { color: '#2D5A3D', fontSize: 18, fontWeight: 'bold' },
-            stepText: { color: '#1A1A2EA6', fontSize: 14 },
-            primaryButton: { backgroundColor: '#2D5A3D' },
-            primaryButtonText: { color: '#f5f5f0' },
         },
     }),
 }));
@@ -655,52 +643,6 @@ describe('PuttingStatsInput', () => {
             );
 
             expect(getByTestId('first-putt-error')).toBeTruthy();
-        });
-    });
-
-    describe('info modal', () => {
-        it('renders the info button', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} />
-            );
-            expect(getByTestId('putting-info-button')).toBeTruthy();
-        });
-
-        it('hides the info modal by default', () => {
-            const onStatsChange = jest.fn();
-            const { queryByTestId } = render(
-                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} />
-            );
-            expect(queryByTestId('acknowledge-overlay')).toBeFalsy();
-        });
-
-        it('shows the info modal with explanatory text when the info button is pressed', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId, getByText } = render(
-                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} />
-            );
-
-            fireEvent.press(getByTestId('putting-info-button'));
-
-            expect(getByTestId('acknowledge-overlay')).toBeTruthy();
-            expect(getByText('Putting Stats')).toBeTruthy();
-            expect(getByText(/Enter 0 for your 2nd putt if you 1-putted/)).toBeTruthy();
-            expect(getByText(/Short and Long refer to whether your ball finished/)).toBeTruthy();
-            expect(getByText(/must be shorter than your 1st putt distance/)).toBeTruthy();
-        });
-
-        it('dismisses the info modal when the close button is pressed', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId, queryByTestId } = render(
-                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} />
-            );
-
-            fireEvent.press(getByTestId('putting-info-button'));
-            expect(getByTestId('acknowledge-overlay')).toBeTruthy();
-
-            fireEvent.press(getByTestId('acknowledge-dismiss'));
-            expect(queryByTestId('acknowledge-overlay')).toBeFalsy();
         });
     });
 });

@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Text, TouchableOpacity, View, TextInput } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
-import AcknowledgeOverlay from './AcknowledgeOverlay';
 import fontSizes from '@/assets/font-sizes';
 
 type Props = {
@@ -32,7 +30,6 @@ const PuttingStatsInput = ({
     const [firstPutt, setFirstPutt] = useState(initialFirstPutt !== undefined ? String(initialFirstPutt) : '');
     const [secondPutt, setSecondPutt] = useState(String(initialSecondPutt ?? 0));
     const [secondIsLong, setSecondIsLong] = useState(initialSecondIsLong);
-    const [showInfo, setShowInfo] = useState(false);
 
     // Initialize error state: if short second putt >= first putt
     const initializeError = () => {
@@ -102,13 +99,6 @@ const PuttingStatsInput = ({
 
     return (
         <View style={{ paddingVertical: 12, paddingHorizontal: 8 }}>
-            {/* Info Button */}
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 4 }}>
-                <TouchableOpacity testID="putting-info-button" onPress={() => setShowInfo(true)} style={{ padding: 4 }}>
-                    <MaterialIcons name="info-outline" size={24} color={colours.primary} />
-                </TouchableOpacity>
-            </View>
-
             {/* 3-putt Indicator */}
             {threePuttSelected && (
                 <View style={{ marginBottom: 16, alignItems: 'flex-start' }}>
@@ -216,18 +206,6 @@ const PuttingStatsInput = ({
                     </Text>
                 )}
             </View>
-
-            <AcknowledgeOverlay
-                visible={showInfo}
-                title="Putting Stats"
-                text={
-                    "Enter 0 for your 2nd putt if you 1-putted (holed out on the first putt).\n\n" +
-                    "Short and Long refer to whether your ball finished short of the hole or past it — not left or right.\n\n" +
-                    "If marked Short, your 2nd putt distance must be shorter than your 1st putt distance."
-                }
-                onDismiss={() => setShowInfo(false)}
-                textAlign="left"
-            />
         </View>
     );
 };

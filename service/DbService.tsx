@@ -21,6 +21,9 @@ import {
     insertPuttingStats,
     getPuttingStats,
     deletePuttingStatsByHole,
+    insertHoleSinDetails,
+    getHoleSinDetails,
+    deleteHoleSinDetailsByHole,
     insertRound,
     updateRound,
     getRoundById,
@@ -347,6 +350,22 @@ export const getPuttingStatsService = (roundId: number, holeNumber: number): Put
     };
 };
 
+export const insertHoleSinDetailsService = async (roundId: number, holeNumber: number, troubleOffTeeClub?: string): Promise<boolean> => {
+    await deleteHoleSinDetailsByHole(roundId, holeNumber);
+    return insertHoleSinDetails(roundId, holeNumber, troubleOffTeeClub);
+};
+
+export const getHoleSinDetailsService = (roundId: number, holeNumber: number): HoleSinDetails | null => {
+    const rows = getHoleSinDetails(roundId, holeNumber) as any[];
+    if (rows.length === 0) return null;
+    const row = rows[0];
+    return {
+        Id: row.Id,
+        RoundId: row.RoundId,
+        HoleNumber: row.HoleNumber,
+        TroubleOffTeeClub: row.TroubleOffTeeClub ?? undefined,
+    };
+};
 
 // Round types
 export type Round = {
@@ -413,6 +432,13 @@ export type PuttingStats = {
     SecondPuttIsLong: number;
     ThirdPuttDistance?: number;
     ThirdPuttIsLong?: number;
+};
+
+export type HoleSinDetails = {
+    Id: number;
+    RoundId: number;
+    HoleNumber: number;
+    TroubleOffTeeClub?: string;
 };
 
 // Round services

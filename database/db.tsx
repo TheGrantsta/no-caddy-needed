@@ -89,6 +89,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS HiddenRecents (Id INTEGER PRIMARY KEY AUTOINCREMENT, Type TEXT NOT NULL, Name TEXT NOT NULL, UNIQUE(Type, Name));
         CREATE TABLE IF NOT EXISTS HoleNotes (Id INTEGER PRIMARY KEY AUTOINCREMENT, CourseName TEXT NOT NULL, HoleNumber INTEGER NOT NULL, Note TEXT NOT NULL, Updated_At TEXT NOT NULL, UNIQUE(CourseName, HoleNumber));
         CREATE TABLE IF NOT EXISTS PuttingStats (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, FirstPuttDistance INTEGER NOT NULL, SecondPuttDistance INTEGER NOT NULL, SecondPuttIsLong INTEGER NOT NULL DEFAULT 0, ThirdPuttDistance INTEGER, ThirdPuttIsLong INTEGER, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
+        CREATE TABLE IF NOT EXISTS HoleSinDetails (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, TroubleOffTeeClub TEXT, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
     `);
 
     const migrations: TableAmendment[] = [
@@ -356,6 +357,49 @@ export const deletePuttingStatsByHole = async (roundId: number, holeNumber: numb
         const db = await SQLite.openDatabaseAsync(dbName);
         const statement = await db.prepareAsync(
             'DELETE FROM PuttingStats WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
+        );
+        try {
+            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+    return success;
+};
+
+export const insertHoleSinDetails = async (roundId: number, holeNumber: number, troubleOffTeeClub?: string): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync(
+            'INSERT INTO HoleSinDetails (RoundId, HoleNumber, TroubleOffTeeClub) VALUES ($RoundId, $HoleNumber, $TroubleOffTeeClub);'
+        );
+        try {
+            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber, $TroubleOffTeeClub: troubleOffTeeClub ?? null });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+    return success;
+};
+
+export const getHoleSinDetails = (roundId: number, holeNumber: number) => {
+    return getSyncDb().getAllSync(
+        'SELECT * FROM HoleSinDetails WHERE RoundId = ? AND HoleNumber = ? LIMIT 1;',
+        [roundId, holeNumber]
+    );
+};
+
+export const deleteHoleSinDetailsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync(
+            'DELETE FROM HoleSinDetails WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
         );
         try {
             await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber });

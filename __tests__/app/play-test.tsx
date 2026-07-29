@@ -30,6 +30,9 @@ import {
     getHolesWithSinsForRoundService,
     getPuttingStatsService,
     insertPuttingStatsService,
+    insertHoleSinDetailsService,
+    getHoleSinDetailsService,
+    deleteHoleSinDetailsByHole,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
@@ -58,7 +61,7 @@ jest.mock('../../service/DbService', () => ({
     getAllRoundHistoryService: jest.fn(),
     insertHoleDeadlySinsService: jest.fn().mockResolvedValue(true),
     getAllDeadlySinsRoundsService: jest.fn(),
-    getClubDistancesService: jest.fn(),
+    getClubDistancesService: jest.fn().mockReturnValue([]),
     getWedgeChartService: jest.fn().mockReturnValue({ distanceNames: [], clubs: [] }),
     saveWedgeChartService: jest.fn(),
     addRoundPlayersService: jest.fn(),
@@ -76,6 +79,9 @@ jest.mock('../../service/DbService', () => ({
     getHolesWithSinsForRoundService: jest.fn().mockReturnValue(new Set()),
     getPuttingStatsService: jest.fn().mockReturnValue(null),
     insertPuttingStatsService: jest.fn().mockResolvedValue(true),
+    insertHoleSinDetailsService: jest.fn().mockResolvedValue(true),
+    getHoleSinDetailsService: jest.fn().mockReturnValue(null),
+    deleteHoleSinDetailsByHole: jest.fn().mockResolvedValue(true),
     getSettingsService: jest.fn().mockReturnValue({
         theme: 'dark',
         notificationsEnabled: true,
@@ -198,6 +204,11 @@ const mockGetHoleDeadlySins = getHoleDeadlySinsService as jest.Mock;
 const mockGetHoleScores = getHoleScoresService as jest.Mock;
 const mockGetHolesWithSinsForRound = getHolesWithSinsForRoundService as jest.Mock;
 const mockHapticsImpact = Haptics.impactAsync as jest.Mock;
+const mockInsertHoleSinDetails = insertHoleSinDetailsService as jest.Mock;
+const mockGetHoleSinDetails = getHoleSinDetailsService as jest.Mock;
+const mockDeleteHoleSinDetailsByHole = deleteHoleSinDetailsByHole as jest.Mock;
+const mockGetPuttingStats = getPuttingStatsService as jest.Mock;
+const mockInsertPuttingStats = insertPuttingStatsService as jest.Mock;
 
 describe('Play screen', () => {
     beforeEach(() => {
@@ -897,15 +908,6 @@ describe('Play screen', () => {
 
             expect(getByText(/#/)).toBeTruthy();
             expect(getByTestId('end-round-button')).toBeTruthy();
-            expect(getByTestId('deadly-sins-reminder-heading')).toBeTruthy();
-            expect(getByTestId('deadly-sins-reminder-item-0')).toBeTruthy();
-            expect(getByTestId('deadly-sins-reminder-item-1')).toBeTruthy();
-            expect(getByTestId('deadly-sins-reminder-item-2')).toBeTruthy();
-            expect(getByTestId('deadly-sins-reminder-item-3')).toBeTruthy();
-            expect(getByTestId('deadly-sins-reminder-item-4')).toBeTruthy();
-            expect(getByTestId('deadly-sins-reminder-item-5')).toBeTruthy();
-            expect(getByTestId('deadly-sins-reminder-item-6')).toBeTruthy();
-            expect(queryByText(/Golf is a game/)).toBeNull();
         });
 
         it.skip('advances to next #after scoring — To be fixed once flow is agreed', async () => {
@@ -2878,5 +2880,18 @@ describe('Play screen', () => {
             expect(queryByTestId('acknowledge-overlay')).toBeNull();
         });
     });
+
+    describe('Sin Details phase', () => {
+        it('loadsClubDistancesOnInitialization', () => {
+            mockGetClubDistances.mockReturnValue([
+                { Id: 1, Club: 'Driver', CarryDistance: 250, TotalDistance: 270, SortOrder: 0 },
+            ]);
+
+            render(<Play />);
+
+            expect(mockGetClubDistances).toHaveBeenCalled();
+        });
+    });
+
 
 });

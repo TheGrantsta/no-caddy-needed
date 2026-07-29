@@ -8,6 +8,7 @@ import HoleScoreInput from '../../components/HoleScoreInput';
 import HoleNoteInput from '../../components/HoleNoteInput';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
 import PuttingStatsInput from '../../components/PuttingStatsInput';
+import SinDetailsInput from '../../components/SinDetailsInput';
 import DeadlySinsChart from '../../components/DeadlySinsChart';
 import WindDisplay from '../../components/WindDisplay';
 import SubMenu from '../../components/SubMenu';
@@ -42,6 +43,10 @@ import {
     getSettingsService,
     saveSettingsService,
     getParAveragesService,
+    getClubDistancesService,
+    insertHoleSinDetailsService,
+    getHoleSinDetailsService,
+    deleteHoleSinDetailsByHole,
     Round,
     RoundPlayer,
     DeadlySinsRound,
@@ -49,6 +54,7 @@ import {
     MultiplayerRoundScorecard,
     ParAverages,
     PuttingStats,
+    ClubDistance,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
@@ -83,7 +89,7 @@ export default function Play() {
     const [refreshing, setRefreshing] = useState(false);
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
     const [currentHole, setCurrentHole] = useState(1);
-    const [holePhase, setHolePhase] = useState<'score' | 'stats' | 'putting'>('score');
+    const [holePhase, setHolePhase] = useState<'score' | 'stats' | 'sinDetails' | 'putting'>('score');
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
     const [deadlySinsRounds, setDeadlySinsRounds] = useState<DeadlySinsRound[]>([]);
     const [section, setSection] = useState('play-score');
@@ -92,6 +98,9 @@ export default function Play() {
     const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt: number; secondIsLong: boolean } | null>(null);
     const [puttingFirstPuttError, setPuttingFirstPuttError] = useState(false);
     const [puttingSecondPuttError, setPuttingSecondPuttError] = useState(false);
+    const [clubDistances, setClubDistances] = useState<ClubDistance[]>([]);
+    const [selectedOffTeeClub, setSelectedOffTeeClub] = useState<string | undefined>(undefined);
+    const [sinDetailsClubError, setSinDetailsClubError] = useState(false);
     const [showPuttingInfo, setShowPuttingInfo] = useState(false);
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
@@ -136,6 +145,7 @@ export default function Play() {
         setDeadlySinsRounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
         setRecentPlayerNames(getRecentPlayerNamesService());
+        setClubDistances(getClubDistancesService());
 
         const currentSettings = getSettingsService();
         setSettings(currentSettings);
@@ -307,6 +317,18 @@ export default function Play() {
         return saved ?? INITIAL_SINS;
     };
 
+    const enterPuttingPhase = (holeNumber: number) => {
+        setHolePhase('putting');
+        setPuttingFirstPuttError(false);
+        setPuttingSecondPuttError(false);
+        const saved = getPuttingStatsService(activeRoundId!, holeNumber);
+        setPuttingStats(saved ? {
+            firstPutt: saved.FirstPuttDistance,
+            secondPutt: saved.SecondPuttDistance,
+            secondIsLong: saved.SecondPuttIsLong === 1,
+        } : null);
+    };
+
     const handlePreviousHole = async () => {
         if (holePhase === 'score') {
             if (currentHole <= 1) return;
@@ -335,8 +357,17 @@ export default function Play() {
                 const holeData = loadHoleForScore(prevHole);
                 setCurrentHoleData(holeData);
             }
-        } else if (holePhase === 'putting') {
+            setSelectedOffTeeClub(undefined);
+            setSinDetailsClubError(false);
+        } else if (holePhase === 'sinDetails') {
             setHolePhase('stats');
+        } else if (holePhase === 'putting') {
+            const shouldShowSinDetails = deadlySinsValues.troubleOffTee && clubDistances.length > 0;
+            if (shouldShowSinDetails) {
+                setHolePhase('sinDetails');
+            } else {
+                setHolePhase('stats');
+            }
         }
     };
 
@@ -355,15 +386,27 @@ export default function Play() {
             }
         } else if (holePhase === 'stats') {
             await insertHoleDeadlySinsService(activeRoundId, currentHole, deadlySinsValues);
-            setHolePhase('putting');
-            setPuttingFirstPuttError(false);
-            setPuttingSecondPuttError(false);
-            const saved = getPuttingStatsService(activeRoundId, currentHole);
-            setPuttingStats(saved ? {
-                firstPutt: saved.FirstPuttDistance,
-                secondPutt: saved.SecondPuttDistance,
-                secondIsLong: saved.SecondPuttIsLong === 1,
-            } : null);
+            setClubDistances(getClubDistancesService());
+
+            const shouldShowSinDetails = deadlySinsValues.troubleOffTee && clubDistances.length > 0;
+            if (shouldShowSinDetails) {
+                const saved = getHoleSinDetailsService(activeRoundId, currentHole);
+                setSelectedOffTeeClub(saved?.TroubleOffTeeClub);
+                setSinDetailsClubError(false);
+                setHolePhase('sinDetails');
+            } else {
+                await deleteHoleSinDetailsByHole(activeRoundId, currentHole);
+                enterPuttingPhase(currentHole);
+            }
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            scrollRef.current?.scrollTo({ y: 0, animated: true });
+        } else if (holePhase === 'sinDetails') {
+            if (!selectedOffTeeClub) {
+                setSinDetailsClubError(true);
+                return;
+            }
+            await insertHoleSinDetailsService(activeRoundId, currentHole, selectedOffTeeClub);
+            enterPuttingPhase(currentHole);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
         } else if (holePhase === 'putting') {
@@ -385,6 +428,8 @@ export default function Play() {
                 const holeData = loadHoleForScore(nextHole);
                 setCurrentHoleData(holeData);
                 setPuttingStats(null);
+                setSelectedOffTeeClub(undefined);
+                setSinDetailsClubError(false);
             }
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
@@ -420,6 +465,8 @@ export default function Play() {
         setPuttingStats(null);
         setPuttingFirstPuttError(false);
         setPuttingSecondPuttError(false);
+        setSelectedOffTeeClub(undefined);
+        setSinDetailsClubError(false);
         setPlayers([]);
         setShowPlayerSetup(false);
         setCurrentHoleData(null);
@@ -732,6 +779,22 @@ export default function Play() {
                                             const player = players.find(p => p.Id === s.playerId);
                                             return player && player.IsUser === 1;
                                         })?.score}
+                                    />
+                                </>
+                            )}
+
+                            {holePhase === 'sinDetails' && (
+                                <>
+                                    <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                                        <Text style={styles.normalText}>Hole {currentHole} — Sin Details</Text>
+                                    </View>
+                                    <SinDetailsInput
+                                        key={`sinDetails-${currentHole}`}
+                                        sins={deadlySinsValues}
+                                        clubs={clubDistances}
+                                        selectedOffTeeClub={selectedOffTeeClub}
+                                        onOffTeeClubChange={setSelectedOffTeeClub}
+                                        showOffTeeClubError={sinDetailsClubError}
                                     />
                                 </>
                             )}

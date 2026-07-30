@@ -908,7 +908,9 @@ export default function Play() {
                                             style={localStyles.previousHoleButton}
                                         >
                                             <MaterialIcons name="skip-previous" size={24} color={colours.primary} />
-                                            <Text style={localStyles.previousHoleButtonText}>Previous hole</Text>
+                                            <Text style={localStyles.previousHoleButtonText}>
+                                                {(holePhase === 'score' || (holePhase === 'stats' && currentHole > 1)) ? 'Previous hole' : 'Previous'}
+                                            </Text>
                                             <View style={{ width: 24 }} />
                                         </TouchableOpacity>
                                     )}

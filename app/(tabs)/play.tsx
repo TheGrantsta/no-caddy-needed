@@ -9,7 +9,6 @@ import HoleNoteInput from '../../components/HoleNoteInput';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
 import PuttingStatsInput from '../../components/PuttingStatsInput';
 import SinDetailsInput from '../../components/SinDetailsInput';
-import DeadlySinsChart from '../../components/DeadlySinsChart';
 import WindDisplay from '../../components/WindDisplay';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
@@ -26,7 +25,6 @@ import {
     getHoleDeadlySinsService,
     getHoleScoresService,
     getHolesWithSinsForRoundService,
-    getAllDeadlySinsRoundsService,
     insertPuttingStatsService,
     getPuttingStatsService,
     addRoundPlayersService,
@@ -91,7 +89,6 @@ export default function Play() {
     const [currentHole, setCurrentHole] = useState(1);
     const [holePhase, setHolePhase] = useState<'score' | 'stats' | 'sinDetails' | 'putting'>('score');
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
-    const [deadlySinsRounds, setDeadlySinsRounds] = useState<DeadlySinsRound[]>([]);
     const [section, setSection] = useState('play-score');
     const INITIAL_SINS: DeadlySinsValues = { threePutts: false, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false };
     const [deadlySinsValues, setDeadlySinsValues] = useState<DeadlySinsValues>(INITIAL_SINS);
@@ -146,7 +143,6 @@ export default function Play() {
         }
         const history = getAllRoundHistoryService();
         setRoundHistory(history);
-        setDeadlySinsRounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
         setRecentPlayerNames(getRecentPlayerNamesService());
         setClubDistances(getClubDistancesService());
@@ -162,7 +158,6 @@ export default function Play() {
         setRefreshing(true);
         refreshTimerRef.current = setTimeout(() => {
             setRoundHistory(getAllRoundHistoryService());
-            setDeadlySinsRounds(getAllDeadlySinsRoundsService());
             setRefreshing(false);
         }, 750);
     };
@@ -177,7 +172,6 @@ export default function Play() {
     // round is deleted on the scorecard screen and we navigate back here).
     const refreshHistoryData = useCallback(() => {
         setRoundHistory(getAllRoundHistoryService());
-        setDeadlySinsRounds(getAllDeadlySinsRoundsService());
     }, []);
 
     useFocusEffect(refreshHistoryData);
@@ -514,7 +508,6 @@ export default function Play() {
         setCourseNotes({});
         setCurrentNoteText('');
         setRoundHistory(getAllRoundHistoryService());
-        setDeadlySinsRounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
         setRecentPlayerNames(getRecentPlayerNamesService());
     };
@@ -580,21 +573,6 @@ export default function Play() {
         () => new Set(filteredRoundHistory.map(r => r.Id)),
         [filteredRoundHistory]
     );
-    const filteredDeadlySinsRounds = useMemo(
-        () => historyFilter === 'all'
-            ? deadlySinsRounds
-            : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number)),
-        [deadlySinsRounds, historyFilter, filteredRoundIds]
-    );
-    const deadlySinsMap = useMemo(
-        () => new Map<number, number>(
-            filteredDeadlySinsRounds
-                .filter(t => t.RoundId != null)
-                .map(t => [t.RoundId as number, t.Total])
-        ),
-        [filteredDeadlySinsRounds]
-    );
-
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             {refreshing && (
@@ -691,8 +669,6 @@ export default function Play() {
                             </View>
                         )}
 
-                        {!incompleteRound && <DeadlySinsChart key={String(historyFilter)} rounds={filteredDeadlySinsRounds} filter={historyFilter} />}
-
                         {!incompleteRound && roundHistory.length > 0 && (
                             <View testID="par-averages-container" style={styles.parAverages.container}>
                                 <Text style={styles.parAverages.heading}>Average score by par</Text>
@@ -722,7 +698,6 @@ export default function Play() {
                                 <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.primary }]}>
                                     <Text testID="round-history-header-date" style={[styles.smallText, localStyles.historyDateColumn]}>Date Course</Text>
                                     <Text testID="round-history-header-strokes" style={[styles.smallText, localStyles.historyTotalColumn, { textAlign: 'left' }]}>Score</Text>
-                                    <Text testID="round-history-header-7DS" style={[styles.smallText, localStyles.historyNarrowColumn]}>7DS</Text>
                                 </View>
                                 <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
                                     {filteredRoundHistory.map((round) => (
@@ -741,11 +716,6 @@ export default function Play() {
                                                         &nbsp;({formatScore(round.TotalScore)})
                                                     </Text>
                                                 </View>
-                                                <Text style={[styles.smallTextNoPadding, localStyles.historyNarrowColumn]}>
-                                                    {deadlySinsMap.has(round.Id) ? deadlySinsMap.get(round.Id) : '-'}
-                                                </Text>
-
-
                                             </View>
                                         </TouchableOpacity>
                                     ))}

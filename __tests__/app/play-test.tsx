@@ -313,11 +313,9 @@ describe('Play screen', () => {
 
             const dateHeader = getByTestId('round-history-header-date');
             const strokesHeader = getByTestId('round-history-header-strokes');
-            const t5Header = getByTestId('round-history-header-7DS');
 
             expect(dateHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '65%' })]));
             expect(strokesHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '20%' })]));
-            expect(t5Header.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '15%' })]));
         });
 
         it('renders round history rows as tappable', () => {
@@ -460,14 +458,6 @@ describe('Play screen', () => {
                     fireEvent.press(getByTestId('continue-round-button'));
                 });
                 expect(mockCancelAllReminders).toHaveBeenCalled();
-            });
-
-            it('shouldHideDeadlySinsChartWhenIncompleteRoundExists', () => {
-                mockGetAllDeadlySinsRounds.mockReturnValue([
-                    { Id: 1, RoundId: 1, Total: 5, ThreePutts: 1, DoubleBogeys: 1, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 1, TroubleOffTee: 0, Penalties: 0 },
-                ]);
-                const { queryByTestId } = render(<Play />);
-                expect(queryByTestId('7deadly-sins-chart-toggle')).toBeNull();
             });
 
             it('shouldHideRoundHistoryWhenIncompleteRoundExists', () => {
@@ -1866,55 +1856,6 @@ describe('Play screen', () => {
         });
     });
 
-    describe('7 Deadly Sins total in round history', () => {
-        it('shows 7DS column header when round history exists', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
-            ]);
-
-            const { getByText } = render(<Play />);
-
-            expect(getByText('7DS')).toBeTruthy();
-        });
-
-        it('shows 7 Deadly Sins total next to matching round', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
-            ]);
-            mockGetAllDeadlySinsRounds.mockReturnValue([
-                { Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 1, TroubleOffTee: 0, Penalties: 0, Total: 5, RoundId: 1, Created_At: '15/06' },
-            ]);
-
-            const { getByText } = render(<Play />);
-
-            expect(getByText('5')).toBeTruthy();
-        });
-
-        it('shows dash when deadly sins row has RoundId null', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
-            ]);
-            mockGetAllDeadlySinsRounds.mockReturnValue([
-                { Id: 1, ThreePutts: 2, DoubleBogeys: 1, BogeysPar5: 0, BogeysInside9Iron: 1, DoubleChips: 1, TroubleOffTee: 0, Penalties: 0, Total: 5, RoundId: null, Created_At: '15/06' },
-            ]);
-
-            const { getAllByText } = render(<Play />);
-
-            expect(getAllByText('-').length).toBeGreaterThan(0);
-        });
-
-        it('shows dash when no 7 Deadly Sins data for a round', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
-            ]);
-            mockGetAllDeadlySinsRounds.mockReturnValue([]);
-
-            const { getAllByText } = render(<Play />);
-
-            expect(getAllByText('-').length).toBeGreaterThan(0);
-        });
-    });
-
     describe('18-Hole limit', () => {
         const startRoundAndAdvanceToHole = async (getByTestId: any, getByText: any, targetHole: number) => {
             fireEvent.press(getByTestId('start-round-button'));
@@ -2322,124 +2263,6 @@ describe('Play screen', () => {
         });
     });
 
-    describe('7 Deadly Sins chart', () => {
-        const mock7DeadlySinsData = [
-            { Id: 1, ThreePutts: 3, DoubleBogeys: 1, BogeysPar5: 2, BogeysInside9Iron: 4, DoubleChips: 0, TroubleOffTee: 1, Penalties: 2, Total: 13, Created_At: '15/06' },
-            { Id: 2, ThreePutts: 2, DoubleBogeys: 3, BogeysPar5: 1, BogeysInside9Iron: 1, DoubleChips: 2, TroubleOffTee: 3, Penalties: 1, Total: 13, Created_At: '16/06' },
-        ];
-
-        it('chart data changes when filter is changed', () => {
-            // Round history: Id:1 first in array → selected by slice(0,1) when filter=1
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01', CourseName: null },
-                { Id: 2, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '02/01', CourseName: null },
-            ]);
-            // 7DS in Id DESC order; RoundId links each 7DS entry to its round
-            mockGetAllDeadlySinsRounds.mockReturnValue([
-                { Id: 2, RoundId: 2, ThreePutts: 10, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 10, Created_At: '02/01' },
-                { Id: 1, RoundId: 1, ThreePutts: 2, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 2, Created_At: '01/01' },
-            ]);
-
-            const { getByTestId } = render(<Play />);
-
-            // All filter: ThreePutts = 10 + 2 = 12
-            expect(getByTestId('7deadly-sins-chart-count-0')).toHaveTextContent('12');
-
-            // Filter 1: round Id:1 selected → 7DS RoundId:1, ThreePutts = 2
-            fireEvent.press(getByTestId('filter-button-1'));
-
-            expect(getByTestId('7deadly-sins-chart-count-0')).toHaveTextContent('2');
-        });
-
-        it('filters chart by RoundId matching round history, not by independent slice', () => {
-            // 3 rounds newest first; only rounds 1 and 3 have 7DS data
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 3, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '03/01', CourseName: null },
-                { Id: 2, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '02/01', CourseName: null },
-                { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01', CourseName: null },
-            ]);
-            // 7DS Id DESC order: 7DS for round 1 has higher Id than 7DS for round 3
-            mockGetAllDeadlySinsRounds.mockReturnValue([
-                { Id: 2, RoundId: 1, ThreePutts: 10, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 10, Created_At: '01/01' },
-                { Id: 1, RoundId: 3, ThreePutts: 2, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 2, Created_At: '03/01' },
-            ]);
-
-            const { getByTestId } = render(<Play />);
-
-            // All filter: ThreePutts = 10 + 2 = 12
-            expect(getByTestId('7deadly-sins-chart-count-0')).toHaveTextContent('12');
-
-            // Filter 1: most recent round (Id:3) has ThreePutts=2; independent slice would wrongly show 10
-            fireEvent.press(getByTestId('filter-button-1'));
-
-            expect(getByTestId('7deadly-sins-chart-count-0')).toHaveTextContent('2');
-        });
-
-        it('does not render chart when no 7 Deadly Sins data', () => {
-            mockGetAllDeadlySinsRounds.mockReturnValue([]);
-
-            const { queryByText } = render(<Play />);
-
-            expect(queryByText('Deadly Sins')).toBeNull();
-        });
-
-        it('renders chart in idle state when data exists', () => {
-            mockGetAllDeadlySinsRounds.mockReturnValue(mock7DeadlySinsData);
-
-            const { getByText } = render(<Play />);
-
-            expect(getByText('Deadly Sins')).toBeTruthy();
-        });
-
-        it('does not render chart during active round', async () => {
-            mockGetAllDeadlySinsRounds.mockReturnValue(mock7DeadlySinsData);
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-
-            const { getByTestId, queryByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-            fireEvent.press(getByTestId('start-button'));
-
-            await waitFor(() => {
-                expect(getByTestId('end-round-button')).toBeTruthy();
-            });
-
-            expect(queryByTestId('7deadly-sins-chart-label')).toBeNull();
-        });
-
-        it('refreshes chart after ending a round', async () => {
-            mockGetAllDeadlySinsRounds.mockReturnValue([]);
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-            mockEndRound.mockResolvedValue(true);
-            mockGetAllRoundHistory.mockReturnValue([]);
-
-            const { getByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-            fireEvent.press(getByTestId('start-button'));
-
-            await waitFor(() => {
-                expect(getByTestId('end-round-button')).toBeTruthy();
-            });
-
-            fireEvent.press(getByTestId('end-round-button'));
-            await act(async () => {
-                fireEvent.press(getByTestId('confirm-end-round-button'));
-            });
-
-            await waitFor(() => {
-                expect(getByTestId('start-round-button')).toBeTruthy();
-            });
-
-            // getAllDeadlySinsRoundsService called on mount + after ending round
-            expect(mockGetAllDeadlySinsRounds).toHaveBeenCalledTimes(2);
-        });
-    });
-
     describe('start round failure', () => {
         it('shows error toast when startRoundService returns null', async () => {
             mockStartRound.mockResolvedValue(null);
@@ -2509,22 +2332,6 @@ describe('Play screen', () => {
             });
 
             expect(mockGetAllRoundHistory.mock.calls.length).toBeGreaterThan(initialCount);
-        });
-
-        it('onRefreshCallsGetAllDeadlySinsRoundsService', () => {
-            const { UNSAFE_getByType } = render(<Play />);
-            const scrollView = UNSAFE_getByType(ScrollView);
-
-            const initialCount = mockGetAllDeadlySinsRounds.mock.calls.length;
-
-            act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
-            });
-            act(() => {
-                jest.advanceTimersByTime(750);
-            });
-
-            expect(mockGetAllDeadlySinsRounds.mock.calls.length).toBeGreaterThan(initialCount);
         });
     });
 

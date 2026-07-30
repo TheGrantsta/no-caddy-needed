@@ -326,6 +326,40 @@ describe('Settings table column migration', () => {
         );
     });
 
+    it('should add SkipStatsFlowEnabled column with DEFAULT 0 during migration', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Settings)') return [
+                { name: 'Id' },
+                { name: 'Theme' },
+                { name: 'NotificationsEnabled' },
+                { name: 'Voice' },
+                { name: 'SoundsEnabled' },
+                { name: 'WedgeChartOnboardingSeen' },
+                { name: 'DistancesOnboardingSeen' },
+                { name: 'PlayOnboardingSeen' },
+                { name: 'HomeOnboardingSeen' },
+                { name: 'PracticeOnboardingSeen' },
+                { name: 'PracticeFrequencyDays' },
+                { name: 'ReviewPromptShown' },
+                { name: 'PreShotReminderEnabled' },
+                { name: 'PreShotRoutineText' },
+                { name: 'WhatsNewVersionSeen' },
+                { name: 'SettingsOnboardingSeen' },
+                { name: 'PerformOnboardingSeen' },
+                { name: 'TempoBpm' },
+                { name: 'Units' },
+                // Note: SkipStatsFlowEnabled is missing — simulating an old Settings schema
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE Settings ADD COLUMN SkipStatsFlowEnabled INTEGER NOT NULL DEFAULT 0'
+        );
+    });
+
     it('should not alter Settings table when all columns already exist', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [

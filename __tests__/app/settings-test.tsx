@@ -16,7 +16,7 @@ jest.mock('../../hooks/useStyles', () => ({
 }));
 
 jest.mock('../../service/DbService', () => ({
-    getSettingsService: jest.fn(() => ({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards' })),
+    getSettingsService: jest.fn(() => ({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false })),
     saveSettingsService: jest.fn(() => Promise.resolve(true)),
 }));
 
@@ -427,7 +427,7 @@ describe('Settings page', () => {
             notificationsEnabled: true, voice: 'female', soundsEnabled: true,
             wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false,
             homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7,
-            reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: 'Target, breathe, go', ...overrides,
+            reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: 'Target, breathe, go', skipStatsFlowEnabled: false, ...overrides,
         });
 
         it('renders the Pre-shot routine heading and On/Off buttons', () => {
@@ -483,9 +483,63 @@ describe('Settings page', () => {
         });
     });
 
+    describe('Score-only mode', () => {
+        it('renders the Score-only mode heading and On/Off buttons', () => {
+            const { getByText, getByTestId } = render(<Settings />);
+
+            expect(getByText('Score-only mode')).toBeTruthy();
+            expect(getByTestId('score-only-on')).toBeTruthy();
+            expect(getByTestId('score-only-off')).toBeTruthy();
+        });
+
+        it('saves skipStatsFlowEnabled true when On pressed', async () => {
+            const { getByTestId } = render(<Settings />);
+
+            fireEvent.press(getByTestId('score-only-on'));
+
+            await waitFor(() => {
+                expect(mockSaveSettingsService).toHaveBeenCalledWith(
+                    expect.objectContaining({ skipStatsFlowEnabled: true })
+                );
+            });
+        });
+
+        it('saves skipStatsFlowEnabled false when Off pressed', async () => {
+            mockGetSettingsService.mockReturnValue({
+                notificationsEnabled: true,
+                voice: 'female',
+                soundsEnabled: true,
+                wedgeChartOnboardingSeen: false,
+                distancesOnboardingSeen: false,
+                playOnboardingSeen: false,
+                homeOnboardingSeen: false,
+                practiceOnboardingSeen: false,
+                practiceFrequencyDays: 7,
+                reviewPromptShown: false,
+                preShotReminderEnabled: true,
+                preShotRoutineText: '',
+                whatsNewVersionSeen: '',
+                settingsOnboardingSeen: false,
+                performOnboardingSeen: false,
+                tempoBpm: 60,
+                units: 'yards',
+                skipStatsFlowEnabled: true,
+            });
+            const { getByTestId } = render(<Settings />);
+
+            fireEvent.press(getByTestId('score-only-off'));
+
+            await waitFor(() => {
+                expect(mockSaveSettingsService).toHaveBeenCalledWith(
+                    expect.objectContaining({ skipStatsFlowEnabled: false })
+                );
+            });
+        });
+    });
+
     describe('Onboarding', () => {
         it('shows the onboarding overlay when not seen before', () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, settingsOnboardingSeen: false });
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, settingsOnboardingSeen: false, skipStatsFlowEnabled: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
 
             const { getByTestId, getByText } = render(<Settings />);
 
@@ -494,7 +548,7 @@ describe('Settings page', () => {
         });
 
         it('hides the onboarding overlay when already seen', () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, settingsOnboardingSeen: true });
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, settingsOnboardingSeen: true, skipStatsFlowEnabled: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
 
             const { queryByTestId } = render(<Settings />);
 
@@ -502,7 +556,7 @@ describe('Settings page', () => {
         });
 
         it('shows the onboarding overlay when the info button is pressed', () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, settingsOnboardingSeen: true });
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, settingsOnboardingSeen: true, skipStatsFlowEnabled: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
 
             const { getByTestId, queryByTestId } = render(<Settings />);
             expect(queryByTestId('onboarding-overlay')).toBeNull();
@@ -513,7 +567,7 @@ describe('Settings page', () => {
         });
 
         it('saves settingsOnboardingSeen true when dismissed', async () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, settingsOnboardingSeen: false });
+            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, settingsOnboardingSeen: false, skipStatsFlowEnabled: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
 
             const { getByTestId, queryByTestId } = render(<Settings />);
 

@@ -43,6 +43,11 @@ const PRESHOT: { key: 'on' | 'off'; label: string; value: boolean }[] = [
   { key: 'off', label: 'Off', value: false },
 ];
 
+const SCORE_ONLY: { key: 'on' | 'off'; label: string; value: boolean }[] = [
+  { key: 'on', label: 'On', value: true },
+  { key: 'off', label: 'Off', value: false },
+];
+
 export default function Settings() {
   const { colours } = useTheme();
   const styles = useStyles();
@@ -112,6 +117,15 @@ export default function Settings() {
 
   const handlePreShotEnabledChange = async (value: boolean) => {
     const updated: AppSettings = { ...settings, preShotReminderEnabled: value };
+    setSettings(updated);
+
+    const success = await saveSettingsService(updated);
+
+    showResult(success, 'Settings saved', 'Failed to save settings');
+  };
+
+  const handleScoreOnlyModeChange = async (value: boolean) => {
+    const updated: AppSettings = { ...settings, skipStatsFlowEnabled: value };
     setSettings(updated);
 
     const success = await saveSettingsService(updated);
@@ -345,6 +359,29 @@ export default function Settings() {
               />
             </View>
           )}
+        </View>
+
+        <View style={styles.contentSection}>
+          <View style={styles.headerContainer}>
+            <Text style={[styles.subHeaderText, { padding: 0 }]}>Score-only mode</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
+            {SCORE_ONLY.map(({ key, label, value }) => {
+              const isSelected = settings.skipStatsFlowEnabled === value;
+              return (
+                <TouchableOpacity
+                  key={key}
+                  testID={`score-only-${key}`}
+                  onPress={() => handleScoreOnlyModeChange(value)}
+                  style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
+                >
+                  {isSelected && <Text testID={`score-only-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
+                  {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
         </>)}
 

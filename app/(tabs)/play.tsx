@@ -88,6 +88,7 @@ export default function Play() {
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
     const [currentHole, setCurrentHole] = useState(1);
     const [holePhase, setHolePhase] = useState<'score' | 'stats' | 'sinDetails' | 'putting'>('score');
+    const [skipStatsFlow, setSkipStatsFlow] = useState(false);
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
     const [section, setSection] = useState('play-score');
     const INITIAL_SINS: DeadlySinsValues = { threePutts: false, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false };
@@ -191,6 +192,7 @@ export default function Play() {
             setPreShotText(currentSettings.preShotRoutineText);
             setShowPreShotReminder(true);
         }
+        setSkipStatsFlow(currentSettings.skipStatsFlowEnabled);
     }, [currentHole, activeRoundId]);
 
     const handleDismissOnboarding = async () => {
@@ -369,9 +371,23 @@ export default function Play() {
             const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
             const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
             if (success) {
-                const sins = loadHoleSins(holeNumber);
-                setDeadlySinsValues(sins);
-                setHolePhase('stats');
+                if (skipStatsFlow) {
+                    // Skip stats flow: advance directly to next hole or end round
+                    if (currentHole >= 18) {
+                        setShowEndRoundConfirm(true);
+                    } else {
+                        const nextHole = currentHole + 1;
+                        setCurrentNoteText(courseNotes[nextHole] ?? '');
+                        setCurrentHole(nextHole);
+                        const holeData = loadHoleForScore(nextHole);
+                        setCurrentHoleData(holeData);
+                    }
+                } else {
+                    // Normal flow: proceed to stats
+                    const sins = loadHoleSins(holeNumber);
+                    setDeadlySinsValues(sins);
+                    setHolePhase('stats');
+                }
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 scrollRef.current?.scrollTo({ y: 0, animated: true });
             }
@@ -843,10 +859,10 @@ export default function Play() {
                                     >
                                         <View style={{ width: 24 }} />
                                         <Text style={localStyles.nextHoleButtonText}>
-                                            {holePhase === 'putting' ? (isLastHole ? 'Finish round' : 'Next hole') : 'Next'}
+                                            {holePhase === 'putting' || (holePhase === 'score' && skipStatsFlow) ? (isLastHole ? 'Finish round' : 'Next hole') : 'Next'}
                                         </Text>
                                         <MaterialIcons
-                                            name={holePhase === 'putting' && isLastHole ? 'sports-score' : 'skip-next'}
+                                            name={(holePhase === 'putting' || (holePhase === 'score' && skipStatsFlow)) && isLastHole ? 'sports-score' : 'skip-next'}
                                             size={24}
                                             color={colours.background}
                                         />

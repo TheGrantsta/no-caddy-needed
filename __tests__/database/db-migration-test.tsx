@@ -348,6 +348,7 @@ describe('Settings table column migration', () => {
                 { name: 'PerformOnboardingSeen' },
                 { name: 'TempoBpm' },
                 { name: 'Units' },
+                { name: 'SkipStatsFlowEnabled' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },

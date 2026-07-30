@@ -46,7 +46,7 @@ import {
     getClubDistancesService,
     insertHoleSinDetailsService,
     getHoleSinDetailsService,
-    deleteHoleSinDetailsByHole,
+    deleteHoleSinDetailsService,
     Round,
     RoundPlayer,
     DeadlySinsRound,
@@ -406,7 +406,7 @@ export default function Play() {
                 setSinDetailsBogeysClubError(false);
                 setHolePhase('sinDetails');
             } else {
-                await deleteHoleSinDetailsByHole(activeRoundId, currentHole);
+                await deleteHoleSinDetailsService(activeRoundId, currentHole);
                 enterPuttingPhase(currentHole);
             }
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

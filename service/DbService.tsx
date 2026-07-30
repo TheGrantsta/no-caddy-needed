@@ -377,6 +377,9 @@ export const getHoleSinDetailsService = (roundId: number, holeNumber: number): H
     };
 };
 
+export const deleteHoleSinDetailsService = (roundId: number, holeNumber: number): Promise<boolean> =>
+    deleteHoleSinDetailsByHole(roundId, holeNumber);
+
 // Round types
 export type Round = {
     Id: number;

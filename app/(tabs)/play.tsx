@@ -349,18 +349,9 @@ export default function Play() {
                 await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
                 setCourseNotes(prev => ({ ...prev, [currentHole]: currentNoteText.trim() }));
             }
-            if (currentHole === 1) {
-                setHolePhase('score');
-                const holeData = loadHoleForScore(1);
-                setCurrentHoleData(holeData);
-            } else {
-                const prevHole = currentHole - 1;
-                setCurrentNoteText(courseNotes[prevHole] ?? '');
-                setCurrentHole(prevHole);
-                setHolePhase('score');
-                const holeData = loadHoleForScore(prevHole);
-                setCurrentHoleData(holeData);
-            }
+            setHolePhase('score');
+            const holeData = loadHoleForScore(currentHole);
+            setCurrentHoleData(holeData);
             setSelectedOffTeeClub(undefined);
             setSinDetailsClubError(false);
             setSelectedPenaltyType(undefined);
@@ -909,7 +900,7 @@ export default function Play() {
                                         >
                                             <MaterialIcons name="skip-previous" size={24} color={colours.primary} />
                                             <Text style={localStyles.previousHoleButtonText}>
-                                                {(holePhase === 'score' || (holePhase === 'stats' && currentHole > 1)) ? 'Previous hole' : 'Previous'}
+                                                {holePhase === 'score' ? 'Previous hole' : 'Previous'}
                                             </Text>
                                             <View style={{ width: 24 }} />
                                         </TouchableOpacity>

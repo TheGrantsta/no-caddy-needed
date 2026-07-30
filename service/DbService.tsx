@@ -350,9 +350,17 @@ export const getPuttingStatsService = (roundId: number, holeNumber: number): Put
     };
 };
 
-export const insertHoleSinDetailsService = async (roundId: number, holeNumber: number, troubleOffTeeClub?: string): Promise<boolean> => {
+export type HoleSinDetailsInput = {
+    troubleOffTeeClub?: string;
+    penaltyType?: string;
+    bogeysInside9IronClub?: string;
+};
+
+export const PENALTY_TYPES = ['Out of bounds', 'Water hazard', 'Unplayable lie', 'Other 1-shot penalty', 'General penalty'] as const;
+
+export const insertHoleSinDetailsService = async (roundId: number, holeNumber: number, details: HoleSinDetailsInput): Promise<boolean> => {
     await deleteHoleSinDetailsByHole(roundId, holeNumber);
-    return insertHoleSinDetails(roundId, holeNumber, troubleOffTeeClub);
+    return insertHoleSinDetails(roundId, holeNumber, details.troubleOffTeeClub, details.penaltyType, details.bogeysInside9IronClub);
 };
 
 export const getHoleSinDetailsService = (roundId: number, holeNumber: number): HoleSinDetails | null => {
@@ -364,6 +372,8 @@ export const getHoleSinDetailsService = (roundId: number, holeNumber: number): H
         RoundId: row.RoundId,
         HoleNumber: row.HoleNumber,
         TroubleOffTeeClub: row.TroubleOffTeeClub ?? undefined,
+        PenaltyType: row.PenaltyType ?? undefined,
+        BogeysInside9IronClub: row.BogeysInside9IronClub ?? undefined,
     };
 };
 
@@ -439,6 +449,8 @@ export type HoleSinDetails = {
     RoundId: number;
     HoleNumber: number;
     TroubleOffTeeClub?: string;
+    PenaltyType?: string;
+    BogeysInside9IronClub?: string;
 };
 
 // Round services

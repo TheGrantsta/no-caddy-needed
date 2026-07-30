@@ -33,6 +33,7 @@ import {
     insertHoleSinDetailsService,
     getHoleSinDetailsService,
     deleteHoleSinDetailsByHole,
+    PENALTY_TYPES,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';

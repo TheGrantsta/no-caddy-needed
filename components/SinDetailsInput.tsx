@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { ClubDistance, DeadlySinsValues } from '@/service/DbService';
 import ClubPicker from './ClubPicker';
+import PenaltyTypePicker from './PenaltyTypePicker';
 
 type Props = {
     sins: DeadlySinsValues;
@@ -9,6 +10,12 @@ type Props = {
     selectedOffTeeClub?: string;
     onOffTeeClubChange: (club: string) => void;
     showOffTeeClubError?: boolean;
+    selectedPenaltyType?: string;
+    onPenaltyTypeChange: (type: string) => void;
+    showPenaltyTypeError?: boolean;
+    selectedBogeysClub?: string;
+    onBogeysClubChange: (club: string) => void;
+    showBogeysClubError?: boolean;
 };
 
 const SinDetailsInput = ({
@@ -17,8 +24,16 @@ const SinDetailsInput = ({
     selectedOffTeeClub,
     onOffTeeClubChange,
     showOffTeeClubError = false,
+    selectedPenaltyType,
+    onPenaltyTypeChange,
+    showPenaltyTypeError = false,
+    selectedBogeysClub,
+    onBogeysClubChange,
+    showBogeysClubError = false,
 }: Props) => {
     const styles = useStyles();
+
+    const shortestFirstClubs = [...clubs].sort((a, b) => a.CarryDistance - b.CarryDistance);
 
     return (
         <View style={{ paddingVertical: 12, paddingHorizontal: 8 }}>
@@ -33,8 +48,28 @@ const SinDetailsInput = ({
                     />
                 </View>
             )}
-            {/* future: penalties section */}
-            {/* future: bogeysInside9Iron club section */}
+            {sins.penalties && (
+                <View style={{ marginBottom: 16 }}>
+                    <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Penalty type</Text>
+                    <PenaltyTypePicker
+                        selectedPenaltyType={selectedPenaltyType}
+                        onSelectPenaltyType={onPenaltyTypeChange}
+                        showError={showPenaltyTypeError}
+                    />
+                </View>
+            )}
+            {sins.bogeysInside9Iron && (
+                <View style={{ marginBottom: 16 }}>
+                    <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Approach club</Text>
+                    <ClubPicker
+                        clubs={shortestFirstClubs}
+                        selectedClub={selectedBogeysClub}
+                        onSelectClub={onBogeysClubChange}
+                        showError={showBogeysClubError}
+                        testIDPrefix="bogeys-club-picker"
+                    />
+                </View>
+            )}
         </View>
     );
 };

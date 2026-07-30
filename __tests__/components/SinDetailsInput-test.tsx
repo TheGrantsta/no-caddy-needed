@@ -1,4 +1,4 @@
-import { render, fireEvent } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
 import React from 'react';
 import SinDetailsInput from '../../components/SinDetailsInput';
 import { DeadlySinsValues } from '../../service/DbService';
@@ -20,6 +20,7 @@ jest.mock('@/context/ThemeContext', () => ({
 }));
 
 jest.mock('../../components/ClubPicker', () => 'ClubPicker');
+jest.mock('../../components/PenaltyTypePicker', () => 'PenaltyTypePicker');
 
 describe('SinDetailsInput', () => {
     const allFalseSins: DeadlySinsValues = {
@@ -39,11 +40,13 @@ describe('SinDetailsInput', () => {
 
     it('does not render off-tee section when troubleOffTee is false', () => {
         const onOffTeeClubChange = jest.fn();
+        const onPenaltyTypeChange = jest.fn();
         const { queryByText } = render(
             <SinDetailsInput
                 sins={allFalseSins}
                 clubs={mockClubs}
                 onOffTeeClubChange={onOffTeeClubChange}
+                onPenaltyTypeChange={onPenaltyTypeChange}
             />
         );
 
@@ -52,11 +55,13 @@ describe('SinDetailsInput', () => {
 
     it('renders off-tee section when troubleOffTee is true', () => {
         const onOffTeeClubChange = jest.fn();
+        const onPenaltyTypeChange = jest.fn();
         const { getByText } = render(
             <SinDetailsInput
                 sins={{ ...allFalseSins, troubleOffTee: true }}
                 clubs={mockClubs}
                 onOffTeeClubChange={onOffTeeClubChange}
+                onPenaltyTypeChange={onPenaltyTypeChange}
             />
         );
 
@@ -65,29 +70,118 @@ describe('SinDetailsInput', () => {
 
     it('renders nothing when all sins are false', () => {
         const onOffTeeClubChange = jest.fn();
+        const onPenaltyTypeChange = jest.fn();
         const { queryByText } = render(
             <SinDetailsInput
                 sins={allFalseSins}
                 clubs={mockClubs}
                 onOffTeeClubChange={onOffTeeClubChange}
+                onPenaltyTypeChange={onPenaltyTypeChange}
             />
         );
 
         expect(queryByText('Club used off the tee')).toBeNull();
+        expect(queryByText('Penalty type')).toBeNull();
     });
 
-    it('passes club selection callback to ClubPicker', () => {
+    it('does not render penalty type section when penalties is false', () => {
         const onOffTeeClubChange = jest.fn();
-        const { getByText } = render(
+        const onPenaltyTypeChange = jest.fn();
+        const { queryByText } = render(
             <SinDetailsInput
-                sins={{ ...allFalseSins, troubleOffTee: true }}
+                sins={allFalseSins}
                 clubs={mockClubs}
-                selectedOffTeeClub="Driver"
                 onOffTeeClubChange={onOffTeeClubChange}
+                onPenaltyTypeChange={onPenaltyTypeChange}
             />
         );
 
-        // Verify section is rendered and ClubPicker is included (via callback)
+        expect(queryByText('Penalty type')).toBeNull();
+    });
+
+    it('renders penalty type section when penalties is true', () => {
+        const onOffTeeClubChange = jest.fn();
+        const onPenaltyTypeChange = jest.fn();
+        const { getByText } = render(
+            <SinDetailsInput
+                sins={{ ...allFalseSins, penalties: true }}
+                clubs={mockClubs}
+                onOffTeeClubChange={onOffTeeClubChange}
+                onPenaltyTypeChange={onPenaltyTypeChange}
+            />
+        );
+
+        expect(getByText('Penalty type')).toBeTruthy();
+    });
+
+    it('renders both sections when both sins are marked', () => {
+        const onOffTeeClubChange = jest.fn();
+        const onPenaltyTypeChange = jest.fn();
+        const onBogeysClubChange = jest.fn();
+        const { getByText } = render(
+            <SinDetailsInput
+                sins={{ ...allFalseSins, troubleOffTee: true, penalties: true }}
+                clubs={mockClubs}
+                onOffTeeClubChange={onOffTeeClubChange}
+                onPenaltyTypeChange={onPenaltyTypeChange}
+                onBogeysClubChange={onBogeysClubChange}
+            />
+        );
+
         expect(getByText('Club used off the tee')).toBeTruthy();
+        expect(getByText('Penalty type')).toBeTruthy();
+    });
+
+    it('does not render bogeys club section when bogeysInside9Iron is false', () => {
+        const onOffTeeClubChange = jest.fn();
+        const onPenaltyTypeChange = jest.fn();
+        const onBogeysClubChange = jest.fn();
+        const { queryByText } = render(
+            <SinDetailsInput
+                sins={allFalseSins}
+                clubs={mockClubs}
+                onOffTeeClubChange={onOffTeeClubChange}
+                onPenaltyTypeChange={onPenaltyTypeChange}
+                onBogeysClubChange={onBogeysClubChange}
+            />
+        );
+
+        expect(queryByText('Approach club')).toBeNull();
+    });
+
+    it('renders bogeys club section when bogeysInside9Iron is true', () => {
+        const onOffTeeClubChange = jest.fn();
+        const onPenaltyTypeChange = jest.fn();
+        const onBogeysClubChange = jest.fn();
+        const { getByText } = render(
+            <SinDetailsInput
+                sins={{ ...allFalseSins, bogeysInside9Iron: true }}
+                clubs={mockClubs}
+                onOffTeeClubChange={onOffTeeClubChange}
+                onPenaltyTypeChange={onPenaltyTypeChange}
+                onBogeysClubChange={onBogeysClubChange}
+            />
+        );
+
+        expect(getByText('Approach club')).toBeTruthy();
+    });
+
+    it('renders all three sections when all sins are marked', () => {
+        const onOffTeeClubChange = jest.fn();
+        const onPenaltyTypeChange = jest.fn();
+        const onBogeysClubChange = jest.fn();
+        const { getByText } = render(
+            <SinDetailsInput
+                sins={{ ...allFalseSins, troubleOffTee: true, penalties: true, bogeysInside9Iron: true }}
+                clubs={mockClubs}
+                onOffTeeClubChange={onOffTeeClubChange}
+                onPenaltyTypeChange={onPenaltyTypeChange}
+                onBogeysClubChange={onBogeysClubChange}
+            />
+        );
+
+        expect(getByText('Club used off the tee')).toBeTruthy();
+        expect(getByText('Penalty type')).toBeTruthy();
+        expect(getByText('Approach club')).toBeTruthy();
     });
 });

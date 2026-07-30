@@ -149,4 +149,26 @@ describe('ClubPicker', () => {
 
         expect(queryByTestId('club-picker-error')).toBeNull();
     });
+
+    it('renders empty state with custom testIDPrefix', () => {
+        const onSelectClub = jest.fn();
+        const { getByTestId } = render(
+            <ClubPicker clubs={[]} onSelectClub={onSelectClub} testIDPrefix="custom" />
+        );
+
+        expect(getByTestId('custom-empty-state')).toBeTruthy();
+    });
+
+    it('renders dropdown with custom testIDPrefix', async () => {
+        const onSelectClub = jest.fn();
+        const { getByTestId } = render(
+            <ClubPicker clubs={mockClubs} onSelectClub={onSelectClub} testIDPrefix="custom" />
+        );
+
+        fireEvent.press(getByTestId('custom-dropdown-toggle'));
+
+        await waitFor(() => {
+            expect(getByTestId('custom-option-Driver')).toBeTruthy();
+        });
+    });
 });

@@ -101,6 +101,10 @@ export default function Play() {
     const [clubDistances, setClubDistances] = useState<ClubDistance[]>([]);
     const [selectedOffTeeClub, setSelectedOffTeeClub] = useState<string | undefined>(undefined);
     const [sinDetailsClubError, setSinDetailsClubError] = useState(false);
+    const [selectedPenaltyType, setSelectedPenaltyType] = useState<string | undefined>(undefined);
+    const [sinDetailsPenaltyError, setSinDetailsPenaltyError] = useState(false);
+    const [selectedBogeysClub, setSelectedBogeysClub] = useState<string | undefined>(undefined);
+    const [sinDetailsBogeysClubError, setSinDetailsBogeysClubError] = useState(false);
     const [showPuttingInfo, setShowPuttingInfo] = useState(false);
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
@@ -359,10 +363,12 @@ export default function Play() {
             }
             setSelectedOffTeeClub(undefined);
             setSinDetailsClubError(false);
+            setSelectedPenaltyType(undefined);
+            setSinDetailsPenaltyError(false);
         } else if (holePhase === 'sinDetails') {
             setHolePhase('stats');
         } else if (holePhase === 'putting') {
-            const shouldShowSinDetails = deadlySinsValues.troubleOffTee && clubDistances.length > 0;
+            const shouldShowSinDetails = (deadlySinsValues.troubleOffTee && clubDistances.length > 0) || deadlySinsValues.penalties || (deadlySinsValues.bogeysInside9Iron && clubDistances.length > 0);
             if (shouldShowSinDetails) {
                 setHolePhase('sinDetails');
             } else {
@@ -386,13 +392,18 @@ export default function Play() {
             }
         } else if (holePhase === 'stats') {
             await insertHoleDeadlySinsService(activeRoundId, currentHole, deadlySinsValues);
-            setClubDistances(getClubDistancesService());
+            const freshClubDistances = getClubDistancesService();
+            setClubDistances(freshClubDistances);
 
-            const shouldShowSinDetails = deadlySinsValues.troubleOffTee && clubDistances.length > 0;
+            const shouldShowSinDetails = (deadlySinsValues.troubleOffTee && freshClubDistances.length > 0) || deadlySinsValues.penalties || (deadlySinsValues.bogeysInside9Iron && freshClubDistances.length > 0);
             if (shouldShowSinDetails) {
                 const saved = getHoleSinDetailsService(activeRoundId, currentHole);
                 setSelectedOffTeeClub(saved?.TroubleOffTeeClub);
+                setSelectedPenaltyType(saved?.PenaltyType);
+                setSelectedBogeysClub(saved?.BogeysInside9IronClub);
                 setSinDetailsClubError(false);
+                setSinDetailsPenaltyError(false);
+                setSinDetailsBogeysClubError(false);
                 setHolePhase('sinDetails');
             } else {
                 await deleteHoleSinDetailsByHole(activeRoundId, currentHole);
@@ -401,11 +412,35 @@ export default function Play() {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
         } else if (holePhase === 'sinDetails') {
-            if (!selectedOffTeeClub) {
+            const needsClub = deadlySinsValues.troubleOffTee && clubDistances.length > 0;
+            const needsPenalty = deadlySinsValues.penalties;
+            const needsBogeysClub = deadlySinsValues.bogeysInside9Iron && clubDistances.length > 0;
+            let blocked = false;
+
+            if (needsClub && !selectedOffTeeClub) {
                 setSinDetailsClubError(true);
-                return;
+                blocked = true;
+            } else {
+                setSinDetailsClubError(false);
             }
-            await insertHoleSinDetailsService(activeRoundId, currentHole, selectedOffTeeClub);
+
+            if (needsPenalty && !selectedPenaltyType) {
+                setSinDetailsPenaltyError(true);
+                blocked = true;
+            } else {
+                setSinDetailsPenaltyError(false);
+            }
+
+            if (needsBogeysClub && !selectedBogeysClub) {
+                setSinDetailsBogeysClubError(true);
+                blocked = true;
+            } else {
+                setSinDetailsBogeysClubError(false);
+            }
+
+            if (blocked) return;
+
+            await insertHoleSinDetailsService(activeRoundId, currentHole, { troubleOffTeeClub: selectedOffTeeClub, penaltyType: selectedPenaltyType, bogeysInside9IronClub: selectedBogeysClub });
             enterPuttingPhase(currentHole);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
@@ -430,6 +465,10 @@ export default function Play() {
                 setPuttingStats(null);
                 setSelectedOffTeeClub(undefined);
                 setSinDetailsClubError(false);
+                setSelectedPenaltyType(undefined);
+                setSinDetailsPenaltyError(false);
+                setSelectedBogeysClub(undefined);
+                setSinDetailsBogeysClubError(false);
             }
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
@@ -467,6 +506,10 @@ export default function Play() {
         setPuttingSecondPuttError(false);
         setSelectedOffTeeClub(undefined);
         setSinDetailsClubError(false);
+        setSelectedPenaltyType(undefined);
+        setSinDetailsPenaltyError(false);
+        setSelectedBogeysClub(undefined);
+        setSinDetailsBogeysClubError(false);
         setPlayers([]);
         setShowPlayerSetup(false);
         setCurrentHoleData(null);
@@ -795,6 +838,12 @@ export default function Play() {
                                         selectedOffTeeClub={selectedOffTeeClub}
                                         onOffTeeClubChange={setSelectedOffTeeClub}
                                         showOffTeeClubError={sinDetailsClubError}
+                                        selectedPenaltyType={selectedPenaltyType}
+                                        onPenaltyTypeChange={setSelectedPenaltyType}
+                                        showPenaltyTypeError={sinDetailsPenaltyError}
+                                        selectedBogeysClub={selectedBogeysClub}
+                                        onBogeysClubChange={setSelectedBogeysClub}
+                                        showBogeysClubError={sinDetailsBogeysClubError}
                                     />
                                 </>
                             )}

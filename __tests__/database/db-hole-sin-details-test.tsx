@@ -57,6 +57,65 @@ describe('insertHoleSinDetails', () => {
         );
     });
 
+    it('binds PenaltyType when provided', async () => {
+        await insertHoleSinDetails(42, 7, 'Driver', 'Out of bounds');
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $PenaltyType: 'Out of bounds' })
+        );
+    });
+
+    it('binds null when PenaltyType is undefined', async () => {
+        await insertHoleSinDetails(42, 7, 'Driver', undefined);
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $PenaltyType: null })
+        );
+    });
+
+    it('binds both fields when both provided', async () => {
+        await insertHoleSinDetails(42, 7, '3-wood', 'Water hazard');
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({
+                $RoundId: 42,
+                $HoleNumber: 7,
+                $TroubleOffTeeClub: '3-wood',
+                $PenaltyType: 'Water hazard',
+            })
+        );
+    });
+
+    it('binds BogeysInside9IronClub when provided', async () => {
+        await insertHoleSinDetails(42, 7, 'Driver', undefined, 'Wedge');
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $BogeysInside9IronClub: 'Wedge' })
+        );
+    });
+
+    it('binds null when BogeysInside9IronClub is undefined', async () => {
+        await insertHoleSinDetails(42, 7, 'Driver', undefined, undefined);
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $BogeysInside9IronClub: null })
+        );
+    });
+
+    it('binds all three fields when all provided', async () => {
+        await insertHoleSinDetails(42, 7, '3-wood', 'Water hazard', 'Wedge');
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({
+                $RoundId: 42,
+                $HoleNumber: 7,
+                $TroubleOffTeeClub: '3-wood',
+                $PenaltyType: 'Water hazard',
+                $BogeysInside9IronClub: 'Wedge',
+            })
+        );
+    });
+
     it('returns true on success', async () => {
         const result = await insertHoleSinDetails(1, 1, 'Driver');
         expect(result).toBe(true);

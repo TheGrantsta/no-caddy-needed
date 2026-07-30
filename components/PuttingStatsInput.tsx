@@ -3,6 +3,7 @@ import { Text, TouchableOpacity, View, TextInput } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
+import { DistanceUnit } from '@/service/UnitsService';
 
 type Props = {
     holePar: number;
@@ -13,6 +14,7 @@ type Props = {
     initialSecondIsLong?: boolean;
     showFirstPuttError?: boolean;
     onSecondPuttErrorChange?: (hasError: boolean) => void;
+    units?: DistanceUnit;
 };
 
 const PuttingStatsInput = ({
@@ -24,9 +26,11 @@ const PuttingStatsInput = ({
     initialSecondIsLong = false,
     showFirstPuttError = false,
     onSecondPuttErrorChange,
+    units = 'yards',
 }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
+    const distanceUnitLabel = units === 'metres' ? 'cm' : 'ft';
     const [firstPutt, setFirstPutt] = useState(initialFirstPutt !== undefined ? String(initialFirstPutt) : '');
     const [secondPutt, setSecondPutt] = useState(String(initialSecondPutt ?? 0));
     const [secondIsLong, setSecondIsLong] = useState(initialSecondIsLong);
@@ -112,7 +116,7 @@ const PuttingStatsInput = ({
 
             {/* First Putt */}
             <View style={{ marginBottom: 16 }}>
-                <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>1st Putt (ft)</Text>
+                <Text testID="first-putt-label" style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>1st Putt ({distanceUnitLabel})</Text>
                 <TextInput
                     testID="first-putt-input"
                     value={firstPutt}
@@ -140,7 +144,7 @@ const PuttingStatsInput = ({
 
             {/* Second Putt */}
             <View style={{ marginBottom: 16 }}>
-                <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>2nd Putt (ft)</Text>
+                <Text testID="second-putt-label" style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>2nd Putt ({distanceUnitLabel})</Text>
                 <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
                     <TextInput
                         testID="second-putt-input"

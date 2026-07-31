@@ -26,13 +26,15 @@ const baseSettings = {
     playOnboardingSeen: false,
     homeOnboardingSeen: false,
     practiceOnboardingSeen: false,
-    practiceFrequencyDays: 7,
     reviewPromptShown: false,
     preShotReminderEnabled: true,
     preShotRoutineText: '',
     whatsNewVersionSeen: '',
     settingsOnboardingSeen: true,
     performOnboardingSeen: true,
+    tempoBpm: 60,
+    units: 'yards',
+    skipStatsFlowEnabled: false,
 };
 
 jest.mock('../../context/ThemeContext', () => ({

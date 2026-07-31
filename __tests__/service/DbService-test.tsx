@@ -213,7 +213,6 @@ describe('getSettingsService', () => {
             PlayOnboardingSeen: 0,
             HomeOnboardingSeen: 0,
             PracticeOnboardingSeen: 0,
-            PracticeFrequencyDays: 7,
         });
 
         const result = getSettingsService();
@@ -251,7 +250,6 @@ describe('getSettingsService', () => {
             PlayOnboardingSeen: 0,
             HomeOnboardingSeen: 0,
             PracticeOnboardingSeen: 0,
-            PracticeFrequencyDays: 7,
         });
 
         const result = getSettingsService();
@@ -289,7 +287,6 @@ describe('getSettingsService', () => {
             PlayOnboardingSeen: 0,
             HomeOnboardingSeen: 0,
             PracticeOnboardingSeen: 0,
-            PracticeFrequencyDays: 7,
         });
 
         const result = getSettingsService();
@@ -327,7 +324,6 @@ describe('getSettingsService', () => {
             PlayOnboardingSeen: 1,
             HomeOnboardingSeen: 0,
             PracticeOnboardingSeen: 0,
-            PracticeFrequencyDays: 7,
         });
 
         const result = getSettingsService();

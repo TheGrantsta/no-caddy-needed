@@ -11,20 +11,6 @@ import {
     getHolesWithSinsForRoundService,
     loadCourseNotesService,
 } from '../../../service/DbService';
-import { checkPremiumEntitlement } from '../../../service/SubscriptionService';
-
-jest.mock('../../../service/SubscriptionService', () => ({
-    checkPremiumEntitlement: jest.fn().mockResolvedValue(true),
-}));
-
-jest.mock('expo-constants', () => ({
-    __esModule: true,
-    default: {
-        get expoConfig() {
-            return { extra: { analyseRoundEnabled: false } };
-        },
-    },
-}));
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,

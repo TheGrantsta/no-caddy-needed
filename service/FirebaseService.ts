@@ -10,8 +10,6 @@ const firebaseConfig = {
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export type FeedbackType = 'positive' | 'neutral' | 'negative';
-
 export const logEvent = async (
     event: string,
     properties?: Record<string, unknown>
@@ -37,24 +35,6 @@ export const logError = async (
             context,
             message,
             loggedAt: serverTimestamp(),
-        });
-        return true;
-    } catch {
-        return false;
-    }
-};
-
-export const submitRoundFeedback = async (
-    roundId: string,
-    feedback: FeedbackType,
-    focusIssue: string
-): Promise<boolean> => {
-    try {
-        await addDoc(collection(db, 'round_feedback'), {
-            roundId,
-            feedback,
-            focusIssue,
-            submittedAt: serverTimestamp(),
         });
         return true;
     } catch {

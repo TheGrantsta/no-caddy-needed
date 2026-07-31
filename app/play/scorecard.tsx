@@ -23,8 +23,6 @@ import {
     DeadlySinsValues,
     Round,
 } from '../../service/DbService';
-import Constants from 'expo-constants';
-import { checkPremiumEntitlement } from '../../service/SubscriptionService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
@@ -77,7 +75,6 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const [editedSins, setEditedSins] = useState<DeadlySinsValues | null>(null);
     const [sinsHoleNumber, setSinsHoleNumber] = useState<number | null>(null);
     const [sinHoles, setSinHoles] = useState<Set<number>>(new Set());
-    const analyseRoundEnabled = Constants.expoConfig?.extra?.analyseRoundEnabled ?? false;
 
     useEffect(() => {
         loadData();
@@ -327,33 +324,14 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                         {/* Action buttons sit at the bottom of the page (spacer fills the gap). */}
                         {!isEditing && !showDeleteConfirm && <View style={{ flexGrow: 1 }} />}
 
-                        {analyseRoundEnabled && !isEditing && !showDeleteConfirm && (
-                            <View style={styles.headerContainer}>
-                                <TouchableOpacity
-                                    testID="analyse-round-button"
-                                    style={styles.largeButton}
-                                    onPress={async () => {
-                                        const isPremium = await checkPremiumEntitlement();
-                                        if (isPremium) {
-                                            router.push({ pathname: '/play/round-analysis', params: { roundId } });
-                                        } else {
-                                            router.push({ pathname: '/play/premium-paywall', params: { roundId } });
-                                        }
-                                    }}
-                                >
-                                    <Text style={styles.buttonText}>Analyse your round</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-
                         {!isEditing && !showDeleteConfirm && (
                             <View style={styles.headerContainer}>
                                 <TouchableOpacity
                                     testID="edit-scorecard-button"
-                                    style={analyseRoundEnabled ? styles.largeButtonSecondary : styles.largeButton}
+                                    style={styles.largeButton}
                                     onPress={handleEdit}
                                 >
-                                    <Text style={analyseRoundEnabled ? styles.buttonTextSecondary : styles.buttonText}>Edit</Text>
+                                    <Text style={styles.buttonText}>Edit</Text>
                                 </TouchableOpacity>
                             </View>
                         )}

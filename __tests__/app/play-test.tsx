@@ -38,7 +38,6 @@ import {
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
 import { maybeRequestRoundReviewService } from '../../service/ReviewService';
-import { checkPremiumEntitlement } from '../../service/SubscriptionService';
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -122,18 +121,6 @@ jest.mock('../../service/FirebaseService', () => ({
     logEvent: jest.fn().mockResolvedValue(true),
 }));
 
-jest.mock('../../service/SubscriptionService', () => ({
-    checkPremiumEntitlement: jest.fn().mockResolvedValue(true),
-}));
-
-const mockExtraConfig = { analyseRoundEnabled: true };
-jest.mock('expo-constants', () => ({
-    __esModule: true,
-    default: {
-        get expoConfig() { return { extra: mockExtraConfig }; },
-    },
-}));
-
 jest.mock('expo-haptics', () => ({
     impactAsync: jest.fn(),
     ImpactFeedbackStyle: { Medium: 'medium' },
@@ -190,7 +177,6 @@ const mockAddRoundPlayers = addRoundPlayersService as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayersService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
 const mockLogEvent = logEvent as jest.Mock;
-const mockCheckPremiumEntitlement = checkPremiumEntitlement as jest.Mock;
 const mockGetRecentCourseNames = getRecentCourseNamesService as jest.Mock;
 const mockGetRecentPlayerNames = getRecentPlayerNamesService as jest.Mock;
 const mockGetSettingsService = getSettingsService as jest.Mock;
@@ -2038,72 +2024,6 @@ describe('Play screen', () => {
             });
         });
 
-        describe('Analyse your round button', () => {
-            it('shows analyse button when scorecard is present', async () => {
-                mockStartRound.mockResolvedValue(1);
-                mockAddRoundPlayers.mockResolvedValue([1]);
-                mockEndRound.mockResolvedValue(true);
-                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
-
-                const { getByTestId } = render(<Play />);
-
-                await startAndEndRound(getByTestId);
-
-                await waitFor(() => expect(getByTestId('scorecard-analyse-button')).toBeTruthy());
-            });
-
-            it('navigates to round-analysis when already subscribed', async () => {
-                mockCheckPremiumEntitlement.mockResolvedValue(true);
-                mockStartRound.mockResolvedValue(7);
-                mockAddRoundPlayers.mockResolvedValue([1]);
-                mockEndRound.mockResolvedValue(true);
-                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
-
-                const { getByTestId } = render(<Play />);
-
-                await startAndEndRound(getByTestId);
-
-                await waitFor(() => getByTestId('scorecard-analyse-button'));
-                fireEvent.press(getByTestId('scorecard-analyse-button'));
-
-                await waitFor(() => expect(mockPush).toHaveBeenCalledWith({ pathname: '/play/round-analysis', params: { roundId: 7 } }));
-            });
-
-            it('navigates to premium-paywall when not subscribed', async () => {
-                mockCheckPremiumEntitlement.mockResolvedValue(false);
-                mockStartRound.mockResolvedValue(7);
-                mockAddRoundPlayers.mockResolvedValue([1]);
-                mockEndRound.mockResolvedValue(true);
-                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
-
-                const { getByTestId } = render(<Play />);
-
-                await startAndEndRound(getByTestId);
-
-                await waitFor(() => getByTestId('scorecard-analyse-button'));
-                fireEvent.press(getByTestId('scorecard-analyse-button'));
-
-                await waitFor(() => expect(mockPush).toHaveBeenCalledWith({ pathname: '/play/premium-paywall', params: { roundId: 7 } }));
-            });
-
-            it('hides analyse button when feature flag is disabled', async () => {
-                mockExtraConfig.analyseRoundEnabled = false;
-                mockStartRound.mockResolvedValue(1);
-                mockAddRoundPlayers.mockResolvedValue([1]);
-                mockEndRound.mockResolvedValue(true);
-                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
-
-                const { getByTestId, queryByTestId } = render(<Play />);
-
-                await startAndEndRound(getByTestId);
-
-                await waitFor(() => expect(getByTestId('scorecard-done-button')).toBeTruthy());
-                expect(queryByTestId('scorecard-analyse-button')).toBeNull();
-
-                mockExtraConfig.analyseRoundEnabled = true;
-            });
-        });
-
         describe('7 Deadly Sins on complete scorecard', () => {
             it('showsDeadlySinsTallyWhenUserHoleSelectedOnCompleteScorecard', async () => {
                 mockStartRound.mockResolvedValue(1);
@@ -2386,34 +2306,6 @@ describe('Play screen', () => {
             await waitFor(() => expect(mockLogEvent).toHaveBeenCalledWith('end_round'));
         });
 
-        it('logs analyse_round event when analyse button pressed', async () => {
-            mockCheckPremiumEntitlement.mockResolvedValue(true);
-            mockStartRound.mockResolvedValue(7);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-            mockEndRound.mockResolvedValue(true);
-            mockGetMultiplayerScorecard.mockReturnValue({
-                round: { Id: 7, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
-                players: [{ Id: 1, RoundId: 7, PlayerName: 'You', IsUser: 1, SortOrder: 0 }],
-                holeScores: [],
-            });
-
-            const { getByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-            fireEvent.press(getByTestId('start-button'));
-
-            await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
-            fireEvent.press(getByTestId('end-round-button'));
-            await act(async () => {
-                fireEvent.press(getByTestId('confirm-end-round-button'));
-            });
-
-            await waitFor(() => expect(getByTestId('scorecard-analyse-button')).toBeTruthy());
-            fireEvent.press(getByTestId('scorecard-analyse-button'));
-
-            expect(mockLogEvent).toHaveBeenCalledWith('analyse_round', { roundId: 7 });
-        });
     });
 
     describe('Tab bar visibility', () => {

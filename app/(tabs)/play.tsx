@@ -263,12 +263,18 @@ export default function Play() {
             setPlayers(roundPlayers);
             setCurrentHole(1);
             setHolePhase('score');
-            setCourseHolePars(getCourseHoleParsService(courseName));
+            const holePars = getCourseHoleParsService(courseName);
+            setCourseHolePars(holePars);
             setActiveCourseName(courseName);
             const notes = loadCourseNotesService(courseName);
             setCourseNotes(notes);
             setCurrentNoteText(notes[1] ?? '');
-            const holeData = loadHoleForScore(1);
+            const par = holePars[1] ?? 4;
+            const holeData = {
+                holeNumber: 1,
+                holePar: par,
+                scores: roundPlayers.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: par })),
+            };
             setCurrentHoleData(holeData);
             setShowPlayerSetup(false);
             const nId = await scheduleRoundReminder();
@@ -369,6 +375,10 @@ export default function Play() {
             const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
             const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
             if (success) {
+                if (activeCourseName !== null) {
+                    await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
+                    setCourseNotes(prev => ({ ...prev, [currentHole]: currentNoteText.trim() }));
+                }
                 if (skipStatsFlow) {
                     // Skip stats flow: advance directly to next hole or end round
                     if (currentHole >= 18) {

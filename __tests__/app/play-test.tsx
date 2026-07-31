@@ -704,7 +704,7 @@ describe('Play screen', () => {
             });
         });
 
-        it.skip('callsSaveHoleNoteServiceWhenAdvancingToNextHole — To be fixed once flow is agreed', async () => {
+        it('callsSaveHoleNoteServiceWhenAdvancingToNextHole', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -720,16 +720,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('add-note-button'));
             fireEvent.changeText(getByTestId('hole-note-input'), 'aim left');
 
-            // Score phase → Stats phase
-            await act(async () => {
-                fireEvent.press(getByTestId('next-hole-button'));
-            });
-
-            await waitFor(() => {
-                expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
-            });
-
-            // Stats phase → Putting phase (note is saved here)
+            // Score phase → Stats phase (note is saved here with Bug B fix)
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));
             });
@@ -878,7 +869,18 @@ describe('Play screen', () => {
             });
         });
 
-        it.skip('turns Next into "Finish round" with a flag icon on the last hole — To be fixed once flow is agreed', async () => {
+        it('turns Next into "Finish round" with a flag icon on the last hole', async () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true,
+                playOnboardingSeen: true,
+                homeOnboardingSeen: true,
+                practiceOnboardingSeen: true,
+                reviewPromptShown: false,
+                skipStatsFlowEnabled: true,
+            });
             const utils = await resumeAtHole(17); // resumes on hole 18
 
             const button = utils.UNSAFE_getByProps({ testID: 'next-hole-button' });
@@ -982,7 +984,7 @@ describe('Play screen', () => {
             });
         });
 
-        it.skip('submits default par scores when next #pressed without changing score — To be fixed once flow is agreed', async () => {
+        it('submits default par scores when next #pressed without changing score — To be fixed once flow is agreed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -1215,7 +1217,7 @@ describe('Play screen', () => {
                 });
             });
 
-            it.skip('savesHistoricalPar3WhenAdvancingWithoutTouchingAnyControl — To be fixed once flow is agreed', async () => {
+            it('savesHistoricalPar3WhenAdvancingWithoutTouchingAnyControl — To be fixed once flow is agreed', async () => {
                 mockStartRound.mockResolvedValue(1);
                 mockAddRoundPlayers.mockResolvedValue([1]);
                 mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -1241,7 +1243,7 @@ describe('Play screen', () => {
                 });
             });
 
-            it.skip('savesHistoricalPar5WhenAdvancingWithoutTouchingAnyControl — To be fixed once flow is agreed', async () => {
+            it('savesHistoricalPar5WhenAdvancingWithoutTouchingAnyControl — To be fixed once flow is agreed', async () => {
                 mockStartRound.mockResolvedValue(1);
                 mockAddRoundPlayers.mockResolvedValue([1]);
                 mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -1513,10 +1515,31 @@ describe('Play screen', () => {
     });
 
     describe('7 Deadly Sins integration', () => {
-        it.skip('shows 7 Deadly Sins tally when round starts — To be fixed once flow is agreed', async () => {
+        beforeEach(() => {
+            jest.clearAllMocks();
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
+            mockInsertHoleDeadlySins.mockResolvedValue(true);
+            mockGetCourseHolePars.mockReturnValue({ 1: 4 });
+            mockGetHoleDeadlySins.mockReturnValue(null);
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true,
+                playOnboardingSeen: true,
+                homeOnboardingSeen: true,
+                practiceOnboardingSeen: true,
+                reviewPromptShown: false,
+            });
+        });
+
+        it('shows 7 Deadly Sins tally when round starts', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+            mockGetCourseHolePars.mockReturnValue({ 1: 4 });
 
             const { getByTestId, getByText, queryByText } = render(<Play />);
 
@@ -1533,7 +1556,7 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
-                expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
+                expect(getByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeTruthy();
             });
 
             expect(getByText('3-putts')).toBeTruthy();
@@ -1563,11 +1586,12 @@ describe('Play screen', () => {
             expect(queryByTestId('toggle-7deadly-sins')).toBeNull();
         });
 
-        it.skip('saves hole sins when next hole is pressed — To be fixed once flow is agreed', async () => {
+        it('saves hole sins when next hole is pressed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
             mockInsertHoleDeadlySins.mockResolvedValue(true);
+            mockGetCourseHolePars.mockReturnValue({ 1: 4 });
 
             const { getByTestId } = render(<Play />);
 
@@ -1584,7 +1608,7 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
-                expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
+                expect(getByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeTruthy();
             });
 
             mockInsertHoleDeadlySins.mockClear();

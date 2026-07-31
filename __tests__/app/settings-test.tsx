@@ -83,10 +83,10 @@ describe('Settings page', () => {
         expect(getByTestId('settings-tab-system')).toBeTruthy();
     });
 
-    it('defaults to the Golf group (Practice visible, System settings hidden)', () => {
+    it('defaults to the Golf group (Show pre-shot routine visible, System settings hidden)', () => {
         const { getByText, queryByText } = render(<Settings />);
 
-        expect(getByText('Practice')).toBeTruthy();
+        expect(getByText('Show pre-shot routine')).toBeTruthy();
         expect(queryByText('Notifications')).toBeNull();
     });
 
@@ -96,7 +96,7 @@ describe('Settings page', () => {
         fireEvent.press(getByTestId('settings-tab-system'));
 
         expect(getByText('Notifications')).toBeTruthy();
-        expect(queryByText('Practice')).toBeNull();
+        expect(queryByText('Show pre-shot routine')).toBeNull();
     });
 
     it('keeps Rate my app and version outside the groups (visible on both tabs)', () => {
@@ -365,68 +365,11 @@ describe('Settings page', () => {
         });
     });
 
-    it('rendersPracticeHeading', () => {
-        const { getByText } = render(<Settings />);
-        expect(getByText('Practice')).toBeTruthy();
-    });
-
-    it('showsPracticeFrequencyDecrementButton', () => {
-        const { getByTestId } = render(<Settings />);
-        expect(getByTestId('practice-frequency-decrement')).toBeTruthy();
-    });
-
-    it('showsPracticeFrequencyIncrementButton', () => {
-        const { getByTestId } = render(<Settings />);
-        expect(getByTestId('practice-frequency-increment')).toBeTruthy();
-    });
-
-    it('showsDefaultPracticeFrequencyOf7', () => {
-        const { getByTestId } = render(<Settings />);
-        expect(getByTestId('practice-frequency-value').props.children).toBe(7);
-    });
-
-    it('showsCustomPracticeFrequencyFromSettings', () => {
-        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 3 });
-        const { getByTestId } = render(<Settings />);
-        expect(getByTestId('practice-frequency-value').props.children).toBe(3);
-    });
-
-    it('incrementsFrequencyWhenIncrementPressed', async () => {
-        const { getByTestId } = render(<Settings />);
-        fireEvent.press(getByTestId('practice-frequency-increment'));
-        await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith(
-                expect.objectContaining({ practiceFrequencyDays: 8 })
-            );
-        });
-    });
-
-    it('decrementsFrequencyWhenDecrementPressed', async () => {
-        const { getByTestId } = render(<Settings />);
-        fireEvent.press(getByTestId('practice-frequency-decrement'));
-        await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith(
-                expect.objectContaining({ practiceFrequencyDays: 6 })
-            );
-        });
-    });
-
-    it('doesNotDecrementBelowOne', async () => {
-        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 1 });
-        const { getByTestId } = render(<Settings />);
-        fireEvent.press(getByTestId('practice-frequency-decrement'));
-        await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith(
-                expect.objectContaining({ practiceFrequencyDays: 1 })
-            );
-        });
-    });
-
     describe('Pre-shot routine', () => {
         const preShotSettings = (overrides: Record<string, unknown> = {}) => ({
             notificationsEnabled: true, voice: 'female', soundsEnabled: true,
             wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false,
-            homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7,
+            homeOnboardingSeen: false, practiceOnboardingSeen: false,
             reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: 'Target, breathe, go', skipStatsFlowEnabled: false, ...overrides,
         });
 

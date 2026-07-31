@@ -189,7 +189,6 @@ describe('getSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -228,7 +227,6 @@ describe('getSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -267,7 +265,6 @@ describe('getSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -306,7 +303,6 @@ describe('getSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -345,7 +341,6 @@ describe('getSettingsService', () => {
             playOnboardingSeen: true,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -436,7 +431,6 @@ describe('saveSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -451,7 +445,7 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0);
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
@@ -466,7 +460,6 @@ describe('saveSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -481,7 +474,7 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0);
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
@@ -496,7 +489,6 @@ describe('saveSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -511,6 +503,6 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0);
     });
 });

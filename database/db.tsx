@@ -103,7 +103,6 @@ export const initialize = async () => {
                 'PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0',
                 "Voice TEXT NOT NULL DEFAULT 'female'",
                 'SoundsEnabled INTEGER NOT NULL DEFAULT 1',
-                'PracticeFrequencyDays INTEGER NOT NULL DEFAULT 7',
                 'ReviewPromptShown INTEGER NOT NULL DEFAULT 0',
                 'PreShotReminderEnabled INTEGER NOT NULL DEFAULT 1',
                 "PreShotRoutineText TEXT NOT NULL DEFAULT ''",
@@ -114,7 +113,7 @@ export const initialize = async () => {
                 "Units TEXT NOT NULL DEFAULT 'yards'",
                 'SkipStatsFlowEnabled INTEGER NOT NULL DEFAULT 0',
             ],
-            columnsToRemove: [],
+            columnsToRemove: ['PracticeFrequencyDays'],
         },
         {
             table: 'Rounds',
@@ -839,7 +838,7 @@ export const getSettings = () => {
     return rows.length > 0 ? rows[0] : null;
 };
 
-export const saveSettings = async (notificationsEnabled: number, voice: string, soundsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number, homeOnboardingSeen: number, practiceOnboardingSeen: number, practiceFrequencyDays: number, reviewPromptShown: number, preShotReminderEnabled: number, preShotRoutineText: string, whatsNewVersionSeen: string, settingsOnboardingSeen: number, performOnboardingSeen: number, tempoBpm: number, units: string, skipStatsFlowEnabled: number): Promise<boolean> => {
+export const saveSettings = async (notificationsEnabled: number, voice: string, soundsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number, homeOnboardingSeen: number, practiceOnboardingSeen: number, reviewPromptShown: number, preShotReminderEnabled: number, preShotRoutineText: string, whatsNewVersionSeen: string, settingsOnboardingSeen: number, performOnboardingSeen: number, tempoBpm: number, units: string, skipStatsFlowEnabled: number): Promise<boolean> => {
     let success = true;
     try {
         // Guard: the Settings row is rewritten via DELETE + INSERT on every save, so a
@@ -852,11 +851,11 @@ export const saveSettings = async (notificationsEnabled: number, voice: string, 
         getSyncDb().execSync('DELETE FROM Settings');
 
         const statement = getSyncDb().prepareSync(
-            'INSERT INTO Settings (NotificationsEnabled, Voice, SoundsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen, HomeOnboardingSeen, PracticeOnboardingSeen, PracticeFrequencyDays, ReviewPromptShown, PreShotReminderEnabled, PreShotRoutineText, WhatsNewVersionSeen, SettingsOnboardingSeen, PerformOnboardingSeen, TempoBpm, Units, SkipStatsFlowEnabled) VALUES ($NotificationsEnabled, $Voice, $SoundsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen, $HomeOnboardingSeen, $PracticeOnboardingSeen, $PracticeFrequencyDays, $ReviewPromptShown, $PreShotReminderEnabled, $PreShotRoutineText, $WhatsNewVersionSeen, $SettingsOnboardingSeen, $PerformOnboardingSeen, $TempoBpm, $Units, $SkipStatsFlowEnabled)'
+            'INSERT INTO Settings (NotificationsEnabled, Voice, SoundsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen, HomeOnboardingSeen, PracticeOnboardingSeen, ReviewPromptShown, PreShotReminderEnabled, PreShotRoutineText, WhatsNewVersionSeen, SettingsOnboardingSeen, PerformOnboardingSeen, TempoBpm, Units, SkipStatsFlowEnabled) VALUES ($NotificationsEnabled, $Voice, $SoundsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen, $HomeOnboardingSeen, $PracticeOnboardingSeen, $ReviewPromptShown, $PreShotReminderEnabled, $PreShotRoutineText, $WhatsNewVersionSeen, $SettingsOnboardingSeen, $PerformOnboardingSeen, $TempoBpm, $Units, $SkipStatsFlowEnabled)'
         );
 
         try {
-            await statement.executeAsync({ $NotificationsEnabled: notificationsEnabled, $Voice: voice, $SoundsEnabled: soundsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen, $PracticeFrequencyDays: practiceFrequencyDays, $ReviewPromptShown: reviewPromptShown, $PreShotReminderEnabled: preShotReminderEnabled, $PreShotRoutineText: routineToStore, $WhatsNewVersionSeen: whatsNewVersionSeen, $SettingsOnboardingSeen: settingsOnboardingSeen, $PerformOnboardingSeen: performOnboardingSeen, $TempoBpm: tempoBpm, $Units: units, $SkipStatsFlowEnabled: skipStatsFlowEnabled });
+            await statement.executeAsync({ $NotificationsEnabled: notificationsEnabled, $Voice: voice, $SoundsEnabled: soundsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen, $ReviewPromptShown: reviewPromptShown, $PreShotReminderEnabled: preShotReminderEnabled, $PreShotRoutineText: routineToStore, $WhatsNewVersionSeen: whatsNewVersionSeen, $SettingsOnboardingSeen: settingsOnboardingSeen, $PerformOnboardingSeen: performOnboardingSeen, $TempoBpm: tempoBpm, $Units: units, $SkipStatsFlowEnabled: skipStatsFlowEnabled });
         } finally {
             await statement.finalizeAsync();
         }
@@ -1053,31 +1052,3 @@ const ZERO_SIN_FREQUENCIES: SinFrequencies = {
     BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0,
 };
 
-export const getSinFrequenciesForRoundsSync = (roundIds: number[]): SinFrequencies => {
-    if (roundIds.length === 0) return { ...ZERO_SIN_FREQUENCIES };
-    const rows = getSyncDb().getAllSync(
-        `SELECT SUM(ThreePutts) as ThreePutts, SUM(DoubleBogeys) as DoubleBogeys,
-                SUM(BogeysPar5) as BogeysPar5, SUM(BogeysInside9Iron) as BogeysInside9Iron,
-                SUM(DoubleChips) as DoubleChips, SUM(TroubleOffTee) as TroubleOffTee,
-                SUM(Penalties) as Penalties
-         FROM HoleDeadlySins WHERE RoundId IN (${roundIds.join(',')})`
-    ) as any[];
-    const row = rows[0] ?? {};
-    return {
-        ThreePutts: row.ThreePutts ?? 0,
-        DoubleBogeys: row.DoubleBogeys ?? 0,
-        BogeysPar5: row.BogeysPar5 ?? 0,
-        BogeysInside9Iron: row.BogeysInside9Iron ?? 0,
-        DoubleChips: row.DoubleChips ?? 0,
-        TroubleOffTee: row.TroubleOffTee ?? 0,
-        Penalties: row.Penalties ?? 0,
-    };
-};
-
-export const getCompletedRoundIdsSync = (limit: number): number[] => {
-    const rows = getSyncDb().getAllSync(
-        'SELECT Id FROM Rounds WHERE IsCompleted = 1 ORDER BY Created_At DESC LIMIT ?',
-        [limit]
-    ) as { Id: number }[];
-    return rows.map(r => r.Id);
-};

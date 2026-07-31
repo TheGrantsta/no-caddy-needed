@@ -339,7 +339,7 @@ describe('Settings table column migration', () => {
                 { name: 'PlayOnboardingSeen' },
                 { name: 'HomeOnboardingSeen' },
                 { name: 'PracticeOnboardingSeen' },
-                { name: 'PracticeFrequencyDays' },
+                
                 { name: 'ReviewPromptShown' },
                 { name: 'PreShotReminderEnabled' },
                 { name: 'PreShotRoutineText' },
@@ -373,7 +373,7 @@ describe('Settings table column migration', () => {
                 { name: 'PlayOnboardingSeen' },
                 { name: 'HomeOnboardingSeen' },
                 { name: 'PracticeOnboardingSeen' },
-                { name: 'PracticeFrequencyDays' },
+                
                 { name: 'ReviewPromptShown' },
                 { name: 'PreShotReminderEnabled' },
                 { name: 'PreShotRoutineText' },
@@ -480,7 +480,7 @@ describe('old Drills to DrillHistory rename migration', () => {
         { name: 'Voice' }, { name: 'SoundsEnabled' },
         { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
         { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
-        { name: 'PracticeOnboardingSeen' }, { name: 'PracticeFrequencyDays' },
+        { name: 'PracticeOnboardingSeen' }, 
     ];
     const allDeadlySinsCols = [
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
@@ -631,7 +631,7 @@ describe('DrillHistory DrillId column migration', () => {
         { name: 'Voice' }, { name: 'SoundsEnabled' },
         { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
         { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
-        { name: 'PracticeOnboardingSeen' }, { name: 'PracticeFrequencyDays' },
+        { name: 'PracticeOnboardingSeen' }, 
     ];
     const allDeadlySinsCols = [
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
@@ -738,7 +738,7 @@ describe('Drills table seeding', () => {
         { name: 'Voice' }, { name: 'SoundsEnabled' },
         { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
         { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
-        { name: 'PracticeOnboardingSeen' }, { name: 'PracticeFrequencyDays' },
+        { name: 'PracticeOnboardingSeen' }, 
     ];
     const allDeadlySinsCols = [
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },

@@ -59,8 +59,6 @@ import {
     getAllHoleNotesForCourse,
     upsertHoleNote,
     deleteHoleNote,
-    getSinFrequenciesForRoundsSync,
-    getCompletedRoundIdsSync,
 } from '../database/db';
 
 export type WedgeChartClub = {
@@ -627,7 +625,6 @@ export type AppSettings = {
     playOnboardingSeen: boolean;
     homeOnboardingSeen: boolean;
     practiceOnboardingSeen: boolean;
-    practiceFrequencyDays: number;
     reviewPromptShown: boolean;
     preShotReminderEnabled: boolean;
     preShotRoutineText: string;
@@ -640,10 +637,10 @@ export type AppSettings = {
 };
 
 export const getSettingsService = (): AppSettings => {
-    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; PracticeFrequencyDays: number; ReviewPromptShown: number; PreShotReminderEnabled: number; PreShotRoutineText: string; WhatsNewVersionSeen: string; SettingsOnboardingSeen: number; PerformOnboardingSeen: number; TempoBpm: number; Units: string; SkipStatsFlowEnabled: number } | null;
+    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; ReviewPromptShown: number; PreShotReminderEnabled: number; PreShotRoutineText: string; WhatsNewVersionSeen: string; SettingsOnboardingSeen: number; PerformOnboardingSeen: number; TempoBpm: number; Units: string; SkipStatsFlowEnabled: number } | null;
 
     if (!row) {
-        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: DEFAULT_PRESHOT_ROUTINE, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false };
+        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: DEFAULT_PRESHOT_ROUTINE, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false };
     }
 
     return {
@@ -655,7 +652,6 @@ export const getSettingsService = (): AppSettings => {
         playOnboardingSeen: row.PlayOnboardingSeen === 1,
         homeOnboardingSeen: row.HomeOnboardingSeen === 1,
         practiceOnboardingSeen: row.PracticeOnboardingSeen === 1,
-        practiceFrequencyDays: row.PracticeFrequencyDays ?? 7,
         reviewPromptShown: row.ReviewPromptShown === 1,
         preShotReminderEnabled: (row.PreShotReminderEnabled ?? 1) === 1,
         preShotRoutineText: row.PreShotRoutineText || DEFAULT_PRESHOT_ROUTINE,
@@ -669,7 +665,7 @@ export const getSettingsService = (): AppSettings => {
 };
 
 export const saveSettingsService = async (settings: AppSettings): Promise<boolean> => {
-    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0, settings.practiceFrequencyDays, settings.reviewPromptShown ? 1 : 0, settings.preShotReminderEnabled ? 1 : 0, settings.preShotRoutineText, settings.whatsNewVersionSeen, settings.settingsOnboardingSeen ? 1 : 0, settings.performOnboardingSeen ? 1 : 0, settings.tempoBpm, settings.units, settings.skipStatsFlowEnabled ? 1 : 0);
+    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0, settings.reviewPromptShown ? 1 : 0, settings.preShotReminderEnabled ? 1 : 0, settings.preShotRoutineText, settings.whatsNewVersionSeen, settings.settingsOnboardingSeen ? 1 : 0, settings.performOnboardingSeen ? 1 : 0, settings.tempoBpm, settings.units, settings.skipStatsFlowEnabled ? 1 : 0);
 };
 
 export type PracticeReminder = {
@@ -719,36 +715,6 @@ export const getParAveragesService = (rounds: Round[]): ParAverages => {
         totals[par]?.count > 0 ? totals[par].sum / totals[par].count : null;
 
     return { par3: avg(3), par4: avg(4), par5: avg(5) };
-};
-
-const SIN_TO_PRACTICE: Record<string, { category: string; reminderLabel: string; drillLabels: string[] }> = {
-    ThreePutts:        { category: 'Putting',    reminderLabel: 'Putting practice — reduce 3-putts',                drillLabels: ['Ladder', 'Clock', 'Gate'] },
-    DoubleChips:       { category: 'Chipping',   reminderLabel: 'Chipping practice — eliminate double chips',       drillLabels: ['Hoop', 'Gate', 'Ladder'] },
-    DoubleBogeys:      { category: 'Chipping',   reminderLabel: 'Chipping practice — reduce double bogeys',         drillLabels: ['Gate', 'Clock', 'Hoop'] },
-    BogeysInside9Iron: { category: 'Pitching',   reminderLabel: 'Pitching practice — sharpen approach shots',       drillLabels: ['Three ball', 'Ladder', 'Gate'] },
-    BogeysPar5:        { category: 'Pitching',   reminderLabel: 'Pitching practice — improve par 5 approaches',     drillLabels: ['Ladder', 'Three ball', 'Gate'] },
-    TroubleOffTee:     { category: 'Full swing', reminderLabel: 'Full swing practice — hit more fairways',          drillLabels: ['Gate', 'Tempo', 'Ladder'] },
-    Penalties:         { category: 'Full swing', reminderLabel: 'Full swing practice — improve course management',  drillLabels: ['Tempo', 'Gate', 'Three ball'] },
-};
-
-export type PracticePlanItem = { reminderLabel: string; drillLabels: string[]; count: number };
-
-export const getTopSinsForPracticePlanService = (): PracticePlanItem[] => {
-    const recentIds = getCompletedRoundIdsSync(10);
-    const freqs = getSinFrequenciesForRoundsSync(recentIds);
-    const entries = (Object.keys(SIN_TO_PRACTICE) as string[])
-        .map(key => ({ ...SIN_TO_PRACTICE[key], count: (freqs as any)[key] as number }))
-        .filter(e => e.count > 0)
-        .sort((a, b) => b.count - a.count);
-
-    const seen = new Set<string>();
-    return entries.reduce<PracticePlanItem[]>((acc, e) => {
-        if (!seen.has(e.category)) {
-            seen.add(e.category);
-            acc.push({ reminderLabel: e.reminderLabel, drillLabels: e.drillLabels, count: e.count });
-        }
-        return acc;
-    }, []);
 };
 
 export const updateScorecardService = async (

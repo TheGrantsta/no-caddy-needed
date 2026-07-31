@@ -1070,7 +1070,7 @@ describe('Play screen', () => {
             });
         });
 
-        it.skip('goes back one #when previous #is pressed — To be fixed once flow is agreed', async () => {
+        it('goes back one when previous button is pressed after going forward two holes', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -1091,14 +1091,6 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
-                expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
-            });
-
-            await act(async () => {
-                fireEvent.press(getByTestId('next-hole-button'));
-            });
-
-            await waitFor(() => {
                 expect(getByText('#2')).toBeTruthy();
             });
 
@@ -1109,7 +1101,7 @@ describe('Play screen', () => {
             expect(getByText('#1')).toBeTruthy();
         });
 
-        it.skip('showsCorrectNoteWhenNavigatingBackward — To be fixed once flow is agreed', async () => {
+        it('showsCorrectNoteWhenNavigatingBackward — To be fixed once flow is agreed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -1132,7 +1124,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('previous-hole-button'));
 
-            expect(getByTestId('hole-note-text')).toHaveTextContent('hole 1 note');
+            await waitFor(() => expect(getByTestId('hole-note-text')).toHaveTextContent('hole 1 note'));
         });
 
         describe('Par score amendment from pre-selected value', () => {
@@ -1217,7 +1209,7 @@ describe('Play screen', () => {
                 });
             });
 
-            it('savesHistoricalPar3WhenAdvancingWithoutTouchingAnyControl — To be fixed once flow is agreed', async () => {
+            it('savesHistoricalPar3WhenAdvancingWithoutTouchingAnyControl', async () => {
                 mockStartRound.mockResolvedValue(1);
                 mockAddRoundPlayers.mockResolvedValue([1]);
                 mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -1243,7 +1235,7 @@ describe('Play screen', () => {
                 });
             });
 
-            it('savesHistoricalPar5WhenAdvancingWithoutTouchingAnyControl — To be fixed once flow is agreed', async () => {
+            it('savesHistoricalPar5WhenAdvancingWithoutTouchingAnyControl', async () => {
                 mockStartRound.mockResolvedValue(1);
                 mockAddRoundPlayers.mockResolvedValue([1]);
                 mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -1532,6 +1524,7 @@ describe('Play screen', () => {
                 homeOnboardingSeen: true,
                 practiceOnboardingSeen: true,
                 reviewPromptShown: false,
+                skipStatsFlowEnabled: false,
             });
         });
 
@@ -1620,35 +1613,6 @@ describe('Play screen', () => {
             await waitFor(() => {
                 expect(mockInsertHoleDeadlySins).toHaveBeenCalledWith(
                     1, 1, expect.objectContaining({ threePutts: false, penalties: false })
-                );
-            });
-        });
-
-        it.skip('saves toggled sins when advancing to next hole — To be fixed once flow is agreed', async () => {
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-            mockAddMultiplayerHoleScores.mockResolvedValue(true);
-
-            const { getByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-            fireEvent.press(getByTestId('start-button'));
-
-            await waitFor(() => {
-                expect(getByTestId('next-hole-button')).toBeTruthy();
-            });
-
-            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
-            fireEvent.press(getByTestId('7deadly-sins-toggle-penalties'));
-
-            await act(async () => {
-                fireEvent.press(getByTestId('next-hole-button'));
-            });
-
-            await waitFor(() => {
-                expect(mockInsertHoleDeadlySins).toHaveBeenCalledWith(
-                    1, 1, expect.objectContaining({ troubleOffTee: true, penalties: true })
                 );
             });
         });
@@ -1838,35 +1802,13 @@ describe('Play screen', () => {
 
             expect(getByText('#1')).toBeTruthy();
         });
-
-        it.skip('advances #with zero contribution when no user player found in scores — To be fixed once flow is agreed', async () => {
-            mockGetActiveRound.mockReturnValue({
-                Id: 5, TotalScore: 0, IsCompleted: 0,
-                StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
-                Created_At: '2025-06-15T10:00:00.000Z',
-            });
-            mockGetRoundPlayers.mockReturnValue([
-                { Id: 2, RoundId: 5, PlayerName: 'Alice', IsUser: 0, SortOrder: 0 },
-            ]);
-            mockAddMultiplayerHoleScores.mockResolvedValue(true);
-
-            const { getByTestId, getByText } = render(<Play />);
-
-            await act(async () => {
-                fireEvent.press(getByTestId('continue-round-button'));
-            });
-
-            expect(getByText('#1')).toBeTruthy();
-
-            await act(async () => {
-                fireEvent.press(getByTestId('next-hole-button'));
-            });
-
-            expect(getByText('#2')).toBeTruthy();
-        });
     });
 
     describe('18-Hole limit', () => {
+        beforeEach(() => {
+            mockGetSettingsService.mockReturnValue({ skipStatsFlowEnabled: true, });
+        });
+
         const startRoundAndAdvanceToHole = async (getByTestId: any, getByText: any, targetHole: number) => {
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
@@ -1886,7 +1828,7 @@ describe('Play screen', () => {
             }
         };
 
-        it.skip('shows end round confirm after submitting Hole 18 scores — To be fixed once flow is agreed', async () => {
+        it('shows end round confirm after submitting Hole 18 scores — To be fixed once flow is agreed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -1900,13 +1842,13 @@ describe('Play screen', () => {
                 fireEvent.press(getByTestId('next-hole-button'));
             });
 
-            await waitFor(() => {
-                expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
-            });
+            // await waitFor(() => {
+            //     expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
+            // });
 
-            await act(async () => {
-                fireEvent.press(getByTestId('next-hole-button'));
-            });
+            // await act(async () => {
+            //     fireEvent.press(getByTestId('next-hole-button'));
+            // });
 
             await waitFor(() => {
                 expect(getByTestId('confirm-end-round-button')).toBeTruthy();
@@ -1915,7 +1857,7 @@ describe('Play screen', () => {
             expect(queryByText('#19')).toBeNull();
         });
 
-        it.skip('saves Hole 18 scores before showing end round confirmation — To be fixed once flow is agreed', async () => {
+        it('saves Hole 18 scores before showing end round confirmation', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);

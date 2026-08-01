@@ -98,7 +98,7 @@ describe('renders homepage', () => {
 
         expect(getByText('Play')).toBeTruthy();
         expect(getByText('Practice')).toBeTruthy();
-        expect(getByText('Perform')).toBeTruthy();
+        expect(getByText('Performance')).toBeTruthy();
     });
 
     it('shows points on homepage', () => {

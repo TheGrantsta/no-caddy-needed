@@ -14,7 +14,7 @@ import { getSettingsService, saveSettingsService, AppSettings } from '../../serv
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ONBOARDING_STEPS = [
-  { text: 'Perform helps you make smarter decisions and set realistic expectations on the course.' },
+  { text: 'Performance helps you make smarter decisions and set realistic expectations on the course.' },
   { text: 'The Approach tab shares concepts for choosing better targets and playing for your shot dispersion.' },
   { text: 'The Pro stats tab shows tour-level proximity and putting make rates so you can manage your expectations.' },
 ];
@@ -193,7 +193,7 @@ export default function Perform() {
               <View style={styles.header}>
                 <View style={styles.titleRow}>
                   <Text style={[styles.headerText, styles.marginTop]}>
-                    Perform
+                    Performance
                   </Text>
                 </View>
                 <Text style={[styles.normalText, styles.marginBottom]}>
@@ -277,7 +277,7 @@ export default function Perform() {
       <OnboardingOverlay
         visible={showOnboarding}
         onDismiss={handleDismissOnboarding}
-        title="Perform guide"
+        title="Performance guide"
         steps={ONBOARDING_STEPS}
       />
     </GestureHandlerRootView>

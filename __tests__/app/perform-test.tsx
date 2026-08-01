@@ -184,7 +184,7 @@ describe('Perform page ', () => {
             const { getByTestId, getByText } = render(<View />);
 
             expect(getByTestId('onboarding-overlay')).toBeTruthy();
-            expect(getByText('Perform guide')).toBeTruthy();
+            expect(getByText('Performance guide')).toBeTruthy();
         });
 
         it('hides the onboarding overlay when already seen', () => {

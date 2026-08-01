@@ -65,7 +65,7 @@ describe('Perform', () => {
     it('showsProsSectionWhenProsSubMenuPressed', () => {
         const { getByTestId, getByText } = render(<Perform />);
         fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-        expect(getByText('Perform')).toBeTruthy();
+        expect(getByText('Performance')).toBeTruthy();
     });
 
     it('displaysManageExpectationsTextInProsSection', () => {
@@ -184,7 +184,7 @@ describe('Perform', () => {
         it('onRefreshResetsSectionToApproach', () => {
             const { getByTestId, UNSAFE_getByType, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-            expect(getByText('Perform')).toBeTruthy();
+            expect(getByText('Performance')).toBeTruthy();
 
             const scrollView = UNSAFE_getByType(ScrollView);
             act(() => {

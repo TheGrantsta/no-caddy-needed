@@ -80,7 +80,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="perform"
           options={{
-            title: 'Perform',
+            title: 'Performance',
             tabBarIcon: ({ color }) => (
               <MaterialIcons name='lightbulb' color={color} size={32} />
             )

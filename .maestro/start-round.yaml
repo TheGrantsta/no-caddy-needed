@@ -66,10 +66,8 @@ appId: com.grantsta.golf.nocaddyneeded
       id: "score-only-on-selected"
     timeout: 5000
 
-# Return to Home screen
-- tapOn:
-    text: ".*Home.*"
-    index: 0
+# Return to Home screen (Settings is a stacked screen, not a tab — no "Home" label to tap)
+- back
 - extendedWaitUntil:
     visible: "No caddy needed!"
     timeout: 5000

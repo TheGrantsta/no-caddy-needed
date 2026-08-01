@@ -89,7 +89,7 @@ export default function Perform() {
 
   // Placeholder until a real per-distance-bucket putting aggregator exists (see getPuttingStatsService).
   // Pro rate in brackets matches getPuttingStats() where a bucket overlaps; other buckets are interpolated.
-  const getFakePersonalPuttingStats = (distanceUnitLabel: string) => {
+  const getFakePersonalPuttingStats = (): [string, string][] => {
     const rates: [string, string, string][] = [
       ['1', '98%', '100%'], ['2', '94%', '99%'], ['3', '88%', '95%'], ['4', '77%', '86%'],
       ['5', '64%', '75%'], ['6', '55%', '65%'], ['7', '47%', '56%'], ['8', '40%', '49%'],
@@ -99,11 +99,7 @@ export default function Perform() {
       ['25', '6%', '10%'], ['30', '4%', '7%'], ['35', '3%', '5%'], ['40', '2%', '3%'],
       ['45', '1%', '2%'], ['50', '1%', '1%'],
     ];
-    const personalPuttingStats: any[] = [[distanceUnitLabel, 'Make rate (Pro)']];
-    rates.forEach(([distance, myRate, proRate]) => {
-      personalPuttingStats.push([distance, `${myRate} (${proRate})`]);
-    });
-    return personalPuttingStats;
+    return rates.map(([distance, myRate, proRate]) => [distance, `${myRate} (${proRate})`]);
   };
 
   const proStats: any[] = [];
@@ -136,8 +132,8 @@ export default function Perform() {
     setActiveIndex(index);
   };
 
-  const renderTableRows = useCallback((item: any) => (
-    <>
+  const renderItem = useCallback(({ item }: any) => (
+    <ScrollView style={[styles.container, styles.scrollWrapper, { maxHeight: 350, overflow: 'hidden' }]}>
       {item.map((row: any, rowIndex: number) => (
         <View key={rowIndex} style={[styles.row, { width: SCREEN_WIDTH * 0.9 }]}>
           {row.map((cell: any, colIndex: number) => (
@@ -151,14 +147,8 @@ export default function Perform() {
           ))}
         </View>
       ))}
-    </>
-  ), [styles]);
-
-  const renderItem = useCallback(({ item }: any) => (
-    <ScrollView style={[styles.container, styles.scrollWrapper, { maxHeight: 350, overflow: 'hidden' }]}>
-      {renderTableRows(item)}
     </ScrollView>
-  ), [renderTableRows]);
+  ), [styles]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -315,8 +305,21 @@ export default function Perform() {
 
             <View style={styles.divider} />
 
-            <View style={[styles.container, styles.scrollWrapper]}>
-              {renderTableRows(getFakePersonalPuttingStats(distanceUnitLabel))}
+            <View style={styles.clubDistanceList.container}>
+              <View style={styles.clubDistanceList.headerRow}>
+                <View style={[styles.clubDistanceList.headerCell, styles.clubDistanceList.clubCell]}>
+                  <Text style={styles.clubDistanceList.headerCell}>{distanceUnitLabel}</Text>
+                </View>
+                <View style={[styles.clubDistanceList.headerCell, styles.clubDistanceList.distanceCell]}>
+                  <Text style={styles.clubDistanceList.headerCell}>Make rate</Text>
+                </View>
+              </View>
+              {getFakePersonalPuttingStats().map(([distance, rate], index, rows) => (
+                <View key={distance} style={[styles.clubDistanceList.row, index === rows.length - 1 && { borderBottomWidth: 0.5 }]}>
+                  <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.clubCell, { textAlign: 'center', }]}>{distance}</Text>
+                  <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.distanceCell]}>{rate}</Text>
+                </View>
+              ))}
             </View>
           </View>
         )}

@@ -220,7 +220,7 @@ describe('Perform', () => {
         it('rendersPuttingTableWithProRatesInBrackets', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            expect(getByText('Make rate (Pro)')).toBeTruthy();
+            expect(getByText('Make rate')).toBeTruthy();
             expect(getByText('98% (100%)')).toBeTruthy();
         });
 
@@ -228,7 +228,7 @@ describe('Perform', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText('Feet')).toBeTruthy();
-            expect(getByText('Make rate (Pro)')).toBeTruthy();
+            expect(getByText('Make rate')).toBeTruthy();
             expect(getByText('1')).toBeTruthy();
             expect(getByText('20')).toBeTruthy();
             expect(getByText('50')).toBeTruthy();

@@ -88,35 +88,21 @@ export default function Perform() {
   };
 
   // Placeholder until a real per-distance-bucket putting aggregator exists (see getPuttingStatsService).
+  // Pro rate in brackets matches getPuttingStats() where a bucket overlaps; other buckets are interpolated.
   const getFakePersonalPuttingStats = (distanceUnitLabel: string) => {
-    const personalPuttingStats: any[] = [];
-    personalPuttingStats.push([distanceUnitLabel, 'Make rate']);
-    personalPuttingStats.push(['1', '98%']);
-    personalPuttingStats.push(['2', '94%']);
-    personalPuttingStats.push(['3', '88%']);
-    personalPuttingStats.push(['4', '77%']);
-    personalPuttingStats.push(['5', '64%']);
-    personalPuttingStats.push(['6', '55%']);
-    personalPuttingStats.push(['7', '47%']);
-    personalPuttingStats.push(['8', '40%']);
-    personalPuttingStats.push(['9', '35%']);
-    personalPuttingStats.push(['10', '30%']);
-    personalPuttingStats.push(['11', '27%']);
-    personalPuttingStats.push(['12', '24%']);
-    personalPuttingStats.push(['13', '21%']);
-    personalPuttingStats.push(['14', '19%']);
-    personalPuttingStats.push(['15', '17%']);
-    personalPuttingStats.push(['16', '15%']);
-    personalPuttingStats.push(['17', '13%']);
-    personalPuttingStats.push(['18', '11%']);
-    personalPuttingStats.push(['19', '10%']);
-    personalPuttingStats.push(['20', '9%']);
-    personalPuttingStats.push(['25', '6%']);
-    personalPuttingStats.push(['30', '4%']);
-    personalPuttingStats.push(['35', '3%']);
-    personalPuttingStats.push(['40', '2%']);
-    personalPuttingStats.push(['45', '1%']);
-    personalPuttingStats.push(['50', '1%']);
+    const rates: [string, string, string][] = [
+      ['1', '98%', '100%'], ['2', '94%', '99%'], ['3', '88%', '95%'], ['4', '77%', '86%'],
+      ['5', '64%', '75%'], ['6', '55%', '65%'], ['7', '47%', '56%'], ['8', '40%', '49%'],
+      ['9', '35%', '43%'], ['10', '30%', '38%'], ['11', '27%', '34%'], ['12', '24%', '31%'],
+      ['13', '21%', '28%'], ['14', '19%', '25%'], ['15', '17%', '22%'], ['16', '15%', '20%'],
+      ['17', '13%', '19%'], ['18', '11%', '17%'], ['19', '10%', '15%'], ['20', '9%', '14%'],
+      ['25', '6%', '10%'], ['30', '4%', '7%'], ['35', '3%', '5%'], ['40', '2%', '3%'],
+      ['45', '1%', '2%'], ['50', '1%', '1%'],
+    ];
+    const personalPuttingStats: any[] = [[distanceUnitLabel, 'Make rate (Pro)']];
+    rates.forEach(([distance, myRate, proRate]) => {
+      personalPuttingStats.push([distance, `${myRate} (${proRate})`]);
+    });
     return personalPuttingStats;
   };
 
@@ -137,7 +123,7 @@ export default function Perform() {
     setSection(sectionName);
     if (sectionName === 'approach') logEvent('view_approach');
     if (sectionName === 'pros') logEvent('view_pro_stats');
-    if (sectionName === 'my-stats') logEvent('view_my_stats');
+    if (sectionName === 'putting') logEvent('view_putting');
   };
 
   const displaySection = (sectionName: string) => {
@@ -150,24 +136,29 @@ export default function Perform() {
     setActiveIndex(index);
   };
 
+  const renderTableRows = useCallback((item: any) => (
+    <>
+      {item.map((row: any, rowIndex: number) => (
+        <View key={rowIndex} style={[styles.row, { width: SCREEN_WIDTH * 0.9 }]}>
+          {row.map((cell: any, colIndex: number) => (
+            <View key={colIndex} style={{
+              flex: 1, padding: 3, alignItems: "center", justifyContent: "center",
+            }}>
+              <Text style={[rowIndex === 0 ? [styles.normalText, { fontWeight: 'bold' }] : styles.normalText, { padding: 5 }]}>
+                {cell}
+              </Text>
+            </View>
+          ))}
+        </View>
+      ))}
+    </>
+  ), [styles]);
+
   const renderItem = useCallback(({ item }: any) => (
     <ScrollView style={[styles.container, styles.scrollWrapper, { maxHeight: 350, overflow: 'hidden' }]}>
-      {
-        item.map((row: any, rowIndex: number) => (
-          <View key={rowIndex} style={[styles.row, { width: SCREEN_WIDTH * 0.9 }]}>
-            {row.map((cell: any, colIndex: number) => (
-              <View key={colIndex} style={{
-                flex: 1, padding: 3, alignItems: "center", justifyContent: "center",
-              }}>
-                <Text style={[rowIndex === 0 ? [styles.normalText, { fontWeight: 'bold' }] : styles.normalText, { padding: 5 }]}>
-                  {cell}
-                </Text>
-              </View>
-            ))}
-          </View>
-        ))}
+      {renderTableRows(item)}
     </ScrollView>
-  ), [styles]);
+  ), [renderTableRows]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -308,13 +299,13 @@ export default function Perform() {
           </View>
         )}
 
-        {/* My stats */}
-        {displaySection('my-stats') && (
+        {/* Putting */}
+        {displaySection('putting') && (
           <View style={styles.container}>
             <View style={styles.header}>
               <View style={styles.titleRow}>
                 <Text style={[styles.headerText, styles.marginTop]}>
-                  My Stats
+                  Putting
                 </Text>
               </View>
               <Text style={[styles.normalText, styles.marginBottom]}>
@@ -324,8 +315,8 @@ export default function Perform() {
 
             <View style={styles.divider} />
 
-            <View style={styles.horizontalScrollContainer}>
-              {renderItem({ item: getFakePersonalPuttingStats(distanceUnitLabel) })}
+            <View style={[styles.container, styles.scrollWrapper]}>
+              {renderTableRows(getFakePersonalPuttingStats(distanceUnitLabel))}
             </View>
           </View>
         )}

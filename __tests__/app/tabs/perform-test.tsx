@@ -204,57 +204,64 @@ describe('Perform', () => {
         });
     });
 
-    describe('My Stats section', () => {
-        it('displaysMyStatsSubMenuTab', () => {
+    describe('Putting section', () => {
+        it('displaysPuttingSubMenuTab', () => {
             const { getByTestId, getByText } = render(<Perform />);
-            expect(getByTestId('perform-sub-menu-my-stats')).toBeTruthy();
-            expect(getByText('My Stats')).toBeTruthy();
+            expect(getByTestId('perform-sub-menu-putting')).toBeTruthy();
+            expect(getByText('Putting')).toBeTruthy();
         });
 
-        it('showsMyStatsSectionWhenMyStatsSubMenuPressed', () => {
+        it('showsPuttingSectionWhenPuttingSubMenuPressed', () => {
             const { getByTestId, getByText } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText('Your personal putting make rates')).toBeTruthy();
         });
 
-        it('rendersPersonalPuttingMakeRateTableWithFeetUnitsByDefault', () => {
+        it('rendersPuttingTableWithProRatesInBrackets', () => {
             const { getByTestId, getByText } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
+            expect(getByText('Make rate (Pro)')).toBeTruthy();
+            expect(getByText('98% (100%)')).toBeTruthy();
+        });
+
+        it('rendersPuttingTableWithFeetUnitsByDefault', () => {
+            const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText('Feet')).toBeTruthy();
-            expect(getByText('Make rate')).toBeTruthy();
+            expect(getByText('Make rate (Pro)')).toBeTruthy();
             expect(getByText('1')).toBeTruthy();
             expect(getByText('20')).toBeTruthy();
             expect(getByText('50')).toBeTruthy();
         });
 
-        it('rendersPersonalPuttingMakeRateTableWithCmUnitsWhenMetricSettingEnabled', () => {
+        it('rendersPuttingTableWithCmUnitsWhenMetricSettingEnabled', () => {
             const { getSettingsService } = require('../../../service/DbService');
             getSettingsService.mockReturnValue({ performOnboardingSeen: true, units: 'metres' });
 
             const { getByTestId, getByText, queryByText } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText('Cm')).toBeTruthy();
             expect(queryByText('Feet')).toBeNull();
         });
 
-        it('logsViewMyStatsAnalyticsEventWhenMyStatsSubMenuTabPressed', () => {
+        it('logsViewPuttingAnalyticsEventWhenPuttingSubMenuTabPressed', () => {
             const { logEvent } = require('../../../service/FirebaseService');
             const { getByTestId } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
-            expect(logEvent).toHaveBeenCalledWith('view_my_stats');
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
+            expect(logEvent).toHaveBeenCalledWith('view_putting');
         });
 
-        it('switchingToMyStatsAndBackDoesNotBreakApproachRendering', () => {
+        it('switchingToPuttingAndBackDoesNotBreakApproachRendering', () => {
             const { getByTestId, getByText } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-approach'));
             expect(getByText('Approach shots')).toBeTruthy();
         });
 
-        it('switchingToMyStatsAndBackDoesNotBreakProsRendering', () => {
+        it('switchingToPuttingAndBackDoesNotBreakProsRendering', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
             expect(getByTestId('perform-flat-list')).toBeTruthy();
             expect(getByText('Yards')).toBeTruthy();

@@ -103,22 +103,22 @@ describe('SubMenu component', () => {
             expect(mockHandleSubMenu).toHaveBeenCalledWith('pros');
         });
 
-        it('renders my stats perform menu item', () => {
+        it('renders putting perform menu item', () => {
             const { getByText } = render(
                 <SubMenu showSubMenu="perform" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
             );
 
-            expect(getByText('My Stats')).toBeTruthy();
+            expect(getByText('Putting')).toBeTruthy();
         });
 
-        it('calls handleSubMenu when My Stats is pressed', () => {
+        it('calls handleSubMenu when Putting is pressed', () => {
             const { getByTestId } = render(
                 <SubMenu showSubMenu="perform" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
             );
 
-            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
 
-            expect(mockHandleSubMenu).toHaveBeenCalledWith('my-stats');
+            expect(mockHandleSubMenu).toHaveBeenCalledWith('putting');
         });
     });
 

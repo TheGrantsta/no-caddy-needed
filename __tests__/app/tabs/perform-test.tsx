@@ -32,11 +32,17 @@ jest.mock('../../../service/FirebaseService', () => ({
 }));
 
 jest.mock('../../../service/DbService', () => ({
-    getSettingsService: jest.fn().mockReturnValue({ performOnboardingSeen: true }),
+    getSettingsService: jest.fn().mockReturnValue({ performOnboardingSeen: true, units: 'yards' }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
 }));
 
 describe('Perform', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        const { getSettingsService } = require('../../../service/DbService');
+        getSettingsService.mockReturnValue({ performOnboardingSeen: true, units: 'yards' });
+    });
+
     it('rendersWithoutCrashing', () => {
         const { toJSON } = render(<Perform />);
         expect(toJSON()).toBeTruthy();
@@ -195,6 +201,63 @@ describe('Perform', () => {
             });
 
             expect(getByText('Approach shots')).toBeTruthy();
+        });
+    });
+
+    describe('My Stats section', () => {
+        it('displaysMyStatsSubMenuTab', () => {
+            const { getByTestId, getByText } = render(<Perform />);
+            expect(getByTestId('perform-sub-menu-my-stats')).toBeTruthy();
+            expect(getByText('My Stats')).toBeTruthy();
+        });
+
+        it('showsMyStatsSectionWhenMyStatsSubMenuPressed', () => {
+            const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
+            expect(getByText('Your personal putting make rates')).toBeTruthy();
+        });
+
+        it('rendersPersonalPuttingMakeRateTableWithFeetUnitsByDefault', () => {
+            const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
+            expect(getByText('Feet')).toBeTruthy();
+            expect(getByText('Make rate')).toBeTruthy();
+            expect(getByText('1')).toBeTruthy();
+            expect(getByText('20')).toBeTruthy();
+            expect(getByText('50')).toBeTruthy();
+        });
+
+        it('rendersPersonalPuttingMakeRateTableWithCmUnitsWhenMetricSettingEnabled', () => {
+            const { getSettingsService } = require('../../../service/DbService');
+            getSettingsService.mockReturnValue({ performOnboardingSeen: true, units: 'metres' });
+
+            const { getByTestId, getByText, queryByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
+            expect(getByText('Cm')).toBeTruthy();
+            expect(queryByText('Feet')).toBeNull();
+        });
+
+        it('logsViewMyStatsAnalyticsEventWhenMyStatsSubMenuTabPressed', () => {
+            const { logEvent } = require('../../../service/FirebaseService');
+            const { getByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
+            expect(logEvent).toHaveBeenCalledWith('view_my_stats');
+        });
+
+        it('switchingToMyStatsAndBackDoesNotBreakApproachRendering', () => {
+            const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
+            fireEvent.press(getByTestId('perform-sub-menu-approach'));
+            expect(getByText('Approach shots')).toBeTruthy();
+        });
+
+        it('switchingToMyStatsAndBackDoesNotBreakProsRendering', () => {
+            const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
+            fireEvent.press(getByTestId('perform-sub-menu-my-stats'));
+            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
+            expect(getByTestId('perform-flat-list')).toBeTruthy();
+            expect(getByText('Yards')).toBeTruthy();
         });
     });
 });

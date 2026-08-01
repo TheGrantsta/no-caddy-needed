@@ -29,6 +29,7 @@ export default function Perform() {
   const flatListRef = useRef(null);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [showOnboarding, setShowOnboarding] = useState(!settings.performOnboardingSeen);
+  const distanceUnitLabel = settings.units === 'metres' ? 'Cm' : 'Feet';
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -86,6 +87,39 @@ export default function Perform() {
     return puttingStats;
   };
 
+  // Placeholder until a real per-distance-bucket putting aggregator exists (see getPuttingStatsService).
+  const getFakePersonalPuttingStats = (distanceUnitLabel: string) => {
+    const personalPuttingStats: any[] = [];
+    personalPuttingStats.push([distanceUnitLabel, 'Make rate']);
+    personalPuttingStats.push(['1', '98%']);
+    personalPuttingStats.push(['2', '94%']);
+    personalPuttingStats.push(['3', '88%']);
+    personalPuttingStats.push(['4', '77%']);
+    personalPuttingStats.push(['5', '64%']);
+    personalPuttingStats.push(['6', '55%']);
+    personalPuttingStats.push(['7', '47%']);
+    personalPuttingStats.push(['8', '40%']);
+    personalPuttingStats.push(['9', '35%']);
+    personalPuttingStats.push(['10', '30%']);
+    personalPuttingStats.push(['11', '27%']);
+    personalPuttingStats.push(['12', '24%']);
+    personalPuttingStats.push(['13', '21%']);
+    personalPuttingStats.push(['14', '19%']);
+    personalPuttingStats.push(['15', '17%']);
+    personalPuttingStats.push(['16', '15%']);
+    personalPuttingStats.push(['17', '13%']);
+    personalPuttingStats.push(['18', '11%']);
+    personalPuttingStats.push(['19', '10%']);
+    personalPuttingStats.push(['20', '9%']);
+    personalPuttingStats.push(['25', '6%']);
+    personalPuttingStats.push(['30', '4%']);
+    personalPuttingStats.push(['35', '3%']);
+    personalPuttingStats.push(['40', '2%']);
+    personalPuttingStats.push(['45', '1%']);
+    personalPuttingStats.push(['50', '1%']);
+    return personalPuttingStats;
+  };
+
   const proStats: any[] = [];
   proStats.push(getApproachShotStats());
   proStats.push(getPuttingStats());
@@ -103,6 +137,7 @@ export default function Perform() {
     setSection(sectionName);
     if (sectionName === 'approach') logEvent('view_approach');
     if (sectionName === 'pros') logEvent('view_pro_stats');
+    if (sectionName === 'my-stats') logEvent('view_my_stats');
   };
 
   const displaySection = (sectionName: string) => {
@@ -270,6 +305,28 @@ export default function Perform() {
                 </Text>
               </View>
             )}
+          </View>
+        )}
+
+        {/* My stats */}
+        {displaySection('my-stats') && (
+          <View style={styles.container}>
+            <View style={styles.header}>
+              <View style={styles.titleRow}>
+                <Text style={[styles.headerText, styles.marginTop]}>
+                  My Stats
+                </Text>
+              </View>
+              <Text style={[styles.normalText, styles.marginBottom]}>
+                Your personal putting make rates
+              </Text>
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.horizontalScrollContainer}>
+              {renderItem({ item: getFakePersonalPuttingStats(distanceUnitLabel) })}
+            </View>
           </View>
         )}
       </ScrollView>

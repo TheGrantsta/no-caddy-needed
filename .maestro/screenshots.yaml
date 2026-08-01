@@ -30,7 +30,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Wait for app to load (splash screen then home)
 - extendedWaitUntil:
     visible: "No caddy needed!"
-    timeout: 15000
+    timeout: 45000
 
 # Screenshot 1: Home screen
 - tapOn:

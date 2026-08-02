@@ -36,30 +36,30 @@ jest.mock('../../../service/DbService', () => ({
     saveSettingsService: jest.fn().mockResolvedValue(true),
     getPuttingMakeRatesService: jest.fn().mockReturnValue([
         { distance: 1, firstPuttMakeRate: '98%', secondPuttMakeRate: '-' },
-        { distance: 2, firstPuttMakeRate: '94%', secondPuttMakeRate: '-' },
-        { distance: 3, firstPuttMakeRate: '88%', secondPuttMakeRate: '-' },
-        { distance: 4, firstPuttMakeRate: '77%', secondPuttMakeRate: '-' },
-        { distance: 5, firstPuttMakeRate: '64%', secondPuttMakeRate: '-' },
-        { distance: 6, firstPuttMakeRate: '55%', secondPuttMakeRate: '-' },
-        { distance: 7, firstPuttMakeRate: '47%', secondPuttMakeRate: '-' },
-        { distance: 8, firstPuttMakeRate: '40%', secondPuttMakeRate: '-' },
-        { distance: 9, firstPuttMakeRate: '35%', secondPuttMakeRate: '-' },
-        { distance: 10, firstPuttMakeRate: '30%', secondPuttMakeRate: '-' },
-        { distance: 11, firstPuttMakeRate: '27%', secondPuttMakeRate: '-' },
-        { distance: 12, firstPuttMakeRate: '24%', secondPuttMakeRate: '-' },
-        { distance: 13, firstPuttMakeRate: '21%', secondPuttMakeRate: '-' },
-        { distance: 14, firstPuttMakeRate: '19%', secondPuttMakeRate: '-' },
-        { distance: 15, firstPuttMakeRate: '17%', secondPuttMakeRate: '-' },
-        { distance: 16, firstPuttMakeRate: '15%', secondPuttMakeRate: '-' },
-        { distance: 17, firstPuttMakeRate: '13%', secondPuttMakeRate: '-' },
-        { distance: 18, firstPuttMakeRate: '11%', secondPuttMakeRate: '-' },
-        { distance: 19, firstPuttMakeRate: '10%', secondPuttMakeRate: '-' },
-        { distance: 20, firstPuttMakeRate: '9%', secondPuttMakeRate: '-' },
-        { distance: 25, firstPuttMakeRate: '6%', secondPuttMakeRate: '-' },
-        { distance: 30, firstPuttMakeRate: '4%', secondPuttMakeRate: '-' },
-        { distance: 35, firstPuttMakeRate: '3%', secondPuttMakeRate: '-' },
-        { distance: 40, firstPuttMakeRate: '2%', secondPuttMakeRate: '-' },
-        { distance: 45, firstPuttMakeRate: '1%', secondPuttMakeRate: '-' },
+        { distance: 2, firstPuttMakeRate: '95%', secondPuttMakeRate: '-' },
+        { distance: 3, firstPuttMakeRate: '92%', secondPuttMakeRate: '-' },
+        { distance: 4, firstPuttMakeRate: '85%', secondPuttMakeRate: '-' },
+        { distance: 5, firstPuttMakeRate: '75%', secondPuttMakeRate: '-' },
+        { distance: 6, firstPuttMakeRate: '65%', secondPuttMakeRate: '-' },
+        { distance: 7, firstPuttMakeRate: '57%', secondPuttMakeRate: '-' },
+        { distance: 8, firstPuttMakeRate: '49%', secondPuttMakeRate: '-' },
+        { distance: 9, firstPuttMakeRate: '42%', secondPuttMakeRate: '-' },
+        { distance: 10, firstPuttMakeRate: '38%', secondPuttMakeRate: '-' },
+        { distance: 11, firstPuttMakeRate: '33%', secondPuttMakeRate: '-' },
+        { distance: 12, firstPuttMakeRate: '30%', secondPuttMakeRate: '-' },
+        { distance: 13, firstPuttMakeRate: '27%', secondPuttMakeRate: '-' },
+        { distance: 14, firstPuttMakeRate: '25%', secondPuttMakeRate: '-' },
+        { distance: 15, firstPuttMakeRate: '23%', secondPuttMakeRate: '-' },
+        { distance: 16, firstPuttMakeRate: '21%', secondPuttMakeRate: '-' },
+        { distance: 17, firstPuttMakeRate: '19%', secondPuttMakeRate: '-' },
+        { distance: 18, firstPuttMakeRate: '17%', secondPuttMakeRate: '-' },
+        { distance: 19, firstPuttMakeRate: '16%', secondPuttMakeRate: '-' },
+        { distance: 20, firstPuttMakeRate: '14%', secondPuttMakeRate: '-' },
+        { distance: 25, firstPuttMakeRate: '10%', secondPuttMakeRate: '-' },
+        { distance: 30, firstPuttMakeRate: '7%', secondPuttMakeRate: '-' },
+        { distance: 35, firstPuttMakeRate: '5%', secondPuttMakeRate: '-' },
+        { distance: 40, firstPuttMakeRate: '3%', secondPuttMakeRate: '-' },
+        { distance: 45, firstPuttMakeRate: '2%', secondPuttMakeRate: '-' },
         { distance: 50, firstPuttMakeRate: '1%', secondPuttMakeRate: '-' },
     ]),
 }));
@@ -292,5 +292,11 @@ describe('Perform', () => {
             expect(getByTestId('perform-flat-list')).toBeTruthy();
             expect(getByText('Yards')).toBeTruthy();
         });
+        it('showsAsteriskExplanationForEstimatedRates', () => {
+            const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
+            expect(getByText(/Estimated or extrapolated from PGA tour data/)).toBeTruthy();
+        });
+
     });
 });

@@ -87,8 +87,9 @@ export default function Perform() {
   };
 
   const PUTTING_PRO_RATES: Record<number, string> = {
-    1: '100%', 2: '99%', 3: '95%', 4: '86%', 5: '75%', 6: '65%', 7: '56%', 8: '49%', 9: '43%', 10: '38%',
-    15: '22%', 20: '14%', 25: '10%', 30: '7%', 35: '5%', 40: '3%', 45: '2%', 50: '1%',
+    1: '99.9%*', 2: '99.0%*', 3: '99.4%', 4: '91.4%', 5: '80.7%', 6: '70.2%', 7: '60.6%', 8: '52.9%', 9: '46.4%', 10: '41.3%',
+    11: '36.7%*', 12: '33.4%*', 13: '30.5%*', 14: '27.8%*', 15: '25.3%*', 16: '23.1%*', 17: '21.0%*', 18: '19.2%*', 19: '17.5%*', 20: '16.0%*',
+    25: '10%*', 30: '7%*', 35: '5%*', 40: '3%*', 45: '2%*', 50: '1%*',
   };
 
   const getPersonalPuttingStats = (): [string, string][] => {
@@ -318,6 +319,10 @@ export default function Perform() {
                 </View>
               ))}
             </View>
+
+            <Text style={[styles.smallestText, styles.marginBottom, { paddingHorizontal: 16, marginTop: 12 }]}>
+              * Estimated or extrapolated from PGA tour data
+            </Text>
           </View>
         )}
       </ScrollView>

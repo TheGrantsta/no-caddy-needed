@@ -337,7 +337,7 @@ export default function Perform() {
                 </Text>
               </View>
               <Text style={[styles.normalText, styles.marginBottom]}>
-                Where your missed putts finish
+                Where your missed first putts finish
               </Text>
             </View>
 

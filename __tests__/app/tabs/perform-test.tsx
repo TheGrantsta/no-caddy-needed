@@ -329,7 +329,7 @@ describe('Perform', () => {
         it('showsProximitySectionWhenProximitySubMenuPressed', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
-            expect(getByText('Where your missed putts finish')).toBeTruthy();
+            expect(getByText('Where your missed first putts finish')).toBeTruthy();
         });
 
         it('logsViewProximityAnalyticsEventWhenProximitySubMenuTabPressed', () => {

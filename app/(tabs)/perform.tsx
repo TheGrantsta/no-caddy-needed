@@ -9,7 +9,7 @@ import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { logEvent } from '../../service/FirebaseService';
-import { getSettingsService, saveSettingsService, AppSettings } from '../../service/DbService';
+import { getSettingsService, saveSettingsService, AppSettings, getPuttingMakeRatesService } from '../../service/DbService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -29,7 +29,6 @@ export default function Perform() {
   const flatListRef = useRef(null);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [showOnboarding, setShowOnboarding] = useState(!settings.performOnboardingSeen);
-  const distanceUnitLabel = settings.units === 'metres' ? 'Cm' : 'Feet';
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -87,19 +86,17 @@ export default function Perform() {
     return puttingStats;
   };
 
-  // Placeholder until a real per-distance-bucket putting aggregator exists (see getPuttingStatsService).
-  // Pro rate in brackets matches getPuttingStats() where a bucket overlaps; other buckets are interpolated.
-  const getFakePersonalPuttingStats = (): [string, string][] => {
-    const rates: [string, string, string][] = [
-      ['1', '98%', '100%'], ['2', '94%', '99%'], ['3', '88%', '95%'], ['4', '77%', '86%'],
-      ['5', '64%', '75%'], ['6', '55%', '65%'], ['7', '47%', '56%'], ['8', '40%', '49%'],
-      ['9', '35%', '43%'], ['10', '30%', '38%'], ['11', '27%', '34%'], ['12', '24%', '31%'],
-      ['13', '21%', '28%'], ['14', '19%', '25%'], ['15', '17%', '22%'], ['16', '15%', '20%'],
-      ['17', '13%', '19%'], ['18', '11%', '17%'], ['19', '10%', '15%'], ['20', '9%', '14%'],
-      ['25', '6%', '10%'], ['30', '4%', '7%'], ['35', '3%', '5%'], ['40', '2%', '3%'],
-      ['45', '1%', '2%'], ['50', '1%', '1%'],
-    ];
-    return rates.map(([distance, myRate, proRate]) => [distance, `${myRate} (${proRate})`]);
+  const PUTTING_PRO_RATES: Record<number, string> = {
+    1: '100%', 2: '99%', 3: '95%', 4: '86%', 5: '75%', 6: '65%', 7: '56%', 8: '49%', 9: '43%', 10: '38%',
+    15: '22%', 20: '14%', 25: '10%', 30: '7%', 35: '5%', 40: '3%', 45: '2%', 50: '1%',
+  };
+
+  const getPersonalPuttingStats = (): [string, string][] => {
+    const rates = getPuttingMakeRatesService();
+    return rates.map((row) => [
+      String(row.distance),
+      `${row.firstPuttMakeRate} (${PUTTING_PRO_RATES[row.distance] || '-'})`,
+    ]);
   };
 
   const proStats: any[] = [];
@@ -308,13 +305,13 @@ export default function Perform() {
             <View style={styles.clubDistanceList.container}>
               <View style={styles.clubDistanceList.headerRow}>
                 <View style={[styles.clubDistanceList.headerCell, styles.clubDistanceList.clubCell]}>
-                  <Text style={styles.clubDistanceList.headerCell}>{distanceUnitLabel}</Text>
+                  <Text style={styles.clubDistanceList.headerCell}>Feet</Text>
                 </View>
                 <View style={[styles.clubDistanceList.headerCell, styles.clubDistanceList.distanceCell]}>
                   <Text style={styles.clubDistanceList.headerCell}>Make rate</Text>
                 </View>
               </View>
-              {getFakePersonalPuttingStats().map(([distance, rate], index, rows) => (
+              {getPersonalPuttingStats().map(([distance, rate], index, rows) => (
                 <View key={distance} style={[styles.clubDistanceList.row, index === rows.length - 1 && { borderBottomWidth: 0.5 }]}>
                   <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.clubCell, { textAlign: 'center', }]}>{distance}</Text>
                   <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.distanceCell]}>{rate}</Text>

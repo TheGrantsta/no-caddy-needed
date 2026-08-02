@@ -647,22 +647,7 @@ describe('PuttingStatsInput', () => {
     });
 
     describe('unit labels', () => {
-        it('displays (ft) for first and second putt when units is yards', () => {
-            const onStatsChange = jest.fn();
-            const { getByText } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={false}
-                    onStatsChange={onStatsChange}
-                    units="yards"
-                />
-            );
-
-            expect(getByText('1st Putt (ft)')).toBeTruthy();
-            expect(getByText('2nd Putt (ft)')).toBeTruthy();
-        });
-
-        it('displays (cm) for first and second putt when units is metres', () => {
+        it('displays (ft) for first and second putt regardless of units prop', () => {
             const onStatsChange = jest.fn();
             const { getByText } = render(
                 <PuttingStatsInput
@@ -673,11 +658,11 @@ describe('PuttingStatsInput', () => {
                 />
             );
 
-            expect(getByText('1st Putt (cm)')).toBeTruthy();
-            expect(getByText('2nd Putt (cm)')).toBeTruthy();
+            expect(getByText('1st Putt (ft)')).toBeTruthy();
+            expect(getByText('2nd Putt (ft)')).toBeTruthy();
         });
 
-        it('defaults to (ft) when units prop is not provided', () => {
+        it('displays (ft) for first and second putt when units prop is not provided', () => {
             const onStatsChange = jest.fn();
             const { getByText } = render(
                 <PuttingStatsInput

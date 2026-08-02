@@ -351,6 +351,16 @@ export const getPuttingStats = (roundId: number, holeNumber: number) => {
     );
 };
 
+export const getAllPuttingStatsWithThreePutts = () => {
+    return getSyncDb().getAllSync(
+        `SELECT ps.FirstPuttDistance, ps.SecondPuttDistance, COALESCE(hds.ThreePutts, 0) AS ThreePutts
+         FROM PuttingStats ps
+         JOIN Rounds r ON ps.RoundId = r.Id
+         LEFT JOIN HoleDeadlySins hds ON hds.RoundId = ps.RoundId AND hds.HoleNumber = ps.HoleNumber
+         WHERE r.IsCompleted = 1;`
+    );
+};
+
 export const deletePuttingStatsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
     let success = true;
     try {

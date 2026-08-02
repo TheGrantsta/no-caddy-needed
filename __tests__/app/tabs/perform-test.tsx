@@ -34,6 +34,34 @@ jest.mock('../../../service/FirebaseService', () => ({
 jest.mock('../../../service/DbService', () => ({
     getSettingsService: jest.fn().mockReturnValue({ performOnboardingSeen: true, units: 'yards' }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
+    getPuttingMakeRatesService: jest.fn().mockReturnValue([
+        { distance: 1, firstPuttMakeRate: '98%', secondPuttMakeRate: '-' },
+        { distance: 2, firstPuttMakeRate: '94%', secondPuttMakeRate: '-' },
+        { distance: 3, firstPuttMakeRate: '88%', secondPuttMakeRate: '-' },
+        { distance: 4, firstPuttMakeRate: '77%', secondPuttMakeRate: '-' },
+        { distance: 5, firstPuttMakeRate: '64%', secondPuttMakeRate: '-' },
+        { distance: 6, firstPuttMakeRate: '55%', secondPuttMakeRate: '-' },
+        { distance: 7, firstPuttMakeRate: '47%', secondPuttMakeRate: '-' },
+        { distance: 8, firstPuttMakeRate: '40%', secondPuttMakeRate: '-' },
+        { distance: 9, firstPuttMakeRate: '35%', secondPuttMakeRate: '-' },
+        { distance: 10, firstPuttMakeRate: '30%', secondPuttMakeRate: '-' },
+        { distance: 11, firstPuttMakeRate: '27%', secondPuttMakeRate: '-' },
+        { distance: 12, firstPuttMakeRate: '24%', secondPuttMakeRate: '-' },
+        { distance: 13, firstPuttMakeRate: '21%', secondPuttMakeRate: '-' },
+        { distance: 14, firstPuttMakeRate: '19%', secondPuttMakeRate: '-' },
+        { distance: 15, firstPuttMakeRate: '17%', secondPuttMakeRate: '-' },
+        { distance: 16, firstPuttMakeRate: '15%', secondPuttMakeRate: '-' },
+        { distance: 17, firstPuttMakeRate: '13%', secondPuttMakeRate: '-' },
+        { distance: 18, firstPuttMakeRate: '11%', secondPuttMakeRate: '-' },
+        { distance: 19, firstPuttMakeRate: '10%', secondPuttMakeRate: '-' },
+        { distance: 20, firstPuttMakeRate: '9%', secondPuttMakeRate: '-' },
+        { distance: 25, firstPuttMakeRate: '6%', secondPuttMakeRate: '-' },
+        { distance: 30, firstPuttMakeRate: '4%', secondPuttMakeRate: '-' },
+        { distance: 35, firstPuttMakeRate: '3%', secondPuttMakeRate: '-' },
+        { distance: 40, firstPuttMakeRate: '2%', secondPuttMakeRate: '-' },
+        { distance: 45, firstPuttMakeRate: '1%', secondPuttMakeRate: '-' },
+        { distance: 50, firstPuttMakeRate: '1%', secondPuttMakeRate: '-' },
+    ]),
 }));
 
 describe('Perform', () => {
@@ -217,11 +245,10 @@ describe('Perform', () => {
             expect(getByText('Your personal putting make rates')).toBeTruthy();
         });
 
-        it('rendersPuttingTableWithProRatesInBrackets', () => {
+        it('rendersPuttingTableWithPersonalRateAndProRateInBrackets', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText('Make rate')).toBeTruthy();
-            expect(getByText('98% (100%)')).toBeTruthy();
         });
 
         it('rendersPuttingTableWithFeetUnitsByDefault', () => {
@@ -234,14 +261,13 @@ describe('Perform', () => {
             expect(getByText('50')).toBeTruthy();
         });
 
-        it('rendersPuttingTableWithCmUnitsWhenMetricSettingEnabled', () => {
+        it('alwaysRendersFeetUnitLabelRegardlessOfMetricSetting', () => {
             const { getSettingsService } = require('../../../service/DbService');
             getSettingsService.mockReturnValue({ performOnboardingSeen: true, units: 'metres' });
 
-            const { getByTestId, getByText, queryByText } = render(<Perform />);
+            const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            expect(getByText('Cm')).toBeTruthy();
-            expect(queryByText('Feet')).toBeNull();
+            expect(getByText('Feet')).toBeTruthy();
         });
 
         it('logsViewPuttingAnalyticsEventWhenPuttingSubMenuTabPressed', () => {

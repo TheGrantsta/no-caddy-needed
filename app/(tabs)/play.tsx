@@ -852,7 +852,6 @@ export default function Play() {
                                         initialSecondPutt={puttingStats?.secondPutt}
                                         initialSecondIsLong={puttingStats?.secondIsLong}
                                         showFirstPuttError={puttingFirstPuttError}
-                                        units={settings.units}
                                         onSecondPuttErrorChange={setPuttingSecondPuttError}
                                     />
                                 </>

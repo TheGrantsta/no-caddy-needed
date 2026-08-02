@@ -21,6 +21,7 @@ import {
     insertPuttingStats,
     getPuttingStats,
     deletePuttingStatsByHole,
+    getAllPuttingStatsWithThreePutts,
     insertHoleSinDetails,
     getHoleSinDetails,
     deleteHoleSinDetailsByHole,
@@ -346,6 +347,59 @@ export const getPuttingStatsService = (roundId: number, holeNumber: number): Put
         ThirdPuttDistance: row.ThirdPuttDistance ?? undefined,
         ThirdPuttIsLong: row.ThirdPuttIsLong ?? undefined,
     };
+};
+
+export const PUTTING_DISTANCE_BUCKETS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,45,50];
+
+export const bucketPuttingDistance = (distance: number): number | null => {
+    let bucket: number | null = null;
+    for (const b of PUTTING_DISTANCE_BUCKETS) {
+        if (distance >= b) bucket = b;
+        else break;
+    }
+    return bucket;
+};
+
+export type PuttingMakeRate = {
+    distance: number;
+    firstPuttMakeRate: string;
+    secondPuttMakeRate: string;
+};
+
+export const getPuttingMakeRatesService = (): PuttingMakeRate[] => {
+    const rows = getAllPuttingStatsWithThreePutts() as any[];
+    const firstStats = new Map<number, { total: number; made: number }>();
+    const secondStats = new Map<number, { total: number; made: number }>();
+
+    rows.forEach((row) => {
+        const firstBucket = bucketPuttingDistance(row.FirstPuttDistance);
+        if (firstBucket !== null) {
+            const current = firstStats.get(firstBucket) || { total: 0, made: 0 };
+            current.total += 1;
+            if (row.SecondPuttDistance === 0) current.made += 1;
+            firstStats.set(firstBucket, current);
+        }
+
+        if (row.SecondPuttDistance > 0) {
+            const secondBucket = bucketPuttingDistance(row.SecondPuttDistance);
+            if (secondBucket !== null) {
+                const current = secondStats.get(secondBucket) || { total: 0, made: 0 };
+                current.total += 1;
+                if (row.ThreePutts !== 1) current.made += 1;
+                secondStats.set(secondBucket, current);
+            }
+        }
+    });
+
+    return PUTTING_DISTANCE_BUCKETS.map((distance) => {
+        const first = firstStats.get(distance);
+        const second = secondStats.get(distance);
+        return {
+            distance,
+            firstPuttMakeRate: first ? `${Math.round((first.made / first.total) * 100)}%` : '-',
+            secondPuttMakeRate: second ? `${Math.round((second.made / second.total) * 100)}%` : '-',
+        };
+    });
 };
 
 export type HoleSinDetailsInput = {

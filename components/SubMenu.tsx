@@ -17,6 +17,7 @@ const allSubMenuItems = [
     { testId: 'perform-sub-menu-approach', name: 'approach', title: 'Approach' },
     { testId: 'perform-sub-menu-pro-stats', name: 'pros', title: 'Pros' },
     { testId: 'perform-sub-menu-putting', name: 'putting', title: 'Putting' },
+    { testId: 'perform-sub-menu-proximity', name: 'proximity', title: 'Proximity' },
     { testId: 'putting-sub-menu-putting-drills', name: 'putting-drills', title: 'Drills' },
     { testId: 'putting-sub-menu-putting-games', name: 'putting-games', title: 'Games' },
     { testId: 'chipping-sub-menu-chipping-drills', name: 'chipping-drills', title: 'Drills' },

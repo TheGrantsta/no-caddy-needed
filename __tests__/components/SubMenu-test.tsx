@@ -120,6 +120,24 @@ describe('SubMenu component', () => {
 
             expect(mockHandleSubMenu).toHaveBeenCalledWith('putting');
         });
+
+        it('renders proximity menu item', () => {
+            const { getByText } = render(
+                <SubMenu showSubMenu="perform" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
+            );
+
+            expect(getByText('Proximity')).toBeTruthy();
+        });
+
+        it('calls handleSubMenu when Proximity is pressed', () => {
+            const { getByTestId } = render(
+                <SubMenu showSubMenu="perform" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
+            );
+
+            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+
+            expect(mockHandleSubMenu).toHaveBeenCalledWith('proximity');
+        });
     });
 
     describe('Putting sub menu', () => {

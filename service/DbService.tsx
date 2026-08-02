@@ -402,6 +402,56 @@ export const getPuttingMakeRatesService = (): PuttingMakeRate[] => {
     });
 };
 
+export const PROXIMITY_DISTANCE_BUCKETS = [1,2,3,4,5,6,7,8,9,10,15,20,25,30,35,40,45,50];
+
+export const bucketProximityDistance = (distance: number): number | null => {
+    if (distance < 1) return null;
+    for (const b of PROXIMITY_DISTANCE_BUCKETS) {
+        if (distance <= b) return b;
+    }
+    return PROXIMITY_DISTANCE_BUCKETS[PROXIMITY_DISTANCE_BUCKETS.length - 1];
+};
+
+export type PuttingProximity = {
+    distance: number;
+    shortPercent: string;
+    longPercent: string;
+};
+
+export const getPuttingProximityService = (): PuttingProximity[] => {
+    const rows = getAllPuttingStatsWithThreePutts() as any[];
+    const stats = new Map<number, { short: number; long: number }>();
+
+    rows.forEach((row) => {
+        if (row.SecondPuttDistance > 0) {
+            const bucket = bucketProximityDistance(row.FirstPuttDistance);
+            if (bucket !== null) {
+                const current = stats.get(bucket) || { short: 0, long: 0 };
+                if (row.SecondPuttIsLong === 1) current.long += 1;
+                else current.short += 1;
+                stats.set(bucket, current);
+            }
+        }
+    });
+
+    return PROXIMITY_DISTANCE_BUCKETS.map((distance) => {
+        const entry = stats.get(distance);
+        if (!entry) {
+            return {
+                distance,
+                shortPercent: '-',
+                longPercent: '-',
+            };
+        }
+        const total = entry.short + entry.long;
+        return {
+            distance,
+            shortPercent: `${Math.round((entry.short / total) * 100)}%`,
+            longPercent: `${Math.round((entry.long / total) * 100)}%`,
+        };
+    });
+};
+
 export type HoleSinDetailsInput = {
     troubleOffTeeClub?: string;
     penaltyType?: string;

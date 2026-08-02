@@ -1256,6 +1256,54 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    puttingProximityChart: StyleSheet.create({
+        container: {
+            padding: 10,
+            paddingBottom: 0,
+        },
+        barContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 8,
+        },
+        labelContainer: {
+            width: 45,
+            paddingRight: 5,
+        },
+        label: {
+            color: c.primary,
+            fontSize: fontSizes.smallestText,
+        },
+        barWrapper: {
+            flex: 1,
+            flexDirection: 'row',
+            height: 20,
+            borderRadius: 4,
+            overflow: 'hidden',
+        },
+        bar: {
+            height: '100%',
+        },
+        barShort: {
+            height: '100%',
+            borderTopLeftRadius: 4,
+            borderBottomLeftRadius: 4,
+        },
+        barLong: {
+            height: '100%',
+            borderTopRightRadius: 4,
+            borderBottomRightRadius: 4,
+        },
+        percentContainer: {
+            minWidth: 100,
+            marginLeft: 12,
+        },
+        percentText: {
+            color: c.primary,
+            fontSize: fontSizes.smallestText,
+        },
+    }),
+
     deadlySinTrend: StyleSheet.create({
         heading: {
             color: c.text,

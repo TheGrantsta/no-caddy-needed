@@ -5,11 +5,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Chevrons from '../../components/Chevrons';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
+import PuttingProximityChart from '../../components/PuttingProximityChart';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { logEvent } from '../../service/FirebaseService';
-import { getSettingsService, saveSettingsService, AppSettings, getPuttingMakeRatesService } from '../../service/DbService';
+import { getSettingsService, saveSettingsService, AppSettings, getPuttingMakeRatesService, getPuttingProximityService } from '../../service/DbService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -118,6 +119,7 @@ export default function Perform() {
     if (sectionName === 'approach') logEvent('view_approach');
     if (sectionName === 'pros') logEvent('view_pro_stats');
     if (sectionName === 'putting') logEvent('view_putting');
+    if (sectionName === 'proximity') logEvent('view_proximity');
   };
 
   const displaySection = (sectionName: string) => {
@@ -323,6 +325,25 @@ export default function Perform() {
             <Text style={[styles.smallestText, styles.marginBottom, { paddingHorizontal: 16, marginTop: 12 }]}>
               * Estimated or extrapolated from PGA tour data
             </Text>
+          </View>
+        )}
+
+        {displaySection('proximity') && (
+          <View style={styles.container}>
+            <View style={styles.header}>
+              <View style={styles.titleRow}>
+                <Text style={[styles.headerText, styles.marginTop]}>
+                  Proximity
+                </Text>
+              </View>
+              <Text style={[styles.normalText, styles.marginBottom]}>
+                Where your missed putts finish
+              </Text>
+            </View>
+
+            <View style={styles.divider} />
+
+            <PuttingProximityChart data={getPuttingProximityService()} />
           </View>
         )}
       </ScrollView>

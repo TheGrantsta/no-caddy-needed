@@ -62,6 +62,26 @@ jest.mock('../../../service/DbService', () => ({
         { distance: 45, firstPuttMakeRate: '2%', secondPuttMakeRate: '-' },
         { distance: 50, firstPuttMakeRate: '1%', secondPuttMakeRate: '-' },
     ]),
+    getPuttingProximityService: jest.fn().mockReturnValue([
+        { distance: 1, shortPercent: '60%', longPercent: '40%' },
+        { distance: 2, shortPercent: '65%', longPercent: '35%' },
+        { distance: 3, shortPercent: '70%', longPercent: '30%' },
+        { distance: 4, shortPercent: '62%', longPercent: '38%' },
+        { distance: 5, shortPercent: '68%', longPercent: '32%' },
+        { distance: 6, shortPercent: '55%', longPercent: '45%' },
+        { distance: 7, shortPercent: '72%', longPercent: '28%' },
+        { distance: 8, shortPercent: '58%', longPercent: '42%' },
+        { distance: 9, shortPercent: '64%', longPercent: '36%' },
+        { distance: 10, shortPercent: '71%', longPercent: '29%' },
+        { distance: 15, shortPercent: '66%', longPercent: '34%' },
+        { distance: 20, shortPercent: '-', longPercent: '-' },
+        { distance: 25, shortPercent: '-', longPercent: '-' },
+        { distance: 30, shortPercent: '-', longPercent: '-' },
+        { distance: 35, shortPercent: '-', longPercent: '-' },
+        { distance: 40, shortPercent: '-', longPercent: '-' },
+        { distance: 45, shortPercent: '-', longPercent: '-' },
+        { distance: 50, shortPercent: '-', longPercent: '-' },
+    ]),
 }));
 
 describe('Perform', () => {
@@ -297,6 +317,33 @@ describe('Perform', () => {
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText(/Estimated or extrapolated from PGA tour data/)).toBeTruthy();
         });
+    });
 
+    describe('Proximity section', () => {
+        it('displaysProximitySubMenuTab', () => {
+            const { getByTestId, getByText } = render(<Perform />);
+            expect(getByTestId('perform-sub-menu-proximity')).toBeTruthy();
+            expect(getByText('Proximity')).toBeTruthy();
+        });
+
+        it('showsProximitySectionWhenProximitySubMenuPressed', () => {
+            const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+            expect(getByText('Where your missed putts finish')).toBeTruthy();
+        });
+
+        it('logsViewProximityAnalyticsEventWhenProximitySubMenuTabPressed', () => {
+            const { logEvent } = require('../../../service/FirebaseService');
+            const { getByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+            expect(logEvent).toHaveBeenCalledWith('view_proximity');
+        });
+
+        it('switchingToProximityAndBackDoesNotBreakOtherSections', () => {
+            const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+            fireEvent.press(getByTestId('perform-sub-menu-approach'));
+            expect(getByText('Approach shots')).toBeTruthy();
+        });
     });
 });

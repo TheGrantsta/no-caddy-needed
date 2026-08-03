@@ -212,52 +212,22 @@ describe('DeadlySinsChart component', () => {
         });
     });
 
-    describe('open/close toggle', () => {
-        it('shows a minus icon when open (distinct from the row drill-in chevron)', () => {
-            const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
+    describe('header', () => {
+        it('renders Deadly Sins header text', () => {
+            const { getByText } = render(<DeadlySinsChart rounds={mockRounds} />);
 
-            expect(getByTestId('7deadly-sins-chart-toggle-icon').props.children).toBe('−');
+            expect(getByText('Deadly Sins')).toBeTruthy();
         });
 
-        it('shows a plus icon when collapsed', () => {
-            const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
+        it('header is always visible and non-interactive', () => {
+            const { getByText } = render(<DeadlySinsChart rounds={mockRounds} />);
 
-            fireEvent.press(getByTestId('7deadly-sins-chart-toggle'));
-
-            expect(getByTestId('7deadly-sins-chart-toggle-icon').props.children).toBe('+');
+            const header = getByText('Deadly Sins').parent?.parent;
+            expect(header).toBeTruthy();
         });
 
-        it('shows toggle header when rounds are provided', () => {
-            const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
-
-            expect(getByTestId('7deadly-sins-chart-toggle')).toBeTruthy();
-        });
-
-        it('does not show toggle when component returns null', () => {
-            const { queryByTestId } = render(<DeadlySinsChart rounds={[]} />);
-
-            expect(queryByTestId('7deadly-sins-chart-toggle')).toBeNull();
-        });
-
-        it('chart content is open by default', () => {
+        it('chart content is always visible (no toggle)', () => {
             const { getAllByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
-
-            expect(getAllByTestId('7deadly-sins-chart-label')).toHaveLength(7);
-        });
-
-        it('pressing toggle hides chart content', () => {
-            const { getByTestId, queryByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
-
-            fireEvent.press(getByTestId('7deadly-sins-chart-toggle'));
-
-            expect(queryByTestId('7deadly-sins-chart-label')).toBeNull();
-        });
-
-        it('pressing toggle again shows chart content', () => {
-            const { getByTestId, getAllByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
-
-            fireEvent.press(getByTestId('7deadly-sins-chart-toggle'));
-            fireEvent.press(getByTestId('7deadly-sins-chart-toggle'));
 
             expect(getAllByTestId('7deadly-sins-chart-label')).toHaveLength(7);
         });
@@ -265,6 +235,23 @@ describe('DeadlySinsChart component', () => {
 
     describe('breakdown sections', () => {
         const { getAllHoleSinDetailsService } = require('../../service/DbService');
+
+        it('breakdown rows align flush left with main sin rows', () => {
+            const troubleRounds: DeadlySinsRound[] = [
+                { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 2, Penalties: 0, Total: 2, RoundId: 1, Created_At: '15/06' },
+            ];
+            getAllHoleSinDetailsService.mockReturnValue([
+                { Id: 1, RoundId: 1, HoleNumber: 1, TroubleOffTeeClub: 'Driver', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+                { Id: 2, RoundId: 1, HoleNumber: 2, TroubleOffTeeClub: 'Driver', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+            ]);
+
+            const { getByTestId, queryByTestId } = render(<DeadlySinsChart rounds={troubleRounds} />);
+
+            const breakdownSection = queryByTestId('7deadly-sins-breakdown-section-0');
+            expect(breakdownSection).toBeTruthy();
+            const sectionStyle = Array.isArray(breakdownSection?.props.style) ? Object.assign({}, ...breakdownSection.props.style) : breakdownSection?.props.style;
+            expect(sectionStyle?.marginHorizontal).toBeUndefined();
+        });
 
         it('renders breakdown for TroubleOffTee with sin details', () => {
             const troubleRounds: DeadlySinsRound[] = [

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -15,7 +15,6 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.deadlySinsChart;
-    const [isOpen, setIsOpen] = useState(true);
     const router = useRouter();
 
     const categories = useMemo(() => sortDeadlySinsByFrequency(rounds), [rounds]);
@@ -61,21 +60,15 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
 
     return (
         <View style={s.container}>
-            <TouchableOpacity
-                testID="7deadly-sins-chart-toggle"
-                onPress={() => setIsOpen(prev => !prev)}
-                style={s.toggleHeader}
-            >
+            <View style={s.toggleHeader}>
                 <Text style={styles.subHeaderText}>Deadly Sins</Text>
-                <Text testID="7deadly-sins-chart-toggle-icon" style={s.chevron}>{isOpen ? '−' : '+'}</Text>
-            </TouchableOpacity>
+            </View>
 
-            {isOpen && (
-                <ScrollView
-                    testID="7deadly-sins-chart-scrollview"
-                    scrollEnabled={true}
-                    nestedScrollEnabled={true}
-                >
+            <ScrollView
+                testID="7deadly-sins-chart-scrollview"
+                scrollEnabled={true}
+                nestedScrollEnabled={true}
+            >
                     {categories.map((category, index) => (
                         <TouchableOpacity
                             key={index}
@@ -135,7 +128,7 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
                             <View
                                 key={`breakdown-${categoryIndex}`}
                                 testID={`7deadly-sins-breakdown-section-${categoryIndex}`}
-                                style={{ marginTop: 20, marginHorizontal: 16, marginBottom: 16 }}
+                                style={{ marginTop: 20, marginBottom: 16 }}
                             >
                                 <Text
                                     testID={`7deadly-sins-breakdown-heading-${categoryIndex}`}
@@ -191,8 +184,7 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
                             </View>
                         );
                     })}
-                </ScrollView>
-            )}
+            </ScrollView>
         </View>
     );
 }

@@ -9,6 +9,10 @@ jest.mock('expo-router', () => ({
     useRouter: () => ({ push: mockPush }),
 }));
 
+jest.mock('../../service/DbService', () => ({
+    getAllHoleSinDetailsService: jest.fn().mockReturnValue([]),
+}));
+
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
     useTheme: () => ({
@@ -256,6 +260,96 @@ describe('DeadlySinsChart component', () => {
             fireEvent.press(getByTestId('7deadly-sins-chart-toggle'));
 
             expect(getAllByTestId('7deadly-sins-chart-label')).toHaveLength(7);
+        });
+    });
+
+    describe('breakdown sections', () => {
+        const { getAllHoleSinDetailsService } = require('../../service/DbService');
+
+        it('renders breakdown for TroubleOffTee with sin details', () => {
+            const troubleRounds: DeadlySinsRound[] = [
+                { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 2, Penalties: 0, Total: 2, RoundId: 1, Created_At: '15/06' },
+            ];
+            getAllHoleSinDetailsService.mockReturnValue([
+                { Id: 1, RoundId: 1, HoleNumber: 1, TroubleOffTeeClub: 'Driver', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+                { Id: 2, RoundId: 1, HoleNumber: 2, TroubleOffTeeClub: 'Driver', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+            ]);
+
+            const { getByTestId } = render(<DeadlySinsChart rounds={troubleRounds} />);
+
+            expect(getByTestId('7deadly-sins-breakdown-heading-0')).toBeTruthy();
+        });
+
+        it('renders breakdown for Penalties with sin details', () => {
+            const penaltyRounds: DeadlySinsRound[] = [
+                { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 2, Total: 2, RoundId: 1, Created_At: '15/06' },
+            ];
+            getAllHoleSinDetailsService.mockReturnValue([
+                { Id: 1, RoundId: 1, HoleNumber: 1, TroubleOffTeeClub: undefined, PenaltyType: 'Out of bounds', BogeysInside9IronClub: undefined },
+                { Id: 2, RoundId: 1, HoleNumber: 2, TroubleOffTeeClub: undefined, PenaltyType: 'Water hazard', BogeysInside9IronClub: undefined },
+            ]);
+
+            const { getByTestId } = render(<DeadlySinsChart rounds={penaltyRounds} />);
+
+            expect(getByTestId('7deadly-sins-breakdown-heading-0')).toBeTruthy();
+        });
+
+        it('renders breakdown for BogeysInside9Iron with sin details', () => {
+            const bogeyRounds: DeadlySinsRound[] = [
+                { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 2, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 2, RoundId: 1, Created_At: '15/06' },
+            ];
+            getAllHoleSinDetailsService.mockReturnValue([
+                { Id: 1, RoundId: 1, HoleNumber: 1, TroubleOffTeeClub: undefined, PenaltyType: undefined, BogeysInside9IronClub: '8-iron' },
+                { Id: 2, RoundId: 1, HoleNumber: 2, TroubleOffTeeClub: undefined, PenaltyType: undefined, BogeysInside9IronClub: 'Wedge' },
+            ]);
+
+            const { getByTestId } = render(<DeadlySinsChart rounds={bogeyRounds} />);
+
+            expect(getByTestId('7deadly-sins-breakdown-heading-0')).toBeTruthy();
+        });
+
+        it('does not render breakdown for sins without detail fields', () => {
+            const threeputtsRounds: DeadlySinsRound[] = [
+                { Id: 1, ThreePutts: 2, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 2, RoundId: 1, Created_At: '15/06' },
+            ];
+            getAllHoleSinDetailsService.mockReturnValue([]);
+
+            const { queryByTestId } = render(<DeadlySinsChart rounds={threeputtsRounds} />);
+
+            expect(queryByTestId('7deadly-sins-breakdown-heading-0')).toBeNull();
+        });
+
+        it('filters breakdown to only rounds in the current filter', () => {
+            const multiRounds: DeadlySinsRound[] = [
+                { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 1, Penalties: 0, Total: 1, RoundId: 1, Created_At: '15/06' },
+                { Id: 2, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 1, Penalties: 0, Total: 1, RoundId: 2, Created_At: '16/06' },
+            ];
+            getAllHoleSinDetailsService.mockReturnValue([
+                { Id: 1, RoundId: 1, HoleNumber: 1, TroubleOffTeeClub: 'Driver', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+                { Id: 2, RoundId: 2, HoleNumber: 1, TroubleOffTeeClub: '3-wood', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+            ]);
+
+            const { queryAllByTestId } = render(<DeadlySinsChart rounds={[multiRounds[1]]} />);
+
+            // With only round 2, should only have the '3-wood' breakdown row
+            const breakdownRows = queryAllByTestId(/7deadly-sins-breakdown-row-/);
+            expect(breakdownRows.length).toBe(1);
+        });
+
+        it('shows correct breakdown counts when multiple clubs/penalties are used', () => {
+            const multiClubRounds: DeadlySinsRound[] = [
+                { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 3, Penalties: 0, Total: 3, RoundId: 1, Created_At: '15/06' },
+            ];
+            getAllHoleSinDetailsService.mockReturnValue([
+                { Id: 1, RoundId: 1, HoleNumber: 1, TroubleOffTeeClub: 'Driver', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+                { Id: 2, RoundId: 1, HoleNumber: 2, TroubleOffTeeClub: 'Driver', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+                { Id: 3, RoundId: 1, HoleNumber: 3, TroubleOffTeeClub: '3-wood', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+            ]);
+
+            const { queryAllByTestId } = render(<DeadlySinsChart rounds={multiClubRounds} />);
+
+            const breakdownRows = queryAllByTestId(/7deadly-sins-breakdown-row-/);
+            expect(breakdownRows.length).toBe(2);
         });
     });
 });

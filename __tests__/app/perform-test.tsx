@@ -15,6 +15,7 @@ jest.mock('../../service/DbService', () => ({
     getAllRoundHistoryService: jest.fn().mockReturnValue([]),
     getPuttingMakeRatesService: jest.fn().mockReturnValue([]),
     getPuttingProximityService: jest.fn().mockReturnValue([]),
+    getAllHoleSinDetailsService: jest.fn().mockReturnValue([]),
 }));
 
 const mockLogEvent = logEvent as jest.Mock;

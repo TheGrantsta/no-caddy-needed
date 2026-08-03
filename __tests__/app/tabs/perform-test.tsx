@@ -84,6 +84,7 @@ jest.mock('../../../service/DbService', () => ({
         { distance: 45, shortPercent: '-', longPercent: '-' },
         { distance: 50, shortPercent: '-', longPercent: '-' },
     ]),
+    getAllHoleSinDetailsService: jest.fn().mockReturnValue([]),
 }));
 
 describe('Perform', () => {

@@ -103,30 +103,6 @@ describe('Perform', () => {
         expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
     });
 
-    it('displaysDeadlySinsApproachShotsHeaderWhenApproachPressed', () => {
-        const { getByTestId, getByText } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-approach'));
-        expect(getByText('Approach shots')).toBeTruthy();
-    });
-
-    it('displaysApproachSubheaderText', () => {
-        const { getByTestId, getByText } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-approach'));
-        expect(getByText('Make better on course decisions & choose better targets')).toBeTruthy();
-    });
-
-    it('displaysConceptsChevrons', () => {
-        const { getByTestId, getByText } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-approach'));
-        expect(getByText('Concepts')).toBeTruthy();
-    });
-
-    it('displaysDispersionFootnote', () => {
-        const { getByTestId, getByText } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-approach'));
-        expect(getByText(/Your dispersion changes with different clubs/)).toBeTruthy();
-    });
-
     it('showsProsSectionWhenProsSubMenuPressed', () => {
         const { getByTestId, getByText } = render(<Perform />);
         fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
@@ -351,10 +327,10 @@ describe('Perform', () => {
 
         it('switchingToDeadlySinsAndBackDoesNotBreakOtherSections', () => {
             const { getByTestId, getByText } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-approach'));
+            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
             fireEvent.press(getByTestId('perform-sub-menu-sins'));
-            fireEvent.press(getByTestId('perform-sub-menu-approach'));
-            expect(getByText('Approach shots')).toBeTruthy();
+            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
+            expect(getByTestId('perform-flat-list')).toBeTruthy();
         });
 
         it('displaysSinsSubtitle', () => {
@@ -408,11 +384,11 @@ describe('Perform', () => {
             expect(logEvent).toHaveBeenCalledWith('view_putting');
         });
 
-        it('switchingToPuttingAndBackDoesNotBreakApproachRendering', () => {
+        it('switchingToPuttingAndBackDoesNotBreakDeadlySinsRendering', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            fireEvent.press(getByTestId('perform-sub-menu-approach'));
-            expect(getByText('Approach shots')).toBeTruthy();
+            fireEvent.press(getByTestId('perform-sub-menu-sins'));
+            expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
         });
 
         it('switchingToPuttingAndBackDoesNotBreakProsRendering', () => {
@@ -453,8 +429,8 @@ describe('Perform', () => {
         it('switchingToProximityAndBackDoesNotBreakOtherSections', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
-            fireEvent.press(getByTestId('perform-sub-menu-approach'));
-            expect(getByText('Approach shots')).toBeTruthy();
+            fireEvent.press(getByTestId('perform-sub-menu-sins'));
+            expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
         });
     });
 });

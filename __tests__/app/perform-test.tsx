@@ -78,27 +78,10 @@ describe('Perform page ', () => {
         mockSaveSettingsService.mockResolvedValue(true);
     });
 
-    describe('Approach section', () => {
-        it('renders correctly with the default text', () => {
-            const { getByTestId, getByText } = render(<View />);
-            fireEvent.press(getByTestId('perform-sub-menu-approach'));
+    it('renders deadly sins as the default section', () => {
+        const { getByText } = render(<View />);
 
-            expect(getByText('Approach shots')).toBeTruthy();
-            expect(getByText('Make better on course decisions & choose better targets')).toBeTruthy();
-        });
-
-        it('renders deadly sins as the default section', () => {
-            const { getByText } = render(<View />);
-
-            expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
-        });
-
-        it('renders approach tendencies', () => {
-            const { getByTestId, getByText } = render(<View />);
-            fireEvent.press(getByTestId('perform-sub-menu-approach'));
-
-            expect(getByText('* Your dispersion changes with different clubs and swing types — know your tendencies for full and partial shots')).toBeTruthy();
-        });
+        expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
     });
 
     it('renders correctly with stats heading', () => {
@@ -143,16 +126,6 @@ describe('Perform page ', () => {
             expect(mockLogEvent).toHaveBeenCalledWith('view_pro_stats');
         });
 
-        it('logs view_approach when approach sub-menu tab pressed', () => {
-            const { getByTestId } = render(<View />);
-
-            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-            mockLogEvent.mockClear();
-
-            fireEvent.press(getByTestId('perform-sub-menu-approach'));
-
-            expect(mockLogEvent).toHaveBeenCalledWith('view_approach');
-        });
     });
 
     it('renders correctly with stats putting make rates', async () => {
@@ -203,7 +176,6 @@ describe('Perform page ', () => {
             const { getByTestId, queryByTestId } = render(<View />);
             expect(queryByTestId('onboarding-overlay')).toBeNull();
 
-            fireEvent.press(getByTestId('perform-sub-menu-approach'));
             fireEvent.press(getByTestId('perform-info-button'));
 
             expect(getByTestId('onboarding-overlay')).toBeTruthy();

@@ -86,10 +86,10 @@ describe('SubMenu component', () => {
     describe('Perform sub menu', () => {
         it('renders perform menu items', () => {
             const { getByText } = render(
-                <SubMenu showSubMenu="perform" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="perform" selectedItem="sins" handleSubMenu={mockHandleSubMenu} />
             );
 
-            expect(getByText('Approach')).toBeTruthy();
+            expect(getByText('Deadly Sins')).toBeTruthy();
             expect(getByText('Pros')).toBeTruthy();
         });
 

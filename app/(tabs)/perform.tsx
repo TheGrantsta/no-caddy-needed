@@ -17,7 +17,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ONBOARDING_STEPS = [
   { text: 'Performance helps you make smarter decisions and set realistic expectations on the course.' },
-  { text: 'The Approach tab shares concepts for choosing better targets and playing for your shot dispersion.' },
+  { text: 'The Deadly Sins tab tracks your 7 Deadly Sins across rounds, with tap-through trends for each one.' },
   { text: 'The Pro stats tab shows tour-level proximity and putting make rates so you can manage your expectations.' },
 ];
 
@@ -186,6 +186,13 @@ export default function Perform() {
             <View style={styles.container}>
               <View style={styles.header}>
                 <View style={styles.titleRow}>
+                  <TouchableOpacity
+                    testID="perform-info-button"
+                    onPress={handleShowOnboarding}
+                    style={{ padding: 4 }}
+                  >
+                    <MaterialIcons name="info-outline" size={24} color={colours.primary} />
+                  </TouchableOpacity>
                   <Text style={[styles.headerText, styles.marginTop]}>
                     Deadly Sins
                   </Text>
@@ -225,13 +232,6 @@ export default function Perform() {
           <View style={styles.container}>
             <View style={styles.header}>
               <View style={styles.titleRow}>
-                <TouchableOpacity
-                  testID="perform-info-button"
-                  onPress={handleShowOnboarding}
-                  style={{ padding: 4 }}
-                >
-                  <MaterialIcons name="info-outline" size={24} color={colours.primary} />
-                </TouchableOpacity>
                 <Text style={[styles.headerText, styles.marginTop]}>
                   Approach shots
                 </Text>

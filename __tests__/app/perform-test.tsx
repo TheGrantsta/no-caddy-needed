@@ -11,6 +11,10 @@ jest.mock('../../service/FirebaseService', () => ({
 jest.mock('../../service/DbService', () => ({
     getSettingsService: jest.fn(),
     saveSettingsService: jest.fn().mockResolvedValue(true),
+    getAllDeadlySinsRoundsService: jest.fn().mockReturnValue([]),
+    getAllRoundHistoryService: jest.fn().mockReturnValue([]),
+    getPuttingMakeRatesService: jest.fn().mockReturnValue([]),
+    getPuttingProximityService: jest.fn().mockReturnValue([]),
 }));
 
 const mockLogEvent = logEvent as jest.Mock;
@@ -76,24 +80,22 @@ describe('Perform page ', () => {
 
     describe('Approach section', () => {
         it('renders correctly with the default text', () => {
-            const { getByText } = render(<View />);
+            const { getByTestId, getByText } = render(<View />);
+            fireEvent.press(getByTestId('perform-sub-menu-approach'));
 
             expect(getByText('Approach shots')).toBeTruthy();
             expect(getByText('Make better on course decisions & choose better targets')).toBeTruthy();
         });
 
-        it('renders approach as the default section', () => {
+        it('renders deadly sins as the default section', () => {
             const { getByText } = render(<View />);
 
-            expect(getByText('Concepts')).toBeTruthy();
-            expect(getByText('Target: play for your shot dispersion')).toBeTruthy();
-            expect(getByText('Aim: think shotgun pattern')).toBeTruthy();
-            expect(getByText('Strategy: favour the "fat" side')).toBeTruthy();
-            expect(getByText('Eliminate: big numbers by playing away from water & severe hazards')).toBeTruthy();
+            expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
         });
 
         it('renders approach tendencies', () => {
-            const { getByText } = render(<View />);
+            const { getByTestId, getByText } = render(<View />);
+            fireEvent.press(getByTestId('perform-sub-menu-approach'));
 
             expect(getByText('* Your dispersion changes with different clubs and swing types — know your tendencies for full and partial shots')).toBeTruthy();
         });
@@ -201,6 +203,7 @@ describe('Perform page ', () => {
             const { getByTestId, queryByTestId } = render(<View />);
             expect(queryByTestId('onboarding-overlay')).toBeNull();
 
+            fireEvent.press(getByTestId('perform-sub-menu-approach'));
             fireEvent.press(getByTestId('perform-info-button'));
 
             expect(getByTestId('onboarding-overlay')).toBeTruthy();

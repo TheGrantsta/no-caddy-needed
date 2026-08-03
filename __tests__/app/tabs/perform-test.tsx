@@ -34,6 +34,8 @@ jest.mock('../../../service/FirebaseService', () => ({
 jest.mock('../../../service/DbService', () => ({
     getSettingsService: jest.fn().mockReturnValue({ performOnboardingSeen: true, units: 'yards' }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
+    getAllDeadlySinsRoundsService: jest.fn().mockReturnValue([]),
+    getAllRoundHistoryService: jest.fn().mockReturnValue([]),
     getPuttingMakeRatesService: jest.fn().mockReturnValue([
         { distance: 1, firstPuttMakeRate: '98%', secondPuttMakeRate: '-' },
         { distance: 2, firstPuttMakeRate: '95%', secondPuttMakeRate: '-' },
@@ -96,23 +98,32 @@ describe('Perform', () => {
         expect(toJSON()).toBeTruthy();
     });
 
-    it('displaysApproachShotsHeaderByDefault', () => {
+    it('displaysDeadlySinsAsDefaultSection', () => {
         const { getByText } = render(<Perform />);
+        expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
+    });
+
+    it('displaysDeadlySinsApproachShotsHeaderWhenApproachPressed', () => {
+        const { getByTestId, getByText } = render(<Perform />);
+        fireEvent.press(getByTestId('perform-sub-menu-approach'));
         expect(getByText('Approach shots')).toBeTruthy();
     });
 
     it('displaysApproachSubheaderText', () => {
-        const { getByText } = render(<Perform />);
+        const { getByTestId, getByText } = render(<Perform />);
+        fireEvent.press(getByTestId('perform-sub-menu-approach'));
         expect(getByText('Make better on course decisions & choose better targets')).toBeTruthy();
     });
 
     it('displaysConceptsChevrons', () => {
-        const { getByText } = render(<Perform />);
+        const { getByTestId, getByText } = render(<Perform />);
+        fireEvent.press(getByTestId('perform-sub-menu-approach'));
         expect(getByText('Concepts')).toBeTruthy();
     });
 
     it('displaysDispersionFootnote', () => {
-        const { getByText } = render(<Perform />);
+        const { getByTestId, getByText } = render(<Perform />);
+        fireEvent.press(getByTestId('perform-sub-menu-approach'));
         expect(getByText(/Your dispersion changes with different clubs/)).toBeTruthy();
     });
 
@@ -235,7 +246,7 @@ describe('Perform', () => {
             expect(queryByText('Release to update')).toBeNull();
         });
 
-        it('onRefreshResetsSectionToApproach', () => {
+        it('onRefreshResetsSectionToDeadlySins', () => {
             const { getByTestId, UNSAFE_getByType, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
             expect(getByText('Performance')).toBeTruthy();
@@ -248,7 +259,107 @@ describe('Perform', () => {
                 jest.advanceTimersByTime(750);
             });
 
+            expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
+        });
+    });
+
+    describe('Deadly Sins section', () => {
+        it('displaysDeadlySinsSubMenuTab', () => {
+            const { getByTestId } = render(<Perform />);
+            expect(getByTestId('perform-sub-menu-sins')).toBeTruthy();
+        });
+
+        it('rendersDeadlySinsChartToggleWhenRoundsExist', () => {
+            const { getAllDeadlySinsRoundsService } = require('../../../service/DbService');
+            getAllDeadlySinsRoundsService.mockReturnValue([
+                {
+                    Id: 1,
+                    RoundId: 1,
+                    ThreePutts: 2,
+                    DoubleBogeys: 1,
+                    BogeysPar5: 0,
+                    BogeysInside9Iron: 1,
+                    DoubleChips: 0,
+                    TroubleOffTee: 1,
+                    Penalties: 0,
+                    Total: 5,
+                    Created_At: '01 Jan',
+                },
+            ]);
+            const { getAllRoundHistoryService } = require('../../../service/DbService');
+            getAllRoundHistoryService.mockReturnValue([
+                {
+                    Id: 1,
+                    TotalScore: 75,
+                    StrokeTotal: null,
+                    StartTime: '2026-08-03T09:00:00Z',
+                    EndTime: '2026-08-03T14:30:00Z',
+                    IsCompleted: 1,
+                    CourseName: 'Test Course',
+                    Created_At: '01 Jan',
+                    HolesPlayed: 18,
+                },
+            ]);
+
+            const { getByTestId } = render(<Perform />);
+            expect(getByTestId('7deadly-sins-chart-toggle')).toBeTruthy();
+        });
+
+        it('rendersFilterButtonsWhenRoundsExist', () => {
+            const { getAllDeadlySinsRoundsService, getAllRoundHistoryService } = require('../../../service/DbService');
+            getAllDeadlySinsRoundsService.mockReturnValue([
+                {
+                    Id: 1,
+                    RoundId: 1,
+                    ThreePutts: 2,
+                    DoubleBogeys: 1,
+                    BogeysPar5: 0,
+                    BogeysInside9Iron: 1,
+                    DoubleChips: 0,
+                    TroubleOffTee: 1,
+                    Penalties: 0,
+                    Total: 5,
+                    Created_At: '01 Jan',
+                },
+            ]);
+            getAllRoundHistoryService.mockReturnValue([
+                {
+                    Id: 1,
+                    TotalScore: 75,
+                    StrokeTotal: null,
+                    StartTime: '2026-08-03T09:00:00Z',
+                    EndTime: '2026-08-03T14:30:00Z',
+                    IsCompleted: 1,
+                    CourseName: 'Test Course',
+                    Created_At: '01 Jan',
+                    HolesPlayed: 18,
+                },
+            ]);
+
+            const { getByTestId } = render(<Perform />);
+            expect(getByTestId('filter-button-1')).toBeTruthy();
+            expect(getByTestId('filter-button-10')).toBeTruthy();
+            expect(getByTestId('filter-button-all')).toBeTruthy();
+        });
+
+        it('logsViewDeadlySinsAnalyticsEventWhenTabPressed', () => {
+            const { logEvent } = require('../../../service/FirebaseService');
+            const { getByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-sins'));
+            expect(logEvent).toHaveBeenCalledWith('view_deadly_sins');
+        });
+
+        it('switchingToDeadlySinsAndBackDoesNotBreakOtherSections', () => {
+            const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-approach'));
+            fireEvent.press(getByTestId('perform-sub-menu-sins'));
+            fireEvent.press(getByTestId('perform-sub-menu-approach'));
             expect(getByText('Approach shots')).toBeTruthy();
+        });
+
+        it('displaysSinsSubtitle', () => {
+            const { getByText } = render(<Perform />);
+            expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
         });
     });
 

@@ -6,11 +6,12 @@ import Chevrons from '../../components/Chevrons';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import PuttingProximityChart from '../../components/PuttingProximityChart';
+import DeadlySinsChart from '../../components/DeadlySinsChart';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { logEvent } from '../../service/FirebaseService';
-import { getSettingsService, saveSettingsService, AppSettings, getPuttingMakeRatesService, getPuttingProximityService } from '../../service/DbService';
+import { getSettingsService, saveSettingsService, AppSettings, getPuttingMakeRatesService, getPuttingProximityService, getAllDeadlySinsRoundsService, getAllRoundHistoryService } from '../../service/DbService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -25,8 +26,9 @@ export default function Perform() {
   const colours = useThemeColours();
   const { landscapePadding } = useOrientation();
   const [refreshing, setRefreshing] = useState(false);
-  const [section, setSection] = useState('approach');
+  const [section, setSection] = useState('sins');
   const [activeIndex, setActiveIndex] = useState(0);
+  const [sinsFilter, setSinsFilter] = useState<1 | 10 | 'all'>('all');
   const flatListRef = useRef(null);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [showOnboarding, setShowOnboarding] = useState(!settings.performOnboardingSeen);
@@ -109,13 +111,14 @@ export default function Perform() {
     setRefreshing(true);
 
     setTimeout(() => {
-      setSection('approach');
+      setSection('sins');
       setRefreshing(false);
     }, 750);
   };
 
   const handleSubMenu = (sectionName: string) => {
     setSection(sectionName);
+    if (sectionName === 'sins') logEvent('view_deadly_sins');
     if (sectionName === 'approach') logEvent('view_approach');
     if (sectionName === 'pros') logEvent('view_pro_stats');
     if (sectionName === 'putting') logEvent('view_putting');
@@ -168,6 +171,54 @@ export default function Perform() {
           onRefresh={onRefresh}
           tintColor={colours.primary} />
       }>
+
+        {/* Deadly Sins */}
+        {displaySection('sins') && (() => {
+          const roundHistory = getAllRoundHistoryService();
+          const deadlySinsRounds = getAllDeadlySinsRoundsService();
+          const filteredRoundHistory = sinsFilter === 'all' ? roundHistory : roundHistory.slice(0, sinsFilter);
+          const filteredRoundIds = new Set(filteredRoundHistory.map(r => r.Id));
+          const filteredDeadlySinsRounds = sinsFilter === 'all'
+              ? deadlySinsRounds
+              : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
+
+          return (
+            <View style={styles.container}>
+              <View style={styles.header}>
+                <View style={styles.titleRow}>
+                  <Text style={[styles.headerText, styles.marginTop]}>
+                    Deadly Sins
+                  </Text>
+                </View>
+                <Text style={[styles.normalText, styles.marginBottom]}>
+                  Track your 7 Deadly Sins across rounds
+                </Text>
+              </View>
+
+              <View style={styles.divider} />
+
+              {roundHistory.length > 0 && (
+                <View style={styles.playScreen.filterContainer}>
+                  <Text testID="filter-label" style={styles.playScreen.filterLabel}>Show</Text>
+                  {([1, 10, 'all'] as const).map(f => (
+                    <TouchableOpacity
+                      key={String(f)}
+                      testID={`filter-button-${f}`}
+                      onPress={() => setSinsFilter(f)}
+                      style={[styles.playScreen.filterButton, sinsFilter === f && styles.playScreen.filterButtonSelected]}
+                    >
+                      <Text style={[styles.playScreen.filterButtonText, sinsFilter === f && styles.playScreen.filterButtonTextSelected]}>
+                        {f === 'all' ? 'All' : String(f)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+
+              <DeadlySinsChart rounds={filteredDeadlySinsRounds} filter={sinsFilter} />
+            </View>
+          );
+        })()}
 
         {/* Approach */}
         {displaySection('approach') && (

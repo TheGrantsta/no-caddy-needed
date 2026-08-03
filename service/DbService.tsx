@@ -24,6 +24,7 @@ import {
     getAllPuttingStatsWithThreePutts,
     insertHoleSinDetails,
     getHoleSinDetails,
+    getAllHoleSinDetails,
     deleteHoleSinDetailsByHole,
     insertRound,
     updateRound,
@@ -477,6 +478,18 @@ export const getHoleSinDetailsService = (roundId: number, holeNumber: number): H
         PenaltyType: row.PenaltyType ?? undefined,
         BogeysInside9IronClub: row.BogeysInside9IronClub ?? undefined,
     };
+};
+
+export const getAllHoleSinDetailsService = (): HoleSinDetails[] => {
+    const rows = getAllHoleSinDetails() as any[];
+    return rows.map(row => ({
+        Id: row.Id,
+        RoundId: row.RoundId,
+        HoleNumber: row.HoleNumber,
+        TroubleOffTeeClub: row.TroubleOffTeeClub ?? undefined,
+        PenaltyType: row.PenaltyType ?? undefined,
+        BogeysInside9IronClub: row.BogeysInside9IronClub ?? undefined,
+    }));
 };
 
 export const deleteHoleSinDetailsService = (roundId: number, holeNumber: number): Promise<boolean> =>

@@ -1,4 +1,4 @@
-import { DeadlySinsRound } from './DbService';
+import { DeadlySinsRound, HoleSinDetails } from './DbService';
 
 export type DeadlySinCategory = {
     key: keyof DeadlySinsRound;
@@ -31,3 +31,10 @@ export const sortDeadlySinsByFrequency = (rounds: DeadlySinsRound[]): DeadlySinC
             count: rounds.reduce((sum, round) => sum + (round[key] as number), 0),
         }))
         .sort((a, b) => b.count - a.count);
+
+// Metadata for sins that have captured granular details.
+export const SIN_DETAIL_FIELDS: Partial<Record<DeadlySinCategory['key'], { field: keyof HoleSinDetails; label: string }>> = {
+    TroubleOffTee: { field: 'TroubleOffTeeClub', label: 'Club used off the tee' },
+    Penalties: { field: 'PenaltyType', label: 'Penalty type' },
+    BogeysInside9Iron: { field: 'BogeysInside9IronClub', label: 'Approach club' },
+};

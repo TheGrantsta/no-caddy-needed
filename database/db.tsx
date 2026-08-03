@@ -404,6 +404,10 @@ export const getHoleSinDetails = (roundId: number, holeNumber: number) => {
     );
 };
 
+export const getAllHoleSinDetails = () => {
+    return getSyncDb().getAllSync('SELECT * FROM HoleSinDetails;');
+};
+
 export const deleteHoleSinDetailsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
     let success = true;
     try {

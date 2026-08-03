@@ -2,9 +2,10 @@ import React, { useRef, useState } from 'react';
 import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useLocalSearchParams } from 'expo-router';
-import { getAllDeadlySinsRoundsService, DeadlySinsRound } from '../../service/DbService';
-import { DeadlySinCategory, sortDeadlySinsByFrequency } from '../../service/deadlySinCategories';
+import { getAllDeadlySinsRoundsService, getAllHoleSinDetailsService, DeadlySinsRound, HoleSinDetails } from '../../service/DbService';
+import { DeadlySinCategory, sortDeadlySinsByFrequency, SIN_DETAIL_FIELDS } from '../../service/deadlySinCategories';
 import { useStyles } from '../../hooks/useStyles';
+import { useThemeColours } from '../../context/ThemeContext';
 
 const CHART_HEIGHT = 200;
 const CHART_PADDING_TOP = 24;
@@ -212,11 +213,30 @@ function BarChart({ rounds, sinKey }: BarChartProps) {
 }
 
 // One full-screen-width page: heading + chart (or empty state) + narrative for a single sin.
-function SinTrendPage({ category, rounds, width }: { category: DeadlySinCategory; rounds: DeadlySinsRound[]; width: number }) {
+function SinTrendPage({ category, rounds, width, sinDetails }: { category: DeadlySinCategory; rounds: DeadlySinsRound[]; width: number; sinDetails: HoleSinDetails[] }) {
     const styles = useStyles();
     const s = styles.deadlySinTrend;
+    const colours = useThemeColours();
     const key = category.key;
     const narrative = buildTrendNarrative(rounds.map(r => r[key] as number), category.label);
+
+    const detail = SIN_DETAIL_FIELDS[key];
+    const breakdown = detail
+        ? Array.from(
+            sinDetails.reduce((counts, d) => {
+                const value = d[detail.field] as string | undefined;
+                if (value) counts.set(value, (counts.get(value) ?? 0) + 1);
+                return counts;
+            }, new Map<string, number>())
+        ).map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count)
+        : [];
+
+    const maxCount = breakdown.length > 0 ? Math.max(...breakdown.map(b => b.count)) : 0;
+
+    const getBarWidth = (count: number): string => {
+        if (maxCount === 0) return '0%';
+        return `${(count / maxCount) * 100}%`;
+    };
 
     return (
         <View testID={`deadly-sin-trend-page-${key}`} style={{ width }}>
@@ -232,6 +252,47 @@ function SinTrendPage({ category, rounds, width }: { category: DeadlySinCategory
                         <Text testID="deadly-sin-trend-narrative" style={s.narrative}>
                             {narrative}
                         </Text>
+                        {breakdown.length > 0 && (
+                            <View style={{ marginTop: 32, marginHorizontal: 16 }}>
+                                <Text testID="deadly-sin-trend-breakdown-heading" style={[styles.normalText, { fontWeight: 'bold', marginBottom: 12, color: colours.text }]}>
+                                    {detail?.label}
+                                </Text>
+                                {breakdown.map((item, index) => (
+                                    <View key={index} testID={`deadly-sin-trend-breakdown-row-${index}`} style={[styles.deadlySinsChart.barContainer, { marginBottom: 8 }]}>
+                                        <View style={styles.deadlySinsChart.labelContainer}>
+                                            <Text testID={`deadly-sin-trend-breakdown-label-${index}`} style={styles.deadlySinsChart.label} numberOfLines={1}>
+                                                {item.label}
+                                            </Text>
+                                        </View>
+
+                                        <View style={styles.deadlySinsChart.barWrapper}>
+                                            <View
+                                                testID={`deadly-sin-trend-breakdown-bar-${index}`}
+                                                style={[
+                                                    styles.deadlySinsChart.bar,
+                                                    {
+                                                        width: getBarWidth(item.count),
+                                                        backgroundColor: colours.primary,
+                                                    }
+                                                ]}
+                                            />
+                                            <View
+                                                style={[
+                                                    styles.deadlySinsChart.barBackground,
+                                                    { width: `${maxCount === 0 ? 100 : 100 - (item.count / maxCount) * 100}%` }
+                                                ]}
+                                            />
+                                        </View>
+
+                                        <View style={styles.deadlySinsChart.countContainer}>
+                                            <Text testID={`deadly-sin-trend-breakdown-count-${index}`} style={styles.deadlySinsChart.countText}>
+                                                {item.count}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                ))}
+                            </View>
+                        )}
                     </>
                 )}
             </ScrollView>
@@ -247,6 +308,9 @@ export default function DeadlySinTrendScreen() {
     const allRounds = getAllDeadlySinsRoundsService();
     const limit = filter === '1' ? 1 : filter === '10' ? 10 : MAX_ROUNDS;
     const rounds = allRounds.slice().reverse().slice(-limit);
+
+    const roundIds = new Set(rounds.map(r => r.RoundId));
+    const sinDetails = getAllHoleSinDetailsService().filter(d => roundIds.has(d.RoundId));
 
     // Pages follow the same frequency order shown in the Deadly Sins bar chart.
     const categories = sortDeadlySinsByFrequency(rounds);
@@ -273,7 +337,7 @@ export default function DeadlySinTrendScreen() {
                 getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
                 onMomentumScrollEnd={onScroll}
                 renderItem={({ item }) => (
-                    <SinTrendPage category={item} rounds={rounds} width={width} />
+                    <SinTrendPage category={item} rounds={rounds} width={width} sinDetails={sinDetails} />
                 )}
             />
             <View testID="deadly-sin-trend-indicators" style={styles.pagerDotRow}>

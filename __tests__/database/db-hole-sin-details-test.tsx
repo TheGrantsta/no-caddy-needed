@@ -1,4 +1,4 @@
-import { insertHoleSinDetails, getHoleSinDetails, deleteHoleSinDetailsByHole, initialize } from '../../database/db';
+import { insertHoleSinDetails, getHoleSinDetails, deleteHoleSinDetailsByHole, getAllHoleSinDetails, initialize } from '../../database/db';
 import * as SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
@@ -215,5 +215,37 @@ describe('deleteHoleSinDetailsByHole', () => {
 
         const result = await deleteHoleSinDetailsByHole(1, 1);
         expect(result).toBe(false);
+    });
+});
+
+describe('getAllHoleSinDetails', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('calls getAllSync with SELECT * FROM HoleSinDetails', () => {
+        getAllHoleSinDetails();
+
+        expect(mockGetAllSync).toHaveBeenCalledWith(
+            expect.stringContaining('SELECT * FROM HoleSinDetails')
+        );
+    });
+
+    it('returns rows from getAllSync', () => {
+        const mockRows = [
+            { Id: 1, RoundId: 1, HoleNumber: 1, TroubleOffTeeClub: 'Driver', PenaltyType: null, BogeysInside9IronClub: null },
+            { Id: 2, RoundId: 1, HoleNumber: 2, TroubleOffTeeClub: null, PenaltyType: 'Out of bounds', BogeysInside9IronClub: null },
+        ];
+        mockGetAllSync.mockReturnValueOnce(mockRows);
+
+        const result = getAllHoleSinDetails();
+        expect(result).toEqual(mockRows);
+    });
+
+    it('returns empty array when no rows found', () => {
+        mockGetAllSync.mockReturnValueOnce([]);
+
+        const result = getAllHoleSinDetails();
+        expect(result).toEqual([]);
     });
 });

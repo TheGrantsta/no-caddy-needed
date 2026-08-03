@@ -571,6 +571,11 @@ export type HoleSinDetails = {
     BogeysInside9IronClub?: string;
 };
 
+export type RoundScoreBreakdown = {
+    putts: number;
+    penalties: number;
+};
+
 // Round services
 export const startRoundService = async (courseName: string): Promise<number | null> => {
     return insertRound(courseName);
@@ -728,6 +733,14 @@ export const getDeadlySinsForRoundService = (roundId: number): DeadlySinsRound |
         RoundId: roundId,
         Created_At: round ? getTwoDigitDayAndMonth(round.Created_At) : '',
     };
+};
+
+export const getRoundScoreBreakdownService = (roundId: number): RoundScoreBreakdown => {
+    const holesPlayed = getHolesPlayedForRoundService(roundId);
+    const sins = getDeadlySinsForRoundService(roundId);
+    const threePutts = sins?.ThreePutts ?? 0;
+    const penalties = sins?.Penalties ?? 0;
+    return { putts: holesPlayed * 2 + threePutts, penalties };
 };
 
 // Settings services

@@ -691,4 +691,44 @@ describe('sin indicator dots', () => {
             expect(getByTestId('sin-cell-1-1').props.accessibilityLabel).toMatch(/deadly sin/i);
         });
     });
+
+    describe('Score breakdown', () => {
+        it('renders score breakdown when provided', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+
+            const { getByTestId } = render(
+                <Scorecard
+                    players={mockPlayers}
+                    holeScores={holeScores}
+                    scoreBreakdown={{ putts: 36, penalties: 2 }}
+                />
+            );
+
+            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · Penalties: 2');
+        });
+
+        it('does not render breakdown when not provided', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+
+            const { queryByTestId } = render(
+                <Scorecard players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(queryByTestId('round-score-breakdown')).toBeNull();
+        });
+
+        it('displays correct putts and penalties values', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+
+            const { getByTestId } = render(
+                <Scorecard
+                    players={mockPlayers}
+                    holeScores={holeScores}
+                    scoreBreakdown={{ putts: 42, penalties: 0 }}
+                />
+            );
+
+            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 42 · Penalties: 0');
+        });
+    });
 });

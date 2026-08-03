@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { render, fireEvent, waitFor, within } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService, getAllRoundHistoryService } from '../../../service/DbService';
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService, getAllRoundHistoryService, getRoundScoreBreakdownService } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -32,6 +32,7 @@ jest.mock('../../../service/DbService', () => ({
     getHolesWithSinsForRoundService: jest.fn(),
     loadCourseNotesService: jest.fn().mockReturnValue({}),
     getAllRoundHistoryService: jest.fn(),
+    getRoundScoreBreakdownService: jest.fn(),
 }));
 
 let mockParams: { roundId: string } = { roundId: '1' };
@@ -68,6 +69,7 @@ const mockReplaceHoleDeadlySinsService = replaceHoleDeadlySinsService as jest.Mo
 const mockGetHolesWithSinsForRoundService = getHolesWithSinsForRoundService as jest.Mock;
 const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
 const mockGetAllRoundHistory = getAllRoundHistoryService as jest.Mock;
+const mockGetRoundScoreBreakdown = getRoundScoreBreakdownService as jest.Mock;
 
 const makeHistoryRound = (id: number) => ({
     Id: id, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '',
@@ -93,6 +95,7 @@ describe('Scorecard screen', () => {
         mockGetHoleDeadlySinsService.mockReturnValue(null);
         mockReplaceHoleDeadlySinsService.mockResolvedValue(true);
         mockGetHolesWithSinsForRoundService.mockReturnValue(new Set());
+        mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, penalties: 0 });
         // Default to a single round (= the param round) so each existing test renders one page.
         mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(1)]);
     });
@@ -887,6 +890,24 @@ describe('Scorecard screen', () => {
 
             fireEvent.press(within(getByTestId('scorecard-page-1')).getByTestId('cancel-edit-button'));
             expect(getByTestId('scorecard-pager').props.scrollEnabled).toBe(true);
+        });
+
+        it('shows score breakdown when round data exists', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, penalties: 1 });
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · Penalties: 1');
+        });
+
+        it('shows score breakdown with zeros when no deadly sins recorded', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, penalties: 0 });
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · Penalties: 0');
         });
     });
 });

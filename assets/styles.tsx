@@ -702,6 +702,12 @@ export const createStyles = (c: ThemeColours) => ({
             borderTopColor: c.primary,
             paddingTop: 5,
         },
+        scoreBreakdownText: {
+            color: c.text,
+            fontSize: fontSizes.small,
+            textAlign: 'center',
+            marginTop: 8,
+        },
     }),
 
     clubDistanceList: StyleSheet.create({

@@ -17,11 +17,13 @@ import {
     getHolesWithSinsForRoundService,
     loadCourseNotesService,
     getAllRoundHistoryService,
+    getRoundScoreBreakdownService,
     RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
     DeadlySinsValues,
     Round,
+    RoundScoreBreakdown,
 } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
@@ -75,6 +77,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const [editedSins, setEditedSins] = useState<DeadlySinsValues | null>(null);
     const [sinsHoleNumber, setSinsHoleNumber] = useState<number | null>(null);
     const [sinHoles, setSinHoles] = useState<Set<number>>(new Set());
+    const [scoreBreakdown, setScoreBreakdown] = useState<RoundScoreBreakdown | null>(null);
 
     useEffect(() => {
         loadData();
@@ -94,6 +97,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         const sc = mp ? null : getRoundScorecardService(Number(roundId));
         setScorecard(sc);
         setSinHoles(getHolesWithSinsForRoundService(Number(roundId)));
+        setScoreBreakdown(getRoundScoreBreakdownService(Number(roundId)));
         const courseName = mp?.round?.CourseName ?? sc?.round?.CourseName ?? null;
         if (courseName) {
             setCourseNotes(loadCourseNotesService(courseName));
@@ -295,6 +299,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                             onScoreSelect={handleScoreSelect}
                             sinHoles={sinHoles}
                             onSinPress={handleSinPress}
+                            scoreBreakdown={scoreBreakdown ?? undefined}
                         />
 
                         {isEditing && selectedScore && (

@@ -484,5 +484,40 @@ describe('Perform', () => {
             fireEvent.press(getByTestId('perform-sub-menu-sins'));
             expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
         });
+
+        it('renders proximity filter toggle buttons', () => {
+            const { getByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+            expect(getByTestId('proximity-filter-all')).toBeTruthy();
+            expect(getByTestId('proximity-filter-three-putt')).toBeTruthy();
+        });
+
+        it('All button is selected by default', () => {
+            const { getByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+            const allButton = getByTestId('proximity-filter-all');
+            const styleArray = Array.isArray(allButton.props.style) ? allButton.props.style : [allButton.props.style];
+            const hasSelectedStyle = styleArray.some((s: any) => s?.backgroundColor !== undefined);
+            expect(hasSelectedStyle).toBe(true);
+        });
+
+        it('pressing 3-Putts Only calls getPuttingProximityService(true)', () => {
+            const { getPuttingProximityService } = require('../../../service/DbService');
+            const { getByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+            getPuttingProximityService.mockClear();
+            fireEvent.press(getByTestId('proximity-filter-three-putt'));
+            expect(getPuttingProximityService).toHaveBeenCalledWith(true);
+        });
+
+        it('pressing All calls getPuttingProximityService(false)', () => {
+            const { getPuttingProximityService } = require('../../../service/DbService');
+            const { getByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+            fireEvent.press(getByTestId('proximity-filter-three-putt'));
+            getPuttingProximityService.mockClear();
+            fireEvent.press(getByTestId('proximity-filter-all'));
+            expect(getPuttingProximityService).toHaveBeenCalledWith(false);
+        });
     });
 });

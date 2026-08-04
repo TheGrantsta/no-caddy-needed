@@ -142,4 +142,58 @@ describe('getPuttingProximityService', () => {
 
         expect(bucket5!.shortPercent).toBe('100%');
     });
+
+    it('filters to only 3-putts when threePuttOnly is true', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { FirstPuttDistance: 5, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { FirstPuttDistance: 5, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThreePutts: 1 },
+        ]);
+
+        const result = getPuttingProximityService(true);
+        const bucket5 = result.find(r => r.distance === 5);
+
+        expect(bucket5!.shortPercent).toBe('100%');
+        expect(bucket5!.longPercent).toBe('0%');
+    });
+
+    it('shows only 3-putt rows with threePuttOnly=true, excluding non-3-putt rows from same bucket', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { FirstPuttDistance: 10, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { FirstPuttDistance: 10, SecondPuttDistance: 3, SecondPuttIsLong: 1, ThreePutts: 1 },
+        ]);
+
+        const result = getPuttingProximityService(true);
+        const bucket10 = result.find(r => r.distance === 10);
+
+        expect(bucket10!.shortPercent).toBe('0%');
+        expect(bucket10!.longPercent).toBe('100%');
+    });
+
+    it('returns "-" for buckets with no 3-putt rows when threePuttOnly=true', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { FirstPuttDistance: 5, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { FirstPuttDistance: 10, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThreePutts: 0 },
+        ]);
+
+        const result = getPuttingProximityService(true);
+        const bucket5 = result.find(r => r.distance === 5);
+        const bucket10 = result.find(r => r.distance === 10);
+
+        expect(bucket5!.shortPercent).toBe('-');
+        expect(bucket5!.longPercent).toBe('-');
+        expect(bucket10!.shortPercent).toBe('-');
+        expect(bucket10!.longPercent).toBe('-');
+    });
+
+    it('default parameter (no args) behaves as threePuttOnly=false', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { FirstPuttDistance: 5, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { FirstPuttDistance: 5, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThreePutts: 1 },
+        ]);
+
+        const result = getPuttingProximityService();
+        const bucket5 = result.find(r => r.distance === 5);
+
+        expect(bucket5!.shortPercent).toBe('100%');
+    });
 });

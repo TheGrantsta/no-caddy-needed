@@ -419,12 +419,12 @@ export type PuttingProximity = {
     longPercent: string;
 };
 
-export const getPuttingProximityService = (): PuttingProximity[] => {
+export const getPuttingProximityService = (threePuttOnly: boolean = false): PuttingProximity[] => {
     const rows = getAllPuttingStatsWithThreePutts() as any[];
     const stats = new Map<number, { short: number; long: number }>();
 
     rows.forEach((row) => {
-        if (row.SecondPuttDistance > 0) {
+        if (row.SecondPuttDistance > 0 && (!threePuttOnly || row.ThreePutts === 1)) {
             const bucket = bucketProximityDistance(row.FirstPuttDistance);
             if (bucket !== null) {
                 const current = stats.get(bucket) || { short: 0, long: 0 };

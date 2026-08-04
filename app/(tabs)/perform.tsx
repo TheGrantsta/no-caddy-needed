@@ -29,6 +29,7 @@ export default function Perform() {
   const [section, setSection] = useState('sins');
   const [activeIndex, setActiveIndex] = useState(0);
   const [sinsFilter, setSinsFilter] = useState<1 | 10 | 'all'>('all');
+  const [proximityThreePuttOnly, setProximityThreePuttOnly] = useState(false);
   const flatListRef = useRef(null);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [showOnboarding, setShowOnboarding] = useState(!settings.performOnboardingSeen);
@@ -394,7 +395,25 @@ export default function Perform() {
 
             <View style={styles.divider} />
 
-            <PuttingProximityChart data={getPuttingProximityService()} />
+            <View style={styles.playScreen.filterContainer}>
+              <Text testID="proximity-filter-label" style={styles.playScreen.filterLabel}>Show</Text>
+              <TouchableOpacity
+                testID="proximity-filter-all"
+                onPress={() => setProximityThreePuttOnly(false)}
+                style={[styles.playScreen.filterButton, !proximityThreePuttOnly && styles.playScreen.filterButtonSelected]}
+              >
+                <Text style={[styles.playScreen.filterButtonText, !proximityThreePuttOnly && styles.playScreen.filterButtonTextSelected]}>All</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                testID="proximity-filter-three-putt"
+                onPress={() => setProximityThreePuttOnly(true)}
+                style={[styles.playScreen.filterButton, proximityThreePuttOnly && styles.playScreen.filterButtonSelected]}
+              >
+                <Text style={[styles.playScreen.filterButtonText, proximityThreePuttOnly && styles.playScreen.filterButtonTextSelected]}>3-Putts Only</Text>
+              </TouchableOpacity>
+            </View>
+
+            <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly)} />
           </View>
         )}
       </ScrollView>

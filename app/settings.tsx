@@ -3,8 +3,10 @@ import { useMemo, useState } from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
+import * as Sharing from 'expo-sharing';
 import { getSettingsService, saveSettingsService, AppSettings } from '../service/DbService';
 import { openStoreReviewService } from '../service/ReviewService';
+import { buildStatsExportPayload, formatStatsExportText, writeStatsExportFile } from '../service/ExportService';
 import { useStyles } from '../hooks/useStyles';
 import { useTheme } from '../context/ThemeContext';
 import { useOrientation } from '../hooks/useOrientation';
@@ -52,7 +54,7 @@ export default function Settings() {
   const { colours } = useTheme();
   const styles = useStyles();
   const { landscapePadding } = useOrientation();
-  const { showSuccess, showResult } = useAppToast();
+  const { showResult, showError } = useAppToast();
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [routineText, setRoutineText] = useState(settings.preShotRoutineText);
   const [showOnboarding, setShowOnboarding] = useState(!settings.settingsOnboardingSeen);
@@ -130,6 +132,27 @@ export default function Settings() {
     const success = await saveSettingsService(updated);
 
     showResult(success, 'Settings saved', 'Failed to save settings');
+  };
+
+  const handleExportStats = async () => {
+    try {
+      const payload = buildStatsExportPayload();
+      const text = formatStatsExportText(payload);
+      const fileUri = await writeStatsExportFile(text);
+
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (!isAvailable) {
+        showError('Failed to export stats');
+        return;
+      }
+
+      await Sharing.shareAsync(fileUri, {
+        mimeType: 'text/plain',
+        dialogTitle: 'Export golf stats',
+      });
+    } catch {
+      showError('Failed to export stats');
+    }
   };
 
   const voiceButtonStyles = useMemo(() => ({
@@ -350,6 +373,16 @@ export default function Settings() {
         </>)}
 
         <View style={[styles.divider, { marginTop: 'auto' }]} />
+
+        <View style={{ alignItems: 'center', paddingVertical: 20 }}>
+          <TouchableOpacity
+            testID="export-stats-button"
+            style={styles.largeButton}
+            onPress={handleExportStats}
+          >
+            <Text style={styles.buttonText}>Export my stats</Text>
+          </TouchableOpacity>
+        </View>
 
         <View style={{ alignItems: 'center', paddingVertical: 20 }}>
           <TouchableOpacity

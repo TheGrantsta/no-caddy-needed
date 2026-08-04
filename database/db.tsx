@@ -1066,3 +1066,39 @@ const ZERO_SIN_FREQUENCIES: SinFrequencies = {
     BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0,
 };
 
+export const getAllRoundHoleScoresWithContext = () => {
+    const sql = `
+        SELECT rhs.RoundId, r.CourseName, r.Created_At, rhs.HoleNumber, rhs.HolePar, rhs.Score
+        FROM RoundHoleScores rhs
+        JOIN RoundPlayers rp ON rhs.RoundPlayerId = rp.Id AND rp.IsUser = 1
+        JOIN Rounds r ON rhs.RoundId = r.Id
+        WHERE r.IsCompleted = 1
+        ORDER BY r.Id DESC, rhs.HoleNumber ASC
+    `;
+    return getSyncDb().getAllSync(sql);
+};
+
+export const getAllHoleDeadlySinsWithContext = () => {
+    const sql = `
+        SELECT hds.RoundId, r.CourseName, r.Created_At, hds.HoleNumber, hds.ThreePutts, hds.DoubleBogeys,
+               hds.BogeysPar5, hds.BogeysInside9Iron, hds.DoubleChips, hds.TroubleOffTee, hds.Penalties
+        FROM HoleDeadlySins hds
+        JOIN Rounds r ON hds.RoundId = r.Id
+        WHERE r.IsCompleted = 1
+        ORDER BY r.Id DESC, hds.HoleNumber ASC
+    `;
+    return getSyncDb().getAllSync(sql);
+};
+
+export const getAllPuttingStatsWithContext = () => {
+    const sql = `
+        SELECT ps.RoundId, r.CourseName, r.Created_At, ps.HoleNumber, ps.FirstPuttDistance,
+               ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.ThirdPuttDistance, ps.ThirdPuttIsLong
+        FROM PuttingStats ps
+        JOIN Rounds r ON ps.RoundId = r.Id
+        WHERE r.IsCompleted = 1
+        ORDER BY r.Id DESC, ps.HoleNumber ASC
+    `;
+    return getSyncDb().getAllSync(sql);
+};
+

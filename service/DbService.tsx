@@ -61,6 +61,9 @@ import {
     getAllHoleNotesForCourse,
     upsertHoleNote,
     deleteHoleNote,
+    getAllRoundHoleScoresWithContext,
+    getAllHoleDeadlySinsWithContext,
+    getAllPuttingStatsWithContext,
 } from '../database/db';
 
 export type WedgeChartClub = {
@@ -873,4 +876,83 @@ export const updateScorecardService = async (
     const totalScore = userScores.reduce((sum, s) => sum + (s.Score - s.HolePar), 0);
 
     return updateRoundTotalScore(roundId, totalScore);
+};
+
+export type RoundHoleScoreDetail = {
+    RoundId: number;
+    CourseName: string;
+    Created_At: string;
+    HoleNumber: number;
+    HolePar: number;
+    Score: number;
+};
+
+export const getAllRoundHoleScoresDetailService = (): RoundHoleScoreDetail[] => {
+    const rows = getAllRoundHoleScoresWithContext() as any[];
+    return rows.map(row => ({
+        RoundId: row.RoundId,
+        CourseName: row.CourseName,
+        Created_At: getTwoDigitDayAndMonth(row.Created_At),
+        HoleNumber: row.HoleNumber,
+        HolePar: row.HolePar,
+        Score: row.Score,
+    }));
+};
+
+export type HoleDeadlySinsDetail = {
+    RoundId: number;
+    CourseName: string;
+    Created_At: string;
+    HoleNumber: number;
+    ThreePutts: number;
+    DoubleBogeys: number;
+    BogeysPar5: number;
+    BogeysInside9Iron: number;
+    DoubleChips: number;
+    TroubleOffTee: number;
+    Penalties: number;
+};
+
+export const getAllHoleDeadlySinsDetailService = (): HoleDeadlySinsDetail[] => {
+    const rows = getAllHoleDeadlySinsWithContext() as any[];
+    return rows.map(row => ({
+        RoundId: row.RoundId,
+        CourseName: row.CourseName,
+        Created_At: getTwoDigitDayAndMonth(row.Created_At),
+        HoleNumber: row.HoleNumber,
+        ThreePutts: row.ThreePutts ?? 0,
+        DoubleBogeys: row.DoubleBogeys ?? 0,
+        BogeysPar5: row.BogeysPar5 ?? 0,
+        BogeysInside9Iron: row.BogeysInside9Iron ?? 0,
+        DoubleChips: row.DoubleChips ?? 0,
+        TroubleOffTee: row.TroubleOffTee ?? 0,
+        Penalties: row.Penalties ?? 0,
+    }));
+};
+
+export type PuttingStatDetail = {
+    RoundId: number;
+    CourseName: string;
+    Created_At: string;
+    HoleNumber: number;
+    FirstPuttDistance: number;
+    SecondPuttDistance: number;
+    SecondPuttIsLong: boolean;
+    ThirdPuttDistance: number | null;
+    ThirdPuttIsLong: boolean | null;
+};
+
+export const getAllPuttingStatsDetailService = (): PuttingStatDetail[] => {
+    const rows = getAllPuttingStatsWithContext() as any[];
+    return rows.map(row => ({
+        RoundId: row.RoundId,
+        CourseName: row.CourseName,
+        Created_At: getTwoDigitDayAndMonth(row.Created_At),
+        HoleNumber: row.HoleNumber,
+        FirstPuttDistance: row.FirstPuttDistance,
+        SecondPuttDistance: row.SecondPuttDistance,
+        SecondPuttIsLong: row.SecondPuttIsLong === 1,
+        ThirdPuttDistance: row.ThirdPuttDistance,
+        ThirdPuttIsLong: row.ThirdPuttIsLong === null ? null : row.ThirdPuttIsLong === 1,
+    }));
 };

@@ -36,7 +36,7 @@ export default function PuttingProximityChart({ data }: Props) {
                                     s.barShort,
                                     {
                                         width: row.shortPercent,
-                                        backgroundColor: colours.red,
+                                        backgroundColor: colours.green,
                                     },
                                 ]}
                             />

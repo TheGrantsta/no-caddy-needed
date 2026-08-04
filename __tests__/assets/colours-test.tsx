@@ -2,7 +2,7 @@ import { darkGreen, ThemeColours } from '../../assets/colours';
 
 describe('Colour palettes', () => {
     it('brand colours match expected values', () => {
-        expect(darkGreen.green).toBe('#00C851');
+        expect(darkGreen.green).toBe('#13b955');
     });
 
     it('dark theme keeps original primary accent', () => {

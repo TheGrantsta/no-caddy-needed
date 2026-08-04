@@ -31,7 +31,7 @@ export const darkGreen: ThemeColours = {
     backgroundLight: '#fff',
     border: '#fff',
     borderError: '#fd0303',
-    green: '#00C851',
+    green: '#13b955',
 };
 
 export default darkGreen;

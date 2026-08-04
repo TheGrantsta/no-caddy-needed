@@ -303,7 +303,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#00C851' });
+            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#13b955' });
         });
 
         it('applies red colour to over par scores', () => {
@@ -341,7 +341,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('player-total-1')).toHaveStyle({ color: '#00C851' });
+            expect(getByTestId('player-total-1')).toHaveStyle({ color: '#13b955' });
         });
 
         it('applies red colour to over par total', () => {
@@ -433,7 +433,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#00C851' });
+            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#13b955' });
         });
 
         it('colour codes sub-total red when over par', () => {
@@ -475,7 +475,7 @@ describe('Scorecard', () => {
             // You: 10 strokes, par 8 -> over par -> red
             expect(getByTestId('round-player-1-total')).toHaveStyle({ color: '#fd0303' });
             // Alice: 6 strokes, par 8 -> under par -> green
-            expect(getByTestId('round-player-2-total')).toHaveStyle({ color: '#00C851' });
+            expect(getByTestId('round-player-2-total')).toHaveStyle({ color: '#13b955' });
         });
     });
 

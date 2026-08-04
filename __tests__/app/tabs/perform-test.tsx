@@ -104,90 +104,6 @@ describe('Perform', () => {
         expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
     });
 
-    it('showsProsSectionWhenProsSubMenuPressed', () => {
-        const { getByTestId, getByText } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-        expect(getByText('Performance')).toBeTruthy();
-    });
-
-    it('displaysManageExpectationsTextInProsSection', () => {
-        const { getByTestId, getByText } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-        expect(getByText('Manage your expectations, better!')).toBeTruthy();
-    });
-
-    it('showsApproachSubheadingAtDefaultIndex', () => {
-        const { getByTestId, getByText } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-        expect(getByText('Average proximity to the hole')).toBeTruthy();
-    });
-
-    it('showsPGASourceAtDefaultIndex', () => {
-        const { getByTestId, getByText } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-        expect(getByText('Source: PGA tour online statistics website')).toBeTruthy();
-    });
-
-    it('hasFlatListWithPerformTestID', () => {
-        const { getByTestId, getByText } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-        expect(getByTestId('perform-flat-list')).toBeTruthy();
-    });
-
-    it('renderItemShowsApproachTableHeaders', () => {
-        const { getByTestId, getByText } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-        expect(getByText('Yards')).toBeTruthy();
-        expect(getByText('Fairway')).toBeTruthy();
-        expect(getByText('Rough')).toBeTruthy();
-    });
-
-    it('renderItemShowsPuttingTableHeaders', () => {
-        const { getByTestId, getByText } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-        expect(getByText('Feet')).toBeTruthy();
-        expect(getByText('Make rate')).toBeTruthy();
-    });
-
-    it('scrollingFlatListShowsPuttingSubheading', () => {
-        const { getByTestId, getByText, UNSAFE_getAllByType } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-
-        act(() => {
-            UNSAFE_getAllByType(FlatList)[0].props.onScroll({
-                nativeEvent: { contentOffset: { x: 375 } },
-            });
-        });
-
-        expect(getByText('Putts')).toBeTruthy();
-    });
-
-    it('scrollingFlatListShowsProfessionalMaleGolferText', () => {
-        const { getByTestId, getByText, UNSAFE_getAllByType } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-
-        act(() => {
-            UNSAFE_getAllByType(FlatList)[0].props.onScroll({
-                nativeEvent: { contentOffset: { x: 375 } },
-            });
-        });
-
-        expect(getByText('Professional male golfer make percentages')).toBeTruthy();
-    });
-
-    it('scrollingFlatListShowsPuttingSource', () => {
-        const { getByTestId, getByText, UNSAFE_getAllByType } = render(<Perform />);
-        fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-
-        act(() => {
-            UNSAFE_getAllByType(FlatList)[0].props.onScroll({
-                nativeEvent: { contentOffset: { x: 375 } },
-            });
-        });
-
-        expect(getByText(/The Lost Art of Putting/)).toBeTruthy();
-    });
-
     describe('onRefresh', () => {
         beforeEach(() => {
             jest.useFakeTimers();
@@ -225,8 +141,8 @@ describe('Perform', () => {
 
         it('onRefreshResetsSectionToDeadlySins', () => {
             const { getByTestId, UNSAFE_getByType, getByText } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-            expect(getByText('Performance')).toBeTruthy();
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
+            expect(getByText('Your personal putting make rates')).toBeTruthy();
 
             const scrollView = UNSAFE_getByType(ScrollView);
             act(() => {
@@ -379,10 +295,10 @@ describe('Perform', () => {
 
         it('switchingToDeadlySinsAndBackDoesNotBreakOtherSections', () => {
             const { getByTestId, getByText } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-sins'));
-            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-            expect(getByTestId('perform-flat-list')).toBeTruthy();
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
+            expect(getByText('Your personal putting make rates')).toBeTruthy();
         });
 
         it('displaysSinsSubtitle', () => {
@@ -443,14 +359,6 @@ describe('Perform', () => {
             expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
         });
 
-        it('switchingToPuttingAndBackDoesNotBreakProsRendering', () => {
-            const { getByTestId, getByText } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-            fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-            expect(getByTestId('perform-flat-list')).toBeTruthy();
-            expect(getByText('Yards')).toBeTruthy();
-        });
         it('showsAsteriskExplanationForEstimatedRates', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));

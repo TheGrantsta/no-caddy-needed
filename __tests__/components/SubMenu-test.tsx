@@ -90,22 +90,11 @@ describe('SubMenu component', () => {
             );
 
             expect(getByText('Deadly Sins')).toBeTruthy();
-            expect(getByText('Pros')).toBeTruthy();
-        });
-
-        it('calls handleSubMenu when Pros is pressed', () => {
-            const { getByTestId } = render(
-                <SubMenu showSubMenu="perform" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
-            );
-
-            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-
-            expect(mockHandleSubMenu).toHaveBeenCalledWith('pros');
         });
 
         it('renders putting perform menu item', () => {
             const { getByText } = render(
-                <SubMenu showSubMenu="perform" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="perform" selectedItem="sins" handleSubMenu={mockHandleSubMenu} />
             );
 
             expect(getByText('Putting')).toBeTruthy();
@@ -113,7 +102,7 @@ describe('SubMenu component', () => {
 
         it('calls handleSubMenu when Putting is pressed', () => {
             const { getByTestId } = render(
-                <SubMenu showSubMenu="perform" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="perform" selectedItem="sins" handleSubMenu={mockHandleSubMenu} />
             );
 
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
@@ -123,7 +112,7 @@ describe('SubMenu component', () => {
 
         it('renders proximity menu item', () => {
             const { getByText } = render(
-                <SubMenu showSubMenu="perform" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="perform" selectedItem="sins" handleSubMenu={mockHandleSubMenu} />
             );
 
             expect(getByText('Proximity')).toBeTruthy();
@@ -131,7 +120,7 @@ describe('SubMenu component', () => {
 
         it('calls handleSubMenu when Proximity is pressed', () => {
             const { getByTestId } = render(
-                <SubMenu showSubMenu="perform" selectedItem="approach" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="perform" selectedItem="sins" handleSubMenu={mockHandleSubMenu} />
             );
 
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));

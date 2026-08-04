@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { Dimensions, FlatList, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 import Chevrons from '../../components/Chevrons';
@@ -395,22 +395,14 @@ export default function Perform() {
 
             <View style={styles.divider} />
 
-            <View style={styles.playScreen.filterContainer}>
-              <Text testID="proximity-filter-label" style={styles.playScreen.filterLabel}>Show</Text>
-              <TouchableOpacity
-                testID="proximity-filter-all"
-                onPress={() => setProximityThreePuttOnly(false)}
-                style={[styles.playScreen.filterButton, !proximityThreePuttOnly && styles.playScreen.filterButtonSelected]}
-              >
-                <Text numberOfLines={1} style={[styles.playScreen.filterButtonText, !proximityThreePuttOnly && styles.playScreen.filterButtonTextSelected]}>All</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                testID="proximity-filter-three-putt"
-                onPress={() => setProximityThreePuttOnly(true)}
-                style={[styles.playScreen.filterButton, proximityThreePuttOnly && styles.playScreen.filterButtonSelected, { width: 115 }]}
-              >
-                <Text numberOfLines={1} style={[styles.playScreen.filterButtonText, proximityThreePuttOnly && styles.playScreen.filterButtonTextSelected]}>3-Putts Only</Text>
-              </TouchableOpacity>
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, paddingTop: 20, gap: 8 }}>
+              <Text testID="proximity-filter-label" style={{ color: colours.primary, fontSize: 16 }}>Show 3-Putts Only</Text>
+              <Switch
+                testID="proximity-filter-toggle"
+                value={proximityThreePuttOnly}
+                onValueChange={setProximityThreePuttOnly}
+                trackColor={{ false: colours.tertiary, true: colours.primary }}
+              />
             </View>
 
             <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly)} />

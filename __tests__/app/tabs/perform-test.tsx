@@ -485,38 +485,35 @@ describe('Perform', () => {
             expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
         });
 
-        it('renders proximity filter toggle buttons', () => {
+        it('renders proximity filter toggle switch', () => {
             const { getByTestId } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
-            expect(getByTestId('proximity-filter-all')).toBeTruthy();
-            expect(getByTestId('proximity-filter-three-putt')).toBeTruthy();
+            expect(getByTestId('proximity-filter-toggle')).toBeTruthy();
         });
 
-        it('All button is selected by default', () => {
+        it('toggle is off by default (All)', () => {
             const { getByTestId } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
-            const allButton = getByTestId('proximity-filter-all');
-            const styleArray = Array.isArray(allButton.props.style) ? allButton.props.style : [allButton.props.style];
-            const hasSelectedStyle = styleArray.some((s: any) => s?.backgroundColor !== undefined);
-            expect(hasSelectedStyle).toBe(true);
+            const toggle = getByTestId('proximity-filter-toggle');
+            expect(toggle.props.value).toBe(false);
         });
 
-        it('pressing 3-Putts Only calls getPuttingProximityService(true)', () => {
+        it('toggling switch on calls getPuttingProximityService(true)', () => {
             const { getPuttingProximityService } = require('../../../service/DbService');
             const { getByTestId } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
             getPuttingProximityService.mockClear();
-            fireEvent.press(getByTestId('proximity-filter-three-putt'));
+            fireEvent(getByTestId('proximity-filter-toggle'), 'valueChange', true);
             expect(getPuttingProximityService).toHaveBeenCalledWith(true);
         });
 
-        it('pressing All calls getPuttingProximityService(false)', () => {
+        it('toggling switch off calls getPuttingProximityService(false)', () => {
             const { getPuttingProximityService } = require('../../../service/DbService');
             const { getByTestId } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
-            fireEvent.press(getByTestId('proximity-filter-three-putt'));
+            fireEvent(getByTestId('proximity-filter-toggle'), 'valueChange', true);
             getPuttingProximityService.mockClear();
-            fireEvent.press(getByTestId('proximity-filter-all'));
+            fireEvent(getByTestId('proximity-filter-toggle'), 'valueChange', false);
             expect(getPuttingProximityService).toHaveBeenCalledWith(false);
         });
     });

@@ -402,14 +402,14 @@ export default function Perform() {
                 onPress={() => setProximityThreePuttOnly(false)}
                 style={[styles.playScreen.filterButton, !proximityThreePuttOnly && styles.playScreen.filterButtonSelected]}
               >
-                <Text style={[styles.playScreen.filterButtonText, !proximityThreePuttOnly && styles.playScreen.filterButtonTextSelected]}>All</Text>
+                <Text numberOfLines={1} style={[styles.playScreen.filterButtonText, !proximityThreePuttOnly && styles.playScreen.filterButtonTextSelected]}>All</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 testID="proximity-filter-three-putt"
                 onPress={() => setProximityThreePuttOnly(true)}
-                style={[styles.playScreen.filterButton, proximityThreePuttOnly && styles.playScreen.filterButtonSelected]}
+                style={[styles.playScreen.filterButton, proximityThreePuttOnly && styles.playScreen.filterButtonSelected, { width: 115 }]}
               >
-                <Text style={[styles.playScreen.filterButtonText, proximityThreePuttOnly && styles.playScreen.filterButtonTextSelected]}>3-Putts Only</Text>
+                <Text numberOfLines={1} style={[styles.playScreen.filterButtonText, proximityThreePuttOnly && styles.playScreen.filterButtonTextSelected]}>3-Putts Only</Text>
               </TouchableOpacity>
             </View>
 

@@ -64,7 +64,7 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('first-putt-input');
             fireEvent.changeText(input, '25');
 
-            expect(onStatsChange).toHaveBeenCalledWith(25, expect.any(Number), expect.any(Boolean));
+            expect(onStatsChange).toHaveBeenCalledWith(25, undefined, expect.any(Boolean));
         });
 
         it('calls onStatsChange with undefined when first putt field is cleared', () => {
@@ -83,7 +83,7 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('first-putt-input');
             fireEvent.changeText(input, '');
 
-            expect(onStatsChange).toHaveBeenCalledWith(undefined, expect.any(Number), expect.any(Boolean));
+            expect(onStatsChange).toHaveBeenCalledWith(undefined, undefined, expect.any(Boolean));
         });
     });
 
@@ -102,7 +102,7 @@ describe('PuttingStatsInput', () => {
             // No add button, input is always visible
             expect(queryByTestId('add-second-putt')).toBeFalsy();
             expect(getByTestId('second-putt-input')).toBeTruthy();
-            expect(getByTestId('second-putt-input').props.value).toBe('0');
+            expect(getByTestId('second-putt-input').props.value).toBe('');
         });
 
         it('shows second putt with loaded saved data', () => {
@@ -133,7 +133,7 @@ describe('PuttingStatsInput', () => {
 
             expect(queryByTestId('add-second-putt')).toBeFalsy();
             expect(getByTestId('second-putt-input')).toBeTruthy();
-            expect(getByTestId('second-putt-input').props.value).toBe('0');
+            expect(getByTestId('second-putt-input').props.value).toBe('');
         });
     });
 
@@ -218,6 +218,26 @@ describe('PuttingStatsInput', () => {
             expect(onStatsChange).not.toHaveBeenCalled();
         });
 
+        it('allows blank second putt even with empty first putt', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                />
+            );
+
+            onStatsChange.mockClear();
+
+            // Blank second putt means no second putt attempted
+            const secondPuttInput = getByTestId('second-putt-input');
+            fireEvent.changeText(secondPuttInput, '');
+
+            // Should be called because blank is always allowed (means no second putt)
+            expect(onStatsChange).toHaveBeenCalledWith(undefined, undefined, false);
+        });
+
         it('allows second putt = 0 even with empty first putt', () => {
             const onStatsChange = jest.fn();
             const { getByTestId } = render(
@@ -230,7 +250,7 @@ describe('PuttingStatsInput', () => {
 
             onStatsChange.mockClear();
 
-            // Second putt = 0 is allowed with empty first putt (just means no second putt)
+            // Second putt = 0 is allowed with empty first putt (explicit 0 means no second putt)
             const secondPuttInput = getByTestId('second-putt-input');
             fireEvent.changeText(secondPuttInput, '0');
 
@@ -578,6 +598,37 @@ describe('PuttingStatsInput', () => {
         });
     });
 
+    describe('required second putt error', () => {
+        it('hides required error by default', () => {
+            const onStatsChange = jest.fn();
+            const { queryByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={20}
+                />
+            );
+
+            expect(queryByTestId('second-putt-required-error')).toBeFalsy();
+        });
+
+        it('shows required error when showSecondPuttRequiredError is true', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={20}
+                    showSecondPuttRequiredError={true}
+                />
+            );
+
+            expect(getByTestId('second-putt-required-error')).toBeTruthy();
+        });
+    });
+
 
     describe('input validation', () => {
         it('clamps first putt to max 300', () => {
@@ -595,7 +646,7 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('first-putt-input');
             fireEvent.changeText(input, '500');
 
-            expect(onStatsChange).toHaveBeenCalledWith(300, expect.any(Number), expect.any(Boolean));
+            expect(onStatsChange).toHaveBeenCalledWith(300, undefined, expect.any(Boolean));
         });
 
         it('clamps first putt to min 0', () => {
@@ -613,7 +664,7 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('first-putt-input');
             fireEvent.changeText(input, '-5');
 
-            expect(onStatsChange).toHaveBeenCalledWith(0, expect.any(Number), expect.any(Boolean));
+            expect(onStatsChange).toHaveBeenCalledWith(0, undefined, expect.any(Boolean));
         });
     });
 

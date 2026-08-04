@@ -7,11 +7,12 @@ import fontSizes from '@/assets/font-sizes';
 type Props = {
     holePar: number;
     threePuttSelected: boolean;
-    onStatsChange: (firstPuttDistance: number | undefined, secondPuttDistance: number, secondPuttIsLong: boolean) => void;
+    onStatsChange: (firstPuttDistance: number | undefined, secondPuttDistance: number | undefined, secondPuttIsLong: boolean) => void;
     initialFirstPutt?: number;
     initialSecondPutt?: number;
     initialSecondIsLong?: boolean;
     showFirstPuttError?: boolean;
+    showSecondPuttRequiredError?: boolean;
     onSecondPuttErrorChange?: (hasError: boolean) => void;
 };
 
@@ -23,12 +24,13 @@ const PuttingStatsInput = ({
     initialSecondPutt,
     initialSecondIsLong = false,
     showFirstPuttError = false,
+    showSecondPuttRequiredError = false,
     onSecondPuttErrorChange,
 }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const [firstPutt, setFirstPutt] = useState(initialFirstPutt !== undefined ? String(initialFirstPutt) : '');
-    const [secondPutt, setSecondPutt] = useState(String(initialSecondPutt ?? 0));
+    const [secondPutt, setSecondPutt] = useState(initialSecondPutt !== undefined ? String(initialSecondPutt) : '');
     const [secondIsLong, setSecondIsLong] = useState(initialSecondIsLong);
 
     // Initialize error state: if short second putt >= first putt
@@ -48,20 +50,27 @@ const PuttingStatsInput = ({
     const handleFirstPuttChange = (value: string) => {
         setFirstPutt(value);
         if (!value || value.trim() === '') {
-            const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
+            const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(100, parseInt(secondPutt))) : undefined;
             onStatsChange(undefined, second, secondIsLong);
             return;
         }
         if (!isNaN(parseInt(value))) {
             const first = Math.max(0, Math.min(300, parseInt(value)));
-            const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
+            const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(100, parseInt(secondPutt))) : undefined;
             onStatsChange(first, second, secondIsLong);
         }
     };
 
     const handleSecondPuttChange = (value: string) => {
         setSecondPutt(value);
-        if (value && !isNaN(parseInt(value))) {
+        if (!value) {
+            // Blank field means undefined second putt
+            const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
+            setSecondPuttError(false);
+            onStatsChange(first, undefined, secondIsLong);
+            return;
+        }
+        if (!isNaN(parseInt(value))) {
             const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
             const second = Math.max(0, Math.min(100, parseInt(value)));
 
@@ -84,10 +93,10 @@ const PuttingStatsInput = ({
 
     const handleSecondIsLongChange = (value: boolean) => {
         const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
-        const second = Math.max(0, Math.min(100, parseInt(secondPutt) || 0));
+        const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(100, parseInt(secondPutt))) : undefined;
 
         // Validation: cannot switch to Short if second putt > 0 and >= first putt
-        if (!value && first !== undefined && second > 0 && second >= first) {
+        if (!value && first !== undefined && second !== undefined && second > 0 && second >= first) {
             setSecondPuttError(true);
             return;
         }
@@ -203,6 +212,11 @@ const PuttingStatsInput = ({
                 {secondPuttError && (
                     <Text testID="second-putt-error" style={{ color: colours.errorText, fontSize: fontSizes.smallText, marginTop: 4 }}>
                         Short second putt must be shorter than first putt
+                    </Text>
+                )}
+                {showSecondPuttRequiredError && (
+                    <Text testID="second-putt-required-error" style={{ color: colours.errorText, fontSize: fontSizes.smallText, marginTop: 4 }}>
+                        2nd putt distance is required for a 3-putt
                     </Text>
                 )}
             </View>

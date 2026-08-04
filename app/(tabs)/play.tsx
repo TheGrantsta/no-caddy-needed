@@ -91,9 +91,10 @@ export default function Play() {
     const [section, setSection] = useState('play-score');
     const INITIAL_SINS: DeadlySinsValues = { threePutts: false, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false };
     const [deadlySinsValues, setDeadlySinsValues] = useState<DeadlySinsValues>(INITIAL_SINS);
-    const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt: number; secondIsLong: boolean } | null>(null);
+    const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt?: number; secondIsLong: boolean } | null>(null);
     const [puttingFirstPuttError, setPuttingFirstPuttError] = useState(false);
     const [puttingSecondPuttError, setPuttingSecondPuttError] = useState(false);
+    const [puttingSecondPuttRequiredError, setPuttingSecondPuttRequiredError] = useState(false);
     const [clubDistances, setClubDistances] = useState<ClubDistance[]>([]);
     const [selectedOffTeeClub, setSelectedOffTeeClub] = useState<string | undefined>(undefined);
     const [sinDetailsClubError, setSinDetailsClubError] = useState(false);
@@ -325,6 +326,7 @@ export default function Play() {
         setHolePhase('putting');
         setPuttingFirstPuttError(false);
         setPuttingSecondPuttError(false);
+        setPuttingSecondPuttRequiredError(false);
         const saved = getPuttingStatsService(activeRoundId!, holeNumber);
         setPuttingStats(saved ? {
             firstPutt: saved.FirstPuttDistance,
@@ -458,10 +460,14 @@ export default function Play() {
                 setPuttingFirstPuttError(true);
                 return;
             }
+            if (deadlySinsValues.threePutts && puttingStats.secondPutt === undefined) {
+                setPuttingSecondPuttRequiredError(true);
+                return;
+            }
             if (puttingSecondPuttError) {
                 return;
             }
-            await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt, puttingStats.secondIsLong);
+            await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong);
             if (currentHole >= 18) {
                 setShowEndRoundConfirm(true);
             } else {
@@ -847,11 +853,13 @@ export default function Play() {
                                         onStatsChange={(firstPutt, secondPutt, secondIsLong) => {
                                             setPuttingStats({ firstPutt, secondPutt, secondIsLong });
                                             if (firstPutt !== undefined) setPuttingFirstPuttError(false);
+                                            if (secondPutt !== undefined) setPuttingSecondPuttRequiredError(false);
                                         }}
                                         initialFirstPutt={puttingStats?.firstPutt}
                                         initialSecondPutt={puttingStats?.secondPutt}
                                         initialSecondIsLong={puttingStats?.secondIsLong}
                                         showFirstPuttError={puttingFirstPuttError}
+                                        showSecondPuttRequiredError={puttingSecondPuttRequiredError}
                                         onSecondPuttErrorChange={setPuttingSecondPuttError}
                                     />
                                 </>

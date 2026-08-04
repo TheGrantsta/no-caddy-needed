@@ -573,6 +573,7 @@ export type HoleSinDetails = {
 
 export type RoundScoreBreakdown = {
     putts: number;
+    threePutts: number;
     penalties: number;
 };
 
@@ -740,7 +741,7 @@ export const getRoundScoreBreakdownService = (roundId: number): RoundScoreBreakd
     const sins = getDeadlySinsForRoundService(roundId);
     const threePutts = sins?.ThreePutts ?? 0;
     const penalties = sins?.Penalties ?? 0;
-    return { putts: holesPlayed * 2 + threePutts, penalties };
+    return { putts: holesPlayed * 2 + threePutts, threePutts, penalties };
 };
 
 // Settings services

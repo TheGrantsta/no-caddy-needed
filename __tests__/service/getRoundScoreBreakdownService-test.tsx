@@ -36,6 +36,7 @@ describe('getRoundScoreBreakdownService', () => {
         const result = getRoundScoreBreakdownService(1);
 
         expect(result.putts).toBe(18 * 2 + 2);
+        expect(result.threePutts).toBe(2);
         expect(result.penalties).toBe(1);
     });
 
@@ -47,6 +48,7 @@ describe('getRoundScoreBreakdownService', () => {
         const result = getRoundScoreBreakdownService(1);
 
         expect(result.putts).toBe(9 * 2);
+        expect(result.threePutts).toBe(0);
         expect(result.penalties).toBe(0);
     });
 
@@ -58,6 +60,7 @@ describe('getRoundScoreBreakdownService', () => {
         const result = getRoundScoreBreakdownService(1);
 
         expect(result.putts).toBe(0);
+        expect(result.threePutts).toBe(0);
         expect(result.penalties).toBe(0);
     });
 
@@ -72,6 +75,7 @@ describe('getRoundScoreBreakdownService', () => {
         const result = getRoundScoreBreakdownService(1);
 
         expect(result.putts).toBe(18 * 2);
+        expect(result.threePutts).toBe(0);
         expect(result.penalties).toBe(2);
     });
 
@@ -86,6 +90,7 @@ describe('getRoundScoreBreakdownService', () => {
         const result = getRoundScoreBreakdownService(1);
 
         expect(result.putts).toBe(18 * 2 + 3);
+        expect(result.threePutts).toBe(3);
         expect(result.penalties).toBe(0);
     });
 
@@ -100,6 +105,7 @@ describe('getRoundScoreBreakdownService', () => {
         const result = getRoundScoreBreakdownService(1);
 
         expect(result.putts).toBe(9 * 2 + 1);
+        expect(result.threePutts).toBe(1);
         expect(result.penalties).toBe(1);
     });
 });

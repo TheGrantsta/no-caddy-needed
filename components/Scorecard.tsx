@@ -13,7 +13,7 @@ type Props = {
     onScoreSelect?: (holeNumber: number, playerId: number) => void;
     sinHoles?: Set<number>;
     onSinPress?: (holeNumber: number) => void;
-    scoreBreakdown?: { putts: number; penalties: number };
+    scoreBreakdown?: { putts: number; threePutts: number; penalties: number };
 };
 
 const formatScore = (score: number): string => {
@@ -225,7 +225,7 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                     })}
                     {scoreBreakdown && (
                         <Text testID="round-score-breakdown" style={s.scoreBreakdownText}>
-                            Putts: {scoreBreakdown.putts} · Penalties: {scoreBreakdown.penalties}
+                            Putts: {scoreBreakdown.putts} · 3-Putts: {scoreBreakdown.threePutts} · Penalties: {scoreBreakdown.penalties}
                         </Text>
                     )}
                 </View>

@@ -894,20 +894,20 @@ describe('Scorecard screen', () => {
 
         it('shows score breakdown when round data exists', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-            mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, penalties: 1 });
+            mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, threePutts: 2, penalties: 1 });
 
             const { getByTestId } = render(<ScorecardScreen />);
 
-            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · Penalties: 1');
+            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · 3-Putts: 2 · Penalties: 1');
         });
 
         it('shows score breakdown with zeros when no deadly sins recorded', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-            mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, penalties: 0 });
+            mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, threePutts: 0, penalties: 0 });
 
             const { getByTestId } = render(<ScorecardScreen />);
 
-            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · Penalties: 0');
+            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · 3-Putts: 0 · Penalties: 0');
         });
     });
 });

@@ -700,11 +700,11 @@ describe('sin indicator dots', () => {
                 <Scorecard
                     players={mockPlayers}
                     holeScores={holeScores}
-                    scoreBreakdown={{ putts: 36, penalties: 2 }}
+                    scoreBreakdown={{ putts: 36, threePutts: 2, penalties: 2 }}
                 />
             );
 
-            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · Penalties: 2');
+            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · 3-Putts: 2 · Penalties: 2');
         });
 
         it('does not render breakdown when not provided', () => {
@@ -724,11 +724,11 @@ describe('sin indicator dots', () => {
                 <Scorecard
                     players={mockPlayers}
                     holeScores={holeScores}
-                    scoreBreakdown={{ putts: 42, penalties: 0 }}
+                    scoreBreakdown={{ putts: 42, threePutts: 0, penalties: 0 }}
                 />
             );
 
-            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 42 · Penalties: 0');
+            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 42 · 3-Putts: 0 · Penalties: 0');
         });
     });
 });

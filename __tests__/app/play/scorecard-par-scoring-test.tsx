@@ -36,7 +36,7 @@ jest.mock('../../../service/DbService', () => ({
     getHolesWithSinsForRoundService: jest.fn(),
     loadCourseNotesService: jest.fn().mockReturnValue({}),
     getAllRoundHistoryService: jest.fn(() => [{ Id: 42, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: 'Test Course', Created_At: '' }]),
-    getRoundScoreBreakdownService: jest.fn().mockReturnValue({ putts: 36, penalties: 0 }),
+    getRoundScoreBreakdownService: jest.fn().mockReturnValue({ putts: 36, threePutts: 0, penalties: 0 }),
 }));
 
 jest.mock('expo-router', () => ({

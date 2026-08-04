@@ -196,4 +196,33 @@ describe('getPuttingProximityService', () => {
 
         expect(bucket5!.shortPercent).toBe('100%');
     });
+
+    it('filters by roundIds when provided', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 2, SecondPuttIsLong: 1, ThreePutts: 0 },
+            { RoundId: 2, FirstPuttDistance: 5, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { RoundId: 2, FirstPuttDistance: 5, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThreePutts: 0 },
+        ]);
+
+        const result = getPuttingProximityService(false, new Set([1]));
+        const bucket5 = result.find(r => r.distance === 5);
+
+        expect(bucket5!.shortPercent).toBe('50%');
+        expect(bucket5!.longPercent).toBe('50%');
+    });
+
+    it('composesRoundIdsFilterWithThreePuttOnlyFilter', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 2, SecondPuttIsLong: 1, ThreePutts: 1 },
+            { RoundId: 2, FirstPuttDistance: 5, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThreePutts: 1 },
+        ]);
+
+        const result = getPuttingProximityService(true, new Set([1]));
+        const bucket5 = result.find(r => r.distance === 5);
+
+        expect(bucket5!.shortPercent).toBe('0%');
+        expect(bucket5!.longPercent).toBe('100%');
+    });
 });

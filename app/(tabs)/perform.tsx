@@ -24,10 +24,15 @@ export default function Perform() {
   const { landscapePadding } = useOrientation();
   const [refreshing, setRefreshing] = useState(false);
   const [section, setSection] = useState('sins');
-  const [sinsFilter, setSinsFilter] = useState<1 | 10 | 'all'>('all');
+  const [roundsFilter, setRoundsFilter] = useState<1 | 10 | 'all'>('all');
   const [proximityThreePuttOnly, setProximityThreePuttOnly] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [showOnboarding, setShowOnboarding] = useState(!settings.performOnboardingSeen);
+
+  const roundHistory = getAllRoundHistoryService();
+  const filteredRoundHistory = roundsFilter === 'all' ? roundHistory : roundHistory.slice(0, roundsFilter);
+  const filteredRoundIds = new Set(filteredRoundHistory.map(r => r.Id));
+  const roundIdsFilter = roundsFilter === 'all' ? undefined : filteredRoundIds;
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -46,8 +51,8 @@ export default function Perform() {
     25: '10%*', 30: '7%*', 35: '5%*', 40: '3%*', 45: '2%*', 50: '1%*',
   };
 
-  const getPersonalPuttingStats = (): [string, string][] => {
-    const rates = getPuttingMakeRatesService();
+  const getPersonalPuttingStats = (roundIds?: Set<number>): [string, string][] => {
+    const rates = getPuttingMakeRatesService(roundIds);
     return rates.map((row) => [
       String(row.distance),
       `${row.firstPuttMakeRate} (${PUTTING_PRO_RATES[row.distance] || '-'})`,
@@ -93,13 +98,28 @@ export default function Perform() {
           tintColor={colours.primary} />
       }>
 
+        {roundHistory.length > 0 && (
+          <View style={styles.playScreen.filterContainer}>
+            <Text testID="filter-label" style={styles.playScreen.filterLabel}>Show</Text>
+            {([1, 10, 'all'] as const).map(f => (
+              <TouchableOpacity
+                key={String(f)}
+                testID={`filter-button-${f}`}
+                onPress={() => setRoundsFilter(f)}
+                style={[styles.playScreen.filterButton, roundsFilter === f && styles.playScreen.filterButtonSelected]}
+              >
+                <Text style={[styles.playScreen.filterButtonText, roundsFilter === f && styles.playScreen.filterButtonTextSelected]}>
+                  {f === 'all' ? 'All' : String(f)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
         {/* Deadly Sins */}
         {displaySection('sins') && (() => {
-          const roundHistory = getAllRoundHistoryService();
           const deadlySinsRounds = getAllDeadlySinsRoundsService();
-          const filteredRoundHistory = sinsFilter === 'all' ? roundHistory : roundHistory.slice(0, sinsFilter);
-          const filteredRoundIds = new Set(filteredRoundHistory.map(r => r.Id));
-          const filteredDeadlySinsRounds = sinsFilter === 'all'
+          const filteredDeadlySinsRounds = roundsFilter === 'all'
               ? deadlySinsRounds
               : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
 
@@ -125,25 +145,7 @@ export default function Perform() {
 
               <View style={styles.divider} />
 
-              {roundHistory.length > 0 && (
-                <View style={styles.playScreen.filterContainer}>
-                  <Text testID="filter-label" style={styles.playScreen.filterLabel}>Show</Text>
-                  {([1, 10, 'all'] as const).map(f => (
-                    <TouchableOpacity
-                      key={String(f)}
-                      testID={`filter-button-${f}`}
-                      onPress={() => setSinsFilter(f)}
-                      style={[styles.playScreen.filterButton, sinsFilter === f && styles.playScreen.filterButtonSelected]}
-                    >
-                      <Text style={[styles.playScreen.filterButtonText, sinsFilter === f && styles.playScreen.filterButtonTextSelected]}>
-                        {f === 'all' ? 'All' : String(f)}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-
-              <DeadlySinsChart rounds={filteredDeadlySinsRounds} filter={sinsFilter} />
+              <DeadlySinsChart rounds={filteredDeadlySinsRounds} filter={roundsFilter} />
             </View>
           );
         })()}
@@ -174,7 +176,7 @@ export default function Perform() {
                   <Text style={styles.clubDistanceList.headerCell}>Make rate</Text>
                 </View>
               </View>
-              {getPersonalPuttingStats().map(([distance, rate], index, rows) => (
+              {getPersonalPuttingStats(roundIdsFilter).map(([distance, rate], index, rows) => (
                 <View key={distance} style={[styles.clubDistanceList.row, index === rows.length - 1 && { borderBottomWidth: 0.5 }]}>
                   <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.clubCell, { textAlign: 'center', }]}>{distance}</Text>
                   <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.distanceCell]}>{rate}</Text>
@@ -213,7 +215,7 @@ export default function Perform() {
               />
             </View>
 
-            <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly)} />
+            <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, roundIdsFilter)} />
           </View>
         )}
       </ScrollView>

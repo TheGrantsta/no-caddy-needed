@@ -367,12 +367,14 @@ export type PuttingMakeRate = {
     secondPuttMakeRate: string;
 };
 
-export const getPuttingMakeRatesService = (): PuttingMakeRate[] => {
+export const getPuttingMakeRatesService = (roundIds?: Set<number>): PuttingMakeRate[] => {
     const rows = getAllPuttingStatsWithThreePutts() as any[];
     const firstStats = new Map<number, { total: number; made: number }>();
     const secondStats = new Map<number, { total: number; made: number }>();
 
     rows.forEach((row) => {
+        if (roundIds && !roundIds.has(row.RoundId)) return;
+
         const firstBucket = bucketPuttingDistance(row.FirstPuttDistance);
         if (firstBucket !== null) {
             const current = firstStats.get(firstBucket) || { total: 0, made: 0 };
@@ -419,11 +421,12 @@ export type PuttingProximity = {
     longPercent: string;
 };
 
-export const getPuttingProximityService = (threePuttOnly: boolean = false): PuttingProximity[] => {
+export const getPuttingProximityService = (threePuttOnly: boolean = false, roundIds?: Set<number>): PuttingProximity[] => {
     const rows = getAllPuttingStatsWithThreePutts() as any[];
     const stats = new Map<number, { short: number; long: number }>();
 
     rows.forEach((row) => {
+        if (roundIds && !roundIds.has(row.RoundId)) return;
         if (row.SecondPuttDistance > 0 && (!threePuttOnly || row.ThreePutts === 1)) {
             const bucket = bucketProximityDistance(row.FirstPuttDistance);
             if (bucket !== null) {

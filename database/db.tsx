@@ -353,7 +353,7 @@ export const getPuttingStats = (roundId: number, holeNumber: number) => {
 
 export const getAllPuttingStatsWithThreePutts = () => {
     return getSyncDb().getAllSync(
-        `SELECT ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, COALESCE(hds.ThreePutts, 0) AS ThreePutts
+        `SELECT ps.RoundId, ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, COALESCE(hds.ThreePutts, 0) AS ThreePutts
          FROM PuttingStats ps
          JOIN Rounds r ON ps.RoundId = r.Id
          LEFT JOIN HoleDeadlySins hds ON hds.RoundId = ps.RoundId AND hds.HoleNumber = ps.HoleNumber

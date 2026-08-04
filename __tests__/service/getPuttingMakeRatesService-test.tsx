@@ -190,4 +190,32 @@ describe('getPuttingMakeRatesService', () => {
 
         expect(result.map(r => r.distance)).toEqual(PUTTING_DISTANCE_BUCKETS);
     });
+
+    it('filters by roundIds when provided', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 0, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 0, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { RoundId: 2, FirstPuttDistance: 5, SecondPuttDistance: 1, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { RoundId: 2, FirstPuttDistance: 5, SecondPuttDistance: 1, SecondPuttIsLong: 0, ThreePutts: 0 },
+        ]);
+
+        const result = getPuttingMakeRatesService(new Set([1]));
+        const bucket5 = result.find(r => r.distance === 5);
+
+        expect(bucket5!.firstPuttMakeRate).toBe('100%');
+    });
+
+    it('aggregates all rows when roundIds is not provided', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 0, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 0, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { RoundId: 2, FirstPuttDistance: 5, SecondPuttDistance: 1, SecondPuttIsLong: 0, ThreePutts: 0 },
+            { RoundId: 2, FirstPuttDistance: 5, SecondPuttDistance: 1, SecondPuttIsLong: 0, ThreePutts: 0 },
+        ]);
+
+        const result = getPuttingMakeRatesService();
+        const bucket5 = result.find(r => r.distance === 5);
+
+        expect(bucket5!.firstPuttMakeRate).toBe('50%');
+    });
 });

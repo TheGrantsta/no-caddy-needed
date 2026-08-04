@@ -327,13 +327,13 @@ describe('Perform', () => {
         });
 
         it('rendersPuttingTableWithFeetUnitsByDefault', () => {
-            const { getByTestId, getByText } = render(<Perform />);
+            const { getByTestId, getAllByText, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText('Feet')).toBeTruthy();
             expect(getByText('Make rate')).toBeTruthy();
-            expect(getByText('1')).toBeTruthy();
-            expect(getByText('20')).toBeTruthy();
-            expect(getByText('50')).toBeTruthy();
+            expect(getAllByText('1').length).toBeGreaterThan(0);
+            expect(getAllByText('20').length).toBeGreaterThan(0);
+            expect(getAllByText('50').length).toBeGreaterThan(0);
         });
 
         it('alwaysRendersFeetUnitLabelRegardlessOfMetricSetting', () => {
@@ -412,7 +412,7 @@ describe('Perform', () => {
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
             getPuttingProximityService.mockClear();
             fireEvent(getByTestId('proximity-filter-toggle'), 'valueChange', true);
-            expect(getPuttingProximityService).toHaveBeenCalledWith(true);
+            expect(getPuttingProximityService).toHaveBeenCalledWith(true, undefined);
         });
 
         it('toggling switch off calls getPuttingProximityService(false)', () => {
@@ -422,7 +422,7 @@ describe('Perform', () => {
             fireEvent(getByTestId('proximity-filter-toggle'), 'valueChange', true);
             getPuttingProximityService.mockClear();
             fireEvent(getByTestId('proximity-filter-toggle'), 'valueChange', false);
-            expect(getPuttingProximityService).toHaveBeenCalledWith(false);
+            expect(getPuttingProximityService).toHaveBeenCalledWith(false, undefined);
         });
     });
 });

@@ -132,7 +132,7 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
                             >
                                 <Text
                                     testID={`7deadly-sins-breakdown-heading-${categoryIndex}`}
-                                    style={[styles.normalText, { fontWeight: 'bold', marginBottom: 12, color: colours.text }]}
+                                    style={[styles.subHeaderText, { marginBottom: 12 }]}
                                 >
                                     {detail?.label}
                                 </Text>

@@ -338,5 +338,24 @@ describe('DeadlySinsChart component', () => {
             const breakdownRows = queryAllByTestId(/7deadly-sins-breakdown-row-/);
             expect(breakdownRows.length).toBe(2);
         });
+
+        it('breakdownHeadingMatchesSectionHeadingSize', () => {
+            const troubleRounds: DeadlySinsRound[] = [
+                { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 2, Penalties: 0, Total: 2, RoundId: 1, Created_At: '15/06' },
+            ];
+            getAllHoleSinDetailsService.mockReturnValue([
+                { Id: 1, RoundId: 1, HoleNumber: 1, TroubleOffTeeClub: 'Driver', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+                { Id: 2, RoundId: 1, HoleNumber: 2, TroubleOffTeeClub: 'Driver', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+            ]);
+
+            const { getByTestId } = render(<DeadlySinsChart rounds={troubleRounds} />);
+
+            const breakdownHeading = getByTestId('7deadly-sins-breakdown-heading-0');
+            const headingStyle = Array.isArray(breakdownHeading.props.style) ? Object.assign({}, ...breakdownHeading.props.style) : breakdownHeading.props.style;
+
+            expect(headingStyle.fontSize).toBe(24);
+            expect(headingStyle.fontWeight).toBe('bold');
+            expect(headingStyle.color).toBe(colours.primary);
+        });
     });
 });

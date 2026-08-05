@@ -659,13 +659,15 @@ export default function Play() {
                                     onPress={handleContinueRound}
                                     style={[localStyles.actionButton, styles.marginTop]}
                                 >
+                                    <MaterialIcons name="play-circle-outline" size={20} color={colours.background} />
                                     <Text style={localStyles.actionButtonText}>Continue round</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     testID="end-incomplete-round-link"
                                     onPress={handleEndIncompleteRound}
-                                    style={{ padding: 12, alignItems: 'center', marginTop: 4 }}
+                                    style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 8, marginTop: 4 }}
                                 >
+                                    <MaterialIcons name="flag" size={20} color={colours.primary} />
                                     <Text style={localStyles.endRoundLink}>End round</Text>
                                 </TouchableOpacity>
                             </>
@@ -675,6 +677,7 @@ export default function Play() {
                                 onPress={handleShowPlayerSetup}
                                 style={[localStyles.actionButton, styles.marginTop]}
                             >
+                                <MaterialIcons name="play-arrow" size={20} color={colours.background} />
                                 <Text style={localStyles.actionButtonText}>Start round</Text>
                             </TouchableOpacity>
                         )}
@@ -924,8 +927,9 @@ export default function Play() {
                                                 <TouchableOpacity
                                                     testID="end-round-button"
                                                     onPress={handleEndRoundPress}
-                                                    style={{ padding: 12, alignItems: 'center', marginTop: 20 }}
+                                                    style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 8, marginTop: 20 }}
                                                 >
+                                                    <MaterialIcons name="flag" size={20} color={colours.primary} />
                                                     <Text style={localStyles.endRoundLink}>End round</Text>
                                                 </TouchableOpacity>
                                             )}
@@ -983,6 +987,7 @@ export default function Play() {
                             onPress={handleScorecardDone}
                             style={localStyles.actionButton}
                         >
+                            <MaterialIcons name="check-circle" size={20} color={colours.background} />
                             <Text style={localStyles.actionButtonText}>Done</Text>
                         </TouchableOpacity>
                     </View>

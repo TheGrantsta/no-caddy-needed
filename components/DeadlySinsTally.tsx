@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
+import { useThemeColours } from '@/context/ThemeContext';
 import { DeadlySinsValues } from '../service/DbService';
 
 type Props = {
@@ -36,6 +38,7 @@ const sinFields: { slug: string; label: string; key: keyof DeadlySinsValues }[] 
 
 const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues, collapsible = true }: Props) => {
     const styles = useStyles();
+    const colours = useThemeColours();
     const s = styles.deadlySinsTally;
     const [roundActive, setRoundActive] = useState(roundControlled === true);
     const [values, setValues] = useState<DeadlySinsValues>({
@@ -87,6 +90,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
         return (
             <View style={s.container}>
                 <TouchableOpacity testID="7deadly-sins-start-round" onPress={handleStartRound} style={s.saveButton}>
+                    <MaterialIcons name="play-arrow" size={20} color={colours.background} />
                     <Text style={s.saveButtonText}>Start round</Text>
                 </TouchableOpacity>
             </View>
@@ -162,6 +166,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
 
             {!roundControlled && (
                 <TouchableOpacity testID="7deadly-sins-end-round" onPress={handleEndRound} style={s.saveButton}>
+                    <MaterialIcons name="flag" size={20} color={colours.background} />
                     <Text style={s.saveButtonText}>End round</Text>
                 </TouchableOpacity>
             )}

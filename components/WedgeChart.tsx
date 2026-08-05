@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import type { WedgeChartData } from '../service/DbService';
@@ -137,6 +138,7 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                         onPress={handleAddClub}
                         style={s.addButton}
                     >
+                        <MaterialIcons name="add" size={20} color={colours.primary} />
                         <Text style={s.addButtonText}>+ Add club</Text>
                     </TouchableOpacity>
                 )}
@@ -146,6 +148,7 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                         onPress={handleAddDistance}
                         style={s.addButton}
                     >
+                        <MaterialIcons name="add" size={20} color={colours.primary} />
                         <Text style={s.addButtonText}>+ Add distance</Text>
                     </TouchableOpacity>
                 )}
@@ -156,6 +159,7 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                 onPress={handleSave}
                 style={s.saveButton}
             >
+                <MaterialIcons name="save" size={20} color={colours.background} />
                 <Text style={s.saveButtonText}>Save</Text>
             </TouchableOpacity>
         </View>

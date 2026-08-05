@@ -380,6 +380,7 @@ export default function Settings() {
             style={styles.largeButton}
             onPress={handleExportStats}
           >
+            <MaterialIcons name="ios-share" size={20} color={colours.white} />
             <Text style={styles.buttonText}>Export my stats</Text>
           </TouchableOpacity>
         </View>
@@ -390,6 +391,7 @@ export default function Settings() {
             style={styles.largeButton}
             onPress={openStoreReviewService}
           >
+            <MaterialIcons name="star" size={20} color={colours.white} />
             <Text style={styles.buttonText}>Rate my app</Text>
           </TouchableOpacity>
         </View>

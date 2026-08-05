@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import RoundScorecard from '../../components/RoundScorecard';
 import Scorecard from '../../components/Scorecard';
@@ -336,6 +337,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                     style={styles.largeButton}
                                     onPress={handleEdit}
                                 >
+                                    <MaterialIcons name="edit" size={20} color={colours.white} />
                                     <Text style={styles.buttonText}>Edit</Text>
                                 </TouchableOpacity>
                             </View>
@@ -348,6 +350,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                     style={styles.tertiaryLink}
                                     onPress={handleDelete}
                                 >
+                                    <MaterialIcons name="delete-outline" size={20} color={colours.red} />
                                     <Text style={styles.tertiaryLinkText}>Delete round</Text>
                                 </TouchableOpacity>
                             </View>

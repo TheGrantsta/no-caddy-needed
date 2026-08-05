@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import { yardsToDisplayUnit, displayUnitToYards } from '../service/UnitsService';
@@ -95,7 +96,10 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
                 style={s.addButton}
             >
                 {distances.length !== 14 && (
-                    <Text style={s.addButtonText}>+ Add club</Text>
+                    <>
+                        <MaterialIcons name="add" size={20} color={colours.primary} />
+                        <Text style={s.addButtonText}>+ Add club</Text>
+                    </>
                 )}
             </TouchableOpacity>
 
@@ -104,6 +108,7 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
                 onPress={handleSave}
                 style={s.saveButton}
             >
+                <MaterialIcons name="save" size={20} color={colours.background} />
                 <Text style={s.saveButtonText}>Save</Text>
             </TouchableOpacity>
         </View>

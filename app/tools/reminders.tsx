@@ -139,6 +139,7 @@ export default function Reminders() {
                 {!showAddForm && (
                     <View style={styles.headerContainer}>
                         <TouchableOpacity testID="add-reminder-button" onPress={() => setShowAddForm(true)} style={styles.largeButton}>
+                            <MaterialIcons name="add-alarm" size={20} color={colours.white} />
                             <Text style={styles.buttonText}>Add reminder</Text>
                         </TouchableOpacity>
                     </View>

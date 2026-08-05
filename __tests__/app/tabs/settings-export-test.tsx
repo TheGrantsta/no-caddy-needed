@@ -64,7 +64,18 @@ jest.mock('../../../context/ThemeContext', () => ({
             primary: '#2D5A3D',
             text: '#000',
             tertiary: '#999',
+            white: '#FFF',
+            background: '#25292e',
+            red: '#FF0000',
         },
+    })),
+    useThemeColours: jest.fn(() => ({
+        primary: '#2D5A3D',
+        text: '#000',
+        tertiary: '#999',
+        white: '#FFF',
+        background: '#25292e',
+        red: '#FF0000',
     })),
 }));
 

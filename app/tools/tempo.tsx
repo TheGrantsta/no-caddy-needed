@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, RefreshControl } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import Chevrons from '@/components/Chevrons';
 import Slider from '@react-native-community/slider';
@@ -158,6 +159,7 @@ export default function Tempo() {
                         </View>
 
                         <TouchableOpacity style={styles.largeButton} onPress={toggleStartStop}>
+                            <MaterialIcons name={isPlaying ? 'stop' : 'play-arrow'} size={20} color={colours.white} />
                             <Text style={styles.buttonText}>{isPlaying ? 'Stop' : 'Play'}</Text>
                         </TouchableOpacity>
 

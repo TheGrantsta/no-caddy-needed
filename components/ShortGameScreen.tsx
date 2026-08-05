@@ -251,6 +251,7 @@ const ShortGameScreen = ({ config }: Props) => {
                                         testID='add-drill-button'
                                         style={s.saveButton}
                                         onPress={() => setShowAddDrillForm(true)}>
+                                        <MaterialIcons name="add" size={20} color={colours.background} />
                                         <Text style={s.saveButtonText}>Add test</Text>
                                     </TouchableOpacity>
                                 </View>

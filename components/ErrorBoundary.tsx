@@ -1,5 +1,6 @@
 import React, { Component, ReactNode } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import defaultStyles from '../assets/styles';
 
 interface Props {
@@ -39,6 +40,7 @@ class ErrorBoundary extends Component<Props, State> {
                         onPress={this.handleRetry}
                         testID="error-boundary-retry-button"
                     >
+                        <MaterialIcons name="refresh" size={20} color="white" />
                         <Text style={styles.buttonText}>Try Again</Text>
                     </TouchableOpacity>
                 </View>

@@ -801,6 +801,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingVertical: 16,
             marginLeft: 'auto',
             marginRight: 'auto',
+            alignItems: 'center',
         },
         headerRow: {
             flexDirection: 'row',

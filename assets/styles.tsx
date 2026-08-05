@@ -799,8 +799,8 @@ export const createStyles = (c: ThemeColours) => ({
     wedgeChart: StyleSheet.create({
         container: {
             paddingVertical: 16,
-            marginLeft: 'auto',
-            marginRight: 'auto',
+            paddingHorizontal: 16,
+            width: '100%',
             alignItems: 'center',
         },
         headerRow: {

@@ -12,6 +12,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useOrientation } from '../hooks/useOrientation';
 import { useAppToast } from '../hooks/useAppToast';
 import OnboardingOverlay from '../components/OnboardingOverlay';
+import CtaButton from '../components/CtaButton';
 
 const ONBOARDING_STEPS = [
   { text: 'Settings let you tailor No Caddy Needed to how you like to play.' },
@@ -375,25 +376,21 @@ export default function Settings() {
         <View style={[styles.divider, { marginTop: 'auto' }]} />
 
         <View style={{ alignItems: 'center', paddingVertical: 20 }}>
-          <TouchableOpacity
+          <CtaButton
             testID="export-stats-button"
-            style={styles.largeButton}
+            label="Export my stats"
+            icon="ios-share"
             onPress={handleExportStats}
-          >
-            <MaterialIcons name="ios-share" size={20} color={colours.white} />
-            <Text style={styles.buttonText}>Export my stats</Text>
-          </TouchableOpacity>
+          />
         </View>
 
         <View style={{ alignItems: 'center', paddingVertical: 20 }}>
-          <TouchableOpacity
+          <CtaButton
             testID="rate-app-button"
-            style={styles.largeButton}
+            label="Rate my app"
+            icon="star"
             onPress={openStoreReviewService}
-          >
-            <MaterialIcons name="star" size={20} color={colours.white} />
-            <Text style={styles.buttonText}>Rate my app</Text>
-          </TouchableOpacity>
+          />
         </View>
 
         <View style={{ alignItems: 'center', paddingBottom: 20 }}>

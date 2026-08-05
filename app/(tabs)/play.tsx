@@ -15,6 +15,7 @@ import OnboardingOverlay from '../../components/OnboardingOverlay';
 import WedgeChartScreen from '../play/wedge-chart';
 import PlayerSetup from '../../components/PlayerSetup';
 import Scorecard from '../../components/Scorecard';
+import CtaButton from '../../components/CtaButton';
 import {
     startRoundService,
     endRoundService,
@@ -654,14 +655,13 @@ export default function Play() {
 
                         {incompleteRound ? (
                             <>
-                                <TouchableOpacity
+                                <CtaButton
                                     testID="continue-round-button"
+                                    label="Continue round"
+                                    icon="play-circle-outline"
                                     onPress={handleContinueRound}
-                                    style={[localStyles.actionButton, styles.marginTop]}
-                                >
-                                    <MaterialIcons name="play-circle-outline" size={20} color={colours.background} />
-                                    <Text style={localStyles.actionButtonText}>Continue round</Text>
-                                </TouchableOpacity>
+                                    style={styles.marginTop}
+                                />
                                 <TouchableOpacity
                                     testID="end-incomplete-round-link"
                                     onPress={handleEndIncompleteRound}
@@ -672,14 +672,13 @@ export default function Play() {
                                 </TouchableOpacity>
                             </>
                         ) : (
-                            <TouchableOpacity
+                            <CtaButton
                                 testID="start-round-button"
+                                label="Start round"
+                                icon="play-arrow"
                                 onPress={handleShowPlayerSetup}
-                                style={[localStyles.actionButton, styles.marginTop]}
-                            >
-                                <MaterialIcons name="play-arrow" size={20} color={colours.background} />
-                                <Text style={localStyles.actionButtonText}>Start round</Text>
-                            </TouchableOpacity>
+                                style={styles.marginTop}
+                            />
                         )}
 
 
@@ -982,14 +981,12 @@ export default function Play() {
                                 userScore={scorecardData.holeScores.find(s => s.HoleNumber === selectedScorecardScore.holeNumber && s.RoundPlayerId === scorecardData.players.find(p => p.IsUser === 1)?.Id)?.Score}
                             />
                         )}
-                        <TouchableOpacity
+                        <CtaButton
                             testID="scorecard-done-button"
+                            label="Done"
+                            icon="check-circle"
                             onPress={handleScorecardDone}
-                            style={localStyles.actionButton}
-                        >
-                            <MaterialIcons name="check-circle" size={20} color={colours.background} />
-                            <Text style={localStyles.actionButtonText}>Done</Text>
-                        </TouchableOpacity>
+                        />
                     </View>
                 )}
 

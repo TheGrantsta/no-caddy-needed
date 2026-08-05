@@ -9,6 +9,7 @@ import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
 import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, PracticeReminder } from '@/service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService } from '../../service/NotificationService';
+import CtaButton from '@/components/CtaButton';
 
 export default function Reminders() {
     const styles = useStyles();
@@ -138,10 +139,12 @@ export default function Reminders() {
 
                 {!showAddForm && (
                     <View style={styles.headerContainer}>
-                        <TouchableOpacity testID="add-reminder-button" onPress={() => setShowAddForm(true)} style={styles.largeButton}>
-                            <MaterialIcons name="add-alarm" size={20} color={colours.white} />
-                            <Text style={styles.buttonText}>Add reminder</Text>
-                        </TouchableOpacity>
+                        <CtaButton
+                            testID="add-reminder-button"
+                            label="Add reminder"
+                            icon="add-alarm"
+                            onPress={() => setShowAddForm(true)}
+                        />
                     </View>
                 )}
 

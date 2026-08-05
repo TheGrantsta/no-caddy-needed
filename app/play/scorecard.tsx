@@ -7,6 +7,7 @@ import RoundScorecard from '../../components/RoundScorecard';
 import Scorecard from '../../components/Scorecard';
 import ScoreEditor from '../../components/ScoreEditor';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
+import CtaButton from '../../components/CtaButton';
 import { useAppToast } from '../../hooks/useAppToast';
 import {
     getRoundScorecardService,
@@ -332,14 +333,12 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
 
                         {!isEditing && !showDeleteConfirm && (
                             <View style={styles.headerContainer}>
-                                <TouchableOpacity
+                                <CtaButton
                                     testID="edit-scorecard-button"
-                                    style={styles.largeButton}
+                                    label="Edit"
+                                    icon="edit"
                                     onPress={handleEdit}
-                                >
-                                    <MaterialIcons name="edit" size={20} color={colours.white} />
-                                    <Text style={styles.buttonText}>Edit</Text>
-                                </TouchableOpacity>
+                                />
                             </View>
                         )}
 

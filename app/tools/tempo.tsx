@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import Chevrons from '@/components/Chevrons';
+import CtaButton from '@/components/CtaButton';
 import Slider from '@react-native-community/slider';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
@@ -158,10 +159,12 @@ export default function Tempo() {
                             </Text>
                         </View>
 
-                        <TouchableOpacity style={styles.largeButton} onPress={toggleStartStop}>
-                            <MaterialIcons name={isPlaying ? 'stop' : 'play-arrow'} size={20} color={colours.white} />
-                            <Text style={styles.buttonText}>{isPlaying ? 'Stop' : 'Play'}</Text>
-                        </TouchableOpacity>
+                        <CtaButton
+                            testID="tempo-toggle-button"
+                            label={isPlaying ? 'Stop' : 'Play'}
+                            icon={isPlaying ? 'stop' : 'play-arrow'}
+                            onPress={toggleStartStop}
+                        />
 
                         <View style={styles.contentSection}>
                             <Chevrons heading='Why tempo is important' points={points} />

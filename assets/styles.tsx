@@ -152,17 +152,6 @@ export const createStyles = (c: ThemeColours) => ({
             alignContent: 'center',
             flexDirection: 'row',
         },
-        largeButton: {
-            backgroundColor: c.primary,
-            padding: 10,
-            borderRadius: 8,
-            width: '90%',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            columnGap: 8,
-            margin: 5,
-        },
         largeButtonSecondary: {
             backgroundColor: 'transparent',
             borderWidth: 2,
@@ -189,6 +178,21 @@ export const createStyles = (c: ThemeColours) => ({
         tertiaryLinkText: {
             color: c.red,
             fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        ctaButton: {
+            backgroundColor: c.primary,
+            width: '100%',
+            padding: 12,
+            borderRadius: 8,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            columnGap: 8,
+        },
+        ctaButtonText: {
+            color: c.background,
+            fontSize: fontSizes.tableHeader,
             fontWeight: 'bold',
         },
         mediumButton: {
@@ -787,22 +791,6 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.primary,
             fontSize: fontSizes.smallText,
         },
-        saveButton: {
-            backgroundColor: c.primary,
-            padding: 10,
-            borderRadius: 8,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            columnGap: 8,
-            marginTop: 12,
-            width: '100%',
-        },
-        saveButtonText: {
-            color: c.background,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-        },
     }),
 
     wedgeChart: StyleSheet.create({
@@ -881,22 +869,6 @@ export const createStyles = (c: ThemeColours) => ({
         addButtonText: {
             color: c.primary,
             fontSize: fontSizes.smallText,
-        },
-        saveButton: {
-            backgroundColor: c.primary,
-            padding: 10,
-            borderRadius: 8,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            columnGap: 8,
-            marginTop: 12,
-            width: '100%',
-        },
-        saveButtonText: {
-            color: c.background,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
         },
     }),
 
@@ -1182,21 +1154,6 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.subHeader,
             minWidth: 40,
             textAlign: 'center',
-        },
-        saveButton: {
-            backgroundColor: c.primary,
-            padding: 12,
-            borderRadius: 8,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            columnGap: 8,
-            marginTop: 5,
-        },
-        saveButtonText: {
-            color: c.background,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
         },
         toggleHeader: {
             flexDirection: 'row',
@@ -1601,22 +1558,6 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 15,
             alignItems: 'center',
         },
-        actionButton: {
-            backgroundColor: c.primary,
-            padding: 12,
-            borderRadius: 8,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            columnGap: 8,
-            width: '100%',
-            marginTop: 5,
-        },
-        actionButtonText: {
-            color: c.background,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
         nextHoleButton: {
             backgroundColor: c.primary,
             borderWidth: 2,
@@ -1748,13 +1689,6 @@ export const createStyles = (c: ThemeColours) => ({
     randomTool: StyleSheet.create({
         container: {
             padding: 20,
-        },
-        actionButton: {
-            backgroundColor: c.primary,
-            padding: 12,
-            borderRadius: 8,
-            alignItems: 'center',
-            width: '100%',
         },
         actionButtonText: {
             color: c.background,

@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { DeadlySinsValues } from '../service/DbService';
+import CtaButton from './CtaButton';
 
 type Props = {
     onEndRound: (values: DeadlySinsValues) => void;
@@ -89,10 +90,12 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     if (!roundActive) {
         return (
             <View style={s.container}>
-                <TouchableOpacity testID="7deadly-sins-start-round" onPress={handleStartRound} style={s.saveButton}>
-                    <MaterialIcons name="play-arrow" size={20} color={colours.background} />
-                    <Text style={s.saveButtonText}>Start round</Text>
-                </TouchableOpacity>
+                <CtaButton
+                    testID="7deadly-sins-start-round"
+                    label="Start round"
+                    icon="play-arrow"
+                    onPress={handleStartRound}
+                />
             </View>
         );
     }
@@ -165,10 +168,12 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
             })}
 
             {!roundControlled && (
-                <TouchableOpacity testID="7deadly-sins-end-round" onPress={handleEndRound} style={s.saveButton}>
-                    <MaterialIcons name="flag" size={20} color={colours.background} />
-                    <Text style={s.saveButtonText}>End round</Text>
-                </TouchableOpacity>
+                <CtaButton
+                    testID="7deadly-sins-end-round"
+                    label="End round"
+                    icon="flag"
+                    onPress={handleEndRound}
+                />
             )}
         </View>
     );

@@ -5,6 +5,7 @@ import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import type { WedgeChartData } from '../service/DbService';
 import { yardsToDisplayUnit, displayUnitToYards } from '../service/UnitsService';
+import CtaButton from './CtaButton';
 
 type Props = {
     data: WedgeChartData;
@@ -154,16 +155,12 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                 )}
             </View>
 
-            <View style={s.saveButton}>
-                <TouchableOpacity
-                    testID="save-wedge-chart-button"
-                    onPress={handleSave}
-                    style={{ flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', columnGap: 8 }}
-                >
-                    <MaterialIcons name="save" size={20} color={colours.background} />
-                    <Text style={s.saveButtonText}>Save</Text>
-                </TouchableOpacity>
-            </View>
+            <CtaButton
+                testID="save-wedge-chart-button"
+                label="Save"
+                icon="save"
+                onPress={handleSave}
+            />
         </View>
     );
 };

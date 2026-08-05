@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import { yardsToDisplayUnit, displayUnitToYards } from '../service/UnitsService';
+import CtaButton from './CtaButton';
 
 type ClubDistance = {
     Id: number;
@@ -103,14 +104,12 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
                 )}
             </TouchableOpacity>
 
-            <TouchableOpacity
+            <CtaButton
                 testID="save-distances-button"
+                label="Save"
+                icon="save"
                 onPress={handleSave}
-                style={s.saveButton}
-            >
-                <MaterialIcons name="save" size={20} color={colours.background} />
-                <Text style={s.saveButtonText}>Save</Text>
-            </TouchableOpacity>
+            />
         </View>
     );
 };

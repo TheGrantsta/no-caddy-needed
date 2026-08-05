@@ -154,14 +154,16 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                 )}
             </View>
 
-            <TouchableOpacity
-                testID="save-wedge-chart-button"
-                onPress={handleSave}
-                style={s.saveButton}
-            >
-                <MaterialIcons name="save" size={20} color={colours.background} />
-                <Text style={s.saveButtonText}>Save</Text>
-            </TouchableOpacity>
+            <View style={s.saveButton}>
+                <TouchableOpacity
+                    testID="save-wedge-chart-button"
+                    onPress={handleSave}
+                    style={{ flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', columnGap: 8 }}
+                >
+                    <MaterialIcons name="save" size={20} color={colours.background} />
+                    <Text style={s.saveButtonText}>Save</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };

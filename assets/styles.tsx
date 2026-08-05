@@ -784,7 +784,10 @@ export const createStyles = (c: ThemeColours) => ({
         },
         addButton: {
             padding: 8,
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
             marginTop: 12,
         },
         addButtonText: {
@@ -864,7 +867,10 @@ export const createStyles = (c: ThemeColours) => ({
         },
         addButton: {
             padding: 8,
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
         },
         addButtonText: {
             color: c.primary,

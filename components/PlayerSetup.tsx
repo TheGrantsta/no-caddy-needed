@@ -172,7 +172,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
                     style={s.addButton}
                 >
                     <MaterialIcons name="person-add" size={20} color={colours.primary} />
-                    <Text style={s.addButtonText}>+ Add player</Text>
+                    <Text style={s.addButtonText}>Add player</Text>
                 </TouchableOpacity>
             )}
 

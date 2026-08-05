@@ -973,7 +973,10 @@ export const createStyles = (c: ThemeColours) => ({
         },
         addButton: {
             paddingVertical: 10,
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
         },
         addButtonText: {
             color: c.primary,
@@ -983,8 +986,12 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
             marginTop: 10,
+            width: '100%',
         },
         startButtonText: {
             color: c.background,
@@ -995,8 +1002,12 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.red,
             padding: 12,
             borderRadius: 8,
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
             marginTop: 10,
+            width: '100%',
         },
         cancelButtonText: {
             color: c.white,

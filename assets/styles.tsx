@@ -942,6 +942,7 @@ export const createStyles = (c: ThemeColours) => ({
     playerSetup: StyleSheet.create({
         container: {
             padding: 15,
+            width: '100%',
         },
         playerRow: {
             flexDirection: 'row',

@@ -182,7 +182,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
                 style={s.startButton}
             >
                 <MaterialIcons name="play-arrow" size={20} color={colours.white} />
-                <Text style={s.startButtonText}>Start</Text>
+                <Text style={s.startButtonText}>Start round</Text>
             </TouchableOpacity>
 
             {onCancel && (

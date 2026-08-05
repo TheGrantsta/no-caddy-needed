@@ -796,6 +796,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             columnGap: 8,
             marginTop: 12,
+            width: '100%',
         },
         saveButtonText: {
             color: c.background,
@@ -890,6 +891,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             columnGap: 8,
             marginTop: 12,
+            width: '100%',
         },
         saveButtonText: {
             color: c.background,

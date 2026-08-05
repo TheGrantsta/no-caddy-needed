@@ -99,7 +99,7 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
                 {distances.length !== 14 && (
                     <>
                         <MaterialIcons name="add" size={20} color={colours.primary} />
-                        <Text style={s.addButtonText}>+ Add club</Text>
+                        <Text style={s.addButtonText}>Add club</Text>
                     </>
                 )}
             </TouchableOpacity>

@@ -140,7 +140,7 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                         style={s.addButton}
                     >
                         <MaterialIcons name="add" size={20} color={colours.primary} />
-                        <Text style={s.addButtonText}>+ Add club</Text>
+                        <Text style={s.addButtonText}>Add club</Text>
                     </TouchableOpacity>
                 )}
                 {rows.length > 0 && distanceNames.length < MAX_DISTANCES && (
@@ -150,7 +150,7 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                         style={s.addButton}
                     >
                         <MaterialIcons name="add" size={20} color={colours.primary} />
-                        <Text style={s.addButtonText}>+ Add distance</Text>
+                        <Text style={s.addButtonText}>Add distance</Text>
                     </TouchableOpacity>
                 )}
             </View>

@@ -64,7 +64,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Screenshot 2: Play screen (tap Play link)
 - extendedWaitUntil:
     visible: "Start round"
-    timeout: 5000
+    timeout: 10000
 - takeScreenshot: .maestro/screenshots/02-play
 
 # Screenshot 3: Start round

@@ -73,7 +73,7 @@ appId: com.grantsta.golf.nocaddyneeded
     index: 0
 - extendedWaitUntil:
     visible: "You"
-    timeout: 5000
+    timeout: 10000
 - takeScreenshot: .maestro/screenshots/02A-play-start-round
 
 # Screenshot 4: Distances

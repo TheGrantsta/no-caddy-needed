@@ -152,14 +152,6 @@ export const createStyles = (c: ThemeColours) => ({
             alignContent: 'center',
             flexDirection: 'row',
         },
-        largeButton: {
-            backgroundColor: c.primary,
-            padding: 10,
-            borderRadius: 8,
-            width: '90%',
-            alignItems: 'center',
-            margin: 5,
-        },
         largeButtonSecondary: {
             backgroundColor: 'transparent',
             borderWidth: 2,
@@ -177,7 +169,10 @@ export const createStyles = (c: ThemeColours) => ({
         },
         tertiaryLink: {
             paddingVertical: 12,
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
             margin: 5,
         },
         tertiaryLinkText: {
@@ -185,12 +180,30 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
+        ctaButton: {
+            backgroundColor: c.primary,
+            width: '100%',
+            padding: 12,
+            borderRadius: 8,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            columnGap: 8,
+        },
+        ctaButtonText: {
+            color: c.background,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
         mediumButton: {
             backgroundColor: c.primary,
             padding: 10,
             borderRadius: 8,
             width: '35%',
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
             margin: 5,
         },
         button: {
@@ -198,7 +211,10 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 10,
             borderRadius: 8,
             width: 100,
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
             margin: 5,
         },
         buttonText: {
@@ -702,6 +718,12 @@ export const createStyles = (c: ThemeColours) => ({
             borderTopColor: c.primary,
             paddingTop: 5,
         },
+        scoreBreakdownText: {
+            color: c.text,
+            fontSize: fontSizes.small,
+            textAlign: 'center',
+            marginTop: 8,
+        },
     }),
 
     clubDistanceList: StyleSheet.create({
@@ -762,32 +784,24 @@ export const createStyles = (c: ThemeColours) => ({
         },
         addButton: {
             padding: 8,
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
             marginTop: 12,
         },
         addButtonText: {
             color: c.primary,
             fontSize: fontSizes.smallText,
         },
-        saveButton: {
-            backgroundColor: c.primary,
-            padding: 10,
-            borderRadius: 8,
-            alignItems: 'center',
-            marginTop: 12,
-        },
-        saveButtonText: {
-            color: c.background,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-        },
     }),
 
     wedgeChart: StyleSheet.create({
         container: {
             paddingVertical: 16,
-            marginLeft: 'auto',
-            marginRight: 'auto',
+            paddingHorizontal: 16,
+            width: '100%',
+            alignItems: 'center',
         },
         headerRow: {
             flexDirection: 'row',
@@ -854,23 +868,14 @@ export const createStyles = (c: ThemeColours) => ({
         },
         addButton: {
             padding: 8,
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
         },
         addButtonText: {
             color: c.primary,
             fontSize: fontSizes.smallText,
-        },
-        saveButton: {
-            backgroundColor: c.primary,
-            padding: 10,
-            borderRadius: 8,
-            alignItems: 'center',
-            marginTop: 12,
-        },
-        saveButtonText: {
-            color: c.background,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
         },
     }),
 
@@ -937,6 +942,7 @@ export const createStyles = (c: ThemeColours) => ({
     playerSetup: StyleSheet.create({
         container: {
             padding: 15,
+            width: '100%',
         },
         playerRow: {
             flexDirection: 'row',
@@ -975,7 +981,10 @@ export const createStyles = (c: ThemeColours) => ({
         },
         addButton: {
             paddingVertical: 10,
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
         },
         addButtonText: {
             color: c.primary,
@@ -985,8 +994,12 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.primary,
             padding: 12,
             borderRadius: 8,
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
             marginTop: 10,
+            width: '100%',
         },
         startButtonText: {
             color: c.background,
@@ -997,8 +1010,12 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.red,
             padding: 12,
             borderRadius: 8,
+            flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            columnGap: 8,
             marginTop: 10,
+            width: '100%',
         },
         cancelButtonText: {
             color: c.white,
@@ -1157,18 +1174,6 @@ export const createStyles = (c: ThemeColours) => ({
             minWidth: 40,
             textAlign: 'center',
         },
-        saveButton: {
-            backgroundColor: c.primary,
-            padding: 12,
-            borderRadius: 8,
-            alignItems: 'center',
-            marginTop: 5,
-        },
-        saveButtonText: {
-            color: c.background,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
         toggleHeader: {
             flexDirection: 'row',
             justifyContent: 'space-between',
@@ -1253,6 +1258,54 @@ export const createStyles = (c: ThemeColours) => ({
         chevron: {
             color: c.primary,
             fontSize: fontSizes.header,
+        },
+    }),
+
+    puttingProximityChart: StyleSheet.create({
+        container: {
+            padding: 10,
+            paddingBottom: 0,
+        },
+        barContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 8,
+        },
+        labelContainer: {
+            width: 45,
+            paddingRight: 5,
+        },
+        label: {
+            color: c.primary,
+            fontSize: fontSizes.smallestText,
+        },
+        barWrapper: {
+            flex: 1,
+            flexDirection: 'row',
+            height: 20,
+            borderRadius: 4,
+            overflow: 'hidden',
+        },
+        bar: {
+            height: '100%',
+        },
+        barShort: {
+            height: '100%',
+            borderTopLeftRadius: 4,
+            borderBottomLeftRadius: 4,
+        },
+        barLong: {
+            height: '100%',
+            borderTopRightRadius: 4,
+            borderBottomRightRadius: 4,
+        },
+        percentContainer: {
+            minWidth: 100,
+            marginLeft: 12,
+        },
+        percentText: {
+            color: c.primary,
+            fontSize: fontSizes.smallestText,
         },
     }),
 
@@ -1524,19 +1577,6 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 15,
             alignItems: 'center',
         },
-        actionButton: {
-            backgroundColor: c.primary,
-            padding: 12,
-            borderRadius: 8,
-            alignItems: 'center',
-            width: '100%',
-            marginTop: 5,
-        },
-        actionButtonText: {
-            color: c.background,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
         nextHoleButton: {
             backgroundColor: c.primary,
             borderWidth: 2,
@@ -1668,13 +1708,6 @@ export const createStyles = (c: ThemeColours) => ({
     randomTool: StyleSheet.create({
         container: {
             padding: 20,
-        },
-        actionButton: {
-            backgroundColor: c.primary,
-            padding: 12,
-            borderRadius: 8,
-            alignItems: 'center',
-            width: '100%',
         },
         actionButtonText: {
             color: c.background,

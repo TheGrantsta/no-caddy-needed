@@ -3,13 +3,16 @@ import { useMemo, useState } from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
+import * as Sharing from 'expo-sharing';
 import { getSettingsService, saveSettingsService, AppSettings } from '../service/DbService';
 import { openStoreReviewService } from '../service/ReviewService';
+import { buildStatsExportPayload, formatStatsExportText, writeStatsExportFile } from '../service/ExportService';
 import { useStyles } from '../hooks/useStyles';
 import { useTheme } from '../context/ThemeContext';
 import { useOrientation } from '../hooks/useOrientation';
 import { useAppToast } from '../hooks/useAppToast';
 import OnboardingOverlay from '../components/OnboardingOverlay';
+import CtaButton from '../components/CtaButton';
 
 const ONBOARDING_STEPS = [
   { text: 'Settings let you tailor No Caddy Needed to how you like to play.' },
@@ -43,11 +46,16 @@ const PRESHOT: { key: 'on' | 'off'; label: string; value: boolean }[] = [
   { key: 'off', label: 'Off', value: false },
 ];
 
+const SCORE_ONLY: { key: 'on' | 'off'; label: string; value: boolean }[] = [
+  { key: 'on', label: 'On', value: true },
+  { key: 'off', label: 'Off', value: false },
+];
+
 export default function Settings() {
   const { colours } = useTheme();
   const styles = useStyles();
   const { landscapePadding } = useOrientation();
-  const { showSuccess, showResult } = useAppToast();
+  const { showResult, showError } = useAppToast();
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [routineText, setRoutineText] = useState(settings.preShotRoutineText);
   const [showOnboarding, setShowOnboarding] = useState(!settings.settingsOnboardingSeen);
@@ -100,9 +108,8 @@ export default function Settings() {
     showResult(success, 'Settings saved', 'Failed to save settings');
   };
 
-  const handleFrequencyChange = async (delta: number) => {
-    const next = Math.max(1, settings.practiceFrequencyDays + delta);
-    const updated: AppSettings = { ...settings, practiceFrequencyDays: next };
+  const handlePreShotEnabledChange = async (value: boolean) => {
+    const updated: AppSettings = { ...settings, preShotReminderEnabled: value };
     setSettings(updated);
 
     const success = await saveSettingsService(updated);
@@ -110,8 +117,8 @@ export default function Settings() {
     showResult(success, 'Settings saved', 'Failed to save settings');
   };
 
-  const handlePreShotEnabledChange = async (value: boolean) => {
-    const updated: AppSettings = { ...settings, preShotReminderEnabled: value };
+  const handleScoreOnlyModeChange = async (value: boolean) => {
+    const updated: AppSettings = { ...settings, skipStatsFlowEnabled: value };
     setSettings(updated);
 
     const success = await saveSettingsService(updated);
@@ -126,6 +133,27 @@ export default function Settings() {
     const success = await saveSettingsService(updated);
 
     showResult(success, 'Settings saved', 'Failed to save settings');
+  };
+
+  const handleExportStats = async () => {
+    try {
+      const payload = buildStatsExportPayload();
+      const text = formatStatsExportText(payload);
+      const fileUri = await writeStatsExportFile(text);
+
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (!isAvailable) {
+        showError('Failed to export stats');
+        return;
+      }
+
+      await Sharing.shareAsync(fileUri, {
+        mimeType: 'text/plain',
+        dialogTitle: 'Export golf stats',
+      });
+    } catch {
+      showError('Failed to export stats');
+    }
   };
 
   const voiceButtonStyles = useMemo(() => ({
@@ -285,32 +313,6 @@ export default function Settings() {
         {group === 'golf' && (<>
         <View style={styles.contentSection}>
           <View style={styles.headerContainer}>
-            <Text style={[styles.subHeaderText, { padding: 0 }]}>Practice</Text>
-          </View>
-
-          <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 10, gap: 16 }}>
-            <Text style={styles.normalText}>Every</Text>
-            <TouchableOpacity
-              testID="practice-frequency-decrement"
-              onPress={() => handleFrequencyChange(-1)}
-              style={[voiceButtonStyles.base, { flex: 0, paddingHorizontal: 16 }]}
-            >
-              <Text style={voiceButtonStyles.unselectedText}>−</Text>
-            </TouchableOpacity>
-            <Text testID="practice-frequency-value" style={styles.normalText}>{settings.practiceFrequencyDays}</Text>
-            <TouchableOpacity
-              testID="practice-frequency-increment"
-              onPress={() => handleFrequencyChange(1)}
-              style={[voiceButtonStyles.base, { flex: 0, paddingHorizontal: 16 }]}
-            >
-              <Text style={voiceButtonStyles.unselectedText}>+</Text>
-            </TouchableOpacity>
-            <Text style={styles.normalText}>days</Text>
-          </View>
-        </View>
-
-        <View style={styles.contentSection}>
-          <View style={styles.headerContainer}>
             <Text style={[styles.subHeaderText, { padding: 0 }]}>Show pre-shot routine</Text>
           </View>
 
@@ -346,18 +348,49 @@ export default function Settings() {
             </View>
           )}
         </View>
+
+        <View style={styles.contentSection}>
+          <View style={styles.headerContainer}>
+            <Text style={[styles.subHeaderText, { padding: 0 }]}>Score-only mode</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 10 }}>
+            {SCORE_ONLY.map(({ key, label, value }) => {
+              const isSelected = settings.skipStatsFlowEnabled === value;
+              return (
+                <TouchableOpacity
+                  key={key}
+                  testID={`score-only-${key}`}
+                  onPress={() => handleScoreOnlyModeChange(value)}
+                  style={[voiceButtonStyles.base, isSelected ? voiceButtonStyles.selected : voiceButtonStyles.unselected]}
+                >
+                  {isSelected && <Text testID={`score-only-${key}-selected`} style={voiceButtonStyles.selectedText}>{label}</Text>}
+                  {!isSelected && <Text style={voiceButtonStyles.unselectedText}>{label}</Text>}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
         </>)}
 
         <View style={[styles.divider, { marginTop: 'auto' }]} />
 
         <View style={{ alignItems: 'center', paddingVertical: 20 }}>
-          <TouchableOpacity
+          <CtaButton
+            testID="export-stats-button"
+            label="Export my stats"
+            icon="ios-share"
+            onPress={handleExportStats}
+          />
+        </View>
+
+        <View style={{ alignItems: 'center', paddingVertical: 20 }}>
+          <CtaButton
             testID="rate-app-button"
-            style={styles.largeButton}
+            label="Rate my app"
+            icon="star"
             onPress={openStoreReviewService}
-          >
-            <Text style={styles.buttonText}>Rate my app</Text>
-          </TouchableOpacity>
+          />
         </View>
 
         <View style={{ alignItems: 'center', paddingBottom: 20 }}>

@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
+import { useThemeColours } from '@/context/ThemeContext';
 import { DeadlySinsValues } from '../service/DbService';
+import CtaButton from './CtaButton';
 
 type Props = {
     onEndRound: (values: DeadlySinsValues) => void;
@@ -11,6 +14,7 @@ type Props = {
     holePar?: number;
     userScore?: number;
     initialValues?: Partial<DeadlySinsValues>;
+    collapsible?: boolean;
 };
 
 const INITIAL_SINS: DeadlySinsValues = {
@@ -33,8 +37,9 @@ const sinFields: { slug: string; label: string; key: keyof DeadlySinsValues }[] 
     { slug: 'bogeys-par5', label: 'Bogeys on par 5s', key: 'bogeysPar5' },
 ];
 
-const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues }: Props) => {
+const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues, collapsible = true }: Props) => {
     const styles = useStyles();
+    const colours = useThemeColours();
     const s = styles.deadlySinsTally;
     const [roundActive, setRoundActive] = useState(roundControlled === true);
     const [values, setValues] = useState<DeadlySinsValues>({
@@ -85,25 +90,34 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     if (!roundActive) {
         return (
             <View style={s.container}>
-                <TouchableOpacity testID="7deadly-sins-start-round" onPress={handleStartRound} style={s.saveButton}>
-                    <Text style={s.saveButtonText}>Start round</Text>
-                </TouchableOpacity>
+                <CtaButton
+                    testID="7deadly-sins-start-round"
+                    label="Start round"
+                    icon="play-arrow"
+                    onPress={handleStartRound}
+                />
             </View>
         );
     }
 
     return (
         <View style={s.container}>
-            <TouchableOpacity
-                testID="7deadly-sins-toggle"
-                onPress={() => setIsOpen(prev => !prev)}
-                style={s.toggleHeader}
-            >
-                <Text style={s.toggleLabel}>Deadly Sins</Text>
-                <Text testID="7deadly-sins-toggle-icon" style={s.chevron}>{isOpen ? '−' : '+'}</Text>
-            </TouchableOpacity>
+            {collapsible ? (
+                <TouchableOpacity
+                    testID="7deadly-sins-toggle"
+                    onPress={() => setIsOpen(prev => !prev)}
+                    style={s.toggleHeader}
+                >
+                    <Text style={s.toggleLabel}>Deadly Sins</Text>
+                    <Text testID="7deadly-sins-toggle-icon" style={s.chevron}>{isOpen ? '−' : '+'}</Text>
+                </TouchableOpacity>
+            ) : (
+                <View style={s.toggleHeader}>
+                    <Text style={s.toggleLabel}>Deadly Sins</Text>
+                </View>
+            )}
 
-            {isOpen && sinFields.map((field) => {
+            {(collapsible ? isOpen : true) && sinFields.map((field) => {
                 if (field.slug === 'bogeys-par5') {
                     if (holePar !== 5) return null;
                     if (isAutoBogeyPar5) {
@@ -154,9 +168,12 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
             })}
 
             {!roundControlled && (
-                <TouchableOpacity testID="7deadly-sins-end-round" onPress={handleEndRound} style={s.saveButton}>
-                    <Text style={s.saveButtonText}>End round</Text>
-                </TouchableOpacity>
+                <CtaButton
+                    testID="7deadly-sins-end-round"
+                    label="End round"
+                    icon="flag"
+                    onPress={handleEndRound}
+                />
             )}
         </View>
     );

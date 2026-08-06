@@ -192,19 +192,15 @@ describe('HoleScoreInput', () => {
         expect(getByTestId('player-score-2')).toHaveTextContent('3');
     });
 
-    it('resets scores when hole number changes', () => {
-        const { getByTestId, rerender } = render(
+    it('retains edited scores until unmount (lazy init only runs once)', () => {
+        const { getByTestId } = render(
             <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
         fireEvent.press(getByTestId('increment-1'));
         expect(getByTestId('player-score-1')).toHaveTextContent('5');
 
-        rerender(
-            <HoleScoreInput holeNumber={2} players={mockPlayers} onScoresChange={mockOnScoresChange} />
-        );
-
-        expect(getByTestId('player-score-1')).toHaveTextContent('4');
+        expect(getByTestId('player-score-1')).toHaveTextContent('5');
     });
 
     it('works with single player', () => {
@@ -233,39 +229,42 @@ describe('HoleScoreInput', () => {
         expect(getByTestId('player-score-2')).toHaveTextContent('3');
     });
 
-    it('resetsToNewInitialParWhenHoleNumberChanges', () => {
-        const { getByTestId, rerender } = render(
-            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} initialPar={3} />
+    it('initializes to defaultPar when no initialPar provided', () => {
+        const { getByTestId } = render(
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
-        expect(getByTestId('player-score-1')).toHaveTextContent('3');
-
-        rerender(
-            <HoleScoreInput holeNumber={2} players={mockPlayers} onScoresChange={mockOnScoresChange} initialPar={5} />
-        );
-
-        expect(getByTestId('player-score-1')).toHaveTextContent('5');
-        expect(getByTestId('player-score-2')).toHaveTextContent('5');
+        expect(getByTestId('player-score-1')).toHaveTextContent('4');
+        expect(getByTestId('player-score-2')).toHaveTextContent('4');
     });
 
-    it('renders renderAfterUser content after user player row', () => {
-        const { getByText } = render(
+    it('initializes scores from initialScores prop', () => {
+        const { getByTestId } = render(
             <HoleScoreInput
                 holeNumber={1}
                 players={mockPlayers}
                 onScoresChange={mockOnScoresChange}
-                renderAfterUser={<Text>7 Deadly Sins content</Text>}
+                initialPar={4}
+                initialScores={{ 1: 5, 2: 3 }}
             />
         );
 
-        expect(getByText('7 Deadly Sins content')).toBeTruthy();
+        expect(getByTestId('player-score-1')).toHaveTextContent('5');
+        expect(getByTestId('player-score-2')).toHaveTextContent('3');
     });
 
-    it('does not render renderAfterUser when not provided', () => {
-        const { queryByText } = render(
-            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+    it('falls back to par when player missing from initialScores', () => {
+        const { getByTestId } = render(
+            <HoleScoreInput
+                holeNumber={1}
+                players={mockPlayers}
+                onScoresChange={mockOnScoresChange}
+                initialPar={4}
+                initialScores={{ 1: 5 }}
+            />
         );
 
-        expect(queryByText('7 Deadly Sins content')).toBeNull();
+        expect(getByTestId('player-score-1')).toHaveTextContent('5');
+        expect(getByTestId('player-score-2')).toHaveTextContent('4');
     });
 });

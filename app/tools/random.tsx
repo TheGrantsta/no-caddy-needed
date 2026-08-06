@@ -6,6 +6,7 @@ import * as Speech from 'expo-speech';
 import { MaterialIcons } from '@expo/vector-icons';
 import { getSettingsService } from '../../service/DbService';
 import Chevrons from '@/components/Chevrons';
+import CtaButton from '@/components/CtaButton';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
@@ -209,11 +210,12 @@ export default function Random() {
                         )}
 
                         <View style={[styles.marginTop, styles.container]}>
-                            <TouchableOpacity testID='save-button' style={localStyles.actionButton} onPress={handleGenerate}>
-                                <Text style={localStyles.actionButtonText}>
-                                    Generate
-                                </Text>
-                            </TouchableOpacity>
+                            <CtaButton
+                                testID="save-button"
+                                label="Generate"
+                                icon="shuffle"
+                                onPress={handleGenerate}
+                            />
 
                             {speechRecognitionAvailable && (
                             <TouchableOpacity

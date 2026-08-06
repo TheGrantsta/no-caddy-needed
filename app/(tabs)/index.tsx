@@ -16,7 +16,7 @@ const points = ['In a nutshell: hit it, find it & hit it again', 'Point: get the
 
 const ONBOARDING_STEPS = [
   { text: 'Welcome to No Caddy Needed — your personal golf companion for smarter play, practice and performance.' },
-  { text: 'Use the Play, Practice and Perform sections to track rounds, sharpen your short game and review your stats.' },
+  { text: 'Use the Play, Practice and Performance sections to track rounds, sharpen your short game and review your stats.' },
   { text: 'Pull down to refresh at any time. Tap the info icon to see this guide again.' },
 ];
 
@@ -125,7 +125,7 @@ export default function HomeScreen() {
                 <View style={styles.iconCircle}>
                   <MaterialIcons name="lightbulb" size={36} color={colours.white} />
                 </View>
-                <Text style={styles.navCardLabel}>Perform</Text>
+                <Text style={styles.navCardLabel}>Performance</Text>
               </View>
             </Link>
           </View>

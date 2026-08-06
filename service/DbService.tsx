@@ -17,6 +17,15 @@ import {
     getHoleDeadlySins,
     deleteHoleDeadlySinsByHole,
     getHolesWithSinsForRound,
+    getRoundHoleScoresByHole,
+    insertPuttingStats,
+    getPuttingStats,
+    deletePuttingStatsByHole,
+    getAllPuttingStatsWithThreePutts,
+    insertHoleSinDetails,
+    getHoleSinDetails,
+    getAllHoleSinDetails,
+    deleteHoleSinDetailsByHole,
     insertRound,
     updateRound,
     getRoundById,
@@ -52,8 +61,9 @@ import {
     getAllHoleNotesForCourse,
     upsertHoleNote,
     deleteHoleNote,
-    getSinFrequenciesForRoundsSync,
-    getCompletedRoundIdsSync,
+    getAllRoundHoleScoresWithContext,
+    getAllHoleDeadlySinsWithContext,
+    getAllPuttingStatsWithContext,
 } from '../database/db';
 
 export type WedgeChartClub = {
@@ -284,6 +294,15 @@ export const getHoleDeadlySinsService = (roundId: number, holeNumber: number): D
     };
 };
 
+export const getHoleScoresService = (roundId: number, holeNumber: number): { holePar: number; scores: Record<number, number> } | null => {
+    const rows = getRoundHoleScoresByHole(roundId, holeNumber) as RoundHoleScore[];
+    if (rows.length === 0) return null;
+    return {
+        holePar: rows[0].HolePar,
+        scores: Object.fromEntries(rows.map(r => [r.RoundPlayerId, r.Score])),
+    };
+};
+
 export const getHolesWithSinsForRoundService = (roundId: number): Set<number> => {
     const rows = getHolesWithSinsForRound(roundId) as { HoleNumber: number }[];
     return new Set(rows.map(r => r.HoleNumber));
@@ -313,6 +332,174 @@ export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {
     }));
 };
 
+export const insertPuttingStatsService = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean): Promise<boolean> => {
+    await deletePuttingStatsByHole(roundId, holeNumber);
+    return insertPuttingStats(roundId, holeNumber, firstPuttDistance, secondPuttDistance, secondPuttIsLong, thirdPuttDistance, thirdPuttIsLong);
+};
+
+export const getPuttingStatsService = (roundId: number, holeNumber: number): PuttingStats | null => {
+    const rows = getPuttingStats(roundId, holeNumber) as any[];
+    if (rows.length === 0) return null;
+    const row = rows[0];
+    return {
+        Id: row.Id,
+        RoundId: row.RoundId,
+        HoleNumber: row.HoleNumber,
+        FirstPuttDistance: row.FirstPuttDistance,
+        SecondPuttDistance: row.SecondPuttDistance,
+        SecondPuttIsLong: row.SecondPuttIsLong,
+        ThirdPuttDistance: row.ThirdPuttDistance ?? undefined,
+        ThirdPuttIsLong: row.ThirdPuttIsLong ?? undefined,
+    };
+};
+
+export const PUTTING_DISTANCE_BUCKETS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,45,50];
+
+export const bucketPuttingDistance = (distance: number): number | null => {
+    let bucket: number | null = null;
+    for (const b of PUTTING_DISTANCE_BUCKETS) {
+        if (distance >= b) bucket = b;
+        else break;
+    }
+    return bucket;
+};
+
+export type PuttingMakeRate = {
+    distance: number;
+    firstPuttMakeRate: string;
+    secondPuttMakeRate: string;
+};
+
+export const getPuttingMakeRatesService = (roundIds?: Set<number>): PuttingMakeRate[] => {
+    const rows = getAllPuttingStatsWithThreePutts() as any[];
+    const firstStats = new Map<number, { total: number; made: number }>();
+    const secondStats = new Map<number, { total: number; made: number }>();
+
+    rows.forEach((row) => {
+        if (roundIds && !roundIds.has(row.RoundId)) return;
+
+        const firstBucket = bucketPuttingDistance(row.FirstPuttDistance);
+        if (firstBucket !== null) {
+            const current = firstStats.get(firstBucket) || { total: 0, made: 0 };
+            current.total += 1;
+            if (row.SecondPuttDistance === 0) current.made += 1;
+            firstStats.set(firstBucket, current);
+        }
+
+        if (row.SecondPuttDistance > 0) {
+            const secondBucket = bucketPuttingDistance(row.SecondPuttDistance);
+            if (secondBucket !== null) {
+                const current = secondStats.get(secondBucket) || { total: 0, made: 0 };
+                current.total += 1;
+                if (row.ThreePutts !== 1) current.made += 1;
+                secondStats.set(secondBucket, current);
+            }
+        }
+    });
+
+    return PUTTING_DISTANCE_BUCKETS.map((distance) => {
+        const first = firstStats.get(distance);
+        const second = secondStats.get(distance);
+        return {
+            distance,
+            firstPuttMakeRate: first ? `${Math.round((first.made / first.total) * 100)}%` : '-',
+            secondPuttMakeRate: second ? `${Math.round((second.made / second.total) * 100)}%` : '-',
+        };
+    });
+};
+
+export const PROXIMITY_DISTANCE_BUCKETS = [1,2,3,4,5,6,7,8,9,10,15,20,25,30,35,40,45,50];
+
+export const bucketProximityDistance = (distance: number): number | null => {
+    if (distance < 1) return null;
+    for (const b of PROXIMITY_DISTANCE_BUCKETS) {
+        if (distance <= b) return b;
+    }
+    return PROXIMITY_DISTANCE_BUCKETS[PROXIMITY_DISTANCE_BUCKETS.length - 1];
+};
+
+export type PuttingProximity = {
+    distance: number;
+    shortPercent: string;
+    longPercent: string;
+};
+
+export const getPuttingProximityService = (threePuttOnly: boolean = false, roundIds?: Set<number>): PuttingProximity[] => {
+    const rows = getAllPuttingStatsWithThreePutts() as any[];
+    const stats = new Map<number, { short: number; long: number }>();
+
+    rows.forEach((row) => {
+        if (roundIds && !roundIds.has(row.RoundId)) return;
+        if (row.SecondPuttDistance > 0 && (!threePuttOnly || row.ThreePutts === 1)) {
+            const bucket = bucketProximityDistance(row.FirstPuttDistance);
+            if (bucket !== null) {
+                const current = stats.get(bucket) || { short: 0, long: 0 };
+                if (row.SecondPuttIsLong === 1) current.long += 1;
+                else current.short += 1;
+                stats.set(bucket, current);
+            }
+        }
+    });
+
+    return PROXIMITY_DISTANCE_BUCKETS.map((distance) => {
+        const entry = stats.get(distance);
+        if (!entry) {
+            return {
+                distance,
+                shortPercent: '-',
+                longPercent: '-',
+            };
+        }
+        const total = entry.short + entry.long;
+        return {
+            distance,
+            shortPercent: `${Math.round((entry.short / total) * 100)}%`,
+            longPercent: `${Math.round((entry.long / total) * 100)}%`,
+        };
+    });
+};
+
+export type HoleSinDetailsInput = {
+    troubleOffTeeClub?: string;
+    penaltyType?: string;
+    bogeysInside9IronClub?: string;
+};
+
+export const PENALTY_TYPES = ['Out of bounds', 'Water hazard', 'Unplayable lie', 'Other 1-shot penalty', 'General penalty'] as const;
+
+export const insertHoleSinDetailsService = async (roundId: number, holeNumber: number, details: HoleSinDetailsInput): Promise<boolean> => {
+    await deleteHoleSinDetailsByHole(roundId, holeNumber);
+    return insertHoleSinDetails(roundId, holeNumber, details.troubleOffTeeClub, details.penaltyType, details.bogeysInside9IronClub);
+};
+
+export const getHoleSinDetailsService = (roundId: number, holeNumber: number): HoleSinDetails | null => {
+    const rows = getHoleSinDetails(roundId, holeNumber) as any[];
+    if (rows.length === 0) return null;
+    const row = rows[0];
+    return {
+        Id: row.Id,
+        RoundId: row.RoundId,
+        HoleNumber: row.HoleNumber,
+        TroubleOffTeeClub: row.TroubleOffTeeClub ?? undefined,
+        PenaltyType: row.PenaltyType ?? undefined,
+        BogeysInside9IronClub: row.BogeysInside9IronClub ?? undefined,
+    };
+};
+
+export const getAllHoleSinDetailsService = (): HoleSinDetails[] => {
+    const rows = getAllHoleSinDetails() as any[];
+    return rows.map(row => ({
+        Id: row.Id,
+        RoundId: row.RoundId,
+        HoleNumber: row.HoleNumber,
+        TroubleOffTeeClub: row.TroubleOffTeeClub ?? undefined,
+        PenaltyType: row.PenaltyType ?? undefined,
+        BogeysInside9IronClub: row.BogeysInside9IronClub ?? undefined,
+    }));
+};
+
+export const deleteHoleSinDetailsService = (roundId: number, holeNumber: number): Promise<boolean> =>
+    deleteHoleSinDetailsByHole(roundId, holeNumber);
 
 // Round types
 export type Round = {
@@ -368,6 +555,32 @@ export type ClubDistance = {
     CarryDistance: number;
     TotalDistance: number;
     SortOrder: number;
+};
+
+export type PuttingStats = {
+    Id: number;
+    RoundId: number;
+    HoleNumber: number;
+    FirstPuttDistance: number;
+    SecondPuttDistance: number;
+    SecondPuttIsLong: number;
+    ThirdPuttDistance?: number;
+    ThirdPuttIsLong?: number;
+};
+
+export type HoleSinDetails = {
+    Id: number;
+    RoundId: number;
+    HoleNumber: number;
+    TroubleOffTeeClub?: string;
+    PenaltyType?: string;
+    BogeysInside9IronClub?: string;
+};
+
+export type RoundScoreBreakdown = {
+    putts: number;
+    threePutts: number;
+    penalties: number;
 };
 
 // Round services
@@ -529,6 +742,14 @@ export const getDeadlySinsForRoundService = (roundId: number): DeadlySinsRound |
     };
 };
 
+export const getRoundScoreBreakdownService = (roundId: number): RoundScoreBreakdown => {
+    const holesPlayed = getHolesPlayedForRoundService(roundId);
+    const sins = getDeadlySinsForRoundService(roundId);
+    const threePutts = sins?.ThreePutts ?? 0;
+    const penalties = sins?.Penalties ?? 0;
+    return { putts: holesPlayed * 2 + threePutts, threePutts, penalties };
+};
+
 // Settings services
 export const DEFAULT_PRESHOT_ROUTINE = 'Pick a specific target\nSee the shot\nOne smooth practice swing\nCommit, breathe, go';
 
@@ -541,7 +762,6 @@ export type AppSettings = {
     playOnboardingSeen: boolean;
     homeOnboardingSeen: boolean;
     practiceOnboardingSeen: boolean;
-    practiceFrequencyDays: number;
     reviewPromptShown: boolean;
     preShotReminderEnabled: boolean;
     preShotRoutineText: string;
@@ -550,13 +770,14 @@ export type AppSettings = {
     performOnboardingSeen: boolean;
     tempoBpm: number;
     units: DistanceUnit;
+    skipStatsFlowEnabled: boolean;
 };
 
 export const getSettingsService = (): AppSettings => {
-    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; PracticeFrequencyDays: number; ReviewPromptShown: number; PreShotReminderEnabled: number; PreShotRoutineText: string; WhatsNewVersionSeen: string; SettingsOnboardingSeen: number; PerformOnboardingSeen: number; TempoBpm: number; Units: string } | null;
+    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; ReviewPromptShown: number; PreShotReminderEnabled: number; PreShotRoutineText: string; WhatsNewVersionSeen: string; SettingsOnboardingSeen: number; PerformOnboardingSeen: number; TempoBpm: number; Units: string; SkipStatsFlowEnabled: number } | null;
 
     if (!row) {
-        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: DEFAULT_PRESHOT_ROUTINE, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards' };
+        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: DEFAULT_PRESHOT_ROUTINE, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false };
     }
 
     return {
@@ -568,7 +789,6 @@ export const getSettingsService = (): AppSettings => {
         playOnboardingSeen: row.PlayOnboardingSeen === 1,
         homeOnboardingSeen: row.HomeOnboardingSeen === 1,
         practiceOnboardingSeen: row.PracticeOnboardingSeen === 1,
-        practiceFrequencyDays: row.PracticeFrequencyDays ?? 7,
         reviewPromptShown: row.ReviewPromptShown === 1,
         preShotReminderEnabled: (row.PreShotReminderEnabled ?? 1) === 1,
         preShotRoutineText: row.PreShotRoutineText || DEFAULT_PRESHOT_ROUTINE,
@@ -577,11 +797,12 @@ export const getSettingsService = (): AppSettings => {
         performOnboardingSeen: row.PerformOnboardingSeen === 1,
         tempoBpm: row.TempoBpm ?? 60,
         units: (row.Units ?? 'yards') as DistanceUnit,
+        skipStatsFlowEnabled: (row.SkipStatsFlowEnabled ?? 0) === 1,
     };
 };
 
 export const saveSettingsService = async (settings: AppSettings): Promise<boolean> => {
-    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0, settings.practiceFrequencyDays, settings.reviewPromptShown ? 1 : 0, settings.preShotReminderEnabled ? 1 : 0, settings.preShotRoutineText, settings.whatsNewVersionSeen, settings.settingsOnboardingSeen ? 1 : 0, settings.performOnboardingSeen ? 1 : 0, settings.tempoBpm, settings.units);
+    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0, settings.reviewPromptShown ? 1 : 0, settings.preShotReminderEnabled ? 1 : 0, settings.preShotRoutineText, settings.whatsNewVersionSeen, settings.settingsOnboardingSeen ? 1 : 0, settings.performOnboardingSeen ? 1 : 0, settings.tempoBpm, settings.units, settings.skipStatsFlowEnabled ? 1 : 0);
 };
 
 export type PracticeReminder = {
@@ -633,36 +854,6 @@ export const getParAveragesService = (rounds: Round[]): ParAverages => {
     return { par3: avg(3), par4: avg(4), par5: avg(5) };
 };
 
-const SIN_TO_PRACTICE: Record<string, { category: string; reminderLabel: string; drillLabels: string[] }> = {
-    ThreePutts:        { category: 'Putting',    reminderLabel: 'Putting practice — reduce 3-putts',                drillLabels: ['Ladder', 'Clock', 'Gate'] },
-    DoubleChips:       { category: 'Chipping',   reminderLabel: 'Chipping practice — eliminate double chips',       drillLabels: ['Hoop', 'Gate', 'Ladder'] },
-    DoubleBogeys:      { category: 'Chipping',   reminderLabel: 'Chipping practice — reduce double bogeys',         drillLabels: ['Gate', 'Clock', 'Hoop'] },
-    BogeysInside9Iron: { category: 'Pitching',   reminderLabel: 'Pitching practice — sharpen approach shots',       drillLabels: ['Three ball', 'Ladder', 'Gate'] },
-    BogeysPar5:        { category: 'Pitching',   reminderLabel: 'Pitching practice — improve par 5 approaches',     drillLabels: ['Ladder', 'Three ball', 'Gate'] },
-    TroubleOffTee:     { category: 'Full swing', reminderLabel: 'Full swing practice — hit more fairways',          drillLabels: ['Gate', 'Tempo', 'Ladder'] },
-    Penalties:         { category: 'Full swing', reminderLabel: 'Full swing practice — improve course management',  drillLabels: ['Tempo', 'Gate', 'Three ball'] },
-};
-
-export type PracticePlanItem = { reminderLabel: string; drillLabels: string[]; count: number };
-
-export const getTopSinsForPracticePlanService = (): PracticePlanItem[] => {
-    const recentIds = getCompletedRoundIdsSync(10);
-    const freqs = getSinFrequenciesForRoundsSync(recentIds);
-    const entries = (Object.keys(SIN_TO_PRACTICE) as string[])
-        .map(key => ({ ...SIN_TO_PRACTICE[key], count: (freqs as any)[key] as number }))
-        .filter(e => e.count > 0)
-        .sort((a, b) => b.count - a.count);
-
-    const seen = new Set<string>();
-    return entries.reduce<PracticePlanItem[]>((acc, e) => {
-        if (!seen.has(e.category)) {
-            seen.add(e.category);
-            acc.push({ reminderLabel: e.reminderLabel, drillLabels: e.drillLabels, count: e.count });
-        }
-        return acc;
-    }, []);
-};
-
 export const updateScorecardService = async (
     roundId: number,
     updatedScores: { id: number; score: number }[],
@@ -685,4 +876,83 @@ export const updateScorecardService = async (
     const totalScore = userScores.reduce((sum, s) => sum + (s.Score - s.HolePar), 0);
 
     return updateRoundTotalScore(roundId, totalScore);
+};
+
+export type RoundHoleScoreDetail = {
+    RoundId: number;
+    CourseName: string;
+    Created_At: string;
+    HoleNumber: number;
+    HolePar: number;
+    Score: number;
+};
+
+export const getAllRoundHoleScoresDetailService = (): RoundHoleScoreDetail[] => {
+    const rows = getAllRoundHoleScoresWithContext() as any[];
+    return rows.map(row => ({
+        RoundId: row.RoundId,
+        CourseName: row.CourseName,
+        Created_At: getTwoDigitDayAndMonth(row.Created_At),
+        HoleNumber: row.HoleNumber,
+        HolePar: row.HolePar,
+        Score: row.Score,
+    }));
+};
+
+export type HoleDeadlySinsDetail = {
+    RoundId: number;
+    CourseName: string;
+    Created_At: string;
+    HoleNumber: number;
+    ThreePutts: number;
+    DoubleBogeys: number;
+    BogeysPar5: number;
+    BogeysInside9Iron: number;
+    DoubleChips: number;
+    TroubleOffTee: number;
+    Penalties: number;
+};
+
+export const getAllHoleDeadlySinsDetailService = (): HoleDeadlySinsDetail[] => {
+    const rows = getAllHoleDeadlySinsWithContext() as any[];
+    return rows.map(row => ({
+        RoundId: row.RoundId,
+        CourseName: row.CourseName,
+        Created_At: getTwoDigitDayAndMonth(row.Created_At),
+        HoleNumber: row.HoleNumber,
+        ThreePutts: row.ThreePutts ?? 0,
+        DoubleBogeys: row.DoubleBogeys ?? 0,
+        BogeysPar5: row.BogeysPar5 ?? 0,
+        BogeysInside9Iron: row.BogeysInside9Iron ?? 0,
+        DoubleChips: row.DoubleChips ?? 0,
+        TroubleOffTee: row.TroubleOffTee ?? 0,
+        Penalties: row.Penalties ?? 0,
+    }));
+};
+
+export type PuttingStatDetail = {
+    RoundId: number;
+    CourseName: string;
+    Created_At: string;
+    HoleNumber: number;
+    FirstPuttDistance: number;
+    SecondPuttDistance: number;
+    SecondPuttIsLong: boolean;
+    ThirdPuttDistance: number | null;
+    ThirdPuttIsLong: boolean | null;
+};
+
+export const getAllPuttingStatsDetailService = (): PuttingStatDetail[] => {
+    const rows = getAllPuttingStatsWithContext() as any[];
+    return rows.map(row => ({
+        RoundId: row.RoundId,
+        CourseName: row.CourseName,
+        Created_At: getTwoDigitDayAndMonth(row.Created_At),
+        HoleNumber: row.HoleNumber,
+        FirstPuttDistance: row.FirstPuttDistance,
+        SecondPuttDistance: row.SecondPuttDistance,
+        SecondPuttIsLong: row.SecondPuttIsLong === 1,
+        ThirdPuttDistance: row.ThirdPuttDistance,
+        ThirdPuttIsLong: row.ThirdPuttIsLong === null ? null : row.ThirdPuttIsLong === 1,
+    }));
 };

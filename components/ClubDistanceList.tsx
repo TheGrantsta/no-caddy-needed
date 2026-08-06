@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import { yardsToDisplayUnit, displayUnitToYards } from '../service/UnitsService';
+import CtaButton from './CtaButton';
 
 type ClubDistance = {
     Id: number;
@@ -95,17 +97,19 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
                 style={s.addButton}
             >
                 {distances.length !== 14 && (
-                    <Text style={s.addButtonText}>+ Add club</Text>
+                    <>
+                        <MaterialIcons name="add" size={20} color={colours.primary} />
+                        <Text style={s.addButtonText}>Add club</Text>
+                    </>
                 )}
             </TouchableOpacity>
 
-            <TouchableOpacity
+            <CtaButton
                 testID="save-distances-button"
+                label="Save"
+                icon="save"
                 onPress={handleSave}
-                style={s.saveButton}
-            >
-                <Text style={s.saveButtonText}>Save</Text>
-            </TouchableOpacity>
+            />
         </View>
     );
 };

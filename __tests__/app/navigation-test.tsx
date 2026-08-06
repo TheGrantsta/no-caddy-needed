@@ -145,11 +145,11 @@ describe('Main Navigation', () => {
             expect(getByTestId('tab-title-play').props.children).toBe('Play');
         });
 
-        it('renders Perform tab with correct title', () => {
+        it('renders Performance tab with correct title', () => {
             const { getByTestId } = render(<TabLayout />);
 
             expect(getByTestId('tab-perform')).toBeTruthy();
-            expect(getByTestId('tab-title-perform').props.children).toBe('Perform');
+            expect(getByTestId('tab-title-perform').props.children).toBe('Performance');
         });
 
         it('renders all four tabs', () => {
@@ -193,10 +193,10 @@ describe('Main Navigation', () => {
             expect(getByText('Practice')).toBeTruthy();
         });
 
-        it('displays Perform link with correct label', () => {
+        it('displays Performance link with correct label', () => {
             const { getByText } = render(<Homepage />);
 
-            expect(getByText('Perform')).toBeTruthy();
+            expect(getByText('Performance')).toBeTruthy();
         });
     });
 });

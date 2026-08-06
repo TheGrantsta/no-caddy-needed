@@ -7,7 +7,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { initialize } from '@/database/db';
-import { initializeRevenueCat } from '@/service/SubscriptionService';
 import '../service/BackgroundTaskService'; // registers OVERDUE_REMINDER_UPGRADE task at module scope
 import { registerOverdueReminderTask } from '../service/BackgroundTaskService';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -253,28 +252,6 @@ function ThemedApp() {
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen
-          name="play/round-analysis"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: colours.primary,
-            },
-            headerTintColor: colours.background,
-            headerBackButtonDisplayMode: 'minimal',
-          }} />
-        <Stack.Screen
-          name="play/premium-paywall"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: colours.primary,
-            },
-            headerTintColor: colours.background,
-            headerBackButtonDisplayMode: 'minimal',
-          }} />
-        <Stack.Screen
           name="settings"
           options={{
             headerTitle: () => <LogoTitle />,
@@ -312,7 +289,6 @@ export default function RootLayout() {
       try {
         // Initialize database first
         await initialize();
-        await initializeRevenueCat();
         await registerOverdueReminderTask();
 
         // Request notification permissions if available

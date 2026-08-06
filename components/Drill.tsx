@@ -75,6 +75,7 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                             setScore('');
                         }
                     }}>
+                    <MaterialIcons name="save" size={20} color={colours.white} />
                     <Text style={styles.buttonText}>
                         Save
                     </Text>
@@ -104,8 +105,9 @@ export default function Drill({ label, iconName, target, objective, setUp, howTo
                 ) : (
                     <TouchableOpacity
                         testID='delete-drill-button'
-                        style={{ padding: 8 }}
+                        style={{ padding: 8, flexDirection: 'row', alignItems: 'center', columnGap: 8 }}
                         onPress={() => setPendingDelete(true)}>
+                        <MaterialIcons name="delete-outline" size={20} color={colours.red} />
                         <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>Delete</Text>
                     </TouchableOpacity>
                 )}

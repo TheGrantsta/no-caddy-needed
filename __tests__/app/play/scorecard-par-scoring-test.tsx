@@ -11,20 +11,6 @@ import {
     getHolesWithSinsForRoundService,
     loadCourseNotesService,
 } from '../../../service/DbService';
-import { checkPremiumEntitlement } from '../../../service/SubscriptionService';
-
-jest.mock('../../../service/SubscriptionService', () => ({
-    checkPremiumEntitlement: jest.fn().mockResolvedValue(true),
-}));
-
-jest.mock('expo-constants', () => ({
-    __esModule: true,
-    default: {
-        get expoConfig() {
-            return { extra: { analyseRoundEnabled: false } };
-        },
-    },
-}));
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -50,6 +36,7 @@ jest.mock('../../../service/DbService', () => ({
     getHolesWithSinsForRoundService: jest.fn(),
     loadCourseNotesService: jest.fn().mockReturnValue({}),
     getAllRoundHistoryService: jest.fn(() => [{ Id: 42, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: 'Test Course', Created_At: '' }]),
+    getRoundScoreBreakdownService: jest.fn().mockReturnValue({ putts: 36, threePutts: 0, penalties: 0 }),
 }));
 
 jest.mock('expo-router', () => ({

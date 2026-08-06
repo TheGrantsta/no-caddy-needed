@@ -2,22 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { render, fireEvent, waitFor, within } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService, getAllRoundHistoryService } from '../../../service/DbService';
-import { checkPremiumEntitlement } from '../../../service/SubscriptionService';
-
-jest.mock('../../../service/SubscriptionService', () => ({
-    checkPremiumEntitlement: jest.fn().mockResolvedValue(true),
-}));
-
-const mockExtraConfig = { analyseRoundEnabled: true };
-jest.mock('expo-constants', () => ({
-    __esModule: true,
-    default: {
-        get expoConfig() {
-            return { extra: mockExtraConfig };
-        },
-    },
-}));
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService, getAllRoundHistoryService, getRoundScoreBreakdownService } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -47,6 +32,7 @@ jest.mock('../../../service/DbService', () => ({
     getHolesWithSinsForRoundService: jest.fn(),
     loadCourseNotesService: jest.fn().mockReturnValue({}),
     getAllRoundHistoryService: jest.fn(),
+    getRoundScoreBreakdownService: jest.fn(),
 }));
 
 let mockParams: { roundId: string } = { roundId: '1' };
@@ -74,7 +60,6 @@ jest.mock('react-native-toast-notifications', () => ({
     }),
 }));
 
-const mockCheckPremiumEntitlement = checkPremiumEntitlement as jest.Mock;
 const mockGetRoundScorecard = getRoundScorecardService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
 const mockUpdateScorecard = updateScorecardService as jest.Mock;
@@ -84,6 +69,7 @@ const mockReplaceHoleDeadlySinsService = replaceHoleDeadlySinsService as jest.Mo
 const mockGetHolesWithSinsForRoundService = getHolesWithSinsForRoundService as jest.Mock;
 const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
 const mockGetAllRoundHistory = getAllRoundHistoryService as jest.Mock;
+const mockGetRoundScoreBreakdown = getRoundScoreBreakdownService as jest.Mock;
 
 const makeHistoryRound = (id: number) => ({
     Id: id, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '',
@@ -109,6 +95,7 @@ describe('Scorecard screen', () => {
         mockGetHoleDeadlySinsService.mockReturnValue(null);
         mockReplaceHoleDeadlySinsService.mockResolvedValue(true);
         mockGetHolesWithSinsForRoundService.mockReturnValue(new Set());
+        mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, penalties: 0 });
         // Default to a single round (= the param round) so each existing test renders one page.
         mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(1)]);
     });
@@ -757,87 +744,6 @@ describe('Scorecard screen', () => {
         });
     });
 
-    describe('Analyse round button', () => {
-        it('renders analyse button for multiplayer scorecard', () => {
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-
-            const { getByTestId } = render(<ScorecardScreen />);
-
-            expect(getByTestId('analyse-round-button')).toBeTruthy();
-        });
-
-        it('does not render analyse button for legacy scorecard', () => {
-            mockGetMultiplayerScorecard.mockReturnValue(null);
-            mockGetRoundScorecard.mockReturnValue({
-                round: { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '' },
-                holes: [{ Id: 1, RoundId: 1, HoleNumber: 1, ScoreRelativeToPar: 3 }],
-            });
-
-            const { queryByTestId } = render(<ScorecardScreen />);
-
-            expect(queryByTestId('analyse-round-button')).toBeNull();
-        });
-
-        it('does not render analyse button in edit mode', () => {
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-
-            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
-
-            fireEvent.press(getByTestId('edit-scorecard-button'));
-
-            expect(queryByTestId('analyse-round-button')).toBeNull();
-        });
-
-        it('does not render analyse button when delete confirmation is shown', () => {
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-
-            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
-
-            fireEvent.press(getByTestId('delete-round-button'));
-
-            expect(queryByTestId('analyse-round-button')).toBeNull();
-        });
-
-        it('navigates to round-analysis when already subscribed', async () => {
-            mockCheckPremiumEntitlement.mockResolvedValue(true);
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-
-            const { getByTestId } = render(<ScorecardScreen />);
-
-            fireEvent.press(getByTestId('analyse-round-button'));
-
-            await waitFor(() => expect(mockPush).toHaveBeenCalledWith({
-                pathname: '/play/round-analysis',
-                params: { roundId: '1' },
-            }));
-        });
-
-        it('navigates to premium-paywall when not subscribed', async () => {
-            mockCheckPremiumEntitlement.mockResolvedValue(false);
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-
-            const { getByTestId } = render(<ScorecardScreen />);
-
-            fireEvent.press(getByTestId('analyse-round-button'));
-
-            await waitFor(() => expect(mockPush).toHaveBeenCalledWith({
-                pathname: '/play/premium-paywall',
-                params: { roundId: '1' },
-            }));
-        });
-
-        it('does not render analyse button when feature flag is disabled', () => {
-            mockExtraConfig.analyseRoundEnabled = false;
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-
-            const { queryByTestId } = render(<ScorecardScreen />);
-
-            expect(queryByTestId('analyse-round-button')).toBeNull();
-
-            mockExtraConfig.analyseRoundEnabled = true;
-        });
-    });
-
     describe('Deadly sin dot', () => {
         it('shows the actual sin name as a danger-styled toast when tapped', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
@@ -861,23 +767,13 @@ describe('Scorecard screen', () => {
     describe('Action button hierarchy', () => {
         const colours = require('../../../assets/colours').default;
 
-        it('renders Analyse as the primary (green) action', () => {
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-
-            const { getByTestId } = render(<ScorecardScreen />);
-            const style = StyleSheet.flatten(getByTestId('analyse-round-button').props.style);
-
-            expect(style.backgroundColor).toBe(colours.primary);
-        });
-
-        it('renders Edit as a secondary outlined button when Analyse is shown', () => {
+        it('renders Edit as the primary (green) action', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
             const { getByTestId } = render(<ScorecardScreen />);
             const style = StyleSheet.flatten(getByTestId('edit-scorecard-button').props.style);
 
-            expect(style.backgroundColor).not.toBe(colours.primary);
-            expect(style.borderWidth).toBeGreaterThan(0);
+            expect(style.backgroundColor).toBe(colours.primary);
         });
 
         it('renders Delete as a quiet link, not a filled red block', () => {
@@ -887,18 +783,6 @@ describe('Scorecard screen', () => {
             const style = StyleSheet.flatten(getByTestId('delete-round-button').props.style);
 
             expect(style.backgroundColor).not.toBe(colours.red);
-        });
-
-        it('makes Edit the primary action when Analyse is disabled', () => {
-            mockExtraConfig.analyseRoundEnabled = false;
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-
-            const { getByTestId } = render(<ScorecardScreen />);
-            const style = StyleSheet.flatten(getByTestId('edit-scorecard-button').props.style);
-
-            expect(style.backgroundColor).toBe(colours.primary);
-
-            mockExtraConfig.analyseRoundEnabled = true;
         });
     });
 
@@ -1006,6 +890,24 @@ describe('Scorecard screen', () => {
 
             fireEvent.press(within(getByTestId('scorecard-page-1')).getByTestId('cancel-edit-button'));
             expect(getByTestId('scorecard-pager').props.scrollEnabled).toBe(true);
+        });
+
+        it('shows score breakdown when round data exists', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, threePutts: 2, penalties: 1 });
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · 3-Putts: 2 · Penalties: 1');
+        });
+
+        it('shows score breakdown with zeros when no deadly sins recorded', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, threePutts: 0, penalties: 0 });
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · 3-Putts: 0 · Penalties: 0');
         });
     });
 });

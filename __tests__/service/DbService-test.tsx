@@ -189,7 +189,6 @@ describe('getSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -198,6 +197,7 @@ describe('getSettingsService', () => {
             performOnboardingSeen: false,
             tempoBpm: 60,
             units: 'yards',
+            skipStatsFlowEnabled: false,
         });
     });
 
@@ -213,7 +213,6 @@ describe('getSettingsService', () => {
             PlayOnboardingSeen: 0,
             HomeOnboardingSeen: 0,
             PracticeOnboardingSeen: 0,
-            PracticeFrequencyDays: 7,
         });
 
         const result = getSettingsService();
@@ -227,7 +226,6 @@ describe('getSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -236,6 +234,7 @@ describe('getSettingsService', () => {
             performOnboardingSeen: false,
             tempoBpm: 60,
             units: 'yards',
+            skipStatsFlowEnabled: false,
         });
     });
 
@@ -251,7 +250,6 @@ describe('getSettingsService', () => {
             PlayOnboardingSeen: 0,
             HomeOnboardingSeen: 0,
             PracticeOnboardingSeen: 0,
-            PracticeFrequencyDays: 7,
         });
 
         const result = getSettingsService();
@@ -265,7 +263,6 @@ describe('getSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -274,6 +271,7 @@ describe('getSettingsService', () => {
             performOnboardingSeen: false,
             tempoBpm: 60,
             units: 'yards',
+            skipStatsFlowEnabled: false,
         });
     });
 
@@ -289,7 +287,6 @@ describe('getSettingsService', () => {
             PlayOnboardingSeen: 0,
             HomeOnboardingSeen: 0,
             PracticeOnboardingSeen: 0,
-            PracticeFrequencyDays: 7,
         });
 
         const result = getSettingsService();
@@ -303,7 +300,6 @@ describe('getSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -312,6 +308,7 @@ describe('getSettingsService', () => {
             performOnboardingSeen: false,
             tempoBpm: 60,
             units: 'yards',
+            skipStatsFlowEnabled: false,
         });
     });
 
@@ -327,7 +324,6 @@ describe('getSettingsService', () => {
             PlayOnboardingSeen: 1,
             HomeOnboardingSeen: 0,
             PracticeOnboardingSeen: 0,
-            PracticeFrequencyDays: 7,
         });
 
         const result = getSettingsService();
@@ -341,7 +337,6 @@ describe('getSettingsService', () => {
             playOnboardingSeen: true,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -350,6 +345,7 @@ describe('getSettingsService', () => {
             performOnboardingSeen: false,
             tempoBpm: 60,
             units: 'yards',
+            skipStatsFlowEnabled: false,
         });
     });
 });
@@ -431,7 +427,6 @@ describe('saveSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -440,12 +435,13 @@ describe('saveSettingsService', () => {
             performOnboardingSeen: false,
             tempoBpm: 60,
             units: 'yards',
+            skipStatsFlowEnabled: false,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards');
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0);
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
@@ -460,7 +456,6 @@ describe('saveSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -469,12 +464,13 @@ describe('saveSettingsService', () => {
             performOnboardingSeen: false,
             tempoBpm: 60,
             units: 'yards',
+            skipStatsFlowEnabled: false,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards');
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0);
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
@@ -489,7 +485,6 @@ describe('saveSettingsService', () => {
             playOnboardingSeen: false,
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
-            practiceFrequencyDays: 7,
             reviewPromptShown: false,
             preShotReminderEnabled: true,
             preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
@@ -498,11 +493,12 @@ describe('saveSettingsService', () => {
             performOnboardingSeen: false,
             tempoBpm: 60,
             units: 'yards',
+            skipStatsFlowEnabled: false,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 7, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards');
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0);
     });
 });

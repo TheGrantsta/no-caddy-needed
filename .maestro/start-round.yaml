@@ -23,7 +23,56 @@ appId: com.grantsta.golf.nocaddyneeded
 # Wait for home screen
 - extendedWaitUntil:
     visible: "No caddy needed!"
+    timeout: 45000
+
+# Enable Score-only mode to restore single Next-press-per-hole navigation
+# (the multi-phase stats flow requires multiple presses per hole otherwise)
+- tapOn:
+    id: "home-settings-link"
+
+# Dismiss the "Settings guide" onboarding overlay
+- extendedWaitUntil:
+    visible:
+      id: "next-button"
     timeout: 15000
+
+# Complete the onboarding flow - step 1
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+
+# Complete the onboarding flow - step 2
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+
+# Complete the onboarding flow - step 3
+- tapOn:
+    text: ".*Done.*"
+    index: 0
+
+# Wait for Settings to load (defaults to Golf tab)
+- extendedWaitUntil:
+    visible: "Score-only mode"
+    timeout: 5000
+
+# Enable Score-only mode
+- tapOn:
+    id: "score-only-on"
+
+# Wait for toggle to take effect
+- extendedWaitUntil:
+    visible:
+      id: "score-only-on-selected"
+    timeout: 5000
+
+# Return to Home screen (Settings is a stacked screen, not a tab — swipe from left edge to pop)
+- swipe:
+    direction: RIGHT
+    duration: 300
+- extendedWaitUntil:
+    visible: "No caddy needed!"
+    timeout: 10000
 
 # Navigate to Play screen
 - tapOn:

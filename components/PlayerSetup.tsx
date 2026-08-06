@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 
@@ -170,7 +171,8 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
                     onPress={handleAddPlayer}
                     style={s.addButton}
                 >
-                    <Text style={s.addButtonText}>+ Add player</Text>
+                    <MaterialIcons name="person-add" size={20} color={colours.primary} />
+                    <Text style={s.addButtonText}>Add player</Text>
                 </TouchableOpacity>
             )}
 
@@ -179,7 +181,8 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
                 onPress={handleStart}
                 style={s.startButton}
             >
-                <Text style={s.startButtonText}>Start</Text>
+                <MaterialIcons name="play-arrow" size={20} color={colours.white} />
+                <Text style={s.startButtonText}>Start round</Text>
             </TouchableOpacity>
 
             {onCancel && (
@@ -188,6 +191,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
                     onPress={onCancel}
                     style={s.cancelButton}
                 >
+                    <MaterialIcons name="close" size={20} color={colours.white} />
                     <Text style={s.cancelButtonText}>Cancel</Text>
                 </TouchableOpacity>
             )}

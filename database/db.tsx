@@ -83,11 +83,13 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
-        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0, ReviewPromptShown INTEGER NOT NULL DEFAULT 0, PreShotReminderEnabled INTEGER NOT NULL DEFAULT 1, PreShotRoutineText TEXT NOT NULL DEFAULT '', WhatsNewVersionSeen TEXT NOT NULL DEFAULT '', SettingsOnboardingSeen INTEGER NOT NULL DEFAULT 0, PerformOnboardingSeen INTEGER NOT NULL DEFAULT 0, TempoBpm INTEGER NOT NULL DEFAULT 60, Units TEXT NOT NULL DEFAULT 'yards');
+        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0, ReviewPromptShown INTEGER NOT NULL DEFAULT 0, PreShotReminderEnabled INTEGER NOT NULL DEFAULT 1, PreShotRoutineText TEXT NOT NULL DEFAULT '', WhatsNewVersionSeen TEXT NOT NULL DEFAULT '', SettingsOnboardingSeen INTEGER NOT NULL DEFAULT 0, PerformOnboardingSeen INTEGER NOT NULL DEFAULT 0, TempoBpm INTEGER NOT NULL DEFAULT 60, Units TEXT NOT NULL DEFAULT 'yards', SkipStatsFlowEnabled INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS Games (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Header TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsDeleted INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS PracticeReminders (Id INTEGER PRIMARY KEY AUTOINCREMENT, Label TEXT NOT NULL, ScheduledFor TEXT NOT NULL, NotificationId TEXT, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS HiddenRecents (Id INTEGER PRIMARY KEY AUTOINCREMENT, Type TEXT NOT NULL, Name TEXT NOT NULL, UNIQUE(Type, Name));
         CREATE TABLE IF NOT EXISTS HoleNotes (Id INTEGER PRIMARY KEY AUTOINCREMENT, CourseName TEXT NOT NULL, HoleNumber INTEGER NOT NULL, Note TEXT NOT NULL, Updated_At TEXT NOT NULL, UNIQUE(CourseName, HoleNumber));
+        CREATE TABLE IF NOT EXISTS PuttingStats (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, FirstPuttDistance INTEGER NOT NULL, SecondPuttDistance INTEGER NOT NULL, SecondPuttIsLong INTEGER NOT NULL DEFAULT 0, ThirdPuttDistance INTEGER, ThirdPuttIsLong INTEGER, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
+        CREATE TABLE IF NOT EXISTS HoleSinDetails (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, TroubleOffTeeClub TEXT, PenaltyType TEXT, BogeysInside9IronClub TEXT, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
     `);
 
     const migrations: TableAmendment[] = [
@@ -101,7 +103,6 @@ export const initialize = async () => {
                 'PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0',
                 "Voice TEXT NOT NULL DEFAULT 'female'",
                 'SoundsEnabled INTEGER NOT NULL DEFAULT 1',
-                'PracticeFrequencyDays INTEGER NOT NULL DEFAULT 7',
                 'ReviewPromptShown INTEGER NOT NULL DEFAULT 0',
                 'PreShotReminderEnabled INTEGER NOT NULL DEFAULT 1',
                 "PreShotRoutineText TEXT NOT NULL DEFAULT ''",
@@ -110,8 +111,9 @@ export const initialize = async () => {
                 'PerformOnboardingSeen INTEGER NOT NULL DEFAULT 0',
                 'TempoBpm INTEGER NOT NULL DEFAULT 60',
                 "Units TEXT NOT NULL DEFAULT 'yards'",
+                'SkipStatsFlowEnabled INTEGER NOT NULL DEFAULT 0',
             ],
-            columnsToRemove: [],
+            columnsToRemove: ['PracticeFrequencyDays'],
         },
         {
             table: 'Rounds',
@@ -307,6 +309,121 @@ export const getHoleDeadlySins = (roundId: number, holeNumber: number) => {
         [roundId, holeNumber]
     ) as any[];
     return rows.length > 0 ? rows[0] : null;
+};
+
+export const getRoundHoleScoresByHole = (roundId: number, holeNumber: number) => {
+    return getSyncDb().getAllSync(
+        'SELECT * FROM RoundHoleScores WHERE RoundId = ? AND HoleNumber = ?;',
+        [roundId, holeNumber]
+    );
+};
+
+export const insertPuttingStats = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync(
+            'INSERT INTO PuttingStats (RoundId, HoleNumber, FirstPuttDistance, SecondPuttDistance, SecondPuttIsLong, ThirdPuttDistance, ThirdPuttIsLong) VALUES ($RoundId, $HoleNumber, $FirstPuttDistance, $SecondPuttDistance, $SecondPuttIsLong, $ThirdPuttDistance, $ThirdPuttIsLong);'
+        );
+        try {
+            await statement.executeAsync({
+                $RoundId: roundId,
+                $HoleNumber: holeNumber,
+                $FirstPuttDistance: firstPuttDistance,
+                $SecondPuttDistance: secondPuttDistance,
+                $SecondPuttIsLong: secondPuttIsLong ? 1 : 0,
+                $ThirdPuttDistance: thirdPuttDistance ?? null,
+                $ThirdPuttIsLong: thirdPuttIsLong ? 1 : 0,
+            });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+    return success;
+};
+
+export const getPuttingStats = (roundId: number, holeNumber: number) => {
+    return getSyncDb().getAllSync(
+        'SELECT * FROM PuttingStats WHERE RoundId = ? AND HoleNumber = ? LIMIT 1;',
+        [roundId, holeNumber]
+    );
+};
+
+export const getAllPuttingStatsWithThreePutts = () => {
+    return getSyncDb().getAllSync(
+        `SELECT ps.RoundId, ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, COALESCE(hds.ThreePutts, 0) AS ThreePutts
+         FROM PuttingStats ps
+         JOIN Rounds r ON ps.RoundId = r.Id
+         LEFT JOIN HoleDeadlySins hds ON hds.RoundId = ps.RoundId AND hds.HoleNumber = ps.HoleNumber
+         WHERE r.IsCompleted = 1;`
+    );
+};
+
+export const deletePuttingStatsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync(
+            'DELETE FROM PuttingStats WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
+        );
+        try {
+            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+    return success;
+};
+
+export const insertHoleSinDetails = async (roundId: number, holeNumber: number, troubleOffTeeClub?: string, penaltyType?: string, bogeysInside9IronClub?: string): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync(
+            'INSERT INTO HoleSinDetails (RoundId, HoleNumber, TroubleOffTeeClub, PenaltyType, BogeysInside9IronClub) VALUES ($RoundId, $HoleNumber, $TroubleOffTeeClub, $PenaltyType, $BogeysInside9IronClub);'
+        );
+        try {
+            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber, $TroubleOffTeeClub: troubleOffTeeClub ?? null, $PenaltyType: penaltyType ?? null, $BogeysInside9IronClub: bogeysInside9IronClub ?? null });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+    return success;
+};
+
+export const getHoleSinDetails = (roundId: number, holeNumber: number) => {
+    return getSyncDb().getAllSync(
+        'SELECT * FROM HoleSinDetails WHERE RoundId = ? AND HoleNumber = ? LIMIT 1;',
+        [roundId, holeNumber]
+    );
+};
+
+export const getAllHoleSinDetails = () => {
+    return getSyncDb().getAllSync('SELECT * FROM HoleSinDetails;');
+};
+
+export const deleteHoleSinDetailsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync(
+            'DELETE FROM HoleSinDetails WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
+        );
+        try {
+            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        success = false;
+    }
+    return success;
 };
 
 export const deleteHoleDeadlySinsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
@@ -735,7 +852,7 @@ export const getSettings = () => {
     return rows.length > 0 ? rows[0] : null;
 };
 
-export const saveSettings = async (notificationsEnabled: number, voice: string, soundsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number, homeOnboardingSeen: number, practiceOnboardingSeen: number, practiceFrequencyDays: number, reviewPromptShown: number, preShotReminderEnabled: number, preShotRoutineText: string, whatsNewVersionSeen: string, settingsOnboardingSeen: number, performOnboardingSeen: number, tempoBpm: number, units: string): Promise<boolean> => {
+export const saveSettings = async (notificationsEnabled: number, voice: string, soundsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number, homeOnboardingSeen: number, practiceOnboardingSeen: number, reviewPromptShown: number, preShotReminderEnabled: number, preShotRoutineText: string, whatsNewVersionSeen: string, settingsOnboardingSeen: number, performOnboardingSeen: number, tempoBpm: number, units: string, skipStatsFlowEnabled: number): Promise<boolean> => {
     let success = true;
     try {
         // Guard: the Settings row is rewritten via DELETE + INSERT on every save, so a
@@ -748,11 +865,11 @@ export const saveSettings = async (notificationsEnabled: number, voice: string, 
         getSyncDb().execSync('DELETE FROM Settings');
 
         const statement = getSyncDb().prepareSync(
-            'INSERT INTO Settings (NotificationsEnabled, Voice, SoundsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen, HomeOnboardingSeen, PracticeOnboardingSeen, PracticeFrequencyDays, ReviewPromptShown, PreShotReminderEnabled, PreShotRoutineText, WhatsNewVersionSeen, SettingsOnboardingSeen, PerformOnboardingSeen, TempoBpm, Units) VALUES ($NotificationsEnabled, $Voice, $SoundsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen, $HomeOnboardingSeen, $PracticeOnboardingSeen, $PracticeFrequencyDays, $ReviewPromptShown, $PreShotReminderEnabled, $PreShotRoutineText, $WhatsNewVersionSeen, $SettingsOnboardingSeen, $PerformOnboardingSeen, $TempoBpm, $Units)'
+            'INSERT INTO Settings (NotificationsEnabled, Voice, SoundsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen, HomeOnboardingSeen, PracticeOnboardingSeen, ReviewPromptShown, PreShotReminderEnabled, PreShotRoutineText, WhatsNewVersionSeen, SettingsOnboardingSeen, PerformOnboardingSeen, TempoBpm, Units, SkipStatsFlowEnabled) VALUES ($NotificationsEnabled, $Voice, $SoundsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen, $HomeOnboardingSeen, $PracticeOnboardingSeen, $ReviewPromptShown, $PreShotReminderEnabled, $PreShotRoutineText, $WhatsNewVersionSeen, $SettingsOnboardingSeen, $PerformOnboardingSeen, $TempoBpm, $Units, $SkipStatsFlowEnabled)'
         );
 
         try {
-            await statement.executeAsync({ $NotificationsEnabled: notificationsEnabled, $Voice: voice, $SoundsEnabled: soundsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen, $PracticeFrequencyDays: practiceFrequencyDays, $ReviewPromptShown: reviewPromptShown, $PreShotReminderEnabled: preShotReminderEnabled, $PreShotRoutineText: routineToStore, $WhatsNewVersionSeen: whatsNewVersionSeen, $SettingsOnboardingSeen: settingsOnboardingSeen, $PerformOnboardingSeen: performOnboardingSeen, $TempoBpm: tempoBpm, $Units: units });
+            await statement.executeAsync({ $NotificationsEnabled: notificationsEnabled, $Voice: voice, $SoundsEnabled: soundsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen, $ReviewPromptShown: reviewPromptShown, $PreShotReminderEnabled: preShotReminderEnabled, $PreShotRoutineText: routineToStore, $WhatsNewVersionSeen: whatsNewVersionSeen, $SettingsOnboardingSeen: settingsOnboardingSeen, $PerformOnboardingSeen: performOnboardingSeen, $TempoBpm: tempoBpm, $Units: units, $SkipStatsFlowEnabled: skipStatsFlowEnabled });
         } finally {
             await statement.finalizeAsync();
         }
@@ -949,31 +1066,39 @@ const ZERO_SIN_FREQUENCIES: SinFrequencies = {
     BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0,
 };
 
-export const getSinFrequenciesForRoundsSync = (roundIds: number[]): SinFrequencies => {
-    if (roundIds.length === 0) return { ...ZERO_SIN_FREQUENCIES };
-    const rows = getSyncDb().getAllSync(
-        `SELECT SUM(ThreePutts) as ThreePutts, SUM(DoubleBogeys) as DoubleBogeys,
-                SUM(BogeysPar5) as BogeysPar5, SUM(BogeysInside9Iron) as BogeysInside9Iron,
-                SUM(DoubleChips) as DoubleChips, SUM(TroubleOffTee) as TroubleOffTee,
-                SUM(Penalties) as Penalties
-         FROM HoleDeadlySins WHERE RoundId IN (${roundIds.join(',')})`
-    ) as any[];
-    const row = rows[0] ?? {};
-    return {
-        ThreePutts: row.ThreePutts ?? 0,
-        DoubleBogeys: row.DoubleBogeys ?? 0,
-        BogeysPar5: row.BogeysPar5 ?? 0,
-        BogeysInside9Iron: row.BogeysInside9Iron ?? 0,
-        DoubleChips: row.DoubleChips ?? 0,
-        TroubleOffTee: row.TroubleOffTee ?? 0,
-        Penalties: row.Penalties ?? 0,
-    };
+export const getAllRoundHoleScoresWithContext = () => {
+    const sql = `
+        SELECT rhs.RoundId, r.CourseName, r.Created_At, rhs.HoleNumber, rhs.HolePar, rhs.Score
+        FROM RoundHoleScores rhs
+        JOIN RoundPlayers rp ON rhs.RoundPlayerId = rp.Id AND rp.IsUser = 1
+        JOIN Rounds r ON rhs.RoundId = r.Id
+        WHERE r.IsCompleted = 1
+        ORDER BY r.Id DESC, rhs.HoleNumber ASC
+    `;
+    return getSyncDb().getAllSync(sql);
 };
 
-export const getCompletedRoundIdsSync = (limit: number): number[] => {
-    const rows = getSyncDb().getAllSync(
-        'SELECT Id FROM Rounds WHERE IsCompleted = 1 ORDER BY Created_At DESC LIMIT ?',
-        [limit]
-    ) as { Id: number }[];
-    return rows.map(r => r.Id);
+export const getAllHoleDeadlySinsWithContext = () => {
+    const sql = `
+        SELECT hds.RoundId, r.CourseName, r.Created_At, hds.HoleNumber, hds.ThreePutts, hds.DoubleBogeys,
+               hds.BogeysPar5, hds.BogeysInside9Iron, hds.DoubleChips, hds.TroubleOffTee, hds.Penalties
+        FROM HoleDeadlySins hds
+        JOIN Rounds r ON hds.RoundId = r.Id
+        WHERE r.IsCompleted = 1
+        ORDER BY r.Id DESC, hds.HoleNumber ASC
+    `;
+    return getSyncDb().getAllSync(sql);
 };
+
+export const getAllPuttingStatsWithContext = () => {
+    const sql = `
+        SELECT ps.RoundId, r.CourseName, r.Created_At, ps.HoleNumber, ps.FirstPuttDistance,
+               ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.ThirdPuttDistance, ps.ThirdPuttIsLong
+        FROM PuttingStats ps
+        JOIN Rounds r ON ps.RoundId = r.Id
+        WHERE r.IsCompleted = 1
+        ORDER BY r.Id DESC, ps.HoleNumber ASC
+    `;
+    return getSyncDb().getAllSync(sql);
+};
+

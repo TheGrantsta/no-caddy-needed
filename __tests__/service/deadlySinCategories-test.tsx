@@ -1,4 +1,4 @@
-import { DEADLY_SIN_CATEGORIES, sortDeadlySinsByFrequency } from '../../service/deadlySinCategories';
+import { DEADLY_SIN_CATEGORIES, sortDeadlySinsByFrequency, SIN_DETAIL_FIELDS } from '../../service/deadlySinCategories';
 import { DeadlySinsRound } from '../../service/DbService';
 
 const makeRound = (overrides: Partial<DeadlySinsRound>): DeadlySinsRound => ({
@@ -55,5 +55,48 @@ describe('sortDeadlySinsByFrequency', () => {
 
         expect(result).toHaveLength(7);
         expect(result.every(c => c.count === 0)).toBe(true);
+    });
+});
+
+describe('SIN_DETAIL_FIELDS', () => {
+    it('has exactly three sins with detail fields', () => {
+        expect(Object.keys(SIN_DETAIL_FIELDS)).toHaveLength(3);
+    });
+
+    it('includes TroubleOffTee with correct field and label', () => {
+        expect(SIN_DETAIL_FIELDS.TroubleOffTee).toEqual({
+            field: 'TroubleOffTeeClub',
+            label: 'Club used off the tee',
+        });
+    });
+
+    it('includes Penalties with correct field and label', () => {
+        expect(SIN_DETAIL_FIELDS.Penalties).toEqual({
+            field: 'PenaltyType',
+            label: 'Penalty type',
+        });
+    });
+
+    it('includes BogeysInside9Iron with correct field and label', () => {
+        expect(SIN_DETAIL_FIELDS.BogeysInside9Iron).toEqual({
+            field: 'BogeysInside9IronClub',
+            label: 'Approach club',
+        });
+    });
+
+    it('does not include ThreePutts', () => {
+        expect(SIN_DETAIL_FIELDS.ThreePutts).toBeUndefined();
+    });
+
+    it('does not include DoubleBogeys', () => {
+        expect(SIN_DETAIL_FIELDS.DoubleBogeys).toBeUndefined();
+    });
+
+    it('does not include BogeysPar5', () => {
+        expect(SIN_DETAIL_FIELDS.BogeysPar5).toBeUndefined();
+    });
+
+    it('does not include DoubleChips', () => {
+        expect(SIN_DETAIL_FIELDS.DoubleChips).toBeUndefined();
     });
 });

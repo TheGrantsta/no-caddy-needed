@@ -326,6 +326,40 @@ describe('Settings table column migration', () => {
         );
     });
 
+    it('should add SkipStatsFlowEnabled column with DEFAULT 0 during migration', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Settings)') return [
+                { name: 'Id' },
+                { name: 'Theme' },
+                { name: 'NotificationsEnabled' },
+                { name: 'Voice' },
+                { name: 'SoundsEnabled' },
+                { name: 'WedgeChartOnboardingSeen' },
+                { name: 'DistancesOnboardingSeen' },
+                { name: 'PlayOnboardingSeen' },
+                { name: 'HomeOnboardingSeen' },
+                { name: 'PracticeOnboardingSeen' },
+                
+                { name: 'ReviewPromptShown' },
+                { name: 'PreShotReminderEnabled' },
+                { name: 'PreShotRoutineText' },
+                { name: 'WhatsNewVersionSeen' },
+                { name: 'SettingsOnboardingSeen' },
+                { name: 'PerformOnboardingSeen' },
+                { name: 'TempoBpm' },
+                { name: 'Units' },
+                // Note: SkipStatsFlowEnabled is missing — simulating an old Settings schema
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE Settings ADD COLUMN SkipStatsFlowEnabled INTEGER NOT NULL DEFAULT 0'
+        );
+    });
+
     it('should not alter Settings table when all columns already exist', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
@@ -339,7 +373,7 @@ describe('Settings table column migration', () => {
                 { name: 'PlayOnboardingSeen' },
                 { name: 'HomeOnboardingSeen' },
                 { name: 'PracticeOnboardingSeen' },
-                { name: 'PracticeFrequencyDays' },
+                
                 { name: 'ReviewPromptShown' },
                 { name: 'PreShotReminderEnabled' },
                 { name: 'PreShotRoutineText' },
@@ -348,6 +382,7 @@ describe('Settings table column migration', () => {
                 { name: 'PerformOnboardingSeen' },
                 { name: 'TempoBpm' },
                 { name: 'Units' },
+                { name: 'SkipStatsFlowEnabled' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },
@@ -445,7 +480,7 @@ describe('old Drills to DrillHistory rename migration', () => {
         { name: 'Voice' }, { name: 'SoundsEnabled' },
         { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
         { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
-        { name: 'PracticeOnboardingSeen' }, { name: 'PracticeFrequencyDays' },
+        { name: 'PracticeOnboardingSeen' }, 
     ];
     const allDeadlySinsCols = [
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
@@ -596,7 +631,7 @@ describe('DrillHistory DrillId column migration', () => {
         { name: 'Voice' }, { name: 'SoundsEnabled' },
         { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
         { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
-        { name: 'PracticeOnboardingSeen' }, { name: 'PracticeFrequencyDays' },
+        { name: 'PracticeOnboardingSeen' }, 
     ];
     const allDeadlySinsCols = [
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },
@@ -703,7 +738,7 @@ describe('Drills table seeding', () => {
         { name: 'Voice' }, { name: 'SoundsEnabled' },
         { name: 'WedgeChartOnboardingSeen' }, { name: 'DistancesOnboardingSeen' },
         { name: 'PlayOnboardingSeen' }, { name: 'HomeOnboardingSeen' },
-        { name: 'PracticeOnboardingSeen' }, { name: 'PracticeFrequencyDays' },
+        { name: 'PracticeOnboardingSeen' }, 
     ];
     const allDeadlySinsCols = [
         { name: 'Id' }, { name: 'ThreePutts' }, { name: 'DoubleBogeys' },

@@ -11,6 +11,11 @@ jest.mock('../../service/FirebaseService', () => ({
 jest.mock('../../service/DbService', () => ({
     getSettingsService: jest.fn(),
     saveSettingsService: jest.fn().mockResolvedValue(true),
+    getAllDeadlySinsRoundsService: jest.fn().mockReturnValue([]),
+    getAllRoundHistoryService: jest.fn().mockReturnValue([]),
+    getPuttingMakeRatesService: jest.fn().mockReturnValue([]),
+    getPuttingProximityService: jest.fn().mockReturnValue([]),
+    getAllHoleSinDetailsService: jest.fn().mockReturnValue([]),
 }));
 
 const mockLogEvent = logEvent as jest.Mock;
@@ -26,13 +31,15 @@ const baseSettings = {
     playOnboardingSeen: false,
     homeOnboardingSeen: false,
     practiceOnboardingSeen: false,
-    practiceFrequencyDays: 7,
     reviewPromptShown: false,
     preShotReminderEnabled: true,
     preShotRoutineText: '',
     whatsNewVersionSeen: '',
     settingsOnboardingSeen: true,
     performOnboardingSeen: true,
+    tempoBpm: 60,
+    units: 'yards',
+    skipStatsFlowEnabled: false,
 };
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -72,107 +79,10 @@ describe('Perform page ', () => {
         mockSaveSettingsService.mockResolvedValue(true);
     });
 
-    describe('Approach section', () => {
-        it('renders correctly with the default text', () => {
-            const { getByText } = render(<View />);
+    it('renders deadly sins as the default section', () => {
+        const { getByText } = render(<View />);
 
-            expect(getByText('Approach shots')).toBeTruthy();
-            expect(getByText('Make better on course decisions & choose better targets')).toBeTruthy();
-        });
-
-        it('renders approach as the default section', () => {
-            const { getByText } = render(<View />);
-
-            expect(getByText('Concepts')).toBeTruthy();
-            expect(getByText('Target: play for your shot dispersion')).toBeTruthy();
-            expect(getByText('Aim: think shotgun pattern')).toBeTruthy();
-            expect(getByText('Strategy: favour the "fat" side')).toBeTruthy();
-            expect(getByText('Eliminate: big numbers by playing away from water & severe hazards')).toBeTruthy();
-        });
-
-        it('renders approach tendencies', () => {
-            const { getByText } = render(<View />);
-
-            expect(getByText('* Your dispersion changes with different clubs and swing types — know your tendencies for full and partial shots')).toBeTruthy();
-        });
-    });
-
-    it('renders correctly with stats heading', () => {
-        const { getByTestId, getByText } = render(<View />);
-
-        const subMenuItem = getByTestId('perform-sub-menu-pro-stats');
-
-        fireEvent.press(subMenuItem);
-
-        expect(getByText('Manage your expectations, better!')).toBeTruthy();
-    });
-
-    it('renders correctly with stats approach shots headings', () => {
-        const { getByTestId, getByText } = render(<View />);
-
-        const subMenuItem = getByTestId('perform-sub-menu-pro-stats');
-
-        fireEvent.press(subMenuItem);
-
-        expect(getByText('Approach shots')).toBeTruthy();
-        expect(getByText('Average proximity to the hole')).toBeTruthy();
-    });
-
-    it('renders correctly with stats approach shot proximity', () => {
-        const { getByTestId, getByText } = render(<View />);
-
-        const subMenuItem = getByTestId('perform-sub-menu-pro-stats');
-
-        fireEvent.press(subMenuItem);
-
-        expect(getByText('Yards')).toBeTruthy();
-        expect(getByText('Fairway')).toBeTruthy();
-        expect(getByText('Rough')).toBeTruthy();
-    });
-
-    describe('Analytics tracking', () => {
-        it('logs view_pro_stats when pro stats sub-menu tab pressed', () => {
-            const { getByTestId } = render(<View />);
-
-            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-
-            expect(mockLogEvent).toHaveBeenCalledWith('view_pro_stats');
-        });
-
-        it('logs view_approach when approach sub-menu tab pressed', () => {
-            const { getByTestId } = render(<View />);
-
-            fireEvent.press(getByTestId('perform-sub-menu-pro-stats'));
-            mockLogEvent.mockClear();
-
-            fireEvent.press(getByTestId('perform-sub-menu-approach'));
-
-            expect(mockLogEvent).toHaveBeenCalledWith('view_approach');
-        });
-    });
-
-    it('renders correctly with stats putting make rates', async () => {
-        const { getByTestId, getByText } = render(<View />);
-
-        const subMenuItem = getByTestId('perform-sub-menu-pro-stats');
-
-        fireEvent.press(subMenuItem);
-
-        const flatList = getByTestId('perform-flat-list');
-
-        fireEvent.scroll(flatList, {
-            nativeEvent: {
-                contentOffset: { x: 500, y: 0 },
-                contentSize: { width: 500, height: 100 },
-                layoutMeasurement: { width: 300, height: 100 }
-            },
-        });
-
-        await waitFor(() => {
-            expect(getByText('Feet')).toBeTruthy();
-            expect(getByText('Make rate')).toBeTruthy();
-            expect(getByText(/Source:/)).toBeTruthy();
-        });
+        expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
     });
 
     describe('Onboarding', () => {
@@ -182,7 +92,7 @@ describe('Perform page ', () => {
             const { getByTestId, getByText } = render(<View />);
 
             expect(getByTestId('onboarding-overlay')).toBeTruthy();
-            expect(getByText('Perform guide')).toBeTruthy();
+            expect(getByText('Performance guide')).toBeTruthy();
         });
 
         it('hides the onboarding overlay when already seen', () => {

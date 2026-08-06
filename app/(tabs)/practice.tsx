@@ -317,10 +317,15 @@ export default function Practice() {
                             borderWidth: 1,
                             borderColor: colours.primary,
                             borderRadius: 8,
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            columnGap: 8,
                           }}
                           onPress={loadMoreItems}
                           disabled={isLoadingMore}
                         >
+                          <MaterialIcons name="expand-more" size={20} color={colours.primary} />
                           <Text style={{ color: colours.primary, fontSize: 14, fontWeight: '500' }}>
                             {isLoadingMore ? 'Loading...' : 'Load more'}
                           </Text>

@@ -7,12 +7,15 @@ import { MaterialIcons } from '@expo/vector-icons';
 import HoleScoreInput from '../../components/HoleScoreInput';
 import HoleNoteInput from '../../components/HoleNoteInput';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
-import DeadlySinsChart from '../../components/DeadlySinsChart';
+import PuttingStatsInput from '../../components/PuttingStatsInput';
+import SinDetailsInput from '../../components/SinDetailsInput';
+import WindDisplay from '../../components/WindDisplay';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import WedgeChartScreen from '../play/wedge-chart';
 import PlayerSetup from '../../components/PlayerSetup';
 import Scorecard from '../../components/Scorecard';
+import CtaButton from '../../components/CtaButton';
 import {
     startRoundService,
     endRoundService,
@@ -21,8 +24,10 @@ import {
     getAllRoundHistoryService,
     insertHoleDeadlySinsService,
     getHoleDeadlySinsService,
+    getHoleScoresService,
     getHolesWithSinsForRoundService,
-    getAllDeadlySinsRoundsService,
+    insertPuttingStatsService,
+    getPuttingStatsService,
     addRoundPlayersService,
     getRoundPlayersService,
     getMultiplayerScorecardService,
@@ -37,24 +42,27 @@ import {
     getSettingsService,
     saveSettingsService,
     getParAveragesService,
+    getClubDistancesService,
+    insertHoleSinDetailsService,
+    getHoleSinDetailsService,
+    deleteHoleSinDetailsService,
     Round,
     RoundPlayer,
     DeadlySinsRound,
     DeadlySinsValues,
     MultiplayerRoundScorecard,
     ParAverages,
+    PuttingStats,
+    ClubDistance,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
 import { maybeRequestRoundReviewService } from '../../service/ReviewService';
-import Constants from 'expo-constants';
-import { checkPremiumEntitlement } from '../../service/SubscriptionService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
 import { useWind } from '../../hooks/useWind';
-import WindIndicator from '../../components/WindIndicator';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import fontSizes from '../../assets/font-sizes';
 import DistancesScreen from '../play/distances';
@@ -78,11 +86,24 @@ export default function Play() {
     const [refreshing, setRefreshing] = useState(false);
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
     const [currentHole, setCurrentHole] = useState(1);
+    const [holePhase, setHolePhase] = useState<'score' | 'stats' | 'sinDetails' | 'putting'>('score');
+    const [skipStatsFlow, setSkipStatsFlow] = useState(false);
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
-    const [deadlySinsRounds, setDeadlySinsRounds] = useState<DeadlySinsRound[]>([]);
     const [section, setSection] = useState('play-score');
     const INITIAL_SINS: DeadlySinsValues = { threePutts: false, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false };
     const [deadlySinsValues, setDeadlySinsValues] = useState<DeadlySinsValues>(INITIAL_SINS);
+    const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt?: number; secondIsLong: boolean } | null>(null);
+    const [puttingFirstPuttError, setPuttingFirstPuttError] = useState(false);
+    const [puttingSecondPuttError, setPuttingSecondPuttError] = useState(false);
+    const [puttingSecondPuttRequiredError, setPuttingSecondPuttRequiredError] = useState(false);
+    const [clubDistances, setClubDistances] = useState<ClubDistance[]>([]);
+    const [selectedOffTeeClub, setSelectedOffTeeClub] = useState<string | undefined>(undefined);
+    const [sinDetailsClubError, setSinDetailsClubError] = useState(false);
+    const [selectedPenaltyType, setSelectedPenaltyType] = useState<string | undefined>(undefined);
+    const [sinDetailsPenaltyError, setSinDetailsPenaltyError] = useState(false);
+    const [selectedBogeysClub, setSelectedBogeysClub] = useState<string | undefined>(undefined);
+    const [sinDetailsBogeysClubError, setSinDetailsBogeysClubError] = useState(false);
+    const [showPuttingInfo, setShowPuttingInfo] = useState(false);
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
@@ -123,9 +144,9 @@ export default function Play() {
         }
         const history = getAllRoundHistoryService();
         setRoundHistory(history);
-        setDeadlySinsRounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
         setRecentPlayerNames(getRecentPlayerNamesService());
+        setClubDistances(getClubDistancesService());
 
         const currentSettings = getSettingsService();
         setSettings(currentSettings);
@@ -138,7 +159,6 @@ export default function Play() {
         setRefreshing(true);
         refreshTimerRef.current = setTimeout(() => {
             setRoundHistory(getAllRoundHistoryService());
-            setDeadlySinsRounds(getAllDeadlySinsRoundsService());
             setRefreshing(false);
         }, 750);
     };
@@ -153,7 +173,6 @@ export default function Play() {
     // round is deleted on the scorecard screen and we navigate back here).
     const refreshHistoryData = useCallback(() => {
         setRoundHistory(getAllRoundHistoryService());
-        setDeadlySinsRounds(getAllDeadlySinsRoundsService());
     }, []);
 
     useFocusEffect(refreshHistoryData);
@@ -173,6 +192,7 @@ export default function Play() {
             setPreShotText(currentSettings.preShotRoutineText);
             setShowPreShotReminder(true);
         }
+        setSkipStatsFlow(currentSettings.skipStatsFlowEnabled);
     }, [currentHole, activeRoundId]);
 
     const handleDismissOnboarding = async () => {
@@ -201,12 +221,15 @@ export default function Play() {
         const holesPlayed = getHolesPlayedForRoundService(incompleteRound.Id);
         const resumeHole = holesPlayed > 0 ? holesPlayed + 1 : 1;
         setCurrentHole(resumeHole);
+        setHolePhase('score');
         setActiveRoundId(incompleteRound.Id);
         const courseName = incompleteRound.CourseName ?? '';
         setActiveCourseName(courseName);
         const notes = loadCourseNotesService(courseName);
         setCourseNotes(notes);
         setCurrentNoteText(notes[resumeHole] ?? '');
+        const holeData = loadHoleForScore(resumeHole);
+        setCurrentHoleData(holeData);
         setIncompleteRound(null);
     };
 
@@ -241,11 +264,20 @@ export default function Play() {
             setActiveRoundId(roundId);
             setPlayers(roundPlayers);
             setCurrentHole(1);
-            setCourseHolePars(getCourseHoleParsService(courseName));
+            setHolePhase('score');
+            const holePars = getCourseHoleParsService(courseName);
+            setCourseHolePars(holePars);
             setActiveCourseName(courseName);
             const notes = loadCourseNotesService(courseName);
             setCourseNotes(notes);
             setCurrentNoteText(notes[1] ?? '');
+            const par = holePars[1] ?? 4;
+            const holeData = {
+                holeNumber: 1,
+                holePar: par,
+                scores: roundPlayers.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: par })),
+            };
+            setCurrentHoleData(holeData);
             setShowPlayerSetup(false);
             const nId = await scheduleRoundReminder();
             setNotificationId(nId);
@@ -267,37 +299,195 @@ export default function Play() {
         };
     };
 
-    const handlePreviousHole = () => {
-        if (currentHole <= 1) return;
-        const holeGoingBackTo = currentHole - 1;
-        setCurrentNoteText(courseNotes[holeGoingBackTo] ?? '');
-        setCurrentHole(prev => prev - 1);
-        setCurrentHoleData(null);
+    const loadHoleForScore = (holeNumber: number) => {
+        if (!activeRoundId) return buildDefaultHoleData();
+        const saved = getHoleScoresService(activeRoundId, holeNumber);
+        if (!saved) {
+            const par = courseHolePars[holeNumber] ?? 4;
+            return {
+                holeNumber,
+                holePar: par,
+                scores: players.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: p.Id in (saved?.scores ?? {}) ? saved!.scores[p.Id] : par })),
+            };
+        }
+        return {
+            holeNumber,
+            holePar: saved.holePar,
+            scores: players.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: saved.scores[p.Id] ?? saved.holePar })),
+        };
+    };
+
+    const loadHoleSins = (holeNumber: number): DeadlySinsValues => {
+        if (!activeRoundId) return INITIAL_SINS;
+        const saved = getHoleDeadlySinsService(activeRoundId, holeNumber);
+        return saved ?? INITIAL_SINS;
+    };
+
+    const enterPuttingPhase = (holeNumber: number) => {
+        setHolePhase('putting');
+        setPuttingFirstPuttError(false);
+        setPuttingSecondPuttError(false);
+        setPuttingSecondPuttRequiredError(false);
+        const saved = getPuttingStatsService(activeRoundId!, holeNumber);
+        setPuttingStats(saved ? {
+            firstPutt: saved.FirstPuttDistance,
+            secondPutt: saved.SecondPuttDistance,
+            secondIsLong: saved.SecondPuttIsLong === 1,
+        } : null);
+    };
+
+    const handlePreviousHole = async () => {
+        if (holePhase === 'score') {
+            if (currentHole <= 1) return;
+            const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
+            await addMultiplayerHoleScoresService(activeRoundId!, holeNumber, holePar, scores);
+            const prevHole = currentHole - 1;
+            setCurrentNoteText(courseNotes[prevHole] ?? '');
+            setCurrentHole(prevHole);
+            const holeData = loadHoleForScore(prevHole);
+            setCurrentHoleData(holeData);
+        } else if (holePhase === 'stats') {
+            await insertHoleDeadlySinsService(activeRoundId!, currentHole, deadlySinsValues);
+            if (activeCourseName !== null) {
+                await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
+                setCourseNotes(prev => ({ ...prev, [currentHole]: currentNoteText.trim() }));
+            }
+            setHolePhase('score');
+            const holeData = loadHoleForScore(currentHole);
+            setCurrentHoleData(holeData);
+            setSelectedOffTeeClub(undefined);
+            setSinDetailsClubError(false);
+            setSelectedPenaltyType(undefined);
+            setSinDetailsPenaltyError(false);
+        } else if (holePhase === 'sinDetails') {
+            setHolePhase('stats');
+        } else if (holePhase === 'putting') {
+            const shouldShowSinDetails = (deadlySinsValues.troubleOffTee && clubDistances.length > 0) || deadlySinsValues.penalties || (deadlySinsValues.bogeysInside9Iron && clubDistances.length > 0);
+            if (shouldShowSinDetails) {
+                setHolePhase('sinDetails');
+            } else {
+                setHolePhase('stats');
+            }
+        }
     };
 
     const handleNextHole = async () => {
         if (!activeRoundId) return;
 
-        const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
-        const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
-        if (success) {
-            await insertHoleDeadlySinsService(activeRoundId, holeNumber, deadlySinsValues);
-            if (activeCourseName !== null) {
-                await saveHoleNoteService(activeCourseName, holeNumber, currentNoteText);
-                setCourseNotes(prev => ({ ...prev, [holeNumber]: currentNoteText.trim() }));
+        if (holePhase === 'score') {
+            const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
+            const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
+            if (success) {
+                if (activeCourseName !== null) {
+                    await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
+                    setCourseNotes(prev => ({ ...prev, [currentHole]: currentNoteText.trim() }));
+                }
+                if (skipStatsFlow) {
+                    // Skip stats flow: advance directly to next hole or end round
+                    if (currentHole >= 18) {
+                        setShowEndRoundConfirm(true);
+                    } else {
+                        const nextHole = currentHole + 1;
+                        setCurrentNoteText(courseNotes[nextHole] ?? '');
+                        setCurrentHole(nextHole);
+                        const holeData = loadHoleForScore(nextHole);
+                        setCurrentHoleData(holeData);
+                    }
+                } else {
+                    // Normal flow: proceed to stats
+                    const sins = loadHoleSins(holeNumber);
+                    setDeadlySinsValues(sins);
+                    setHolePhase('stats');
+                }
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                scrollRef.current?.scrollTo({ y: 0, animated: true });
             }
-            setDeadlySinsValues(INITIAL_SINS);
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        } else if (holePhase === 'stats') {
+            await insertHoleDeadlySinsService(activeRoundId, currentHole, deadlySinsValues);
+            const freshClubDistances = getClubDistancesService();
+            setClubDistances(freshClubDistances);
 
-            setCurrentHoleData(null);
+            const shouldShowSinDetails = (deadlySinsValues.troubleOffTee && freshClubDistances.length > 0) || deadlySinsValues.penalties || (deadlySinsValues.bogeysInside9Iron && freshClubDistances.length > 0);
+            if (shouldShowSinDetails) {
+                const saved = getHoleSinDetailsService(activeRoundId, currentHole);
+                setSelectedOffTeeClub(saved?.TroubleOffTeeClub);
+                setSelectedPenaltyType(saved?.PenaltyType);
+                setSelectedBogeysClub(saved?.BogeysInside9IronClub);
+                setSinDetailsClubError(false);
+                setSinDetailsPenaltyError(false);
+                setSinDetailsBogeysClubError(false);
+                setHolePhase('sinDetails');
+            } else {
+                await deleteHoleSinDetailsService(activeRoundId, currentHole);
+                enterPuttingPhase(currentHole);
+            }
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
+        } else if (holePhase === 'sinDetails') {
+            const needsClub = deadlySinsValues.troubleOffTee && clubDistances.length > 0;
+            const needsPenalty = deadlySinsValues.penalties;
+            const needsBogeysClub = deadlySinsValues.bogeysInside9Iron && clubDistances.length > 0;
+            let blocked = false;
+
+            if (needsClub && !selectedOffTeeClub) {
+                setSinDetailsClubError(true);
+                blocked = true;
+            } else {
+                setSinDetailsClubError(false);
+            }
+
+            if (needsPenalty && !selectedPenaltyType) {
+                setSinDetailsPenaltyError(true);
+                blocked = true;
+            } else {
+                setSinDetailsPenaltyError(false);
+            }
+
+            if (needsBogeysClub && !selectedBogeysClub) {
+                setSinDetailsBogeysClubError(true);
+                blocked = true;
+            } else {
+                setSinDetailsBogeysClubError(false);
+            }
+
+            if (blocked) return;
+
+            await insertHoleSinDetailsService(activeRoundId, currentHole, { troubleOffTeeClub: selectedOffTeeClub, penaltyType: selectedPenaltyType, bogeysInside9IronClub: selectedBogeysClub });
+            enterPuttingPhase(currentHole);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            scrollRef.current?.scrollTo({ y: 0, animated: true });
+        } else if (holePhase === 'putting') {
+            if (!puttingStats || puttingStats.firstPutt === undefined) {
+                setPuttingFirstPuttError(true);
+                return;
+            }
+            if (deadlySinsValues.threePutts && puttingStats.secondPutt === undefined) {
+                setPuttingSecondPuttRequiredError(true);
+                return;
+            }
+            if (puttingSecondPuttError) {
+                return;
+            }
+            await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong);
             if (currentHole >= 18) {
                 setShowEndRoundConfirm(true);
             } else {
                 const nextHole = currentHole + 1;
                 setCurrentNoteText(courseNotes[nextHole] ?? '');
                 setCurrentHole(nextHole);
+                setHolePhase('score');
+                const holeData = loadHoleForScore(nextHole);
+                setCurrentHoleData(holeData);
+                setPuttingStats(null);
+                setSelectedOffTeeClub(undefined);
+                setSinDetailsClubError(false);
+                setSelectedPenaltyType(undefined);
+                setSinDetailsPenaltyError(false);
+                setSelectedBogeysClub(undefined);
+                setSinDetailsBogeysClubError(false);
             }
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            scrollRef.current?.scrollTo({ y: 0, animated: true });
         }
     };
 
@@ -324,8 +514,18 @@ export default function Play() {
     const resetToIdle = () => {
         setActiveRoundId(null);
         setCurrentHole(1);
+        setHolePhase('score');
         setSection('play-score');
         setDeadlySinsValues(INITIAL_SINS);
+        setPuttingStats(null);
+        setPuttingFirstPuttError(false);
+        setPuttingSecondPuttError(false);
+        setSelectedOffTeeClub(undefined);
+        setSinDetailsClubError(false);
+        setSelectedPenaltyType(undefined);
+        setSinDetailsPenaltyError(false);
+        setSelectedBogeysClub(undefined);
+        setSinDetailsBogeysClubError(false);
         setPlayers([]);
         setShowPlayerSetup(false);
         setCurrentHoleData(null);
@@ -339,7 +539,6 @@ export default function Play() {
         setCourseNotes({});
         setCurrentNoteText('');
         setRoundHistory(getAllRoundHistoryService());
-        setDeadlySinsRounds(getAllDeadlySinsRoundsService());
         setRecentCourseNames(getRecentCourseNamesService());
         setRecentPlayerNames(getRecentPlayerNamesService());
     };
@@ -390,7 +589,6 @@ export default function Play() {
         }
     };
 
-    const analyseRoundEnabled = Constants.expoConfig?.extra?.analyseRoundEnabled ?? false;
     const isRoundActive = activeRoundId !== null;
 
     const filteredRoundHistory = useMemo(
@@ -405,21 +603,6 @@ export default function Play() {
         () => new Set(filteredRoundHistory.map(r => r.Id)),
         [filteredRoundHistory]
     );
-    const filteredDeadlySinsRounds = useMemo(
-        () => historyFilter === 'all'
-            ? deadlySinsRounds
-            : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number)),
-        [deadlySinsRounds, historyFilter, filteredRoundIds]
-    );
-    const deadlySinsMap = useMemo(
-        () => new Map<number, number>(
-            filteredDeadlySinsRounds
-                .filter(t => t.RoundId != null)
-                .map(t => [t.RoundId as number, t.Total])
-        ),
-        [filteredDeadlySinsRounds]
-    );
-
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             {refreshing && (
@@ -472,29 +655,30 @@ export default function Play() {
 
                         {incompleteRound ? (
                             <>
-                                <TouchableOpacity
+                                <CtaButton
                                     testID="continue-round-button"
+                                    label="Continue round"
+                                    icon="play-circle-outline"
                                     onPress={handleContinueRound}
-                                    style={[localStyles.actionButton, styles.marginTop]}
-                                >
-                                    <Text style={localStyles.actionButtonText}>Continue round</Text>
-                                </TouchableOpacity>
+                                    style={styles.marginTop}
+                                />
                                 <TouchableOpacity
                                     testID="end-incomplete-round-link"
                                     onPress={handleEndIncompleteRound}
-                                    style={{ padding: 12, alignItems: 'center', marginTop: 4 }}
+                                    style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 8, marginTop: 4 }}
                                 >
+                                    <MaterialIcons name="flag" size={20} color={colours.primary} />
                                     <Text style={localStyles.endRoundLink}>End round</Text>
                                 </TouchableOpacity>
                             </>
                         ) : (
-                            <TouchableOpacity
+                            <CtaButton
                                 testID="start-round-button"
+                                label="Start round"
+                                icon="play-arrow"
                                 onPress={handleShowPlayerSetup}
-                                style={[localStyles.actionButton, styles.marginTop]}
-                            >
-                                <Text style={localStyles.actionButtonText}>Start round</Text>
-                            </TouchableOpacity>
+                                style={styles.marginTop}
+                            />
                         )}
 
 
@@ -515,8 +699,6 @@ export default function Play() {
                                 ))}
                             </View>
                         )}
-
-                        {!incompleteRound && <DeadlySinsChart key={String(historyFilter)} rounds={filteredDeadlySinsRounds} filter={historyFilter} />}
 
                         {!incompleteRound && roundHistory.length > 0 && (
                             <View testID="par-averages-container" style={styles.parAverages.container}>
@@ -547,7 +729,6 @@ export default function Play() {
                                 <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.primary }]}>
                                     <Text testID="round-history-header-date" style={[styles.smallText, localStyles.historyDateColumn]}>Date Course</Text>
                                     <Text testID="round-history-header-strokes" style={[styles.smallText, localStyles.historyTotalColumn, { textAlign: 'left' }]}>Score</Text>
-                                    <Text testID="round-history-header-7DS" style={[styles.smallText, localStyles.historyNarrowColumn]}>7DS</Text>
                                 </View>
                                 <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
                                     {filteredRoundHistory.map((round) => (
@@ -566,11 +747,6 @@ export default function Play() {
                                                         &nbsp;({formatScore(round.TotalScore)})
                                                     </Text>
                                                 </View>
-                                                <Text style={[styles.smallTextNoPadding, localStyles.historyNarrowColumn]}>
-                                                    {deadlySinsMap.has(round.Id) ? deadlySinsMap.get(round.Id) : '-'}
-                                                </Text>
-
-
                                             </View>
                                         </TouchableOpacity>
                                     ))}
@@ -602,23 +778,35 @@ export default function Play() {
                 {isRoundActive && !scorecardData && displaySection('play-score') && (
                     <View style={styles.container}>
                         <View>
-                            <HoleScoreInput
-                                holeNumber={currentHole}
-                                initialPar={courseHolePars[currentHole] ?? 4}
-                                players={players}
-                                onScoresChange={handleScoresChange}
-                                headerAccessory={
-                                    <WindIndicator
-                                        directionFrom={wind?.directionFrom ?? null}
-                                        speedMph={wind?.speedMph ?? null}
-                                        heading={heading}
+                            {holePhase === 'score' && (
+                                <>
+                                    <HoleScoreInput
+                                        key={`score-${currentHole}`}
+                                        holeNumber={currentHole}
+                                        initialPar={courseHolePars[currentHole] ?? 4}
+                                        initialScores={currentHoleData?.scores.reduce((acc, s) => ({ ...acc, [s.playerId]: s.score }), {}) ?? undefined}
+                                        players={players}
+                                        onScoresChange={handleScoresChange}
                                     />
-                                }
-                                renderAfterUser={
+
+                                    <HoleNoteInput
+                                        key={`note-${currentHole}`}
+                                        note={currentNoteText}
+                                        onNoteChange={setCurrentNoteText}
+                                    />
+                                </>
+                            )}
+
+                            {holePhase === 'stats' && (
+                                <>
+                                    <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                                        <Text style={styles.normalText}>Hole {currentHole} — 7 Deadly Sins</Text>
+                                    </View>
                                     <DeadlySinsTally
                                         key={`tally-${currentHole}`}
                                         onEndRound={() => { }}
                                         roundControlled={true}
+                                        collapsible={false}
                                         onValuesChange={handledeadlySinsValuesChange}
                                         initialValues={deadlySinsValues}
                                         holePar={currentHoleData?.holePar}
@@ -627,14 +815,57 @@ export default function Play() {
                                             return player && player.IsUser === 1;
                                         })?.score}
                                     />
-                                }
-                            />
+                                </>
+                            )}
 
-                            <HoleNoteInput
-                                key={currentHole}
-                                note={currentNoteText}
-                                onNoteChange={setCurrentNoteText}
-                            />
+                            {holePhase === 'sinDetails' && (
+                                <>
+                                    <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                                        <Text style={styles.normalText}>Hole {currentHole} — Sin Details</Text>
+                                    </View>
+                                    <SinDetailsInput
+                                        key={`sinDetails-${currentHole}`}
+                                        sins={deadlySinsValues}
+                                        clubs={clubDistances}
+                                        selectedOffTeeClub={selectedOffTeeClub}
+                                        onOffTeeClubChange={setSelectedOffTeeClub}
+                                        showOffTeeClubError={sinDetailsClubError}
+                                        selectedPenaltyType={selectedPenaltyType}
+                                        onPenaltyTypeChange={setSelectedPenaltyType}
+                                        showPenaltyTypeError={sinDetailsPenaltyError}
+                                        selectedBogeysClub={selectedBogeysClub}
+                                        onBogeysClubChange={setSelectedBogeysClub}
+                                        showBogeysClubError={sinDetailsBogeysClubError}
+                                    />
+                                </>
+                            )}
+
+                            {holePhase === 'putting' && (
+                                <>
+                                    <View style={{ paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                                        <TouchableOpacity testID="putting-info-button" onPress={() => setShowPuttingInfo(true)} style={{ padding: 4 }}>
+                                            <MaterialIcons name="info-outline" size={24} color={colours.primary} />
+                                        </TouchableOpacity>
+                                        <Text style={styles.normalText}>Hole {currentHole} — Putting Stats</Text>
+                                    </View>
+                                    <PuttingStatsInput
+                                        key={`putting-${currentHole}`}
+                                        holePar={currentHoleData?.holePar ?? 4}
+                                        threePuttSelected={deadlySinsValues.threePutts}
+                                        onStatsChange={(firstPutt, secondPutt, secondIsLong) => {
+                                            setPuttingStats({ firstPutt, secondPutt, secondIsLong });
+                                            if (firstPutt !== undefined) setPuttingFirstPuttError(false);
+                                            if (secondPutt !== undefined) setPuttingSecondPuttRequiredError(false);
+                                        }}
+                                        initialFirstPutt={puttingStats?.firstPutt}
+                                        initialSecondPutt={puttingStats?.secondPutt}
+                                        initialSecondIsLong={puttingStats?.secondIsLong}
+                                        showFirstPuttError={puttingFirstPuttError}
+                                        showSecondPuttRequiredError={puttingSecondPuttRequiredError}
+                                        onSecondPuttErrorChange={setPuttingSecondPuttError}
+                                    />
+                                </>
+                            )}
 
                             {!showEndRoundConfirm && (
                                 <View>
@@ -644,23 +875,17 @@ export default function Play() {
                                         style={localStyles.nextHoleButton}
                                     >
                                         <View style={{ width: 24 }} />
-                                        <Text style={localStyles.nextHoleButtonText}>{isLastHole ? 'Finish round' : 'Next hole'}</Text>
-                                        <MaterialIcons name={isLastHole ? 'sports-score' : 'skip-next'} size={24} color={colours.background} />
+                                        <Text style={localStyles.nextHoleButtonText}>
+                                            {holePhase === 'putting' || (holePhase === 'score' && skipStatsFlow) ? (isLastHole ? 'Finish round' : 'Next hole') : 'Next'}
+                                        </Text>
+                                        <MaterialIcons
+                                            name={(holePhase === 'putting' || (holePhase === 'score' && skipStatsFlow)) && isLastHole ? 'sports-score' : 'skip-next'}
+                                            size={24}
+                                            color={colours.background}
+                                        />
                                     </TouchableOpacity>
 
-                                    {currentHole > 1 ? (
-                                        <TouchableOpacity
-                                            testID="previous-hole-button"
-                                            onPress={handlePreviousHole}
-                                            style={localStyles.previousHoleButton}
-                                        >
-                                            <MaterialIcons name="skip-previous" size={24} color={colours.primary} />
-                                            <Text style={localStyles.previousHoleButtonText}>Previous hole</Text>
-                                            <View style={{ width: 24 }} />
-                                        </TouchableOpacity>
-                                    ) : (
-                                        // Invisible same-sized placeholder so hiding Previous on hole 1
-                                        // doesn't pull the content below it upwards.
+                                    {holePhase === 'score' && currentHole <= 1 ? (
                                         <View
                                             testID="previous-hole-placeholder"
                                             style={[localStyles.previousHoleButton, { opacity: 0 }]}
@@ -670,24 +895,46 @@ export default function Play() {
                                             <Text style={localStyles.previousHoleButtonText}>Previous hole</Text>
                                             <View style={{ width: 24 }} />
                                         </View>
+                                    ) : (
+                                        <TouchableOpacity
+                                            testID="previous-hole-button"
+                                            onPress={handlePreviousHole}
+                                            style={localStyles.previousHoleButton}
+                                        >
+                                            <MaterialIcons name="skip-previous" size={24} color={colours.primary} />
+                                            <Text style={localStyles.previousHoleButtonText}>
+                                                {holePhase === 'score' ? 'Previous hole' : 'Previous'}
+                                            </Text>
+                                            <View style={{ width: 24 }} />
+                                        </TouchableOpacity>
                                     )}
 
-                                    <View style={styles.contentSection}>
-                                        <Text style={styles.normalText}>
-                                            Golf is a game; have fun & be kind to yourself!
-                                        </Text>
-                                    </View>
-                                </View>
-                            )}
+                                    {holePhase === 'score' && (
+                                        <View style={styles.contentSection}>
+                                            <WindDisplay
+                                                directionFrom={wind?.directionFrom ?? null}
+                                                speedMph={wind?.speedMph ?? null}
+                                                heading={heading}
+                                                compact
+                                            />
+                                        </View>
+                                    )}
 
-                            {!showEndRoundConfirm && (
-                                <TouchableOpacity
-                                    testID="end-round-button"
-                                    onPress={handleEndRoundPress}
-                                    style={{ padding: 12, alignItems: 'center', marginTop: 20 }}
-                                >
-                                    <Text style={localStyles.endRoundLink}>End round</Text>
-                                </TouchableOpacity>
+                                    {holePhase === 'score' && (
+                                        <>
+                                            {!showEndRoundConfirm && (
+                                                <TouchableOpacity
+                                                    testID="end-round-button"
+                                                    onPress={handleEndRoundPress}
+                                                    style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 8, marginTop: 20 }}
+                                                >
+                                                    <MaterialIcons name="flag" size={20} color={colours.primary} />
+                                                    <Text style={localStyles.endRoundLink}>End round</Text>
+                                                </TouchableOpacity>
+                                            )}
+                                        </>
+                                    )}
+                                </View>
                             )}
 
                             {showEndRoundConfirm && (
@@ -734,30 +981,12 @@ export default function Play() {
                                 userScore={scorecardData.holeScores.find(s => s.HoleNumber === selectedScorecardScore.holeNumber && s.RoundPlayerId === scorecardData.players.find(p => p.IsUser === 1)?.Id)?.Score}
                             />
                         )}
-                        <TouchableOpacity
+                        <CtaButton
                             testID="scorecard-done-button"
+                            label="Done"
+                            icon="check-circle"
                             onPress={handleScorecardDone}
-                            style={localStyles.actionButton}
-                        >
-                            <Text style={localStyles.actionButtonText}>Done</Text>
-                        </TouchableOpacity>
-                        {analyseRoundEnabled && (
-                            <TouchableOpacity
-                                testID="scorecard-analyse-button"
-                                onPress={async () => {
-                                    logEvent('analyse_round', { roundId: activeRoundId! });
-                                    const isPremium = await checkPremiumEntitlement();
-                                    if (isPremium) {
-                                        router.push({ pathname: '/play/round-analysis', params: { roundId: activeRoundId! } });
-                                    } else {
-                                        router.push({ pathname: '/play/premium-paywall', params: { roundId: activeRoundId! } });
-                                    }
-                                }}
-                                style={[localStyles.actionButton, { backgroundColor: colours.tertiary, marginTop: 12 }]}
-                            >
-                                <Text style={localStyles.actionButtonText}>Analyse your round</Text>
-                            </TouchableOpacity>
-                        )}
+                        />
                     </View>
                 )}
 
@@ -786,6 +1015,18 @@ export default function Play() {
                 title="Pre-shot routine"
                 text={preShotText}
                 onDismiss={() => setShowPreShotReminder(false)}
+            />
+
+            <AcknowledgeOverlay
+                visible={showPuttingInfo}
+                title="Putting Stats"
+                text={
+                    "If you 1-putted (holed out with the first putt), submit with 2nd-putt default value of 0.\n\n" +
+                    "Short and Long refer to whether your ball finished short of the hole or past it — not left or right.\n\n" +
+                    "If marked Short, your 2nd putt distance must be shorter than your 1st putt distance."
+                }
+                onDismiss={() => setShowPuttingInfo(false)}
+                textAlign="left"
             />
         </GestureHandlerRootView>
     );

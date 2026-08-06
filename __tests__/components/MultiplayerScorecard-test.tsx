@@ -303,7 +303,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#00C851' });
+            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#13b955' });
         });
 
         it('applies red colour to over par scores', () => {
@@ -341,7 +341,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('player-total-1')).toHaveStyle({ color: '#00C851' });
+            expect(getByTestId('player-total-1')).toHaveStyle({ color: '#13b955' });
         });
 
         it('applies red colour to over par total', () => {
@@ -433,7 +433,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#00C851' });
+            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#13b955' });
         });
 
         it('colour codes sub-total red when over par', () => {
@@ -475,7 +475,7 @@ describe('Scorecard', () => {
             // You: 10 strokes, par 8 -> over par -> red
             expect(getByTestId('round-player-1-total')).toHaveStyle({ color: '#fd0303' });
             // Alice: 6 strokes, par 8 -> under par -> green
-            expect(getByTestId('round-player-2-total')).toHaveStyle({ color: '#00C851' });
+            expect(getByTestId('round-player-2-total')).toHaveStyle({ color: '#13b955' });
         });
     });
 
@@ -689,6 +689,46 @@ describe('sin indicator dots', () => {
             );
 
             expect(getByTestId('sin-cell-1-1').props.accessibilityLabel).toMatch(/deadly sin/i);
+        });
+    });
+
+    describe('Score breakdown', () => {
+        it('renders score breakdown when provided', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+
+            const { getByTestId } = render(
+                <Scorecard
+                    players={mockPlayers}
+                    holeScores={holeScores}
+                    scoreBreakdown={{ putts: 36, threePutts: 2, penalties: 2 }}
+                />
+            );
+
+            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · 3-Putts: 2 · Penalties: 2');
+        });
+
+        it('does not render breakdown when not provided', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+
+            const { queryByTestId } = render(
+                <Scorecard players={mockPlayers} holeScores={holeScores} />
+            );
+
+            expect(queryByTestId('round-score-breakdown')).toBeNull();
+        });
+
+        it('displays correct putts and penalties values', () => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+
+            const { getByTestId } = render(
+                <Scorecard
+                    players={mockPlayers}
+                    holeScores={holeScores}
+                    scoreBreakdown={{ putts: 42, threePutts: 0, penalties: 0 }}
+                />
+            );
+
+            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 42 · 3-Putts: 0 · Penalties: 0');
         });
     });
 });

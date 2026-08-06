@@ -7,6 +7,7 @@ import Drill from "@/components/Drill";
 import Game from "@/components/Game";
 import AddDrillForm from "@/components/AddDrillForm";
 import AddGameForm from "@/components/AddGameForm";
+import CtaButton from "@/components/CtaButton";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
 import { useOrientation } from "@/hooks/useOrientation";
@@ -247,12 +248,12 @@ const ShortGameScreen = ({ config }: Props) => {
                                     ))}
                                 </View>
                                 <View style={s.container}>
-                                    <TouchableOpacity
-                                        testID='add-drill-button'
-                                        style={s.saveButton}
-                                        onPress={() => setShowAddDrillForm(true)}>
-                                        <Text style={s.saveButtonText}>Add test</Text>
-                                    </TouchableOpacity>
+                                    <CtaButton
+                                        testID="add-drill-button"
+                                        label="Add test"
+                                        icon="add"
+                                        onPress={() => setShowAddDrillForm(true)}
+                                    />
                                 </View>
                             </>
                         )}

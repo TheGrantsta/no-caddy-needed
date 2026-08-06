@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import RoundScorecard from '../../components/RoundScorecard';
 import Scorecard from '../../components/Scorecard';
 import ScoreEditor from '../../components/ScoreEditor';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
+import CtaButton from '../../components/CtaButton';
 import { useAppToast } from '../../hooks/useAppToast';
 import {
     getRoundScorecardService,
@@ -17,14 +19,14 @@ import {
     getHolesWithSinsForRoundService,
     loadCourseNotesService,
     getAllRoundHistoryService,
+    getRoundScoreBreakdownService,
     RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
     DeadlySinsValues,
     Round,
+    RoundScoreBreakdown,
 } from '../../service/DbService';
-import Constants from 'expo-constants';
-import { checkPremiumEntitlement } from '../../service/SubscriptionService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
@@ -77,7 +79,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const [editedSins, setEditedSins] = useState<DeadlySinsValues | null>(null);
     const [sinsHoleNumber, setSinsHoleNumber] = useState<number | null>(null);
     const [sinHoles, setSinHoles] = useState<Set<number>>(new Set());
-    const analyseRoundEnabled = Constants.expoConfig?.extra?.analyseRoundEnabled ?? false;
+    const [scoreBreakdown, setScoreBreakdown] = useState<RoundScoreBreakdown | null>(null);
 
     useEffect(() => {
         loadData();
@@ -97,6 +99,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         const sc = mp ? null : getRoundScorecardService(Number(roundId));
         setScorecard(sc);
         setSinHoles(getHolesWithSinsForRoundService(Number(roundId)));
+        setScoreBreakdown(getRoundScoreBreakdownService(Number(roundId)));
         const courseName = mp?.round?.CourseName ?? sc?.round?.CourseName ?? null;
         if (courseName) {
             setCourseNotes(loadCourseNotesService(courseName));
@@ -298,6 +301,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                             onScoreSelect={handleScoreSelect}
                             sinHoles={sinHoles}
                             onSinPress={handleSinPress}
+                            scoreBreakdown={scoreBreakdown ?? undefined}
                         />
 
                         {isEditing && selectedScore && (
@@ -327,34 +331,14 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                         {/* Action buttons sit at the bottom of the page (spacer fills the gap). */}
                         {!isEditing && !showDeleteConfirm && <View style={{ flexGrow: 1 }} />}
 
-                        {analyseRoundEnabled && !isEditing && !showDeleteConfirm && (
-                            <View style={styles.headerContainer}>
-                                <TouchableOpacity
-                                    testID="analyse-round-button"
-                                    style={styles.largeButton}
-                                    onPress={async () => {
-                                        const isPremium = await checkPremiumEntitlement();
-                                        if (isPremium) {
-                                            router.push({ pathname: '/play/round-analysis', params: { roundId } });
-                                        } else {
-                                            router.push({ pathname: '/play/premium-paywall', params: { roundId } });
-                                        }
-                                    }}
-                                >
-                                    <Text style={styles.buttonText}>Analyse your round</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-
                         {!isEditing && !showDeleteConfirm && (
                             <View style={styles.headerContainer}>
-                                <TouchableOpacity
+                                <CtaButton
                                     testID="edit-scorecard-button"
-                                    style={analyseRoundEnabled ? styles.largeButtonSecondary : styles.largeButton}
+                                    label="Edit"
+                                    icon="edit"
                                     onPress={handleEdit}
-                                >
-                                    <Text style={analyseRoundEnabled ? styles.buttonTextSecondary : styles.buttonText}>Edit</Text>
-                                </TouchableOpacity>
+                                />
                             </View>
                         )}
 
@@ -365,6 +349,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                     style={styles.tertiaryLink}
                                     onPress={handleDelete}
                                 >
+                                    <MaterialIcons name="delete-outline" size={20} color={colours.red} />
                                     <Text style={styles.tertiaryLinkText}>Delete round</Text>
                                 </TouchableOpacity>
                             </View>

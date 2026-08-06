@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Reminders from '../../../app/tools/reminders';
-import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, getTopSinsForPracticePlanService, getSettingsService } from '../../../service/DbService';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService } from '../../../service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService } from '../../../service/NotificationService';
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -62,8 +62,6 @@ jest.mock('../../../service/DbService', () => ({
     getPracticeRemindersService: jest.fn().mockReturnValue([]),
     addPracticeReminderService: jest.fn().mockResolvedValue(true),
     deletePracticeReminderService: jest.fn().mockResolvedValue(true),
-    getTopSinsForPracticePlanService: jest.fn().mockReturnValue([]),
-    getSettingsService: jest.fn().mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 }),
 }));
 
 const mockGetPracticeRemindersService = getPracticeRemindersService as jest.Mock;
@@ -72,15 +70,12 @@ const mockDeletePracticeReminderService = deletePracticeReminderService as jest.
 const mockSchedulePracticeReminder = schedulePracticeReminder as jest.Mock;
 const mockCancelPracticeReminder = cancelPracticeReminder as jest.Mock;
 const mockUpgradeOverdueRemindersService = upgradeOverdueRemindersService as jest.Mock;
-const mockGetTopSinsForPracticePlanService = getTopSinsForPracticePlanService as jest.Mock;
-const mockGetSettingsService = getSettingsService as jest.Mock;
 
 describe('Reminders screen', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockGetPracticeRemindersService.mockReturnValue([]);
         mockSchedulePracticeReminder.mockResolvedValue('notif-id-1');
-        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 7 });
     });
 
     // Renders and flushes the mount effect (upgradeOverdueRemindersService().then(loadReminders))
@@ -300,128 +295,6 @@ describe('Reminders screen', () => {
             });
 
             expect(getByText('Evening chipping')).toBeTruthy();
-        });
-    });
-
-    describe('generate practice plan', () => {
-        it('showsGeneratePracticePlanButton', async () => {
-            const { getByTestId } = await renderReminders();
-            expect(getByTestId('generate-practice-plan-button')).toBeTruthy();
-        });
-
-        it('creates6RemindersWhen2SinsPresent', async () => {
-            mockGetTopSinsForPracticePlanService.mockReturnValue([
-                { reminderLabel: 'Putting practice — reduce 3-putts', drillLabels: ['Ladder', 'Clock', 'Gate'], count: 5 },
-                { reminderLabel: 'Chipping practice — eliminate double chips', drillLabels: ['Hoop', 'Gate', 'Ladder'], count: 3 },
-            ]);
-            mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = await renderReminders();
-            await act(async () => {
-                fireEvent.press(getByTestId('generate-practice-plan-button'));
-            });
-            expect(mockAddPracticeReminderService).toHaveBeenCalledTimes(6);
-        });
-
-        it('creates3RemindersWhenOnlyOneSinPresent', async () => {
-            mockGetTopSinsForPracticePlanService.mockReturnValue([
-                { reminderLabel: 'Putting practice — reduce 3-putts', drillLabels: ['Ladder', 'Clock', 'Gate'], count: 5 },
-            ]);
-            mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = await renderReminders();
-            await act(async () => {
-                fireEvent.press(getByTestId('generate-practice-plan-button'));
-            });
-            expect(mockAddPracticeReminderService).toHaveBeenCalledTimes(3);
-        });
-
-        it('alternatesBetween2SinsAcross6Sessions', async () => {
-            mockGetTopSinsForPracticePlanService.mockReturnValue([
-                { reminderLabel: 'Putting practice — reduce 3-putts', drillLabels: ['Ladder', 'Clock', 'Gate'], count: 5 },
-                { reminderLabel: 'Chipping practice — eliminate double chips', drillLabels: ['Hoop', 'Gate', 'Ladder'], count: 3 },
-            ]);
-            mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = await renderReminders();
-            await act(async () => {
-                fireEvent.press(getByTestId('generate-practice-plan-button'));
-            });
-            const labels: string[] = mockAddPracticeReminderService.mock.calls.map((c: any[]) => c[0]);
-            expect(labels[0]).toContain('Putting practice');
-            expect(labels[1]).toContain('Chipping practice');
-            expect(labels[2]).toContain('Putting practice');
-            expect(labels[3]).toContain('Chipping practice');
-            expect(labels[4]).toContain('Putting practice');
-            expect(labels[5]).toContain('Chipping practice');
-        });
-
-        it('rotatesDrillsAcrossSessionsForSingleSin', async () => {
-            mockGetTopSinsForPracticePlanService.mockReturnValue([
-                { reminderLabel: 'Putting practice — reduce 3-putts', drillLabels: ['Ladder', 'Clock', 'Gate'], count: 5 },
-            ]);
-            mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = await renderReminders();
-            await act(async () => {
-                fireEvent.press(getByTestId('generate-practice-plan-button'));
-            });
-            const labels: string[] = mockAddPracticeReminderService.mock.calls.map((c: any[]) => c[0]);
-            expect(labels[0]).toContain('Ladder drill (Session 1 of 3)');
-            expect(labels[1]).toContain('Clock drill (Session 2 of 3)');
-            expect(labels[2]).toContain('Gate drill (Session 3 of 3)');
-        });
-
-        it('schedulesSessionsAtDays0And7And14ForSingleSin', async () => {
-            mockGetTopSinsForPracticePlanService.mockReturnValue([
-                { reminderLabel: 'Putting practice — reduce 3-putts', drillLabels: ['Ladder', 'Clock', 'Gate'], count: 5 },
-            ]);
-            mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = await renderReminders();
-            await act(async () => {
-                fireEvent.press(getByTestId('generate-practice-plan-button'));
-            });
-            expect(mockSchedulePracticeReminder).toHaveBeenCalledTimes(3);
-            const d0 = new Date(mockSchedulePracticeReminder.mock.calls[0][1]);
-            const d7 = new Date(mockSchedulePracticeReminder.mock.calls[1][1]);
-            const d14 = new Date(mockSchedulePracticeReminder.mock.calls[2][1]);
-            expect((d7.getTime() - d0.getTime()) / (1000 * 60 * 60 * 24)).toBe(7);
-            expect((d14.getTime() - d0.getTime()) / (1000 * 60 * 60 * 24)).toBe(14);
-        });
-
-        it('showsNoDataMessageWhenNoSinData', async () => {
-            mockGetTopSinsForPracticePlanService.mockReturnValue([]);
-            const { getByTestId } = await renderReminders();
-            await act(async () => {
-                fireEvent.press(getByTestId('generate-practice-plan-button'));
-            });
-            expect(getByTestId('no-sin-data-message')).toBeTruthy();
-        });
-
-        it('usesSettingsPracticeFrequencyForSpacing', async () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, practiceFrequencyDays: 3 });
-            mockGetTopSinsForPracticePlanService.mockReturnValue([
-                { reminderLabel: 'Putting practice — reduce 3-putts', drillLabels: ['Ladder', 'Clock', 'Gate'], count: 5 },
-            ]);
-            mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = await renderReminders();
-            await act(async () => {
-                fireEvent.press(getByTestId('generate-practice-plan-button'));
-            });
-            const d0 = new Date(mockSchedulePracticeReminder.mock.calls[0][1]);
-            const d1 = new Date(mockSchedulePracticeReminder.mock.calls[1][1]);
-            expect((d1.getTime() - d0.getTime()) / (1000 * 60 * 60 * 24)).toBe(3);
-        });
-
-        it('doesNotRegenerateWhenAnySessionLabelAlreadyExists', async () => {
-            mockGetPracticeRemindersService.mockReturnValue([
-                { Id: 1, Label: 'Putting practice — reduce 3-putts: Ladder drill (Session 1 of 3)', ScheduledFor: new Date().toISOString(), NotificationId: 'n1', Created_At: new Date().toISOString() },
-            ]);
-            mockGetTopSinsForPracticePlanService.mockReturnValue([
-                { reminderLabel: 'Putting practice — reduce 3-putts', drillLabels: ['Ladder', 'Clock', 'Gate'], count: 5 },
-            ]);
-            mockSchedulePracticeReminder.mockResolvedValue('notif-id');
-            const { getByTestId } = await renderReminders();
-            await act(async () => {
-                fireEvent.press(getByTestId('generate-practice-plan-button'));
-            });
-            expect(mockAddPracticeReminderService).not.toHaveBeenCalled();
         });
     });
 

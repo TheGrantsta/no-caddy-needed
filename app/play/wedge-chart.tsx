@@ -80,8 +80,9 @@ export default function WedgeChartScreen() {
                     <TouchableOpacity
                         testID="clear-button"
                         onPress={() => setShowClearConfirm(true)}
-                        style={{ padding: 12, alignItems: 'center', marginTop: 10 }}
+                        style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 8, marginTop: 10 }}
                     >
+                        <MaterialIcons name="delete-sweep" size={20} color={colours.red} />
                         <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>Clear all</Text>
                     </TouchableOpacity>
                 )}

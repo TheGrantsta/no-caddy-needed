@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import type { WedgeChartData } from '../service/DbService';
 import { yardsToDisplayUnit, displayUnitToYards } from '../service/UnitsService';
+import CtaButton from './CtaButton';
 
 type Props = {
     data: WedgeChartData;
@@ -137,7 +139,8 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                         onPress={handleAddClub}
                         style={s.addButton}
                     >
-                        <Text style={s.addButtonText}>+ Add club</Text>
+                        <MaterialIcons name="add" size={20} color={colours.primary} />
+                        <Text style={s.addButtonText}>Add club</Text>
                     </TouchableOpacity>
                 )}
                 {rows.length > 0 && distanceNames.length < MAX_DISTANCES && (
@@ -146,18 +149,18 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                         onPress={handleAddDistance}
                         style={s.addButton}
                     >
-                        <Text style={s.addButtonText}>+ Add distance</Text>
+                        <MaterialIcons name="add" size={20} color={colours.primary} />
+                        <Text style={s.addButtonText}>Add distance</Text>
                     </TouchableOpacity>
                 )}
             </View>
 
-            <TouchableOpacity
+            <CtaButton
                 testID="save-wedge-chart-button"
+                label="Save"
+                icon="save"
                 onPress={handleSave}
-                style={s.saveButton}
-            >
-                <Text style={s.saveButtonText}>Save</Text>
-            </TouchableOpacity>
+            />
         </View>
     );
 };

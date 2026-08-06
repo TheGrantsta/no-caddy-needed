@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColours } from '@/context/ThemeContext';
-import { DeadlySinsRound } from '@/service/DbService';
-import { sortDeadlySinsByFrequency } from '@/service/deadlySinCategories';
+import { DeadlySinsRound, getAllHoleSinDetailsService, HoleSinDetails } from '@/service/DbService';
+import { sortDeadlySinsByFrequency, SIN_DETAIL_FIELDS } from '@/service/deadlySinCategories';
 import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
@@ -15,12 +15,14 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.deadlySinsChart;
-    const [isOpen, setIsOpen] = useState(true);
     const router = useRouter();
 
     const categories = useMemo(() => sortDeadlySinsByFrequency(rounds), [rounds]);
 
     const maxCount = useMemo(() => Math.max(...categories.map(c => c.count)), [categories]);
+
+    const roundIds = useMemo(() => new Set(rounds.map(r => r.RoundId)), [rounds]);
+    const sinDetails = useMemo(() => getAllHoleSinDetailsService().filter(d => roundIds.has(d.RoundId)), [roundIds]);
 
     if (rounds.length === 0 || rounds.every(r => r.Total === 0)) {
         return null;
@@ -37,19 +39,36 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
         return `${(count / maxCount) * 100}%`;
     };
 
+    const getBreakdownForSin = (categoryKey: string) => {
+        const detail = SIN_DETAIL_FIELDS[categoryKey as keyof typeof SIN_DETAIL_FIELDS];
+        if (!detail) return [];
+
+        const sinDetailRows = sinDetails.filter(d => d[detail.field] !== null && d[detail.field] !== undefined);
+        return Array.from(
+            sinDetailRows.reduce((counts, d) => {
+                const value = d[detail.field] as string;
+                counts.set(value, (counts.get(value) ?? 0) + 1);
+                return counts;
+            }, new Map<string, number>())
+        ).map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count);
+    };
+
+    const getMaxBreakdownCount = (categoryKey: string) => {
+        const breakdown = getBreakdownForSin(categoryKey);
+        return breakdown.length > 0 ? Math.max(...breakdown.map(b => b.count)) : 0;
+    };
+
     return (
         <View style={s.container}>
-            <TouchableOpacity
-                testID="7deadly-sins-chart-toggle"
-                onPress={() => setIsOpen(prev => !prev)}
-                style={s.toggleHeader}
-            >
+            <View style={s.toggleHeader}>
                 <Text style={styles.subHeaderText}>Deadly Sins</Text>
-                <Text testID="7deadly-sins-chart-toggle-icon" style={s.chevron}>{isOpen ? '−' : '+'}</Text>
-            </TouchableOpacity>
+            </View>
 
-            {isOpen && (
-                <>
+            <ScrollView
+                testID="7deadly-sins-chart-scrollview"
+                scrollEnabled={true}
+                nestedScrollEnabled={true}
+            >
                     {categories.map((category, index) => (
                         <TouchableOpacity
                             key={index}
@@ -96,8 +115,76 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
                             </Text>
                         </TouchableOpacity>
                     ))}
-                </>
-            )}
+
+                    {/* Render breakdowns for sins with detail fields */}
+                    {categories.map((category, categoryIndex) => {
+                        const breakdown = getBreakdownForSin(category.key as string);
+                        if (breakdown.length === 0) return null;
+
+                        const detail = SIN_DETAIL_FIELDS[category.key as keyof typeof SIN_DETAIL_FIELDS];
+                        const maxBreakdownCount = getMaxBreakdownCount(category.key as string);
+
+                        return (
+                            <View
+                                key={`breakdown-${categoryIndex}`}
+                                testID={`7deadly-sins-breakdown-section-${categoryIndex}`}
+                                style={{ marginTop: 20, marginBottom: 16 }}
+                            >
+                                <Text
+                                    testID={`7deadly-sins-breakdown-heading-${categoryIndex}`}
+                                    style={[styles.subHeaderText, { marginBottom: 12 }]}
+                                >
+                                    {detail?.label}
+                                </Text>
+                                {breakdown.map((item, breakdownIndex) => (
+                                    <View
+                                        key={breakdownIndex}
+                                        testID={`7deadly-sins-breakdown-row-${categoryIndex}-${breakdownIndex}`}
+                                        style={[s.barContainer, { marginBottom: 8 }]}
+                                    >
+                                        <View style={s.labelContainer}>
+                                            <Text
+                                                testID={`7deadly-sins-breakdown-label-${categoryIndex}-${breakdownIndex}`}
+                                                style={s.label}
+                                                numberOfLines={1}
+                                            >
+                                                {item.label}
+                                            </Text>
+                                        </View>
+
+                                        <View style={s.barWrapper}>
+                                            <View
+                                                testID={`7deadly-sins-breakdown-bar-${categoryIndex}-${breakdownIndex}`}
+                                                style={[
+                                                    s.bar,
+                                                    {
+                                                        width: maxBreakdownCount === 0 ? '0%' : `${(item.count / maxBreakdownCount) * 100}%`,
+                                                        backgroundColor: colours.primary,
+                                                    }
+                                                ]}
+                                            />
+                                            <View
+                                                style={[
+                                                    s.barBackground,
+                                                    { width: `${maxBreakdownCount === 0 ? 100 : 100 - (item.count / maxBreakdownCount) * 100}%` }
+                                                ]}
+                                            />
+                                        </View>
+
+                                        <View style={s.countContainer}>
+                                            <Text
+                                                testID={`7deadly-sins-breakdown-count-${categoryIndex}-${breakdownIndex}`}
+                                                style={s.countText}
+                                            >
+                                                {item.count}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                ))}
+                            </View>
+                        );
+                    })}
+            </ScrollView>
         </View>
     );
 }

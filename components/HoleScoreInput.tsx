@@ -1,4 +1,4 @@
-import { useEffect, useState, ReactNode } from 'react';
+import { useState, ReactNode } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { RoundPlayer } from '../service/DbService';
 import { useStyles } from '@/hooks/useStyles';
@@ -7,8 +7,8 @@ type Props = {
     holeNumber: number;
     players: RoundPlayer[];
     onScoresChange: (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => void;
-    renderAfterUser?: ReactNode;
     initialPar?: number;
+    initialScores?: Record<number, number>;
     headerAccessory?: ReactNode;
 };
 
@@ -22,16 +22,16 @@ const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>
     }));
 };
 
-const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser, initialPar, headerAccessory }: Props) => {
+const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initialScores, headerAccessory }: Props) => {
     const styles = useStyles();
-    const [state, setState] = useState<{ par: number; scores: Record<number, number> }>({ par: 4, scores: {} });
-
-    useEffect(() => {
-        const par = initialPar ?? 4;
-        const initial: Record<number, number> = {};
-        players.forEach(p => { initial[p.Id] = par; });
-        setState({ par, scores: initial });
-    }, [holeNumber, initialPar]);
+    const defaultPar = initialPar ?? 4;
+    const [state, setState] = useState<{ par: number; scores: Record<number, number> }>(() => {
+        const scores: Record<number, number> = {};
+        players.forEach(p => {
+            scores[p.Id] = initialScores?.[p.Id] ?? defaultPar;
+        });
+        return { par: defaultPar, scores };
+    });
 
     const { par, scores } = state;
 
@@ -98,7 +98,6 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, renderAfterUser, 
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        {player.IsUser === 1 && renderAfterUser}
                     </View>
                 ))}
             </View>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, within } from '@testing-library/react-native';
 import DeadlySinTrendScreen from '../../../app/play/deadly-sin-trend';
-import { getAllDeadlySinsRoundsService, DeadlySinsRound } from '../../../service/DbService';
+import { getAllDeadlySinsRoundsService, getAllHoleSinDetailsService, DeadlySinsRound, HoleSinDetails } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -19,6 +19,7 @@ jest.mock('../../../hooks/useStyles', () => ({
 
 jest.mock('../../../service/DbService', () => ({
     getAllDeadlySinsRoundsService: jest.fn(),
+    getAllHoleSinDetailsService: jest.fn(),
 }));
 
 jest.mock('react-native-gesture-handler', () => {
@@ -36,6 +37,7 @@ jest.mock('expo-router', () => ({
 }));
 
 const mockGetAllDeadlySinsRoundsService = getAllDeadlySinsRoundsService as jest.Mock;
+const mockGetAllHoleSinDetailsService = getAllHoleSinDetailsService as jest.Mock;
 
 // The screen is now a horizontal pager of all 7 sins; every page renders the same
 // chart testIDs. Scope the per-page assertions to the active sin's page so they stay
@@ -64,6 +66,7 @@ function makeRound(id: number, threePutts: number, date: string): DeadlySinsRoun
 describe('DeadlySinTrendScreen', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        mockGetAllHoleSinDetailsService.mockReturnValue([]);
     });
 
     it('renders the sin label as heading', () => {

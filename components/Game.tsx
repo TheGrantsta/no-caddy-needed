@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import Instructions from './Instructions';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -43,8 +44,9 @@ export default function Game({ header, objective, setUp, howToPlay, onDelete }: 
                 ) : (
                     <TouchableOpacity
                         testID='delete-game-button'
-                        style={{ padding: 8 }}
+                        style={{ padding: 8, flexDirection: 'row', alignItems: 'center', columnGap: 8 }}
                         onPress={() => setPendingDelete(true)}>
+                        <MaterialIcons name="delete-outline" size={20} color={colours.red} />
                         <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>Delete</Text>
                     </TouchableOpacity>
                 )}

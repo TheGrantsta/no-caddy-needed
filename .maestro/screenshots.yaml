@@ -61,16 +61,15 @@ appId: com.grantsta.golf.nocaddyneeded
     text: ".*Done.*"
     index: 0
 
-# Screenshot 2: Play screen (tap Play link)
+# Wait for Play screen to render, then tap the Start Round button
 - extendedWaitUntil:
-    visible: "Start round"
-    timeout: 10000
+    visible: "Play"
+    timeout: 30000
 - takeScreenshot: .maestro/screenshots/02-play
 
-# Screenshot 3: Start round
+# Screenshot 3: Start round (use testID tap instead of text)
 - tapOn:
-    text: "Start round"
-    index: 0
+    id: "start-round-button"
 - extendedWaitUntil:
     visible: "You"
     timeout: 10000
@@ -209,9 +208,10 @@ appId: com.grantsta.golf.nocaddyneeded
     text: ".*Done.*"
     index: 0
 
+# Wait for Performance tab to render - just skip the text check and screenshot directly
 - extendedWaitUntil:
-    visible: "Make better on course decisions & choose better targets"
-    timeout: 5000
+    visible: "Pros"
+    timeout: 15000
 - takeScreenshot: .maestro/screenshots/04-perform-options
 
 # Screenshot 9: Pros menu

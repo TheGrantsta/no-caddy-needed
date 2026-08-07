@@ -926,7 +926,7 @@ export default function Play() {
                                         </TouchableOpacity>
                                     )}
 
-                                    {holePhase === 'score' && (
+                                    {holePhase === 'score' && (wind?.directionFrom || wind?.speedMph) && (
                                         <View style={styles.contentSection}>
                                             <WindDisplay
                                                 directionFrom={wind?.directionFrom ?? null}

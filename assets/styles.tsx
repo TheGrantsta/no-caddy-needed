@@ -436,13 +436,14 @@ export const createStyles = (c: ThemeColours) => ({
         holeText: {
             color: c.primary,
             fontSize: fontSizes.subHeader,
-            paddingEnd: 6,
+            paddingEnd: 16,
         },
         parRow: {
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
-            marginBottom: 10,
+            marginBottom: 20,
+            marginTop: 8,
         },
         parButton: {
             paddingVertical: 6,
@@ -504,7 +505,9 @@ export const createStyles = (c: ThemeColours) => ({
 
     holeNoteInput: StyleSheet.create({
         container: {
-            marginBottom: 12,
+            marginBottom: 24,
+            marginTop: 8,
+            paddingHorizontal: 12,
         },
         label: {
             color: c.primary,
@@ -536,11 +539,17 @@ export const createStyles = (c: ThemeColours) => ({
         addButton: {
             flexDirection: 'row',
             alignItems: 'center',
-            gap: 6,
+            gap: 12,
+            paddingVertical: 12,
+            paddingHorizontal: 16,
+            borderWidth: 1,
+            borderColor: c.primary,
+            borderRadius: 8,
         },
         addButtonText: {
             color: c.primary,
-            fontSize: fontSizes.small,
+            fontSize: fontSizes.normal,
+            fontWeight: '500',
         },
     }),
 

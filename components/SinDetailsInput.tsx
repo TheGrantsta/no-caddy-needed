@@ -3,6 +3,7 @@ import { useStyles } from '@/hooks/useStyles';
 import { ClubDistance, DeadlySinsValues } from '@/service/DbService';
 import ClubPicker from './ClubPicker';
 import PenaltyTypePicker from './PenaltyTypePicker';
+import DoubleChipReasonPicker from './DoubleChipReasonPicker';
 
 type Props = {
     sins: DeadlySinsValues;
@@ -16,6 +17,9 @@ type Props = {
     selectedBogeysClub?: string;
     onBogeysClubChange: (club: string) => void;
     showBogeysClubError?: boolean;
+    selectedDoubleChipReason?: string;
+    onDoubleChipReasonChange: (reason: string) => void;
+    showDoubleChipReasonError?: boolean;
 };
 
 const SinDetailsInput = ({
@@ -30,6 +34,9 @@ const SinDetailsInput = ({
     selectedBogeysClub,
     onBogeysClubChange,
     showBogeysClubError = false,
+    selectedDoubleChipReason,
+    onDoubleChipReasonChange,
+    showDoubleChipReasonError = false,
 }: Props) => {
     const styles = useStyles();
 
@@ -67,6 +74,16 @@ const SinDetailsInput = ({
                         onSelectClub={onBogeysClubChange}
                         showError={showBogeysClubError}
                         testIDPrefix="bogeys-club-picker"
+                    />
+                </View>
+            )}
+            {sins.doubleChips && (
+                <View style={{ marginBottom: 16 }}>
+                    <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Double chip reason</Text>
+                    <DoubleChipReasonPicker
+                        selectedReason={selectedDoubleChipReason}
+                        onSelectReason={onDoubleChipReasonChange}
+                        showError={showDoubleChipReasonError}
                     />
                 </View>
             )}

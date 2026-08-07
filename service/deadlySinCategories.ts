@@ -37,4 +37,5 @@ export const SIN_DETAIL_FIELDS: Partial<Record<DeadlySinCategory['key'], { field
     TroubleOffTee: { field: 'TroubleOffTeeClub', label: 'Club used off the tee' },
     Penalties: { field: 'PenaltyType', label: 'Penalty type' },
     BogeysInside9Iron: { field: 'BogeysInside9IronClub', label: 'Approach club' },
+    DoubleChips: { field: 'DoubleChipsReason', label: 'Double chip reason' },
 };

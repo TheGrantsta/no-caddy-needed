@@ -103,6 +103,8 @@ export default function Play() {
     const [sinDetailsPenaltyError, setSinDetailsPenaltyError] = useState(false);
     const [selectedBogeysClub, setSelectedBogeysClub] = useState<string | undefined>(undefined);
     const [sinDetailsBogeysClubError, setSinDetailsBogeysClubError] = useState(false);
+    const [selectedDoubleChipReason, setSelectedDoubleChipReason] = useState<string | undefined>(undefined);
+    const [sinDetailsDoubleChipReasonError, setSinDetailsDoubleChipReasonError] = useState(false);
     const [showPuttingInfo, setShowPuttingInfo] = useState(false);
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
@@ -359,10 +361,12 @@ export default function Play() {
             setSinDetailsClubError(false);
             setSelectedPenaltyType(undefined);
             setSinDetailsPenaltyError(false);
+            setSelectedDoubleChipReason(undefined);
+            setSinDetailsDoubleChipReasonError(false);
         } else if (holePhase === 'sinDetails') {
             setHolePhase('stats');
         } else if (holePhase === 'putting') {
-            const shouldShowSinDetails = (deadlySinsValues.troubleOffTee && clubDistances.length > 0) || deadlySinsValues.penalties || (deadlySinsValues.bogeysInside9Iron && clubDistances.length > 0);
+            const shouldShowSinDetails = (deadlySinsValues.troubleOffTee && clubDistances.length > 0) || deadlySinsValues.penalties || (deadlySinsValues.bogeysInside9Iron && clubDistances.length > 0) || deadlySinsValues.doubleChips;
             if (shouldShowSinDetails) {
                 setHolePhase('sinDetails');
             } else {
@@ -407,15 +411,17 @@ export default function Play() {
             const freshClubDistances = getClubDistancesService();
             setClubDistances(freshClubDistances);
 
-            const shouldShowSinDetails = (deadlySinsValues.troubleOffTee && freshClubDistances.length > 0) || deadlySinsValues.penalties || (deadlySinsValues.bogeysInside9Iron && freshClubDistances.length > 0);
+            const shouldShowSinDetails = (deadlySinsValues.troubleOffTee && freshClubDistances.length > 0) || deadlySinsValues.penalties || (deadlySinsValues.bogeysInside9Iron && freshClubDistances.length > 0) || deadlySinsValues.doubleChips;
             if (shouldShowSinDetails) {
                 const saved = getHoleSinDetailsService(activeRoundId, currentHole);
                 setSelectedOffTeeClub(saved?.TroubleOffTeeClub);
                 setSelectedPenaltyType(saved?.PenaltyType);
                 setSelectedBogeysClub(saved?.BogeysInside9IronClub);
+                setSelectedDoubleChipReason(saved?.DoubleChipsReason);
                 setSinDetailsClubError(false);
                 setSinDetailsPenaltyError(false);
                 setSinDetailsBogeysClubError(false);
+                setSinDetailsDoubleChipReasonError(false);
                 setHolePhase('sinDetails');
             } else {
                 await deleteHoleSinDetailsService(activeRoundId, currentHole);
@@ -427,6 +433,7 @@ export default function Play() {
             const needsClub = deadlySinsValues.troubleOffTee && clubDistances.length > 0;
             const needsPenalty = deadlySinsValues.penalties;
             const needsBogeysClub = deadlySinsValues.bogeysInside9Iron && clubDistances.length > 0;
+            const needsDoubleChipReason = deadlySinsValues.doubleChips;
             let blocked = false;
 
             if (needsClub && !selectedOffTeeClub) {
@@ -450,9 +457,16 @@ export default function Play() {
                 setSinDetailsBogeysClubError(false);
             }
 
+            if (needsDoubleChipReason && !selectedDoubleChipReason) {
+                setSinDetailsDoubleChipReasonError(true);
+                blocked = true;
+            } else {
+                setSinDetailsDoubleChipReasonError(false);
+            }
+
             if (blocked) return;
 
-            await insertHoleSinDetailsService(activeRoundId, currentHole, { troubleOffTeeClub: selectedOffTeeClub, penaltyType: selectedPenaltyType, bogeysInside9IronClub: selectedBogeysClub });
+            await insertHoleSinDetailsService(activeRoundId, currentHole, { troubleOffTeeClub: selectedOffTeeClub, penaltyType: selectedPenaltyType, bogeysInside9IronClub: selectedBogeysClub, doubleChipsReason: selectedDoubleChipReason });
             enterPuttingPhase(currentHole);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
@@ -836,6 +850,9 @@ export default function Play() {
                                         selectedBogeysClub={selectedBogeysClub}
                                         onBogeysClubChange={setSelectedBogeysClub}
                                         showBogeysClubError={sinDetailsBogeysClubError}
+                                        selectedDoubleChipReason={selectedDoubleChipReason}
+                                        onDoubleChipReasonChange={setSelectedDoubleChipReason}
+                                        showDoubleChipReasonError={sinDetailsDoubleChipReasonError}
                                     />
                                 </>
                             )}

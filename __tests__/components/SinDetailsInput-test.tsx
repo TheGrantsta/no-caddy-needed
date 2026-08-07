@@ -21,6 +21,7 @@ jest.mock('@/context/ThemeContext', () => ({
 
 jest.mock('../../components/ClubPicker', () => 'ClubPicker');
 jest.mock('../../components/PenaltyTypePicker', () => 'PenaltyTypePicker');
+jest.mock('../../components/DoubleChipReasonPicker', () => 'DoubleChipReasonPicker');
 
 describe('SinDetailsInput', () => {
     const allFalseSins: DeadlySinsValues = {
@@ -183,5 +184,65 @@ describe('SinDetailsInput', () => {
         expect(getByText('Club used off the tee')).toBeTruthy();
         expect(getByText('Penalty type')).toBeTruthy();
         expect(getByText('Approach club')).toBeTruthy();
+    });
+
+    it('does not render double chip reason section when doubleChips is false', () => {
+        const onOffTeeClubChange = jest.fn();
+        const onPenaltyTypeChange = jest.fn();
+        const onBogeysClubChange = jest.fn();
+        const onDoubleChipReasonChange = jest.fn();
+        const { queryByText } = render(
+            <SinDetailsInput
+                sins={allFalseSins}
+                clubs={mockClubs}
+                onOffTeeClubChange={onOffTeeClubChange}
+                onPenaltyTypeChange={onPenaltyTypeChange}
+                onBogeysClubChange={onBogeysClubChange}
+                onDoubleChipReasonChange={onDoubleChipReasonChange}
+            />
+        );
+
+        expect(queryByText('Double chip reason')).toBeNull();
+    });
+
+    it('renders double chip reason section when doubleChips is true', () => {
+        const onOffTeeClubChange = jest.fn();
+        const onPenaltyTypeChange = jest.fn();
+        const onBogeysClubChange = jest.fn();
+        const onDoubleChipReasonChange = jest.fn();
+        const { getByText } = render(
+            <SinDetailsInput
+                sins={{ ...allFalseSins, doubleChips: true }}
+                clubs={mockClubs}
+                onOffTeeClubChange={onOffTeeClubChange}
+                onPenaltyTypeChange={onPenaltyTypeChange}
+                onBogeysClubChange={onBogeysClubChange}
+                onDoubleChipReasonChange={onDoubleChipReasonChange}
+            />
+        );
+
+        expect(getByText('Double chip reason')).toBeTruthy();
+    });
+
+    it('renders all four sections when all sins are marked', () => {
+        const onOffTeeClubChange = jest.fn();
+        const onPenaltyTypeChange = jest.fn();
+        const onBogeysClubChange = jest.fn();
+        const onDoubleChipReasonChange = jest.fn();
+        const { getByText } = render(
+            <SinDetailsInput
+                sins={{ ...allFalseSins, troubleOffTee: true, penalties: true, bogeysInside9Iron: true, doubleChips: true }}
+                clubs={mockClubs}
+                onOffTeeClubChange={onOffTeeClubChange}
+                onPenaltyTypeChange={onPenaltyTypeChange}
+                onBogeysClubChange={onBogeysClubChange}
+                onDoubleChipReasonChange={onDoubleChipReasonChange}
+            />
+        );
+
+        expect(getByText('Club used off the tee')).toBeTruthy();
+        expect(getByText('Penalty type')).toBeTruthy();
+        expect(getByText('Approach club')).toBeTruthy();
+        expect(getByText('Double chip reason')).toBeTruthy();
     });
 });

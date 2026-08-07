@@ -59,8 +59,8 @@ describe('sortDeadlySinsByFrequency', () => {
 });
 
 describe('SIN_DETAIL_FIELDS', () => {
-    it('has exactly three sins with detail fields', () => {
-        expect(Object.keys(SIN_DETAIL_FIELDS)).toHaveLength(3);
+    it('has exactly four sins with detail fields', () => {
+        expect(Object.keys(SIN_DETAIL_FIELDS)).toHaveLength(4);
     });
 
     it('includes TroubleOffTee with correct field and label', () => {
@@ -84,6 +84,13 @@ describe('SIN_DETAIL_FIELDS', () => {
         });
     });
 
+    it('includes DoubleChips with correct field and label', () => {
+        expect(SIN_DETAIL_FIELDS.DoubleChips).toEqual({
+            field: 'DoubleChipsReason',
+            label: 'Double chip reason',
+        });
+    });
+
     it('does not include ThreePutts', () => {
         expect(SIN_DETAIL_FIELDS.ThreePutts).toBeUndefined();
     });
@@ -94,9 +101,5 @@ describe('SIN_DETAIL_FIELDS', () => {
 
     it('does not include BogeysPar5', () => {
         expect(SIN_DETAIL_FIELDS.BogeysPar5).toBeUndefined();
-    });
-
-    it('does not include DoubleChips', () => {
-        expect(SIN_DETAIL_FIELDS.DoubleChips).toBeUndefined();
     });
 });

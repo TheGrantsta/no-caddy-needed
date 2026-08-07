@@ -31,31 +31,43 @@ describe('insertHoleSinDetailsService', () => {
     it('passes club name to insert', async () => {
         await insertHoleSinDetailsService(42, 7, { troubleOffTeeClub: 'Driver' });
 
-        expect(mockInsert).toHaveBeenCalledWith(42, 7, 'Driver', undefined, undefined);
+        expect(mockInsert).toHaveBeenCalledWith(42, 7, 'Driver', undefined, undefined, undefined);
     });
 
     it('passes penalty type to insert', async () => {
         await insertHoleSinDetailsService(42, 7, { penaltyType: 'Out of bounds' });
 
-        expect(mockInsert).toHaveBeenCalledWith(42, 7, undefined, 'Out of bounds', undefined);
+        expect(mockInsert).toHaveBeenCalledWith(42, 7, undefined, 'Out of bounds', undefined, undefined);
     });
 
     it('passes both fields to insert', async () => {
         await insertHoleSinDetailsService(42, 7, { troubleOffTeeClub: '3-wood', penaltyType: 'Water hazard' });
 
-        expect(mockInsert).toHaveBeenCalledWith(42, 7, '3-wood', 'Water hazard', undefined);
+        expect(mockInsert).toHaveBeenCalledWith(42, 7, '3-wood', 'Water hazard', undefined, undefined);
     });
 
     it('passes bogeysInside9IronClub to insert', async () => {
         await insertHoleSinDetailsService(42, 7, { bogeysInside9IronClub: 'Wedge' });
 
-        expect(mockInsert).toHaveBeenCalledWith(42, 7, undefined, undefined, 'Wedge');
+        expect(mockInsert).toHaveBeenCalledWith(42, 7, undefined, undefined, 'Wedge', undefined);
     });
 
     it('passes all three fields to insert', async () => {
         await insertHoleSinDetailsService(42, 7, { troubleOffTeeClub: '3-wood', penaltyType: 'Water hazard', bogeysInside9IronClub: 'Wedge' });
 
-        expect(mockInsert).toHaveBeenCalledWith(42, 7, '3-wood', 'Water hazard', 'Wedge');
+        expect(mockInsert).toHaveBeenCalledWith(42, 7, '3-wood', 'Water hazard', 'Wedge', undefined);
+    });
+
+    it('passes doubleChipsReason to insert', async () => {
+        await insertHoleSinDetailsService(42, 7, { doubleChipsReason: 'Chunked' });
+
+        expect(mockInsert).toHaveBeenCalledWith(42, 7, undefined, undefined, undefined, 'Chunked');
+    });
+
+    it('passes all four fields to insert', async () => {
+        await insertHoleSinDetailsService(42, 7, { troubleOffTeeClub: '3-wood', penaltyType: 'Water hazard', bogeysInside9IronClub: 'Wedge', doubleChipsReason: 'Short sided' });
+
+        expect(mockInsert).toHaveBeenCalledWith(42, 7, '3-wood', 'Water hazard', 'Wedge', 'Short sided');
     });
 
     it('returns true on success', async () => {
@@ -178,6 +190,24 @@ describe('getHoleSinDetailsService', () => {
         const result = getHoleSinDetailsService(42, 7);
         expect(result?.BogeysInside9IronClub).toBeUndefined();
     });
+
+    it('maps DoubleChipsReason from row', () => {
+        mockGet.mockReturnValue([
+            { Id: 1, RoundId: 42, HoleNumber: 7, TroubleOffTeeClub: null, PenaltyType: null, BogeysInside9IronClub: null, DoubleChipsReason: 'Chunked' },
+        ]);
+
+        const result = getHoleSinDetailsService(42, 7);
+        expect(result?.DoubleChipsReason).toBe('Chunked');
+    });
+
+    it('converts null DoubleChipsReason to undefined', () => {
+        mockGet.mockReturnValue([
+            { Id: 1, RoundId: 42, HoleNumber: 7, TroubleOffTeeClub: null, PenaltyType: null, BogeysInside9IronClub: null, DoubleChipsReason: null },
+        ]);
+
+        const result = getHoleSinDetailsService(42, 7);
+        expect(result?.DoubleChipsReason).toBeUndefined();
+    });
 });
 
 describe('getAllHoleSinDetailsService', () => {
@@ -254,7 +284,7 @@ describe('getAllHoleSinDetailsService', () => {
 
     it('maps all fields correctly when all present', () => {
         mockGetAll.mockReturnValue([
-            { Id: 1, RoundId: 42, HoleNumber: 1, TroubleOffTeeClub: '3-wood', PenaltyType: 'Water hazard', BogeysInside9IronClub: 'Wedge' },
+            { Id: 1, RoundId: 42, HoleNumber: 1, TroubleOffTeeClub: '3-wood', PenaltyType: 'Water hazard', BogeysInside9IronClub: 'Wedge', DoubleChipsReason: null },
         ]);
 
         const result = getAllHoleSinDetailsService();
@@ -265,6 +295,25 @@ describe('getAllHoleSinDetailsService', () => {
             TroubleOffTeeClub: '3-wood',
             PenaltyType: 'Water hazard',
             BogeysInside9IronClub: 'Wedge',
+            DoubleChipsReason: undefined,
         });
+    });
+
+    it('maps DoubleChipsReason from row', () => {
+        mockGetAll.mockReturnValue([
+            { Id: 1, RoundId: 42, HoleNumber: 1, TroubleOffTeeClub: null, PenaltyType: null, BogeysInside9IronClub: null, DoubleChipsReason: 'Chunked' },
+        ]);
+
+        const result = getAllHoleSinDetailsService();
+        expect(result[0].DoubleChipsReason).toBe('Chunked');
+    });
+
+    it('converts null DoubleChipsReason to undefined', () => {
+        mockGetAll.mockReturnValue([
+            { Id: 1, RoundId: 42, HoleNumber: 1, TroubleOffTeeClub: null, PenaltyType: null, BogeysInside9IronClub: null, DoubleChipsReason: null },
+        ]);
+
+        const result = getAllHoleSinDetailsService();
+        expect(result[0].DoubleChipsReason).toBeUndefined();
     });
 });

@@ -116,6 +116,37 @@ describe('insertHoleSinDetails', () => {
         );
     });
 
+    it('binds DoubleChipsReason when provided', async () => {
+        await insertHoleSinDetails(42, 7, 'Driver', undefined, undefined, 'Chunked');
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $DoubleChipsReason: 'Chunked' })
+        );
+    });
+
+    it('binds null when DoubleChipsReason is undefined', async () => {
+        await insertHoleSinDetails(42, 7, 'Driver', undefined, undefined, undefined);
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ $DoubleChipsReason: null })
+        );
+    });
+
+    it('binds all four fields when all provided', async () => {
+        await insertHoleSinDetails(42, 7, '3-wood', 'Water hazard', 'Wedge', 'Short sided');
+
+        expect(mockStatementExecuteAsync).toHaveBeenCalledWith(
+            expect.objectContaining({
+                $RoundId: 42,
+                $HoleNumber: 7,
+                $TroubleOffTeeClub: '3-wood',
+                $PenaltyType: 'Water hazard',
+                $BogeysInside9IronClub: 'Wedge',
+                $DoubleChipsReason: 'Short sided',
+            })
+        );
+    });
+
     it('returns true on success', async () => {
         const result = await insertHoleSinDetails(1, 1, 'Driver');
         expect(result).toBe(true);

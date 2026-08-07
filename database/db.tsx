@@ -89,10 +89,15 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS HiddenRecents (Id INTEGER PRIMARY KEY AUTOINCREMENT, Type TEXT NOT NULL, Name TEXT NOT NULL, UNIQUE(Type, Name));
         CREATE TABLE IF NOT EXISTS HoleNotes (Id INTEGER PRIMARY KEY AUTOINCREMENT, CourseName TEXT NOT NULL, HoleNumber INTEGER NOT NULL, Note TEXT NOT NULL, Updated_At TEXT NOT NULL, UNIQUE(CourseName, HoleNumber));
         CREATE TABLE IF NOT EXISTS PuttingStats (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, FirstPuttDistance INTEGER NOT NULL, SecondPuttDistance INTEGER NOT NULL, SecondPuttIsLong INTEGER NOT NULL DEFAULT 0, ThirdPuttDistance INTEGER, ThirdPuttIsLong INTEGER, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
-        CREATE TABLE IF NOT EXISTS HoleSinDetails (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, TroubleOffTeeClub TEXT, PenaltyType TEXT, BogeysInside9IronClub TEXT, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
+        CREATE TABLE IF NOT EXISTS HoleSinDetails (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, TroubleOffTeeClub TEXT, PenaltyType TEXT, BogeysInside9IronClub TEXT, DoubleChipsReason TEXT, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
     `);
 
     const migrations: TableAmendment[] = [
+        {
+            table: 'HoleSinDetails',
+            columnsToAdd: ['DoubleChipsReason TEXT'],
+            columnsToRemove: [],
+        },
         {
             table: 'Settings',
             columnsToAdd: [
@@ -379,15 +384,15 @@ export const deletePuttingStatsByHole = async (roundId: number, holeNumber: numb
     return success;
 };
 
-export const insertHoleSinDetails = async (roundId: number, holeNumber: number, troubleOffTeeClub?: string, penaltyType?: string, bogeysInside9IronClub?: string): Promise<boolean> => {
+export const insertHoleSinDetails = async (roundId: number, holeNumber: number, troubleOffTeeClub?: string, penaltyType?: string, bogeysInside9IronClub?: string, doubleChipsReason?: string): Promise<boolean> => {
     let success = true;
     try {
         const db = await SQLite.openDatabaseAsync(dbName);
         const statement = await db.prepareAsync(
-            'INSERT INTO HoleSinDetails (RoundId, HoleNumber, TroubleOffTeeClub, PenaltyType, BogeysInside9IronClub) VALUES ($RoundId, $HoleNumber, $TroubleOffTeeClub, $PenaltyType, $BogeysInside9IronClub);'
+            'INSERT INTO HoleSinDetails (RoundId, HoleNumber, TroubleOffTeeClub, PenaltyType, BogeysInside9IronClub, DoubleChipsReason) VALUES ($RoundId, $HoleNumber, $TroubleOffTeeClub, $PenaltyType, $BogeysInside9IronClub, $DoubleChipsReason);'
         );
         try {
-            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber, $TroubleOffTeeClub: troubleOffTeeClub ?? null, $PenaltyType: penaltyType ?? null, $BogeysInside9IronClub: bogeysInside9IronClub ?? null });
+            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber, $TroubleOffTeeClub: troubleOffTeeClub ?? null, $PenaltyType: penaltyType ?? null, $BogeysInside9IronClub: bogeysInside9IronClub ?? null, $DoubleChipsReason: doubleChipsReason ?? null });
         } finally {
             await statement.finalizeAsync();
         }

@@ -473,7 +473,8 @@ export const createStyles = (c: ThemeColours) => ({
         },
         playerName: {
             color: c.primary,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.subHeader,
+            fontWeight: '600',
             flex: 1,
         },
         stepperRow: {

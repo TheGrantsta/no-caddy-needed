@@ -23,6 +23,8 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "This app does not access your photo library unless you choose to select a photo.",
+        "NSMicrophoneUsageDescription": "Allow No Caddy Needed to use the microphone for hands-free number generation.",
+        "NSSpeechRecognitionUsageDescription": "Allow No Caddy Needed to recognise your voice to generate numbers hands-free.",
         "UIBackgroundModes": [
           "processing"
         ],

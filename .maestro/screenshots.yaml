@@ -210,22 +210,23 @@ appId: com.grantsta.golf.nocaddyneeded
 
 # Wait for Performance tab to render - just skip the text check and screenshot directly
 - extendedWaitUntil:
-    visible: "Pros"
+    visible: "Deadly Sins"
     timeout: 15000
 - takeScreenshot: .maestro/screenshots/04-perform-options
 
 # Screenshot 9: Pros menu
-- tapOn: "Pros"
+- tapOn: "Putting"
 - extendedWaitUntil:
-    visible: "Approach shots"
+    visible: "Your personal putting make rates"
     timeout: 5000
-- takeScreenshot: .maestro/screenshots/04A-perform-pros-approach-shots
+- takeScreenshot: .maestro/screenshots/04A-perform-putting
 
-# Screenshot 10: Pros menu
-- swipe:
-    direction: LEFT
-    duration: 500
-- takeScreenshot: .maestro/screenshots/04B-perform-pros-putt-make-rates
+# Screenshot 10: Proximity menu
+- tapOn: "Proximity"
+- extendedWaitUntil:
+    visible: "Where your missed first putts finish"
+    timeout: 5000
+- takeScreenshot: .maestro/screenshots/04A-perform-proximity
 
 # Return: Home screen
 - tapOn:

@@ -508,6 +508,10 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 24,
             marginTop: 8,
             paddingHorizontal: 12,
+            paddingVertical: 12,
+            borderWidth: 1,
+            borderColor: c.primary,
+            borderRadius: 8,
         },
         label: {
             color: c.primary,
@@ -517,10 +521,8 @@ export const createStyles = (c: ThemeColours) => ({
         input: {
             color: c.text,
             fontSize: fontSizes.normal,
-            borderWidth: 1,
-            borderColor: c.primary,
-            borderRadius: 4,
-            padding: 12,
+            borderWidth: 0,
+            padding: 0,
             minHeight: 52,
         },
         placeholder: {
@@ -540,11 +542,6 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
             alignItems: 'center',
             gap: 12,
-            paddingVertical: 12,
-            paddingHorizontal: 16,
-            borderWidth: 1,
-            borderColor: c.primary,
-            borderRadius: 8,
         },
         addButtonText: {
             color: c.primary,

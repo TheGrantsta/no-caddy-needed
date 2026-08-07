@@ -22,9 +22,9 @@ const ONBOARDING_STEPS = [
 
 // What's new for the current version — shown once per version to existing users.
 const WHATS_NEW = [
-  'Add manual entry backup support for the microphone',
-  'Amend the "Clear all" flow for wedge chart & distances',
-  'Reorientate the wedge chart to show clubs across the top and swing types down the side',
+  'Enchance score input options for better, personalised stats - off by default in Settings',
+  'Performance section redesigned for your stats',
+  'Wind direction available when playing',
 ];
 
 const APP_VERSION = Constants.expoConfig?.version ?? '';

@@ -468,7 +468,7 @@ export type HoleSinDetailsInput = {
 
 export const PENALTY_TYPES = ['Out of bounds', 'Water hazard', 'Unplayable lie', 'Lost ball', 'Other 1-shot penalty', 'General penalty'] as const;
 
-export const DOUBLE_CHIP_REASONS = ['Short sided', 'Chunked', 'Thinned', 'Wrong club selection', 'Other'] as const;
+export const DOUBLE_CHIP_REASONS = ['Short sided', 'Chunked', 'Thinned', 'Hero shot', 'Wrong club selection', 'Other'] as const;
 
 export const insertHoleSinDetailsService = async (roundId: number, holeNumber: number, details: HoleSinDetailsInput): Promise<boolean> => {
     await deleteHoleSinDetailsByHole(roundId, holeNumber);

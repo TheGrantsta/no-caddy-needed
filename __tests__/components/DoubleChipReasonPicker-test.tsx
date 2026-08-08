@@ -14,25 +14,26 @@ describe('DoubleChipReasonPicker', () => {
     });
 
     it('renders Dropdown component', () => {
-        render(<DoubleChipReasonPicker selectedReason={undefined} onSelectReason={() => {}} />);
+        render(<DoubleChipReasonPicker selectedReason={undefined} onSelectReason={() => { }} />);
 
         expect(mockDropdown).toHaveBeenCalled();
     });
 
     it('passes correct options to Dropdown', () => {
-        render(<DoubleChipReasonPicker selectedReason={undefined} onSelectReason={() => {}} />);
+        render(<DoubleChipReasonPicker selectedReason={undefined} onSelectReason={() => { }} />);
 
         const call = mockDropdown.mock.calls[0][0];
         expect(call.options).toContain('Short sided');
         expect(call.options).toContain('Chunked');
         expect(call.options).toContain('Thinned');
+        expect(call.options).toContain('Hero shot');
         expect(call.options).toContain('Wrong club selection');
         expect(call.options).toContain('Other');
-        expect(call.options).toHaveLength(5);
+        expect(call.options).toHaveLength(6);
     });
 
     it('passes selectedReason to Dropdown', () => {
-        render(<DoubleChipReasonPicker selectedReason="Chunked" onSelectReason={() => {}} />);
+        render(<DoubleChipReasonPicker selectedReason="Chunked" onSelectReason={() => { }} />);
 
         const call = mockDropdown.mock.calls[0][0];
         expect(call.selectedOption).toBe('Chunked');
@@ -47,7 +48,7 @@ describe('DoubleChipReasonPicker', () => {
     });
 
     it('passes correct placeholder and testIDPrefix', () => {
-        render(<DoubleChipReasonPicker selectedReason={undefined} onSelectReason={() => {}} />);
+        render(<DoubleChipReasonPicker selectedReason={undefined} onSelectReason={() => { }} />);
 
         const call = mockDropdown.mock.calls[0][0];
         expect(call.placeholder).toBe('Select reason');
@@ -58,7 +59,7 @@ describe('DoubleChipReasonPicker', () => {
         render(
             <DoubleChipReasonPicker
                 selectedReason={undefined}
-                onSelectReason={() => {}}
+                onSelectReason={() => { }}
                 showError={true}
             />
         );
@@ -69,7 +70,7 @@ describe('DoubleChipReasonPicker', () => {
     });
 
     it('passes showError false by default', () => {
-        render(<DoubleChipReasonPicker selectedReason={undefined} onSelectReason={() => {}} />);
+        render(<DoubleChipReasonPicker selectedReason={undefined} onSelectReason={() => { }} />);
 
         const call = mockDropdown.mock.calls[0][0];
         expect(call.showError).toBe(false);

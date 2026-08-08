@@ -366,7 +366,7 @@ export default function Play() {
         } else if (holePhase === 'sinDetails') {
             setHolePhase('stats');
         } else if (holePhase === 'putting') {
-            const shouldShowSinDetails = (deadlySinsValues.troubleOffTee && clubDistances.length > 0) || deadlySinsValues.penalties || (deadlySinsValues.bogeysInside9Iron && clubDistances.length > 0) || deadlySinsValues.doubleChips;
+            const shouldShowSinDetails = deadlySinsValues.troubleOffTee || deadlySinsValues.penalties || deadlySinsValues.bogeysInside9Iron || deadlySinsValues.doubleChips;
             if (shouldShowSinDetails) {
                 setHolePhase('sinDetails');
             } else {
@@ -411,7 +411,7 @@ export default function Play() {
             const freshClubDistances = getClubDistancesService();
             setClubDistances(freshClubDistances);
 
-            const shouldShowSinDetails = (deadlySinsValues.troubleOffTee && freshClubDistances.length > 0) || deadlySinsValues.penalties || (deadlySinsValues.bogeysInside9Iron && freshClubDistances.length > 0) || deadlySinsValues.doubleChips;
+            const shouldShowSinDetails = deadlySinsValues.troubleOffTee || deadlySinsValues.penalties || deadlySinsValues.bogeysInside9Iron || deadlySinsValues.doubleChips;
             if (shouldShowSinDetails) {
                 const saved = getHoleSinDetailsService(activeRoundId, currentHole);
                 setSelectedOffTeeClub(saved?.TroubleOffTeeClub);

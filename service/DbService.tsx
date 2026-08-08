@@ -466,7 +466,7 @@ export type HoleSinDetailsInput = {
     doubleChipsReason?: string;
 };
 
-export const PENALTY_TYPES = ['Out of bounds', 'Water hazard', 'Unplayable lie', 'Other 1-shot penalty', 'General penalty'] as const;
+export const PENALTY_TYPES = ['Out of bounds', 'Water hazard', 'Unplayable lie', 'Other 1-shot penalty', 'General penalty', 'Lost ball', 'Two-shot penalty'] as const;
 
 export const DOUBLE_CHIP_REASONS = ['Short sided', 'Chunked', 'Thinned', 'Wrong club selection', 'Other'] as const;
 

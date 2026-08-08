@@ -56,6 +56,8 @@ describe('PenaltyTypePicker', () => {
             expect(getByText('Unplayable lie')).toBeTruthy();
             expect(getByText('Other 1-shot penalty')).toBeTruthy();
             expect(getByText('General penalty')).toBeTruthy();
+            expect(getByText('Lost ball')).toBeTruthy();
+            expect(getByText('Two-shot penalty')).toBeTruthy();
         });
     });
 

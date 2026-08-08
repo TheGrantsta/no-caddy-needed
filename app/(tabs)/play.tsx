@@ -679,9 +679,8 @@ export default function Play() {
                                 <TouchableOpacity
                                     testID="end-incomplete-round-link"
                                     onPress={handleEndIncompleteRound}
-                                    style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 8, marginTop: 4 }}
+                                    style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 4 }}
                                 >
-                                    <MaterialIcons name="flag" size={20} color={colours.primary} />
                                     <Text style={localStyles.endRoundLink}>End round</Text>
                                 </TouchableOpacity>
                             </>
@@ -943,9 +942,8 @@ export default function Play() {
                                                 <TouchableOpacity
                                                     testID="end-round-button"
                                                     onPress={handleEndRoundPress}
-                                                    style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 8, marginTop: 20 }}
+                                                    style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 20 }}
                                                 >
-                                                    <MaterialIcons name="flag" size={20} color={colours.primary} />
                                                     <Text style={localStyles.endRoundLink}>End round</Text>
                                                 </TouchableOpacity>
                                             )}

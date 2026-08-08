@@ -54,10 +54,9 @@ describe('PenaltyTypePicker', () => {
             expect(getByText('Out of bounds')).toBeTruthy();
             expect(getByText('Water hazard')).toBeTruthy();
             expect(getByText('Unplayable lie')).toBeTruthy();
+            expect(getByText('Lost ball')).toBeTruthy();
             expect(getByText('Other 1-shot penalty')).toBeTruthy();
             expect(getByText('General penalty')).toBeTruthy();
-            expect(getByText('Lost ball')).toBeTruthy();
-            expect(getByText('Two-shot penalty')).toBeTruthy();
         });
     });
 

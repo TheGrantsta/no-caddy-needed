@@ -353,7 +353,7 @@ export const getPuttingStatsService = (roundId: number, holeNumber: number): Put
     };
 };
 
-export const PUTTING_DISTANCE_BUCKETS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,45,50];
+export const PUTTING_DISTANCE_BUCKETS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 35, 40, 45, 50];
 
 export const bucketPuttingDistance = (distance: number): number | null => {
     let bucket: number | null = null;
@@ -408,7 +408,7 @@ export const getPuttingMakeRatesService = (roundIds?: Set<number>): PuttingMakeR
     });
 };
 
-export const PROXIMITY_DISTANCE_BUCKETS = [1,2,3,4,5,6,7,8,9,10,15,20,25,30,35,40,45,50];
+export const PROXIMITY_DISTANCE_BUCKETS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50];
 
 export const bucketProximityDistance = (distance: number): number | null => {
     if (distance < 1) return null;
@@ -466,7 +466,7 @@ export type HoleSinDetailsInput = {
     doubleChipsReason?: string;
 };
 
-export const PENALTY_TYPES = ['Out of bounds', 'Water hazard', 'Unplayable lie', 'Other 1-shot penalty', 'General penalty', 'Lost ball', 'Two-shot penalty'] as const;
+export const PENALTY_TYPES = ['Out of bounds', 'Water hazard', 'Unplayable lie', 'Lost ball', 'Other 1-shot penalty', 'General penalty'] as const;
 
 export const DOUBLE_CHIP_REASONS = ['Short sided', 'Chunked', 'Thinned', 'Wrong club selection', 'Other'] as const;
 

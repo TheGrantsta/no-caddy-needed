@@ -92,7 +92,9 @@ jest.mock('../../service/DbService', () => ({
         practiceOnboardingSeen: true,
         reviewPromptShown: false,
         skipStatsFlowEnabled: false,
-    }),
+        preShotReminderEnabled: true,
+        badHoleReassuranceEnabled: true,
+    } as any),
     saveSettingsService: jest.fn().mockResolvedValue(true),
 }));
 
@@ -2590,6 +2592,179 @@ describe('Play screen', () => {
             render(<Play />);
 
             expect(mockGetClubDistances).toHaveBeenCalled();
+        });
+    });
+
+    describe('Bad hole reassurance splash', () => {
+        it('shows splash in score-only mode after triple-bogey score entry', async () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true,
+                playOnboardingSeen: true,
+                homeOnboardingSeen: true,
+                practiceOnboardingSeen: true,
+                reviewPromptShown: false,
+                skipStatsFlowEnabled: true,
+                badHoleReassuranceEnabled: true,
+            });
+
+            mockGetActiveRound.mockReturnValue({
+                Id: 5, TotalScore: 0, IsCompleted: 0,
+                StartTime: '2025-06-15T10:00:00.000Z', EndTime: null, Created_At: '2025-06-15T10:00:00.000Z',
+                IsScoreOnly: 1,
+            });
+            mockGetRoundPlayers.mockReturnValue([
+                { Id: 1, RoundId: 5, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+            ]);
+            mockGetHolesPlayedForRound.mockReturnValue(0);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+            await act(async () => {
+                fireEvent.press(getByTestId('continue-round-button'));
+            });
+
+            await waitFor(() => expect(queryByTestId('increment-1')).toBeTruthy());
+
+            // Score triple bogey in score-only mode (hole 1 par 4, increment 3x to get 7)
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('next-hole-button'));
+
+            // Splash should appear immediately (no stats/putting steps in score-only mode)
+            await waitFor(() => expect(getByTestId('acknowledge-overlay')).toBeTruthy());
+        });
+
+        it('does not show splash for double-bogey (par + 2) or better in score-only mode', async () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true,
+                playOnboardingSeen: true,
+                homeOnboardingSeen: true,
+                practiceOnboardingSeen: true,
+                reviewPromptShown: false,
+                skipStatsFlowEnabled: true,
+                badHoleReassuranceEnabled: true,
+            });
+
+            mockGetActiveRound.mockReturnValue({
+                Id: 5, TotalScore: 0, IsCompleted: 0,
+                StartTime: '2025-06-15T10:00:00.000Z', EndTime: null, Created_At: '2025-06-15T10:00:00.000Z',
+                IsScoreOnly: 1,
+            });
+            mockGetRoundPlayers.mockReturnValue([
+                { Id: 1, RoundId: 5, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+            ]);
+            mockGetHolesPlayedForRound.mockReturnValue(0);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+            await act(async () => {
+                fireEvent.press(getByTestId('continue-round-button'));
+            });
+
+            await waitFor(() => expect(queryByTestId('increment-1')).toBeTruthy());
+
+            // Score double bogey (par 4 + 2 = 6, so increment 2x)
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('next-hole-button'));
+
+            // Splash should NOT appear for double-bogey
+            await waitFor(() => expect(queryByTestId('next-hole-button')).toBeTruthy());
+            expect(queryByTestId('acknowledge-overlay')).toBeNull();
+        });
+
+        it('does not show splash when badHoleReassuranceEnabled is false in score-only mode', async () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true,
+                playOnboardingSeen: true,
+                homeOnboardingSeen: true,
+                practiceOnboardingSeen: true,
+                reviewPromptShown: false,
+                skipStatsFlowEnabled: true,
+                badHoleReassuranceEnabled: false,
+            });
+
+            mockGetActiveRound.mockReturnValue({
+                Id: 5, TotalScore: 0, IsCompleted: 0,
+                StartTime: '2025-06-15T10:00:00.000Z', EndTime: null, Created_At: '2025-06-15T10:00:00.000Z',
+                IsScoreOnly: 1,
+            });
+            mockGetRoundPlayers.mockReturnValue([
+                { Id: 1, RoundId: 5, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+            ]);
+            mockGetHolesPlayedForRound.mockReturnValue(0);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+            await act(async () => {
+                fireEvent.press(getByTestId('continue-round-button'));
+            });
+
+            await waitFor(() => expect(queryByTestId('increment-1')).toBeTruthy());
+
+            // Score triple bogey
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('next-hole-button'));
+
+            // Splash should NOT appear when disabled
+            await waitFor(() => expect(queryByTestId('next-hole-button')).toBeTruthy());
+            expect(queryByTestId('acknowledge-overlay')).toBeNull();
+        });
+
+        it('advances to next hole when splash is dismissed in score-only mode', async () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true,
+                playOnboardingSeen: true,
+                homeOnboardingSeen: true,
+                practiceOnboardingSeen: true,
+                reviewPromptShown: false,
+                skipStatsFlowEnabled: true,
+                badHoleReassuranceEnabled: true,
+            });
+
+            mockGetActiveRound.mockReturnValue({
+                Id: 5, TotalScore: 0, IsCompleted: 0,
+                StartTime: '2025-06-15T10:00:00.000Z', EndTime: null, Created_At: '2025-06-15T10:00:00.000Z',
+                IsScoreOnly: 1,
+            });
+            mockGetRoundPlayers.mockReturnValue([
+                { Id: 1, RoundId: 5, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+            ]);
+            mockGetHolesPlayedForRound.mockReturnValue(0);
+
+            const { getByTestId, queryByTestId, getByText } = render(<Play />);
+            await act(async () => {
+                fireEvent.press(getByTestId('continue-round-button'));
+            });
+
+            await waitFor(() => expect(queryByTestId('increment-1')).toBeTruthy());
+
+            // Score triple bogey on hole 1
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('next-hole-button'));
+
+            // Wait for splash to appear
+            await waitFor(() => expect(getByTestId('acknowledge-overlay')).toBeTruthy());
+
+            // Dismiss splash
+            fireEvent.press(getByTestId('acknowledge-dismiss'));
+
+            // Hole should advance to hole 2
+            await waitFor(() => expect(getByText('#2')).toBeTruthy());
         });
     });
 

@@ -198,6 +198,7 @@ describe('getSettingsService', () => {
             tempoBpm: 60,
             units: 'yards',
             skipStatsFlowEnabled: false,
+            badHoleReassuranceEnabled: true,
         });
     });
 
@@ -235,6 +236,7 @@ describe('getSettingsService', () => {
             tempoBpm: 60,
             units: 'yards',
             skipStatsFlowEnabled: false,
+            badHoleReassuranceEnabled: true,
         });
     });
 
@@ -272,6 +274,7 @@ describe('getSettingsService', () => {
             tempoBpm: 60,
             units: 'yards',
             skipStatsFlowEnabled: false,
+            badHoleReassuranceEnabled: true,
         });
     });
 
@@ -309,6 +312,7 @@ describe('getSettingsService', () => {
             tempoBpm: 60,
             units: 'yards',
             skipStatsFlowEnabled: false,
+            badHoleReassuranceEnabled: true,
         });
     });
 
@@ -346,6 +350,7 @@ describe('getSettingsService', () => {
             tempoBpm: 60,
             units: 'yards',
             skipStatsFlowEnabled: false,
+            badHoleReassuranceEnabled: true,
         });
     });
 });
@@ -436,12 +441,13 @@ describe('saveSettingsService', () => {
             tempoBpm: 60,
             units: 'yards',
             skipStatsFlowEnabled: false,
+            badHoleReassuranceEnabled: true,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0, 1);
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
@@ -465,12 +471,13 @@ describe('saveSettingsService', () => {
             tempoBpm: 60,
             units: 'yards',
             skipStatsFlowEnabled: false,
+            badHoleReassuranceEnabled: true,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0, 1);
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
@@ -494,11 +501,12 @@ describe('saveSettingsService', () => {
             tempoBpm: 60,
             units: 'yards',
             skipStatsFlowEnabled: false,
+            badHoleReassuranceEnabled: true,
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0, 1);
     });
 });

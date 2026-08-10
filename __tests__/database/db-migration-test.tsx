@@ -360,6 +360,40 @@ describe('Settings table column migration', () => {
         );
     });
 
+    it('should add BadHoleReassuranceEnabled column when missing from Settings table', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Settings)') return [
+                { name: 'Id' },
+                { name: 'Theme' },
+                { name: 'NotificationsEnabled' },
+                { name: 'Voice' },
+                { name: 'SoundsEnabled' },
+                { name: 'WedgeChartOnboardingSeen' },
+                { name: 'DistancesOnboardingSeen' },
+                { name: 'PlayOnboardingSeen' },
+                { name: 'HomeOnboardingSeen' },
+                { name: 'PracticeOnboardingSeen' },
+                { name: 'ReviewPromptShown' },
+                { name: 'PreShotReminderEnabled' },
+                { name: 'PreShotRoutineText' },
+                { name: 'WhatsNewVersionSeen' },
+                { name: 'SettingsOnboardingSeen' },
+                { name: 'PerformOnboardingSeen' },
+                { name: 'TempoBpm' },
+                { name: 'Units' },
+                { name: 'SkipStatsFlowEnabled' },
+                // Note: BadHoleReassuranceEnabled is missing — simulating an old Settings schema
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE Settings ADD COLUMN BadHoleReassuranceEnabled INTEGER NOT NULL DEFAULT 1'
+        );
+    });
+
     it('should not alter Settings table when all columns already exist', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
@@ -383,6 +417,7 @@ describe('Settings table column migration', () => {
                 { name: 'TempoBpm' },
                 { name: 'Units' },
                 { name: 'SkipStatsFlowEnabled' },
+                { name: 'BadHoleReassuranceEnabled' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },

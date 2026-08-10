@@ -73,6 +73,14 @@ const ONBOARDING_STEPS = [
     { text: 'After your round, review your scorecard and track your 7 Deadly Sins stats over time.' },
 ];
 
+const BAD_HOLE_MESSAGES = [
+    'A triple bogey isn\'t the end of the round — plenty of golf left.',
+    'Shake it off — reset and go get the next one.',
+    'Even the pros have blow-up holes. Onward!',
+    'One bad hole doesn\'t define your round. Keep grinding.',
+    'Just a bump in the road. You\'ve got this!',
+];
+
 const formatScore = (score: number): string => {
     if (score === 0) return 'E';
     if (score > 0) return `+${score}`;
@@ -130,6 +138,8 @@ export default function Play() {
     const [currentNoteText, setCurrentNoteText] = useState('');
     const [showPreShotReminder, setShowPreShotReminder] = useState(false);
     const [preShotText, setPreShotText] = useState('');
+    const [showBadHoleReassurance, setShowBadHoleReassurance] = useState(false);
+    const [reassuranceMessage, setReassuranceMessage] = useState('');
     const scrollRef = useRef<ScrollView>(null);
     const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const localStyles = styles.playScreen;
@@ -339,6 +349,40 @@ export default function Play() {
         } : null);
     };
 
+    const isTripleBogeyOrWorse = (holeData: typeof currentHoleData): boolean => {
+        if (!holeData) return false;
+        const userScore = holeData.scores.find(s => {
+            const player = players.find(p => p.Id === s.playerId);
+            return player && player.IsUser === 1;
+        })?.score;
+        return userScore !== undefined && userScore >= holeData.holePar + 3;
+    };
+
+    const advanceHoleOrEndRound = () => {
+        if (currentHole >= 18) {
+            setShowEndRoundConfirm(true);
+        } else {
+            const nextHole = currentHole + 1;
+            setCurrentNoteText(courseNotes[nextHole] ?? '');
+            setCurrentHole(nextHole);
+            setHolePhase('score');
+            const holeData = loadHoleForScore(nextHole);
+            setCurrentHoleData(holeData);
+            setPuttingStats(null);
+            setSelectedOffTeeClub(undefined);
+            setSinDetailsClubError(false);
+            setSelectedPenaltyType(undefined);
+            setSinDetailsPenaltyError(false);
+            setSelectedBogeysClub(undefined);
+            setSinDetailsBogeysClubError(false);
+        }
+    };
+
+    const handleDismissBadHoleReassurance = () => {
+        setShowBadHoleReassurance(false);
+        advanceHoleOrEndRound();
+    };
+
     const handlePreviousHole = async () => {
         if (holePhase === 'score') {
             if (currentHole <= 1) return;
@@ -389,14 +433,11 @@ export default function Play() {
                 }
                 if (skipStatsFlow) {
                     // Skip stats flow: advance directly to next hole or end round
-                    if (currentHole >= 18) {
-                        setShowEndRoundConfirm(true);
+                    if (isTripleBogeyOrWorse(currentHoleData) && settings.badHoleReassuranceEnabled) {
+                        setReassuranceMessage(BAD_HOLE_MESSAGES[Math.floor(Math.random() * BAD_HOLE_MESSAGES.length)]);
+                        setShowBadHoleReassurance(true);
                     } else {
-                        const nextHole = currentHole + 1;
-                        setCurrentNoteText(courseNotes[nextHole] ?? '');
-                        setCurrentHole(nextHole);
-                        const holeData = loadHoleForScore(nextHole);
-                        setCurrentHoleData(holeData);
+                        advanceHoleOrEndRound();
                     }
                 } else {
                     // Normal flow: proceed to stats
@@ -484,22 +525,11 @@ export default function Play() {
                 return;
             }
             await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong);
-            if (currentHole >= 18) {
-                setShowEndRoundConfirm(true);
+            if (isTripleBogeyOrWorse(currentHoleData) && settings.badHoleReassuranceEnabled) {
+                setReassuranceMessage(BAD_HOLE_MESSAGES[Math.floor(Math.random() * BAD_HOLE_MESSAGES.length)]);
+                setShowBadHoleReassurance(true);
             } else {
-                const nextHole = currentHole + 1;
-                setCurrentNoteText(courseNotes[nextHole] ?? '');
-                setCurrentHole(nextHole);
-                setHolePhase('score');
-                const holeData = loadHoleForScore(nextHole);
-                setCurrentHoleData(holeData);
-                setPuttingStats(null);
-                setSelectedOffTeeClub(undefined);
-                setSinDetailsClubError(false);
-                setSelectedPenaltyType(undefined);
-                setSinDetailsPenaltyError(false);
-                setSelectedBogeysClub(undefined);
-                setSinDetailsBogeysClubError(false);
+                advanceHoleOrEndRound();
             }
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             scrollRef.current?.scrollTo({ y: 0, animated: true });
@@ -1043,6 +1073,13 @@ export default function Play() {
                 }
                 onDismiss={() => setShowPuttingInfo(false)}
                 textAlign="left"
+            />
+
+            <AcknowledgeOverlay
+                visible={showBadHoleReassurance}
+                title="Tough hole!"
+                text={reassuranceMessage}
+                onDismiss={handleDismissBadHoleReassurance}
             />
         </GestureHandlerRootView>
     );

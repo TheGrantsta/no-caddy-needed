@@ -10,6 +10,8 @@ import {
     replaceHoleDeadlySinsService,
     getHolesWithSinsForRoundService,
     loadCourseNotesService,
+    PENALTY_TYPES,
+    DOUBLE_CHIP_REASONS,
 } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -37,6 +39,12 @@ jest.mock('../../../service/DbService', () => ({
     loadCourseNotesService: jest.fn().mockReturnValue({}),
     getAllRoundHistoryService: jest.fn(() => [{ Id: 42, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: 'Test Course', Created_At: '' }]),
     getRoundScoreBreakdownService: jest.fn().mockReturnValue({ putts: 36, threePutts: 0, penalties: 0 }),
+    getClubDistancesService: jest.fn().mockReturnValue([]),
+    getHoleSinDetailsService: jest.fn().mockReturnValue(null),
+    replaceHoleSinDetailsService: jest.fn().mockResolvedValue(true),
+    deleteHoleSinDetailsService: jest.fn().mockResolvedValue(true),
+    PENALTY_TYPES: ['Out of bounds', 'Water hazard', 'Unplayable lie', 'Lost ball', 'Other 1-shot penalty', 'General penalty'],
+    DOUBLE_CHIP_REASONS: ['Poor contact', 'Bad lie', 'Distance miscalculation', 'Other'],
 }));
 
 jest.mock('expo-router', () => ({

@@ -7,6 +7,7 @@ import RoundScorecard from '../../components/RoundScorecard';
 import Scorecard from '../../components/Scorecard';
 import ScoreEditor from '../../components/ScoreEditor';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
+import SinDetailsInput from '../../components/SinDetailsInput';
 import CtaButton from '../../components/CtaButton';
 import { useAppToast } from '../../hooks/useAppToast';
 import {
@@ -20,12 +21,18 @@ import {
     loadCourseNotesService,
     getAllRoundHistoryService,
     getRoundScoreBreakdownService,
+    getClubDistancesService,
+    getHoleSinDetailsService,
+    replaceHoleSinDetailsService,
+    deleteHoleSinDetailsService,
     RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
     DeadlySinsValues,
     Round,
     RoundScoreBreakdown,
+    ClubDistance,
+    HoleSinDetailsInput,
 } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
@@ -80,6 +87,16 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const [sinsHoleNumber, setSinsHoleNumber] = useState<number | null>(null);
     const [sinHoles, setSinHoles] = useState<Set<number>>(new Set());
     const [scoreBreakdown, setScoreBreakdown] = useState<RoundScoreBreakdown | null>(null);
+    const [clubDistances, setClubDistances] = useState<ClubDistance[]>([]);
+    const [selectedOffTeeClub, setSelectedOffTeeClub] = useState<string | undefined>(undefined);
+    const [selectedPenaltyType, setSelectedPenaltyType] = useState<string | undefined>(undefined);
+    const [selectedBogeysClub, setSelectedBogeysClub] = useState<string | undefined>(undefined);
+    const [selectedDoubleChipReason, setSelectedDoubleChipReason] = useState<string | undefined>(undefined);
+    const [sinDetailsClubError, setSinDetailsClubError] = useState(false);
+    const [sinDetailsPenaltyError, setSinDetailsPenaltyError] = useState(false);
+    const [sinDetailsBogeysClubError, setSinDetailsBogeysClubError] = useState(false);
+    const [sinDetailsDoubleChipReasonError, setSinDetailsDoubleChipReasonError] = useState(false);
+    const [hadPriorSinDetails, setHadPriorSinDetails] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -100,6 +117,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         setScorecard(sc);
         setSinHoles(getHolesWithSinsForRoundService(Number(roundId)));
         setScoreBreakdown(getRoundScoreBreakdownService(Number(roundId)));
+        setClubDistances(getClubDistancesService());
         const courseName = mp?.round?.CourseName ?? sc?.round?.CourseName ?? null;
         if (courseName) {
             setCourseNotes(loadCourseNotesService(courseName));
@@ -122,6 +140,15 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         setShowSaveConfirm(false);
         setEditedSins(null);
         setSinsHoleNumber(null);
+        setSelectedOffTeeClub(undefined);
+        setSelectedPenaltyType(undefined);
+        setSelectedBogeysClub(undefined);
+        setSelectedDoubleChipReason(undefined);
+        setHadPriorSinDetails(false);
+        setSinDetailsClubError(false);
+        setSinDetailsPenaltyError(false);
+        setSinDetailsBogeysClubError(false);
+        setSinDetailsDoubleChipReasonError(false);
     };
 
     const handleScoreSelect = (holeNumber: number, playerId: number) => {
@@ -132,9 +159,28 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             const existing = getHoleDeadlySinsService(Number(roundId), holeNumber);
             setEditedSins(existing ?? INITIAL_SINS);
             setSinsHoleNumber(holeNumber);
+            const existingDetails = getHoleSinDetailsService(Number(roundId), holeNumber);
+            setSelectedOffTeeClub(existingDetails?.TroubleOffTeeClub);
+            setSelectedPenaltyType(existingDetails?.PenaltyType);
+            setSelectedBogeysClub(existingDetails?.BogeysInside9IronClub);
+            setSelectedDoubleChipReason(existingDetails?.DoubleChipsReason);
+            setHadPriorSinDetails(!!existingDetails);
+            setSinDetailsClubError(false);
+            setSinDetailsPenaltyError(false);
+            setSinDetailsBogeysClubError(false);
+            setSinDetailsDoubleChipReasonError(false);
         } else {
             setEditedSins(null);
             setSinsHoleNumber(null);
+            setSelectedOffTeeClub(undefined);
+            setSelectedPenaltyType(undefined);
+            setSelectedBogeysClub(undefined);
+            setSelectedDoubleChipReason(undefined);
+            setHadPriorSinDetails(false);
+            setSinDetailsClubError(false);
+            setSinDetailsPenaltyError(false);
+            setSinDetailsBogeysClubError(false);
+            setSinDetailsDoubleChipReasonError(false);
         }
     };
 
@@ -201,6 +247,20 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     };
 
     const handleSave = () => {
+        if (sinsHoleNumber !== null && editedSins !== null) {
+            const needsClub = editedSins.troubleOffTee && clubDistances.length > 0;
+            const needsPenalty = editedSins.penalties;
+            const needsBogeysClub = editedSins.bogeysInside9Iron && clubDistances.length > 0;
+            const needsDoubleChipReason = editedSins.doubleChips;
+            let blocked = false;
+
+            if (needsClub && !selectedOffTeeClub) { setSinDetailsClubError(true); blocked = true; } else setSinDetailsClubError(false);
+            if (needsPenalty && !selectedPenaltyType) { setSinDetailsPenaltyError(true); blocked = true; } else setSinDetailsPenaltyError(false);
+            if (needsBogeysClub && !selectedBogeysClub) { setSinDetailsBogeysClubError(true); blocked = true; } else setSinDetailsBogeysClubError(false);
+            if (needsDoubleChipReason && !selectedDoubleChipReason) { setSinDetailsDoubleChipReasonError(true); blocked = true; } else setSinDetailsDoubleChipReasonError(false);
+
+            if (blocked) return;
+        }
         setShowSaveConfirm(true);
     };
 
@@ -230,6 +290,17 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         if (success) {
             if (sinsHoleNumber !== null && editedSins !== null) {
                 await replaceHoleDeadlySinsService(Number(roundId), sinsHoleNumber, editedSins);
+                const needsSinDetails = editedSins.troubleOffTee || editedSins.penalties || editedSins.bogeysInside9Iron || editedSins.doubleChips;
+                if (needsSinDetails) {
+                    await replaceHoleSinDetailsService(Number(roundId), sinsHoleNumber, {
+                        troubleOffTeeClub: selectedOffTeeClub,
+                        penaltyType: selectedPenaltyType,
+                        bogeysInside9IronClub: selectedBogeysClub,
+                        doubleChipsReason: selectedDoubleChipReason,
+                    });
+                } else if (hadPriorSinDetails) {
+                    await deleteHoleSinDetailsService(Number(roundId), sinsHoleNumber);
+                }
             }
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
             loadData();
@@ -239,6 +310,15 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             setShowSaveConfirm(false);
             setEditedSins(null);
             setSinsHoleNumber(null);
+            setSelectedOffTeeClub(undefined);
+            setSelectedPenaltyType(undefined);
+            setSelectedBogeysClub(undefined);
+            setSelectedDoubleChipReason(undefined);
+            setHadPriorSinDetails(false);
+            setSinDetailsClubError(false);
+            setSinDetailsPenaltyError(false);
+            setSinDetailsBogeysClubError(false);
+            setSinDetailsDoubleChipReasonError(false);
         } else {
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
             setShowSaveConfirm(false);
@@ -326,6 +406,26 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                 initialValues={editedSins}
                                 holePar={editedScores.find(s => s.HoleNumber === selectedScore.holeNumber)?.HolePar}
                                 userScore={editedScores.find(s => s.HoleNumber === selectedScore.holeNumber && s.RoundPlayerId === multiplayerScorecard?.players.find(p => p.IsUser === 1)?.Id)?.Score}
+                            />
+                        )}
+
+                        {isEditing && selectedScore && editedSins && (editedSins.troubleOffTee || editedSins.penalties || editedSins.bogeysInside9Iron || editedSins.doubleChips) && (
+                            <SinDetailsInput
+                                key={`sin-details-${selectedScore.holeNumber}`}
+                                sins={editedSins}
+                                clubs={clubDistances}
+                                selectedOffTeeClub={selectedOffTeeClub}
+                                onOffTeeClubChange={setSelectedOffTeeClub}
+                                showOffTeeClubError={sinDetailsClubError}
+                                selectedPenaltyType={selectedPenaltyType}
+                                onPenaltyTypeChange={setSelectedPenaltyType}
+                                showPenaltyTypeError={sinDetailsPenaltyError}
+                                selectedBogeysClub={selectedBogeysClub}
+                                onBogeysClubChange={setSelectedBogeysClub}
+                                showBogeysClubError={sinDetailsBogeysClubError}
+                                selectedDoubleChipReason={selectedDoubleChipReason}
+                                onDoubleChipReasonChange={setSelectedDoubleChipReason}
+                                showDoubleChipReasonError={sinDetailsDoubleChipReasonError}
                             />
                         )}
 

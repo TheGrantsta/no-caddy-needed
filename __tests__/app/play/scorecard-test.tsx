@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { render, fireEvent, waitFor, within } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService, getAllRoundHistoryService, getRoundScoreBreakdownService } from '../../../service/DbService';
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService, getAllRoundHistoryService, getRoundScoreBreakdownService, getClubDistancesService, getHoleSinDetailsService, replaceHoleSinDetailsService, deleteHoleSinDetailsService, PENALTY_TYPES, DOUBLE_CHIP_REASONS } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -33,6 +33,12 @@ jest.mock('../../../service/DbService', () => ({
     loadCourseNotesService: jest.fn().mockReturnValue({}),
     getAllRoundHistoryService: jest.fn(),
     getRoundScoreBreakdownService: jest.fn(),
+    getClubDistancesService: jest.fn().mockReturnValue([]),
+    getHoleSinDetailsService: jest.fn().mockReturnValue(null),
+    replaceHoleSinDetailsService: jest.fn().mockResolvedValue(true),
+    deleteHoleSinDetailsService: jest.fn().mockResolvedValue(true),
+    PENALTY_TYPES: ['Out of bounds', 'Water hazard', 'Unplayable lie', 'Lost ball', 'Other 1-shot penalty', 'General penalty'],
+    DOUBLE_CHIP_REASONS: ['Poor contact', 'Bad lie', 'Distance miscalculation', 'Other'],
 }));
 
 let mockParams: { roundId: string } = { roundId: '1' };
@@ -70,6 +76,10 @@ const mockGetHolesWithSinsForRoundService = getHolesWithSinsForRoundService as j
 const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
 const mockGetAllRoundHistory = getAllRoundHistoryService as jest.Mock;
 const mockGetRoundScoreBreakdown = getRoundScoreBreakdownService as jest.Mock;
+const mockGetClubDistances = getClubDistancesService as jest.Mock;
+const mockGetHoleSinDetails = getHoleSinDetailsService as jest.Mock;
+const mockReplaceHoleSinDetails = replaceHoleSinDetailsService as jest.Mock;
+const mockDeleteHoleSinDetails = deleteHoleSinDetailsService as jest.Mock;
 
 const makeHistoryRound = (id: number) => ({
     Id: id, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '',
@@ -956,6 +966,210 @@ describe('Scorecard screen', () => {
 
                 expect(queryByTestId('round-score-breakdown')).toBeNull();
             });
+        });
+    });
+
+    describe('Sin details in edit mode', () => {
+        const clubs = [
+            { Id: 1, Club: 'Driver', CarryDistance: 220, TotalDistance: 230, SortOrder: 0 },
+            { Id: 2, Club: '3 Wood', CarryDistance: 190, TotalDistance: 200, SortOrder: 1 },
+        ];
+
+        it('shows club picker when trouble off tee is toggled on', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetClubDistances.mockReturnValue(clubs);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+
+            expect(queryByTestId('club-picker-dropdown-toggle')).toBeNull();
+
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
+
+            expect(getByTestId('club-picker-dropdown-toggle')).toBeTruthy();
+        });
+
+        it('does not show detail picker when no detail sins are ticked', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetClubDistances.mockReturnValue(clubs);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+
+            expect(queryByTestId('club-picker-dropdown-toggle')).toBeNull();
+            expect(queryByTestId('penalty-type-picker-dropdown-toggle')).toBeNull();
+        });
+
+        it('pre-fills existing details when hole with saved details is selected', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetClubDistances.mockReturnValue(clubs);
+            mockGetHoleSinDetails.mockReturnValue({
+                troubleOffTeeClub: 'Driver',
+                penaltyType: 'OB',
+                bogeysInside9IronClub: '6 Iron',
+                doubleChipsReason: 'Poor contact',
+            });
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
+
+            // Pre-filled club should be selected
+            expect(mockGetHoleSinDetails).toHaveBeenCalledWith(1, 1);
+        });
+
+        it('blocks save when trouble off tee is ticked but no club selected', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetClubDistances.mockReturnValue(clubs);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+
+            // Save should not show confirmation because validation is blocking
+            expect(queryByTestId('confirm-save-button')).toBeNull();
+        });
+
+        it('does not block save when trouble off tee is ticked but no clubs configured', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetClubDistances.mockReturnValue([]); // No clubs
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+
+            // Should allow save when no clubs configured
+            expect(getByTestId('confirm-save-button')).toBeTruthy();
+        });
+
+        it('does not block save when penalties ticked and penalty type selected', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetClubDistances.mockReturnValue(clubs);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-penalties'));
+            fireEvent.press(getByTestId('penalty-type-picker-dropdown-toggle'));
+            fireEvent.press(getByTestId('penalty-type-picker-option-Out of bounds'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+
+            expect(getByTestId('confirm-save-button')).toBeTruthy();
+        });
+
+        it('calls replaceHoleSinDetailsService with selected values on confirm save', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(true);
+            mockGetClubDistances.mockReturnValue(clubs);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
+            fireEvent.press(getByTestId('club-picker-dropdown-toggle'));
+            fireEvent.press(getByTestId('club-picker-option-Driver'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(mockReplaceHoleSinDetails).toHaveBeenCalledWith(
+                    1,
+                    1,
+                    expect.objectContaining({
+                        troubleOffTeeClub: 'Driver',
+                    })
+                );
+            });
+        });
+
+        it('calls deleteHoleSinDetailsService when detail sin is unticked before save', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(true);
+            mockGetClubDistances.mockReturnValue(clubs);
+            mockGetHoleSinDetails.mockReturnValue({
+                troubleOffTeeClub: 'Driver',
+                penaltyType: null,
+                bogeysInside9IronClub: null,
+                doubleChipsReason: null,
+            });
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            // Trouble off tee was previously saved but now untick it
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(mockDeleteHoleSinDetails).toHaveBeenCalledWith(1, 1);
+            });
+        });
+
+        it('does not call sin detail services when no detail sins ticked', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(true);
+            mockGetHoleSinDetails.mockReturnValue(null); // Ensure no prior details
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts')); // Not a detail-needing sin
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(mockUpdateScorecard).toHaveBeenCalled();
+            });
+            expect(mockReplaceHoleSinDetails).not.toHaveBeenCalled();
+            expect(mockDeleteHoleSinDetails).not.toHaveBeenCalled();
+        });
+
+        it('clears detail selections and error state when cancel edit pressed', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetClubDistances.mockReturnValue(clubs);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
+
+            expect(getByTestId('club-picker-dropdown-toggle')).toBeTruthy();
+
+            fireEvent.press(getByTestId('cancel-edit-button'));
+
+            expect(queryByTestId('club-picker-dropdown-toggle')).toBeNull();
+        });
+
+        it('does not show detail pickers for sins without follow-ups (three-putts)', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetClubDistances.mockReturnValue(clubs);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+
+            // No detail pickers should show for three-putts
+            expect(queryByTestId('club-picker-dropdown-toggle')).toBeNull();
+            expect(queryByTestId('penalty-type-picker-dropdown-toggle')).toBeNull();
         });
     });
 });

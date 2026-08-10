@@ -471,6 +471,9 @@ export const insertHoleSinDetailsService = async (roundId: number, holeNumber: n
     return insertHoleSinDetails(roundId, holeNumber, details.troubleOffTeeClub, details.penaltyType, details.bogeysInside9IronClub, details.doubleChipsReason);
 };
 
+export const replaceHoleSinDetailsService = (roundId: number, holeNumber: number, details: HoleSinDetailsInput): Promise<boolean> =>
+    insertHoleSinDetailsService(roundId, holeNumber, details);
+
 export const getHoleSinDetailsService = (roundId: number, holeNumber: number): HoleSinDetails | null => {
     const rows = getHoleSinDetails(roundId, holeNumber) as any[];
     if (rows.length === 0) return null;

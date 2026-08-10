@@ -55,7 +55,7 @@ export default function Perform() {
     const rates = getPuttingMakeRatesService(roundIds);
     return rates.map((row) => [
       String(row.distance),
-      `${row.firstPuttMakeRate} (${PUTTING_PRO_RATES[row.distance] || '-'})`,
+      `${row.makeRate} (${PUTTING_PRO_RATES[row.distance] || '-'})`,
     ]);
   };
 

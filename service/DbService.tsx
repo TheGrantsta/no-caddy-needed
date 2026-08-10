@@ -366,44 +366,40 @@ export const bucketPuttingDistance = (distance: number): number | null => {
 
 export type PuttingMakeRate = {
     distance: number;
-    firstPuttMakeRate: string;
-    secondPuttMakeRate: string;
+    makeRate: string;
 };
 
 export const getPuttingMakeRatesService = (roundIds?: Set<number>): PuttingMakeRate[] => {
     const rows = getAllPuttingStatsWithThreePutts() as any[];
-    const firstStats = new Map<number, { total: number; made: number }>();
-    const secondStats = new Map<number, { total: number; made: number }>();
+    const stats = new Map<number, { total: number; made: number }>();
 
     rows.forEach((row) => {
         if (roundIds && !roundIds.has(row.RoundId)) return;
 
         const firstBucket = bucketPuttingDistance(row.FirstPuttDistance);
         if (firstBucket !== null) {
-            const current = firstStats.get(firstBucket) || { total: 0, made: 0 };
+            const current = stats.get(firstBucket) || { total: 0, made: 0 };
             current.total += 1;
             if (row.SecondPuttDistance === 0) current.made += 1;
-            firstStats.set(firstBucket, current);
+            stats.set(firstBucket, current);
         }
 
         if (row.SecondPuttDistance > 0) {
             const secondBucket = bucketPuttingDistance(row.SecondPuttDistance);
             if (secondBucket !== null) {
-                const current = secondStats.get(secondBucket) || { total: 0, made: 0 };
+                const current = stats.get(secondBucket) || { total: 0, made: 0 };
                 current.total += 1;
                 if (row.ThreePutts !== 1) current.made += 1;
-                secondStats.set(secondBucket, current);
+                stats.set(secondBucket, current);
             }
         }
     });
 
     return PUTTING_DISTANCE_BUCKETS.map((distance) => {
-        const first = firstStats.get(distance);
-        const second = secondStats.get(distance);
+        const bucket = stats.get(distance);
         return {
             distance,
-            firstPuttMakeRate: first ? `${Math.round((first.made / first.total) * 100)}%` : '-',
-            secondPuttMakeRate: second ? `${Math.round((second.made / second.total) * 100)}%` : '-',
+            makeRate: bucket ? `${Math.round((bucket.made / bucket.total) * 100)}%` : '-',
         };
     });
 };

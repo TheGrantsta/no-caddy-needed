@@ -53,12 +53,11 @@ describe('getPuttingMakeRatesService', () => {
 
         expect(result).toHaveLength(PUTTING_DISTANCE_BUCKETS.length);
         result.forEach((row) => {
-            expect(row.firstPuttMakeRate).toBe('-');
-            expect(row.secondPuttMakeRate).toBe('-');
+            expect(row.makeRate).toBe('-');
         });
     });
 
-    it('calculates first-putt make rate: holed on first (secondPuttDistance === 0) counts as made', () => {
+    it('counts first-putt attempts made when secondPuttDistance === 0', () => {
         mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
             { FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 0 },
             { FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 0 },
@@ -69,10 +68,10 @@ describe('getPuttingMakeRatesService', () => {
         const bucket5 = result.find(r => r.distance === 5);
 
         expect(bucket5).toBeDefined();
-        expect(bucket5!.firstPuttMakeRate).toBe('67%');
+        expect(bucket5!.makeRate).toBe('67%');
     });
 
-    it('calculates first-putt miss rate: any secondPuttDistance > 0 counts as missed', () => {
+    it('counts first-putt attempts missed when secondPuttDistance > 0', () => {
         mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
             { FirstPuttDistance: 10, SecondPuttDistance: 2, ThreePutts: 0 },
             { FirstPuttDistance: 10, SecondPuttDistance: 1, ThreePutts: 0 },
@@ -83,7 +82,7 @@ describe('getPuttingMakeRatesService', () => {
         const bucket10 = result.find(r => r.distance === 10);
 
         expect(bucket10).toBeDefined();
-        expect(bucket10!.firstPuttMakeRate).toBe('33%');
+        expect(bucket10!.makeRate).toBe('33%');
     });
 
     it('only counts second putts when secondPuttDistance > 0', () => {
@@ -97,10 +96,10 @@ describe('getPuttingMakeRatesService', () => {
         const bucket5 = result.find(r => r.distance === 5);
 
         expect(bucket5).toBeDefined();
-        expect(bucket5!.secondPuttMakeRate).toBe('100%');
+        expect(bucket5!.makeRate).toBe('100%');
     });
 
-    it('counts second putt as made when ThreePutts !== 1', () => {
+    it('counts second-putt attempts made when ThreePutts !== 1', () => {
         mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
             { FirstPuttDistance: 5, SecondPuttDistance: 2, ThreePutts: 0 },
             { FirstPuttDistance: 5, SecondPuttDistance: 3, ThreePutts: 0 },
@@ -110,11 +109,11 @@ describe('getPuttingMakeRatesService', () => {
         const bucket2 = result.find(r => r.distance === 2);
         const bucket3 = result.find(r => r.distance === 3);
 
-        expect(bucket2!.secondPuttMakeRate).toBe('100%');
-        expect(bucket3!.secondPuttMakeRate).toBe('100%');
+        expect(bucket2!.makeRate).toBe('100%');
+        expect(bucket3!.makeRate).toBe('100%');
     });
 
-    it('counts second putt as missed when ThreePutts === 1', () => {
+    it('counts second-putt attempts missed when ThreePutts === 1', () => {
         mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
             { FirstPuttDistance: 5, SecondPuttDistance: 2, ThreePutts: 1 },
             { FirstPuttDistance: 5, SecondPuttDistance: 2, ThreePutts: 0 },
@@ -123,7 +122,30 @@ describe('getPuttingMakeRatesService', () => {
         const result = getPuttingMakeRatesService();
         const bucket2 = result.find(r => r.distance === 2);
 
-        expect(bucket2!.secondPuttMakeRate).toBe('50%');
+        expect(bucket2!.makeRate).toBe('50%');
+    });
+
+    it('combines first-putt and second-putt attempts from the same distance bucket', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 0 },
+            { FirstPuttDistance: 7, SecondPuttDistance: 5, ThreePutts: 0 },
+        ]);
+
+        const result = getPuttingMakeRatesService();
+        const bucket5 = result.find(r => r.distance === 5);
+
+        expect(bucket5!.makeRate).toBe('100%');
+    });
+
+    it('includes a made second putt from a distance with no first-putt attempts', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { FirstPuttDistance: 20, SecondPuttDistance: 4, ThreePutts: 0 },
+        ]);
+
+        const result = getPuttingMakeRatesService();
+        const bucket4 = result.find(r => r.distance === 4);
+
+        expect(bucket4!.makeRate).toBe('100%');
     });
 
     it('buckets distances correctly', () => {
@@ -137,8 +159,8 @@ describe('getPuttingMakeRatesService', () => {
         const bucket20 = result.find(r => r.distance === 20);
         const bucket25 = result.find(r => r.distance === 25);
 
-        expect(bucket20!.firstPuttMakeRate).toBe('100%');
-        expect(bucket25!.firstPuttMakeRate).toBe('100%');
+        expect(bucket20!.makeRate).toBe('100%');
+        expect(bucket25!.makeRate).toBe('100%');
     });
 
     it('rounds percentages correctly', () => {
@@ -152,7 +174,7 @@ describe('getPuttingMakeRatesService', () => {
         const result = getPuttingMakeRatesService();
         const bucket3 = result.find(r => r.distance === 3);
 
-        expect(bucket3!.firstPuttMakeRate).toBe('75%');
+        expect(bucket3!.makeRate).toBe('75%');
     });
 
     it('handles multiple buckets with different make rates', () => {
@@ -167,20 +189,8 @@ describe('getPuttingMakeRatesService', () => {
         const bucket5 = result.find(r => r.distance === 5);
         const bucket10 = result.find(r => r.distance === 10);
 
-        expect(bucket5!.firstPuttMakeRate).toBe('100%');
-        expect(bucket10!.firstPuttMakeRate).toBe('50%');
-    });
-
-    it('handles empty second-putt buckets', () => {
-        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
-            { FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 0 },
-        ]);
-
-        const result = getPuttingMakeRatesService();
-        const bucket5 = result.find(r => r.distance === 5);
-
-        expect(bucket5!.firstPuttMakeRate).toBe('100%');
-        expect(bucket5!.secondPuttMakeRate).toBe('-');
+        expect(bucket5!.makeRate).toBe('100%');
+        expect(bucket10!.makeRate).toBe('50%');
     });
 
     it('returns all 26 buckets in order', () => {
@@ -202,7 +212,7 @@ describe('getPuttingMakeRatesService', () => {
         const result = getPuttingMakeRatesService(new Set([1]));
         const bucket5 = result.find(r => r.distance === 5);
 
-        expect(bucket5!.firstPuttMakeRate).toBe('100%');
+        expect(bucket5!.makeRate).toBe('100%');
     });
 
     it('aggregates all rows when roundIds is not provided', () => {
@@ -216,6 +226,6 @@ describe('getPuttingMakeRatesService', () => {
         const result = getPuttingMakeRatesService();
         const bucket5 = result.find(r => r.distance === 5);
 
-        expect(bucket5!.firstPuttMakeRate).toBe('50%');
+        expect(bucket5!.makeRate).toBe('50%');
     });
 });

@@ -373,7 +373,7 @@ describe('Settings table column migration', () => {
                 { name: 'PlayOnboardingSeen' },
                 { name: 'HomeOnboardingSeen' },
                 { name: 'PracticeOnboardingSeen' },
-                
+
                 { name: 'ReviewPromptShown' },
                 { name: 'PreShotReminderEnabled' },
                 { name: 'PreShotRoutineText' },
@@ -397,6 +397,67 @@ describe('Settings table column migration', () => {
             (call: string[]) => call[0].includes('Settings')
         );
         expect(settingsAlterCalls).toHaveLength(0);
+    });
+});
+
+describe('Rounds table IsScoreOnly column migration', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockExecAsync.mockResolvedValue(undefined);
+    });
+
+    it('should add IsScoreOnly column when missing from Rounds table', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Rounds)') return [
+                { name: 'Id' },
+                { name: 'TotalScore' },
+                { name: 'CourseName' },
+            ];
+            if (sql === 'PRAGMA table_info(Settings)') return [
+                { name: 'Id' },
+                { name: 'Theme' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE Rounds ADD COLUMN IsScoreOnly INTEGER NOT NULL DEFAULT 0'
+        );
+    });
+
+    it('should not add IsScoreOnly when it already exists in Rounds table', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Rounds)') return [
+                { name: 'Id' },
+                { name: 'TotalScore' },
+                { name: 'IsScoreOnly' },
+                { name: 'CourseName' },
+            ];
+            if (sql === 'PRAGMA table_info(Settings)') return [
+                { name: 'Id' },
+                { name: 'Theme' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        const roundsAlterCalls = mockExecSync.mock.calls.filter(
+            (call: string[]) => call[0].includes('ALTER TABLE Rounds')
+        );
+        expect(roundsAlterCalls).toHaveLength(0);
+    });
+
+    it('should include IsScoreOnly in the base Rounds CREATE TABLE DDL', async () => {
+        mockExecAsync.mockResolvedValue(undefined);
+        mockGetAllSync.mockReturnValue([]);
+
+        await initialize();
+
+        const sql = mockExecAsync.mock.calls[0][0];
+        expect(sql).toContain('IsScoreOnly');
     });
 });
 
@@ -726,7 +787,7 @@ describe('DrillHistory DrillId column migration', () => {
         await initialize();
 
         const scoreAlterCalls = mockExecSync.mock.calls.filter(
-            (call: string[]) => call[0].includes('Score')
+            (call: string[]) => call[0].includes('ALTER TABLE DrillHistory') && call[0].includes('Score')
         );
         expect(scoreAlterCalls).toHaveLength(0);
     });

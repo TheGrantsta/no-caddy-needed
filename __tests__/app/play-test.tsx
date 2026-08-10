@@ -91,6 +91,7 @@ jest.mock('../../service/DbService', () => ({
         homeOnboardingSeen: true,
         practiceOnboardingSeen: true,
         reviewPromptShown: false,
+        skipStatsFlowEnabled: false,
     }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
 }));
@@ -621,7 +622,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(mockStartRound).toHaveBeenCalledWith('Test Course');
+                expect(mockStartRound).toHaveBeenCalledWith('Test Course', false);
                 expect(mockAddRoundPlayers).toHaveBeenCalledWith(1, []);
             });
         });
@@ -637,7 +638,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(mockStartRound).toHaveBeenCalledWith('St Andrews');
+                expect(mockStartRound).toHaveBeenCalledWith('St Andrews', false);
                 expect(getByText('#1')).toBeTruthy();
             });
         });
@@ -744,6 +745,48 @@ describe('Play screen', () => {
 
             await waitFor(() => {
                 expect(mockAddRoundPlayers).toHaveBeenCalledWith(1, ['Alice']);
+            });
+        });
+
+        it('passes false for isScoreOnly when skipStatsFlowEnabled is false', async () => {
+            const mockGetSettings = getSettingsService as jest.Mock;
+            mockGetSettings.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                skipStatsFlowEnabled: false,
+            });
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(mockStartRound).toHaveBeenCalledWith('St Andrews', false);
+            });
+        });
+
+        it('passes true for isScoreOnly when skipStatsFlowEnabled is true', async () => {
+            const mockGetSettings = getSettingsService as jest.Mock;
+            mockGetSettings.mockReturnValue({
+                theme: 'dark',
+                notificationsEnabled: true,
+                skipStatsFlowEnabled: true,
+            });
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(mockStartRound).toHaveBeenCalledWith('St Andrews', true);
             });
         });
     });

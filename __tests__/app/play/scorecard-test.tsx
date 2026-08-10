@@ -909,5 +909,53 @@ describe('Scorecard screen', () => {
 
             expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · 3-Putts: 0 · Penalties: 0');
         });
+
+        describe('Score-only rounds', () => {
+            it('shows score editor but not sins tally when selecting score-only round score', () => {
+                const scoreOnlyData = {
+                    ...multiplayerData,
+                    round: { ...multiplayerData.round, IsScoreOnly: 1 },
+                };
+                mockGetMultiplayerScorecard.mockReturnValue(scoreOnlyData);
+
+                const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+                fireEvent.press(getByTestId('edit-scorecard-button'));
+                fireEvent.press(getByTestId('score-cell-1-1'));
+
+                expect(getByTestId('score-editor-value')).toBeTruthy();
+                expect(queryByTestId('deadly-sins-tally')).toBeNull();
+            });
+
+            it('does not call getHoleDeadlySinsService for score-only rounds', () => {
+                const scoreOnlyData = {
+                    ...multiplayerData,
+                    round: { ...multiplayerData.round, IsScoreOnly: 1 },
+                };
+                mockGetMultiplayerScorecard.mockReturnValue(scoreOnlyData);
+
+                render(<ScorecardScreen />);
+
+                const { getByTestId } = render(<ScorecardScreen />);
+                fireEvent.press(getByTestId('edit-scorecard-button'));
+                fireEvent.press(getByTestId('score-cell-1-1'));
+
+                // getHoleDeadlySinsService should not be called for score-only rounds
+                expect(mockGetHoleDeadlySinsService).not.toHaveBeenCalled();
+            });
+
+            it('hides score breakdown for score-only rounds', () => {
+                const scoreOnlyData = {
+                    ...multiplayerData,
+                    round: { ...multiplayerData.round, IsScoreOnly: 1 },
+                };
+                mockGetMultiplayerScorecard.mockReturnValue(scoreOnlyData);
+                mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, threePutts: 0, penalties: 0 });
+
+                const { queryByTestId } = render(<ScorecardScreen />);
+
+                expect(queryByTestId('round-score-breakdown')).toBeNull();
+            });
+        });
     });
 });

@@ -66,16 +66,16 @@ describe('startRoundService', () => {
     it('creates a new round and returns the round ID', async () => {
         mockInsertRound.mockResolvedValue(42);
 
-        const result = await startRoundService('St Andrews');
+        const result = await startRoundService('St Andrews', false);
 
-        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews');
+        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', false);
         expect(result).toBe(42);
     });
 
     it('returns null when insert fails', async () => {
         mockInsertRound.mockResolvedValue(null);
 
-        const result = await startRoundService('');
+        const result = await startRoundService('', false);
 
         expect(result).toBeNull();
     });
@@ -83,10 +83,26 @@ describe('startRoundService', () => {
     it('passes empty string when no course name provided', async () => {
         mockInsertRound.mockResolvedValue(1);
 
-        const result = await startRoundService('');
+        const result = await startRoundService('', false);
 
-        expect(mockInsertRound).toHaveBeenCalledWith('');
+        expect(mockInsertRound).toHaveBeenCalledWith('', false);
         expect(result).toBe(1);
+    });
+
+    it('passes true for isScoreOnly when in score-only mode', async () => {
+        mockInsertRound.mockResolvedValue(42);
+
+        await startRoundService('St Andrews', true);
+
+        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', true);
+    });
+
+    it('passes false for isScoreOnly when not in score-only mode', async () => {
+        mockInsertRound.mockResolvedValue(42);
+
+        await startRoundService('St Andrews', false);
+
+        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', false);
     });
 });
 
@@ -281,6 +297,26 @@ describe('getAllRoundHistoryService', () => {
         const result = getAllRoundHistoryService();
 
         expect(result[0].HolesPlayed).toBe(0);
+    });
+
+    it('includes IsScoreOnly in returned rounds', () => {
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: 'St Andrews', UserPlayerId: null, StrokeTotal: null, HolesPlayed: 0, IsScoreOnly: 1 },
+        ]);
+
+        const result = getAllRoundHistoryService();
+
+        expect(result[0].IsScoreOnly).toBe(1);
+    });
+
+    it('returns IsScoreOnly as 0 for normal rounds', () => {
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: '2025-06-15T14:00:00.000Z', Created_At: '2025-06-15T10:00:00.000Z', CourseName: 'St Andrews', UserPlayerId: null, StrokeTotal: null, HolesPlayed: 0, IsScoreOnly: 0 },
+        ]);
+
+        const result = getAllRoundHistoryService();
+
+        expect(result[0].IsScoreOnly).toBe(0);
     });
 });
 

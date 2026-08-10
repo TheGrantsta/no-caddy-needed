@@ -223,7 +223,7 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                         ({formatScore(relativeTotal)})
                                     </Text>
                                 </View>
-                                {isUserPlayer && scoreBreakdown && (scoreBreakdown.putts > 0 || scoreBreakdown.threePutts > 0 || scoreBreakdown.penalties > 0) && (
+                                {isUserPlayer && scoreBreakdown && (
                                     <Text testID="round-score-breakdown" style={s.scoreBreakdownText}>
                                         Putts: {scoreBreakdown.putts} · 3-Putts: {scoreBreakdown.threePutts} · Penalties: {scoreBreakdown.penalties}
                                     </Text>

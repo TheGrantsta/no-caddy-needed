@@ -194,7 +194,6 @@ export default function Play() {
             setPreShotText(currentSettings.preShotRoutineText);
             setShowPreShotReminder(true);
         }
-        setSkipStatsFlow(currentSettings.skipStatsFlowEnabled);
     }, [currentHole, activeRoundId]);
 
     const handleDismissOnboarding = async () => {
@@ -220,6 +219,7 @@ export default function Play() {
         } else {
             await cancelAllRoundReminders();
         }
+        setSkipStatsFlow(incompleteRound.IsScoreOnly === 1);
         const holesPlayed = getHolesPlayedForRoundService(incompleteRound.Id);
         const resumeHole = holesPlayed > 0 ? holesPlayed + 1 : 1;
         setCurrentHole(resumeHole);
@@ -250,10 +250,11 @@ export default function Play() {
     };
 
     const handleStartRound = async (playerNames: string[], courseName: string) => {
-        const roundId = await startRoundService(courseName);
+        const roundId = await startRoundService(courseName, settings.skipStatsFlowEnabled);
 
         if (roundId) {
             logEvent('start_round');
+            setSkipStatsFlow(settings.skipStatsFlowEnabled);
             const playerIds = await addRoundPlayersService(roundId, playerNames);
             const roundPlayers = playerIds.map((id, index) => ({
                 Id: id,

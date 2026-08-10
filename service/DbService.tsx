@@ -513,6 +513,7 @@ export type Round = {
     CourseName: string | null;
     Created_At: string;
     HolesPlayed: number;
+    IsScoreOnly: number;
 };
 
 export type RoundHole = {
@@ -586,8 +587,8 @@ export type RoundScoreBreakdown = {
 };
 
 // Round services
-export const startRoundService = async (courseName: string): Promise<number | null> => {
-    return insertRound(courseName);
+export const startRoundService = async (courseName: string, isScoreOnly: boolean): Promise<number | null> => {
+    return insertRound(courseName, isScoreOnly);
 };
 
 export const endRoundService = async (roundId: number): Promise<boolean> => {
@@ -621,6 +622,7 @@ export const getAllRoundHistoryService = (): Round[] => {
         CourseName: row.CourseName ?? null,
         Created_At: getTwoDigitDayAndMonth(row.Created_At),
         HolesPlayed: row.HolesPlayed ?? 0,
+        IsScoreOnly: row.IsScoreOnly,
     }));
 };
 

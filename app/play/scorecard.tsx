@@ -127,7 +127,8 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const handleScoreSelect = (holeNumber: number, playerId: number) => {
         setSelectedScore({ holeNumber, playerId });
         const isUserPlayer = multiplayerScorecard?.players.find(p => p.Id === playerId)?.IsUser === 1;
-        if (isUserPlayer) {
+        const isScoreOnlyRound = multiplayerScorecard?.round.IsScoreOnly === 1;
+        if (isUserPlayer && !isScoreOnlyRound) {
             const existing = getHoleDeadlySinsService(Number(roundId), holeNumber);
             setEditedSins(existing ?? INITIAL_SINS);
             setSinsHoleNumber(holeNumber);
@@ -301,7 +302,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                             onScoreSelect={handleScoreSelect}
                             sinHoles={sinHoles}
                             onSinPress={handleSinPress}
-                            scoreBreakdown={scoreBreakdown ?? undefined}
+                            scoreBreakdown={round?.IsScoreOnly ? undefined : (scoreBreakdown ?? undefined)}
                         />
 
                         {isEditing && selectedScore && (

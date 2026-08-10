@@ -79,7 +79,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS DrillHistory (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, Result BOOLEAN NOT NULL, DrillId INTEGER, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS Drills (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Label TEXT NOT NULL, IconName TEXT NOT NULL, Target TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsDeleted INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS HoleDeadlySins (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, ThreePutts INTEGER NOT NULL DEFAULT 0, DoubleBogeys INTEGER NOT NULL DEFAULT 0, BogeysPar5 INTEGER NOT NULL DEFAULT 0, BogeysInside9Iron INTEGER NOT NULL DEFAULT 0, DoubleChips INTEGER NOT NULL DEFAULT 0, TroubleOffTee INTEGER NOT NULL DEFAULT 0, Penalties INTEGER NOT NULL DEFAULT 0);
-        CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, CourseName TEXT, Created_At TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, CourseName TEXT, Created_At TEXT NOT NULL, IsScoreOnly INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
@@ -122,7 +122,7 @@ export const initialize = async () => {
         },
         {
             table: 'Rounds',
-            columnsToAdd: [],
+            columnsToAdd: ['IsScoreOnly INTEGER NOT NULL DEFAULT 0'],
             columnsToRemove: [
                 'CoursePar'
             ],
@@ -543,17 +543,17 @@ export const restoreDrill = async (id: number): Promise<boolean> => {
     return success;
 };
 
-export const insertRound = async (courseName: string): Promise<number | null> => {
+export const insertRound = async (courseName: string, isScoreOnly: boolean): Promise<number | null> => {
     try {
         const db = await SQLite.openDatabaseAsync(dbName);
         const now = new Date().toISOString();
 
         const statement = await db.prepareAsync(
-            'INSERT INTO Rounds (TotalScore, StartTime, IsCompleted, CourseName, Created_At) VALUES (0, $StartTime, 0, $CourseName, $Created_At);'
+            'INSERT INTO Rounds (TotalScore, StartTime, IsCompleted, CourseName, Created_At, IsScoreOnly) VALUES (0, $StartTime, 0, $CourseName, $Created_At, $IsScoreOnly);'
         );
 
         try {
-            const result = await statement.executeAsync({ $StartTime: now, $CourseName: courseName || null, $Created_At: now });
+            const result = await statement.executeAsync({ $StartTime: now, $CourseName: courseName || null, $Created_At: now, $IsScoreOnly: isScoreOnly ? 1 : 0 });
             return result.lastInsertRowId;
         } finally {
             await statement.finalizeAsync();
@@ -1030,7 +1030,7 @@ export const updatePracticeReminderNotificationId = async (id: number, notificat
 export const getAllRoundsWithPlayersAndScores = () => {
     const sql = `
         SELECT
-            r.Id, r.TotalScore, r.StartTime, r.EndTime, r.IsCompleted, r.CourseName, r.Created_At,
+            r.Id, r.TotalScore, r.StartTime, r.EndTime, r.IsCompleted, r.CourseName, r.Created_At, r.IsScoreOnly,
             rp.Id AS UserPlayerId,
             SUM(CASE WHEN rhs.RoundPlayerId = rp.Id THEN rhs.Score ELSE NULL END) AS StrokeTotal,
             COUNT(DISTINCT rhs.HoleNumber) AS HolesPlayed

@@ -356,13 +356,31 @@ export const getPuttingStats = (roundId: number, holeNumber: number) => {
     );
 };
 
+export const getAsyncDb = (): SQLite.SQLiteDatabase => {
+    if (!_db) {
+        throw new Error('Database not initialized. Call initialize() first.');
+    }
+    return _db;
+};
+
+export const getAllPuttingStatsRaw = () => {
+    return getSyncDb().getAllSync(
+        `SELECT ps.RoundId, ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.HoleNumber
+         FROM PuttingStats ps;`
+    );
+};
+
+export const getAllRoundsRaw = () => {
+    return getSyncDb().getAllSync(
+        `SELECT Id, IsCompleted, CourseName FROM Rounds ORDER BY Id DESC;`
+    );
+};
+
 export const getAllPuttingStatsWithThreePutts = () => {
     return getSyncDb().getAllSync(
         `SELECT ps.RoundId, ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, COALESCE(hds.ThreePutts, 0) AS ThreePutts
          FROM PuttingStats ps
-         JOIN Rounds r ON ps.RoundId = r.Id
-         LEFT JOIN HoleDeadlySins hds ON hds.RoundId = ps.RoundId AND hds.HoleNumber = ps.HoleNumber
-         WHERE r.IsCompleted = 1;`
+         LEFT JOIN HoleDeadlySins hds ON hds.RoundId = ps.RoundId AND hds.HoleNumber = ps.HoleNumber;`
     );
 };
 

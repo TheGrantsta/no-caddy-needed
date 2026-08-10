@@ -745,11 +745,19 @@ export const getDeadlySinsForRoundService = (roundId: number): DeadlySinsRound |
 };
 
 export const getRoundScoreBreakdownService = (roundId: number): RoundScoreBreakdown => {
-    const holesPlayed = getHolesPlayedForRoundService(roundId);
     const sins = getDeadlySinsForRoundService(roundId);
     const threePutts = sins?.ThreePutts ?? 0;
     const penalties = sins?.Penalties ?? 0;
-    return { putts: holesPlayed * 2 + threePutts, threePutts, penalties };
+
+    const puttingStats = getAllPuttingStatsWithThreePutts() as any[];
+    const roundStats = puttingStats.filter((row) => row.RoundId === roundId);
+    let putts = 0;
+    roundStats.forEach((stat) => {
+        putts += 1;
+        if (stat.SecondPuttDistance > 0) putts += 1;
+    });
+
+    return { putts, threePutts, penalties };
 };
 
 // Settings services

@@ -14,40 +14,46 @@ jest.mock('../../database/db', () => ({
     getDeadlySinsForRound: jest.fn(),
     getAllDeadlySinsRoundTotals: jest.fn(),
     getHolesPlayedForRound: jest.fn(),
+    getAllPuttingStatsWithThreePutts: jest.fn(),
 }));
 
 const mockGetRoundById = getRoundById as jest.Mock;
 const mockGetDeadlySinsForRound = getDeadlySinsForRound as jest.Mock;
 const mockGetHolesPlayedForRound = require('../../database/db').getHolesPlayedForRound as jest.Mock;
+const mockGetAllPuttingStatsWithThreePutts = require('../../database/db').getAllPuttingStatsWithThreePutts as jest.Mock;
 
 describe('getRoundScoreBreakdownService', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    it('returns putts as 2 * holesPlayed + threePutts when sins exist', () => {
+    it('counts putts from actual putting stats when sins exist', () => {
         mockGetRoundById.mockReturnValue({ Created_At: '01/06' });
         mockGetDeadlySinsForRound.mockReturnValue({
             ThreePutts: 2,
             Penalties: 1,
         });
-        mockGetHolesPlayedForRound.mockReturnValue(18);
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 10, SecondPuttDistance: 3, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 8, SecondPuttDistance: 0, ThreePutts: 0 },
+        ]);
 
         const result = getRoundScoreBreakdownService(1);
 
-        expect(result.putts).toBe(18 * 2 + 2);
+        expect(result.putts).toBe(4);
         expect(result.threePutts).toBe(2);
         expect(result.penalties).toBe(1);
     });
 
-    it('returns putts as 2 * holesPlayed and penalties as 0 when sins is null', () => {
+    it('returns putts and penalties as 0 when no putting stats exist', () => {
         mockGetRoundById.mockReturnValue({ Created_At: '01/06' });
         mockGetDeadlySinsForRound.mockReturnValue(null);
-        mockGetHolesPlayedForRound.mockReturnValue(9);
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([]);
 
         const result = getRoundScoreBreakdownService(1);
 
-        expect(result.putts).toBe(9 * 2);
+        expect(result.putts).toBe(0);
         expect(result.threePutts).toBe(0);
         expect(result.penalties).toBe(0);
     });
@@ -55,7 +61,7 @@ describe('getRoundScoreBreakdownService', () => {
     it('returns 0 putts when no holes played', () => {
         mockGetRoundById.mockReturnValue({ Created_At: '01/06' });
         mockGetDeadlySinsForRound.mockReturnValue(null);
-        mockGetHolesPlayedForRound.mockReturnValue(0);
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([]);
 
         const result = getRoundScoreBreakdownService(1);
 
@@ -70,11 +76,14 @@ describe('getRoundScoreBreakdownService', () => {
             ThreePutts: 0,
             Penalties: 2,
         });
-        mockGetHolesPlayedForRound.mockReturnValue(18);
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 10, SecondPuttDistance: 2, ThreePutts: 0 },
+        ]);
 
         const result = getRoundScoreBreakdownService(1);
 
-        expect(result.putts).toBe(18 * 2);
+        expect(result.putts).toBe(3);
         expect(result.threePutts).toBe(0);
         expect(result.penalties).toBe(2);
     });
@@ -85,26 +94,34 @@ describe('getRoundScoreBreakdownService', () => {
             ThreePutts: 3,
             Penalties: 0,
         });
-        mockGetHolesPlayedForRound.mockReturnValue(18);
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 10, SecondPuttDistance: 4, ThreePutts: 1 },
+        ]);
 
         const result = getRoundScoreBreakdownService(1);
 
-        expect(result.putts).toBe(18 * 2 + 3);
+        expect(result.putts).toBe(3);
         expect(result.threePutts).toBe(3);
         expect(result.penalties).toBe(0);
     });
 
-    it('computes partial 9-hole round', () => {
+    it('counts putts correctly for partial 9-hole round', () => {
         mockGetRoundById.mockReturnValue({ Created_At: '01/06' });
         mockGetDeadlySinsForRound.mockReturnValue({
             ThreePutts: 1,
             Penalties: 1,
         });
-        mockGetHolesPlayedForRound.mockReturnValue(9);
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 3, SecondPuttDistance: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 4, SecondPuttDistance: 2, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 8, SecondPuttDistance: 3, ThreePutts: 1 },
+        ]);
 
         const result = getRoundScoreBreakdownService(1);
 
-        expect(result.putts).toBe(9 * 2 + 1);
+        expect(result.putts).toBe(6);
         expect(result.threePutts).toBe(1);
         expect(result.penalties).toBe(1);
     });

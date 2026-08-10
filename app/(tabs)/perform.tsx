@@ -59,6 +59,16 @@ export default function Perform() {
     ]);
   };
 
+  const hasPersonalPuttingData = (roundIds?: Set<number>): boolean => {
+    const rates = getPuttingMakeRatesService(roundIds);
+    return rates.some((row) => row.makeRate !== '-');
+  };
+
+  const hasProximityData = (threePuttOnly: boolean, roundIds?: Set<number>): boolean => {
+    const proximity = getPuttingProximityService(threePuttOnly, roundIds);
+    return proximity.length > 0 && proximity.some((row) => row.shortPercent !== '-' || row.longPercent !== '-');
+  };
+
   const onRefresh = () => {
     setRefreshing(true);
 
@@ -167,26 +177,34 @@ export default function Perform() {
 
             <View style={styles.divider} />
 
-            <View style={styles.clubDistanceList.container}>
-              <View style={styles.clubDistanceList.headerRow}>
-                <View style={[styles.clubDistanceList.headerCell, styles.clubDistanceList.clubCell]}>
-                  <Text style={styles.clubDistanceList.headerCell}>Feet</Text>
+            {hasPersonalPuttingData(roundIdsFilter) ? (
+              <>
+                <View style={styles.clubDistanceList.container}>
+                  <View style={styles.clubDistanceList.headerRow}>
+                    <View style={[styles.clubDistanceList.headerCell, styles.clubDistanceList.clubCell]}>
+                      <Text style={styles.clubDistanceList.headerCell}>Feet</Text>
+                    </View>
+                    <View style={[styles.clubDistanceList.headerCell, styles.clubDistanceList.distanceCell]}>
+                      <Text style={styles.clubDistanceList.headerCell}>Make rate</Text>
+                    </View>
+                  </View>
+                  {getPersonalPuttingStats(roundIdsFilter).map(([distance, rate], index, rows) => (
+                    <View key={distance} style={[styles.clubDistanceList.row, index === rows.length - 1 && { borderBottomWidth: 0.5 }]}>
+                      <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.clubCell, { textAlign: 'center', }]}>{distance}</Text>
+                      <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.distanceCell]}>{rate}</Text>
+                    </View>
+                  ))}
                 </View>
-                <View style={[styles.clubDistanceList.headerCell, styles.clubDistanceList.distanceCell]}>
-                  <Text style={styles.clubDistanceList.headerCell}>Make rate</Text>
-                </View>
-              </View>
-              {getPersonalPuttingStats(roundIdsFilter).map(([distance, rate], index, rows) => (
-                <View key={distance} style={[styles.clubDistanceList.row, index === rows.length - 1 && { borderBottomWidth: 0.5 }]}>
-                  <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.clubCell, { textAlign: 'center', }]}>{distance}</Text>
-                  <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.distanceCell]}>{rate}</Text>
-                </View>
-              ))}
-            </View>
 
-            <Text style={[styles.smallestText, styles.marginBottom, { paddingHorizontal: 16, marginTop: 12 }]}>
-              * Estimated or extrapolated from PGA tour data
-            </Text>
+                <Text style={[styles.smallestText, styles.marginBottom, { paddingHorizontal: 16, marginTop: 12 }]}>
+                  * Estimated or extrapolated from PGA tour data
+                </Text>
+              </>
+            ) : (
+              <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
+                No putting data for selected rounds
+              </Text>
+            )}
           </View>
         )}
 
@@ -205,17 +223,25 @@ export default function Perform() {
 
             <View style={styles.divider} />
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, paddingTop: 20, gap: 8 }}>
-              <Text testID="proximity-filter-label" style={{ color: colours.primary, fontSize: 16 }}>Show 3-Putts Only</Text>
-              <Switch
-                testID="proximity-filter-toggle"
-                value={proximityThreePuttOnly}
-                onValueChange={setProximityThreePuttOnly}
-                trackColor={{ false: colours.tertiary, true: colours.primary }}
-              />
-            </View>
+            {hasProximityData(proximityThreePuttOnly, roundIdsFilter) ? (
+              <>
+                <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, paddingTop: 20, gap: 8 }}>
+                  <Text testID="proximity-filter-label" style={{ color: colours.primary, fontSize: 16 }}>Show 3-Putts Only</Text>
+                  <Switch
+                    testID="proximity-filter-toggle"
+                    value={proximityThreePuttOnly}
+                    onValueChange={setProximityThreePuttOnly}
+                    trackColor={{ false: colours.tertiary, true: colours.primary }}
+                  />
+                </View>
 
-            <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, roundIdsFilter)} />
+                <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, roundIdsFilter)} />
+              </>
+            ) : (
+              <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
+                No putting data for selected rounds
+              </Text>
+            )}
           </View>
         )}
       </ScrollView>

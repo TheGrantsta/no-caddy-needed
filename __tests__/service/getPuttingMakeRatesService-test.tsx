@@ -59,9 +59,9 @@ describe('getPuttingMakeRatesService', () => {
 
     it('counts first-putt attempts made when secondPuttDistance === 0', () => {
         mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
-            { FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 0 },
-            { FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 0 },
-            { FirstPuttDistance: 5, SecondPuttDistance: 1, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 1, ThreePutts: 0 },
         ]);
 
         const result = getPuttingMakeRatesService();

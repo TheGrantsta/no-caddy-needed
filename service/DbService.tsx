@@ -374,7 +374,7 @@ export const getPuttingMakeRatesService = (roundIds?: Set<number>): PuttingMakeR
     const stats = new Map<number, { total: number; made: number }>();
 
     rows.forEach((row) => {
-        if (roundIds && !roundIds.has(row.RoundId)) return;
+        if (roundIds && (!row.RoundId || !roundIds.has(row.RoundId))) return;
 
         const firstBucket = bucketPuttingDistance(row.FirstPuttDistance);
         if (firstBucket !== null) {

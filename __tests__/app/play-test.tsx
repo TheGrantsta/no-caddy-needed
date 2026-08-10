@@ -378,7 +378,7 @@ describe('Play screen', () => {
         });
 
         describe('Incomplete round on mount', () => {
-            const incompleteRound = { Id: 42, TotalScore: 0, IsCompleted: 0, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: 'Pebble Beach', HolesPlayed: 5 };
+            const incompleteRound = { Id: 42, TotalScore: 0, IsCompleted: 0, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: 'Pebble Beach', HolesPlayed: 5, IsScoreOnly: 0 };
 
             beforeEach(() => {
                 mockGetActiveRound.mockReturnValue(incompleteRound);
@@ -820,10 +820,11 @@ describe('Play screen', () => {
         };
 
         // Resume an in-progress round to land directly on hole (holesPlayed + 1).
-        const resumeAtHole = async (holesPlayed: number) => {
+        const resumeAtHole = async (holesPlayed: number, isScoreOnly: number = 0) => {
             mockGetActiveRound.mockReturnValue({
                 Id: 5, TotalScore: 0, IsCompleted: 0,
                 StartTime: '2025-06-15T10:00:00.000Z', EndTime: null, Created_At: '2025-06-15T10:00:00.000Z',
+                IsScoreOnly: isScoreOnly,
             });
             mockGetRoundPlayers.mockReturnValue([
                 { Id: 1, RoundId: 5, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
@@ -924,7 +925,7 @@ describe('Play screen', () => {
                 reviewPromptShown: false,
                 skipStatsFlowEnabled: true,
             });
-            const utils = await resumeAtHole(17); // resumes on hole 18
+            const utils = await resumeAtHole(17, 1); // resumes on hole 18 in score-only mode
 
             const button = utils.UNSAFE_getByProps({ testID: 'next-hole-button' });
             expect(button.findByProps({ children: 'Finish round' })).toBeTruthy();
@@ -938,6 +939,7 @@ describe('Play screen', () => {
                 Id: 5, TotalScore: 0, IsCompleted: 0,
                 StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
                 Created_At: '2025-06-15T10:00:00.000Z',
+                IsScoreOnly: 0,
             });
             mockGetRoundPlayers.mockReturnValue([
                 { Id: 1, RoundId: 5, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
@@ -1791,6 +1793,7 @@ describe('Play screen', () => {
                 Id: 5, TotalScore: 0, IsCompleted: 0,
                 StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
                 Created_At: '2025-06-15T10:00:00.000Z',
+                IsScoreOnly: 0,
             });
             mockGetRoundPlayers.mockReturnValue([
                 { Id: 1, RoundId: 5, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
@@ -1812,6 +1815,7 @@ describe('Play screen', () => {
                 Id: 5, TotalScore: 0, IsCompleted: 0,
                 StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
                 Created_At: '2025-06-15T10:00:00.000Z',
+                IsScoreOnly: 0,
             });
             mockGetRoundPlayers.mockReturnValue([]);
 
@@ -2181,6 +2185,7 @@ describe('Play screen', () => {
                 Id: 5, TotalScore: 0, IsCompleted: 0,
                 StartTime: '2025-06-15T10:00:00.000Z', EndTime: null,
                 Created_At: '2025-06-15T10:00:00.000Z',
+                IsScoreOnly: 0,
             });
             mockGetRoundPlayers.mockReturnValue([
                 { Id: 1, RoundId: 5, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
@@ -2281,7 +2286,7 @@ describe('Play screen', () => {
         });
 
         it('logs continue_round event when continue round button pressed', async () => {
-            mockGetActiveRound.mockReturnValue({ Id: 42, TotalScore: 0, IsCompleted: 0, StartTime: '', EndTime: '', Created_At: '15/06' });
+            mockGetActiveRound.mockReturnValue({ Id: 42, TotalScore: 0, IsCompleted: 0, StartTime: '', EndTime: '', Created_At: '15/06', IsScoreOnly: 0 });
             mockGetRoundPlayers.mockReturnValue([]);
 
             const { getByTestId } = render(<Play />);

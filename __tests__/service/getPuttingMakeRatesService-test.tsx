@@ -228,4 +228,19 @@ describe('getPuttingMakeRatesService', () => {
 
         expect(bucket5!.makeRate).toBe('50%');
     });
+
+    it('reproduces user scenario: 2-putt hole filtered to single round', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 42, FirstPuttDistance: 20, SecondPuttDistance: 4, SecondPuttIsLong: 0, ThreePutts: 0 },
+        ]);
+
+        const result = getPuttingMakeRatesService(new Set([42]));
+        const bucket4 = result.find(r => r.distance === 4);
+        const bucket20 = result.find(r => r.distance === 20);
+        const bucket10 = result.find(r => r.distance === 10);
+
+        expect(bucket4!.makeRate).toBe('100%');
+        expect(bucket20!.makeRate).toBe('0%');
+        expect(bucket10!.makeRate).toBe('-');
+    });
 });

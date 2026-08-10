@@ -148,6 +148,15 @@ export const initialize = async () => {
         amendTable(syncDb, migration);
     }
 
+    // Infer IsScoreOnly for existing rounds based on whether putting stats were recorded.
+    // If a round has no putting stats (putts = 0), it was played in score-only mode.
+    syncDb.execSync(`
+        UPDATE Rounds SET IsScoreOnly = 1
+        WHERE IsCompleted = 1 AND Id NOT IN (
+            SELECT DISTINCT RoundId FROM PuttingStats
+        )
+    `);
+
     syncDb.execSync('DROP TABLE IF EXISTS DeadlySinsRounds;');
     syncDb.execSync(
         'DELETE FROM HoleDeadlySins WHERE Id NOT IN (SELECT MAX(Id) FROM HoleDeadlySins GROUP BY RoundId, HoleNumber);'

@@ -925,3 +925,40 @@ describe('Tiger5Rounds to DeadlySinsRounds rename migration', () => {
         expect(renameCalls).toHaveLength(0);
     });
 });
+
+describe('Rounds IsScoreOnly post-migration inference', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockExecAsync.mockResolvedValue(undefined);
+        mockGetAllSync.mockReturnValue([]);
+    });
+
+    it('infers IsScoreOnly=1 for completed rounds with no putting stats', async () => {
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            expect.stringContaining('UPDATE Rounds SET IsScoreOnly = 1')
+        );
+        expect(mockExecSync).toHaveBeenCalledWith(
+            expect.stringContaining('WHERE IsCompleted = 1 AND Id NOT IN')
+        );
+        expect(mockExecSync).toHaveBeenCalledWith(
+            expect.stringContaining('SELECT DISTINCT RoundId FROM PuttingStats')
+        );
+    });
+
+    it('only updates completed rounds without putting stats', async () => {
+        await initialize();
+
+        // Verify the UPDATE statement uses the correct WHERE clause:
+        // - IsCompleted = 1: only completed rounds
+        // - Id NOT IN (... PuttingStats): only rounds without any putting stats
+        const updateCalls = mockExecSync.mock.calls.filter(
+            (call: string[]) => call[0].includes('UPDATE Rounds SET IsScoreOnly = 1')
+        );
+        expect(updateCalls.length).toBeGreaterThan(0);
+        expect(updateCalls[0][0]).toContain('WHERE IsCompleted = 1');
+        expect(updateCalls[0][0]).toContain('NOT IN');
+        expect(updateCalls[0][0]).toContain('PuttingStats');
+    });
+});

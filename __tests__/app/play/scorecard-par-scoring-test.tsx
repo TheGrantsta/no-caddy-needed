@@ -10,6 +10,8 @@ import {
     replaceHoleDeadlySinsService,
     getHolesWithSinsForRoundService,
     loadCourseNotesService,
+    getPuttingStatsService,
+    insertPuttingStatsService,
     PENALTY_TYPES,
     DOUBLE_CHIP_REASONS,
 } from '../../../service/DbService';
@@ -43,6 +45,8 @@ jest.mock('../../../service/DbService', () => ({
     getHoleSinDetailsService: jest.fn().mockReturnValue(null),
     replaceHoleSinDetailsService: jest.fn().mockResolvedValue(true),
     deleteHoleSinDetailsService: jest.fn().mockResolvedValue(true),
+    getPuttingStatsService: jest.fn().mockReturnValue(null),
+    insertPuttingStatsService: jest.fn().mockResolvedValue(true),
     PENALTY_TYPES: ['Out of bounds', 'Water hazard', 'Unplayable lie', 'Lost ball', 'Other 1-shot penalty', 'General penalty'],
     DOUBLE_CHIP_REASONS: ['Poor contact', 'Bad lie', 'Distance miscalculation', 'Other'],
 }));

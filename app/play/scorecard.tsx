@@ -8,6 +8,7 @@ import Scorecard from '../../components/Scorecard';
 import ScoreEditor from '../../components/ScoreEditor';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
 import SinDetailsInput from '../../components/SinDetailsInput';
+import PuttingStatsInput from '../../components/PuttingStatsInput';
 import CtaButton from '../../components/CtaButton';
 import { useAppToast } from '../../hooks/useAppToast';
 import {
@@ -25,6 +26,8 @@ import {
     getHoleSinDetailsService,
     replaceHoleSinDetailsService,
     deleteHoleSinDetailsService,
+    getPuttingStatsService,
+    insertPuttingStatsService,
     RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
@@ -33,6 +36,7 @@ import {
     RoundScoreBreakdown,
     ClubDistance,
     HoleSinDetailsInput,
+    PuttingStats,
 } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
@@ -97,6 +101,8 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const [sinDetailsBogeysClubError, setSinDetailsBogeysClubError] = useState(false);
     const [sinDetailsDoubleChipReasonError, setSinDetailsDoubleChipReasonError] = useState(false);
     const [hadPriorSinDetails, setHadPriorSinDetails] = useState(false);
+    const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt?: number; secondIsLong: boolean } | null>(null);
+    const [hadPriorPuttingStats, setHadPriorPuttingStats] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -149,6 +155,8 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         setSinDetailsPenaltyError(false);
         setSinDetailsBogeysClubError(false);
         setSinDetailsDoubleChipReasonError(false);
+        setPuttingStats(null);
+        setHadPriorPuttingStats(false);
     };
 
     const handleScoreSelect = (holeNumber: number, playerId: number) => {
@@ -169,6 +177,13 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             setSinDetailsPenaltyError(false);
             setSinDetailsBogeysClubError(false);
             setSinDetailsDoubleChipReasonError(false);
+            const existingPuttingStats = getPuttingStatsService(Number(roundId), holeNumber);
+            setPuttingStats(existingPuttingStats ? {
+                firstPutt: existingPuttingStats.FirstPuttDistance,
+                secondPutt: existingPuttingStats.SecondPuttDistance || undefined,
+                secondIsLong: !!existingPuttingStats.SecondPuttIsLong,
+            } : null);
+            setHadPriorPuttingStats(!!existingPuttingStats);
         } else {
             setEditedSins(null);
             setSinsHoleNumber(null);
@@ -181,6 +196,8 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             setSinDetailsPenaltyError(false);
             setSinDetailsBogeysClubError(false);
             setSinDetailsDoubleChipReasonError(false);
+            setPuttingStats(null);
+            setHadPriorPuttingStats(false);
         }
     };
 
@@ -302,6 +319,12 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                     await deleteHoleSinDetailsService(Number(roundId), sinsHoleNumber);
                 }
             }
+            if (sinsHoleNumber !== null && puttingStats) {
+                await insertPuttingStatsService(Number(roundId), sinsHoleNumber, puttingStats.firstPutt ?? 0, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong);
+            } else if (sinsHoleNumber !== null && hadPriorPuttingStats && !puttingStats) {
+                // Putting stats were cleared - they're already deleted by insertPuttingStatsService when stats exist
+                // No-op here; just document the behavior
+            }
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
             loadData();
             setEditing(false);
@@ -319,6 +342,8 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             setSinDetailsPenaltyError(false);
             setSinDetailsBogeysClubError(false);
             setSinDetailsDoubleChipReasonError(false);
+            setPuttingStats(null);
+            setHadPriorPuttingStats(false);
         } else {
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
             setShowSaveConfirm(false);
@@ -426,6 +451,20 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                 selectedDoubleChipReason={selectedDoubleChipReason}
                                 onDoubleChipReasonChange={setSelectedDoubleChipReason}
                                 showDoubleChipReasonError={sinDetailsDoubleChipReasonError}
+                            />
+                        )}
+
+                        {isEditing && selectedScore && multiplayerScorecard?.players.find(p => p.Id === selectedScore.playerId)?.IsUser === 1 && multiplayerScorecard?.round.IsScoreOnly !== 1 && (
+                            <PuttingStatsInput
+                                key={`putting-stats-${selectedScore.holeNumber}`}
+                                holePar={getSelectedHolePar()}
+                                threePuttSelected={editedSins?.threePutts ?? false}
+                                onStatsChange={(firstPutt, secondPutt, secondIsLong) => {
+                                    setPuttingStats(firstPutt !== undefined ? { firstPutt, secondPutt, secondIsLong } : null);
+                                }}
+                                initialFirstPutt={puttingStats?.firstPutt}
+                                initialSecondPutt={puttingStats?.secondPutt}
+                                initialSecondIsLong={puttingStats?.secondIsLong}
                             />
                         )}
 

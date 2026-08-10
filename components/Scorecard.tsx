@@ -205,29 +205,32 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                         const strokeTotal = getPlayerStrokeTotal(player.Id, allHoles);
                         const parTotal = getParTotalForHoles(allHoles);
                         const relativeTotal = getPlayerTotal(player.Id);
+                        const isUserPlayer = player.IsUser === 1;
                         return (
-                            <View key={player.Id} style={s.totalRow}>
-                                <Text style={s.totalPlayerName} numberOfLines={1}>{player.PlayerName}</Text>
-                                <Text
-                                    testID={`round-player-${player.Id}-total`}
-                                    style={[s.totalScore, s.totalStrokeCol, getScoreColor(strokeTotal, parTotal)]}
-                                >
-                                    {strokeTotal}
-                                </Text>
-                                <Text
-                                    testID={`player-total-${player.Id}`}
-                                    style={[s.totalScore, s.totalRelativeCol, getScoreColor(relativeTotal, 0)]}
-                                >
-                                    ({formatScore(relativeTotal)})
-                                </Text>
+                            <View key={player.Id}>
+                                <View style={s.totalRow}>
+                                    <Text style={s.totalPlayerName} numberOfLines={1}>{player.PlayerName}</Text>
+                                    <Text
+                                        testID={`round-player-${player.Id}-total`}
+                                        style={[s.totalScore, s.totalStrokeCol, getScoreColor(strokeTotal, parTotal)]}
+                                    >
+                                        {strokeTotal}
+                                    </Text>
+                                    <Text
+                                        testID={`player-total-${player.Id}`}
+                                        style={[s.totalScore, s.totalRelativeCol, getScoreColor(relativeTotal, 0)]}
+                                    >
+                                        ({formatScore(relativeTotal)})
+                                    </Text>
+                                </View>
+                                {isUserPlayer && scoreBreakdown && (scoreBreakdown.putts > 0 || scoreBreakdown.threePutts > 0 || scoreBreakdown.penalties > 0) && (
+                                    <Text testID="round-score-breakdown" style={s.scoreBreakdownText}>
+                                        Putts: {scoreBreakdown.putts} · 3-Putts: {scoreBreakdown.threePutts} · Penalties: {scoreBreakdown.penalties}
+                                    </Text>
+                                )}
                             </View>
                         );
                     })}
-                    {scoreBreakdown && (scoreBreakdown.putts > 0 || scoreBreakdown.threePutts > 0 || scoreBreakdown.penalties > 0) && (
-                        <Text testID="round-score-breakdown" style={s.scoreBreakdownText}>
-                            Putts: {scoreBreakdown.putts} · 3-Putts: {scoreBreakdown.threePutts} · Penalties: {scoreBreakdown.penalties}
-                        </Text>
-                    )}
                 </View>
             )}
 

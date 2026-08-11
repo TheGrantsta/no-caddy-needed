@@ -229,7 +229,7 @@ export default function Play() {
         } else {
             await cancelAllRoundReminders();
         }
-        setSkipStatsFlow(settings.skipStatsFlowEnabled);
+        setSkipStatsFlow(incompleteRound.IsScoreOnly === 1);
         const holesPlayed = getHolesPlayedForRoundService(incompleteRound.Id);
         const resumeHole = holesPlayed > 0 ? holesPlayed + 1 : 1;
         setCurrentHole(resumeHole);

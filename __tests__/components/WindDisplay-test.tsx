@@ -60,7 +60,7 @@ describe('WindDisplay', () => {
         const { getByTestId } = render(<WindDisplay directionFrom={0} speedMph={5} heading={0} />);
 
         expect(getByTestId('wind-arrow-large').props.style).toEqual(
-            [{ "marginTop": 2 }, { "transform": [{ "rotate": "180deg" }] }]
+            [{ "marginTop": 0 }, { "transform": [{ "rotate": "180deg" }] }]
         );
     });
 
@@ -69,7 +69,7 @@ describe('WindDisplay', () => {
         const { getByTestId } = render(<WindDisplay directionFrom={0} speedMph={5} heading={90} />);
 
         expect(getByTestId('wind-arrow-large').props.style).toEqual(
-            [{ "marginTop": 2 }, { "transform": [{ "rotate": "90deg" }] }]
+            [{ "marginTop": 0 }, { "transform": [{ "rotate": "90deg" }] }]
         );
     });
 
@@ -88,29 +88,29 @@ describe('WindDisplay', () => {
         expect(getByTestId('wind-effect-text')).toHaveTextContent(/about the same/i);
     });
 
-    describe('two-column layout', () => {
-        it('usesFlexRowForHorizontalLayout', () => {
+    describe('stacked sections layout', () => {
+        it('hasWindObservationSectionAtTop', () => {
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
+            const windSection = getByTestId('wind-observation-section');
+            expect(windSection).toBeTruthy();
+            expect(getByTestId('wind-target-marker')).toBeTruthy();
+            expect(getByTestId('wind-arrow-large')).toBeTruthy();
+            expect(getByTestId('wind-speed-text-large')).toBeTruthy();
+        });
+
+        it('hasGolfImplicationsSectionAtBottom', () => {
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
+            const implSection = getByTestId('wind-implications-section');
+            expect(implSection).toBeTruthy();
+        });
+
+        it('separatesWindObservationFromImplications', () => {
             const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
             const container = getByTestId('wind-display-container');
             const flat = Array.isArray(container.props.style)
                 ? Object.assign({}, ...container.props.style)
                 : container.props.style;
-            expect(flat.flexDirection).toBe('row');
-        });
-
-        it('arrangesleftColumnWithTargetAndArrow', () => {
-            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
-            const leftCol = getByTestId('wind-display-left-column');
-            expect(leftCol).toBeTruthy();
-            expect(getByTestId('wind-target-marker')).toBeTruthy();
-            expect(getByTestId('wind-arrow-large')).toBeTruthy();
-        });
-
-        it('arrangesRightColumnWithSpeedAndBottom', () => {
-            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
-            const rightCol = getByTestId('wind-display-right-column');
-            expect(rightCol).toBeTruthy();
-            expect(getByTestId('wind-speed-text-large')).toBeTruthy();
+            expect(flat.flexDirection).toBe('column');
         });
     });
 

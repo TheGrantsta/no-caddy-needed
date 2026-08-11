@@ -97,24 +97,26 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                     Wind direction / speed
                 </Text>
             )}
-            <View testID="wind-display-left-column" style={styles.windDisplay.leftColumn}>
-                <View testID="wind-target-marker" style={styles.windDisplay.targetMarker}>
-                    <MaterialIcons name="golf-course" size={22} color={colours.primary} />
-                    <Text style={styles.windDisplay.targetLabel}>
-                        Target
+            <View testID="wind-observation-section" style={styles.windDisplay.observationSection}>
+                <View style={styles.windDisplay.windReadingRow}>
+                    <View testID="wind-target-marker" style={styles.windDisplay.targetMarker}>
+                        <MaterialIcons name="golf-course" size={22} color={colours.primary} />
+                        <Text style={styles.windDisplay.targetLabel}>
+                            Target
+                        </Text>
+                    </View>
+                    <View testID="wind-arrow-large" style={[styles.windDisplay.arrowWrapper, { transform: [{ rotate: `${rotation}deg` }] }]}>
+                        <MaterialIcons name="straight" size={80} color={colours.primary} />
+                    </View>
+                    <Text
+                        testID="wind-speed-text-large"
+                        style={styles.windDisplay.speedText}
+                    >
+                        {speed} mph
                     </Text>
                 </View>
-                <View testID="wind-arrow-large" style={[styles.windDisplay.arrowWrapper, { transform: [{ rotate: `${rotation}deg` }] }]}>
-                    <MaterialIcons name="straight" size={80} color={colours.primary} />
-                </View>
             </View>
-            <View testID="wind-display-right-column" style={styles.windDisplay.rightColumn}>
-                <Text
-                    testID="wind-speed-text-large"
-                    style={styles.windDisplay.speedText}
-                >
-                    {speed} mph
-                </Text>
+            <View testID="wind-implications-section" style={styles.windDisplay.implicationsSection}>
                 <View style={styles.windDisplay.bottomSection}>
                 {voiceEnabled && !manualEntryOpen && (
                     <View style={styles.windDisplay.voiceRow}>
@@ -211,7 +213,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                     </Text>
                 )}
                 </View>
-            </View>
+                </View>
             {!compact && (
                 <Text
                     testID="wind-aim-hint"

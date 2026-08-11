@@ -1951,9 +1951,8 @@ export const createStyles = (c: ThemeColours) => ({
         card: {
             backgroundColor: c.background,
             borderRadius: 16,
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            alignItems: 'flex-start',
+            flexDirection: 'column',
+            alignItems: 'center',
             borderWidth: 1,
             borderColor: c.primary,
             width: 330,
@@ -1973,19 +1972,28 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 6,
             width: '100%',
         },
-        leftColumn: {
+        observationSection: {
+            width: '100%',
             alignItems: 'center',
-            justifyContent: 'flex-start',
-            flex: 1,
+            justifyContent: 'center',
+            paddingBottom: 12,
+            borderBottomWidth: 1,
+            borderBottomColor: c.primary,
+            opacity: 0.3,
         },
-        rightColumn: {
+        windReadingRow: {
+            flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'flex-start',
-            flex: 1,
+            justifyContent: 'center',
+            gap: 12,
+        },
+        implicationsSection: {
+            width: '100%',
+            alignItems: 'center',
+            paddingTop: 12,
         },
         targetMarker: {
             alignItems: 'center',
-            marginBottom: 2,
         },
         targetLabel: {
             color: c.primary,
@@ -1994,16 +2002,14 @@ export const createStyles = (c: ThemeColours) => ({
             opacity: 0.7,
         },
         arrowWrapper: {
-            marginTop: 2,
+            marginTop: 0,
         },
         speedText: {
             color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
-            marginTop: 0,
         },
         bottomSection: {
-            marginTop: 6,
             width: '100%',
             alignItems: 'center',
         },

@@ -410,6 +410,12 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                             scoreBreakdown={round?.IsScoreOnly ? undefined : (scoreBreakdown ?? undefined)}
                         />
 
+                        {isEditing && !selectedScore && (
+                            <View style={[styles.headerContainer, { paddingVertical: 16 }]}>
+                                <Text style={{ color: colours.text, fontSize: 16, fontWeight: '600' }}>Select the score to be amended</Text>
+                            </View>
+                        )}
+
                         {isEditing && selectedScore && (
                             <ScoreEditor
                                 holeNumber={selectedScore.holeNumber}

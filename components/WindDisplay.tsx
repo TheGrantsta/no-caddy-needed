@@ -100,7 +100,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
             <View testID="wind-observation-section" style={styles.windDisplay.observationSection}>
                 <View style={styles.windDisplay.windReadingColumn}>
                     <View testID="wind-arrow-large" style={[styles.windDisplay.arrowWrapper, { transform: [{ rotate: `${rotation}deg` }] }]}>
-                        <MaterialIcons name="straight" size={80} color={colours.primary} />
+                        <MaterialIcons name="straight" size={120} color={colours.accent} />
                     </View>
                     <Text
                         testID="wind-speed-text-large"

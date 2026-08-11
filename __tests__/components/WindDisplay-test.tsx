@@ -60,7 +60,7 @@ describe('WindDisplay', () => {
         const { getByTestId } = render(<WindDisplay directionFrom={0} speedMph={5} heading={0} />);
 
         expect(getByTestId('wind-arrow-large').props.style).toEqual(
-            [{ "marginTop": 0, "marginBottom": 4 }, { "transform": [{ "rotate": "180deg" }] }]
+            [{ "marginTop": 0, "marginBottom": 8 }, { "transform": [{ "rotate": "180deg" }] }]
         );
     });
 
@@ -69,7 +69,7 @@ describe('WindDisplay', () => {
         const { getByTestId } = render(<WindDisplay directionFrom={0} speedMph={5} heading={90} />);
 
         expect(getByTestId('wind-arrow-large').props.style).toEqual(
-            [{ "marginTop": 0, "marginBottom": 4 }, { "transform": [{ "rotate": "90deg" }] }]
+            [{ "marginTop": 0, "marginBottom": 8 }, { "transform": [{ "rotate": "90deg" }] }]
         );
     });
 

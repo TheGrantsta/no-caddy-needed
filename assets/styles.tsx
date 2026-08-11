@@ -1994,7 +1994,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         arrowWrapper: {
             marginTop: 0,
-            marginBottom: 4,
+            marginBottom: 8,
         },
         speedText: {
             color: c.primary,

@@ -692,7 +692,7 @@ export default function Play() {
                                 </Text>
                             ) : (
                                 <Text style={[styles.normalText, styles.marginBottom]}>
-                                    Start round, review past rounds & 7 Deadly Sins stats
+                                    Start a round (score-only or full tracking), review past rounds & edit scores
                                 </Text>
                             )}
                         </View>

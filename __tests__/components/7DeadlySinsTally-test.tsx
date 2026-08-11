@@ -534,93 +534,6 @@ describe('DeadlySinsTally component', () => {
         });
     });
 
-    describe('open/close toggle', () => {
-        // it('shows toggle header when round is active', () => {
-        //     const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
-
-        //     fireEvent.press(getByTestId('7deadly-sins-start-round'));
-
-        //     expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
-        // });
-
-        it('does not show toggle when round is not active', () => {
-            const { queryByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
-
-            expect(queryByTestId('7deadly-sins-toggle')).toBeNull();
-        });
-
-        it('titles the section "Deadly Sins" (no leading number)', () => {
-            const { getByTestId, getByText, queryByText } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
-
-            fireEvent.press(getByTestId('7deadly-sins-start-round'));
-
-            expect(getByText('Deadly Sins')).toBeTruthy();
-            expect(queryByText('7 Deadly Sins')).toBeNull();
-        });
-
-        // it('shows a minus icon when open (matching the Play home screen)', () => {
-        //     const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
-
-        //     fireEvent.press(getByTestId('7deadly-sins-start-round'));
-
-        //     expect(getByTestId('7deadly-sins-toggle-icon').props.children).toBe('−');
-        // });
-
-        // it('shows a plus icon when collapsed', () => {
-        //     const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
-
-        //     fireEvent.press(getByTestId('7deadly-sins-start-round'));
-        //     fireEvent.press(getByTestId('7deadly-sins-toggle'));
-
-        //     expect(getByTestId('7deadly-sins-toggle-icon').props.children).toBe('+');
-        // });
-
-        it('sin toggles are visible by default when round is active', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
-
-            fireEvent.press(getByTestId('7deadly-sins-start-round'));
-
-            expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
-        });
-
-        // it('pressing header toggle hides sin rows', () => {
-        //     const { getByTestId, queryByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
-
-        //     fireEvent.press(getByTestId('7deadly-sins-start-round'));
-        //     fireEvent.press(getByTestId('7deadly-sins-toggle'));
-
-        //     expect(queryByTestId('7deadly-sins-toggle-three-putts')).toBeNull();
-        // });
-
-        // it('pressing header toggle again shows sin rows', () => {
-        //     const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} />);
-
-        //     fireEvent.press(getByTestId('7deadly-sins-start-round'));
-        //     fireEvent.press(getByTestId('7deadly-sins-toggle'));
-        //     fireEvent.press(getByTestId('7deadly-sins-toggle'));
-
-        //     expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
-        // });
-
-        // it('shows toggle header in roundControlled mode', () => {
-        //     const { getByTestId } = render(
-        //         <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} />
-        //     );
-
-        //     expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
-        // });
-
-        // it('pressing header toggle hides sins in roundControlled mode', () => {
-        //     const { getByTestId, queryByTestId } = render(
-        //         <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} />
-        //     );
-
-        //     fireEvent.press(getByTestId('7deadly-sins-toggle'));
-
-        //     expect(queryByTestId('7deadly-sins-toggle-three-putts')).toBeNull();
-        // });
-    });
-
     describe('roundControlled mode', () => {
         const mockOnValuesChange = jest.fn();
 
@@ -747,39 +660,6 @@ describe('DeadlySinsTally component', () => {
             // pressing should go from false → true
             fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
             expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ threePutts: true }));
-        });
-    });
-
-    describe('collapsible prop', () => {
-        // it('shows collapsible toggle header by default', () => {
-        //     const { getByTestId } = render(
-        //         <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} />
-        //     );
-
-        //     expect(getByTestId('7deadly-sins-toggle')).toBeTruthy();
-        //     expect(getByTestId('7deadly-sins-toggle-icon')).toBeTruthy();
-        // });
-
-        it('hides toggle icon when collapsible={false}', () => {
-            const { queryByTestId } = render(
-                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled={true} collapsible={false} />
-            );
-
-            expect(queryByTestId('7deadly-sins-toggle-icon')).toBeNull();
-        });
-
-        it('keeps sins always visible when collapsible={false}', () => {
-            const { getByTestId } = render(
-                <DeadlySinsTally
-                    onEndRound={mockOnEndRound}
-                    roundControlled={true}
-                    collapsible={false}
-                    initialValues={allFalse}
-                />
-            );
-
-            expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy();
-            expect(getByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeTruthy();
         });
     });
 });

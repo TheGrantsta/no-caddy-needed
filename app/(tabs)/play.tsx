@@ -850,7 +850,6 @@ export default function Play() {
                                         key={`tally-${currentHole}`}
                                         onEndRound={() => { }}
                                         roundControlled={true}
-                                        collapsible={false}
                                         onValuesChange={handledeadlySinsValuesChange}
                                         initialValues={deadlySinsValues}
                                         holePar={currentHoleData?.holePar}

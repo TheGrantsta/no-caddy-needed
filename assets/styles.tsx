@@ -1951,47 +1951,29 @@ export const createStyles = (c: ThemeColours) => ({
         card: {
             backgroundColor: c.background,
             borderRadius: 16,
-            flexDirection: 'column',
             alignItems: 'center',
             borderWidth: 1,
             borderColor: c.primary,
-            width: 330,
-        },
-        cardFull: {
-            paddingVertical: 8,
-            paddingHorizontal: 16,
         },
         cardCompact: {
-            paddingVertical: 8,
             borderWidth: 0,
-        },
-        title: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-            marginBottom: 6,
-            width: '100%',
         },
         observationSection: {
             width: '100%',
             alignItems: 'center',
             justifyContent: 'center',
-            paddingTop: 2,
-            paddingBottom: 6,
             borderBottomWidth: 1,
             borderBottomColor: c.primary,
-            opacity: 0.3,
+            opacity: 0.5,
         },
         windReadingColumn: {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 2,
         },
         implicationsSection: {
             width: '100%',
             alignItems: 'center',
-            paddingTop: 10,
         },
         arrowWrapper: {
             marginTop: 0,

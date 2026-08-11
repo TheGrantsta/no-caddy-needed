@@ -89,18 +89,10 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
             testID="wind-display-container"
             style={[styles.windDisplay.card, compact ? styles.windDisplay.cardCompact : styles.windDisplay.cardFull]}
         >
-            {!compact && (
-                <Text
-                    testID="wind-display-title"
-                    style={styles.windDisplay.title}
-                >
-                    Wind direction / speed
-                </Text>
-            )}
             <View testID="wind-observation-section" style={styles.windDisplay.observationSection}>
                 <View style={styles.windDisplay.windReadingColumn}>
                     <View testID="wind-arrow-large" style={[styles.windDisplay.arrowWrapper, { transform: [{ rotate: `${rotation}deg` }] }]}>
-                        <MaterialIcons name="straight" size={120} color={colours.accent} />
+                        <MaterialIcons name="straight" size={128} color={colours.primary} />
                     </View>
                     <Text
                         testID="wind-speed-text-large"
@@ -112,102 +104,102 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
             </View>
             <View testID="wind-implications-section" style={styles.windDisplay.implicationsSection}>
                 <View style={styles.windDisplay.bottomSection}>
-                {voiceEnabled && !manualEntryOpen && (
-                    <View style={styles.windDisplay.voiceRow}>
-                        <TouchableOpacity
-                            testID="wind-voice-button"
-                            style={[styles.windDisplay.voiceButton, isListening ? styles.windDisplay.voiceButtonActive : styles.windDisplay.voiceButtonInactive]}
-                            onPress={toggleListening}
-                        >
-                            <MaterialIcons
-                                name={isListening ? 'mic' : 'mic-off'}
-                                size={20}
-                                color={isListening ? colours.background : colours.primary}
-                            />
-                            <Text
-                                style={[styles.windDisplay.voiceButtonText, isListening ? styles.windDisplay.voiceButtonTextActive : styles.windDisplay.voiceButtonTextInactive]}
+                    {voiceEnabled && !manualEntryOpen && (
+                        <View style={styles.windDisplay.voiceRow}>
+                            <TouchableOpacity
+                                testID="wind-voice-button"
+                                style={[styles.windDisplay.voiceButton, isListening ? styles.windDisplay.voiceButtonActive : styles.windDisplay.voiceButtonInactive]}
+                                onPress={toggleListening}
                             >
-                                {isListening ? 'Listening...' : 'Say the distance'}
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            testID="wind-manual-entry-toggle"
-                            style={styles.windDisplay.manualEntryToggle}
-                            onPress={handleToggleManualEntry}
-                        >
-                            <MaterialIcons
-                                name="straighten"
-                                size={20}
-                                color={colours.primary}
+                                <MaterialIcons
+                                    name={isListening ? 'mic' : 'mic-off'}
+                                    size={20}
+                                    color={isListening ? colours.background : colours.primary}
+                                />
+                                <Text
+                                    style={[styles.windDisplay.voiceButtonText, isListening ? styles.windDisplay.voiceButtonTextActive : styles.windDisplay.voiceButtonTextInactive]}
+                                >
+                                    {isListening ? 'Listening...' : 'Say the distance'}
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                testID="wind-manual-entry-toggle"
+                                style={styles.windDisplay.manualEntryToggle}
+                                onPress={handleToggleManualEntry}
+                            >
+                                <MaterialIcons
+                                    name="straighten"
+                                    size={20}
+                                    color={colours.primary}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                    {voiceEnabled && manualEntryOpen && (
+                        <View style={styles.windDisplay.manualEntryPanel}>
+                            <TextInput
+                                testID="wind-manual-entry-input"
+                                style={styles.windDisplay.manualEntryInput}
+                                keyboardType="decimal-pad"
+                                value={manualEntryText}
+                                onChangeText={setManualEntryText}
+                                placeholder="Distance"
+                                placeholderTextColor={colours.backgroundAlternate}
+                                onSubmitEditing={handleManualSubmit}
+                                returnKeyType="done"
+                                autoFocus
                             />
-                        </TouchableOpacity>
-                    </View>
-                )}
-                {voiceEnabled && manualEntryOpen && (
-                    <View style={styles.windDisplay.manualEntryPanel}>
-                        <TextInput
-                            testID="wind-manual-entry-input"
-                            style={styles.windDisplay.manualEntryInput}
-                            keyboardType="decimal-pad"
-                            value={manualEntryText}
-                            onChangeText={setManualEntryText}
-                            placeholder="Distance"
-                            placeholderTextColor={colours.backgroundAlternate}
-                            onSubmitEditing={handleManualSubmit}
-                            returnKeyType="done"
-                            autoFocus
-                        />
-                        <TouchableOpacity
-                            testID="wind-manual-entry-submit"
-                            style={styles.windDisplay.manualEntrySubmit}
-                            onPress={handleManualSubmit}
+                            <TouchableOpacity
+                                testID="wind-manual-entry-submit"
+                                style={styles.windDisplay.manualEntrySubmit}
+                                onPress={handleManualSubmit}
+                            >
+                                <Text style={styles.windDisplay.manualEntrySubmitText}>
+                                    Go
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                testID="wind-manual-entry-cancel"
+                                onPress={handleToggleManualEntry}
+                                style={{ padding: 8 }}
+                            >
+                                <MaterialIcons
+                                    name="close"
+                                    size={20}
+                                    color={colours.primary}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                    {!adjustedDisplayValue && (
+                        <Text
+                            testID="wind-effect-text"
+                            style={[styles.windDisplay.effectText, { marginTop: voiceEnabled ? 12 : 0 }]}
                         >
-                            <Text style={styles.windDisplay.manualEntrySubmitText}>
-                                Go
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            testID="wind-manual-entry-cancel"
-                            onPress={handleToggleManualEntry}
-                            style={{ padding: 8 }}
+                            {effectText}
+                        </Text>
+                    )}
+                    <Text
+                        testID="wind-adjusted-yards"
+                        style={[styles.windDisplay.adjustedYardsText, { opacity: adjustedDisplayValue !== null ? 1 : 0 }]}
+                    >
+                        {adjustedDisplayValue !== null ? `Play it as ${adjustedDisplayValue} ${distanceUnit}` : ' '}
+                    </Text>
+                    {suggestedClubs.length > 0 && wedgeChartData && (
+                        <View testID="wind-club-suggestions">
+                            <WedgeChartGrid data={wedgeChartData} suggestedClubs={suggestedClubs} unit={distanceUnit} />
+                        </View>
+                    )}
+                    {fallbackSuggestion && (
+                        <Text
+                            testID="wind-fallback-suggestion"
+                            style={styles.windDisplay.fallbackSuggestionText}
                         >
-                            <MaterialIcons
-                                name="close"
-                                size={20}
-                                color={colours.primary}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                )}
-                {!adjustedDisplayValue && (
-                    <Text
-                        testID="wind-effect-text"
-                        style={[styles.windDisplay.effectText, { marginTop: voiceEnabled ? 12 : 0 }]}
-                    >
-                        {effectText}
-                    </Text>
-                )}
-                <Text
-                    testID="wind-adjusted-yards"
-                    style={[styles.windDisplay.adjustedYardsText, { opacity: adjustedDisplayValue !== null ? 1 : 0 }]}
-                >
-                    {adjustedDisplayValue !== null ? `Play it as ${adjustedDisplayValue} ${distanceUnit}` : ' '}
-                </Text>
-                {suggestedClubs.length > 0 && wedgeChartData && (
-                    <View testID="wind-club-suggestions">
-                        <WedgeChartGrid data={wedgeChartData} suggestedClubs={suggestedClubs} unit={distanceUnit} />
-                    </View>
-                )}
-                {fallbackSuggestion && (
-                    <Text
-                        testID="wind-fallback-suggestion"
-                        style={styles.windDisplay.fallbackSuggestionText}
-                    >
-                        {`Try your ${fallbackSuggestion.club} (~${yardsToDisplayUnit(fallbackSuggestion.distance, distanceUnit)} ${distanceUnit})`}
-                    </Text>
-                )}
+                            {`Try your ${fallbackSuggestion.club} (~${yardsToDisplayUnit(fallbackSuggestion.distance, distanceUnit)} ${distanceUnit})`}
+                        </Text>
+                    )}
                 </View>
-                </View>
+            </View>
             {!compact && (
                 <Text
                     testID="wind-aim-hint"

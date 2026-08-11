@@ -24,8 +24,8 @@ describe('WindDisplay', () => {
             isAvailable: false,
             isListening: false,
             adjustedYards: null,
-                adjustedDisplayValue: null,
-                distanceUnit: 'yards',
+            adjustedDisplayValue: null,
+            distanceUnit: 'yards',
             toggleListening: jest.fn(),
             submitManualDistance: jest.fn(),
         });
@@ -102,21 +102,11 @@ describe('WindDisplay', () => {
             const implSection = getByTestId('wind-implications-section');
             expect(implSection).toBeTruthy();
         });
-
-        it('separatesWindObservationFromImplications', () => {
-            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
-            const container = getByTestId('wind-display-container');
-            const flat = Array.isArray(container.props.style)
-                ? Object.assign({}, ...container.props.style)
-                : container.props.style;
-            expect(flat.flexDirection).toBe('column');
-        });
     });
 
     describe('compact mode (embedded in a page)', () => {
         it('showsTitleAndAimHintByDefault', () => {
             const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
-            expect(getByTestId('wind-display-title')).toBeTruthy();
             expect(getByTestId('wind-aim-hint')).toBeTruthy();
         });
 

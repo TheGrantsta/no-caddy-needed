@@ -1647,7 +1647,7 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
             justifyContent: 'center',
             paddingHorizontal: 15,
-            paddingTop: 20,
+            paddingTop: 8,
             gap: 8,
         },
         filterLabel: {

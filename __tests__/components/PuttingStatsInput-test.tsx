@@ -1,4 +1,4 @@
-import { render, fireEvent, getByTestId } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import PuttingStatsInput from '../../components/PuttingStatsInput';
 
 jest.mock('@/hooks/useStyles', () => ({

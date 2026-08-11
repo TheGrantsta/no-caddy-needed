@@ -10,14 +10,14 @@ type Props = {
     onDismiss: () => void;
     textAlign?: 'left' | 'center';
     buttonText?: string;
-    icon?: string;
+    variant?: 'default' | 'reassurance';
 };
 
 /**
  * A simple modal notice the user acknowledges with a "Got it" 👍 button.
  * Shared by the pre-shot routine reminder and the "What's new" overlay.
  */
-const AcknowledgeOverlay = ({ visible, title, text, onDismiss, textAlign = 'center', buttonText = 'Got it', icon = 'thumb-up' }: Props) => {
+const AcknowledgeOverlay = ({ visible, title, text, onDismiss, textAlign = 'center', buttonText = 'Got it', variant = 'default' }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.onboardingOverlay;
@@ -33,18 +33,18 @@ const AcknowledgeOverlay = ({ visible, title, text, onDismiss, textAlign = 'cent
             testID="acknowledge-overlay"
         >
             <View style={s.overlay}>
-                <View style={s.container}>
+                <View style={[s.container, variant === 'reassurance' && { backgroundColor: '#f5f5f5' }]}>
                     <Text style={s.title}>{title}</Text>
                     <Text style={[s.stepText, { textAlign }]}>{text}</Text>
                     <TouchableOpacity
                         testID="acknowledge-dismiss"
                         onPress={onDismiss}
-                        style={s.primaryButton}
+                        style={[s.primaryButton, variant === 'reassurance' && { backgroundColor: colours.text }]}
                     >
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                            <Text style={s.primaryButtonText}>{buttonText}</Text>
+                            <Text style={[s.primaryButtonText, variant === 'reassurance' && { color: colours.background }]}>{buttonText}</Text>
                             <View testID="acknowledge-thumbs-up">
-                                <MaterialIcons name={icon} size={20} color={colours.background} />
+                                <MaterialIcons name="thumb-up" size={20} color={colours.background} />
                             </View>
                         </View>
                     </TouchableOpacity>

@@ -65,7 +65,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
             onValuesChange?.(next);
             return next;
         });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAutoDoubleBogey, isAutoBogeyPar5]);
 
     const handleToggle = useCallback((key: keyof DeadlySinsValues) => {
@@ -101,80 +101,87 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     }
 
     return (
-        <View style={s.container}>
-            {collapsible ? (
+        <View>
+            <View style={{ paddingHorizontal: 8 }}>
+                <Text style={styles.holeScoreInput.playerName}>Deadly Sins</Text>
+            </View>
+            <View style={s.container}>
+                {/* {collapsible ? (
                 <TouchableOpacity
                     testID="7deadly-sins-toggle"
                     onPress={() => setIsOpen(prev => !prev)}
                     style={s.toggleHeader}
                 >
-                    <Text style={s.toggleLabel}>Deadly Sins</Text>
+                    <Text style={s.toggleLabel}>Deadly Sins 2</Text>
                     <Text testID="7deadly-sins-toggle-icon" style={s.chevron}>{isOpen ? '−' : '+'}</Text>
                 </TouchableOpacity>
             ) : (
                 <View style={s.toggleHeader}>
-                    <Text style={s.toggleLabel}>Deadly Sins</Text>
+                    <Text style={s.toggleLabel}>Deadly Sins 1</Text>
                 </View>
-            )}
+            )} */}
 
-            {(collapsible ? isOpen : true) && sinFields.map((field) => {
-                if (field.slug === 'bogeys-par5') {
-                    if (holePar !== 5) return null;
-                    if (isAutoBogeyPar5) {
+
+
+                {(collapsible ? isOpen : true) && sinFields.map((field) => {
+                    if (field.slug === 'bogeys-par5') {
+                        if (holePar !== 5) return null;
+                        if (isAutoBogeyPar5) {
+                            return (
+                                <View key={field.slug} style={s.row}>
+                                    <Text style={s.label}>{field.label}</Text>
+                                    <View style={s.controls}>
+                                        <View testID="7deadly-sins-auto-bogeys-par5" style={[s.button, s.buttonActive]}>
+                                            <Text style={s.buttonText}>✗</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            );
+                        }
+                    }
+                    if (field.slug === 'double-bogeys') {
+                        if (!isAutoDoubleBogey) return null;
                         return (
                             <View key={field.slug} style={s.row}>
                                 <Text style={s.label}>{field.label}</Text>
                                 <View style={s.controls}>
-                                    <View testID="7deadly-sins-auto-bogeys-par5" style={[s.button, s.buttonActive]}>
+                                    <View testID="7deadly-sins-auto-double-bogeys" style={[s.button, s.buttonActive]}>
                                         <Text style={s.buttonText}>✗</Text>
                                     </View>
                                 </View>
                             </View>
                         );
                     }
-                }
-                if (field.slug === 'double-bogeys') {
-                    if (!isAutoDoubleBogey) return null;
                     return (
-                        <View key={field.slug} style={s.row}>
+                        <TouchableOpacity
+                            key={field.slug}
+                            testID={`7deadly-sins-toggle-${field.slug}`}
+                            onPress={() => handleToggle(field.key)}
+                            activeOpacity={0.6}
+                            style={s.row}
+                        >
                             <Text style={s.label}>{field.label}</Text>
                             <View style={s.controls}>
-                                <View testID="7deadly-sins-auto-double-bogeys" style={[s.button, s.buttonActive]}>
-                                    <Text style={s.buttonText}>✗</Text>
+                                <View
+                                    testID={`7deadly-sins-indicator-${field.slug}`}
+                                    style={[s.button, values[field.key] ? s.buttonActive : s.buttonInactive]}
+                                >
+                                    {values[field.key] ? <Text style={s.buttonText}>✗</Text> : null}
                                 </View>
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     );
-                }
-                return (
-                    <TouchableOpacity
-                        key={field.slug}
-                        testID={`7deadly-sins-toggle-${field.slug}`}
-                        onPress={() => handleToggle(field.key)}
-                        activeOpacity={0.6}
-                        style={s.row}
-                    >
-                        <Text style={s.label}>{field.label}</Text>
-                        <View style={s.controls}>
-                            <View
-                                testID={`7deadly-sins-indicator-${field.slug}`}
-                                style={[s.button, values[field.key] ? s.buttonActive : s.buttonInactive]}
-                            >
-                                {values[field.key] ? <Text style={s.buttonText}>✗</Text> : null}
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                );
-            })}
+                })}
 
-            {!roundControlled && (
-                <CtaButton
-                    testID="7deadly-sins-end-round"
-                    label="End round"
-                    icon="flag"
-                    onPress={handleEndRound}
-                />
-            )}
+                {!roundControlled && (
+                    <CtaButton
+                        testID="7deadly-sins-end-round"
+                        label="End round"
+                        icon="flag"
+                        onPress={handleEndRound}
+                    />
+                )}
+            </View>
         </View>
     );
 };

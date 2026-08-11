@@ -9,7 +9,6 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
         },
         header: {
-            paddingTop: 32,
             paddingHorizontal: 24,
             paddingBottom: 4,
             alignItems: 'center',

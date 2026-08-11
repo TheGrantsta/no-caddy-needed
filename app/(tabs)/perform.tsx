@@ -136,14 +136,14 @@ export default function Perform() {
         {displaySection('sins') && (() => {
           const deadlySinsRounds = getAllDeadlySinsRoundsService();
           const filteredDeadlySinsRounds = roundsFilter === 'all'
-              ? deadlySinsRounds
-              : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
+            ? deadlySinsRounds
+            : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
 
           return (
             <View style={styles.container}>
               <View style={styles.header}>
                 <View style={styles.titleRow}>
-                  <Text style={[styles.headerText, styles.marginTop]}>
+                  <Text style={styles.headerText}>
                     Deadly Sins
                   </Text>
                 </View>
@@ -165,7 +165,7 @@ export default function Perform() {
           <View style={styles.container}>
             <View style={styles.header}>
               <View style={styles.titleRow}>
-                <Text style={[styles.headerText, styles.marginTop]}>
+                <Text style={styles.headerText}>
                   Putting
                 </Text>
               </View>
@@ -211,7 +211,7 @@ export default function Perform() {
           <View style={styles.container}>
             <View style={styles.header}>
               <View style={styles.titleRow}>
-                <Text style={[styles.headerText, styles.marginTop]}>
+                <Text style={styles.headerText}>
                   Proximity
                 </Text>
               </View>

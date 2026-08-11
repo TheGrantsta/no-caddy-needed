@@ -1,4 +1,4 @@
-import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, Text, TouchableOpacity, View, TouchableWithoutFeedback } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -32,8 +32,9 @@ const AcknowledgeOverlay = ({ visible, title, text, onDismiss, textAlign = 'cent
             onRequestClose={onDismiss}
             testID="acknowledge-overlay"
         >
-            <View style={s.overlay}>
-                <View style={[s.container, variant === 'reassurance' && { backgroundColor: '#f5f5f5' }]}>
+            <TouchableWithoutFeedback onPress={onDismiss}>
+                <View style={s.overlay}>
+                    <View style={[s.container, variant === 'reassurance' && { backgroundColor: '#f5f5f5' }]}>
                     <Text style={s.title}>{title}</Text>
                     <Text style={[s.stepText, { textAlign }]}>{text}</Text>
                     <TouchableOpacity
@@ -49,7 +50,8 @@ const AcknowledgeOverlay = ({ visible, title, text, onDismiss, textAlign = 'cent
                         </View>
                     </TouchableOpacity>
                 </View>
-            </View>
+                </View>
+            </TouchableWithoutFeedback>
         </Modal>
     );
 };

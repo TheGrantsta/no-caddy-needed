@@ -1976,7 +1976,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: '100%',
             alignItems: 'center',
             justifyContent: 'center',
-            paddingBottom: 12,
+            paddingVertical: 6,
             borderBottomWidth: 1,
             borderBottomColor: c.primary,
             opacity: 0.3,
@@ -1985,16 +1985,16 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 0,
+            gap: 2,
         },
         implicationsSection: {
             width: '100%',
             alignItems: 'center',
-            paddingTop: 12,
+            paddingTop: 10,
         },
         arrowWrapper: {
             marginTop: 0,
-            marginBottom: 8,
+            marginBottom: 0,
         },
         speedText: {
             color: c.primary,

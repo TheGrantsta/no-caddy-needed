@@ -366,26 +366,6 @@ export const getPuttingStats = (roundId: number, holeNumber: number) => {
     );
 };
 
-export const getAsyncDb = (): SQLite.SQLiteDatabase => {
-    if (!_db) {
-        throw new Error('Database not initialized. Call initialize() first.');
-    }
-    return _db;
-};
-
-export const getAllPuttingStatsRaw = () => {
-    return getSyncDb().getAllSync(
-        `SELECT ps.RoundId, ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.HoleNumber
-         FROM PuttingStats ps;`
-    );
-};
-
-export const getAllRoundsRaw = () => {
-    return getSyncDb().getAllSync(
-        `SELECT Id, IsCompleted, CourseName FROM Rounds ORDER BY Id DESC;`
-    );
-};
-
 export const getAllPuttingStatsWithThreePutts = () => {
     return getSyncDb().getAllSync(
         `SELECT ps.RoundId, ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, COALESCE(hds.ThreePutts, 0) AS ThreePutts
@@ -1064,29 +1044,6 @@ function get(sql: string) {
     });
 
     return rows;
-};
-
-export const getSinFrequenciesSync = (): {
-    ThreePutts: number; DoubleBogeys: number; BogeysPar5: number;
-    BogeysInside9Iron: number; DoubleChips: number; TroubleOffTee: number; Penalties: number;
-} => {
-    const rows = getSyncDb().getAllSync(
-        `SELECT SUM(ThreePutts) as ThreePutts, SUM(DoubleBogeys) as DoubleBogeys,
-                SUM(BogeysPar5) as BogeysPar5, SUM(BogeysInside9Iron) as BogeysInside9Iron,
-                SUM(DoubleChips) as DoubleChips, SUM(TroubleOffTee) as TroubleOffTee,
-                SUM(Penalties) as Penalties
-         FROM HoleDeadlySins`
-    ) as any[];
-    const row = rows[0] ?? {};
-    return {
-        ThreePutts: row.ThreePutts ?? 0,
-        DoubleBogeys: row.DoubleBogeys ?? 0,
-        BogeysPar5: row.BogeysPar5 ?? 0,
-        BogeysInside9Iron: row.BogeysInside9Iron ?? 0,
-        DoubleChips: row.DoubleChips ?? 0,
-        TroubleOffTee: row.TroubleOffTee ?? 0,
-        Penalties: row.Penalties ?? 0,
-    };
 };
 
 type SinFrequencies = {

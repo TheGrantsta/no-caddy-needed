@@ -108,8 +108,8 @@ export default function Perform() {
           tintColor={colours.primary} />
       }>
 
-        {/* Info Button */}
-        <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", paddingVertical: 12, gap: 8 }}>
+        {/* Show Filter with Info Button */}
+        <View style={[styles.playScreen.filterContainer, { paddingVertical: 12 }]}>
           <TouchableOpacity
             testID="perform-info-button"
             onPress={handleShowOnboarding}
@@ -118,24 +118,19 @@ export default function Perform() {
             <MaterialIcons name="info-outline" size={24} color={colours.primary} />
           </TouchableOpacity>
           <Text testID="filter-label" style={styles.playScreen.filterLabel}>Show</Text>
+          {roundHistory.length > 0 && ([1, 10, 'all'] as const).map(f => (
+            <TouchableOpacity
+              key={String(f)}
+              testID={`filter-button-${f}`}
+              onPress={() => setRoundsFilter(f)}
+              style={[styles.playScreen.filterButton, roundsFilter === f && styles.playScreen.filterButtonSelected]}
+            >
+              <Text style={[styles.playScreen.filterButtonText, roundsFilter === f && styles.playScreen.filterButtonTextSelected]}>
+                {f === 'all' ? 'All' : String(f)}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
-
-        {roundHistory.length > 0 && (
-          <View style={styles.playScreen.filterContainer}>
-            {([1, 10, 'all'] as const).map(f => (
-              <TouchableOpacity
-                key={String(f)}
-                testID={`filter-button-${f}`}
-                onPress={() => setRoundsFilter(f)}
-                style={[styles.playScreen.filterButton, roundsFilter === f && styles.playScreen.filterButtonSelected]}
-              >
-                <Text style={[styles.playScreen.filterButtonText, roundsFilter === f && styles.playScreen.filterButtonTextSelected]}>
-                  {f === 'all' ? 'All' : String(f)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
 
         {/* Deadly Sins */}
         {displaySection('sins') && (() => {

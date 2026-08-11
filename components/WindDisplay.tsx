@@ -98,13 +98,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                 </Text>
             )}
             <View testID="wind-observation-section" style={styles.windDisplay.observationSection}>
-                <View style={styles.windDisplay.windReadingRow}>
-                    <View testID="wind-target-marker" style={styles.windDisplay.targetMarker}>
-                        <MaterialIcons name="golf-course" size={22} color={colours.primary} />
-                        <Text style={styles.windDisplay.targetLabel}>
-                            Target
-                        </Text>
-                    </View>
+                <View style={styles.windDisplay.windReadingColumn}>
                     <View testID="wind-arrow-large" style={[styles.windDisplay.arrowWrapper, { transform: [{ rotate: `${rotation}deg` }] }]}>
                         <MaterialIcons name="straight" size={80} color={colours.primary} />
                     </View>

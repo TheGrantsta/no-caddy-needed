@@ -50,9 +50,9 @@ describe('WindDisplay', () => {
         expect(getByTestId('wind-speed-text-large')).toHaveTextContent('11 mph');
     });
 
-    it('showsTargetMarker', () => {
-        const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
-        expect(getByTestId('wind-target-marker')).toBeTruthy();
+    it('doesNotShowTargetMarker', () => {
+        const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
+        expect(queryByTestId('wind-target-marker')).toBeNull();
     });
 
     it('appliesDownwindCompassRotationToLargeArrow', () => {
@@ -60,7 +60,7 @@ describe('WindDisplay', () => {
         const { getByTestId } = render(<WindDisplay directionFrom={0} speedMph={5} heading={0} />);
 
         expect(getByTestId('wind-arrow-large').props.style).toEqual(
-            [{ "marginTop": 0 }, { "transform": [{ "rotate": "180deg" }] }]
+            [{ "marginTop": 0, "marginBottom": 4 }, { "transform": [{ "rotate": "180deg" }] }]
         );
     });
 
@@ -69,7 +69,7 @@ describe('WindDisplay', () => {
         const { getByTestId } = render(<WindDisplay directionFrom={0} speedMph={5} heading={90} />);
 
         expect(getByTestId('wind-arrow-large').props.style).toEqual(
-            [{ "marginTop": 0 }, { "transform": [{ "rotate": "90deg" }] }]
+            [{ "marginTop": 0, "marginBottom": 4 }, { "transform": [{ "rotate": "90deg" }] }]
         );
     });
 
@@ -93,7 +93,6 @@ describe('WindDisplay', () => {
             const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
             const windSection = getByTestId('wind-observation-section');
             expect(windSection).toBeTruthy();
-            expect(getByTestId('wind-target-marker')).toBeTruthy();
             expect(getByTestId('wind-arrow-large')).toBeTruthy();
             expect(getByTestId('wind-speed-text-large')).toBeTruthy();
         });

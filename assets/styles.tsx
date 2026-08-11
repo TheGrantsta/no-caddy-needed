@@ -1981,33 +1981,26 @@ export const createStyles = (c: ThemeColours) => ({
             borderBottomColor: c.primary,
             opacity: 0.3,
         },
-        windReadingRow: {
-            flexDirection: 'row',
+        windReadingColumn: {
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 12,
+            gap: 0,
         },
         implicationsSection: {
             width: '100%',
             alignItems: 'center',
             paddingTop: 12,
         },
-        targetMarker: {
-            alignItems: 'center',
-        },
-        targetLabel: {
-            color: c.primary,
-            fontSize: fontSizes.smallestText,
-            fontWeight: 'bold',
-            opacity: 0.7,
-        },
         arrowWrapper: {
             marginTop: 0,
+            marginBottom: 4,
         },
         speedText: {
             color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
+            marginTop: 0,
         },
         bottomSection: {
             width: '100%',

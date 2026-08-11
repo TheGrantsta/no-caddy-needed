@@ -114,6 +114,7 @@ describe('Scorecard screen', () => {
         mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(1)]);
     });
 
+
     it('renders the scorecard page without a top heading', () => {
         mockGetRoundScorecard.mockReturnValue({
             round: { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '' },
@@ -802,28 +803,36 @@ describe('Scorecard screen', () => {
 
     describe('Round pager', () => {
         it('configures the pager with every round in history order', () => {
-            mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            jest.useFakeTimers();
+            try {
+                mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
+                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
-            const { getByTestId } = render(<ScorecardScreen />);
-            const ids = getByTestId('scorecard-pager').props.data.map((r: { Id: number }) => r.Id);
+                const { getByTestId } = render(<ScorecardScreen />);
+                act(() => { jest.advanceTimersByTime(100); });
+                const ids = getByTestId('scorecard-pager').props.data.map((r: { Id: number }) => r.Id);
 
-            expect(ids).toEqual([3, 2, 1]);
+                expect(ids).toEqual([3, 2, 1]);
+            } finally {
+                jest.useRealTimers();
+            }
         });
 
         it('starts on the page for the roundId param', () => {
             jest.useFakeTimers();
-            mockParams = { roundId: '2' };
-            mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            try {
+                mockParams = { roundId: '2' };
+                mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
+                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
-            const { getByTestId } = render(<ScorecardScreen />);
-            act(() => { jest.runOnlyPendingTimers(); });
+                const { getByTestId } = render(<ScorecardScreen />);
+                act(() => { jest.advanceTimersByTime(100); });
 
-            // round 2 is at index 1 in the history list
-            expect(getByTestId('scorecard-pager').props.initialScrollIndex).toBe(1);
-
-            jest.useRealTimers();
+                // round 2 is at index 1 in the history list
+                expect(getByTestId('scorecard-pager').props.initialScrollIndex).toBe(1);
+            } finally {
+                jest.useRealTimers();
+            }
         });
 
         it('renders the active round as a page', () => {
@@ -835,12 +844,18 @@ describe('Scorecard screen', () => {
         });
 
         it('renders one bottom indicator dot per round', () => {
-            mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            jest.useFakeTimers();
+            try {
+                mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
+                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
-            const { getAllByTestId } = render(<ScorecardScreen />);
+                const { getAllByTestId } = render(<ScorecardScreen />);
+                act(() => { jest.advanceTimersByTime(100); });
 
-            expect(getAllByTestId(/scorecard-indicator-/)).toHaveLength(3);
+                expect(getAllByTestId(/scorecard-indicator-/)).toHaveLength(3);
+            } finally {
+                jest.useRealTimers();
+            }
         });
 
         // History is newest-first; the pager covers only the most recent 10 rounds.
@@ -849,68 +864,76 @@ describe('Scorecard screen', () => {
 
         it('caps the pager to the 10 most recent rounds', () => {
             jest.useFakeTimers();
-            mockParams = { roundId: '15' }; // newest, within the recent window
-            mockGetAllRoundHistory.mockReturnValue(fifteenRoundsNewestFirst());
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            try {
+                mockParams = { roundId: '15' }; // newest, within the recent window
+                mockGetAllRoundHistory.mockReturnValue(fifteenRoundsNewestFirst());
+                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
-            const { getByTestId } = render(<ScorecardScreen />);
-            act(() => { jest.runOnlyPendingTimers(); });
-            const ids = getByTestId('scorecard-pager').props.data.map((r: { Id: number }) => r.Id);
+                const { getByTestId } = render(<ScorecardScreen />);
+                act(() => { jest.advanceTimersByTime(100); });
+                const ids = getByTestId('scorecard-pager').props.data.map((r: { Id: number }) => r.Id);
 
-            expect(ids).toHaveLength(10);
-            expect(ids[0]).toBe(15); // newest
-            expect(ids[9]).toBe(6);  // 10th most recent
-
-            jest.useRealTimers();
+                expect(ids).toHaveLength(10);
+                expect(ids[0]).toBe(15); // newest
+                expect(ids[9]).toBe(6);  // 10th most recent
+            } finally {
+                jest.useRealTimers();
+            }
         });
 
         it('renders at most 10 indicator dots', () => {
             jest.useFakeTimers();
-            mockParams = { roundId: '15' };
-            mockGetAllRoundHistory.mockReturnValue(fifteenRoundsNewestFirst());
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            try {
+                mockParams = { roundId: '15' };
+                mockGetAllRoundHistory.mockReturnValue(fifteenRoundsNewestFirst());
+                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
-            const { getAllByTestId } = render(<ScorecardScreen />);
-            act(() => { jest.runOnlyPendingTimers(); });
+                const { getAllByTestId } = render(<ScorecardScreen />);
+                act(() => { jest.advanceTimersByTime(100); });
 
-            expect(getAllByTestId(/scorecard-indicator-/)).toHaveLength(10);
-
-            jest.useRealTimers();
+                expect(getAllByTestId(/scorecard-indicator-/)).toHaveLength(10);
+            } finally {
+                jest.useRealTimers();
+            }
         });
 
         it('opens an older round (beyond the recent 10) on its own with no dots', () => {
             jest.useFakeTimers();
-            mockParams = { roundId: '1' }; // oldest, outside the recent window
-            mockGetAllRoundHistory.mockReturnValue(fifteenRoundsNewestFirst());
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            try {
+                mockParams = { roundId: '1' }; // oldest, outside the recent window
+                mockGetAllRoundHistory.mockReturnValue(fifteenRoundsNewestFirst());
+                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
-            const { getByTestId, queryAllByTestId } = render(<ScorecardScreen />);
-            act(() => { jest.runOnlyPendingTimers(); });
+                const { getByTestId, queryAllByTestId } = render(<ScorecardScreen />);
+                act(() => { jest.advanceTimersByTime(100); });
 
-            expect(getByTestId('scorecard-page-1')).toBeTruthy();
-            expect(getByTestId('scorecard-pager').props.data).toHaveLength(1);
-            expect(queryAllByTestId(/scorecard-indicator-/)).toHaveLength(0);
-
-            jest.useRealTimers();
+                expect(getByTestId('scorecard-page-1')).toBeTruthy();
+                expect(getByTestId('scorecard-pager').props.data).toHaveLength(1);
+                expect(queryAllByTestId(/scorecard-indicator-/)).toHaveLength(0);
+            } finally {
+                jest.useRealTimers();
+            }
         });
 
         it('uses a red active dot and hollow (non-black-filled) inactive dots', () => {
             jest.useFakeTimers();
-            const colours = require('../../../assets/colours').default;
-            mockParams = { roundId: '1' };
-            mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            try {
+                const colours = require('../../../assets/colours').default;
+                mockParams = { roundId: '1' };
+                mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
+                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
-            const { getByTestId } = render(<ScorecardScreen />);
-            act(() => { jest.runOnlyPendingTimers(); });
-            // round '1' is at index 2 → the active dot
-            const active = StyleSheet.flatten(getByTestId('scorecard-indicator-2').props.style);
-            const inactive = StyleSheet.flatten(getByTestId('scorecard-indicator-0').props.style);
+                const { getByTestId } = render(<ScorecardScreen />);
+                act(() => { jest.advanceTimersByTime(100); });
+                // round '1' is at index 2 → the active dot
+                const active = StyleSheet.flatten(getByTestId('scorecard-indicator-2').props.style);
+                const inactive = StyleSheet.flatten(getByTestId('scorecard-indicator-0').props.style);
 
-            expect(active.backgroundColor).toBe(colours.red);
-            expect(inactive.backgroundColor).not.toBe(colours.black);
-
-            jest.useRealTimers();
+                expect(active.backgroundColor).toBe(colours.red);
+                expect(inactive.backgroundColor).not.toBe(colours.black);
+            } finally {
+                jest.useRealTimers();
+            }
         });
 
         it('locks horizontal swiping while editing and unlocks on cancel', () => {

@@ -90,7 +90,7 @@
         "expo-build-properties",
         {
           "android": {
-            "targetSdkVersion": 35,
+            "targetSdkVersion": 36,
             "enableProguardInReleaseBuilds": true
           }
         }

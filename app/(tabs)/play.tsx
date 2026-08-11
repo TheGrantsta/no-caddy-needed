@@ -364,6 +364,7 @@ export default function Play() {
             setShowEndRoundConfirm(true);
         } else {
             const nextHole = currentHole + 1;
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setCurrentNoteText(courseNotes[nextHole] ?? '');
             setCurrentHole(nextHole);
             setHolePhase('score');
@@ -390,6 +391,7 @@ export default function Play() {
             const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
             await addMultiplayerHoleScoresService(activeRoundId!, holeNumber, holePar, scores);
             const prevHole = currentHole - 1;
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setCurrentNoteText(courseNotes[prevHole] ?? '');
             setCurrentHole(prevHole);
             const holeData = loadHoleForScore(prevHole);

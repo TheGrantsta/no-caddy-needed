@@ -1951,7 +1951,9 @@ export const createStyles = (c: ThemeColours) => ({
         card: {
             backgroundColor: c.background,
             borderRadius: 16,
-            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            alignItems: 'flex-start',
             borderWidth: 1,
             borderColor: c.primary,
             width: 330,
@@ -1969,6 +1971,17 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
             marginBottom: 6,
+            width: '100%',
+        },
+        leftColumn: {
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            flex: 1,
+        },
+        rightColumn: {
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            flex: 1,
         },
         targetMarker: {
             alignItems: 'center',
@@ -1987,7 +2000,7 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
-            marginTop: 2,
+            marginTop: 0,
         },
         bottomSection: {
             marginTop: 6,

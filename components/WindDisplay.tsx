@@ -97,22 +97,25 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                     Wind direction / speed
                 </Text>
             )}
-            <View testID="wind-target-marker" style={styles.windDisplay.targetMarker}>
-                <MaterialIcons name="golf-course" size={22} color={colours.primary} />
-                <Text style={styles.windDisplay.targetLabel}>
-                    Target
+            <View testID="wind-display-left-column" style={styles.windDisplay.leftColumn}>
+                <View testID="wind-target-marker" style={styles.windDisplay.targetMarker}>
+                    <MaterialIcons name="golf-course" size={22} color={colours.primary} />
+                    <Text style={styles.windDisplay.targetLabel}>
+                        Target
+                    </Text>
+                </View>
+                <View testID="wind-arrow-large" style={[styles.windDisplay.arrowWrapper, { transform: [{ rotate: `${rotation}deg` }] }]}>
+                    <MaterialIcons name="straight" size={80} color={colours.primary} />
+                </View>
+            </View>
+            <View testID="wind-display-right-column" style={styles.windDisplay.rightColumn}>
+                <Text
+                    testID="wind-speed-text-large"
+                    style={styles.windDisplay.speedText}
+                >
+                    {speed} mph
                 </Text>
-            </View>
-            <View testID="wind-arrow-large" style={[styles.windDisplay.arrowWrapper, { transform: [{ rotate: `${rotation}deg` }] }]}>
-                <MaterialIcons name="straight" size={80} color={colours.primary} />
-            </View>
-            <Text
-                testID="wind-speed-text-large"
-                style={styles.windDisplay.speedText}
-            >
-                {speed} mph
-            </Text>
-            <View style={styles.windDisplay.bottomSection}>
+                <View style={styles.windDisplay.bottomSection}>
                 {voiceEnabled && !manualEntryOpen && (
                     <View style={styles.windDisplay.voiceRow}>
                         <TouchableOpacity
@@ -207,6 +210,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                         {`Try your ${fallbackSuggestion.club} (~${yardsToDisplayUnit(fallbackSuggestion.distance, distanceUnit)} ${distanceUnit})`}
                     </Text>
                 )}
+                </View>
             </View>
             {!compact && (
                 <Text

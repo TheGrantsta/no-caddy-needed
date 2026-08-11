@@ -88,6 +88,32 @@ describe('WindDisplay', () => {
         expect(getByTestId('wind-effect-text')).toHaveTextContent(/about the same/i);
     });
 
+    describe('two-column layout', () => {
+        it('usesFlexRowForHorizontalLayout', () => {
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
+            const container = getByTestId('wind-display-container');
+            const flat = Array.isArray(container.props.style)
+                ? Object.assign({}, ...container.props.style)
+                : container.props.style;
+            expect(flat.flexDirection).toBe('row');
+        });
+
+        it('arrangesleftColumnWithTargetAndArrow', () => {
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
+            const leftCol = getByTestId('wind-display-left-column');
+            expect(leftCol).toBeTruthy();
+            expect(getByTestId('wind-target-marker')).toBeTruthy();
+            expect(getByTestId('wind-arrow-large')).toBeTruthy();
+        });
+
+        it('arrangesRightColumnWithSpeedAndBottom', () => {
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);
+            const rightCol = getByTestId('wind-display-right-column');
+            expect(rightCol).toBeTruthy();
+            expect(getByTestId('wind-speed-text-large')).toBeTruthy();
+        });
+    });
+
     describe('compact mode (embedded in a page)', () => {
         it('showsTitleAndAimHintByDefault', () => {
             const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={12} heading={0} />);

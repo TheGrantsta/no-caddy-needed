@@ -1080,6 +1080,8 @@ export default function Play() {
                 title="Tough hole!"
                 text={reassuranceMessage}
                 onDismiss={handleDismissBadHoleReassurance}
+                buttonText="Move on"
+                icon="skip-next"
             />
         </GestureHandlerRootView>
     );

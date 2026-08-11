@@ -9,13 +9,15 @@ type Props = {
     text: string;
     onDismiss: () => void;
     textAlign?: 'left' | 'center';
+    buttonText?: string;
+    icon?: string;
 };
 
 /**
  * A simple modal notice the user acknowledges with a "Got it" 👍 button.
  * Shared by the pre-shot routine reminder and the "What's new" overlay.
  */
-const AcknowledgeOverlay = ({ visible, title, text, onDismiss, textAlign = 'center' }: Props) => {
+const AcknowledgeOverlay = ({ visible, title, text, onDismiss, textAlign = 'center', buttonText = 'Got it', icon = 'thumb-up' }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.onboardingOverlay;
@@ -40,9 +42,9 @@ const AcknowledgeOverlay = ({ visible, title, text, onDismiss, textAlign = 'cent
                         style={s.primaryButton}
                     >
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                            <Text style={s.primaryButtonText}>Got it</Text>
+                            <Text style={s.primaryButtonText}>{buttonText}</Text>
                             <View testID="acknowledge-thumbs-up">
-                                <MaterialIcons name="thumb-up" size={20} color={colours.background} />
+                                <MaterialIcons name={icon} size={20} color={colours.background} />
                             </View>
                         </View>
                     </TouchableOpacity>

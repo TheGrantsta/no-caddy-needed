@@ -1957,7 +1957,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 330,
         },
         cardFull: {
-            paddingVertical: 12,
+            paddingVertical: 8,
             paddingHorizontal: 16,
         },
         cardCompact: {
@@ -1981,16 +1981,16 @@ export const createStyles = (c: ThemeColours) => ({
             opacity: 0.7,
         },
         arrowWrapper: {
-            marginTop: 4,
+            marginTop: 2,
         },
         speedText: {
             color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
-            marginTop: 4,
+            marginTop: 2,
         },
         bottomSection: {
-            marginTop: 8,
+            marginTop: 6,
             width: '100%',
             alignItems: 'center',
         },

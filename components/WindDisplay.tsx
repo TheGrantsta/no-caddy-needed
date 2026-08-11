@@ -104,7 +104,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                 </Text>
             </View>
             <View testID="wind-arrow-large" style={[styles.windDisplay.arrowWrapper, { transform: [{ rotate: `${rotation}deg` }] }]}>
-                <MaterialIcons name="straight" size={110} color={colours.primary} />
+                <MaterialIcons name="straight" size={80} color={colours.primary} />
             </View>
             <Text
                 testID="wind-speed-text-large"

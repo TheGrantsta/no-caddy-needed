@@ -230,6 +230,7 @@ export default function Play() {
             await cancelAllRoundReminders();
         }
         setSkipStatsFlow(incompleteRound.IsScoreOnly === 1);
+        console.log("[PLAY] Resuming round with IsScoreOnly:", incompleteRound.IsScoreOnly, "→ skipStatsFlow:", incompleteRound.IsScoreOnly === 1);
         const holesPlayed = getHolesPlayedForRoundService(incompleteRound.Id);
         const resumeHole = holesPlayed > 0 ? holesPlayed + 1 : 1;
         setCurrentHole(resumeHole);
@@ -259,6 +260,7 @@ export default function Play() {
         setRoundHistory(history);
     };
 
+        console.log("[PLAY] Starting round with skipStatsFlowEnabled:", settings.skipStatsFlowEnabled);
     const handleStartRound = async (playerNames: string[], courseName: string) => {
         const roundId = await startRoundService(courseName, settings.skipStatsFlowEnabled);
 

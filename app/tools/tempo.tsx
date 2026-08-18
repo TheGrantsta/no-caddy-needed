@@ -24,7 +24,7 @@ export default function Tempo() {
     useEffect(() => {
         setAudioModeAsync({
             allowsRecording: false,
-            shouldPlayInBackground: false,
+            shouldPlayInBackground: true,
             playsInSilentMode: true,
             interruptionMode: 'mixWithOthers',
         }).catch((error) => {

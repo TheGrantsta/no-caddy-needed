@@ -297,4 +297,11 @@ describe('Tempo training page', () => {
 
         expect(getByText('Play')).toBeTruthy();
     });
+
+    it('requestsBackgroundPlaybackSoTheBeatContinuesWhenAppIsBackgrounded', () => {
+        render(<Tempo />);
+        expect(mockSetAudioModeAsync).toHaveBeenCalledWith(
+            expect.objectContaining({ shouldPlayInBackground: true })
+        );
+    });
 });

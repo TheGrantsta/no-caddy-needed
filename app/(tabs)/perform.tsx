@@ -10,7 +10,7 @@ import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { logEvent } from '../../service/FirebaseService';
-import { getSettingsService, saveSettingsService, AppSettings, getPuttingMakeRatesService, getPuttingProximityService, getAllDeadlySinsRoundsService, getAllRoundHistoryService } from '../../service/DbService';
+import { getSettingsService, saveSettingsService, AppSettings, getPuttingMakeRatesService, getPuttingProximityService, getAllDeadlySinsRoundsService, getAllRoundHistoryService, formatPuttCount } from '../../service/DbService';
 
 const ONBOARDING_STEPS = [
   { text: 'Performance helps you make smarter decisions and set realistic expectations on the course.' },
@@ -53,10 +53,13 @@ export default function Perform() {
 
   const getPersonalPuttingStats = (roundIds?: Set<number>): [string, string][] => {
     const rates = getPuttingMakeRatesService(roundIds);
-    return rates.map((row) => [
-      String(row.distance),
-      `${row.makeRate} (${PUTTING_PRO_RATES[row.distance] || '-'})`,
-    ]);
+    return rates.map((row) => {
+      const puttsSegment = row.putts > 0 ? ` of ${formatPuttCount(row.putts)}` : '';
+      return [
+        String(row.distance),
+        `${row.makeRate}${puttsSegment} (${PUTTING_PRO_RATES[row.distance] || '-'})`,
+      ];
+    });
   };
 
   const hasPersonalPuttingData = (roundIds?: Set<number>): boolean => {

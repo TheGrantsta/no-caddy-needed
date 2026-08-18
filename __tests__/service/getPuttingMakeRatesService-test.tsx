@@ -1,4 +1,4 @@
-import { getPuttingMakeRatesService, bucketPuttingDistance, PUTTING_DISTANCE_BUCKETS } from '../../service/DbService';
+import { getPuttingMakeRatesService, bucketPuttingDistance, PUTTING_DISTANCE_BUCKETS, formatPuttCount } from '../../service/DbService';
 import { getAllPuttingStatsWithThreePutts } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
@@ -54,6 +54,7 @@ describe('getPuttingMakeRatesService', () => {
         expect(result).toHaveLength(PUTTING_DISTANCE_BUCKETS.length);
         result.forEach((row) => {
             expect(row.makeRate).toBe('-');
+            expect(row.putts).toBe(0);
         });
     });
 
@@ -69,6 +70,7 @@ describe('getPuttingMakeRatesService', () => {
 
         expect(bucket5).toBeDefined();
         expect(bucket5!.makeRate).toBe('67%');
+        expect(bucket5!.putts).toBe(3);
     });
 
     it('counts first-putt attempts missed when secondPuttDistance > 0', () => {
@@ -83,6 +85,7 @@ describe('getPuttingMakeRatesService', () => {
 
         expect(bucket10).toBeDefined();
         expect(bucket10!.makeRate).toBe('33%');
+        expect(bucket10!.putts).toBe(3);
     });
 
     it('only counts second putts when secondPuttDistance > 0', () => {
@@ -97,6 +100,7 @@ describe('getPuttingMakeRatesService', () => {
 
         expect(bucket5).toBeDefined();
         expect(bucket5!.makeRate).toBe('100%');
+        expect(bucket5!.putts).toBe(1);
     });
 
     it('counts second-putt attempts made when ThreePutts !== 1', () => {
@@ -110,7 +114,9 @@ describe('getPuttingMakeRatesService', () => {
         const bucket3 = result.find(r => r.distance === 3);
 
         expect(bucket2!.makeRate).toBe('100%');
+        expect(bucket2!.putts).toBe(1);
         expect(bucket3!.makeRate).toBe('100%');
+        expect(bucket3!.putts).toBe(1);
     });
 
     it('counts second-putt attempts missed when ThreePutts === 1', () => {
@@ -123,6 +129,7 @@ describe('getPuttingMakeRatesService', () => {
         const bucket2 = result.find(r => r.distance === 2);
 
         expect(bucket2!.makeRate).toBe('50%');
+        expect(bucket2!.putts).toBe(2);
     });
 
     it('combines first-putt and second-putt attempts from the same distance bucket', () => {
@@ -135,6 +142,7 @@ describe('getPuttingMakeRatesService', () => {
         const bucket5 = result.find(r => r.distance === 5);
 
         expect(bucket5!.makeRate).toBe('100%');
+        expect(bucket5!.putts).toBe(2);
     });
 
     it('includes a made second putt from a distance with no first-putt attempts', () => {
@@ -146,6 +154,7 @@ describe('getPuttingMakeRatesService', () => {
         const bucket4 = result.find(r => r.distance === 4);
 
         expect(bucket4!.makeRate).toBe('100%');
+        expect(bucket4!.putts).toBe(1);
     });
 
     it('buckets distances correctly', () => {
@@ -190,7 +199,9 @@ describe('getPuttingMakeRatesService', () => {
         const bucket10 = result.find(r => r.distance === 10);
 
         expect(bucket5!.makeRate).toBe('100%');
+        expect(bucket5!.putts).toBe(2);
         expect(bucket10!.makeRate).toBe('50%');
+        expect(bucket10!.putts).toBe(2);
     });
 
     it('returns all 26 buckets in order', () => {
@@ -213,6 +224,7 @@ describe('getPuttingMakeRatesService', () => {
         const bucket5 = result.find(r => r.distance === 5);
 
         expect(bucket5!.makeRate).toBe('100%');
+        expect(bucket5!.putts).toBe(2);
     });
 
     it('aggregates all rows when roundIds is not provided', () => {
@@ -240,7 +252,32 @@ describe('getPuttingMakeRatesService', () => {
         const bucket10 = result.find(r => r.distance === 10);
 
         expect(bucket4!.makeRate).toBe('100%');
+        expect(bucket4!.putts).toBe(1);
         expect(bucket20!.makeRate).toBe('0%');
+        expect(bucket20!.putts).toBe(1);
         expect(bucket10!.makeRate).toBe('-');
+        expect(bucket10!.putts).toBe(0);
+    });
+});
+
+describe('formatPuttCount', () => {
+    it('returns the count as a string when 0', () => {
+        expect(formatPuttCount(0)).toBe('0');
+    });
+
+    it('returns the count as a string when 1', () => {
+        expect(formatPuttCount(1)).toBe('1');
+    });
+
+    it('returns the count as a string when 99', () => {
+        expect(formatPuttCount(99)).toBe('99');
+    });
+
+    it('returns "99+" when count is 100', () => {
+        expect(formatPuttCount(100)).toBe('99+');
+    });
+
+    it('returns "99+" when count is greater than 100', () => {
+        expect(formatPuttCount(250)).toBe('99+');
     });
 });

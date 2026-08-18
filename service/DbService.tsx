@@ -364,9 +364,13 @@ export const bucketPuttingDistance = (distance: number): number | null => {
     return bucket;
 };
 
+export const formatPuttCount = (count: number): string =>
+    count > 99 ? '99+' : String(count);
+
 export type PuttingMakeRate = {
     distance: number;
     makeRate: string;
+    putts: number;
 };
 
 export const getPuttingMakeRatesService = (roundIds?: Set<number>): PuttingMakeRate[] => {
@@ -400,6 +404,7 @@ export const getPuttingMakeRatesService = (roundIds?: Set<number>): PuttingMakeR
         return {
             distance,
             makeRate: bucket ? `${Math.round((bucket.made / bucket.total) * 100)}%` : '-',
+            putts: bucket ? bucket.total : 0,
         };
     });
 };

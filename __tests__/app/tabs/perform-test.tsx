@@ -36,33 +36,34 @@ jest.mock('../../../service/DbService', () => ({
     saveSettingsService: jest.fn().mockResolvedValue(true),
     getAllDeadlySinsRoundsService: jest.fn().mockReturnValue([]),
     getAllRoundHistoryService: jest.fn().mockReturnValue([]),
+    formatPuttCount: (count: number) => count > 99 ? '99+' : String(count),
     getPuttingMakeRatesService: jest.fn().mockReturnValue([
-        { distance: 1, makeRate: '98%' },
-        { distance: 2, makeRate: '95%' },
-        { distance: 3, makeRate: '92%' },
-        { distance: 4, makeRate: '85%' },
-        { distance: 5, makeRate: '75%' },
-        { distance: 6, makeRate: '65%' },
-        { distance: 7, makeRate: '57%' },
-        { distance: 8, makeRate: '49%' },
-        { distance: 9, makeRate: '42%' },
-        { distance: 10, makeRate: '38%' },
-        { distance: 11, makeRate: '33%' },
-        { distance: 12, makeRate: '30%' },
-        { distance: 13, makeRate: '27%' },
-        { distance: 14, makeRate: '25%' },
-        { distance: 15, makeRate: '23%' },
-        { distance: 16, makeRate: '21%' },
-        { distance: 17, makeRate: '19%' },
-        { distance: 18, makeRate: '17%' },
-        { distance: 19, makeRate: '16%' },
-        { distance: 20, makeRate: '14%' },
-        { distance: 25, makeRate: '10%' },
-        { distance: 30, makeRate: '7%' },
-        { distance: 35, makeRate: '5%' },
-        { distance: 40, makeRate: '3%' },
-        { distance: 45, makeRate: '2%' },
-        { distance: 50, makeRate: '1%' },
+        { distance: 1, makeRate: '98%', putts: 45 },
+        { distance: 2, makeRate: '95%', putts: 38 },
+        { distance: 3, makeRate: '92%', putts: 52 },
+        { distance: 4, makeRate: '85%', putts: 41 },
+        { distance: 5, makeRate: '75%', putts: 24 },
+        { distance: 6, makeRate: '65%', putts: 31 },
+        { distance: 7, makeRate: '57%', putts: 28 },
+        { distance: 8, makeRate: '49%', putts: 35 },
+        { distance: 9, makeRate: '42%', putts: 19 },
+        { distance: 10, makeRate: '38%', putts: 21 },
+        { distance: 11, makeRate: '33%', putts: 0 },
+        { distance: 12, makeRate: '30%', putts: 0 },
+        { distance: 13, makeRate: '27%', putts: 0 },
+        { distance: 14, makeRate: '25%', putts: 0 },
+        { distance: 15, makeRate: '23%', putts: 0 },
+        { distance: 16, makeRate: '21%', putts: 0 },
+        { distance: 17, makeRate: '19%', putts: 0 },
+        { distance: 18, makeRate: '17%', putts: 0 },
+        { distance: 19, makeRate: '16%', putts: 0 },
+        { distance: 20, makeRate: '14%', putts: 0 },
+        { distance: 25, makeRate: '10%', putts: 0 },
+        { distance: 30, makeRate: '7%', putts: 0 },
+        { distance: 35, makeRate: '5%', putts: 0 },
+        { distance: 40, makeRate: '3%', putts: 0 },
+        { distance: 45, makeRate: '2%', putts: 0 },
+        { distance: 50, makeRate: '1%', putts: 0 },
     ]),
     getPuttingProximityService: jest.fn().mockReturnValue([
         { distance: 1, shortPercent: '60%', longPercent: '40%' },
@@ -363,6 +364,28 @@ describe('Perform', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText(/Estimated or extrapolated from PGA tour data/)).toBeTruthy();
+        });
+
+        it('displaysPuttCountInParenthesesNextToMakeRate', () => {
+            const { getByTestId, queryByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
+            expect(queryByText(/98% of 45/)).toBeTruthy();
+            expect(queryByText(/75% of 24/)).toBeTruthy();
+        });
+
+        it('capsDisplayedPuttCountAt99', () => {
+            const { getPuttingMakeRatesService } = require('../../../service/DbService');
+            const original = getPuttingMakeRatesService.getMockImplementation();
+            getPuttingMakeRatesService.mockReturnValue([
+                { distance: 1, makeRate: '85%', putts: 150 },
+                { distance: 2, makeRate: '80%', putts: 0 },
+            ]);
+
+            const { getByTestId, queryByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
+            expect(queryByText('85% of 99+ (100%*)')).toBeTruthy();
+
+            getPuttingMakeRatesService.mockImplementation(original);
         });
     });
 

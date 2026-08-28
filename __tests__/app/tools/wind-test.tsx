@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import Wind from '../../../app/tools/wind';
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -24,16 +24,25 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
+jest.mock('expo-router', () => ({
+    useFocusEffect: jest.fn((callback) => {
+        callback();
+    }),
+}));
+
 const mockRefreshWind = jest.fn();
 let mockWindValue: { directionFrom: number; speedMph: number } | null = { directionFrom: 100, speedMph: 12 };
+let mockLocationIssue: 'servicesDisabled' | 'permissionDenied' | null = null;
 jest.mock('../../../hooks/useWind', () => ({
-    useWind: () => ({ wind: mockWindValue, heading: 0, refreshWind: mockRefreshWind }),
+    useWind: () => ({ wind: mockWindValue, heading: 0, refreshWind: mockRefreshWind, locationIssue: mockLocationIssue }),
 }));
+
 
 describe('Wind tool screen', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockWindValue = { directionFrom: 100, speedMph: 12 };
+        mockLocationIssue = null;
     });
 
     it('renders the screen header', () => {
@@ -63,5 +72,40 @@ describe('Wind tool screen', () => {
         const { queryByTestId } = render(<Wind />);
         expect(queryByTestId('wind-display-title')).toBeNull();
         expect(queryByTestId('wind-aim-hint')).toBeNull();
+    });
+
+    it('shows location services disabled message when locationIssue is servicesDisabled', () => {
+        mockWindValue = null;
+        mockLocationIssue = 'servicesDisabled';
+        const { getByTestId, queryByTestId, getByText } = render(<Wind />);
+        expect(getByTestId('wind-tool-location-off')).toBeTruthy();
+        expect(queryByTestId('wind-tool-unavailable')).toBeNull();
+        expect(getByText(/location services/i)).toBeTruthy();
+    });
+
+    it('shows permission denied message when locationIssue is permissionDenied', () => {
+        mockWindValue = null;
+        mockLocationIssue = 'permissionDenied';
+        const { getByTestId, queryByTestId, getByText } = render(<Wind />);
+        expect(getByTestId('wind-tool-permission-denied')).toBeTruthy();
+        expect(queryByTestId('wind-tool-unavailable')).toBeNull();
+        expect(getByText(/permission/i)).toBeTruthy();
+    });
+
+    it('renders Open Settings button when location issue is servicesDisabled', () => {
+        mockWindValue = null;
+        mockLocationIssue = 'servicesDisabled';
+        const { getByTestId } = render(<Wind />);
+        const button = getByTestId('wind-open-settings-button');
+        expect(button).toBeTruthy();
+    });
+
+    it('shows generic unavailable message when locationIssue is null but wind is null', () => {
+        mockWindValue = null;
+        mockLocationIssue = null;
+        const { getByTestId, queryByTestId } = render(<Wind />);
+        expect(getByTestId('wind-tool-unavailable')).toBeTruthy();
+        expect(queryByTestId('wind-tool-location-off')).toBeNull();
+        expect(queryByTestId('wind-tool-permission-denied')).toBeNull();
     });
 });

@@ -1,22 +1,22 @@
-import { useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { useState } from 'react';
+import { RefreshControl, ScrollView, Text, View, Linking } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useFocusEffect } from 'expo-router';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { useOrientation } from '@/hooks/useOrientation';
 import { useWind } from '@/hooks/useWind';
 import WindDisplay from '@/components/WindDisplay';
+import CtaButton from '@/components/CtaButton';
 
 export default function Wind() {
     const colours = useThemeColours();
     const styles = useStyles();
     const { landscapePadding } = useOrientation();
-    const { wind, heading, refreshWind } = useWind();
+    const { wind, heading, refreshWind, locationIssue } = useWind();
     const [refreshing, setRefreshing] = useState(false);
 
-    useEffect(() => {
-        refreshWind();
-    }, [refreshWind]);
+    useFocusEffect(refreshWind);
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -52,6 +52,36 @@ export default function Wind() {
                                 compact
                                 disableVoice
                             />
+                        ) : locationIssue === 'servicesDisabled' ? (
+                            <View style={{ alignItems: 'center', margin: 20 }}>
+                                <Text
+                                    testID="wind-tool-location-off"
+                                    style={[styles.normalText, { textAlign: 'center', marginBottom: 16 }]}
+                                >
+                                    Location services are disabled. Enable them in your device settings to show wind data.
+                                </Text>
+                                <CtaButton
+                                    testID="wind-open-settings-button"
+                                    label="Open Settings"
+                                    icon="settings"
+                                    onPress={() => Linking.openSettings()}
+                                />
+                            </View>
+                        ) : locationIssue === 'permissionDenied' ? (
+                            <View style={{ alignItems: 'center', margin: 20 }}>
+                                <Text
+                                    testID="wind-tool-permission-denied"
+                                    style={[styles.normalText, { textAlign: 'center', marginBottom: 16 }]}
+                                >
+                                    This app needs location permission to show wind data. Grant permission in your device settings.
+                                </Text>
+                                <CtaButton
+                                    testID="wind-open-settings-button"
+                                    label="Open Settings"
+                                    icon="settings"
+                                    onPress={() => Linking.openSettings()}
+                                />
+                            </View>
                         ) : (
                             <Text
                                 testID="wind-tool-unavailable"

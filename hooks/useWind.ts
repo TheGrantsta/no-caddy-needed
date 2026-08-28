@@ -21,10 +21,12 @@ try {
  * - `refreshWind()` fetches the latest wind for the current GPS position.
  * - On any failure (permission denied, no GPS, offline, API down) the previous
  *   wind value is retained rather than cleared.
+ * - Detects and reports specific location issues: services disabled vs permission denied.
  */
 export const useWind = () => {
     const [wind, setWind] = useState<Wind | null>(null);
     const [heading, setHeading] = useState(0);
+    const [locationIssue, setLocationIssue] = useState<'servicesDisabled' | 'permissionDenied' | null>(null);
 
     useEffect(() => {
         let subscription: { remove: () => void } | null = null;
@@ -36,11 +38,19 @@ export const useWind = () => {
                 return;
             }
             try {
+                const servicesEnabled = await Location.hasServicesEnabledAsync();
+                if (!servicesEnabled) {
+                    devWarn('location services not enabled');
+                    setLocationIssue('servicesDisabled');
+                    return;
+                }
                 const { status } = await Location.requestForegroundPermissionsAsync();
                 if (status !== 'granted') {
                     devWarn(`location permission not granted (status: ${status}) — wind indicator hidden`);
+                    setLocationIssue('permissionDenied');
                     return;
                 }
+                setLocationIssue(null);
                 if (cancelled) return;
                 subscription = await Location.watchHeadingAsync((h) => {
                     setHeading(h.trueHeading >= 0 ? h.trueHeading : h.magHeading);
@@ -59,6 +69,17 @@ export const useWind = () => {
     const refreshWind = useCallback(async () => {
         if (!Location) return;
         try {
+            const servicesEnabled = await Location.hasServicesEnabledAsync();
+            if (!servicesEnabled) {
+                setLocationIssue('servicesDisabled');
+                return;
+            }
+            const { status } = await Location.getForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setLocationIssue('permissionDenied');
+                return;
+            }
+            setLocationIssue(null);
             const position = await Location.getCurrentPositionAsync();
             const next = await fetchWind(position.coords.latitude, position.coords.longitude);
             setWind(next);
@@ -68,5 +89,5 @@ export const useWind = () => {
         }
     }, []);
 
-    return { wind, heading, refreshWind };
+    return { wind, heading, refreshWind, locationIssue };
 };

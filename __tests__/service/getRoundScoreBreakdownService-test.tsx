@@ -101,7 +101,7 @@ describe('getRoundScoreBreakdownService', () => {
 
         const result = getRoundScoreBreakdownService(1);
 
-        expect(result.putts).toBe(3);
+        expect(result.putts).toBe(4);
         expect(result.threePutts).toBe(3);
         expect(result.penalties).toBe(0);
     });
@@ -121,8 +121,44 @@ describe('getRoundScoreBreakdownService', () => {
 
         const result = getRoundScoreBreakdownService(1);
 
-        expect(result.putts).toBe(6);
+        expect(result.putts).toBe(7);
         expect(result.threePutts).toBe(1);
         expect(result.penalties).toBe(1);
+    });
+
+    it('counts three-putt as 3 strokes even when SecondPuttDistance is 0', () => {
+        mockGetRoundById.mockReturnValue({ Created_At: '01/06' });
+        mockGetDeadlySinsForRound.mockReturnValue({
+            ThreePutts: 1,
+            Penalties: 0,
+        });
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 20, SecondPuttDistance: 0, ThreePutts: 1 },
+        ]);
+
+        const result = getRoundScoreBreakdownService(1);
+
+        expect(result.putts).toBe(3);
+        expect(result.threePutts).toBe(1);
+        expect(result.penalties).toBe(0);
+    });
+
+    it('counts multiple three-putts correctly', () => {
+        mockGetRoundById.mockReturnValue({ Created_At: '01/06' });
+        mockGetDeadlySinsForRound.mockReturnValue({
+            ThreePutts: 2,
+            Penalties: 0,
+        });
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 10, SecondPuttDistance: 2, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 15, SecondPuttDistance: 3, ThreePutts: 1 },
+            { RoundId: 1, FirstPuttDistance: 5, SecondPuttDistance: 0, ThreePutts: 1 },
+        ]);
+
+        const result = getRoundScoreBreakdownService(1);
+
+        expect(result.putts).toBe(8);
+        expect(result.threePutts).toBe(2);
+        expect(result.penalties).toBe(0);
     });
 });

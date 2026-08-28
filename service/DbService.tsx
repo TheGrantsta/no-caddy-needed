@@ -763,8 +763,12 @@ export const getRoundScoreBreakdownService = (roundId: number): RoundScoreBreakd
     const roundStats = puttingStats.filter((row) => row.RoundId === roundId);
     let putts = 0;
     roundStats.forEach((stat) => {
-        putts += 1;
-        if (stat.SecondPuttDistance > 0) putts += 1;
+        if (stat.ThreePutts === 1) {
+            putts += 3;
+        } else {
+            putts += 1;
+            if (stat.SecondPuttDistance > 0) putts += 1;
+        }
     });
 
     return { putts, threePutts, penalties };

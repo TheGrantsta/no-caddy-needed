@@ -264,20 +264,18 @@ export default function Perform() {
 
             <View style={styles.divider} />
 
-            {hasProximityData(proximityThreePuttOnly, roundIdsFilter) ? (
-              <>
-                <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, paddingTop: 20, gap: 8 }}>
-                  <Text testID="proximity-filter-label" style={{ color: colours.primary, fontSize: 16 }}>Show 3-Putts Only</Text>
-                  <Switch
-                    testID="proximity-filter-toggle"
-                    value={proximityThreePuttOnly}
-                    onValueChange={setProximityThreePuttOnly}
-                    trackColor={{ false: colours.tertiary, true: colours.primary }}
-                  />
-                </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, paddingTop: 20, gap: 8 }}>
+              <Text testID="proximity-filter-label" style={{ color: colours.primary, fontSize: 16 }}>Show 3-Putts Only</Text>
+              <Switch
+                testID="proximity-filter-toggle"
+                value={proximityThreePuttOnly}
+                onValueChange={setProximityThreePuttOnly}
+                trackColor={{ false: colours.tertiary, true: colours.primary }}
+              />
+            </View>
 
-                <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, roundIdsFilter)} />
-              </>
+            {hasProximityData(proximityThreePuttOnly, roundIdsFilter) ? (
+              <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, roundIdsFilter)} />
             ) : (
               <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
                 No putting data for selected rounds

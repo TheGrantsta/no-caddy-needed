@@ -116,11 +116,6 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                                     size={20}
                                     color={isListening ? colours.background : colours.primary}
                                 />
-                                <Text
-                                    style={[styles.windDisplay.voiceButtonText, isListening ? styles.windDisplay.voiceButtonTextActive : styles.windDisplay.voiceButtonTextInactive]}
-                                >
-                                    {isListening ? 'Listening...' : 'Say the distance'}
-                                </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 testID="wind-manual-entry-toggle"

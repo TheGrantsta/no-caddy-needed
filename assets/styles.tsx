@@ -1993,15 +1993,14 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         voiceButton: {
-            paddingVertical: 6,
-            paddingHorizontal: 10,
+            width: 40,
+            height: 40,
             borderRadius: 8,
             borderWidth: 1,
             borderColor: c.primary,
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 6,
         },
         voiceButtonActive: {
             backgroundColor: c.primary,
@@ -2028,8 +2027,8 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 8,
         },
         manualEntryToggle: {
-            paddingVertical: 8,
-            paddingHorizontal: 12,
+            width: 40,
+            height: 40,
             justifyContent: 'center',
             alignItems: 'center',
             borderWidth: 1,

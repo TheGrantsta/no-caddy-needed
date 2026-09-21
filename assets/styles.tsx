@@ -1593,7 +1593,7 @@ export const createStyles = (c: ThemeColours) => ({
         nextHoleButton: {
             backgroundColor: c.primary,
             borderWidth: 2,
-            borderColor: c.background,
+            borderColor: c.primary,
             paddingVertical: 8,
             paddingHorizontal: 12,
             borderRadius: 6,

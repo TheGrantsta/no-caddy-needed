@@ -847,14 +847,14 @@ describe('Play screen', () => {
             expect(button.findByProps({ name: 'skip-next' })).toBeTruthy();
         });
 
-        it('gives the Next hole button a background-coloured border', async () => {
+        it('gives the Next hole button a primary-coloured border', async () => {
             const colours = require('../../assets/colours').default;
             const utils = render(<Play />);
             await startRound(utils);
 
             const style = StyleSheet.flatten(utils.getByTestId('next-hole-button').props.style);
             expect(style.borderWidth).toBeGreaterThan(0);
-            expect(style.borderColor).toBe(colours.background);
+            expect(style.borderColor).toBe(colours.primary);
         });
 
         it('renders End round in red', async () => {

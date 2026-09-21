@@ -1982,6 +1982,8 @@ export const createStyles = (c: ThemeColours) => ({
         implicationsSection: {
             width: '100%',
             alignItems: 'center',
+            paddingHorizontal: 12,
+            paddingVertical: 12,
         },
         arrowWrapper: {
             marginTop: 0,

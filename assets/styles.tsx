@@ -507,6 +507,7 @@ export const createStyles = (c: ThemeColours) => ({
         container: {
             marginBottom: 4,
             marginTop: 8,
+            marginHorizontal: 8,
             paddingHorizontal: 12,
             paddingVertical: 12,
             borderWidth: 1,

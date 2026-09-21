@@ -1,4 +1,5 @@
 import React from 'react';
+import { Animated } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
 import WindDisplay from '../../components/WindDisplay';
 
@@ -704,6 +705,31 @@ describe('WindDisplay', () => {
             const { queryByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
             expect(queryByTestId('wind-club-suggestions')).toBeTruthy();
             expect(queryByTestId('wind-fallback-suggestion')).toBeNull();
+        });
+    });
+
+    describe('manual entry animation', () => {
+        it('triggers Animated.timing when manual entry toggle is pressed', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+            const animSpy = jest.spyOn(Animated, 'timing');
+
+            const { getByTestId } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            fireEvent.press(getByTestId('wind-manual-entry-toggle'));
+
+            expect(animSpy).toHaveBeenCalledWith(
+                expect.any(Animated.Value),
+                expect.objectContaining({ useNativeDriver: true })
+            );
+
+            animSpy.mockRestore();
         });
     });
 });

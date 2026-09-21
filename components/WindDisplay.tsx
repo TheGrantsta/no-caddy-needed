@@ -1,6 +1,6 @@
-import { Text, View, TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, TouchableOpacity, TextInput, Animated } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/WeatherService';
@@ -38,6 +38,41 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
     const styles = useStyles();
     const [manualEntryOpen, setManualEntryOpen] = useState(false);
     const [manualEntryText, setManualEntryText] = useState('');
+    const manualEntryFadeAnim = useRef(new Animated.Value(0)).current;
+    const manualEntrySlideAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        if (manualEntryOpen) {
+            manualEntryFadeAnim.setValue(0);
+            manualEntrySlideAnim.setValue(-40);
+            Animated.parallel([
+                Animated.timing(manualEntryFadeAnim, {
+                    toValue: 1,
+                    duration: 350,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(manualEntrySlideAnim, {
+                    toValue: 0,
+                    duration: 350,
+                    useNativeDriver: true,
+                }),
+            ]).start();
+        } else {
+            Animated.parallel([
+                Animated.timing(manualEntryFadeAnim, {
+                    toValue: 0,
+                    duration: 350,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(manualEntrySlideAnim, {
+                    toValue: -40,
+                    duration: 350,
+                    useNativeDriver: true,
+                }),
+            ]).start();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [manualEntryOpen]);
 
     const effect = directionFrom !== null && speedMph !== null
         ? getWindEffect(directionFrom, speedMph, heading)
@@ -133,7 +168,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
             <View testID="wind-implications-section" style={styles.windDisplay.implicationsSection}>
                 <View style={styles.windDisplay.bottomSection}>
                     {voiceEnabled && manualEntryOpen && (
-                        <View style={styles.windDisplay.manualEntryPanel}>
+                        <Animated.View style={[styles.windDisplay.manualEntryPanel, { opacity: manualEntryFadeAnim, transform: [{ translateY: manualEntrySlideAnim }] }]}>
                             <TextInput
                                 testID="wind-manual-entry-input"
                                 style={styles.windDisplay.manualEntryInput}
@@ -166,7 +201,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                                     color={colours.primary}
                                 />
                             </TouchableOpacity>
-                        </View>
+                        </Animated.View>
                     )}
                     {!adjustedDisplayValue && (
                         <Text

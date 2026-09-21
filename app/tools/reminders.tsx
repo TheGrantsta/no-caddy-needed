@@ -138,7 +138,7 @@ export default function Reminders() {
                 })}
 
                 {!showAddForm && (
-                    <View style={styles.headerContainer}>
+                    <View style={[styles.headerContainer, { marginHorizontal: 8, marginTop: 20 }]}>
                         <CtaButton
                             testID="add-reminder-button"
                             label="Add reminder"

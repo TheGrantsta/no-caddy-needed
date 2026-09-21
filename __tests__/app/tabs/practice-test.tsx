@@ -1,5 +1,5 @@
 import React, { act } from 'react';
-import { FlatList, ScrollView } from 'react-native';
+import { Animated, FlatList, ScrollView } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import Practice from '../../../app/(tabs)/practice';
 import {
@@ -318,6 +318,38 @@ describe('Practice', () => {
             });
 
             expect(mockGetAllDrillHistoryService.mock.calls.length).toBeGreaterThan(initialCallCount);
+        });
+    });
+
+    describe('section transition animation', () => {
+        it('triggers Animated.timing when switching to Tools section', async () => {
+            const animSpy = jest.spyOn(Animated, 'timing');
+            const utils = render(<Practice />);
+
+            const toolsTab = utils.getByTestId('practice-sub-menu-tools');
+            fireEvent.press(toolsTab);
+
+            expect(animSpy).toHaveBeenCalledWith(
+                expect.any(Animated.Value),
+                expect.objectContaining({ useNativeDriver: true })
+            );
+
+            animSpy.mockRestore();
+        });
+
+        it('triggers Animated.timing when switching to History section', async () => {
+            const animSpy = jest.spyOn(Animated, 'timing');
+            const utils = render(<Practice />);
+
+            const historyTab = utils.getByTestId('practice-sub-menu-history');
+            fireEvent.press(historyTab);
+
+            expect(animSpy).toHaveBeenCalledWith(
+                expect.any(Animated.Value),
+                expect.objectContaining({ useNativeDriver: true })
+            );
+
+            animSpy.mockRestore();
         });
     });
 

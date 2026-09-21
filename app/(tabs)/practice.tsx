@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Animated, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
@@ -34,6 +34,9 @@ export default function Practice() {
   const [displayedDrillHistory, setDisplayedDrillHistory] = useState<any[]>([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sectionFadeAnim = useRef(new Animated.Value(0)).current;
+  const sectionSlideAnim = useRef(new Animated.Value(0)).current;
+  const sectionDirectionRef = useRef<'next' | 'previous'>('next');
 
   const points = ['Intention: practice with a purpose!', 'Evaluate: be honest with yourself - identify the shots you avoid (or can\'t play) and give yourself time to improve', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
 
@@ -48,6 +51,10 @@ export default function Practice() {
   };
 
   const handleSubMenu = (sectionName: string) => {
+    const sectionOrder = ['areas', 'tools', 'history'];
+    const currentIndex = sectionOrder.indexOf(section);
+    const nextIndex = sectionOrder.indexOf(sectionName);
+    sectionDirectionRef.current = nextIndex > currentIndex ? 'next' : 'previous';
     setSection(sectionName);
     if (sectionName === 'areas') logEvent('view_areas');
     if (sectionName === 'tools') logEvent('view_tools');
@@ -98,6 +105,25 @@ export default function Practice() {
     };
   }, []);
 
+  useEffect(() => {
+    const offset = sectionDirectionRef.current === 'next' ? 40 : -40;
+    sectionFadeAnim.setValue(0);
+    sectionSlideAnim.setValue(offset);
+    Animated.parallel([
+      Animated.timing(sectionFadeAnim, {
+        toValue: 1,
+        duration: 350,
+        useNativeDriver: true,
+      }),
+      Animated.timing(sectionSlideAnim, {
+        toValue: 0,
+        duration: 350,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [section]);
+
   return (
     <GestureHandlerRootView style={styles.flexOne}>
       <SubMenu showSubMenu='practice' selectedItem={section} handleSubMenu={handleSubMenu} />
@@ -144,7 +170,7 @@ export default function Practice() {
 
         {/* Practice areas */}
         {displaySection('areas') && (
-          <View>
+          <Animated.View style={{ opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }}>
             <Text style={[styles.subHeaderText, styles.marginTop]}>
               Practice areas
             </Text>
@@ -201,12 +227,12 @@ export default function Practice() {
             <View style={styles.contentSection}>
               <Chevrons heading='Principles' points={points} />
             </View>
-          </View>
+          </Animated.View>
         )}
 
         {/* Tools */}
         {displaySection('tools') && (
-          <View>
+          <Animated.View style={{ opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }}>
             <Text style={[styles.subHeaderText, styles.marginTop]}>
               Practice tools
             </Text>
@@ -249,12 +275,12 @@ export default function Practice() {
                 </Link>
               </View>
             </View>
-          </View>
+          </Animated.View>
         )}
 
         {/* History */}
         {displaySection('history') && (
-          <View>
+          <Animated.View style={{ opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }}>
             {loading ? (
               <View>
                 <ActivityIndicator size="large" color={colours.primary} />
@@ -336,7 +362,7 @@ export default function Practice() {
                 )}
               </View>
             )}
-          </View>
+          </Animated.View>
         )}
       </ScrollView>
 

@@ -825,18 +825,18 @@ export default function Play() {
                                         onScoresChange={handleScoresChange}
                                     />
 
-                                    <HoleNoteInput
-                                        key={`note-${currentHole}`}
-                                        note={currentNoteText}
-                                        onNoteChange={setCurrentNoteText}
-                                    />
-
                                     {settings.preShotReminderEnabled && (
                                         <View style={styles.contentSection}>
                                             <Text style={[styles.normalText, { color: colours.primary, fontWeight: 'bold', marginBottom: 12 }]}>Pre-shot routine</Text>
                                             <Text style={{ color: colours.text, fontSize: fontSizes.normal, lineHeight: 22 }}>{settings.preShotRoutineText}</Text>
                                         </View>
                                     )}
+
+                                    <HoleNoteInput
+                                        key={`note-${currentHole}`}
+                                        note={currentNoteText}
+                                        onNoteChange={setCurrentNoteText}
+                                    />
                                 </>
                             )}
 

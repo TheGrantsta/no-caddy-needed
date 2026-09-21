@@ -1,5 +1,5 @@
 import React, { act } from 'react';
-import { FlatList, ScrollView } from 'react-native';
+import { Animated, FlatList, ScrollView } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import Perform from '../../../app/(tabs)/perform';
 
@@ -446,6 +446,38 @@ describe('Perform', () => {
             getPuttingProximityService.mockClear();
             fireEvent(getByTestId('proximity-filter-toggle'), 'valueChange', false);
             expect(getPuttingProximityService).toHaveBeenCalledWith(false, undefined);
+        });
+    });
+
+    describe('section transition animation', () => {
+        it('triggers Animated.timing when switching to Putting section', async () => {
+            const animSpy = jest.spyOn(Animated, 'timing');
+            const utils = render(<Perform />);
+
+            const puttingTab = utils.getByTestId('perform-sub-menu-putting');
+            fireEvent.press(puttingTab);
+
+            expect(animSpy).toHaveBeenCalledWith(
+                expect.any(Animated.Value),
+                expect.objectContaining({ useNativeDriver: true })
+            );
+
+            animSpy.mockRestore();
+        });
+
+        it('triggers Animated.timing when switching to Proximity section', async () => {
+            const animSpy = jest.spyOn(Animated, 'timing');
+            const utils = render(<Perform />);
+
+            const proximityTab = utils.getByTestId('perform-sub-menu-proximity');
+            fireEvent.press(proximityTab);
+
+            expect(animSpy).toHaveBeenCalledWith(
+                expect.any(Animated.Value),
+                expect.objectContaining({ useNativeDriver: true })
+            );
+
+            animSpy.mockRestore();
         });
     });
 });

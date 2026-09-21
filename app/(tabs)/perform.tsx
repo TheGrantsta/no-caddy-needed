@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 import SubMenu from '../../components/SubMenu';
@@ -28,6 +28,9 @@ export default function Perform() {
   const [proximityThreePuttOnly, setProximityThreePuttOnly] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [showOnboarding, setShowOnboarding] = useState(!settings.performOnboardingSeen);
+  const sectionFadeAnim = useRef(new Animated.Value(0)).current;
+  const sectionSlideAnim = useRef(new Animated.Value(0)).current;
+  const sectionDirectionRef = useRef<'next' | 'previous'>('next');
 
   const roundHistory = getAllRoundHistoryService();
   const filteredRoundHistory = roundsFilter === 'all' ? roundHistory : roundHistory.slice(0, roundsFilter);
@@ -82,6 +85,10 @@ export default function Perform() {
   };
 
   const handleSubMenu = (sectionName: string) => {
+    const sectionOrder = ['sins', 'putting', 'proximity'];
+    const currentIndex = sectionOrder.indexOf(section);
+    const nextIndex = sectionOrder.indexOf(sectionName);
+    sectionDirectionRef.current = nextIndex > currentIndex ? 'next' : 'previous';
     setSection(sectionName);
     if (sectionName === 'sins') logEvent('view_deadly_sins');
     if (sectionName === 'putting') logEvent('view_putting');
@@ -91,6 +98,25 @@ export default function Perform() {
   const displaySection = (sectionName: string) => {
     return section === sectionName;
   };
+
+  useEffect(() => {
+    const offset = sectionDirectionRef.current === 'next' ? 40 : -40;
+    sectionFadeAnim.setValue(0);
+    sectionSlideAnim.setValue(offset);
+    Animated.parallel([
+      Animated.timing(sectionFadeAnim, {
+        toValue: 1,
+        duration: 350,
+        useNativeDriver: true,
+      }),
+      Animated.timing(sectionSlideAnim, {
+        toValue: 0,
+        duration: 350,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [section]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -143,7 +169,7 @@ export default function Perform() {
             : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
 
           return (
-            <View style={styles.container}>
+            <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
               <View style={styles.header}>
                 <View style={styles.titleRow}>
                   <Text style={styles.headerText}>
@@ -158,14 +184,14 @@ export default function Perform() {
               <View style={styles.divider} />
 
               <DeadlySinsChart rounds={filteredDeadlySinsRounds} filter={roundsFilter} />
-            </View>
+            </Animated.View>
           );
         })()}
 
         {/* Deadly Sins */}
         {/* Putting */}
         {displaySection('putting') && (
-          <View style={styles.container}>
+          <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
             <View style={styles.header}>
               <View style={styles.titleRow}>
                 <Text style={styles.headerText}>
@@ -207,11 +233,11 @@ export default function Perform() {
                 No putting data for selected rounds
               </Text>
             )}
-          </View>
+          </Animated.View>
         )}
 
         {displaySection('proximity') && (
-          <View style={styles.container}>
+          <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
             <View style={styles.header}>
               <View style={styles.titleRow}>
                 <Text style={styles.headerText}>
@@ -244,7 +270,7 @@ export default function Perform() {
                 No putting data for selected rounds
               </Text>
             )}
-          </View>
+          </Animated.View>
         )}
       </ScrollView>
 

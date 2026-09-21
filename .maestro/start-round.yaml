@@ -124,12 +124,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 1 — Par 4
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 10000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#1"
+      id: "par-4-button"
     timeout: 10000
 - tapOn:
     id: "par-4-button"
@@ -139,12 +134,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 2 — Par 4
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#2"
+      id: "par-4-button"
     timeout: 5000
 - tapOn:
     id: "par-4-button"
@@ -154,12 +144,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 3 — Par 3
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#3"
+      id: "par-3-button"
     timeout: 5000
 - tapOn:
     id: "par-3-button"
@@ -169,12 +154,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 4 — Par 4
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#4"
+      id: "par-4-button"
     timeout: 5000
 - tapOn:
     id: "par-4-button"
@@ -184,12 +164,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 5 — Par 5
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#5"
+      id: "par-5-button"
     timeout: 5000
 - tapOn:
     id: "par-5-button"
@@ -199,12 +174,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 6 — Par 3
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#6"
+      id: "par-3-button"
     timeout: 5000
 - tapOn:
     id: "par-3-button"
@@ -214,12 +184,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 7 — Par 4
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#7"
+      id: "par-4-button"
     timeout: 5000
 - tapOn:
     id: "par-4-button"
@@ -229,12 +194,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 8 — Par 5
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#8"
+      id: "par-5-button"
     timeout: 5000
 - tapOn:
     id: "par-5-button"
@@ -244,12 +204,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 9 — Par 4
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#9"
+      id: "par-4-button"
     timeout: 5000
 - tapOn:
     id: "par-4-button"
@@ -259,12 +214,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 10 — Par 4
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#10"
+      id: "par-4-button"
     timeout: 5000
 - tapOn:
     id: "par-4-button"
@@ -274,12 +224,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 11 — Par 4
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#11"
+      id: "par-4-button"
     timeout: 5000
 - tapOn:
     id: "par-4-button"
@@ -289,12 +234,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 12 — Par 3
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#12"
+      id: "par-3-button"
     timeout: 5000
 - tapOn:
     id: "par-3-button"
@@ -304,12 +244,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 13 — Par 5
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#13"
+      id: "par-5-button"
     timeout: 5000
 - tapOn:
     id: "par-5-button"
@@ -319,12 +254,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 14 — Par 4
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#14"
+      id: "par-4-button"
     timeout: 5000
 - tapOn:
     id: "par-4-button"
@@ -334,12 +264,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 15 — Par 3
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#15"
+      id: "par-3-button"
     timeout: 5000
 - tapOn:
     id: "par-3-button"
@@ -349,12 +274,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 16 — Par 5
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#16"
+      id: "par-5-button"
     timeout: 5000
 - tapOn:
     id: "par-5-button"
@@ -364,12 +284,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 17 — Par 4
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#17"
+      id: "par-4-button"
     timeout: 5000
 - tapOn:
     id: "par-4-button"
@@ -379,12 +294,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Hole 18 — Par 4 (next-hole-button triggers end-round confirmation)
 - extendedWaitUntil:
     visible:
-      id: "acknowledge-dismiss"
-    timeout: 5000
-- tapOn:
-    id: "acknowledge-dismiss"
-- extendedWaitUntil:
-    visible: "#18"
+      id: "par-4-button"
     timeout: 5000
 - tapOn:
     id: "par-4-button"

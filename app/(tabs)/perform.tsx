@@ -137,29 +137,42 @@ export default function Perform() {
           tintColor={colours.primary} />
       }>
 
-        {/* Show Filter with Info Button */}
-        <View style={[styles.playScreen.filterContainer, { paddingVertical: 12 }]}>
-          <TouchableOpacity
-            testID="perform-info-button"
-            onPress={handleShowOnboarding}
-            style={{ padding: 4 }}
-          >
-            <MaterialIcons name="info-outline" size={24} color={colours.primary} />
-          </TouchableOpacity>
-          <Text testID="filter-label" style={styles.playScreen.filterLabel}>Show</Text>
-          {roundHistory.length > 0 && ([1, 10, 'all'] as const).map(f => (
-            <TouchableOpacity
-              key={String(f)}
-              testID={`filter-button-${f}`}
-              onPress={() => setRoundsFilter(f)}
-              style={[styles.playScreen.filterButton, roundsFilter === f && styles.playScreen.filterButtonSelected]}
-            >
-              <Text style={[styles.playScreen.filterButtonText, roundsFilter === f && styles.playScreen.filterButtonTextSelected]}>
-                {f === 'all' ? 'All' : String(f)}
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <View style={styles.titleRow}>
+              <TouchableOpacity
+                testID="perform-info-button"
+                onPress={handleShowOnboarding}
+                style={{ padding: 4 }}
+              >
+                <MaterialIcons name="info-outline" size={24} color={colours.primary} />
+              </TouchableOpacity>
+              <Text style={[styles.headerText, styles.marginTop]}>
+                Performance
               </Text>
-            </TouchableOpacity>
-          ))}
+            </View>
+          </View>
+
+          <View style={styles.divider} />
         </View>
+
+        {/* Filter buttons */}
+        {roundHistory.length > 0 && (
+          <View style={[styles.playScreen.filterContainer, { paddingVertical: 12 }]}>
+            {([1, 10, 'all'] as const).map(f => (
+              <TouchableOpacity
+                key={String(f)}
+                testID={`filter-button-${f}`}
+                onPress={() => setRoundsFilter(f)}
+                style={[styles.playScreen.filterButton, roundsFilter === f && styles.playScreen.filterButtonSelected]}
+              >
+                <Text style={[styles.playScreen.filterButtonText, roundsFilter === f && styles.playScreen.filterButtonTextSelected]}>
+                  {f === 'all' ? 'All' : String(f)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
         {/* Deadly Sins */}
         {displaySection('sins') && (() => {

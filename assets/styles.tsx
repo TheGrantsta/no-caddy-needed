@@ -1993,7 +1993,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         voiceButton: {
-            width: 40,
+            width: 50,
             height: 40,
             borderRadius: 8,
             borderWidth: 1,
@@ -2023,11 +2023,11 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 6,
+            gap: 12,
             marginTop: 8,
         },
         manualEntryToggle: {
-            width: 40,
+            width: 50,
             height: 40,
             justifyContent: 'center',
             alignItems: 'center',

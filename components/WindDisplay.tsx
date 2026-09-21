@@ -123,7 +123,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                                 onPress={handleToggleManualEntry}
                             >
                                 <MaterialIcons
-                                    name="straighten"
+                                    name="keyboard"
                                     size={20}
                                     color={colours.primary}
                                 />

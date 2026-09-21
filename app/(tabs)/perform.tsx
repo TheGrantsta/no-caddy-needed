@@ -196,7 +196,13 @@ export default function Perform() {
 
               <View style={styles.divider} />
 
-              <DeadlySinsChart rounds={filteredDeadlySinsRounds} filter={roundsFilter} />
+              {filteredDeadlySinsRounds.length > 0 ? (
+                <DeadlySinsChart rounds={filteredDeadlySinsRounds} filter={roundsFilter} />
+              ) : (
+                <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
+                  No deadly sins data for selected rounds
+                </Text>
+              )}
             </Animated.View>
           );
         })()}

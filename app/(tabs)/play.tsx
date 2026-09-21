@@ -825,17 +825,21 @@ export default function Play() {
                                         onScoresChange={handleScoresChange}
                                     />
 
-                                    <HoleNoteInput
-                                        key={`note-${currentHole}`}
-                                        note={currentNoteText}
-                                        onNoteChange={setCurrentNoteText}
-                                    />
+                                    {!showEndRoundConfirm && (
+                                        <>
+                                            <HoleNoteInput
+                                                key={`note-${currentHole}`}
+                                                note={currentNoteText}
+                                                onNoteChange={setCurrentNoteText}
+                                            />
 
-                                    {settings.preShotReminderEnabled && (
-                                        <View style={[styles.holeNoteInput.container, { paddingHorizontal: 16, paddingVertical: 16, marginTop: 4, marginBottom: 12 }]}>
-                                            <Text style={[styles.normalText, { color: colours.primary, fontWeight: 'bold', marginBottom: 6 }]}>Pre-shot routine</Text>
-                                            <Text style={{ color: colours.text, fontSize: fontSizes.normal, lineHeight: 22 }}>{settings.preShotRoutineText}</Text>
-                                        </View>
+                                            {settings.preShotReminderEnabled && (
+                                                <View style={[styles.holeNoteInput.container, { paddingHorizontal: 16, paddingVertical: 16, marginTop: 4, marginBottom: 12 }]}>
+                                                    <Text style={[styles.normalText, { color: colours.primary, fontWeight: 'bold', marginBottom: 6 }]}>Pre-shot routine</Text>
+                                                    <Text style={{ color: colours.text, fontSize: fontSizes.normal, lineHeight: 22 }}>{settings.preShotRoutineText}</Text>
+                                                </View>
+                                            )}
+                                        </>
                                     )}
                                 </>
                             )}

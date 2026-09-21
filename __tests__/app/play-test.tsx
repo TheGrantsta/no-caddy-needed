@@ -2550,36 +2550,36 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button') as never);
         };
 
-        it('showsReminderWithRoutineTextWhenRoundStarts', async () => {
+        it('showsRoutineTextInlineWhenRoundStarts', async () => {
             mockGetSettingsService.mockReturnValue(settingsWith({ preShotReminderEnabled: true, preShotRoutineText: 'Target, breathe, go' }));
+
+            const { getByTestId, getByText, queryByTestId } = render(<Play />);
+            startRound(getByTestId);
+
+            await waitFor(() => expect(getByText('Target, breathe, go')).toBeTruthy());
+            expect(queryByTestId('acknowledge-overlay')).toBeNull();
+        });
+
+        it('routineTextPersistsAfterAdvancingToNextHole', async () => {
+            mockGetSettingsService.mockReturnValue(settingsWith({ preShotReminderEnabled: true, preShotRoutineText: 'Routine text' }));
 
             const { getByTestId, getByText } = render(<Play />);
             startRound(getByTestId);
 
-            await waitFor(() => expect(getByTestId('acknowledge-overlay')).toBeTruthy());
-            expect(getByText('Target, breathe, go')).toBeTruthy();
-        });
+            await waitFor(() => expect(getByText('Routine text')).toBeTruthy());
+            fireEvent.press(getByTestId('next-hole-button'));
 
-        it('dismissesReminderWhenGotItPressed', async () => {
-            mockGetSettingsService.mockReturnValue(settingsWith({ preShotReminderEnabled: true, preShotRoutineText: 'Routine' }));
-
-            const { getByTestId, queryByTestId } = render(<Play />);
-            startRound(getByTestId);
-
-            await waitFor(() => expect(getByTestId('acknowledge-overlay')).toBeTruthy());
-            fireEvent.press(getByTestId('acknowledge-dismiss'));
-
-            await waitFor(() => expect(queryByTestId('acknowledge-overlay')).toBeNull());
+            await waitFor(() => expect(getByText('Routine text')).toBeTruthy());
         });
 
         it('doesNotShowReminderWhenDisabled', async () => {
             mockGetSettingsService.mockReturnValue(settingsWith({ preShotReminderEnabled: false, preShotRoutineText: 'Routine' }));
 
-            const { getByTestId, queryByTestId } = render(<Play />);
+            const { getByTestId, queryByText } = render(<Play />);
             startRound(getByTestId);
 
             await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
-            expect(queryByTestId('acknowledge-overlay')).toBeNull();
+            expect(queryByText('Routine')).toBeNull();
         });
     });
 

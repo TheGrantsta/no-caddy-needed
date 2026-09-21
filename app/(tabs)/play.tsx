@@ -136,8 +136,6 @@ export default function Play() {
     const [scorecardDisplaySins, setScorecardDisplaySins] = useState<DeadlySinsValues | null>(null);
     const [courseNotes, setCourseNotes] = useState<Record<number, string>>({});
     const [currentNoteText, setCurrentNoteText] = useState('');
-    const [showPreShotReminder, setShowPreShotReminder] = useState(false);
-    const [preShotText, setPreShotText] = useState('');
     const [showBadHoleReassurance, setShowBadHoleReassurance] = useState(false);
     const [reassuranceMessage, setReassuranceMessage] = useState('');
     const scrollRef = useRef<ScrollView>(null);
@@ -197,15 +195,6 @@ export default function Play() {
         }
     }, [currentHole, activeRoundId, refreshWind]);
 
-    // Show the pre-shot routine reminder before the first hole and between holes.
-    useEffect(() => {
-        if (activeRoundId === null) return;
-        const currentSettings = getSettingsService();
-        if (currentSettings.preShotReminderEnabled) {
-            setPreShotText(currentSettings.preShotRoutineText);
-            setShowPreShotReminder(true);
-        }
-    }, [currentHole, activeRoundId]);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);
@@ -841,6 +830,13 @@ export default function Play() {
                                         note={currentNoteText}
                                         onNoteChange={setCurrentNoteText}
                                     />
+
+                                    {settings.preShotReminderEnabled && (
+                                        <View style={styles.contentSection}>
+                                            <Text style={[styles.normalText, { color: colours.primary, fontWeight: 'bold', marginBottom: 12 }]}>Pre-shot routine</Text>
+                                            <Text style={{ color: colours.text, fontSize: fontSizes.normal, lineHeight: 22 }}>{settings.preShotRoutineText}</Text>
+                                        </View>
+                                    )}
                                 </>
                             )}
 
@@ -1056,13 +1052,6 @@ export default function Play() {
                 onDismiss={handleDismissOnboarding}
                 title="Play"
                 steps={ONBOARDING_STEPS}
-            />
-
-            <AcknowledgeOverlay
-                visible={showPreShotReminder}
-                title="Pre-shot routine"
-                text={preShotText}
-                onDismiss={() => setShowPreShotReminder(false)}
             />
 
             <AcknowledgeOverlay

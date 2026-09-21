@@ -15,7 +15,7 @@ type Props = {
 
 /**
  * A simple modal notice the user acknowledges with a "Got it" 👍 button.
- * Shared by the pre-shot routine reminder and the "What's new" overlay.
+ * Used for putting stats info and bad hole reassurance overlays.
  */
 const AcknowledgeOverlay = ({ visible, title, text, onDismiss, textAlign = 'center', buttonText = 'Got it', variant = 'default' }: Props) => {
     const styles = useStyles();

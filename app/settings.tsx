@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
-import { useMemo, useState } from 'react';
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useMemo, useState, useRef, useEffect } from 'react';
+import { Animated, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Sharing from 'expo-sharing';
@@ -65,6 +65,24 @@ export default function Settings() {
   const [routineText, setRoutineText] = useState(settings.preShotRoutineText);
   const [showOnboarding, setShowOnboarding] = useState(!settings.settingsOnboardingSeen);
   const [group, setGroup] = useState<'golf' | 'system'>('golf');
+  const [showRoutineInput, setShowRoutineInput] = useState(settings.preShotReminderEnabled);
+  const routineFadeAnim = useRef(new Animated.Value(settings.preShotReminderEnabled ? 1 : 0)).current;
+
+  useEffect(() => {
+    if (settings.preShotReminderEnabled) {
+      setShowRoutineInput(true);
+    }
+    Animated.timing(routineFadeAnim, {
+      toValue: settings.preShotReminderEnabled ? 1 : 0,
+      duration: 350,
+      useNativeDriver: true,
+    }).start(() => {
+      if (!settings.preShotReminderEnabled) {
+        setShowRoutineInput(false);
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings.preShotReminderEnabled]);
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -347,19 +365,21 @@ export default function Settings() {
               })}
             </View>
 
-            {settings.preShotReminderEnabled && (
-              <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
-                <TextInput
-                  testID="preshot-routine-input"
-                  style={[styles.textInput, { height: undefined, minHeight: 110, textAlignVertical: 'top', paddingVertical: 10 }]}
-                  value={routineText}
-                  onChangeText={setRoutineText}
-                  onEndEditing={handleRoutineTextChange}
-                  multiline
-                  placeholder="Your pre-shot routine"
-                  placeholderTextColor={colours.tertiary}
-                />
-              </View>
+            {showRoutineInput && (
+              <Animated.View style={{ opacity: routineFadeAnim }}>
+                <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
+                  <TextInput
+                    testID="preshot-routine-input"
+                    style={[styles.textInput, { height: undefined, minHeight: 110, textAlignVertical: 'top', paddingVertical: 10 }]}
+                    value={routineText}
+                    onChangeText={setRoutineText}
+                    onEndEditing={handleRoutineTextChange}
+                    multiline
+                    placeholder="Your pre-shot routine"
+                    placeholderTextColor={colours.tertiary}
+                  />
+                </View>
+              </Animated.View>
             )}
           </View>
 

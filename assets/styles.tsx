@@ -1967,9 +1967,10 @@ export const createStyles = (c: ThemeColours) => ({
             opacity: 0.5,
         },
         windReadingColumn: {
-            flexDirection: 'column',
+            flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
+            gap: 12,
         },
         implicationsSection: {
             width: '100%',
@@ -1984,6 +1985,8 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             marginTop: 0,
+            minWidth: 60,
+            textAlign: 'center',
         },
         bottomSection: {
             width: '100%',

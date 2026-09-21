@@ -53,6 +53,7 @@ function ThemedToastProvider({ children }: { children: React.ReactNode }) {
     <ToastProvider
       placement="bottom"
       offset={80}
+      duration={1000}
       style={{ maxWidth: '100%' }}
       renderType={{
         success: (toast) => (

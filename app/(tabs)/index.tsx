@@ -22,9 +22,9 @@ const ONBOARDING_STEPS = [
 
 // What's new for the current version — shown once per version to existing users.
 const WHATS_NEW = [
-  'Enhanced score input options for better, personalised stats - off by default in Settings',
-  'Performance section redesigned for your stats',
-  'Wind direction available when playing without requiring user interaction',
+  'Smoother screen transitions when switching between Play, Practice and Performance sections',
+  'Show pre-shot routine when entering scores',
+  'Improved wind direction layout and distance entry',
 ];
 
 const APP_VERSION = Constants.expoConfig?.version ?? '';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { Animated, ScrollView, StyleSheet } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Play from '../../app/(tabs)/play';
 import * as Haptics from 'expo-haptics';
@@ -928,6 +928,51 @@ describe('Play screen', () => {
             const button = utils.UNSAFE_getByProps({ testID: 'next-hole-button' });
             expect(button.findByProps({ children: 'Finish' })).toBeTruthy();
             expect(button.findByProps({ name: 'sports-score' })).toBeTruthy();
+        });
+    });
+
+    describe('hole transition animation', () => {
+        it('triggers Animated.timing on Next hole press', async () => {
+            const animSpy = jest.spyOn(Animated, 'timing');
+            const utils = render(<Play />);
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            fireEvent.press(utils.getByTestId('start-round-button'));
+            fireEvent.changeText(utils.getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(utils.getByTestId('start-button'));
+            await waitFor(() => expect(utils.getByText('#1')).toBeTruthy());
+
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+            mockInsertHoleDeadlySins.mockResolvedValue(undefined);
+            mockSaveHoleNote.mockResolvedValue(undefined);
+            fireEvent.press(utils.getByTestId('next-hole-button'));
+
+            await waitFor(() => {
+                expect(animSpy).toHaveBeenCalledWith(
+                    expect.any(Animated.Value),
+                    expect.objectContaining({ useNativeDriver: true })
+                );
+            });
+
+            animSpy.mockRestore();
+        });
+
+        it('keeps nav buttons present after Next hole press', async () => {
+            const utils = render(<Play />);
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            fireEvent.press(utils.getByTestId('start-round-button'));
+            fireEvent.changeText(utils.getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(utils.getByTestId('start-button'));
+            await waitFor(() => expect(utils.getByText('#1')).toBeTruthy());
+
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+            mockInsertHoleDeadlySins.mockResolvedValue(undefined);
+            mockSaveHoleNote.mockResolvedValue(undefined);
+
+            fireEvent.press(utils.getByTestId('next-hole-button'));
+
+            expect(utils.getByTestId('next-hole-button')).toBeTruthy();
         });
     });
 

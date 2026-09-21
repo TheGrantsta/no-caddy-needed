@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as Haptics from 'expo-haptics';
-import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -140,6 +140,9 @@ export default function Play() {
     const [reassuranceMessage, setReassuranceMessage] = useState('');
     const scrollRef = useRef<ScrollView>(null);
     const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const contentFadeAnim = useRef(new Animated.Value(0)).current;
+    const contentSlideAnim = useRef(new Animated.Value(0)).current;
+    const navDirectionRef = useRef<'next' | 'previous'>('next');
     const localStyles = styles.playScreen;
     const isLastHole = currentHole >= 18;
 
@@ -195,6 +198,24 @@ export default function Play() {
         }
     }, [currentHole, activeRoundId, refreshWind]);
 
+    useEffect(() => {
+        const offset = navDirectionRef.current === 'next' ? 24 : -24;
+        contentFadeAnim.setValue(0);
+        contentSlideAnim.setValue(offset);
+        Animated.parallel([
+            Animated.timing(contentFadeAnim, {
+                toValue: 1,
+                duration: 220,
+                useNativeDriver: true,
+            }),
+            Animated.timing(contentSlideAnim, {
+                toValue: 0,
+                duration: 220,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentHole, holePhase]);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);
@@ -375,6 +396,7 @@ export default function Play() {
     };
 
     const handlePreviousHole = async () => {
+        navDirectionRef.current = 'previous';
         if (holePhase === 'score') {
             if (currentHole <= 1) return;
             const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
@@ -413,6 +435,7 @@ export default function Play() {
     };
 
     const handleNextHole = async () => {
+        navDirectionRef.current = 'next';
         if (!activeRoundId) return;
 
         if (holePhase === 'score') {
@@ -814,7 +837,8 @@ export default function Play() {
                 {isRoundActive && !scorecardData && displaySection('play-score') && (
                     <View style={styles.container}>
                         <View>
-                            {holePhase === 'score' && (
+                            <Animated.View style={{ opacity: contentFadeAnim, transform: [{ translateX: contentSlideAnim }] }}>
+                                {holePhase === 'score' && (
                                 <>
                                     <HoleScoreInput
                                         key={`score-${currentHole}`}
@@ -915,6 +939,7 @@ export default function Play() {
                                     />
                                 </>
                             )}
+                            </Animated.View>
 
                             {!showEndRoundConfirm && (
                                 <View>

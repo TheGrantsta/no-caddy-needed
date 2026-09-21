@@ -196,7 +196,7 @@ export default function Perform() {
 
               <View style={styles.divider} />
 
-              {filteredDeadlySinsRounds.length > 0 ? (
+              {filteredDeadlySinsRounds.length > 0 && !filteredDeadlySinsRounds.every(r => r.Total === 0) ? (
                 <DeadlySinsChart rounds={filteredDeadlySinsRounds} filter={roundsFilter} />
               ) : (
                 <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>

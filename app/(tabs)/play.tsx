@@ -199,18 +199,18 @@ export default function Play() {
     }, [currentHole, activeRoundId, refreshWind]);
 
     useEffect(() => {
-        const offset = navDirectionRef.current === 'next' ? 24 : -24;
+        const offset = navDirectionRef.current === 'next' ? 40 : -40;
         contentFadeAnim.setValue(0);
         contentSlideAnim.setValue(offset);
         Animated.parallel([
             Animated.timing(contentFadeAnim, {
                 toValue: 1,
-                duration: 220,
+                duration: 350,
                 useNativeDriver: true,
             }),
             Animated.timing(contentSlideAnim, {
                 toValue: 0,
-                duration: 220,
+                duration: 350,
                 useNativeDriver: true,
             }),
         ]).start();

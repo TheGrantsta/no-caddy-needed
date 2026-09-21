@@ -1958,13 +1958,20 @@ export const createStyles = (c: ThemeColours) => ({
         cardCompact: {
             borderWidth: 0,
         },
-        observationSection: {
-            width: '100%',
+        windControlRow: {
+            flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            paddingHorizontal: 12,
+            paddingVertical: 12,
             borderBottomWidth: 1,
             borderBottomColor: c.primary,
-            opacity: 0.5,
+        },
+        observationSection: {
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
         },
         windReadingColumn: {
             flexDirection: 'row',

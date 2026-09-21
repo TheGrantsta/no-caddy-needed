@@ -89,47 +89,49 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
             testID="wind-display-container"
             style={[styles.windDisplay.card, compact ? styles.windDisplay.cardCompact : styles.windDisplay.cardFull]}
         >
-            <View testID="wind-observation-section" style={styles.windDisplay.observationSection}>
-                <View style={styles.windDisplay.windReadingColumn}>
-                    <View testID="wind-arrow-large" style={[styles.windDisplay.arrowWrapper, { transform: [{ rotate: `${rotation}deg` }] }]}>
-                        <MaterialIcons name="straight" size={80} color={colours.primary} />
-                    </View>
-                    <Text
-                        testID="wind-speed-text-large"
-                        style={styles.windDisplay.speedText}
+            <View style={styles.windDisplay.windControlRow}>
+                {voiceEnabled && !manualEntryOpen && (
+                    <TouchableOpacity
+                        testID="wind-voice-button"
+                        style={[styles.windDisplay.voiceButton, isListening ? styles.windDisplay.voiceButtonActive : styles.windDisplay.voiceButtonInactive]}
+                        onPress={toggleListening}
                     >
-                        {speed} mph
-                    </Text>
+                        <MaterialIcons
+                            name={isListening ? 'mic' : 'mic-off'}
+                            size={20}
+                            color={isListening ? colours.background : colours.primary}
+                        />
+                    </TouchableOpacity>
+                )}
+                <View testID="wind-observation-section" style={styles.windDisplay.observationSection}>
+                    <View style={styles.windDisplay.windReadingColumn}>
+                        <View testID="wind-arrow-large" style={[styles.windDisplay.arrowWrapper, { transform: [{ rotate: `${rotation}deg` }] }]}>
+                            <MaterialIcons name="straight" size={80} color={colours.primary} />
+                        </View>
+                        <Text
+                            testID="wind-speed-text-large"
+                            style={styles.windDisplay.speedText}
+                        >
+                            {speed} mph
+                        </Text>
+                    </View>
                 </View>
+                {voiceEnabled && !manualEntryOpen && (
+                    <TouchableOpacity
+                        testID="wind-manual-entry-toggle"
+                        style={styles.windDisplay.manualEntryToggle}
+                        onPress={handleToggleManualEntry}
+                    >
+                        <MaterialIcons
+                            name="keyboard"
+                            size={20}
+                            color={colours.primary}
+                        />
+                    </TouchableOpacity>
+                )}
             </View>
             <View testID="wind-implications-section" style={styles.windDisplay.implicationsSection}>
                 <View style={styles.windDisplay.bottomSection}>
-                    {voiceEnabled && !manualEntryOpen && (
-                        <View style={styles.windDisplay.voiceRow}>
-                            <TouchableOpacity
-                                testID="wind-voice-button"
-                                style={[styles.windDisplay.voiceButton, isListening ? styles.windDisplay.voiceButtonActive : styles.windDisplay.voiceButtonInactive]}
-                                onPress={toggleListening}
-                            >
-                                <MaterialIcons
-                                    name={isListening ? 'mic' : 'mic-off'}
-                                    size={20}
-                                    color={isListening ? colours.background : colours.primary}
-                                />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                testID="wind-manual-entry-toggle"
-                                style={styles.windDisplay.manualEntryToggle}
-                                onPress={handleToggleManualEntry}
-                            >
-                                <MaterialIcons
-                                    name="keyboard"
-                                    size={20}
-                                    color={colours.primary}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    )}
                     {voiceEnabled && manualEntryOpen && (
                         <View style={styles.windDisplay.manualEntryPanel}>
                             <TextInput

@@ -34,22 +34,24 @@ const AcknowledgeOverlay = ({ visible, title, text, onDismiss, textAlign = 'cent
         >
             <TouchableWithoutFeedback onPress={onDismiss}>
                 <View style={s.overlay}>
-                    <View style={[s.container, variant === 'reassurance' && { backgroundColor: '#f5f5f5' }]}>
-                    <Text style={s.title}>{title}</Text>
-                    <Text style={[s.stepText, { textAlign }]}>{text}</Text>
-                    <TouchableOpacity
-                        testID="acknowledge-dismiss"
-                        onPress={onDismiss}
-                        style={[s.primaryButton, variant === 'reassurance' && { backgroundColor: colours.text }]}
-                    >
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                            <Text style={[s.primaryButtonText, variant === 'reassurance' && { color: colours.background }]}>{buttonText}</Text>
-                            <View testID="acknowledge-thumbs-up">
-                                <MaterialIcons name="thumb-up" size={20} color={colours.background} />
-                            </View>
+                    <TouchableWithoutFeedback>
+                        <View style={[s.container, variant === 'reassurance' && { backgroundColor: '#f5f5f5' }]}>
+                            <Text style={s.title}>{title}</Text>
+                            <Text style={[s.stepText, { textAlign }]}>{text}</Text>
+                            <TouchableOpacity
+                                testID="acknowledge-dismiss"
+                                onPress={onDismiss}
+                                style={[s.primaryButton, variant === 'reassurance' && { backgroundColor: colours.text }]}
+                            >
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                    <Text style={[s.primaryButtonText, variant === 'reassurance' && { color: colours.background }]}>{buttonText}</Text>
+                                    <View testID="acknowledge-thumbs-up">
+                                        <MaterialIcons name="thumb-up" size={20} color={colours.background} />
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
                         </View>
-                    </TouchableOpacity>
-                </View>
+                    </TouchableWithoutFeedback>
                 </View>
             </TouchableWithoutFeedback>
         </Modal>

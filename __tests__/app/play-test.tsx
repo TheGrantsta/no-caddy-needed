@@ -874,13 +874,12 @@ describe('Play screen', () => {
             expect(utils.queryByTestId('previous-hole-button')).toBeNull();
         });
 
-        it('reserves the Previous-hole space with a placeholder on the first hole', async () => {
+        it('does not show Previous button on the first hole', async () => {
             const utils = render(<Play />);
             await startRound(utils);
 
-            // Real button gone, but an invisible placeholder keeps the layout from shifting up.
+            // Previous button is not rendered on hole 1, only Next button shows
             expect(utils.queryByTestId('previous-hole-button')).toBeNull();
-            expect(utils.getByTestId('previous-hole-placeholder')).toBeTruthy();
         });
 
         it('renders Previous hole as a green-bordered button with a skip-previous icon after hole 1', async () => {
@@ -891,19 +890,16 @@ describe('Play screen', () => {
             const style = StyleSheet.flatten(button.props.style);
             expect(style.borderColor).toBe(colours.primary);
             expect(button.findByProps({ name: 'skip-previous' })).toBeTruthy();
-            expect(utils.queryByTestId('previous-hole-placeholder')).toBeNull();
         });
 
         describe('Previous button behavior and label', () => {
-            it('shows "Previous hole" label in score phase', async () => {
-                const utils = await resumeAtHole(1); // hole 2, score phase
-                expect(utils.getByText('Previous hole')).toBeTruthy();
+            it('shows "Previous" label', async () => {
+                const utils = await resumeAtHole(1); // hole 2
+                expect(utils.getByText('Previous')).toBeTruthy();
             });
 
-            it('shows "Previous" label when not in score phase (via conditional)', () => {
-                // Regression test: label should be "Previous" when holePhase !== 'score'
-                // This is verified through the conditional: holePhase === 'score' ? 'Previous hole' : 'Previous'
-                // Behavioral verification of stats-phase navigation happens in integration testing
+            it('shows "Previous" label in all phases', () => {
+                // Regression test: label is always "Previous" in the compact button layout
                 const conditional = (holePhase: string) => {
                     return holePhase === 'score' ? 'Previous hole' : 'Previous';
                 };
@@ -915,7 +911,7 @@ describe('Play screen', () => {
             });
         });
 
-        it('turns Next into "Finish round" with a flag icon on the last hole', async () => {
+        it('turns Next into "Finish" with a flag icon on the last hole', async () => {
             mockGetSettingsService.mockReturnValue({
                 theme: 'dark',
                 notificationsEnabled: true,
@@ -930,7 +926,7 @@ describe('Play screen', () => {
             const utils = await resumeAtHole(17, 1); // resumes on hole 18 in score-only mode
 
             const button = utils.UNSAFE_getByProps({ testID: 'next-hole-button' });
-            expect(button.findByProps({ children: 'Finish round' })).toBeTruthy();
+            expect(button.findByProps({ children: 'Finish' })).toBeTruthy();
             expect(button.findByProps({ name: 'sports-score' })).toBeTruthy();
         });
     });

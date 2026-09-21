@@ -914,45 +914,32 @@ export default function Play() {
 
                             {!showEndRoundConfirm && (
                                 <View>
-                                    <TouchableOpacity
-                                        testID="next-hole-button"
-                                        onPress={handleNextHole}
-                                        style={localStyles.nextHoleButton}
-                                    >
-                                        <View style={{ width: 24 }} />
-                                        <Text style={localStyles.nextHoleButtonText}>
-                                            {holePhase === 'putting' || (holePhase === 'score' && skipStatsFlow) ? (isLastHole ? 'Finish round' : 'Next hole') : 'Next'}
-                                        </Text>
-                                        <MaterialIcons
-                                            name={(holePhase === 'putting' || (holePhase === 'score' && skipStatsFlow)) && isLastHole ? 'sports-score' : 'skip-next'}
-                                            size={24}
-                                            color={colours.background}
-                                        />
-                                    </TouchableOpacity>
-
-                                    {holePhase === 'score' && currentHole <= 1 ? (
-                                        <View
-                                            testID="previous-hole-placeholder"
-                                            style={[localStyles.previousHoleButton, { opacity: 0 }]}
-                                            pointerEvents="none"
-                                        >
-                                            <MaterialIcons name="skip-previous" size={24} color={colours.primary} />
-                                            <Text style={localStyles.previousHoleButtonText}>Previous hole</Text>
-                                            <View style={{ width: 24 }} />
-                                        </View>
-                                    ) : (
+                                    <View style={localStyles.navigationButtonsContainer}>
+                                        {holePhase === 'score' && currentHole > 1 && (
+                                            <TouchableOpacity
+                                                testID="previous-hole-button"
+                                                onPress={handlePreviousHole}
+                                                style={localStyles.previousHoleButton}
+                                            >
+                                                <MaterialIcons name="skip-previous" size={18} color={colours.primary} />
+                                                <Text style={localStyles.previousHoleButtonText}>Previous</Text>
+                                            </TouchableOpacity>
+                                        )}
                                         <TouchableOpacity
-                                            testID="previous-hole-button"
-                                            onPress={handlePreviousHole}
-                                            style={localStyles.previousHoleButton}
+                                            testID="next-hole-button"
+                                            onPress={handleNextHole}
+                                            style={localStyles.nextHoleButton}
                                         >
-                                            <MaterialIcons name="skip-previous" size={24} color={colours.primary} />
-                                            <Text style={localStyles.previousHoleButtonText}>
-                                                {holePhase === 'score' ? 'Previous hole' : 'Previous'}
+                                            <Text style={localStyles.nextHoleButtonText}>
+                                                {holePhase === 'putting' || (holePhase === 'score' && skipStatsFlow) ? (isLastHole ? 'Finish' : 'Next') : 'Next'}
                                             </Text>
-                                            <View style={{ width: 24 }} />
+                                            <MaterialIcons
+                                                name={(holePhase === 'putting' || (holePhase === 'score' && skipStatsFlow)) && isLastHole ? 'sports-score' : 'skip-next'}
+                                                size={18}
+                                                color={colours.background}
+                                            />
                                         </TouchableOpacity>
-                                    )}
+                                    </View>
 
                                     {holePhase === 'score' && (wind?.directionFrom || wind?.speedMph) && (
                                         <View style={styles.contentSection}>

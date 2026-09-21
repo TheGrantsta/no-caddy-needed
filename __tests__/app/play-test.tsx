@@ -2809,5 +2809,43 @@ describe('Play screen', () => {
         });
     });
 
+    describe('section transition animation', () => {
+        it('triggers Animated.timing when switching to Distances section', async () => {
+            const animSpy = jest.spyOn(Animated, 'timing');
+            const utils = render(<Play />);
+
+            await waitFor(() => expect(utils.getByTestId('play-sub-menu-distances')).toBeTruthy());
+
+            fireEvent.press(utils.getByTestId('play-sub-menu-distances'));
+
+            await waitFor(() => {
+                expect(animSpy).toHaveBeenCalledWith(
+                    expect.any(Animated.Value),
+                    expect.objectContaining({ useNativeDriver: true })
+                );
+            });
+
+            animSpy.mockRestore();
+        });
+
+        it('triggers Animated.timing when switching to Wedge Chart section', async () => {
+            const animSpy = jest.spyOn(Animated, 'timing');
+            const utils = render(<Play />);
+
+            await waitFor(() => expect(utils.getByTestId('play-sub-menu-wedge-chart')).toBeTruthy());
+
+            fireEvent.press(utils.getByTestId('play-sub-menu-wedge-chart'));
+
+            await waitFor(() => {
+                expect(animSpy).toHaveBeenCalledWith(
+                    expect.any(Animated.Value),
+                    expect.objectContaining({ useNativeDriver: true })
+                );
+            });
+
+            animSpy.mockRestore();
+        });
+    });
+
 
 });

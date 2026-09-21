@@ -143,6 +143,9 @@ export default function Play() {
     const contentFadeAnim = useRef(new Animated.Value(0)).current;
     const contentSlideAnim = useRef(new Animated.Value(0)).current;
     const navDirectionRef = useRef<'next' | 'previous'>('next');
+    const sectionFadeAnim = useRef(new Animated.Value(0)).current;
+    const sectionSlideAnim = useRef(new Animated.Value(0)).current;
+    const sectionDirectionRef = useRef<'next' | 'previous'>('next');
     const localStyles = styles.playScreen;
     const isLastHole = currentHole >= 18;
 
@@ -216,6 +219,25 @@ export default function Play() {
         ]).start();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentHole, holePhase]);
+
+    useEffect(() => {
+        const offset = sectionDirectionRef.current === 'next' ? 40 : -40;
+        sectionFadeAnim.setValue(0);
+        sectionSlideAnim.setValue(offset);
+        Animated.parallel([
+            Animated.timing(sectionFadeAnim, {
+                toValue: 1,
+                duration: 350,
+                useNativeDriver: true,
+            }),
+            Animated.timing(sectionSlideAnim, {
+                toValue: 0,
+                duration: 350,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [section]);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);
@@ -552,6 +574,10 @@ export default function Play() {
     };
 
     const handleSubMenu = (sectionName: string) => {
+        const sectionOrder = ['play-score', 'play-distances', 'play-wedge-chart'];
+        const currentIndex = sectionOrder.indexOf(section);
+        const nextIndex = sectionOrder.indexOf(sectionName);
+        sectionDirectionRef.current = nextIndex > currentIndex ? 'next' : 'previous';
         setSection(sectionName);
     };
 
@@ -835,7 +861,7 @@ export default function Play() {
                 )}
 
                 {isRoundActive && !scorecardData && displaySection('play-score') && (
-                    <View style={styles.container}>
+                    <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
                         <View>
                             <Animated.View style={{ opacity: contentFadeAnim, transform: [{ translateX: contentSlideAnim }] }}>
                                 {holePhase === 'score' && (
@@ -1016,7 +1042,7 @@ export default function Play() {
                                 </View>
                             )}
                         </View>
-                    </View>
+                    </Animated.View>
                 )}
 
                 {scorecardData && displaySection('play-score') && (
@@ -1051,15 +1077,15 @@ export default function Play() {
                 )}
 
                 {displaySection('play-distances') && (
-                    <View style={styles.container}>
+                    <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
                         <DistancesScreen />
-                    </View>
+                    </Animated.View>
                 )}
 
                 {displaySection('play-wedge-chart') && (
-                    <View style={styles.container}>
+                    <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
                         <WedgeChartScreen />
-                    </View>
+                    </Animated.View>
                 )}
             </ScrollView>
 

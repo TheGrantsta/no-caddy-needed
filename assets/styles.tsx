@@ -111,7 +111,6 @@ export const createStyles = (c: ThemeColours) => ({
             borderRadius: 14,
             padding: 16,
             borderWidth: 1,
-            borderColor: c.primary + '33',
         },
         // Segmented section switcher: full-width track with two equal segments, each an
         // icon above its label; the selected segment is a filled green pill.
@@ -516,7 +515,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         label: {
             color: c.primary,
-            fontSize: fontSizes.small,
+            fontSize: fontSizes.smallText,
             marginBottom: 10,
         },
         input: {
@@ -1843,10 +1842,6 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
     wedgeChartGrid: StyleSheet.create({
-        // scrollContainer: {
-        //     marginTop: 12,
-        //     marginHorizontal: 0,
-        // },
         container: {
             borderWidth: 1,
             borderColor: c.primary + '44',
@@ -1958,11 +1953,10 @@ export const createStyles = (c: ThemeColours) => ({
 
     windDisplay: StyleSheet.create({
         card: {
-            backgroundColor: c.background,
-            borderRadius: 16,
             alignItems: 'center',
+        },
+        cardFull: {
             borderWidth: 1,
-            borderColor: c.primary,
         },
         cardCompact: {
             borderWidth: 0,
@@ -1973,9 +1967,7 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'space-between',
             width: '100%',
             paddingHorizontal: 12,
-            paddingVertical: 12,
             borderBottomWidth: 1,
-            borderBottomColor: c.primary,
         },
         observationSection: {
             flex: 1,

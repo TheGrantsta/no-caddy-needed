@@ -625,6 +625,8 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.text,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
+            textAlign: 'center',
+            width: '100%',
         },
         scoreMarker: {
             width: 22,

@@ -80,7 +80,7 @@ describe('Distances screen', () => {
 
         const { getByTestId, getByText } = render(<DistancesScreen />);
 
-        expect(getByText('Club carry distances NOT total distances to choose the right club')).toBeTruthy();
+        expect(getByText('Club carry distances NOT total')).toBeTruthy();
         expect(getByTestId('club-input-0').props.value).toBe('Driver');
         expect(getByTestId('distance-input-0').props.value).toBe('250');
     });
@@ -90,7 +90,7 @@ describe('Distances screen', () => {
 
         const { getByText } = render(<DistancesScreen />);
 
-        expect(getByText('Club carry distances NOT total distances to choose the right club')).toBeTruthy();
+        expect(getByText('Club carry distances NOT total')).toBeTruthy();
     });
 
     it('shows add club button', () => {

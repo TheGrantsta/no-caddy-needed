@@ -69,7 +69,7 @@ export default function DistancesScreen() {
                         <Text style={[styles.headerText, styles.marginTop]}>Distances</Text>
                     </View>
                     <Text style={[styles.normalText, styles.marginBottom]}>
-                        Club carry distances NOT total distances to choose the right club
+                        Club carry distances NOT total
                     </Text>
                 </View>
 

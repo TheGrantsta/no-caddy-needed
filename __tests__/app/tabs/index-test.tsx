@@ -79,7 +79,7 @@ describe('HomeScreen', () => {
 
     it('displaysSubheaderText', () => {
         const { getByText } = render(<HomeScreen />);
-        expect(getByText('Smarter play, practice & performance')).toBeTruthy();
+        expect(getByText('Smarter play & practice')).toBeTruthy();
     });
 
     it('displaysPlayNavLink', () => {

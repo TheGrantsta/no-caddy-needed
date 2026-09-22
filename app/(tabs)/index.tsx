@@ -87,7 +87,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
             <Text style={styles.titleText}>No caddy needed!</Text>
           </View>
-          <Text style={styles.subtitleText}>Smarter play, practice & performance</Text>
+          <Text style={styles.subtitleText}>Smarter play & practice</Text>
         </View>
 
         <View style={styles.divider} />

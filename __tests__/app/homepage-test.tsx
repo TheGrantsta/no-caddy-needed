@@ -84,7 +84,7 @@ describe('renders homepage', () => {
     it('shows sub title', () => {
         const { getByText } = render(<Homepage />);
 
-        expect(getByText('Smarter play, practice & performance')).toBeTruthy();
+        expect(getByText('Smarter play & practice')).toBeTruthy();
     });
 
     it('shows sub, sub title', () => {

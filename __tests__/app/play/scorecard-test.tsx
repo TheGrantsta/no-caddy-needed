@@ -929,8 +929,8 @@ describe('Scorecard screen', () => {
                 const active = StyleSheet.flatten(getByTestId('scorecard-indicator-2').props.style);
                 const inactive = StyleSheet.flatten(getByTestId('scorecard-indicator-0').props.style);
 
-                expect(active.backgroundColor).toBe(colours.red);
-                expect(inactive.backgroundColor).not.toBe(colours.black);
+                expect(active.backgroundColor).toBe(colours.primary);
+                expect(inactive.backgroundColor).not.toBe(colours.primary);
             } finally {
                 jest.useRealTimers();
             }

@@ -298,12 +298,12 @@ export const createStyles = (c: ThemeColours) => ({
             borderRadius: 5,
             backgroundColor: 'transparent',
             marginHorizontal: 5,
-            borderColor: c.black,
+            borderColor: c.primary,
             borderWidth: 1,
         },
         scrollActiveDot: {
-            backgroundColor: c.red,
-            borderColor: c.red,
+            backgroundColor: c.primary,
+            borderColor: c.primary,
         },
         // Shared swipe-pager dot indicators (used by the Deadly Sins trend pager and
         // the scorecard pager) — hollow black-outlined dots with a filled red active dot.
@@ -323,8 +323,8 @@ export const createStyles = (c: ThemeColours) => ({
             borderWidth: 1,
         },
         pagerDotActive: {
-            backgroundColor: c.red,
-            borderColor: c.red,
+            backgroundColor: c.primary,
+            borderColor: c.primary,
             borderWidth: 1,
         },
         navGrid: {

@@ -9,6 +9,7 @@ import { getWedgeChartService, getClubDistancesService } from '@/service/DbServi
 import { findClubSuggestions, findNearestClubDistance } from '@/service/ClubSuggestionService';
 import { yardsToDisplayUnit } from '@/service/UnitsService';
 import WedgeChartGrid from './WedgeChartGrid';
+import fontSizes from '@/assets/font-sizes';
 
 type Props = {
     directionFrom: number | null;
@@ -71,7 +72,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                 }),
             ]).start();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [manualEntryOpen]);
 
     const effect = directionFrom !== null && speedMph !== null
@@ -147,7 +148,10 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                             testID="wind-speed-text-large"
                             style={styles.windDisplay.speedText}
                         >
-                            {speed} mph
+                            {speed}
+                            <Text style={[styles.windDisplay.speedText, { fontSize: fontSizes.normal }]}>
+                                &nbsp;mph
+                            </Text>
                         </Text>
                     </View>
                 </View>

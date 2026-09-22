@@ -43,11 +43,11 @@ export default function Wind() {
                             Wind
                         </Text>
                         <Text style={[styles.normalText, { margin: 5, textAlign: 'center' }]}>
-                            Point your phone at your target to read the wind
+                            Point your phone at your target
                         </Text>
                     </View>
 
-                    <View style={[styles.container, { alignItems: 'center' }]}>
+                    <View style={[styles.container, { alignItems: 'center', paddingHorizontal: 16 }]}>
                         {wind ? (
                             <WindDisplay
                                 directionFrom={wind.directionFrom}
@@ -87,17 +87,12 @@ export default function Wind() {
                                 />
                             </View>
                         ) : (
-                            <>
-                                <View style={styles.divider} />
-
-                                <Text
-                                    testID="wind-tool-unavailable"
-                                    style={[styles.normalText, { textAlign: 'center', margin: 20 }]}
-                                >
-                                    Wind data unavailable — check location permission and your connection
-                                </Text>
-                            </>
-
+                            <Text
+                                testID="wind-tool-unavailable"
+                                style={[styles.normalText, { textAlign: 'center', margin: 20 }]}
+                            >
+                                Wind data unavailable — check location permission and your connection
+                            </Text>
                         )}
                     </View>
                 </View>

@@ -30,7 +30,7 @@ jest.mock('expo-router', () => ({
     }),
 }));
 
-const mockRefreshWind = jest.fn();
+const mockRefreshWind = jest.fn().mockResolvedValue(undefined);
 let mockWindValue: { directionFrom: number; speedMph: number } | null = { directionFrom: 100, speedMph: 12 };
 let mockLocationIssue: 'servicesDisabled' | 'permissionDenied' | null = null;
 jest.mock('../../../hooks/useWind', () => ({
@@ -107,5 +107,13 @@ describe('Wind tool screen', () => {
         expect(getByTestId('wind-tool-unavailable')).toBeTruthy();
         expect(queryByTestId('wind-tool-location-off')).toBeNull();
         expect(queryByTestId('wind-tool-permission-denied')).toBeNull();
+    });
+
+    it('registers a useFocusEffect callback that does not return a Promise', () => {
+        render(<Wind />);
+        const mockUseFocusEffect = require('expo-router').useFocusEffect as jest.Mock;
+        const registeredCallback = mockUseFocusEffect.mock.calls[0][0];
+        const result = registeredCallback();
+        expect(result).toBeUndefined();
     });
 });

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { RefreshControl, ScrollView, Text, View, Linking } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFocusEffect } from 'expo-router';
@@ -16,7 +16,11 @@ export default function Wind() {
     const { wind, heading, refreshWind, locationIssue } = useWind();
     const [refreshing, setRefreshing] = useState(false);
 
-    useFocusEffect(refreshWind);
+    useFocusEffect(
+        useCallback(() => {
+            refreshWind();
+        }, [refreshWind])
+    );
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -83,12 +87,17 @@ export default function Wind() {
                                 />
                             </View>
                         ) : (
-                            <Text
-                                testID="wind-tool-unavailable"
-                                style={[styles.normalText, { textAlign: 'center', margin: 20 }]}
-                            >
-                                Wind data unavailable — check location permission and your connection
-                            </Text>
+                            <>
+                                <View style={styles.divider} />
+
+                                <Text
+                                    testID="wind-tool-unavailable"
+                                    style={[styles.normalText, { textAlign: 'center', margin: 20 }]}
+                                >
+                                    Wind data unavailable — check location permission and your connection
+                                </Text>
+                            </>
+
                         )}
                     </View>
                 </View>

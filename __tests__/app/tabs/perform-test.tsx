@@ -102,7 +102,7 @@ describe('Perform', () => {
 
     it('displaysDeadlySinsAsDefaultSection', () => {
         const { getByText } = render(<Perform />);
-        expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
+        expect(getByText('Your 7 Deadly Sins, tracked')).toBeTruthy();
     });
 
     describe('onRefresh', () => {
@@ -153,7 +153,7 @@ describe('Perform', () => {
                 jest.advanceTimersByTime(750);
             });
 
-            expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
+            expect(getByText('Your 7 Deadly Sins, tracked')).toBeTruthy();
         });
     });
 
@@ -304,7 +304,7 @@ describe('Perform', () => {
 
         it('displaysSinsSubtitle', () => {
             const { getByText } = render(<Perform />);
-            expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
+            expect(getByText('Your 7 Deadly Sins, tracked')).toBeTruthy();
         });
     });
 
@@ -357,7 +357,7 @@ describe('Perform', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-sins'));
-            expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
+            expect(getByText('Your 7 Deadly Sins, tracked')).toBeTruthy();
         });
 
         it('showsAsteriskExplanationForEstimatedRates', () => {
@@ -413,7 +413,7 @@ describe('Perform', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
             fireEvent.press(getByTestId('perform-sub-menu-sins'));
-            expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
+            expect(getByText('Your 7 Deadly Sins, tracked')).toBeTruthy();
         });
 
         it('renders proximity filter toggle switch', () => {

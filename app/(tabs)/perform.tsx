@@ -188,7 +188,7 @@ export default function Perform() {
                   </Text>
                 </View>
                 <Text style={[styles.normalText, styles.marginBottom]}>
-                  Track your 7 Deadly Sins across rounds
+                  Your 7 Deadly Sins, tracked
                 </Text>
               </View>
 

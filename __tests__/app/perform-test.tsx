@@ -82,7 +82,7 @@ describe('Perform page ', () => {
     it('renders deadly sins as the default section', () => {
         const { getByText } = render(<View />);
 
-        expect(getByText('Track your 7 Deadly Sins across rounds')).toBeTruthy();
+        expect(getByText('Your 7 Deadly Sins, tracked')).toBeTruthy();
     });
 
     describe('Onboarding', () => {

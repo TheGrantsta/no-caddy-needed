@@ -217,7 +217,7 @@ export default function Play() {
                 useNativeDriver: true,
             }),
         ]).start();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentHole, holePhase]);
 
     useEffect(() => {
@@ -236,7 +236,7 @@ export default function Play() {
                 useNativeDriver: true,
             }),
         ]).start();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [section]);
 
     const handleDismissOnboarding = async () => {
@@ -732,7 +732,7 @@ export default function Play() {
                                 </Text>
                             ) : (
                                 <Text style={[styles.normalText, styles.marginBottom]}>
-                                    Start a round (score-only or full tracking), review past rounds & edit scores
+                                    Start a round (score-only or stats), review past rounds & edit scores
                                 </Text>
                             )}
                         </View>
@@ -865,106 +865,106 @@ export default function Play() {
                         <View>
                             <Animated.View style={{ opacity: contentFadeAnim, transform: [{ translateX: contentSlideAnim }] }}>
                                 {holePhase === 'score' && (
-                                <>
-                                    <HoleScoreInput
-                                        key={`score-${currentHole}`}
-                                        holeNumber={currentHole}
-                                        initialPar={courseHolePars[currentHole] ?? 4}
-                                        initialScores={currentHoleData?.scores.reduce((acc, s) => ({ ...acc, [s.playerId]: s.score }), {}) ?? undefined}
-                                        players={players}
-                                        onScoresChange={handleScoresChange}
-                                    />
+                                    <>
+                                        <HoleScoreInput
+                                            key={`score-${currentHole}`}
+                                            holeNumber={currentHole}
+                                            initialPar={courseHolePars[currentHole] ?? 4}
+                                            initialScores={currentHoleData?.scores.reduce((acc, s) => ({ ...acc, [s.playerId]: s.score }), {}) ?? undefined}
+                                            players={players}
+                                            onScoresChange={handleScoresChange}
+                                        />
 
-                                    {!showEndRoundConfirm && (
-                                        <>
-                                            <HoleNoteInput
-                                                key={`note-${currentHole}`}
-                                                note={currentNoteText}
-                                                onNoteChange={setCurrentNoteText}
-                                            />
+                                        {!showEndRoundConfirm && (
+                                            <>
+                                                <HoleNoteInput
+                                                    key={`note-${currentHole}`}
+                                                    note={currentNoteText}
+                                                    onNoteChange={setCurrentNoteText}
+                                                />
 
-                                            {settings.preShotReminderEnabled && (
-                                                <View style={[styles.holeNoteInput.container, { paddingHorizontal: 16, paddingVertical: 16, marginTop: 4, marginBottom: 12 }]}>
-                                                    <Text style={[styles.normalText, { color: colours.primary, fontWeight: 'bold', marginBottom: 6 }]}>Pre-shot routine</Text>
-                                                    <Text style={{ color: colours.text, fontSize: fontSizes.normal, lineHeight: 22 }}>{settings.preShotRoutineText}</Text>
-                                                </View>
-                                            )}
-                                        </>
-                                    )}
-                                </>
-                            )}
+                                                {settings.preShotReminderEnabled && (
+                                                    <View style={[styles.holeNoteInput.container, { paddingHorizontal: 16, paddingVertical: 16, marginTop: 4, marginBottom: 12 }]}>
+                                                        <Text style={[styles.normalText, { color: colours.primary, fontWeight: 'bold', marginBottom: 6 }]}>Pre-shot routine</Text>
+                                                        <Text style={{ color: colours.text, fontSize: fontSizes.normal, lineHeight: 22 }}>{settings.preShotRoutineText}</Text>
+                                                    </View>
+                                                )}
+                                            </>
+                                        )}
+                                    </>
+                                )}
 
-                            {holePhase === 'stats' && (
-                                <>
-                                    <View style={{ paddingVertical: 12, alignItems: 'center' }}>
-                                        <Text style={styles.normalText}>Hole {currentHole} — 7 Deadly Sins</Text>
-                                    </View>
-                                    <DeadlySinsTally
-                                        key={`tally-${currentHole}`}
-                                        onEndRound={() => { }}
-                                        roundControlled={true}
-                                        onValuesChange={handledeadlySinsValuesChange}
-                                        initialValues={deadlySinsValues}
-                                        holePar={currentHoleData?.holePar}
-                                        userScore={currentHoleData?.scores.find(s => {
-                                            const player = players.find(p => p.Id === s.playerId);
-                                            return player && player.IsUser === 1;
-                                        })?.score}
-                                    />
-                                </>
-                            )}
+                                {holePhase === 'stats' && (
+                                    <>
+                                        <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                                            <Text style={styles.normalText}>Hole {currentHole} — 7 Deadly Sins</Text>
+                                        </View>
+                                        <DeadlySinsTally
+                                            key={`tally-${currentHole}`}
+                                            onEndRound={() => { }}
+                                            roundControlled={true}
+                                            onValuesChange={handledeadlySinsValuesChange}
+                                            initialValues={deadlySinsValues}
+                                            holePar={currentHoleData?.holePar}
+                                            userScore={currentHoleData?.scores.find(s => {
+                                                const player = players.find(p => p.Id === s.playerId);
+                                                return player && player.IsUser === 1;
+                                            })?.score}
+                                        />
+                                    </>
+                                )}
 
-                            {holePhase === 'sinDetails' && (
-                                <>
-                                    <View style={{ paddingVertical: 12, alignItems: 'center' }}>
-                                        <Text style={styles.normalText}>Hole {currentHole} — Sin Details</Text>
-                                    </View>
-                                    <SinDetailsInput
-                                        key={`sinDetails-${currentHole}`}
-                                        sins={deadlySinsValues}
-                                        clubs={clubDistances}
-                                        selectedOffTeeClub={selectedOffTeeClub}
-                                        onOffTeeClubChange={setSelectedOffTeeClub}
-                                        showOffTeeClubError={sinDetailsClubError}
-                                        selectedPenaltyType={selectedPenaltyType}
-                                        onPenaltyTypeChange={setSelectedPenaltyType}
-                                        showPenaltyTypeError={sinDetailsPenaltyError}
-                                        selectedBogeysClub={selectedBogeysClub}
-                                        onBogeysClubChange={setSelectedBogeysClub}
-                                        showBogeysClubError={sinDetailsBogeysClubError}
-                                        selectedDoubleChipReason={selectedDoubleChipReason}
-                                        onDoubleChipReasonChange={setSelectedDoubleChipReason}
-                                        showDoubleChipReasonError={sinDetailsDoubleChipReasonError}
-                                    />
-                                </>
-                            )}
+                                {holePhase === 'sinDetails' && (
+                                    <>
+                                        <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                                            <Text style={styles.normalText}>Hole {currentHole} — Sin Details</Text>
+                                        </View>
+                                        <SinDetailsInput
+                                            key={`sinDetails-${currentHole}`}
+                                            sins={deadlySinsValues}
+                                            clubs={clubDistances}
+                                            selectedOffTeeClub={selectedOffTeeClub}
+                                            onOffTeeClubChange={setSelectedOffTeeClub}
+                                            showOffTeeClubError={sinDetailsClubError}
+                                            selectedPenaltyType={selectedPenaltyType}
+                                            onPenaltyTypeChange={setSelectedPenaltyType}
+                                            showPenaltyTypeError={sinDetailsPenaltyError}
+                                            selectedBogeysClub={selectedBogeysClub}
+                                            onBogeysClubChange={setSelectedBogeysClub}
+                                            showBogeysClubError={sinDetailsBogeysClubError}
+                                            selectedDoubleChipReason={selectedDoubleChipReason}
+                                            onDoubleChipReasonChange={setSelectedDoubleChipReason}
+                                            showDoubleChipReasonError={sinDetailsDoubleChipReasonError}
+                                        />
+                                    </>
+                                )}
 
-                            {holePhase === 'putting' && (
-                                <>
-                                    <View style={{ paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                                        <TouchableOpacity testID="putting-info-button" onPress={() => setShowPuttingInfo(true)} style={{ padding: 4 }}>
-                                            <MaterialIcons name="info-outline" size={24} color={colours.primary} />
-                                        </TouchableOpacity>
-                                        <Text style={styles.normalText}>Hole {currentHole} — Putting Stats</Text>
-                                    </View>
-                                    <PuttingStatsInput
-                                        key={`putting-${currentHole}`}
-                                        holePar={currentHoleData?.holePar ?? 4}
-                                        threePuttSelected={deadlySinsValues.threePutts}
-                                        onStatsChange={(firstPutt, secondPutt, secondIsLong) => {
-                                            setPuttingStats({ firstPutt, secondPutt, secondIsLong });
-                                            if (firstPutt !== undefined) setPuttingFirstPuttError(false);
-                                            if (secondPutt !== undefined) setPuttingSecondPuttRequiredError(false);
-                                        }}
-                                        initialFirstPutt={puttingStats?.firstPutt}
-                                        initialSecondPutt={puttingStats?.secondPutt}
-                                        initialSecondIsLong={puttingStats?.secondIsLong}
-                                        showFirstPuttError={puttingFirstPuttError}
-                                        showSecondPuttRequiredError={puttingSecondPuttRequiredError}
-                                        onSecondPuttErrorChange={setPuttingSecondPuttError}
-                                    />
-                                </>
-                            )}
+                                {holePhase === 'putting' && (
+                                    <>
+                                        <View style={{ paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                                            <TouchableOpacity testID="putting-info-button" onPress={() => setShowPuttingInfo(true)} style={{ padding: 4 }}>
+                                                <MaterialIcons name="info-outline" size={24} color={colours.primary} />
+                                            </TouchableOpacity>
+                                            <Text style={styles.normalText}>Hole {currentHole} — Putting Stats</Text>
+                                        </View>
+                                        <PuttingStatsInput
+                                            key={`putting-${currentHole}`}
+                                            holePar={currentHoleData?.holePar ?? 4}
+                                            threePuttSelected={deadlySinsValues.threePutts}
+                                            onStatsChange={(firstPutt, secondPutt, secondIsLong) => {
+                                                setPuttingStats({ firstPutt, secondPutt, secondIsLong });
+                                                if (firstPutt !== undefined) setPuttingFirstPuttError(false);
+                                                if (secondPutt !== undefined) setPuttingSecondPuttRequiredError(false);
+                                            }}
+                                            initialFirstPutt={puttingStats?.firstPutt}
+                                            initialSecondPutt={puttingStats?.secondPutt}
+                                            initialSecondIsLong={puttingStats?.secondIsLong}
+                                            showFirstPuttError={puttingFirstPuttError}
+                                            showSecondPuttRequiredError={puttingSecondPuttRequiredError}
+                                            onSecondPuttErrorChange={setPuttingSecondPuttError}
+                                        />
+                                    </>
+                                )}
                             </Animated.View>
 
                             {!showEndRoundConfirm && (

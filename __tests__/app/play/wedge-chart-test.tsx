@@ -94,7 +94,7 @@ describe('Wedge Chart screen', () => {
 
     it('renders wedge distances subtitle', () => {
         const { getByText } = render(<WedgeChartScreen />);
-        expect(getByText('Your wedge carry distances NOT total distances to choose the right club')).toBeTruthy();
+        expect(getByText('Wedge carry distances NOT total')).toBeTruthy();
     });
 
     it('shows save button', () => {

@@ -181,19 +181,6 @@ export default function Perform() {
 
           return (
             <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
-              <View style={styles.header}>
-                <View style={styles.titleRow}>
-                  <Text style={styles.headerText}>
-                    Deadly Sins
-                  </Text>
-                </View>
-                <Text style={[styles.normalText, styles.marginBottom]}>
-                  Your 7 Deadly Sins, tracked
-                </Text>
-              </View>
-
-              <View style={styles.divider} />
-
               {filteredDeadlySinsRounds.length > 0 && !filteredDeadlySinsRounds.every(r => r.Total === 0) ? (
                 <DeadlySinsChart rounds={filteredDeadlySinsRounds} filter={roundsFilter} />
               ) : (
@@ -205,23 +192,9 @@ export default function Perform() {
           );
         })()}
 
-        {/* Deadly Sins */}
         {/* Putting */}
         {displaySection('putting') && (
           <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
-            <View style={styles.header}>
-              <View style={styles.titleRow}>
-                <Text style={styles.headerText}>
-                  Putting
-                </Text>
-              </View>
-              <Text style={[styles.normalText, styles.marginBottom]}>
-                Your personal putting make rates
-              </Text>
-            </View>
-
-            <View style={styles.divider} />
-
             {hasPersonalPuttingData(roundIdsFilter) ? (
               <>
                 <View style={styles.clubDistanceList.container}>
@@ -241,6 +214,10 @@ export default function Perform() {
                   ))}
                 </View>
 
+                <Text style={[styles.normalText, styles.marginBottom]}>
+                  Your personal putting make rates
+                </Text>
+
                 <Text style={[styles.smallestText, styles.marginBottom, { paddingHorizontal: 16, marginTop: 12 }]}>
                   * Estimated or extrapolated from PGA tour data
                 </Text>
@@ -255,19 +232,6 @@ export default function Perform() {
 
         {displaySection('proximity') && (
           <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
-            <View style={styles.header}>
-              <View style={styles.titleRow}>
-                <Text style={styles.headerText}>
-                  Proximity
-                </Text>
-              </View>
-              <Text style={[styles.normalText, styles.marginBottom]}>
-                Where your missed first putts finish
-              </Text>
-            </View>
-
-            <View style={styles.divider} />
-
             <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, paddingTop: 20, gap: 8 }}>
               <Text testID="proximity-filter-label" style={{ color: colours.primary, fontSize: 16 }}>Show 3-Putts Only</Text>
               <Switch
@@ -279,7 +243,13 @@ export default function Perform() {
             </View>
 
             {hasProximityData(proximityThreePuttOnly, roundIdsFilter) ? (
-              <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, roundIdsFilter)} />
+              <>
+                <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, roundIdsFilter)} />
+
+                <Text style={[styles.normalText, styles.marginBottom]}>
+                  Where your missed first putts finish
+                </Text>
+              </>
             ) : (
               <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
                 No putting data for selected rounds

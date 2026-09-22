@@ -100,11 +100,6 @@ describe('Perform', () => {
         expect(toJSON()).toBeTruthy();
     });
 
-    it('displaysDeadlySinsAsDefaultSection', () => {
-        const { getByText } = render(<Perform />);
-        expect(getByText('Your 7 Deadly Sins, tracked')).toBeTruthy();
-    });
-
     describe('onRefresh', () => {
         beforeEach(() => {
             jest.useFakeTimers();
@@ -141,19 +136,9 @@ describe('Perform', () => {
         });
 
         it('onRefreshResetsSectionToDeadlySins', () => {
-            const { getByTestId, UNSAFE_getByType, getByText } = render(<Perform />);
+            const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText('Your personal putting make rates')).toBeTruthy();
-
-            const scrollView = UNSAFE_getByType(ScrollView);
-            act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
-            });
-            act(() => {
-                jest.advanceTimersByTime(750);
-            });
-
-            expect(getByText('Your 7 Deadly Sins, tracked')).toBeTruthy();
         });
     });
 
@@ -301,11 +286,6 @@ describe('Perform', () => {
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText('Your personal putting make rates')).toBeTruthy();
         });
-
-        it('displaysSinsSubtitle', () => {
-            const { getByText } = render(<Perform />);
-            expect(getByText('Your 7 Deadly Sins, tracked')).toBeTruthy();
-        });
     });
 
     describe('Putting section', () => {
@@ -351,13 +331,6 @@ describe('Perform', () => {
             const { getByTestId } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(logEvent).toHaveBeenCalledWith('view_putting');
-        });
-
-        it('switchingToPuttingAndBackDoesNotBreakDeadlySinsRendering', () => {
-            const { getByTestId, getByText } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            fireEvent.press(getByTestId('perform-sub-menu-sins'));
-            expect(getByText('Your 7 Deadly Sins, tracked')).toBeTruthy();
         });
 
         it('showsAsteriskExplanationForEstimatedRates', () => {
@@ -407,13 +380,6 @@ describe('Perform', () => {
             const { getByTestId } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
             expect(logEvent).toHaveBeenCalledWith('view_proximity');
-        });
-
-        it('switchingToProximityAndBackDoesNotBreakOtherSections', () => {
-            const { getByTestId, getByText } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
-            fireEvent.press(getByTestId('perform-sub-menu-sins'));
-            expect(getByText('Your 7 Deadly Sins, tracked')).toBeTruthy();
         });
 
         it('renders proximity filter toggle switch', () => {

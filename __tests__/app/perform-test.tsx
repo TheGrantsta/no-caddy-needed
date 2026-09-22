@@ -79,12 +79,6 @@ describe('Perform page ', () => {
         mockSaveSettingsService.mockResolvedValue(true);
     });
 
-    it('renders deadly sins as the default section', () => {
-        const { getByText } = render(<View />);
-
-        expect(getByText('Your 7 Deadly Sins, tracked')).toBeTruthy();
-    });
-
     describe('Onboarding', () => {
         it('shows the onboarding overlay when not seen before', () => {
             mockGetSettingsService.mockReturnValue({ ...baseSettings, performOnboardingSeen: false });

@@ -223,9 +223,13 @@ export default function Perform() {
                 </Text>
               </>
             ) : (
-              <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
-                No putting data for selected rounds
-              </Text>
+              <>
+                <View style={styles.divider} />
+
+                <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
+                  No putting data for selected rounds
+                </Text>
+              </>
             )}
           </Animated.View>
         )}
@@ -251,9 +255,13 @@ export default function Perform() {
                 </Text>
               </>
             ) : (
-              <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
-                No putting data for selected rounds
-              </Text>
+              <>
+                <View style={styles.divider} />
+
+                <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
+                  No putting data for selected rounds
+                </Text>
+              </>
             )}
           </Animated.View>
         )}

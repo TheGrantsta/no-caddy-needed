@@ -286,14 +286,13 @@ export default function Practice() {
             ) : (
               <View>
                 {allDrillHistory.length === 0 && (
-                  <Text style={{
-                    color: colours.primary,
-                    fontSize: fontSizes.subHeader,
-                    padding: 6,
-                    marginTop: 10
-                  }}>
-                    No test history yet
-                  </Text>
+                  <>
+                    <View style={styles.divider} />
+
+                    <Text style={styles.normalText}>
+                      No test history yet
+                    </Text>
+                  </>
                 )}
 
                 {allDrillHistory.length > 0 && (

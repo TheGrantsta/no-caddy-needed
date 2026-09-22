@@ -478,7 +478,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                         {!isEditing && !showDeleteConfirm && <View style={{ flexGrow: 1 }} />}
 
                         {!isEditing && !showDeleteConfirm && (
-                            <View style={styles.headerContainer}>
+                            <View style={[styles.headerContainer, { paddingHorizontal: 16 }]}>
                                 <CtaButton
                                     testID="edit-scorecard-button"
                                     label="Edit"

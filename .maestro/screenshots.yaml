@@ -217,14 +217,14 @@ appId: com.grantsta.golf.nocaddyneeded
 # Screenshot 9: Pros menu
 - tapOn: "Putting"
 - extendedWaitUntil:
-    visible: "Your personal putting make rates"
+    visible: "No putting data for selected rounds"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/04A-perform-putting
 
 # Screenshot 10: Proximity menu
 - tapOn: "Proximity"
 - extendedWaitUntil:
-    visible: "Where your missed first putts finish"
+    visible: "No putting data for selected rounds"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/04A-perform-proximity
 

@@ -115,7 +115,7 @@ export default function Perform() {
         useNativeDriver: true,
       }),
     ]).start();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [section]);
 
   return (
@@ -152,8 +152,6 @@ export default function Perform() {
               </Text>
             </View>
           </View>
-
-          <View style={styles.divider} />
         </View>
 
         {/* Filter buttons */}

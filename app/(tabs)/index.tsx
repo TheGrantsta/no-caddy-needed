@@ -90,8 +90,6 @@ export default function HomeScreen() {
           <Text style={styles.subtitleText}>Smarter play & practice</Text>
         </View>
 
-        <View style={styles.divider} />
-
         <View style={styles.contentSection}>
           <Text style={styles.headerText}>Be your own best caddy</Text>
           <Text style={styles.normalText}>

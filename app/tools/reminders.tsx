@@ -98,8 +98,6 @@ export default function Reminders() {
                     </Text>
                 </View>
 
-                <View style={styles.divider} />
-
                 {reminders.length === 0 && !showAddForm && (
                     <View style={styles.contentSection}>
                         <Text style={styles.normalText}>No reminders set</Text>

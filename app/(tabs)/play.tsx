@@ -737,8 +737,6 @@ export default function Play() {
                             )}
                         </View>
 
-                        <View style={styles.divider} />
-
                         {incompleteRound ? (
                             <>
                                 <CtaButton

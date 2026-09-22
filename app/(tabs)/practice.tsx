@@ -121,7 +121,7 @@ export default function Practice() {
         useNativeDriver: true,
       }),
     ]).start();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [section]);
 
   return (
@@ -164,8 +164,6 @@ export default function Practice() {
               Making practice time effective
             </Text>
           </View>
-
-          <View style={styles.divider} />
         </View>
 
         {/* Practice areas */}

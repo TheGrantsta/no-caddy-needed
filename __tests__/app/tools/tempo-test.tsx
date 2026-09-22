@@ -151,7 +151,7 @@ describe('Tempo training page', () => {
     it('renders tempo training tips', () => {
         const { getByText } = render(<Tempo />);
 
-        expect(getByText(/Tempo: focus on flow, and not mechanics/)).toBeTruthy();
+        expect(getByText(/Tempo: focus on flow & not mechanics/)).toBeTruthy();
     });
 
     it('renders a Play button initially', () => {

@@ -214,7 +214,7 @@ export default function Perform() {
                   ))}
                 </View>
 
-                <Text style={[styles.normalText, styles.marginBottom]}>
+                <Text style={[styles.normalText, styles.marginTop, { alignSelf: 'center' }]}>
                   Your personal putting make rates
                 </Text>
 
@@ -250,7 +250,7 @@ export default function Perform() {
               <>
                 <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, roundIdsFilter)} />
 
-                <Text style={[styles.normalText, styles.marginBottom]}>
+                <Text style={[styles.normalText, styles.marginTop, { alignSelf: 'center' }]}>
                   Where your missed first putts finish
                 </Text>
               </>

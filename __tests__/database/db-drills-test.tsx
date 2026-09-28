@@ -1,5 +1,6 @@
 import { insertDrillResult, getAllDrillHistory, getDrillsByCategory, insertDrill, softDeleteDrill, restoreDrill, initialize } from '../../database/db';
 import * as SQLite from 'expo-sqlite';
+import { logError } from '../../service/ErrorLoggingService';
 
 const mockExecAsync = jest.fn();
 const mockGetAllSync = jest.fn();
@@ -16,6 +17,10 @@ jest.mock('expo-sqlite', () => ({
         execSync: mockExecSync,
     })),
     openDatabaseSync: jest.fn(() => ({ getAllSync: mockGetAllSync, execSync: mockExecSync })),
+}));
+
+jest.mock('../../service/ErrorLoggingService', () => ({
+    logError: jest.fn(),
 }));
 
 beforeAll(async () => {
@@ -85,6 +90,16 @@ describe('insertDrillResult', () => {
         const result = await insertDrillResult('Putting - Gate', true, null);
 
         expect(result).toBe(false);
+    });
+
+    it('logs error with correct context when executeAsync fails', async () => {
+        const testError = new Error('drill write failed');
+        mockStatementExecuteAsync.mockRejectedValue(testError);
+        const mockLogError = logError as jest.Mock;
+
+        await insertDrillResult('Putting - Gate', true, null);
+
+        expect(mockLogError).toHaveBeenCalledWith('db.insertDrillResult', testError);
     });
 });
 
@@ -257,6 +272,16 @@ describe('insertDrill', () => {
 
         expect(result).toBe(false);
     });
+
+    it('logs error with correct context when executeAsync fails', async () => {
+        const testError = new Error('drill insert failed');
+        mockStatementExecuteAsync.mockRejectedValue(testError);
+        const mockLogError = logError as jest.Mock;
+
+        await insertDrill('putting', 'Gate', 'golf-course', '8/10', 'Obj', 'Setup', 'HowToPlay');
+
+        expect(mockLogError).toHaveBeenCalledWith('db.insertDrill', testError);
+    });
 });
 
 describe('softDeleteDrill', () => {
@@ -297,6 +322,16 @@ describe('softDeleteDrill', () => {
         const result = await softDeleteDrill(1);
 
         expect(result).toBe(false);
+    });
+
+    it('logs error with correct context when executeAsync fails', async () => {
+        const testError = new Error('drill soft delete failed');
+        mockStatementExecuteAsync.mockRejectedValue(testError);
+        const mockLogError = logError as jest.Mock;
+
+        await softDeleteDrill(1);
+
+        expect(mockLogError).toHaveBeenCalledWith('db.softDeleteDrill', testError);
     });
 
     it('doesNotModifyDrillHistoryTable', async () => {
@@ -346,5 +381,15 @@ describe('restoreDrill', () => {
         const result = await restoreDrill(1);
 
         expect(result).toBe(false);
+    });
+
+    it('logs error with correct context when executeAsync fails', async () => {
+        const testError = new Error('drill restore failed');
+        mockStatementExecuteAsync.mockRejectedValue(testError);
+        const mockLogError = logError as jest.Mock;
+
+        await restoreDrill(1);
+
+        expect(mockLogError).toHaveBeenCalledWith('db.restoreDrill', testError);
     });
 });

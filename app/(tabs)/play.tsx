@@ -65,6 +65,11 @@ import { useAppToast } from '../../hooks/useAppToast';
 import { useWind } from '../../hooks/useWind';
 import { useFakeRefresh } from '../../hooks/useFakeRefresh';
 import { useSectionTransition } from '../../hooks/useSectionTransition';
+import { useHoleLifecycle } from '../../hooks/useHoleLifecycle';
+import PhaseScore from '../../components/PhaseScore';
+import PhaseStats from '../../components/PhaseStats';
+import PhaseSinDetails from '../../components/PhaseSinDetails';
+import PhasePutting from '../../components/PhasePutting';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import fontSizes from '../../assets/font-sizes';
 import DistancesScreen from '../play/distances';
@@ -94,25 +99,49 @@ export default function Play() {
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
-    const [currentHole, setCurrentHole] = useState(1);
-    const [holePhase, setHolePhase] = useState<'score' | 'stats' | 'sinDetails' | 'putting'>('score');
-    const [skipStatsFlow, setSkipStatsFlow] = useState(false);
-    const [roundHistory, setRoundHistory] = useState<Round[]>([]);
+
+    // Use lifecycle hook for hole state management
+    const lifecycle = useHoleLifecycle();
+
     const INITIAL_SINS: DeadlySinsValues = { threePutts: false, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false };
-    const [deadlySinsValues, setDeadlySinsValues] = useState<DeadlySinsValues>(INITIAL_SINS);
-    const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt?: number; secondIsLong: boolean } | null>(null);
-    const [puttingFirstPuttError, setPuttingFirstPuttError] = useState(false);
-    const [puttingSecondPuttError, setPuttingSecondPuttError] = useState(false);
-    const [puttingSecondPuttRequiredError, setPuttingSecondPuttRequiredError] = useState(false);
+
+    // Create aliases for backward compatibility with existing code
+    const currentHole = lifecycle.currentHole;
+    const setCurrentHole = lifecycle.setCurrentHoleValue;
+    const holePhase = lifecycle.holePhase;
+    const setHolePhase = lifecycle.setHolePhase;
+    const skipStatsFlow = lifecycle.skipStatsFlow;
+    const setSkipStatsFlow = lifecycle.setSkipStatsFlow;
+    const deadlySinsValues = lifecycle.deadlySinsValues;
+    const setDeadlySinsValues = lifecycle.setDeadlySinsValues;
+    const puttingStats = lifecycle.puttingStats;
+    const setPuttingStats = lifecycle.setPuttingStats;
+    const puttingFirstPuttError = lifecycle.puttingFirstPuttError;
+    const setPuttingFirstPuttError = lifecycle.setPuttingFirstPuttError;
+    const puttingSecondPuttError = lifecycle.puttingSecondPuttError;
+    const setPuttingSecondPuttError = lifecycle.setPuttingSecondPuttError;
+    const puttingSecondPuttRequiredError = lifecycle.puttingSecondPuttRequiredError;
+    const setPuttingSecondPuttRequiredError = lifecycle.setPuttingSecondPuttRequiredError;
+
     const [clubDistances, setClubDistances] = useState<ClubDistance[]>([]);
-    const [selectedOffTeeClub, setSelectedOffTeeClub] = useState<string | undefined>(undefined);
-    const [sinDetailsClubError, setSinDetailsClubError] = useState(false);
-    const [selectedPenaltyType, setSelectedPenaltyType] = useState<string | undefined>(undefined);
-    const [sinDetailsPenaltyError, setSinDetailsPenaltyError] = useState(false);
-    const [selectedBogeysClub, setSelectedBogeysClub] = useState<string | undefined>(undefined);
-    const [sinDetailsBogeysClubError, setSinDetailsBogeysClubError] = useState(false);
-    const [selectedDoubleChipReason, setSelectedDoubleChipReason] = useState<string | undefined>(undefined);
-    const [sinDetailsDoubleChipReasonError, setSinDetailsDoubleChipReasonError] = useState(false);
+    const selectedOffTeeClub = lifecycle.selectedOffTeeClub;
+    const setSelectedOffTeeClub = lifecycle.setSelectedOffTeeClub;
+    const sinDetailsClubError = lifecycle.sinDetailsClubError;
+    const setSinDetailsClubError = lifecycle.setSinDetailsClubError;
+    const selectedPenaltyType = lifecycle.selectedPenaltyType;
+    const setSelectedPenaltyType = lifecycle.setSelectedPenaltyType;
+    const sinDetailsPenaltyError = lifecycle.sinDetailsPenaltyError;
+    const setSinDetailsPenaltyError = lifecycle.setSinDetailsPenaltyError;
+    const selectedBogeysClub = lifecycle.selectedBogeysClub;
+    const setSelectedBogeysClub = lifecycle.setSelectedBogeysClub;
+    const sinDetailsBogeysClubError = lifecycle.sinDetailsBogeysClubError;
+    const setSinDetailsBogeysClubError = lifecycle.setSinDetailsBogeysClubError;
+    const selectedDoubleChipReason = lifecycle.selectedDoubleChipReason;
+    const setSelectedDoubleChipReason = lifecycle.setSelectedDoubleChipReason;
+    const sinDetailsDoubleChipReasonError = lifecycle.sinDetailsDoubleChipReasonError;
+    const setSinDetailsDoubleChipReasonError = lifecycle.setSinDetailsDoubleChipReasonError;
+
+    const [roundHistory, setRoundHistory] = useState<Round[]>([]);
     const [showPuttingInfo, setShowPuttingInfo] = useState(false);
     const [notificationId, setNotificationId] = useState<string | null>(null);
     const [showPlayerSetup, setShowPlayerSetup] = useState(false);
@@ -150,8 +179,10 @@ export default function Play() {
     const [scorecardDisplaySins, setScorecardDisplaySins] = useState<DeadlySinsValues | null>(null);
     const [courseNotes, setCourseNotes] = useState<Record<number, string>>({});
     const [currentNoteText, setCurrentNoteText] = useState('');
-    const [showBadHoleReassurance, setShowBadHoleReassurance] = useState(false);
-    const [reassuranceMessage, setReassuranceMessage] = useState('');
+    const showBadHoleReassurance = lifecycle.showBadHoleReassurance;
+    const setShowBadHoleReassurance = lifecycle.setShowBadHoleReassurance;
+    const reassuranceMessage = lifecycle.reassuranceMessage;
+    const setReassuranceMessage = lifecycle.setReassuranceMessage;
     const scrollRef = useRef<ScrollView>(null);
     const contentFadeAnim = useRef(new Animated.Value(0)).current;
     const contentSlideAnim = useRef(new Animated.Value(0)).current;

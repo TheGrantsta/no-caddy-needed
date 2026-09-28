@@ -10,12 +10,14 @@ type SettingsToggleRowProps = {
     options: ToggleOption[];
     value: string | number;
     onChange: (value: string | number) => void;
+    testIDPrefix?: string;
 };
 
 export default function SettingsToggleRow({
     options,
     value,
     onChange,
+    testIDPrefix = '',
 }: SettingsToggleRowProps) {
     const colours = useThemeColours();
 
@@ -53,13 +55,18 @@ export default function SettingsToggleRow({
         <View style={styles.container}>
             {options.map(({ label, value: optionValue }) => {
                 const isSelected = value === optionValue;
+                const testID = testIDPrefix ? `${testIDPrefix}-${optionValue}` : String(optionValue);
                 return (
                     <TouchableOpacity
                         key={String(optionValue)}
+                        testID={testID}
                         onPress={() => onChange(optionValue)}
                         style={[styles.button, isSelected && styles.selectedButton]}
                     >
-                        <Text style={isSelected ? styles.selectedText : styles.unselectedText}>
+                        <Text
+                            testID={isSelected ? `${testID}-selected` : undefined}
+                            style={isSelected ? styles.selectedText : styles.unselectedText}
+                        >
                             {label}
                         </Text>
                     </TouchableOpacity>

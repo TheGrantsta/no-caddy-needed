@@ -9,13 +9,13 @@ import Slider from '@react-native-community/slider';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { useOrientation } from '@/hooks/useOrientation';
+import { useFakeRefresh } from '@/hooks/useFakeRefresh';
 import { getSettingsService, saveSettingsService } from '@/service/DbService';
 
 export default function Tempo() {
     const colours = useThemeColours();
     const styles = useStyles();
     const { landscapePadding } = useOrientation();
-    const [refreshing, setRefreshing] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [tempo, setTempo] = useState(() => getSettingsService().tempoBpm);
     const player = useAudioPlayer(require('../../assets/single-beep.wav'));
@@ -60,6 +60,12 @@ export default function Tempo() {
         }
     };
 
+    const { refreshing, onRefresh } = useFakeRefresh(async () => {
+        setTempo(getSettingsService().tempoBpm);
+        setIsPlaying(false);
+        await stopLoop();
+    });
+
     const startLoop = async () => {
         const interval = (60 / tempo) * 1000;
 
@@ -88,17 +94,6 @@ export default function Tempo() {
             await stopLoop();
         }
     }
-
-    const onRefresh = () => {
-        setRefreshing(true);
-
-        setTimeout(() => {
-            setTempo(getSettingsService().tempoBpm);
-            setIsPlaying(false);
-            stopLoop();
-            setRefreshing(false);
-        }, 750);
-    };
 
     const points = ['Tempo: focus on flow & not mechanics', 'Fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Misconception: amateurs believe they swing "too fast" even though they swing slower than professionals - sequence over speed']
 

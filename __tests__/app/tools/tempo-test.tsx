@@ -246,12 +246,12 @@ describe('Tempo training page', () => {
         expect(getByText('Release to update')).toBeTruthy();
     });
 
-    it('onRefreshHidesOverlayAfterTimeout', () => {
+    it('onRefreshHidesOverlayAfterTimeout', async () => {
         const { UNSAFE_getByType, queryByText } = render(<Tempo />);
         const scrollView = UNSAFE_getByType(ScrollView);
 
-        act(() => {
-            scrollView.props.refreshControl.props.onRefresh();
+        await act(async () => {
+            await scrollView.props.refreshControl.props.onRefresh();
         });
 
         act(() => {

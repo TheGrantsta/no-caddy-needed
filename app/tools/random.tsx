@@ -11,8 +11,12 @@ import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
 import { useFakeRefresh } from '@/hooks/useFakeRefresh';
-let ExpoSpeechRecognitionModule: any = null;
-let useSpeechRecognitionEvent: (eventName: string, handler: (event: any) => void) => void = () => {};
+interface SpeechRecognitionEvent {
+    results: { transcript: string; isFinal: boolean }[];
+}
+
+let ExpoSpeechRecognitionModule: { requestPermissionsAsync: () => Promise<{ granted: boolean }>; start: (opts: object) => void; stop: () => void } | null = null;
+let useSpeechRecognitionEvent: (eventName: string, handler: (event: SpeechRecognitionEvent) => void) => void = () => {};
 let speechRecognitionAvailable = false;
 try {
     const mod = require('expo-speech-recognition');
@@ -61,7 +65,7 @@ export default function Random() {
         setRandomNumber(0);
     });
 
-    useSpeechRecognitionEvent('result', (event) => {
+    useSpeechRecognitionEvent('result', (event: SpeechRecognitionEvent) => {
         if (isStoppingRef.current) return;
         const transcript = (event.results[0]?.transcript ?? '').toLowerCase();
         const lastWord = transcript.trim().split(" ").pop();
@@ -113,12 +117,12 @@ export default function Random() {
         }
     };
 
-    const handleRangeInput = (text: any) => {
+    const handleRangeInput = (text: string) => {
         const formattedText = text.replace(/[^0-9-]/g, '');
         setRangeText(formattedText);
     }
 
-    const handleIncrementInput = (text: any) => {
+    const handleIncrementInput = (text: string) => {
         const formattedText = text.replace(/[^0-9]/g, '');
         setIncrementText(formattedText);
     }

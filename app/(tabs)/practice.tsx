@@ -4,6 +4,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
 import { useOrientation } from "@/hooks/useOrientation";
+import { useFakeRefresh } from "@/hooks/useFakeRefresh";
+import { useSectionTransition } from "@/hooks/useSectionTransition";
 import SubMenu from "@/components/SubMenu";
 import { Link } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -27,16 +29,21 @@ export default function Practice() {
   const colours = useThemeColours();
   const { landscapePadding } = useOrientation();
   const [showOnboarding, setShowOnboarding] = useState(() => !getSettingsService().practiceOnboardingSeen);
-  const [refreshing, setRefreshing] = useState(false);
-  const [section, setSection] = useState('areas');
   const [loading, setLoading] = useState(true);
   const [allDrillHistory, setAllDrillHistory] = useState<any[]>([]);
   const [displayedDrillHistory, setDisplayedDrillHistory] = useState<any[]>([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const sectionFadeAnim = useRef(new Animated.Value(0)).current;
-  const sectionSlideAnim = useRef(new Animated.Value(0)).current;
-  const sectionDirectionRef = useRef<'next' | 'previous'>('next');
+
+  const SECTION_ORDER = ['areas', 'tools', 'history'];
+  const {
+    section,
+    displaySection,
+    handleSubMenu,
+    fadeAnim: sectionFadeAnim,
+    slideAnim: sectionSlideAnim
+  } = useSectionTransition(SECTION_ORDER);
+
+  const { refreshing, onRefresh } = useFakeRefresh(() => fetchData());
 
   const points = ['Deliberate: purposeful practice', 'Variety: mix up your practice to keep it interesting & challenging', 'Accountability: track progress & measure your performance', 'Stress: practice under pressure', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
 
@@ -50,19 +57,11 @@ export default function Practice() {
     setShowOnboarding(true);
   };
 
-  const handleSubMenu = (sectionName: string) => {
-    const sectionOrder = ['areas', 'tools', 'history'];
-    const currentIndex = sectionOrder.indexOf(section);
-    const nextIndex = sectionOrder.indexOf(sectionName);
-    sectionDirectionRef.current = nextIndex > currentIndex ? 'next' : 'previous';
-    setSection(sectionName);
+  const handleSubMenuWithLogging = (sectionName: string) => {
+    handleSubMenu(sectionName);
     if (sectionName === 'areas') logEvent('view_areas');
     if (sectionName === 'tools') logEvent('view_tools');
     if (sectionName === 'history') logEvent('view_history');
-  };
-
-  const displaySection = (sectionName: string) => {
-    return section === sectionName;
   };
 
   const fetchData = () => {
@@ -90,43 +89,13 @@ export default function Practice() {
     }, 100);
   };
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    refreshTimerRef.current = setTimeout(() => {
-      fetchData();
-      setRefreshing(false);
-    }, 750);
-  };
-
   useEffect(() => {
     fetchData();
-    return () => {
-      if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
-    };
   }, []);
-
-  useEffect(() => {
-    const offset = sectionDirectionRef.current === 'next' ? 40 : -40;
-    sectionFadeAnim.setValue(0);
-    sectionSlideAnim.setValue(offset);
-    Animated.parallel([
-      Animated.timing(sectionFadeAnim, {
-        toValue: 1,
-        duration: 350,
-        useNativeDriver: true,
-      }),
-      Animated.timing(sectionSlideAnim, {
-        toValue: 0,
-        duration: 350,
-        useNativeDriver: true,
-      }),
-    ]).start();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [section]);
 
   return (
     <GestureHandlerRootView style={styles.flexOne}>
-      <SubMenu showSubMenu='practice' selectedItem={section} handleSubMenu={handleSubMenu} />
+      <SubMenu showSubMenu='practice' selectedItem={section} handleSubMenu={handleSubMenuWithLogging} />
 
       {refreshing && (
         <View style={styles.updateOverlay}>

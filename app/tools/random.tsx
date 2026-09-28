@@ -10,6 +10,7 @@ import CtaButton from '@/components/CtaButton';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
+import { useFakeRefresh } from '@/hooks/useFakeRefresh';
 let ExpoSpeechRecognitionModule: any = null;
 let useSpeechRecognitionEvent: (eventName: string, handler: (event: any) => void) => void = () => {};
 let speechRecognitionAvailable = false;
@@ -44,7 +45,6 @@ export default function Random() {
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const [refreshing, setRefreshing] = useState(false);
     const [rangeText, setRangeText] = useState('30-100');
     const [rangeError, setRangeError] = useState('');
     const [incrementText, setIncrementText] = useState('10');
@@ -52,6 +52,14 @@ export default function Random() {
     const [randomNumber, setRandomNumber] = useState(0);
     const [micActive, setMicActive] = useState(false);
     const isStoppingRef = useRef(false);
+
+    const { refreshing, onRefresh } = useFakeRefresh(() => {
+        setRangeText('30-100');
+        setIncrementText('10');
+        setRangeError('');
+        setIncrementError('');
+        setRandomNumber(0);
+    });
 
     useSpeechRecognitionEvent('result', (event) => {
         if (isStoppingRef.current) return;
@@ -114,19 +122,6 @@ export default function Random() {
         const formattedText = text.replace(/[^0-9]/g, '');
         setIncrementText(formattedText);
     }
-
-    const onRefresh = () => {
-        setRefreshing(true);
-
-        setTimeout(() => {
-            setRangeText('30-100');
-            setIncrementText('10');
-            setRangeError('');
-            setIncrementError('');
-            setRandomNumber(0);
-            setRefreshing(false);
-        }, 750);
-    };
 
     const points = ['Random: mimic play when practising', 'Focus: use your pre-shot routine', 'Evaluate: use your post-shot routine'];
 

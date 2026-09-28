@@ -404,12 +404,12 @@ describe('Random number generator page', () => {
             expect(getByText('Release to update')).toBeTruthy();
         });
 
-        it('onRefreshHidesOverlayAfterTimeout', () => {
+        it('onRefreshHidesOverlayAfterTimeout', async () => {
             const { UNSAFE_getByType, queryByText } = render(<Random />);
             const scrollView = UNSAFE_getByType(ScrollView);
 
-            act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
+            await act(async () => {
+                await scrollView.props.refreshControl.props.onRefresh();
             });
             act(() => {
                 jest.advanceTimersByTime(750);

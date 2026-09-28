@@ -6,6 +6,7 @@ import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { useOrientation } from '@/hooks/useOrientation';
 import { useWind } from '@/hooks/useWind';
+import { useFakeRefresh } from '@/hooks/useFakeRefresh';
 import WindDisplay from '@/components/WindDisplay';
 import CtaButton from '@/components/CtaButton';
 
@@ -14,7 +15,6 @@ export default function Wind() {
     const styles = useStyles();
     const { landscapePadding } = useOrientation();
     const { wind, heading, refreshWind, locationIssue } = useWind();
-    const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -22,11 +22,7 @@ export default function Wind() {
         }, [refreshWind])
     );
 
-    const onRefresh = () => {
-        setRefreshing(true);
-        refreshWind();
-        setRefreshing(false);
-    };
+    const { refreshing, onRefresh } = useFakeRefresh(() => refreshWind());
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>

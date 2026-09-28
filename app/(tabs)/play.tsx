@@ -63,6 +63,8 @@ import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
 import { useWind } from '../../hooks/useWind';
+import { useFakeRefresh } from '../../hooks/useFakeRefresh';
+import { useSectionTransition } from '../../hooks/useSectionTransition';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import fontSizes from '../../assets/font-sizes';
 import DistancesScreen from '../play/distances';
@@ -91,13 +93,11 @@ export default function Play() {
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const [refreshing, setRefreshing] = useState(false);
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
     const [currentHole, setCurrentHole] = useState(1);
     const [holePhase, setHolePhase] = useState<'score' | 'stats' | 'sinDetails' | 'putting'>('score');
     const [skipStatsFlow, setSkipStatsFlow] = useState(false);
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
-    const [section, setSection] = useState('play-score');
     const INITIAL_SINS: DeadlySinsValues = { threePutts: false, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false };
     const [deadlySinsValues, setDeadlySinsValues] = useState<DeadlySinsValues>(INITIAL_SINS);
     const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt?: number; secondIsLong: boolean } | null>(null);
@@ -124,6 +124,20 @@ export default function Play() {
     const [recentPlayerNames, setRecentPlayerNames] = useState<string[]>([]);
     const { showError, showResult } = useAppToast();
     const { wind, heading, refreshWind } = useWind();
+
+    const SECTION_ORDER = ['play-score', 'play-distances', 'play-wedge-chart'];
+    const {
+        section,
+        displaySection,
+        handleSubMenu,
+        fadeAnim: sectionFadeAnim,
+        slideAnim: sectionSlideAnim
+    } = useSectionTransition(SECTION_ORDER);
+
+    const { refreshing, onRefresh } = useFakeRefresh(
+        () => setRoundHistory(getAllRoundHistoryService())
+    );
+
     const router = useRouter();
     const [settings, setSettings] = useState(getSettingsService());
     const [showOnboarding, setShowOnboarding] = useState(false);
@@ -139,13 +153,9 @@ export default function Play() {
     const [showBadHoleReassurance, setShowBadHoleReassurance] = useState(false);
     const [reassuranceMessage, setReassuranceMessage] = useState('');
     const scrollRef = useRef<ScrollView>(null);
-    const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const contentFadeAnim = useRef(new Animated.Value(0)).current;
     const contentSlideAnim = useRef(new Animated.Value(0)).current;
     const navDirectionRef = useRef<'next' | 'previous'>('next');
-    const sectionFadeAnim = useRef(new Animated.Value(0)).current;
-    const sectionSlideAnim = useRef(new Animated.Value(0)).current;
-    const sectionDirectionRef = useRef<'next' | 'previous'>('next');
     const localStyles = styles.playScreen;
     const isLastHole = currentHole >= 18;
 
@@ -171,19 +181,6 @@ export default function Play() {
         }
     }, []);
 
-    const onRefresh = () => {
-        setRefreshing(true);
-        refreshTimerRef.current = setTimeout(() => {
-            setRoundHistory(getAllRoundHistoryService());
-            setRefreshing(false);
-        }, 750);
-    };
-
-    useEffect(() => {
-        return () => {
-            if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
-        };
-    }, []);
 
     // Re-read the history list whenever the screen regains focus (e.g. after a
     // round is deleted on the scorecard screen and we navigate back here).
@@ -220,24 +217,6 @@ export default function Play() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentHole, holePhase]);
 
-    useEffect(() => {
-        const offset = sectionDirectionRef.current === 'next' ? 40 : -40;
-        sectionFadeAnim.setValue(0);
-        sectionSlideAnim.setValue(offset);
-        Animated.parallel([
-            Animated.timing(sectionFadeAnim, {
-                toValue: 1,
-                duration: 350,
-                useNativeDriver: true,
-            }),
-            Animated.timing(sectionSlideAnim, {
-                toValue: 0,
-                duration: 350,
-                useNativeDriver: true,
-            }),
-        ]).start();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [section]);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);
@@ -573,17 +552,6 @@ export default function Play() {
         }
     };
 
-    const handleSubMenu = (sectionName: string) => {
-        const sectionOrder = ['play-score', 'play-distances', 'play-wedge-chart'];
-        const currentIndex = sectionOrder.indexOf(section);
-        const nextIndex = sectionOrder.indexOf(sectionName);
-        sectionDirectionRef.current = nextIndex > currentIndex ? 'next' : 'previous';
-        setSection(sectionName);
-    };
-
-    const displaySection = (sectionName: string) => {
-        return section === sectionName;
-    };
 
     const handledeadlySinsValuesChange = (values: DeadlySinsValues) => {
         setDeadlySinsValues(values);
@@ -601,7 +569,6 @@ export default function Play() {
         setActiveRoundId(null);
         setCurrentHole(1);
         setHolePhase('score');
-        setSection('play-score');
         setDeadlySinsValues(INITIAL_SINS);
         setPuttingStats(null);
         setPuttingFirstPuttError(false);

@@ -1010,6 +1010,9 @@ describe('Play screen', () => {
             const mockScrollTo = jest.fn();
             const realUseRef = jest.requireActual('react').useRef;
             const spy = jest.spyOn(React, 'useRef')
+                .mockImplementationOnce((initial: any) => realUseRef(initial)) // useSectionTransition sectionDirectionRef
+                .mockImplementationOnce((initial: any) => realUseRef(initial)) // useSectionTransition sectionFadeAnim
+                .mockImplementationOnce((initial: any) => realUseRef(initial)) // useSectionTransition sectionSlideAnim
                 .mockImplementationOnce(() => {
                     const ref = realUseRef(null);
                     Object.defineProperty(ref, 'current', {
@@ -1018,8 +1021,8 @@ describe('Play screen', () => {
                         configurable: true,
                     });
                     return ref;
-                })
-                .mockImplementation((initial: any) => realUseRef(initial));
+                }) // play screen scrollRef
+                .mockImplementation((initial: any) => realUseRef(initial)); // all other useRef calls
 
             try {
                 mockStartRound.mockResolvedValue(1);
@@ -2281,12 +2284,12 @@ describe('Play screen', () => {
             expect(getByText('Release to update')).toBeTruthy();
         });
 
-        it('onRefreshHidesOverlayAfterTimeout', () => {
+        it('onRefreshHidesOverlayAfterTimeout', async () => {
             const { UNSAFE_getByType, queryByText } = render(<Play />);
             const scrollView = UNSAFE_getByType(ScrollView);
 
-            act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
+            await act(async () => {
+                await scrollView.props.refreshControl.props.onRefresh();
             });
             act(() => {
                 jest.advanceTimersByTime(750);

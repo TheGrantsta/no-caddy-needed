@@ -7,6 +7,7 @@ import Constants from 'expo-constants';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
+import { useFakeRefresh } from '@/hooks/useFakeRefresh';
 import { getSettingsService, saveSettingsService } from '@/service/DbService';
 import Chevrons from '@/components/Chevrons';
 import OnboardingOverlay from '@/components/OnboardingOverlay';
@@ -39,7 +40,8 @@ export default function HomeScreen() {
   const [showWhatsNew, setShowWhatsNew] = useState(
     settings.homeOnboardingSeen && settings.whatsNewVersionSeen !== APP_VERSION
   );
-  const [refreshing, setRefreshing] = useState(false);
+
+  const { refreshing, onRefresh } = useFakeRefresh(() => {});
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -56,13 +58,6 @@ export default function HomeScreen() {
 
   const handleShowOnboarding = () => {
     setShowOnboarding(true);
-  };
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 750);
   };
 
   return (

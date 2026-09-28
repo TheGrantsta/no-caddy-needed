@@ -70,6 +70,8 @@ import PhaseScore from '../../components/PhaseScore';
 import PhaseStats from '../../components/PhaseStats';
 import PhaseSinDetails from '../../components/PhaseSinDetails';
 import PhasePutting from '../../components/PhasePutting';
+import RoundEntry from '../../components/RoundEntry';
+import HoleNavigationControls from '../../components/HoleNavigationControls';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import fontSizes from '../../assets/font-sizes';
 import DistancesScreen from '../play/distances';
@@ -710,150 +712,33 @@ export default function Play() {
 
                 <SubMenu showSubMenu="play" selectedItem={section} handleSubMenu={handleSubMenu} />
 
-                {!isRoundActive && !showPlayerSetup && !scorecardData && displaySection('play-score') && (
-                    <View style={styles.container}>
-                        <View style={styles.header}>
-                            <View style={styles.titleRow}>
-                                <TouchableOpacity
-                                    testID="play-onboarding-info-button"
-                                    onPress={handleShowOnboarding}
-                                    style={{ padding: 4 }}
-                                >
-                                    <MaterialIcons name="info-outline" size={24} color={colours.primary} />
-                                </TouchableOpacity>
-                                <Text style={[styles.headerText, styles.marginTop]}>Play</Text>
-                            </View>
-
-                            {incompleteRound ? (
-                                <Text style={[styles.normalText, styles.marginBottom]}>
-                                    Continue or end previously started round that was not completed
-                                </Text>
-                            ) : (
-                                <Text style={[styles.normalText, styles.marginBottom]}>
-                                    Start a round (score-only or stats), review past rounds & edit scores
-                                </Text>
-                            )}
-                        </View>
-
-                        {incompleteRound ? (
-                            <>
-                                <CtaButton
-                                    testID="continue-round-button"
-                                    label="Continue round"
-                                    icon="play-circle-outline"
-                                    onPress={handleContinueRound}
-                                    style={styles.marginTop}
-                                />
-                                <TouchableOpacity
-                                    testID="end-incomplete-round-link"
-                                    onPress={handleEndIncompleteRound}
-                                    style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 4 }}
-                                >
-                                    <Text style={localStyles.endRoundLink}>End round</Text>
-                                </TouchableOpacity>
-                            </>
-                        ) : (
-                            <CtaButton
-                                testID="start-round-button"
-                                label="Start round"
-                                icon="play-arrow"
-                                onPress={handleShowPlayerSetup}
-                                style={styles.marginTop}
-                            />
-                        )}
-
-
-                        {!incompleteRound && roundHistory.length > 0 && (
-                            <View style={localStyles.filterContainer}>
-                                <Text testID="filter-label" style={localStyles.filterLabel}>Show</Text>
-                                {([1, 10, 'all'] as const).map(f => (
-                                    <TouchableOpacity
-                                        key={String(f)}
-                                        testID={`filter-button-${f}`}
-                                        onPress={() => setHistoryFilter(f)}
-                                        style={[localStyles.filterButton, historyFilter === f && localStyles.filterButtonSelected]}
-                                    >
-                                        <Text style={[localStyles.filterButtonText, historyFilter === f && localStyles.filterButtonTextSelected]}>
-                                            {f === 'all' ? 'All' : String(f)}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        )}
-
-                        {!incompleteRound && roundHistory.length > 0 && (
-                            <View testID="par-averages-container" style={styles.parAverages.container}>
-                                <Text style={styles.parAverages.heading}>Average score by par</Text>
-                                <View style={styles.parAverages.row}>
-                                    {([3, 4, 5] as const).map(par => {
-                                        const val = parAverages[`par${par}` as keyof ParAverages];
-                                        return (
-                                            <View key={par} style={styles.parAverages.cell}>
-                                                <Text
-                                                    testID={`par-averages-par${par}`}
-                                                    style={styles.parAverages.value}
-                                                >
-                                                    Par {par}: {val !== null ? val.toFixed(2) : '-'}
-                                                </Text>
-                                            </View>
-                                        );
-                                    })}
-                                </View>
-                            </View>
-                        )}
-
-                        {!incompleteRound && roundHistory.length > 0 && (
-                            <View style={{ padding: 5 }}>
-                                <Text style={styles.subHeaderText}>
-                                    Round history
-                                </Text>
-                                <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.primary }]}>
-                                    <Text testID="round-history-header-date" style={[styles.smallText, localStyles.historyDateColumn]}>Date Course</Text>
-                                    <Text testID="round-history-header-strokes" style={[styles.smallText, localStyles.historyTotalColumn, { textAlign: 'left' }]}>Score</Text>
-                                </View>
-                                <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
-                                    {filteredRoundHistory.map((round) => (
-                                        <TouchableOpacity
-                                            key={round.Id}
-                                            testID={`round-history-row-${round.Id}`}
-                                            onPress={() => router.push({ pathname: '/play/scorecard', params: { roundId: String(round.Id) } })}
-                                        >
-                                            <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.primary }]}>
-                                                <Text style={[styles.smallTextNoPadding, localStyles.historyDateColumn]}>{round.CourseName ? `${round.Created_At} ${round.CourseName}` : round.Created_At}{round.HolesPlayed < 18 ? ` (${round.HolesPlayed})` : ''}</Text>
-                                                <View style={[styles.row, localStyles.historyTotalColumn]}>
-                                                    <Text testID={`round-history-strokes-${round.Id}`} style={styles.smallTextNoPadding}>
-                                                        {round.StrokeTotal !== null && round.StrokeTotal !== undefined ? String(round.StrokeTotal) : '-'}
-                                                    </Text>
-                                                    <Text style={[styles.smallTextNoPadding, { textAlign: 'right' }]}>
-                                                        &nbsp;({formatScore(round.TotalScore)})
-                                                    </Text>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
-                                    ))}
-                                </ScrollView>
-                            </View>
-                        )}
-                    </View>
-                )}
-
-                {!isRoundActive && showPlayerSetup && displaySection('play-score') && (
-                    <View style={styles.container}>
-                        <PlayerSetup
-                            onStartRound={handleStartRound}
-                            onCancel={() => setShowPlayerSetup(false)}
-                            recentCourseNames={recentCourseNames}
-                            recentPlayerNames={recentPlayerNames}
-                            onRemoveCourse={(name) => {
-                                hideCourseFromRecentsService(name);
-                                setRecentCourseNames(getRecentCourseNamesService());
-                            }}
-                            onRemovePlayer={(name) => {
-                                hidePlayerFromRecentsService(name);
-                                setRecentPlayerNames(getRecentPlayerNamesService());
-                            }}
-                        />
-                    </View>
+                {!isRoundActive && !scorecardData && displaySection('play-score') && (
+                    <RoundEntry
+                        roundHistory={roundHistory}
+                        historyFilter={historyFilter}
+                        onHistoryFilterChange={setHistoryFilter}
+                        incompleteRound={incompleteRound}
+                        notificationId={notificationId}
+                        showPlayerSetup={showPlayerSetup}
+                        onShowPlayerSetup={handleShowPlayerSetup}
+                        onCancelPlayerSetup={() => setShowPlayerSetup(false)}
+                        onContinueRound={handleContinueRound}
+                        onEndIncompleteRound={handleEndIncompleteRound}
+                        recentCourseNames={recentCourseNames}
+                        recentPlayerNames={recentPlayerNames}
+                        onStartRound={handleStartRound}
+                        onRemoveCourse={(name) => {
+                            hideCourseFromRecentsService(name);
+                            setRecentCourseNames(getRecentCourseNamesService());
+                        }}
+                        onRemovePlayer={(name) => {
+                            hidePlayerFromRecentsService(name);
+                            setRecentPlayerNames(getRecentPlayerNamesService());
+                        }}
+                        parAverages={parAverages}
+                        onShowOnboarding={handleShowOnboarding}
+                        showOnboarding={showOnboarding}
+                    />
                 )}
 
                 {isRoundActive && !scorecardData && displaySection('play-score') && (
@@ -956,59 +841,17 @@ export default function Play() {
                             </Animated.View>
 
                             {!showEndRoundConfirm && (
-                                <View>
-                                    <View style={localStyles.navigationButtonsContainer}>
-                                        {holePhase === 'score' && currentHole > 1 && (
-                                            <TouchableOpacity
-                                                testID="previous-hole-button"
-                                                onPress={handlePreviousHole}
-                                                style={localStyles.previousHoleButton}
-                                            >
-                                                <MaterialIcons name="skip-previous" size={18} color={colours.primary} />
-                                                <Text style={localStyles.previousHoleButtonText}>Previous</Text>
-                                            </TouchableOpacity>
-                                        )}
-                                        <TouchableOpacity
-                                            testID="next-hole-button"
-                                            onPress={handleNextHole}
-                                            style={localStyles.nextHoleButton}
-                                        >
-                                            <Text style={localStyles.nextHoleButtonText}>
-                                                {holePhase === 'putting' || (holePhase === 'score' && skipStatsFlow) ? (isLastHole ? 'Finish' : 'Next') : 'Next'}
-                                            </Text>
-                                            <MaterialIcons
-                                                name={(holePhase === 'putting' || (holePhase === 'score' && skipStatsFlow)) && isLastHole ? 'sports-score' : 'skip-next'}
-                                                size={18}
-                                                color={colours.background}
-                                            />
-                                        </TouchableOpacity>
-                                    </View>
-
-                                    {holePhase === 'score' && (wind?.directionFrom || wind?.speedMph) && (
-                                        <View style={styles.contentSection}>
-                                            <WindDisplay
-                                                directionFrom={wind?.directionFrom ?? null}
-                                                speedMph={wind?.speedMph ?? null}
-                                                heading={heading}
-                                                compact
-                                            />
-                                        </View>
-                                    )}
-
-                                    {holePhase === 'score' && (
-                                        <>
-                                            {!showEndRoundConfirm && (
-                                                <TouchableOpacity
-                                                    testID="end-round-button"
-                                                    onPress={handleEndRoundPress}
-                                                    style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 20 }}
-                                                >
-                                                    <Text style={localStyles.endRoundLink}>End round</Text>
-                                                </TouchableOpacity>
-                                            )}
-                                        </>
-                                    )}
-                                </View>
+                                <HoleNavigationControls
+                                    holePhase={holePhase}
+                                    currentHole={currentHole}
+                                    isLastHole={isLastHole}
+                                    skipStatsFlow={skipStatsFlow}
+                                    onPreviousHole={handlePreviousHole}
+                                    onNextHole={handleNextHole}
+                                    onEndRound={handleEndRoundPress}
+                                    wind={wind}
+                                    heading={heading}
+                                />
                             )}
 
                             {showEndRoundConfirm && (

@@ -16,6 +16,7 @@ interface Props {
     notificationId: string | null;
     showPlayerSetup: boolean;
     onShowPlayerSetup: () => void;
+    onCancelPlayerSetup: () => void;
     onContinueRound: () => Promise<void>;
     onEndIncompleteRound: () => Promise<void>;
     recentCourseNames: string[];
@@ -36,6 +37,7 @@ export default function RoundEntry({
     notificationId,
     showPlayerSetup,
     onShowPlayerSetup,
+    onCancelPlayerSetup,
     onContinueRound,
     onEndIncompleteRound,
     recentCourseNames,
@@ -62,7 +64,7 @@ export default function RoundEntry({
             <View style={styles.container}>
                 <PlayerSetup
                     onStartRound={onStartRound}
-                    onCancel={() => { /* handled by parent */ }}
+                    onCancel={onCancelPlayerSetup}
                     recentCourseNames={recentCourseNames}
                     recentPlayerNames={recentPlayerNames}
                     onRemoveCourse={onRemoveCourse}

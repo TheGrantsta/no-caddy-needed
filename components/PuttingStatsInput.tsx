@@ -4,6 +4,9 @@ import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 
+const MAX_FIRST_PUTT_DISTANCE = 300;
+const MAX_SECOND_PUTT_DISTANCE = 100;
+
 type Props = {
     holePar: number;
     threePuttSelected: boolean;
@@ -50,13 +53,13 @@ const PuttingStatsInput = ({
     const handleFirstPuttChange = (value: string) => {
         setFirstPutt(value);
         if (!value || value.trim() === '') {
-            const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(100, parseInt(secondPutt))) : undefined;
+            const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(secondPutt))) : undefined;
             onStatsChange(undefined, second, secondIsLong);
             return;
         }
         if (!isNaN(parseInt(value))) {
-            const first = Math.max(0, Math.min(300, parseInt(value)));
-            const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(100, parseInt(secondPutt))) : undefined;
+            const first = Math.max(0, Math.min(MAX_FIRST_PUTT_DISTANCE, parseInt(value)));
+            const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(secondPutt))) : undefined;
             onStatsChange(first, second, secondIsLong);
         }
     };
@@ -65,14 +68,14 @@ const PuttingStatsInput = ({
         setSecondPutt(value);
         if (!value) {
             // Blank field means undefined second putt
-            const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
+            const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(MAX_FIRST_PUTT_DISTANCE, parseInt(firstPutt))) : undefined;
             setSecondPuttError(false);
             onStatsChange(first, undefined, secondIsLong);
             return;
         }
         if (!isNaN(parseInt(value))) {
-            const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
-            const second = Math.max(0, Math.min(100, parseInt(value)));
+            const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(MAX_FIRST_PUTT_DISTANCE, parseInt(firstPutt))) : undefined;
+            const second = Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(value)));
 
             // Validation: if second putt > 0, first putt must also be > 0
             if (second > 0 && (first === undefined || first === 0)) {
@@ -92,8 +95,8 @@ const PuttingStatsInput = ({
 
 
     const handleSecondIsLongChange = (value: boolean) => {
-        const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(300, parseInt(firstPutt))) : undefined;
-        const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(100, parseInt(secondPutt))) : undefined;
+        const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(MAX_FIRST_PUTT_DISTANCE, parseInt(firstPutt))) : undefined;
+        const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(secondPutt))) : undefined;
 
         // Validation: cannot switch to Short if second putt > 0 and >= first putt
         if (!value && first !== undefined && second !== undefined && second > 0 && second >= first) {

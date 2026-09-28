@@ -14,7 +14,10 @@ import NetworkStatus from '@/components/NetworkStatus';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useTheme } from '@/context/ThemeContext';
 
-LogBox.ignoreAllLogs();
+LogBox.ignoreLogs([
+    'SafeAreaView has been deprecated',
+    'Non-serializable values were found in the navigation state',
+]);
 
 const _warn = console.warn;
 console.warn = (...args: Parameters<typeof console.warn>) => {

@@ -3,7 +3,7 @@ import React from 'react';
 import { Platform, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
-import ScreenWrapper from '../screen-wrapper';
+import ScreenWrapper from '@/components/ScreenWrapper';
 import { getPracticeRemindersService } from '@/service/DbService';
 import fontSizes from '@/assets/font-sizes';
 

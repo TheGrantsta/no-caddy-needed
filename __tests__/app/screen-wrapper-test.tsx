@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { render } from '@testing-library/react-native';
-import ScreenWrapper from '../../app/screen-wrapper';
+import ScreenWrapper from '../../components/ScreenWrapper';
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => ({ background: '#25292e' }),

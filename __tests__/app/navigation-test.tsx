@@ -75,7 +75,7 @@ jest.mock('react-native-gesture-handler', () => {
 });
 
 // Mock the screen wrapper
-jest.mock('../../app/screen-wrapper', () => {
+jest.mock('../../components/ScreenWrapper', () => {
     const ScreenWrapper = ({ children }: { children: React.ReactNode }) => <>{children}</>;
     ScreenWrapper.displayName = 'ScreenWrapper';
     return ScreenWrapper;

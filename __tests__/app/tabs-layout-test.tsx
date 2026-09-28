@@ -33,7 +33,7 @@ jest.mock('expo-router', () => ({
     useSegments: () => mockUseSegments(),
 }));
 
-jest.mock('../../app/screen-wrapper', () => ({ children }: any) => <>{children}</>);
+jest.mock('../../components/ScreenWrapper', () => ({ children }: any) => <>{children}</>);
 
 jest.mock('../../service/DbService', () => ({
     getPracticeRemindersService: jest.fn().mockReturnValue([]),

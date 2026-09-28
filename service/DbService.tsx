@@ -1,4 +1,4 @@
-import getTwoDigitDayAndMonth from '@/app/DateFormatter';
+import { getTwoDigitDayAndMonth } from '@/utils/DateFormatter';
 import { DrillData, GameData } from '@/types/ShortGame';
 import type { DistanceUnit } from './UnitsService';
 import {

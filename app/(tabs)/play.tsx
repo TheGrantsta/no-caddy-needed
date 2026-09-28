@@ -891,75 +891,67 @@ export default function Play() {
                                 )}
 
                                 {holePhase === 'stats' && (
-                                    <>
-                                        <View style={{ paddingVertical: 12, alignItems: 'center' }}>
-                                            <Text style={styles.normalText}>Hole {currentHole} — 7 Deadly Sins</Text>
-                                        </View>
-                                        <DeadlySinsTally
-                                            key={`tally-${currentHole}`}
-                                            onEndRound={() => { }}
-                                            roundControlled={true}
-                                            onValuesChange={handledeadlySinsValuesChange}
-                                            initialValues={deadlySinsValues}
-                                            holePar={currentHoleData?.holePar}
-                                            userScore={currentHoleData?.scores.find(s => {
-                                                const player = players.find(p => p.Id === s.playerId);
-                                                return player && player.IsUser === 1;
-                                            })?.score}
-                                        />
-                                    </>
+                                    <PhaseStats
+                                        key={`stats-${currentHole}`}
+                                        holeNumber={currentHole}
+                                        holePar={currentHoleData?.holePar ?? 4}
+                                        sins={deadlySinsValues}
+                                        onSinsChange={handledeadlySinsValuesChange}
+                                        players={players}
+                                        userScore={currentHoleData?.scores.find(s => {
+                                            const player = players.find(p => p.Id === s.playerId);
+                                            return player && player.IsUser === 1;
+                                        })?.score}
+                                    />
                                 )}
 
                                 {holePhase === 'sinDetails' && (
-                                    <>
-                                        <View style={{ paddingVertical: 12, alignItems: 'center' }}>
-                                            <Text style={styles.normalText}>Hole {currentHole} — Sin Details</Text>
-                                        </View>
-                                        <SinDetailsInput
-                                            key={`sinDetails-${currentHole}`}
-                                            sins={deadlySinsValues}
-                                            clubs={clubDistances}
-                                            selectedOffTeeClub={selectedOffTeeClub}
-                                            onOffTeeClubChange={setSelectedOffTeeClub}
-                                            showOffTeeClubError={sinDetailsClubError}
-                                            selectedPenaltyType={selectedPenaltyType}
-                                            onPenaltyTypeChange={setSelectedPenaltyType}
-                                            showPenaltyTypeError={sinDetailsPenaltyError}
-                                            selectedBogeysClub={selectedBogeysClub}
-                                            onBogeysClubChange={setSelectedBogeysClub}
-                                            showBogeysClubError={sinDetailsBogeysClubError}
-                                            selectedDoubleChipReason={selectedDoubleChipReason}
-                                            onDoubleChipReasonChange={setSelectedDoubleChipReason}
-                                            showDoubleChipReasonError={sinDetailsDoubleChipReasonError}
-                                        />
-                                    </>
+                                    <PhaseSinDetails
+                                        key={`sinDetails-${currentHole}`}
+                                        holeNumber={currentHole}
+                                        clubDistances={clubDistances}
+                                        deadlySinsValues={deadlySinsValues}
+                                        selectedOffTeeClub={selectedOffTeeClub}
+                                        sinDetailsClubError={sinDetailsClubError}
+                                        selectedPenaltyType={selectedPenaltyType}
+                                        sinDetailsPenaltyError={sinDetailsPenaltyError}
+                                        selectedBogeysClub={selectedBogeysClub}
+                                        sinDetailsBogeysClubError={sinDetailsBogeysClubError}
+                                        selectedDoubleChipReason={selectedDoubleChipReason}
+                                        sinDetailsDoubleChipReasonError={sinDetailsDoubleChipReasonError}
+                                        onOffTeeClubChange={setSelectedOffTeeClub}
+                                        onPenaltyTypeChange={setSelectedPenaltyType}
+                                        onBogeysClubChange={setSelectedBogeysClub}
+                                        onDoubleChipReasonChange={setSelectedDoubleChipReason}
+                                    />
                                 )}
 
                                 {holePhase === 'putting' && (
-                                    <>
+                                    <View>
                                         <View style={{ paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                                             <TouchableOpacity testID="putting-info-button" onPress={() => setShowPuttingInfo(true)} style={{ padding: 4 }}>
                                                 <MaterialIcons name="info-outline" size={24} color={colours.primary} />
                                             </TouchableOpacity>
                                             <Text style={styles.normalText}>Hole {currentHole} — Putting Stats</Text>
                                         </View>
-                                        <PuttingStatsInput
+                                        <PhasePutting
                                             key={`putting-${currentHole}`}
                                             holePar={currentHoleData?.holePar ?? 4}
-                                            threePuttSelected={deadlySinsValues.threePutts}
+                                            deadlySinsValues={deadlySinsValues}
+                                            puttingStats={puttingStats}
+                                            puttingFirstPuttError={puttingFirstPuttError}
+                                            puttingSecondPuttError={puttingSecondPuttError}
+                                            puttingSecondPuttRequiredError={puttingSecondPuttRequiredError}
+                                            showPuttingInfo={showPuttingInfo}
                                             onStatsChange={(firstPutt, secondPutt, secondIsLong) => {
                                                 setPuttingStats({ firstPutt, secondPutt, secondIsLong });
                                                 if (firstPutt !== undefined) setPuttingFirstPuttError(false);
                                                 if (secondPutt !== undefined) setPuttingSecondPuttRequiredError(false);
                                             }}
-                                            initialFirstPutt={puttingStats?.firstPutt}
-                                            initialSecondPutt={puttingStats?.secondPutt}
-                                            initialSecondIsLong={puttingStats?.secondIsLong}
-                                            showFirstPuttError={puttingFirstPuttError}
-                                            showSecondPuttRequiredError={puttingSecondPuttRequiredError}
-                                            onSecondPuttErrorChange={setPuttingSecondPuttError}
+                                            onErrorChange={setPuttingSecondPuttError}
+                                            onShowInfo={setShowPuttingInfo}
                                         />
-                                    </>
+                                    </View>
                                 )}
                             </Animated.View>
 

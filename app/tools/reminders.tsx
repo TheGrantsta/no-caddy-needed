@@ -7,6 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
+import { useFakeRefresh } from '@/hooks/useFakeRefresh';
 import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, PracticeReminder } from '@/service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService } from '../../service/NotificationService';
 import CtaButton from '@/components/CtaButton';
@@ -28,10 +29,15 @@ export default function Reminders() {
         return d;
     });
     const [labelError, setLabelError] = useState('');
-    const [refreshing, setRefreshing] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const [swipedOpen, setSwipedOpen] = useState<Set<number>>(new Set());
     const [isSaving, setIsSaving] = useState(false);
+
+    const { refreshing, onRefresh } = useFakeRefresh(() => {
+        loadReminders();
+        setRefreshKey(prev => prev + 1);
+        setSwipedOpen(new Set());
+    });
 
     const loadReminders = () => {
         setReminders(sortBySoonest(getPracticeRemindersService()));
@@ -64,16 +70,6 @@ export default function Reminders() {
         } finally {
             setIsSaving(false);
         }
-    };
-
-    const onRefresh = () => {
-        setRefreshing(true);
-        setTimeout(() => {
-            loadReminders();
-            setRefreshKey(prev => prev + 1);
-            setSwipedOpen(new Set());
-            setRefreshing(false);
-        }, 750);
     };
 
     const handleDeleteReminder = async (reminder: PracticeReminder) => {

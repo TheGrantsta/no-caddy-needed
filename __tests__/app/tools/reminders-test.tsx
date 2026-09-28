@@ -268,8 +268,8 @@ describe('Reminders screen', () => {
             const { UNSAFE_getByType, queryByText } = await renderReminders();
             const scrollView = UNSAFE_getByType(ScrollView);
 
-            act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
+            await act(async () => {
+                await scrollView.props.refreshControl.props.onRefresh();
             });
             act(() => {
                 jest.advanceTimersByTime(750);

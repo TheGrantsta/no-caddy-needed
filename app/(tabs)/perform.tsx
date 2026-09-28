@@ -9,6 +9,8 @@ import DeadlySinsChart from '../../components/DeadlySinsChart';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
+import { useFakeRefresh } from '../../hooks/useFakeRefresh';
+import { useSectionTransition } from '../../hooks/useSectionTransition';
 import { logEvent } from '../../service/FirebaseService';
 import { getSettingsService, saveSettingsService, AppSettings, getPuttingMakeRatesService, getPuttingProximityService, getAllDeadlySinsRoundsService, getAllRoundHistoryService, formatPuttCount } from '../../service/DbService';
 
@@ -22,15 +24,23 @@ export default function Perform() {
   const styles = useStyles();
   const colours = useThemeColours();
   const { landscapePadding } = useOrientation();
-  const [refreshing, setRefreshing] = useState(false);
-  const [section, setSection] = useState('sins');
   const [roundsFilter, setRoundsFilter] = useState<1 | 10 | 'all'>('all');
   const [proximityThreePuttOnly, setProximityThreePuttOnly] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [showOnboarding, setShowOnboarding] = useState(!settings.performOnboardingSeen);
-  const sectionFadeAnim = useRef(new Animated.Value(0)).current;
-  const sectionSlideAnim = useRef(new Animated.Value(0)).current;
-  const sectionDirectionRef = useRef<'next' | 'previous'>('next');
+
+  const SECTION_ORDER = ['sins', 'putting', 'proximity'];
+  const {
+    section,
+    displaySection,
+    handleSubMenu,
+    fadeAnim: sectionFadeAnim,
+    slideAnim: sectionSlideAnim
+  } = useSectionTransition(SECTION_ORDER);
+
+  const { refreshing, onRefresh } = useFakeRefresh(() => {
+    handleSubMenu('sins');
+  });
 
   const roundHistory = getAllRoundHistoryService();
   const filteredRoundHistory = roundsFilter === 'all' ? roundHistory : roundHistory.slice(0, roundsFilter);
@@ -75,52 +85,16 @@ export default function Perform() {
     return proximity.length > 0 && proximity.some((row) => row.shortPercent !== '-' || row.longPercent !== '-');
   };
 
-  const onRefresh = () => {
-    setRefreshing(true);
-
-    setTimeout(() => {
-      setSection('sins');
-      setRefreshing(false);
-    }, 750);
-  };
-
-  const handleSubMenu = (sectionName: string) => {
-    const sectionOrder = ['sins', 'putting', 'proximity'];
-    const currentIndex = sectionOrder.indexOf(section);
-    const nextIndex = sectionOrder.indexOf(sectionName);
-    sectionDirectionRef.current = nextIndex > currentIndex ? 'next' : 'previous';
-    setSection(sectionName);
+  const handleSubMenuWithLogging = (sectionName: string) => {
+    handleSubMenu(sectionName);
     if (sectionName === 'sins') logEvent('view_deadly_sins');
     if (sectionName === 'putting') logEvent('view_putting');
     if (sectionName === 'proximity') logEvent('view_proximity');
   };
 
-  const displaySection = (sectionName: string) => {
-    return section === sectionName;
-  };
-
-  useEffect(() => {
-    const offset = sectionDirectionRef.current === 'next' ? 40 : -40;
-    sectionFadeAnim.setValue(0);
-    sectionSlideAnim.setValue(offset);
-    Animated.parallel([
-      Animated.timing(sectionFadeAnim, {
-        toValue: 1,
-        duration: 350,
-        useNativeDriver: true,
-      }),
-      Animated.timing(sectionSlideAnim, {
-        toValue: 0,
-        duration: 350,
-        useNativeDriver: true,
-      }),
-    ]).start();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [section]);
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SubMenu showSubMenu='perform' selectedItem={section} handleSubMenu={handleSubMenu} />
+      <SubMenu showSubMenu='perform' selectedItem={section} handleSubMenu={handleSubMenuWithLogging} />
 
       {refreshing && (
         <View style={styles.updateOverlay}>

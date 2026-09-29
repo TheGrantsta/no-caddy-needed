@@ -3,6 +3,7 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useAppToast } from '@/hooks/useAppToast';
+import { useForm } from '@/hooks/useForm';
 import { insertGameService } from '@/service/DbService';
 
 const STEPS = [
@@ -24,15 +25,12 @@ export default function AddGameForm({ category, onSaved, onCancel }: Props) {
     const { showSuccess } = useAppToast();
 
     const [step, setStep] = useState(0);
-    const [stepError, setStepError] = useState('');
-    const [header, setHeader] = useState('');
-    const [objective, setObjective] = useState('');
-    const [setUp, setSetUp] = useState('');
-    const [howToPlay, setHowToPlay] = useState('');
     const [saveError, setSaveError] = useState('');
+    const [formState, resetForm] = useForm({ header: '', objective: '', setUp: '', howToPlay: '' });
 
-    const fieldValues = [header, objective, setUp, howToPlay];
-    const fieldSetters = [setHeader, setObjective, setSetUp, setHowToPlay];
+    const fieldNames = ['header', 'objective', 'setUp', 'howToPlay'] as const;
+    const currentField = formState[fieldNames[step]];
+    const currentValue = currentField.value;
 
     const inputRef = useRef<TextInput>(null);
 
@@ -43,25 +41,24 @@ export default function AddGameForm({ category, onSaved, onCancel }: Props) {
 
     const isLastStep = step === STEPS.length - 1;
     const currentStep = STEPS[step];
-    const currentValue = fieldValues[step];
 
     const handleNext = async () => {
         if (!currentValue.trim()) {
-            setStepError('This field is required');
+            currentField.setError('This field is required');
             return;
         }
-        setStepError('');
 
         if (isLastStep) {
             const success = await insertGameService(
                 category,
-                header.trim(),
-                objective.trim(),
-                setUp.trim(),
-                howToPlay.trim()
+                formState.header.value.trim(),
+                formState.objective.value.trim(),
+                formState.setUp.value.trim(),
+                formState.howToPlay.value.trim()
             );
             if (success) {
                 showSuccess('Game saved');
+                resetForm();
                 onSaved();
             } else {
                 setSaveError('Failed to save game');
@@ -74,7 +71,6 @@ export default function AddGameForm({ category, onSaved, onCancel }: Props) {
 
     const handleBack = () => {
         setStep(s => s - 1);
-        setStepError('');
     };
 
     return (
@@ -102,13 +98,10 @@ export default function AddGameForm({ category, onSaved, onCancel }: Props) {
                 style={[
                     styles.textInput,
                     currentStep.multiline ? { minHeight: 100, textAlignVertical: 'top' } : undefined,
-                    stepError ? styles.textInputError : undefined,
+                    currentField.error ? styles.textInputError : undefined,
                 ]}
                 value={currentValue}
-                onChangeText={(text) => {
-                    fieldSetters[step]?.(text);
-                    setStepError('');
-                }}
+                onChangeText={currentField.onChange}
                 placeholder={currentStep.placeholder}
                 placeholderTextColor={colours.backgroundAlternate}
                 multiline={currentStep.multiline}
@@ -116,7 +109,7 @@ export default function AddGameForm({ category, onSaved, onCancel }: Props) {
                 autoFocus
             />
 
-            {stepError ? <Text style={styles.errorText}>{stepError}</Text> : null}
+            {currentField.error ? <Text style={styles.errorText}>{currentField.error}</Text> : null}
             {saveError ? <Text style={styles.errorText}>{saveError}</Text> : null}
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>

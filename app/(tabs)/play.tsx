@@ -65,6 +65,7 @@ import { useAppToast } from '../../hooks/useAppToast';
 import { useWind } from '../../hooks/useWind';
 import { useFakeRefresh } from '../../hooks/useFakeRefresh';
 import { useSectionTransition } from '../../hooks/useSectionTransition';
+import { useToggle } from '../../hooks/useToggle';
 import { useHoleLifecycle } from '../../hooks/useHoleLifecycle';
 import PhaseScore from '../../components/PhaseScore';
 import PhaseStats from '../../components/PhaseStats';
@@ -144,12 +145,12 @@ export default function Play() {
     const setSinDetailsDoubleChipReasonError = lifecycle.setSinDetailsDoubleChipReasonError;
 
     const [roundHistory, setRoundHistory] = useState<Round[]>([]);
-    const [showPuttingInfo, setShowPuttingInfo] = useState(false);
+    const [showPuttingInfo, , setShowPuttingInfo] = useToggle(false);
     const [notificationId, setNotificationId] = useState<string | null>(null);
-    const [showPlayerSetup, setShowPlayerSetup] = useState(false);
+    const [showPlayerSetup, , setShowPlayerSetup] = useToggle(false);
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
     const [currentHoleData, setCurrentHoleData] = useState<{ holeNumber: number; holePar: number; scores: { playerId: number; playerName: string; score: number }[] } | null>(null);
-    const [showEndRoundConfirm, setShowEndRoundConfirm] = useState(false);
+    const [showEndRoundConfirm, , setShowEndRoundConfirm] = useToggle(false);
     const [scorecardData, setScorecardData] = useState<MultiplayerRoundScorecard | null>(null);
     const [recentCourseNames, setRecentCourseNames] = useState<string[]>([]);
     const [recentPlayerNames, setRecentPlayerNames] = useState<string[]>([]);
@@ -171,7 +172,7 @@ export default function Play() {
 
     const router = useRouter();
     const [settings, setSettings] = useState(getSettingsService());
-    const [showOnboarding, setShowOnboarding] = useState(false);
+    const [showOnboarding, , setShowOnboarding] = useToggle(false);
     const [historyFilter, setHistoryFilter] = useState<1 | 10 | 'all'>('all');
     const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
     const [courseHolePars, setCourseHolePars] = useState<Record<number, number>>({});

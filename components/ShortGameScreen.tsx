@@ -1,20 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { Dimensions, RefreshControl, ScrollView, Text, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { insertDrillResultService, getDrillsByCategoryService, deleteDrillService, restoreDrillService, getGamesByCategoryService, deleteGameService, restoreGameService } from "@/service/DbService";
 import Drill from "@/components/Drill";
 import Game from "@/components/Game";
 import AddDrillForm from "@/components/AddDrillForm";
 import AddGameForm from "@/components/AddGameForm";
-import CtaButton from "@/components/CtaButton";
+import UndoDeleteNotification from "@/components/UndoDeleteNotification";
+import TestPager from "@/components/TestPager";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
 import { useOrientation } from "@/hooks/useOrientation";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAppToast } from "@/hooks/useAppToast";
 import { ShortGameConfig, DrillData, GameData } from "@/types/ShortGame";
-import fontSizes from "@/assets/font-sizes";
 
 type Props = {
     config: ShortGameConfig;
@@ -31,10 +29,8 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ShortGameScreen = ({ config }: Props) => {
     const { category } = config;
     const styles = useStyles();
-    const s = styles.deadlySinsTally;
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const { bottom: bottomInset } = useSafeAreaInsets();
     const { showResult } = useAppToast();
     const [refreshing, setRefreshing] = useState(false);
     const [tests, setTests] = useState<TestItem[]>([]);
@@ -42,7 +38,6 @@ const ShortGameScreen = ({ config }: Props) => {
     const [showAddDrillForm, setShowAddDrillForm] = useState(false);
     const [showAddGameForm, setShowAddGameForm] = useState(false);
     const [lastDeleted, setLastDeleted] = useState<{ type: 'drill' | 'game'; id: number } | null>(null);
-    const flatListRef = useRef(null);
     const isSavingDrillRef = useRef(false);
 
     useEffect(() => {
@@ -155,13 +150,9 @@ const ShortGameScreen = ({ config }: Props) => {
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             {lastDeleted !== null && (
-                <TouchableOpacity
-                    testID={lastDeleted.type === 'drill' ? 'undo-drill-delete' : 'undo-game-delete'}
-                    style={[{
-                        backgroundColor: colours.primary, position: 'absolute', bottom: bottomInset, zIndex: 10, padding: 12,
-                        borderColor: colours.red, borderLeftWidth: 10, width: '90%', alignSelf: 'center'
-                    }]}
-                    onPress={() => {
+                <UndoDeleteNotification
+                    type={lastDeleted.type}
+                    onUndo={() => {
                         if (lastDeleted.type === 'drill') {
                             restoreDrillService(lastDeleted.id).then(() => {
                                 setLastDeleted(null);
@@ -173,12 +164,8 @@ const ShortGameScreen = ({ config }: Props) => {
                                 onRefresh();
                             });
                         }
-                    }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Text style={[styles.updateText, { color: colours.background, fontSize: fontSizes.normal, fontWeight: 'bold' }]}>Undo delete</Text>
-                        <MaterialIcons name="undo" size={20} color={colours.background} />
-                    </View>
-                </TouchableOpacity>
+                    }}
+                />
             )}
 
             {refreshing && (
@@ -220,40 +207,13 @@ const ShortGameScreen = ({ config }: Props) => {
                                 onCancel={() => setShowAddGameForm(false)}
                             />
                         ) : (
-                            <>
-                                <View style={styles.horizontalScrollContainer}>
-                                    <FlatList
-                                        ref={flatListRef}
-                                        data={tests}
-                                        horizontal
-                                        pagingEnabled
-                                        showsHorizontalScrollIndicator={false}
-                                        onScroll={handleTestScroll}
-                                        renderItem={renderTestItem}
-                                        keyExtractor={(item, index) => `${item.type}-${item.id ?? index}`}
-                                    />
-                                </View>
-
-                                <View style={styles.scrollIndicatorContainer}>
-                                    {tests.map((_, index) => (
-                                        <View
-                                            key={index}
-                                            style={[
-                                                styles.scrollIndicatorDot,
-                                                testActiveIndex === index && styles.scrollActiveDot,
-                                            ]}
-                                        />
-                                    ))}
-                                </View>
-                                <View style={s.container}>
-                                    <CtaButton
-                                        testID="add-drill-button"
-                                        label="Add test"
-                                        icon="add"
-                                        onPress={() => setShowAddDrillForm(true)}
-                                    />
-                                </View>
-                            </>
+                            <TestPager
+                                tests={tests}
+                                activeIndex={testActiveIndex}
+                                onScroll={handleTestScroll}
+                                onAddTest={() => setShowAddDrillForm(true)}
+                                renderItem={renderTestItem}
+                            />
                         )}
                     </View>
                 </View>

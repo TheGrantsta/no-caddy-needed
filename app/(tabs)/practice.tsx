@@ -6,6 +6,7 @@ import { useThemeColours } from "@/context/ThemeContext";
 import { useOrientation } from "@/hooks/useOrientation";
 import { useFakeRefresh } from "@/hooks/useFakeRefresh";
 import { useSectionTransition } from "@/hooks/useSectionTransition";
+import { useToggle } from "@/hooks/useToggle";
 import SubMenu from "@/components/SubMenu";
 import { MaterialIcons } from "@expo/vector-icons";
 import { getAllDrillHistoryService, getSettingsService, saveSettingsService } from "@/service/DbService";
@@ -32,7 +33,7 @@ export default function Practice() {
   const [loading, setLoading] = useState(true);
   const [allDrillHistory, setAllDrillHistory] = useState<any[]>([]);
   const [displayedDrillHistory, setDisplayedDrillHistory] = useState<any[]>([]);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isLoadingMore, , setIsLoadingMore] = useToggle(false);
 
   const SECTION_ORDER = ['areas', 'tools', 'history'];
   const {

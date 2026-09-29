@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, RefreshControl } from 'react-native';
+import { ScrollView, View, Text, RefreshControl } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import Chevrons from '@/components/Chevrons';
-import CtaButton from '@/components/CtaButton';
-import Slider from '@react-native-community/slider';
+import TempoSlider from '@/components/TempoSlider';
+import TempoDisplay from '@/components/TempoDisplay';
+import TempoControls from '@/components/TempoControls';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { useOrientation } from '@/hooks/useOrientation';
@@ -127,38 +127,16 @@ export default function Tempo() {
                     </View>
 
                     <View style={localStyles.container}>
-                        <Slider
-                            style={[localStyles.slider]}
-                            minimumValue={60}
-                            maximumValue={120}
-                            step={6}
-                            value={tempo}
-                            onValueChange={tempoValueChange}
-                            minimumTrackTintColor={colours.tertiary}
-                            maximumTrackTintColor={colours.primary}
-                            thumbTintColor={colours.primary}
+                        <TempoSlider
+                            tempo={tempo}
+                            onTempoChange={tempoValueChange}
                         />
 
-                        {/* Labels */}
-                        <View style={localStyles.labelsContainer}>
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
-                                <Text key={num} style={[localStyles.label]}>
-                                    {num === 1 ? 'slow' : num === 12 ? 'fast' : ' '}
-                                </Text>
-                            ))}
-                        </View>
+                        <TempoDisplay tempo={tempo} />
 
-                        <View style={{ flexDirection: 'row', flexWrap: 'nowrap', flex: 1, alignContent: 'space-evenly' }}>
-                            <Text style={[localStyles.valueText, styles.normalText, { color: colours.primary, padding: 5 }]}>
-                                Beats per minute: {tempo}
-                            </Text>
-                        </View>
-
-                        <CtaButton
-                            testID="tempo-toggle-button"
-                            label={isPlaying ? 'Stop' : 'Play'}
-                            icon={isPlaying ? 'stop' : 'play-arrow'}
-                            onPress={toggleStartStop}
+                        <TempoControls
+                            isPlaying={isPlaying}
+                            onToggle={toggleStartStop}
                         />
 
                         <View style={styles.contentSection}>

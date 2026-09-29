@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useToggle } from '../hooks/useToggle';
 import { Image, LogBox, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -283,7 +284,7 @@ function ThemedApp() {
 }
 
 export default function RootLayout() {
-  const [appIsReady, setAppIsReady] = useState(false);
+  const [appIsReady, , setAppIsReady] = useToggle(false);
   useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });

@@ -29,13 +29,16 @@ export default function SettingsToggleRow({
             gap: 8,
         },
         button: {
-            paddingHorizontal: 20,
+            flex: 1,
+            paddingHorizontal: 24,
             paddingVertical: 12,
             marginHorizontal: 0,
             borderRadius: 8,
             backgroundColor: colours.background,
             borderWidth: 1,
             borderColor: colours.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         selectedButton: {
             backgroundColor: colours.primary,

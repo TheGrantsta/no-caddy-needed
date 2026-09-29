@@ -194,6 +194,7 @@ export const insertDrillResult = async (name: string, result: boolean, drillId: 
     try {
         await statement.executeAsync({ $Name: name, $Result: result, $DrillId: drillId, $Score: score, $Created_At: new Date().toISOString() });
     } catch (e) {
+        void logError('db.insertDrillResult', e);
         success = false;
         void logError('db.insertDrillResult', e);
     } finally {
@@ -248,6 +249,7 @@ export const insertWedgeChart = async (
             }
         }
     } catch (e) {
+        void logError('db.insertWedgeChart', e);
         success = false;
         void logError('db.insertWedgeChart', e);
     }
@@ -282,6 +284,7 @@ export const insertHoleDeadlySins = async (
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.insertHoleDeadlySins', e);
         success = false;
         void logError('db.insertHoleDeadlySins', e);
     }
@@ -358,6 +361,7 @@ export const insertPuttingStats = async (roundId: number, holeNumber: number, fi
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.insertPuttingStats', e);
         success = false;
         void logError('db.insertPuttingStats', e);
     }
@@ -392,6 +396,7 @@ export const deletePuttingStatsByHole = async (roundId: number, holeNumber: numb
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.deletePuttingStatsByHole', e);
         success = false;
         void logError('db.deletePuttingStatsByHole', e);
     }
@@ -411,6 +416,7 @@ export const insertHoleSinDetails = async (roundId: number, holeNumber: number, 
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.insertHoleSinDetails', e);
         success = false;
         void logError('db.insertHoleSinDetails', e);
     }
@@ -441,6 +447,7 @@ export const deleteHoleSinDetailsByHole = async (roundId: number, holeNumber: nu
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.deleteHoleSinDetailsByHole', e);
         success = false;
         void logError('db.deleteHoleSinDetailsByHole', e);
     }
@@ -460,6 +467,7 @@ export const deleteHoleDeadlySinsByHole = async (roundId: number, holeNumber: nu
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.deleteHoleDeadlySinsByHole', e);
         success = false;
         void logError('db.deleteHoleDeadlySinsByHole', e);
     }
@@ -494,6 +502,7 @@ export const insertDrill = async (category: string, label: string, iconName: str
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.insertDrill', e);
         success = false;
         void logError('db.insertDrill', e);
     }
@@ -516,6 +525,7 @@ export const softDeleteDrill = async (id: number): Promise<boolean> => {
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.softDeleteDrill', e);
         success = false;
         void logError('db.softDeleteDrill', e);
     }
@@ -538,6 +548,7 @@ export const restoreDrill = async (id: number): Promise<boolean> => {
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.restoreDrill', e);
         success = false;
         void logError('db.restoreDrill', e);
     }
@@ -582,6 +593,7 @@ export const updateRound = async (roundId: number, totalScore: number): Promise<
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.updateRound', e);
         success = false;
         void logError('db.updateRound', e);
     }
@@ -639,6 +651,7 @@ export const upsertHoleNote = async (courseName: string, holeNumber: number, not
             return true;
         }
     } catch (e) {
+        void logError('db.upsertHoleNote', e);
         success = false;
         void logError('db.upsertHoleNote.update', e);
     } finally {
@@ -653,6 +666,7 @@ export const upsertHoleNote = async (courseName: string, holeNumber: number, not
     try {
         await insertStatement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber, $Note: note, $Updated_At: now });
     } catch (e) {
+        void logError('db.upsertHoleNote', e);
         success = false;
         void logError('db.upsertHoleNote.insert', e);
     } finally {
@@ -670,6 +684,7 @@ export const deleteHoleNote = async (courseName: string, holeNumber: number): Pr
     try {
         await statement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber });
     } catch (e) {
+        void logError('db.deleteHoleNote', e);
         success = false;
         void logError('db.deleteHoleNote', e);
     } finally {
@@ -691,6 +706,7 @@ export const addHiddenRecent = async (type: 'course' | 'player', name: string): 
     try {
         await statement.executeAsync({ $Type: type, $Name: name });
     } catch (e) {
+        void logError('db.addHiddenRecent', e);
         success = false;
         void logError('db.addHiddenRecent', e);
     } finally {
@@ -725,6 +741,7 @@ export const insertClubDistances = async (distances: { Club: string; CarryDistan
             }
         }
     } catch (e) {
+        void logError('db.insertClubDistances', e);
         success = false;
         void logError('db.insertClubDistances', e);
     }
@@ -771,6 +788,7 @@ export const insertRoundHoleScore = async (roundId: number, roundPlayerId: numbe
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.insertRoundHoleScore', e);
         success = false;
         void logError('db.insertRoundHoleScore', e);
     }
@@ -791,6 +809,7 @@ export const deleteRoundHoleScoresByHole = async (roundId: number, holeNumber: n
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.deleteRoundHoleScoresByHole', e);
         success = false;
         void logError('db.deleteRoundHoleScoresByHole', e);
     }
@@ -816,6 +835,7 @@ export const updateRoundHoleScore = async (id: number, score: number): Promise<b
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.updateRoundHoleScore', e);
         success = false;
         void logError('db.updateRoundHoleScore', e);
     }
@@ -838,6 +858,7 @@ export const updateRoundHoleParForHole = async (roundId: number, holeNumber: num
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.updateRoundHoleParForHole', e);
         success = false;
         void logError('db.updateRoundHoleParForHole', e);
     }
@@ -860,6 +881,7 @@ export const updateRoundTotalScore = async (roundId: number, totalScore: number)
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.updateRoundTotalScore', e);
         success = false;
         void logError('db.updateRoundTotalScore', e);
     }
@@ -879,6 +901,7 @@ export const deleteRound = async (roundId: number): Promise<boolean> => {
             DELETE FROM Rounds WHERE Id = ${roundId};
         `);
     } catch (e) {
+        void logError('db.deleteRound', e);
         success = false;
         void logError('db.deleteRound', e);
     }
@@ -913,6 +936,7 @@ export const saveSettings = async (notificationsEnabled: number, voice: string, 
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.saveSettings', e);
         success = false;
         void logError('db.saveSettings', e);
     }
@@ -942,6 +966,7 @@ export const insertGame = async (category: string, header: string, objective: st
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.insertGame', e);
         success = false;
         void logError('db.insertGame', e);
     }
@@ -964,6 +989,7 @@ export const restoreGame = async (id: number): Promise<boolean> => {
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.restoreGame', e);
         success = false;
         void logError('db.restoreGame', e);
     }
@@ -986,6 +1012,7 @@ export const softDeleteGame = async (id: number): Promise<boolean> => {
             await statement.finalizeAsync();
         }
     } catch (e) {
+        void logError('db.softDeleteGame', e);
         success = false;
         void logError('db.softDeleteGame', e);
     }
@@ -1004,6 +1031,7 @@ export const insertPracticeReminder = async (label: string, scheduledFor: string
     try {
         await statement.executeAsync({ $Label: label, $ScheduledFor: scheduledFor, $NotificationId: notificationId, $Created_At: new Date().toISOString() });
     } catch (e) {
+        void logError('db.insertPracticeReminder', e);
         success = false;
         void logError('db.insertPracticeReminder', e);
     } finally {
@@ -1028,6 +1056,7 @@ export const deletePracticeReminder = async (id: number): Promise<boolean> => {
     try {
         await statement.executeAsync({ $Id: id });
     } catch (e) {
+        void logError('db.deletePracticeReminder', e);
         success = false;
         void logError('db.deletePracticeReminder', e);
     } finally {

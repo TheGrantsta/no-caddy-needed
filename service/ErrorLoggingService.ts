@@ -3,7 +3,7 @@ import { db } from './FirebaseService';
 
 export const logError = async (context: string, error: unknown): Promise<void> => {
     const message = error instanceof Error ? error.message : String(error);
-    const stack = error instanceof Error ? error.stack : undefined;
+    const stack = error instanceof Error ? error.stack : null;
 
     console.error(`[${context}]`, error);
 
@@ -11,7 +11,7 @@ export const logError = async (context: string, error: unknown): Promise<void> =
         await addDoc(collection(db, 'app_errors'), {
             context,
             message,
-            stack: stack ?? null,
+            stack,
             loggedAt: serverTimestamp(),
         });
     } catch {

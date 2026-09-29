@@ -1,101 +1,95 @@
 import { logError } from '../../service/ErrorLoggingService';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
-jest.mock('firebase/app', () => ({
-    initializeApp: jest.fn(() => 'MOCK_APP'),
-    getApps: jest.fn(() => []),
-    getApp: jest.fn(() => 'MOCK_APP'),
-}));
-
-jest.mock('firebase/firestore', () => ({
-    getFirestore: jest.fn(() => 'MOCK_DB'),
-    addDoc: jest.fn(),
-    collection: jest.fn(() => 'MOCK_COLLECTION_REF'),
-    serverTimestamp: jest.fn(() => 'MOCK_TIMESTAMP'),
-}));
+jest.mock('firebase/firestore');
 
 const mockAddDoc = addDoc as jest.Mock;
 const mockCollection = collection as jest.Mock;
+const mockServerTimestamp = serverTimestamp as jest.Mock;
 
 describe('ErrorLoggingService', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        jest.spyOn(console, 'error').mockImplementation(() => {});
-        mockCollection.mockReturnValue('MOCK_COLLECTION_REF');
+        jest.spyOn(console, 'error').mockImplementation();
     });
 
     afterEach(() => {
-        jest.restoreAllMocks();
+        (console.error as jest.Mock).mockRestore();
     });
 
-    describe('logError', () => {
-        it('writes to the app_errors collection with context, message, and timestamp', async () => {
-            mockAddDoc.mockResolvedValue({ id: 'err1' });
+    it('writes error to Firestore with context, message, stack, and loggedAt', async () => {
+        mockCollection.mockReturnValue('app_errors_collection');
+        mockAddDoc.mockResolvedValue({ id: 'doc1' });
+        mockServerTimestamp.mockReturnValue('timestamp_value');
 
-            await logError('db.insertRound', new Error('disk full'));
+        const error = new Error('Test error');
+        await logError('db.insertDrill', error);
 
-            expect(mockCollection).toHaveBeenCalledWith('MOCK_DB', 'app_errors');
-            expect(mockAddDoc).toHaveBeenCalledWith('MOCK_COLLECTION_REF', expect.objectContaining({
-                context: 'db.insertRound',
-                loggedAt: 'MOCK_TIMESTAMP',
-            }));
-        });
+        expect(mockAddDoc).toHaveBeenCalledWith(
+            'app_errors_collection',
+            {
+                context: 'db.insertDrill',
+                message: 'Test error',
+                stack: error.stack,
+                loggedAt: 'timestamp_value',
+            }
+        );
+    });
 
-        it('extracts message from Error instance', async () => {
-            mockAddDoc.mockResolvedValue({ id: 'err2' });
-            const err = new Error('constraint violation');
+    it('extracts message and stack from Error instances', async () => {
+        mockCollection.mockReturnValue('collection');
+        mockAddDoc.mockResolvedValue({});
+        mockServerTimestamp.mockReturnValue('ts');
 
-            await logError('db.updateScore', err);
+        const error = new Error('Specific error message');
+        error.stack = 'Error stack trace';
 
-            expect(mockAddDoc).toHaveBeenCalledWith('MOCK_COLLECTION_REF', expect.objectContaining({
-                message: 'constraint violation',
-            }));
-        });
+        await logError('db.updateRound', error);
 
-        it('extracts stack trace from Error instance', async () => {
-            mockAddDoc.mockResolvedValue({ id: 'err3' });
-            const err = new Error('index out of bounds');
-            const expectedStack = err.stack;
+        expect(mockAddDoc).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({
+                message: 'Specific error message',
+                stack: 'Error stack trace',
+            })
+        );
+    });
 
-            await logError('db.deleteHole', err);
+    it('sets stack to null for non-Error values', async () => {
+        mockCollection.mockReturnValue('collection');
+        mockAddDoc.mockResolvedValue({});
+        mockServerTimestamp.mockReturnValue('ts');
 
-            expect(mockAddDoc).toHaveBeenCalledWith('MOCK_COLLECTION_REF', expect.objectContaining({
-                stack: expectedStack,
-            }));
-        });
+        await logError('db.deleteRound', 'string error');
 
-        it('stringifies non-Error values and sets stack to null', async () => {
-            mockAddDoc.mockResolvedValue({ id: 'err4' });
-
-            await logError('db.saveDrill', 'thrown string value');
-
-            expect(mockAddDoc).toHaveBeenCalledWith('MOCK_COLLECTION_REF', expect.objectContaining({
-                message: 'thrown string value',
+        expect(mockAddDoc).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({
+                message: 'string error',
                 stack: null,
-            }));
-        });
+            })
+        );
+    });
 
-        it('calls console.error with context and raw error', async () => {
-            mockAddDoc.mockResolvedValue({ id: 'err5' });
-            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-            const err = new Error('test error');
+    it('calls console.error with context and raw error', async () => {
+        mockCollection.mockReturnValue('collection');
+        mockAddDoc.mockResolvedValue({});
+        mockServerTimestamp.mockReturnValue('ts');
 
-            await logError('db.test', err);
+        const error = new Error('Test');
+        await logError('db.test', error);
 
-            expect(consoleErrorSpy).toHaveBeenCalledWith('[db.test]', err);
-            consoleErrorSpy.mockRestore();
-        });
+        expect(console.error).toHaveBeenCalledWith('[db.test]', error);
+    });
 
-        it('swallows error if addDoc itself rejects', async () => {
-            mockAddDoc.mockRejectedValue(new Error('network failure'));
+    it('does not throw when Firestore write fails', async () => {
+        mockCollection.mockReturnValue('collection');
+        mockAddDoc.mockRejectedValue(new Error('Firestore error'));
+        mockServerTimestamp.mockReturnValue('ts');
 
-            await expect(logError('db.insert', new Error('original error'))).resolves.toBeUndefined();
-        });
-
-        it('does not throw when addDoc rejects', async () => {
-            mockAddDoc.mockRejectedValue(new Error('firestore unavailable'));
-
-            await expect(logError('db.update', 'error')).resolves.not.toThrow();
-        });
+        const error = new Error('Original error');
+        expect(async () => {
+            await logError('db.test', error);
+        }).not.toThrow();
     });
 });

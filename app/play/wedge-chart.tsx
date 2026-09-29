@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { MaterialIcons } from '@expo/vector-icons';
 import WedgeChart from '../../components/WedgeChart';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
+import WedgeChartHeader from '../../components/WedgeChartHeader';
+import ClearWedgeChartButton from '../../components/ClearWedgeChartButton';
+import ClearWedgeChartConfirmation from '../../components/ClearWedgeChartConfirmation';
 import { getWedgeChartService, saveWedgeChartService, WedgeChartData, getSettingsService, saveSettingsService } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
-import fontSizes from '@/assets/font-sizes';
 
 const ONBOARDING_STEPS = [
     { text: 'Your wedge chart helps you know exactly how far you hit each wedge with different swing lengths.' },
@@ -59,51 +60,19 @@ export default function WedgeChartScreen() {
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
-                <View style={styles.header}>
-                    <View style={styles.titleRow}>
-                        <TouchableOpacity
-                            testID="info-button"
-                            onPress={handleShowOnboarding}
-                        >
-                            <MaterialIcons name="info-outline" size={24} color={colours.primary} />
-                        </TouchableOpacity>
-                        <Text style={[styles.headerText, styles.marginTop]}>Wedge chart</Text>
-                    </View>
-                    <Text style={[styles.normalText, styles.marginBottom]}>
-                        Wedge carry distances NOT total
-                    </Text>
-                </View>
+                <WedgeChartHeader onInfoPress={handleShowOnboarding} />
 
                 <WedgeChart key={data.clubs.length} data={data} onSave={handleSave} units={settings.units} />
 
                 {!chartIsEmpty && !showClearConfirm && (
-                    <TouchableOpacity
-                        testID="clear-button"
-                        onPress={() => setShowClearConfirm(true)}
-                        style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 8, marginTop: 10 }}
-                    >
-                        <MaterialIcons name="delete-sweep" size={20} color={colours.red} />
-                        <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>Clear all</Text>
-                    </TouchableOpacity>
+                    <ClearWedgeChartButton onPress={() => setShowClearConfirm(true)} />
                 )}
 
                 {showClearConfirm && (
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20, gap: 10 }}>
-                        <TouchableOpacity
-                            testID="cancel-clear-button"
-                            onPress={() => setShowClearConfirm(false)}
-                            style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.errorText }}
-                        >
-                            <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            testID="confirm-clear-button"
-                            onPress={handleClear}
-                            style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.primary }}
-                        >
-                            <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Confirm</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <ClearWedgeChartConfirmation
+                        onCancel={() => setShowClearConfirm(false)}
+                        onConfirm={handleClear}
+                    />
                 )}
             </ScrollView>
 

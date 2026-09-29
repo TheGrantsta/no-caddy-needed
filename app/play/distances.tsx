@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { MaterialIcons } from '@expo/vector-icons';
 import ClubDistanceList from '../../components/ClubDistanceList';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
+import DistancesHeader from '../../components/DistancesHeader';
+import ClearDistancesButton from '../../components/ClearDistancesButton';
+import ClearDistancesConfirmation from '../../components/ClearDistancesConfirmation';
 import { getClubDistancesService, saveClubDistancesService, getSettingsService, saveSettingsService } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
-import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
-import fontSizes from '@/assets/font-sizes';
 
 const ONBOARDING_STEPS = [
     { text: 'Track your club distances to make better decisions on the course.' },
@@ -19,7 +19,6 @@ const ONBOARDING_STEPS = [
 
 export default function DistancesScreen() {
     const styles = useStyles();
-    const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
     const { showResult } = useAppToast();
     const [distances, setDistances] = useState(getClubDistancesService());
@@ -58,51 +57,19 @@ export default function DistancesScreen() {
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
-                <View style={styles.header}>
-                    <View style={styles.titleRow}>
-                        <TouchableOpacity
-                            testID="info-button"
-                            onPress={handleShowOnboarding}
-                        >
-                            <MaterialIcons name="info-outline" size={24} color={colours.primary} />
-                        </TouchableOpacity>
-                        <Text style={[styles.headerText, styles.marginTop]}>Distances</Text>
-                    </View>
-                    <Text style={[styles.normalText, styles.marginBottom]}>
-                        Club carry distances NOT total
-                    </Text>
-                </View>
+                <DistancesHeader onInfoPress={handleShowOnboarding} />
 
                 <ClubDistanceList key={distances.length} distances={distances} onSave={handleSave} units={settings.units} />
 
                 {!distancesIsEmpty && !showClearConfirm && (
-                    <TouchableOpacity
-                        testID="clear-button"
-                        onPress={() => setShowClearConfirm(true)}
-                        style={{ padding: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', columnGap: 8, marginTop: 10 }}
-                    >
-                        <MaterialIcons name="delete-sweep" size={20} color={colours.red} />
-                        <Text style={{ color: colours.red, fontSize: fontSizes.normal }}>Clear all</Text>
-                    </TouchableOpacity>
+                    <ClearDistancesButton onPress={() => setShowClearConfirm(true)} />
                 )}
 
                 {showClearConfirm && (
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20, gap: 10 }}>
-                        <TouchableOpacity
-                            testID="cancel-clear-button"
-                            onPress={() => setShowClearConfirm(false)}
-                            style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.errorText }}
-                        >
-                            <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            testID="confirm-clear-button"
-                            onPress={handleClear}
-                            style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.primary }}
-                        >
-                            <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Confirm</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <ClearDistancesConfirmation
+                        onCancel={() => setShowClearConfirm(false)}
+                        onConfirm={handleClear}
+                    />
                 )}
             </ScrollView>
 

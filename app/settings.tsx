@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useToggle } from '../hooks/useToggle';
 import { Animated, ScrollView } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Sharing from 'expo-sharing';
@@ -27,9 +28,9 @@ export default function Settings() {
   const { showResult, showError } = useAppToast();
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [routineText, setRoutineText] = useState(settings.preShotRoutineText);
-  const [showOnboarding, setShowOnboarding] = useState(!settings.settingsOnboardingSeen);
+  const [showOnboarding, , setShowOnboarding] = useToggle(!settings.settingsOnboardingSeen);
   const [group, setGroup] = useState<'golf' | 'system'>('golf');
-  const [showRoutineInput, setShowRoutineInput] = useState(settings.preShotReminderEnabled);
+  const [showRoutineInput, , setShowRoutineInput] = useToggle(settings.preShotReminderEnabled);
   const routineFadeAnim = useRef(new Animated.Value(settings.preShotReminderEnabled ? 1 : 0)).current;
 
   useEffect(() => {

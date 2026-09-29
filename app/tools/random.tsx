@@ -12,6 +12,9 @@ import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
 import { useFakeRefresh } from '@/hooks/useFakeRefresh';
+import { useForm } from '../../hooks/useForm';
+import { useToggle } from '../../hooks/useToggle';
+import { validateRange, validateNumber } from '../../assets/validation';
 interface SpeechRecognitionEvent {
     results: { transcript: string; isFinal: boolean }[];
 }
@@ -50,19 +53,13 @@ export default function Random() {
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const [rangeText, setRangeText] = useState('30-100');
-    const [rangeError, setRangeError] = useState('');
-    const [incrementText, setIncrementText] = useState('10');
-    const [incrementError, setIncrementError] = useState('');
+    const [formState, resetForm] = useForm({ range: '30-100', increment: '10' });
     const [randomNumber, setRandomNumber] = useState(0);
-    const [micActive, setMicActive] = useState(false);
+    const [micActive, toggleMic, setMicActive] = useToggle(false);
     const isStoppingRef = useRef(false);
 
     const { refreshing, onRefresh } = useFakeRefresh(() => {
-        setRangeText('30-100');
-        setIncrementText('10');
-        setRangeError('');
-        setIncrementError('');
+        resetForm();
         setRandomNumber(0);
     });
 
@@ -100,14 +97,18 @@ export default function Random() {
     };
 
     const handleGenerate = async () => {
-        if (rangeText.length < 1) {
-            setRangeError('Range cannot be empty');
+        const rangeError = validateRange(formState.range.value, 'Range');
+        const incrementError = validateNumber(formState.increment.value, 'Increment');
+
+        if (rangeError) {
+            formState.range.setError(rangeError);
         }
-        if (incrementText.length < 1) {
-            setIncrementError('Increment cannot be empty');
+        if (incrementError) {
+            formState.increment.setError(incrementError);
         }
-        if (rangeText.length > 0 && incrementText.length > 0) {
-            const number = getRandomNumber(rangeText, incrementText, randomNumber);
+
+        if (!rangeError && !incrementError) {
+            const number = getRandomNumber(formState.range.value, formState.increment.value, randomNumber);
             setRandomNumber(number);
             const settings = getSettingsService();
             if (number > 0 && settings.soundsEnabled) {
@@ -120,12 +121,12 @@ export default function Random() {
 
     const handleRangeInput = (text: string) => {
         const formattedText = text.replace(/[^0-9-]/g, '');
-        setRangeText(formattedText);
+        formState.range.onChange(formattedText);
     }
 
     const handleIncrementInput = (text: string) => {
         const formattedText = text.replace(/[^0-9]/g, '');
-        setIncrementText(formattedText);
+        formState.increment.onChange(formattedText);
     }
 
     const points = ['Random: mimic play when practising', 'Focus: use your pre-shot routine', 'Evaluate: use your post-shot routine'];
@@ -156,18 +157,12 @@ export default function Random() {
                     </View>
                     <View style={localStyles.container}>
                         <RandomNumberForm
-                            rangeText={rangeText}
-                            rangeError={rangeError}
-                            onRangeChange={(value) => {
-                                handleRangeInput(value);
-                                if (rangeError) setRangeError('');
-                            }}
-                            incrementText={incrementText}
-                            incrementError={incrementError}
-                            onIncrementChange={(value) => {
-                                handleIncrementInput(value);
-                                if (incrementError) setIncrementError('');
-                            }}
+                            rangeText={formState.range.value}
+                            rangeError={formState.range.error}
+                            onRangeChange={handleRangeInput}
+                            incrementText={formState.increment.value}
+                            incrementError={formState.increment.error}
+                            onIncrementChange={handleIncrementInput}
                         />
 
                         <RandomNumberDisplay randomNumber={randomNumber} />

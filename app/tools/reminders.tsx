@@ -5,6 +5,9 @@ import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
 import { useFakeRefresh } from '@/hooks/useFakeRefresh';
+import { useForm } from '../../hooks/useForm';
+import { useToggle } from '../../hooks/useToggle';
+import { validateNonEmpty } from '../../assets/validation';
 import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, PracticeReminder } from '@/service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService } from '../../service/NotificationService';
 import ReminderList from '@/components/ReminderList';
@@ -18,15 +21,14 @@ export default function Reminders() {
         [...list].sort((a, b) => new Date(a.ScheduledFor).getTime() - new Date(b.ScheduledFor).getTime());
 
     const [reminders, setReminders] = useState<PracticeReminder[]>(() => sortBySoonest(getPracticeRemindersService()));
-    const [showAddForm, setShowAddForm] = useState(false);
-    const [reminderLabel, setReminderLabel] = useState('');
+    const [showAddForm, toggleAddForm] = useToggle(false);
+    const [formState, resetForm] = useForm({ label: '' });
     const [reminderDate, setReminderDate] = useState(() => {
         const d = new Date();
         d.setDate(d.getDate() + 1);
         d.setHours(12, 0, 0, 0);
         return d;
     });
-    const [labelError, setLabelError] = useState('');
     const [refreshKey, setRefreshKey] = useState(0);
     const [swipedOpen, setSwipedOpen] = useState<Set<number>>(new Set());
     const [isSaving, setIsSaving] = useState(false);
@@ -47,24 +49,26 @@ export default function Reminders() {
 
     const handleSaveReminder = async () => {
         if (isSaving) return;
-        if (!reminderLabel.trim()) {
-            setLabelError('Reminder label is required');
+
+        const labelError = validateNonEmpty(formState.label.value, 'Reminder label');
+        if (labelError) {
+            formState.label.setError(labelError);
             return;
         }
+
         setIsSaving(true);
         try {
             const scheduledDate = new Date(reminderDate);
             scheduledDate.setHours(9, 0, 0, 0);
-            const notificationId = await schedulePracticeReminder(reminderLabel, scheduledDate);
-            await addPracticeReminderService(reminderLabel, scheduledDate.toISOString(), notificationId);
+            const notificationId = await schedulePracticeReminder(formState.label.value, scheduledDate);
+            await addPracticeReminderService(formState.label.value, scheduledDate.toISOString(), notificationId);
             loadReminders();
-            setShowAddForm(false);
-            setReminderLabel('');
+            toggleAddForm(false);
+            resetForm();
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
             tomorrow.setHours(12, 0, 0, 0);
             setReminderDate(tomorrow);
-            setLabelError('');
         } finally {
             setIsSaving(false);
         }
@@ -99,22 +103,22 @@ export default function Reminders() {
                 />
 
                 <ReminderForm
-                    reminderLabel={reminderLabel}
-                    onReminderLabelChange={(text) => { setReminderLabel(text); if (labelError) setLabelError(''); }}
-                    labelError={labelError}
+                    reminderLabel={formState.label.value}
+                    onReminderLabelChange={formState.label.onChange}
+                    labelError={formState.label.error}
                     reminderDate={reminderDate}
                     onReminderDateChange={setReminderDate}
                     isSaving={isSaving}
                     onSave={handleSaveReminder}
                     onCancel={() => {
-                        setShowAddForm(false);
-                        setReminderLabel('');
+                        toggleAddForm(false);
+                        resetForm();
                         const t = new Date();
                         t.setDate(t.getDate() + 1);
                         t.setHours(12, 0, 0, 0);
                         setReminderDate(t);
                     }}
-                    onShowForm={() => setShowAddForm(true)}
+                    onShowForm={() => toggleAddForm(true)}
                     showForm={showAddForm}
                 />
             </ScrollView>

@@ -1,18 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
-import PuttingProximityChart from '../../components/PuttingProximityChart';
-import DeadlySinsChart from '../../components/DeadlySinsChart';
+import DeadlySinsSection from '../../components/DeadlySinsSection';
+import PuttingStatsSection from '../../components/PuttingStatsSection';
+import ProximitySection from '../../components/ProximitySection';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useFakeRefresh } from '../../hooks/useFakeRefresh';
 import { useSectionTransition } from '../../hooks/useSectionTransition';
 import { logEvent } from '../../service/FirebaseService';
-import { getSettingsService, saveSettingsService, AppSettings, getPuttingMakeRatesService, getPuttingProximityService, getAllDeadlySinsRoundsService, getAllRoundHistoryService, formatPuttCount } from '../../service/DbService';
+import { getSettingsService, saveSettingsService, AppSettings, getAllRoundHistoryService } from '../../service/DbService';
 
 const ONBOARDING_STEPS = [
   { text: 'Performance helps you make smarter decisions and set realistic expectations on the course.' },
@@ -58,32 +59,6 @@ export default function Perform() {
     setShowOnboarding(true);
   };
 
-  const PUTTING_PRO_RATES: Record<number, string> = {
-    1: '100%*', 2: '99%*', 3: '99%', 4: '91%', 5: '81%', 6: '70%', 7: '61%', 8: '53%', 9: '46%', 10: '41%',
-    11: '37%*', 12: '33%*', 13: '31%*', 14: '28%*', 15: '25%*', 16: '23%*', 17: '21%*', 18: '19%*', 19: '18%*', 20: '16%*',
-    25: '10%*', 30: '7%*', 35: '5%*', 40: '3%*', 45: '2%*', 50: '1%*',
-  };
-
-  const getPersonalPuttingStats = (roundIds?: Set<number>): [string, string][] => {
-    const rates = getPuttingMakeRatesService(roundIds);
-    return rates.map((row) => {
-      const puttsSegment = row.putts > 0 ? ` of ${formatPuttCount(row.putts)}` : '';
-      return [
-        String(row.distance),
-        `${row.makeRate}${puttsSegment} (${PUTTING_PRO_RATES[row.distance] || '-'})`,
-      ];
-    });
-  };
-
-  const hasPersonalPuttingData = (roundIds?: Set<number>): boolean => {
-    const rates = getPuttingMakeRatesService(roundIds);
-    return rates.some((row) => row.makeRate !== '-');
-  };
-
-  const hasProximityData = (threePuttOnly: boolean, roundIds?: Set<number>): boolean => {
-    const proximity = getPuttingProximityService(threePuttOnly, roundIds);
-    return proximity.length > 0 && proximity.some((row) => row.shortPercent !== '-' || row.longPercent !== '-');
-  };
 
   const handleSubMenuWithLogging = (sectionName: string) => {
     handleSubMenu(sectionName);
@@ -146,98 +121,31 @@ export default function Perform() {
           </View>
         )}
 
-        {/* Deadly Sins */}
-        {displaySection('sins') && (() => {
-          const deadlySinsRounds = getAllDeadlySinsRoundsService();
-          const filteredDeadlySinsRounds = roundsFilter === 'all'
-            ? deadlySinsRounds
-            : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
+        {displaySection('sins') && (
+          <DeadlySinsSection
+            fadeAnim={sectionFadeAnim}
+            slideAnim={sectionSlideAnim}
+            roundsFilter={roundsFilter}
+            filteredRoundIds={filteredRoundIds}
+          />
+        )}
 
-          return (
-            <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
-              {filteredDeadlySinsRounds.length > 0 && !filteredDeadlySinsRounds.every(r => r.Total === 0) ? (
-                <DeadlySinsChart rounds={filteredDeadlySinsRounds} filter={roundsFilter} />
-              ) : (
-                <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
-                  No deadly sins data for selected rounds
-                </Text>
-              )}
-            </Animated.View>
-          );
-        })()}
-
-        {/* Putting */}
         {displaySection('putting') && (
-          <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
-            {hasPersonalPuttingData(roundIdsFilter) ? (
-              <>
-                <View style={styles.clubDistanceList.container}>
-                  <View style={styles.clubDistanceList.headerRow}>
-                    <View style={[styles.clubDistanceList.headerCell, styles.clubDistanceList.clubCell]}>
-                      <Text style={styles.clubDistanceList.headerCell}>Feet</Text>
-                    </View>
-                    <View style={[styles.clubDistanceList.headerCell, styles.clubDistanceList.distanceCell]}>
-                      <Text style={styles.clubDistanceList.headerCell}>Make rate</Text>
-                    </View>
-                  </View>
-                  {getPersonalPuttingStats(roundIdsFilter).map(([distance, rate], index, rows) => (
-                    <View key={distance} style={[styles.clubDistanceList.row, index === rows.length - 1 && { borderBottomWidth: 0.5 }]}>
-                      <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.clubCell, { textAlign: 'center', }]}>{distance}</Text>
-                      <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.distanceCell]}>{rate}</Text>
-                    </View>
-                  ))}
-                </View>
-
-                <Text style={[styles.normalText, styles.marginTop, { alignSelf: 'center' }]}>
-                  Your personal putting make rates
-                </Text>
-
-                <Text style={[styles.smallestText, styles.marginBottom, { paddingHorizontal: 16, marginTop: 12 }]}>
-                  * Estimated or extrapolated from PGA tour data
-                </Text>
-              </>
-            ) : (
-              <>
-                <View style={styles.divider} />
-
-                <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
-                  No putting data for selected rounds
-                </Text>
-              </>
-            )}
-          </Animated.View>
+          <PuttingStatsSection
+            fadeAnim={sectionFadeAnim}
+            slideAnim={sectionSlideAnim}
+            filteredRoundIds={roundIdsFilter}
+          />
         )}
 
         {displaySection('proximity') && (
-          <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, paddingTop: 20, gap: 8 }}>
-              <Text testID="proximity-filter-label" style={{ color: colours.primary, fontSize: 16 }}>Show 3-Putts Only</Text>
-              <Switch
-                testID="proximity-filter-toggle"
-                value={proximityThreePuttOnly}
-                onValueChange={setProximityThreePuttOnly}
-                trackColor={{ false: colours.tertiary, true: colours.primary }}
-              />
-            </View>
-
-            {hasProximityData(proximityThreePuttOnly, roundIdsFilter) ? (
-              <>
-                <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, roundIdsFilter)} />
-
-                <Text style={[styles.normalText, styles.marginTop, { alignSelf: 'center' }]}>
-                  Where your missed first putts finish
-                </Text>
-              </>
-            ) : (
-              <>
-                <View style={styles.divider} />
-
-                <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
-                  No putting data for selected rounds
-                </Text>
-              </>
-            )}
-          </Animated.View>
+          <ProximitySection
+            fadeAnim={sectionFadeAnim}
+            slideAnim={sectionSlideAnim}
+            proximityThreePuttOnly={proximityThreePuttOnly}
+            onProximityFilterChange={setProximityThreePuttOnly}
+            filteredRoundIds={roundIdsFilter}
+          />
         )}
       </ScrollView>
 

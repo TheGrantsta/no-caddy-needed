@@ -1,19 +1,18 @@
 import { useState } from 'react';
-import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Link } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
 import { useFakeRefresh } from '@/hooks/useFakeRefresh';
 import { getSettingsService, saveSettingsService } from '@/service/DbService';
-import Chevrons from '@/components/Chevrons';
+import HomeHeader from '@/components/HomeHeader';
+import HomeIntro from '@/components/HomeIntro';
+import HomeNavigation from '@/components/HomeNavigation';
+import HomeGolfSimplified from '@/components/HomeGolfSimplified';
 import OnboardingOverlay from '@/components/OnboardingOverlay';
 import AcknowledgeOverlay from '@/components/AcknowledgeOverlay';
-
-const points = ['Have fun: golf is a game!', 'Simply: hit it, find it, hit it again', 'Point: get the ball in the hole with the fewest shots'];
 
 const ONBOARDING_STEPS = [
   { text: 'Welcome to No Caddy Needed — your personal golf companion for smarter play, practice and performance.' },
@@ -74,59 +73,13 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colours.primary} />
         }
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.titleRow}>
-            <TouchableOpacity testID="info-button" onPress={handleShowOnboarding}>
-              <MaterialIcons name="info-outline" size={26} color={colours.primary} />
-            </TouchableOpacity>
-            <Text style={styles.titleText}>No caddy needed!</Text>
-          </View>
-          <Text style={styles.subtitleText}>Smarter play & practice</Text>
-        </View>
+        <HomeHeader onInfoPress={handleShowOnboarding} />
 
-        <View style={styles.contentSection}>
-          <Text style={styles.headerText}>Be your own best caddy</Text>
-          <Text style={styles.normalText}>
-            Golf is not a game of perfect, or having a perfect swing
-          </Text>
-        </View>
+        <HomeIntro />
 
-        {/* Navigation cards — 2 + 1 grid */}
-        <View style={styles.navGrid}>
-          <View style={styles.navRow}>
-            <Link testID="home-play-link" href="/play" style={styles.navCardLink}>
-              <View style={styles.navCard}>
-                <View style={styles.iconCircle}>
-                  <MaterialIcons name="sports-golf" size={36} color={colours.white} />
-                </View>
-                <Text style={styles.navCardLabel}>Play</Text>
-              </View>
-            </Link>
-          </View>
-          <View style={styles.navRow}>
-            <Link testID="home-practice-link" href="/practice" style={styles.navCardLink}>
-              <View style={styles.navCard}>
-                <View style={styles.iconCircle}>
-                  <MaterialIcons name="golf-course" size={36} color={colours.white} />
-                </View>
-                <Text style={styles.navCardLabel}>Practice</Text>
-              </View>
-            </Link>
-            <Link testID="home-perform-link" href="/perform" style={styles.navCardLink}>
-              <View style={styles.navCard}>
-                <View style={styles.iconCircle}>
-                  <MaterialIcons name="lightbulb" size={36} color={colours.white} />
-                </View>
-                <Text style={styles.navCardLabel}>Performance</Text>
-              </View>
-            </Link>
-          </View>
-        </View>
+        <HomeNavigation />
 
-        <View style={styles.contentSection}>
-          <Chevrons heading="Golf, simplified" points={points} />
-        </View>
+        <HomeGolfSimplified />
 
       </ScrollView>
 

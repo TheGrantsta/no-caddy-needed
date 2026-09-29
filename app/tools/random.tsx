@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { ScrollView, View, Text, TextInput, RefreshControl, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, RefreshControl } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getRandomNumber } from '../../assets/random-number';
 import * as Speech from 'expo-speech';
-import { MaterialIcons } from '@expo/vector-icons';
 import { getSettingsService } from '../../service/DbService';
 import Chevrons from '@/components/Chevrons';
-import CtaButton from '@/components/CtaButton';
+import RandomNumberForm from '@/components/RandomNumberForm';
+import RandomNumberDisplay from '@/components/RandomNumberDisplay';
+import RandomNumberActions from '@/components/RandomNumberActions';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
@@ -154,85 +155,29 @@ export default function Random() {
                         </Text>
                     </View>
                     <View style={localStyles.container}>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={[styles.textLabel, { width: 120 }]}>
-                                Range
-                            </Text>
-                            <TextInput
-                                style={[styles.textInput, rangeError ? styles.textInputError : null, { width: 150 }]}
-                                value={rangeText}
-                                placeholder='Lower and upper limits'
-                                onChangeText={(value) => {
-                                    handleRangeInput(value)
-                                    if (rangeError) setRangeError('');
-                                }}
-                                keyboardType='numbers-and-punctuation'
-                            />
-                        </View>
-                        {rangeError ? <Text style={[styles.errorText, { marginLeft: 100 }]}>{rangeError}</Text> : null}
+                        <RandomNumberForm
+                            rangeText={rangeText}
+                            rangeError={rangeError}
+                            onRangeChange={(value) => {
+                                handleRangeInput(value);
+                                if (rangeError) setRangeError('');
+                            }}
+                            incrementText={incrementText}
+                            incrementError={incrementError}
+                            onIncrementChange={(value) => {
+                                handleIncrementInput(value);
+                                if (incrementError) setIncrementError('');
+                            }}
+                        />
 
-                        <View>
-                            <Text style={styles.smallestText}>
-                                Range: the lower and upper bound of numbers (inclusive) between which the random number will be generated
-                            </Text>
-                        </View>
+                        <RandomNumberDisplay randomNumber={randomNumber} />
 
-                        <View style={[{ flexDirection: 'row', marginTop: 10 }]}>
-                            <Text style={[styles.textLabel, { width: 120 }]}>
-                                Increment
-                            </Text>
-                            <TextInput
-                                style={[styles.textInput, incrementError ? styles.textInputError : null, { width: 100 }]}
-                                value={incrementText}
-                                placeholder='Increment'
-                                onChangeText={(value) => {
-                                    handleIncrementInput(value)
-                                    if (incrementError) setIncrementError('');
-                                }}
-                                keyboardType='number-pad'
-                            />
-                        </View>
-                        {incrementError ? <Text style={[styles.errorText, { marginLeft: 100 }]}>{incrementError}</Text> : null}
-
-                        <View>
-                            <Text style={styles.smallestText}>
-                                Increment: specifies the "step" between the random numbers; for example, an increment of 5 would mean the random number is divisible by 5
-                            </Text>
-                        </View>
-
-                        {randomNumber > 0 && (
-                            <View style={localStyles.randomNumberContainer}>
-                                <Text style={localStyles.randomNumberText}>
-                                    {randomNumber}
-                                </Text>
-                            </View>
-                        )}
-
-                        <View style={[styles.marginTop, styles.container]}>
-                            <CtaButton
-                                testID="save-button"
-                                label="Generate"
-                                icon="shuffle"
-                                onPress={handleGenerate}
-                            />
-
-                            {speechRecognitionAvailable && (
-                            <TouchableOpacity
-                                testID="mic-button"
-                                style={[localStyles.micButton, micActive && localStyles.micButtonActive]}
-                                onPress={handleMicToggle}
-                            >
-                                <Text style={[localStyles.actionButtonText, micActive ? { color: colours.background } : { color: colours.text }]}>
-                                    Say "next"
-                                </Text>
-                                <MaterialIcons
-                                    name={micActive ? 'mic' : 'mic-off'}
-                                    size={28}
-                                    color={micActive ? colours.background : colours.text}
-                                />
-                            </TouchableOpacity>
-                        )}
-                        </View>
+                        <RandomNumberActions
+                            onGenerate={handleGenerate}
+                            speechRecognitionAvailable={speechRecognitionAvailable}
+                            micActive={micActive}
+                            onMicToggle={handleMicToggle}
+                        />
 
                         <View style={styles.contentSection}>
                             <Chevrons heading='Purpose' points={points} />

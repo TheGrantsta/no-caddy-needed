@@ -12,6 +12,7 @@ import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useFakeRefresh } from '../../hooks/useFakeRefresh';
 import { useSectionTransition } from '../../hooks/useSectionTransition';
+import { useToggle } from '../../hooks/useToggle';
 import { logEvent } from '../../service/FirebaseService';
 import { getSettingsService, saveSettingsService, AppSettings, getAllRoundHistoryService } from '../../service/DbService';
 
@@ -26,9 +27,9 @@ export default function Perform() {
   const colours = useThemeColours();
   const { landscapePadding } = useOrientation();
   const [roundsFilter, setRoundsFilter] = useState<1 | 10 | 'all'>('all');
-  const [proximityThreePuttOnly, setProximityThreePuttOnly] = useState(false);
+  const [proximityThreePuttOnly, , setProximityThreePuttOnly] = useToggle(false);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
-  const [showOnboarding, setShowOnboarding] = useState(!settings.performOnboardingSeen);
+  const [showOnboarding, , setShowOnboarding] = useToggle(!settings.performOnboardingSeen);
 
   const SECTION_ORDER = ['sins', 'putting', 'proximity'];
   const {

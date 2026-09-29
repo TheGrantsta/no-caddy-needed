@@ -10,6 +10,7 @@ import { getClubDistancesService, saveClubDistancesService, getSettingsService, 
 import { useStyles } from '../../hooks/useStyles';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
+import { useToggle } from '../../hooks/useToggle';
 
 const ONBOARDING_STEPS = [
     { text: 'Track your club distances to make better decisions on the course.' },
@@ -24,8 +25,8 @@ export default function DistancesScreen() {
     const [distances, setDistances] = useState(getClubDistancesService());
     const settings = getSettingsService();
     const distancesIsEmpty = distances.length === 0;
-    const [showOnboarding, setShowOnboarding] = useState(!settings.distancesOnboardingSeen && distancesIsEmpty);
-    const [showClearConfirm, setShowClearConfirm] = useState(false);
+    const [showOnboarding, , setShowOnboarding] = useToggle(!settings.distancesOnboardingSeen && distancesIsEmpty);
+    const [showClearConfirm, , setShowClearConfirm] = useToggle(false);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);

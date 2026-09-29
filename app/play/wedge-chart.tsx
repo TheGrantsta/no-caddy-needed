@@ -11,6 +11,7 @@ import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
+import { useToggle } from '../../hooks/useToggle';
 
 const ONBOARDING_STEPS = [
     { text: 'Your wedge chart helps you know exactly how far you hit each wedge with different swing lengths.' },
@@ -26,8 +27,8 @@ export default function WedgeChartScreen() {
     const [data, setData] = useState(getWedgeChartService());
     const settings = getSettingsService();
     const chartIsEmpty = data.clubs.length === 0;
-    const [showOnboarding, setShowOnboarding] = useState(!settings.wedgeChartOnboardingSeen && chartIsEmpty);
-    const [showClearConfirm, setShowClearConfirm] = useState(false);
+    const [showOnboarding, , setShowOnboarding] = useToggle(!settings.wedgeChartOnboardingSeen && chartIsEmpty);
+    const [showClearConfirm, , setShowClearConfirm] = useToggle(false);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Animated, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
@@ -7,13 +7,12 @@ import { useOrientation } from "@/hooks/useOrientation";
 import { useFakeRefresh } from "@/hooks/useFakeRefresh";
 import { useSectionTransition } from "@/hooks/useSectionTransition";
 import SubMenu from "@/components/SubMenu";
-import { Link } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
-import fontSizes from "@/assets/font-sizes";
-import { getAllDrillHistoryService, getDrillStatsByTypeService, getSettingsService, saveSettingsService, DrillStats } from "@/service/DbService";
+import { getAllDrillHistoryService, getSettingsService, saveSettingsService } from "@/service/DbService";
 import { logEvent } from "@/service/FirebaseService";
-import DrillStatsChart from "@/components/DrillStatsChart";
-import Chevrons from "@/components/Chevrons";
+import PracticeAreasSection from "@/components/PracticeAreasSection";
+import PracticeToolsSection from "@/components/PracticeToolsSection";
+import DrillHistorySection from "@/components/DrillHistorySection";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
 
 const ONBOARDING_STEPS = [
@@ -23,6 +22,7 @@ const ONBOARDING_STEPS = [
 ];
 
 const ITEMS_PER_BATCH = 10;
+const PRINCIPLES = ['Deliberate: purposeful practice', 'Variety: mix up your practice to keep it interesting & challenging', 'Accountability: track progress & measure your performance', 'Stress: practice under pressure', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
 
 export default function Practice() {
   const styles = useStyles();
@@ -44,8 +44,6 @@ export default function Practice() {
   } = useSectionTransition(SECTION_ORDER);
 
   const { refreshing, onRefresh } = useFakeRefresh(() => fetchData());
-
-  const points = ['Deliberate: purposeful practice', 'Variety: mix up your practice to keep it interesting & challenging', 'Accountability: track progress & measure your performance', 'Stress: practice under pressure', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -135,200 +133,24 @@ export default function Practice() {
           </View>
         </View>
 
-        {/* Practice areas */}
         {displaySection('areas') && (
-          <Animated.View style={{ opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }}>
-            <Text style={[styles.subHeaderText, styles.marginTop]}>
-              Practice areas
-            </Text>
-
-            <View style={styles.navGrid}>
-              <View style={styles.navRow}>
-                <Link href="../areas/putting" style={styles.navCardLink}>
-                  <View style={styles.navCard}>
-                    <View style={styles.iconCircle}>
-                      <MaterialIcons name="adjust" size={36} color={colours.white} />
-                    </View>
-                    <Text style={styles.navCardLabel}>Putting</Text>
-                  </View>
-                </Link>
-                <Link href="../areas/chipping" style={styles.navCardLink}>
-                  <View style={styles.navCard}>
-                    <View style={styles.iconCircle}>
-                      <MaterialIcons name="filter-tilt-shift" size={36} color={colours.white} />
-                    </View>
-                    <Text style={styles.navCardLabel}>Chipping</Text>
-                  </View>
-                </Link>
-              </View>
-              <View style={styles.navRow}>
-                <Link href="../areas/pitching" style={styles.navCardLink}>
-                  <View style={styles.navCard}>
-                    <View style={styles.iconCircle}>
-                      <MaterialIcons name="golf-course" size={36} color={colours.white} />
-                    </View>
-                    <Text style={styles.navCardLabel}>Pitching</Text>
-                  </View>
-                </Link>
-                <Link href="../areas/bunker" style={styles.navCardLink}>
-                  <View style={styles.navCard}>
-                    <View style={styles.iconCircle}>
-                      <MaterialIcons name="beach-access" size={36} color={colours.white} />
-                    </View>
-                    <Text style={styles.navCardLabel}>Bunker play</Text>
-                  </View>
-                </Link>
-              </View>
-              <View style={styles.navRow}>
-                <Link href="../areas/full-swing" style={styles.navCardLink}>
-                  <View style={styles.navCard}>
-                    <View style={styles.iconCircle}>
-                      <MaterialIcons name="sports-golf" size={36} color={colours.white} />
-                    </View>
-                    <Text style={styles.navCardLabel}>Full swing</Text>
-                  </View>
-                </Link>
-              </View>
-            </View>
-
-            <View style={styles.contentSection}>
-              <Chevrons heading='Principles' points={points} />
-            </View>
-          </Animated.View>
+          <PracticeAreasSection fadeAnim={sectionFadeAnim} slideAnim={sectionSlideAnim} />
         )}
 
-        {/* Tools */}
         {displaySection('tools') && (
-          <Animated.View style={{ opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }}>
-            <Text style={[styles.subHeaderText, styles.marginTop]}>
-              Practice tools
-            </Text>
-
-            <View style={styles.navGrid}>
-              <View style={styles.navRow}>
-                <Link href="../tools/tempo" style={styles.navCardLink}>
-                  <View style={styles.navCard}>
-                    <View style={styles.iconCircle}>
-                      <MaterialIcons name="music-note" size={36} color={colours.white} />
-                    </View>
-                    <Text style={styles.navCardLabel}>Tempo</Text>
-                  </View>
-                </Link>
-                <Link href="../tools/random" style={styles.navCardLink}>
-                  <View style={styles.navCard}>
-                    <View style={styles.iconCircle}>
-                      <MaterialIcons name="shuffle-on" size={36} color={colours.white} />
-                    </View>
-                    <Text style={styles.navCardLabel}>Random</Text>
-                  </View>
-                </Link>
-              </View>
-              <View style={styles.navRow}>
-                <Link href="../tools/reminders" style={styles.navCardLink}>
-                  <View style={styles.navCard}>
-                    <View style={styles.iconCircle}>
-                      <MaterialIcons name="notifications-none" size={36} color={colours.white} />
-                    </View>
-                    <Text style={styles.navCardLabel}>Reminders</Text>
-                  </View>
-                </Link>
-                <Link href="../tools/wind" style={styles.navCardLink}>
-                  <View style={styles.navCard}>
-                    <View style={styles.iconCircle}>
-                      <MaterialIcons name="air" size={36} color={colours.white} />
-                    </View>
-                    <Text style={styles.navCardLabel}>Wind</Text>
-                  </View>
-                </Link>
-              </View>
-            </View>
-          </Animated.View>
+          <PracticeToolsSection fadeAnim={sectionFadeAnim} slideAnim={sectionSlideAnim} />
         )}
 
-        {/* History */}
         {displaySection('history') && (
-          <Animated.View style={{ opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }}>
-            {loading ? (
-              <View>
-                <ActivityIndicator size="large" color={colours.primary} />
-              </View>
-            ) : (
-              <View>
-                {allDrillHistory.length === 0 && (
-                  <>
-                    <View style={styles.divider} />
-
-                    <Text style={styles.normalText}>
-                      No test history yet
-                    </Text>
-                  </>
-                )}
-
-                {allDrillHistory.length > 0 && (
-                  <View>
-                    <View style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 10, marginTop: 10 }}>
-                      <Text style={[styles.subHeaderText, { flex: 0.6 }]} numberOfLines={1}>
-                        Test
-                      </Text>
-                      <Text style={[styles.subHeaderText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
-                        Score
-                      </Text>
-                      <Text style={[styles.subHeaderText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
-                        Date
-                      </Text>
-                    </View>
-
-                    {displayedDrillHistory.map((item, index) => (
-                      <View key={index} style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 8 }}>
-                        <Text style={[styles.cell, { textAlign: 'left', flex: 0.6, borderWidth: 0, fontWeight: 'normal' }]} numberOfLines={1}>
-                          {item.Name}
-                        </Text>
-                        <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center', fontWeight: 'normal' }]} numberOfLines={1}>
-                          {item.Score ?? '—'}
-                        </Text>
-                        <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center', fontWeight: 'normal' }]} numberOfLines={1}>
-                          {item.Created_At}
-                        </Text>
-                      </View>
-                    ))}
-
-                    {displayedDrillHistory.length < allDrillHistory.length && (
-                      <View style={{ paddingVertical: 15, alignItems: 'center', gap: 10 }}>
-                        {isLoadingMore && (
-                          <ActivityIndicator
-                            testID="infinite-scroll-loader"
-                            size="small"
-                            color={colours.primary}
-                          />
-                        )}
-                        <TouchableOpacity
-                          testID="load-more-button"
-                          style={{
-                            paddingHorizontal: 16,
-                            paddingVertical: 10,
-                            borderWidth: 1,
-                            borderColor: colours.primary,
-                            borderRadius: 8,
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            columnGap: 8,
-                          }}
-                          onPress={loadMoreItems}
-                          disabled={isLoadingMore}
-                        >
-                          <MaterialIcons name="expand-more" size={20} color={colours.primary} />
-                          <Text style={{ color: colours.primary, fontSize: 14, fontWeight: '500' }}>
-                            {isLoadingMore ? 'Loading...' : 'Load more'}
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    )}
-                  </View>
-                )}
-              </View>
-            )}
-          </Animated.View>
+          <DrillHistorySection
+            fadeAnim={sectionFadeAnim}
+            slideAnim={sectionSlideAnim}
+            loading={loading}
+            allDrillHistory={allDrillHistory}
+            displayedDrillHistory={displayedDrillHistory}
+            isLoadingMore={isLoadingMore}
+            onLoadMore={loadMoreItems}
+          />
         )}
       </ScrollView>
 

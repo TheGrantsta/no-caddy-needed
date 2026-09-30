@@ -29,9 +29,13 @@ export default function DeadlySinsSection({
             {filteredDeadlySinsRounds.length > 0 && !filteredDeadlySinsRounds.every(r => r.Total === 0) ? (
                 <DeadlySinsChart rounds={filteredDeadlySinsRounds} filter={roundsFilter} />
             ) : (
-                <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
-                    No deadly sins data for selected rounds
-                </Text>
+                <>
+                    <View style={styles.divider} />
+
+                    <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
+                        No deadly sins data for selected rounds
+                    </Text>
+                </>
             )}
         </Animated.View>
     );

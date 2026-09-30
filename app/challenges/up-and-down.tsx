@@ -156,12 +156,14 @@ export default function UpAndDownChallenge() {
                             <Text style={styles.headerText}>Challenge complete</Text>
 
                             <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
-                                <View style={{ marginBottom: 32 }}>
-                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 8 }]}>Up-and-down rate</Text>
-                                    <Text style={styles.subHeaderText}>{sim.successPercentage}%</Text>
-                                    <Text style={[styles.normalText, { color: colours.gray, marginTop: 8 }]}>
-                                        {sim.upAndDownCount} of {sim.totalHoles}
-                                    </Text>
+                                <View style={{ marginBottom: 32, paddingVertical: 20, paddingHorizontal: 16, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.gray }}>
+                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 12 }]}>Up-and-down rate</Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <Text style={styles.subHeaderText}>{sim.successPercentage}%</Text>
+                                        <Text style={[styles.normalText, { color: colours.gray }]}>
+                                            {sim.upAndDownCount} of {sim.totalHoles}
+                                        </Text>
+                                    </View>
                                 </View>
 
                                 {/* Performance bands */}
@@ -183,7 +185,7 @@ export default function UpAndDownChallenge() {
                                                 backgroundColor: isUserBand ? band.color : 'transparent',
                                                 borderRadius: 8,
                                                 borderWidth: isUserBand ? 0 : 1,
-                                                borderColor: colours.gray,
+                                                borderColor: colours.primary,
                                             }}
                                         >
                                             <Text

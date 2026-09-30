@@ -9,7 +9,7 @@ interface State {
     distances: number[];
     holeNumber: number;
     shots: number[];
-    currentShots: number;
+    currentShots: number; // Default: 2 shots per hole
 }
 
 type Action =
@@ -64,8 +64,8 @@ function reducer(state: State, action: Action): State {
                 phase: 'in-progress',
                 distances: action.distances,
                 holeNumber: 1,
-                shots: new Array(TOTAL_HOLES).fill(1),
-                currentShots: 1,
+                shots: new Array(TOTAL_HOLES).fill(2),
+                currentShots: 2,
             };
         }
         default:
@@ -78,8 +78,8 @@ export function useUpAndDownSimulation(rng?: () => number) {
         phase: 'in-progress',
         distances: shuffleDistances(rng),
         holeNumber: 1,
-        shots: new Array(TOTAL_HOLES).fill(1),
-        currentShots: 1,
+        shots: new Array(TOTAL_HOLES).fill(2),
+        currentShots: 2,
     });
 
     const setShots = useCallback((count: number) => {

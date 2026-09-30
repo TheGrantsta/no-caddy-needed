@@ -24,9 +24,9 @@ describe('useUpAndDownSimulation', () => {
             expect(result.current.currentDistance).toBe(result.current.distances[0]);
         });
 
-        it('starts with currentShots at 1', () => {
+        it('starts with currentShots at 2', () => {
             const { result } = renderHook(() => useUpAndDownSimulation());
-            expect(result.current.currentShots).toBe(1);
+            expect(result.current.currentShots).toBe(2);
         });
 
         it('starts with zero up-and-downs', () => {
@@ -49,7 +49,7 @@ describe('useUpAndDownSimulation', () => {
         it('sets currentShots for the hole (1-4 range)', () => {
             const { result } = renderHook(() => useUpAndDownSimulation());
 
-            expect(result.current.currentShots).toBe(1);
+            expect(result.current.currentShots).toBe(2);
 
             act(() => {
                 result.current.setShots(3);
@@ -117,7 +117,7 @@ describe('useUpAndDownSimulation', () => {
             expect(result.current.holeNumber).toBe(2);
         });
 
-        it('resets currentShots to 1 on next hole', () => {
+        it('resets currentShots to 2 on next hole', () => {
             const { result } = renderHook(() => useUpAndDownSimulation());
 
             act(() => {
@@ -125,7 +125,7 @@ describe('useUpAndDownSimulation', () => {
                 result.current.goToNextHole();
             });
 
-            expect(result.current.currentShots).toBe(1);
+            expect(result.current.currentShots).toBe(2);
         });
 
         it('transitions to complete after hole 9', () => {

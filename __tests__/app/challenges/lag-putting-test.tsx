@@ -42,7 +42,8 @@ describe('LagPutting screen', () => {
     it('shows task instructions', () => {
         const { getByText } = render(<LagPutting />);
 
-        expect(getByText(/Hit putts from 30–45 ft/)).toBeTruthy();
+        expect(getByText(/Start at Tee 1/)).toBeTruthy();
+        expect(getByText(/First putt must reach Tee 2/)).toBeTruthy();
     });
 
     it('increments/decrements score (0-15)', () => {

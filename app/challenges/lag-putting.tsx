@@ -56,14 +56,7 @@ export default function LagPutting() {
                             <Text style={styles.headerText}>Lag Putting Drill</Text>
 
                             <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
-                                <View style={{ marginBottom: 32, paddingVertical: 16, paddingHorizontal: 12, backgroundColor: colours.background, borderRadius: 8 }}>
-                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 12 }]}>Task</Text>
-                                    <Text style={[styles.normalText, { color: colours.text }]}>
-                                        Hit putts from 30–45 ft on a flat green. No hole needed. Start at Tee 1. First putt must reach Tee 2 (~21 ft). Each following putt must advance past the previous ball and stop before Tee 3 (~30 ft). Count how many putts land successfully in sequence before one fails.
-                                    </Text>
-                                </View>
-
-                                <Text style={[styles.normalText, { color: colours.gray, marginBottom: 16 }]}>Successful putts</Text>
+                                <Text style={[styles.normalText, { color: colours.gray, marginBottom: 16 }]}>Total putts</Text>
                                 <View style={[styles.navRow, { marginBottom: 32, justifyContent: 'center', alignItems: 'center' }]}>
                                     <TouchableOpacity
                                         testID="decrease-score-button"
@@ -96,11 +89,19 @@ export default function LagPutting() {
 
                                 <TouchableOpacity
                                     testID="submit-button"
-                                    style={[styles.onboardingOverlay.primaryButton]}
+                                    style={[styles.onboardingOverlay.primaryButton, { marginBottom: 32 }]}
                                     onPress={sim.submit}
                                 >
-                                    <Text style={styles.onboardingOverlay.primaryButtonText}>Submit</Text>
+                                    <Text style={styles.onboardingOverlay.primaryButtonText}>Finish</Text>
                                 </TouchableOpacity>
+
+                                <View style={{ paddingVertical: 16, paddingHorizontal: 12, backgroundColor: colours.background, borderRadius: 8 }}>
+                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 12 }]}>Task</Text>
+                                    <Text style={[styles.normalText, { color: colours.text, marginBottom: 8 }]}>• Start at Tee 1</Text>
+                                    <Text style={[styles.normalText, { color: colours.text, marginBottom: 8 }]}>• First putt must reach Tee 2 (~21 ft)</Text>
+                                    <Text style={[styles.normalText, { color: colours.text, marginBottom: 8 }]}>• Each following putt must advance past the previous ball and stop before Tee 3 (~30 ft)</Text>
+                                    <Text style={[styles.normalText, { color: colours.text }]}>• Count how many putts land successfully in sequence before one fails</Text>
+                                </View>
                             </View>
                         </>
                     )}

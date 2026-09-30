@@ -158,7 +158,7 @@ export default function ShortPuttingLadder() {
 
                             <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
                                 <View style={{ marginBottom: 32, paddingVertical: 20, paddingHorizontal: 16, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.gray }}>
-                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 12 }]}>Results</Text>
+                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 12 }]}>Result</Text>
                                     <Text style={styles.subHeaderText}>Total attempts: {sim.totalAttempts}</Text>
                                 </View>
 

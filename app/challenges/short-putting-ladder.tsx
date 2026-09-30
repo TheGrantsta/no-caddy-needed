@@ -159,12 +159,7 @@ export default function ShortPuttingLadder() {
                             <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
                                 <View style={{ marginBottom: 32, paddingVertical: 20, paddingHorizontal: 16, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.gray }}>
                                     <Text style={[styles.normalText, { color: colours.gray, marginBottom: 12 }]}>Results</Text>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <Text style={styles.subHeaderText}>{sim.totalAttempts} total attempts</Text>
-                                        <Text style={[styles.normalText, { color: colours.gray }]}>
-                                            {sim.results.length} {sim.results.length === 1 ? 'level' : 'levels'}
-                                        </Text>
-                                    </View>
+                                    <Text style={styles.subHeaderText}>{sim.totalAttempts} total attempts</Text>
                                 </View>
 
                                 {/* Performance bands */}

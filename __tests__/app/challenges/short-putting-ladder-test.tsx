@@ -91,7 +91,7 @@ describe('ShortPuttingLadder screen', () => {
         expect(getByTestId('play-again-button')).toBeTruthy();
     });
 
-    it('displays total attempts and levels on completion', () => {
+    it('displays total attempts on completion', () => {
         const { getByText, getByTestId } = render(<ShortPuttingLadder />);
 
         for (let i = 0; i < 7; i++) {
@@ -99,7 +99,6 @@ describe('ShortPuttingLadder screen', () => {
         }
 
         expect(getByText(/total attempts/)).toBeTruthy();
-        expect(getByText(/levels/)).toBeTruthy();
     });
 
     it('auto-saves result when finishing', async () => {

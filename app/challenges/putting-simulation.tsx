@@ -108,9 +108,13 @@ export default function PuttingSimulation() {
                                         onPress={sim.goToNextHole}
                                     >
                                         <Text style={[styles.normalText, { color: colours.white, fontWeight: '600' }]}>
-                                            Next
+                                            {sim.holeNumber === sim.totalHoles ? 'Finish' : 'Next'}
                                         </Text>
-                                        <MaterialIcons name="chevron-right" size={24} color={colours.white} />
+                                        <MaterialIcons
+                                            name={sim.holeNumber === sim.totalHoles ? 'check' : 'chevron-right'}
+                                            size={24}
+                                            color={colours.white}
+                                        />
                                     </TouchableOpacity>
                                 </View>
                             </View>

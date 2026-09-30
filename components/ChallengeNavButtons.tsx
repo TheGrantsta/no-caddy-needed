@@ -32,21 +32,26 @@ export default function ChallengeNavButtons({
                 style={[
                     styles.buttonOutlined,
                     {
-                        paddingVertical: 12,
-                        paddingHorizontal: 24,
-                        borderRadius: 8,
+                        flex: 1,
+                        paddingVertical: 14,
+                        paddingHorizontal: 16,
+                        borderRadius: 12,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                        gap: 8,
                         opacity: previousDisabled ? 0.5 : 1,
                     },
                 ]}
             >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <MaterialIcons
-                        name="chevron-left"
-                        size={24}
-                        color={colours.primary}
-                    />
-                    <Text style={[styles.buttonText, { color: colours.primary }]}>Previous</Text>
-                </View>
+                <MaterialIcons
+                    name="skip-previous"
+                    size={20}
+                    color={colours.primary}
+                />
+                <Text style={[styles.normalText, { color: colours.primary, fontWeight: '600' }]}>
+                    Previous
+                </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -55,22 +60,25 @@ export default function ChallengeNavButtons({
                 style={[
                     styles.buttonFilled,
                     {
-                        paddingVertical: 12,
-                        paddingHorizontal: 24,
-                        borderRadius: 8,
+                        flex: 1,
+                        paddingVertical: 14,
+                        paddingHorizontal: 16,
+                        borderRadius: 12,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                        gap: 8,
                     },
                 ]}
             >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <Text style={[styles.buttonText, { color: colours.white }]}>
-                        {isLastStep ? 'Finish' : 'Next'}
-                    </Text>
-                    <MaterialIcons
-                        name={isLastStep ? 'check' : 'chevron-right'}
-                        size={24}
-                        color={colours.white}
-                    />
-                </View>
+                <Text style={[styles.normalText, { color: colours.white, fontWeight: '600' }]}>
+                    {isLastStep ? 'Finish' : 'Next'}
+                </Text>
+                <MaterialIcons
+                    name={isLastStep ? 'check' : 'skip-next'}
+                    size={20}
+                    color={colours.white}
+                />
             </TouchableOpacity>
         </View>
     );

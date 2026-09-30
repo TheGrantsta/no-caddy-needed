@@ -11,18 +11,18 @@ import { useEffect, useRef } from 'react';
 type PerformanceBand = 'pro' | 'd1' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
 
 interface BandInfo {
-  label: string;
-  minPercentage: number;
-  color: string;
+    label: string;
+    minPercentage: number;
+    color: string;
 }
 
 const PERFORMANCE_BANDS: Record<PerformanceBand, BandInfo> = {
-  pro: { label: 'PGA Pro', minPercentage: 80, color: '#00C851' },
-  d1: { label: 'D1 College', minPercentage: 70, color: '#2D5A3D' },
-  scratch: { label: 'Scratch', minPercentage: 60, color: '#4A7C59' },
-  '5hcp': { label: '5 Handicap', minPercentage: 50, color: '#6B9B7F' },
-  '10hcp': { label: '10 Handicap', minPercentage: 40, color: '#8CBBA4' },
-  '15hcp': { label: '15 Handicap', minPercentage: 30, color: '#ADCFC9' },
+    pro: { label: 'PGA Pro', minPercentage: 80, color: '#00C851' },
+    d1: { label: 'D1 College', minPercentage: 70, color: '#2D5A3D' },
+    scratch: { label: 'Scratch', minPercentage: 60, color: '#4A7C59' },
+    '5hcp': { label: '5 Handicap', minPercentage: 50, color: '#6B9B7F' },
+    '10hcp': { label: '10 Handicap', minPercentage: 40, color: '#8CBBA4' },
+    '15hcp': { label: '15 Handicap', minPercentage: 30, color: '#ADCFC9' },
 };
 
 export default function UpAndDownChallenge() {
@@ -60,7 +60,7 @@ export default function UpAndDownChallenge() {
                             {/* Main content container with padding */}
                             <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'baseline', marginBottom: 24, gap: 8 }}>
-                                    <Text style={[styles.subHeaderText, { color: colours.gray }]}>Distance</Text>
+                                    <Text style={styles.subHeaderText}>Distance</Text>
                                     <Text style={styles.subHeaderText}>{sim.currentDistance} yd</Text>
                                 </View>
 

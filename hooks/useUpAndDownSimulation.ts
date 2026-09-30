@@ -103,8 +103,8 @@ export function useUpAndDownSimulation(rng?: () => number) {
     }, [rng]);
 
     const currentDistance = state.distances[state.holeNumber - 1];
-    const upAndDownCount = state.shots.slice(0, state.holeNumber - 1).filter((s) => s <= 2).length;
-    const completedHoles = state.holeNumber - 1;
+    const completedHoles = state.phase === 'complete' ? TOTAL_HOLES : state.holeNumber - 1;
+    const upAndDownCount = state.shots.slice(0, completedHoles).filter((s) => s <= 2).length;
     const successPercentage = completedHoles > 0 ? Math.round((upAndDownCount / completedHoles) * 100) : 0;
     const isComplete = state.phase === 'complete';
 

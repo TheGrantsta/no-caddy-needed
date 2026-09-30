@@ -29,6 +29,16 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
                         </View>
                     </Link>
                 </View>
+                <View style={styles.navRow}>
+                    <Link href="../challenges/up-and-down" style={styles.navCardLink}>
+                        <View style={styles.navCard}>
+                            <View style={styles.iconCircle}>
+                                <MaterialIcons name="flag" size={36} color={colours.white} />
+                            </View>
+                            <Text style={styles.navCardLabel}>Up-and-Down</Text>
+                        </View>
+                    </Link>
+                </View>
             </View>
         </Animated.View>
     );

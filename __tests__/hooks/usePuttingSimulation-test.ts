@@ -24,6 +24,11 @@ describe('usePuttingSimulation', () => {
             expect(result.current.currentDistance).toBe(result.current.distances[0]);
         });
 
+        it('starts with currentPutts at 1', () => {
+            const { result } = renderHook(() => usePuttingSimulation());
+            expect(result.current.currentPutts).toBe(1);
+        });
+
         it('starts with zero makes', () => {
             const { result } = renderHook(() => usePuttingSimulation());
             expect(result.current.makesCount).toBe(0);
@@ -42,179 +47,165 @@ describe('usePuttingSimulation', () => {
     });
 
     describe('start()', () => {
-        it('generates new 18 distances', () => {
-            const { result } = renderHook(() => usePuttingSimulation());
-
-            const firstDistances = [...result.current.distances];
-
-            act(() => {
-                result.current.start();
-            });
-
-            expect(result.current.distances.length).toBe(18);
-            // Should have new distances (not guaranteed to be different, but testing the behavior)
-        });
-
-        it('keeps in-progress phase', () => {
+        it('generates new 18 distances and resets round', () => {
             const { result } = renderHook(() => usePuttingSimulation());
 
             act(() => {
+                result.current.goToNextHole();
+                result.current.setPutts(3);
                 result.current.start();
             });
 
             expect(result.current.phase).toBe('in-progress');
-        });
-
-        it('resets to hole 1', () => {
-            const { result } = renderHook(() => usePuttingSimulation());
-
-            act(() => {
-                result.current.recordPutt(true);
-                result.current.recordPutt(false);
-            });
-
-            expect(result.current.holeNumber).toBe(3);
-
-            act(() => {
-                result.current.start();
-            });
-
             expect(result.current.holeNumber).toBe(1);
-        });
-
-        it('clears results on start', () => {
-            const { result } = renderHook(() =>
-                usePuttingSimulation(() => 0.5)
-            );
-
-            act(() => {
-                result.current.recordPutt(true);
-            });
-
-            const firstMakesCount = result.current.makesCount;
-            expect(firstMakesCount).toBe(1);
-
-            act(() => {
-                result.current.start();
-            });
-
+            expect(result.current.currentPutts).toBe(1);
             expect(result.current.makesCount).toBe(0);
-        });
-
-        it('recomputes expectedTourMakes with new distances', () => {
-            const { result } = renderHook(() => usePuttingSimulation());
-
-            const expectedBefore = result.current.expectedTourMakes;
-
-            act(() => {
-                result.current.start();
-            });
-
-            // Should still be a valid value (even if same, that's okay)
-            expect(result.current.expectedTourMakes).toBeGreaterThan(0);
-            expect(result.current.expectedTourMakes).toBeLessThan(18);
         });
     });
 
-    describe('recordPutt()', () => {
-        it('increments holeNumber on each putt', () => {
+    describe('setPutts()', () => {
+        it('sets currentPutts for the hole', () => {
+            const { result } = renderHook(() => usePuttingSimulation());
+
+            expect(result.current.currentPutts).toBe(1);
+
+            act(() => {
+                result.current.setPutts(3);
+            });
+
+            expect(result.current.currentPutts).toBe(3);
+        });
+
+        it('increments makesCount only on 1-putt holes', () => {
             const { result } = renderHook(() => usePuttingSimulation());
 
             act(() => {
-                result.current.start();
+                result.current.setPutts(1);
+                result.current.goToNextHole();
             });
+
+            expect(result.current.makesCount).toBe(1);
+
+            act(() => {
+                result.current.setPutts(2);
+                result.current.goToNextHole();
+            });
+
+            expect(result.current.makesCount).toBe(1); // still 1, didn't add another
+        });
+    });
+
+    describe('goToNextHole()', () => {
+        it('advances to next hole', () => {
+            const { result } = renderHook(() => usePuttingSimulation());
 
             expect(result.current.holeNumber).toBe(1);
 
             act(() => {
-                result.current.recordPutt(false);
+                result.current.goToNextHole();
             });
 
             expect(result.current.holeNumber).toBe(2);
-
-            act(() => {
-                result.current.recordPutt(true);
-            });
-
-            expect(result.current.holeNumber).toBe(3);
         });
 
-        it('increments makesCount only on made putts', () => {
+        it('resets currentPutts to 1 on next hole', () => {
             const { result } = renderHook(() => usePuttingSimulation());
 
             act(() => {
-                result.current.start();
+                result.current.setPutts(4);
+                result.current.goToNextHole();
             });
 
-            act(() => {
-                result.current.recordPutt(false); // missed
-                result.current.recordPutt(true); // made
-                result.current.recordPutt(true); // made
-            });
-
-            expect(result.current.makesCount).toBe(2);
+            expect(result.current.currentPutts).toBe(1);
         });
 
-        it('transitions to complete after 18 putts', () => {
+        it('transitions to complete after hole 18', () => {
             const { result } = renderHook(() => usePuttingSimulation());
-
-            act(() => {
-                result.current.start();
-            });
 
             for (let i = 0; i < 18; i++) {
-                expect(result.current.phase).not.toBe('complete');
+                expect(result.current.phase).toBe('in-progress');
                 act(() => {
-                    result.current.recordPutt(i % 2 === 0);
+                    result.current.goToNextHole();
                 });
             }
 
             expect(result.current.phase).toBe('complete');
-            expect(result.current.isComplete).toBe(true);
         });
 
-        it('has correct currentDistance for each hole', () => {
+        it('updates currentDistance when advancing', () => {
             const { result } = renderHook(() => usePuttingSimulation());
 
             const distances = [...result.current.distances];
+            expect(result.current.currentDistance).toBe(distances[0]);
 
-            for (let i = 0; i < 5; i++) {
-                expect(result.current.currentDistance).toBe(distances[i]);
-                act(() => {
-                    result.current.recordPutt(true);
-                });
-            }
+            act(() => {
+                result.current.goToNextHole();
+            });
+
+            expect(result.current.currentDistance).toBe(distances[1]);
         });
+    });
 
-        it('is a no-op after complete', () => {
+    describe('goToPreviousHole()', () => {
+        it('goes back to previous hole', () => {
             const { result } = renderHook(() => usePuttingSimulation());
 
             act(() => {
-                result.current.start();
-                for (let i = 0; i < 18; i++) {
-                    result.current.recordPutt(true);
-                }
+                result.current.goToNextHole();
+                result.current.goToNextHole();
             });
 
-            const completeMakesCount = result.current.makesCount;
+            expect(result.current.holeNumber).toBe(3);
 
             act(() => {
-                result.current.recordPutt(true);
+                result.current.goToPreviousHole();
             });
 
-            expect(result.current.makesCount).toBe(completeMakesCount);
+            expect(result.current.holeNumber).toBe(2);
+        });
+
+        it('is a no-op on hole 1', () => {
+            const { result } = renderHook(() => usePuttingSimulation());
+
+            expect(result.current.holeNumber).toBe(1);
+
+            act(() => {
+                result.current.goToPreviousHole();
+            });
+
+            expect(result.current.holeNumber).toBe(1);
+        });
+
+        it('restores previous hole data', () => {
+            const { result } = renderHook(() => usePuttingSimulation());
+
+            act(() => {
+                result.current.setPutts(2);
+            });
+
+            act(() => {
+                result.current.goToNextHole();
+            });
+
+            act(() => {
+                result.current.setPutts(3);
+            });
+
+            act(() => {
+                result.current.goToPreviousHole();
+            });
+
+            expect(result.current.currentPutts).toBe(2);
         });
     });
 
     describe('reset()', () => {
-        it('returns to in-progress phase', () => {
+        it('returns to in-progress at hole 1 with cleared data', () => {
             const { result } = renderHook(() => usePuttingSimulation());
 
             act(() => {
-                result.current.recordPutt(true);
-                result.current.recordPutt(false);
-                for (let i = 0; i < 16; i++) {
-                    result.current.recordPutt(true);
+                for (let i = 0; i < 18; i++) {
+                    result.current.goToNextHole();
                 }
             });
 
@@ -225,42 +216,8 @@ describe('usePuttingSimulation', () => {
             });
 
             expect(result.current.phase).toBe('in-progress');
-        });
-
-        it('generates new distances on reset', () => {
-            const { result } = renderHook(() => usePuttingSimulation());
-
-            const firstDistances = [...result.current.distances];
-
-            act(() => {
-                result.current.reset();
-            });
-
-            expect(result.current.distances).toHaveLength(18);
-        });
-
-        it('clears results', () => {
-            const { result } = renderHook(() => usePuttingSimulation());
-
-            act(() => {
-                result.current.recordPutt(true);
-                result.current.recordPutt(false);
-                result.current.reset();
-            });
-
-            expect(result.current.results).toEqual([]);
-        });
-
-        it('returns to hole 1', () => {
-            const { result } = renderHook(() => usePuttingSimulation());
-
-            act(() => {
-                result.current.recordPutt(true);
-                result.current.recordPutt(false);
-                result.current.reset();
-            });
-
             expect(result.current.holeNumber).toBe(1);
+            expect(result.current.makesCount).toBe(0);
         });
     });
 
@@ -292,19 +249,15 @@ describe('usePuttingSimulation', () => {
     });
 
     describe('expectedTourMakes stability', () => {
-        it('is stable across putt recordings', () => {
+        it('is stable across hole navigation', () => {
             const { result } = renderHook(() => usePuttingSimulation(() => 0.5));
-
-            act(() => {
-                result.current.start();
-            });
 
             const expectedBefore = result.current.expectedTourMakes;
 
             act(() => {
-                result.current.recordPutt(true);
-                result.current.recordPutt(false);
-                result.current.recordPutt(true);
+                result.current.goToNextHole();
+                result.current.goToNextHole();
+                result.current.goToPreviousHole();
             });
 
             const expectedAfter = result.current.expectedTourMakes;

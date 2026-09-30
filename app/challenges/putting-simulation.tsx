@@ -1,12 +1,15 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
+import { useThemeColours } from '@/context/ThemeContext';
 import { useAppToast } from '@/hooks/useAppToast';
 import { usePuttingSimulation } from '@/hooks/usePuttingSimulation';
 import { insertDrillResultService } from '@/service/DbService';
 
 export default function PuttingSimulation() {
     const styles = useStyles();
+    const colours = useThemeColours();
     const { showResult } = useAppToast();
     const sim = usePuttingSimulation();
 
@@ -24,20 +27,57 @@ export default function PuttingSimulation() {
                         <>
                             <Text style={styles.headerText}>Hole {sim.holeNumber} of {sim.totalHoles}</Text>
                             <Text style={styles.subHeaderText}>{sim.currentDistance} ft</Text>
+
+                            {/* Number picker for putts */}
+                            <View style={[styles.navRow, { marginVertical: 20, justifyContent: 'center', alignItems: 'center' }]}>
+                                <TouchableOpacity
+                                    testID="decrease-putts-button"
+                                    onPress={() => sim.setPutts(sim.currentPutts - 1)}
+                                    disabled={sim.currentPutts <= 1}
+                                >
+                                    <MaterialIcons
+                                        name="remove-circle"
+                                        size={40}
+                                        color={sim.currentPutts <= 1 ? colours.gray : colours.primary}
+                                    />
+                                </TouchableOpacity>
+                                <View style={{ marginHorizontal: 20 }}>
+                                    <Text testID="putt-count-display" style={styles.headerText}>
+                                        {sim.currentPutts} {sim.currentPutts === 1 ? 'putt' : 'putts'}
+                                    </Text>
+                                </View>
+                                <TouchableOpacity
+                                    testID="increase-putts-button"
+                                    onPress={() => sim.setPutts(sim.currentPutts + 1)}
+                                    disabled={sim.currentPutts >= 5}
+                                >
+                                    <MaterialIcons
+                                        name="add-circle"
+                                        size={40}
+                                        color={sim.currentPutts >= 5 ? colours.gray : colours.primary}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+
+                            {/* Navigation buttons */}
                             <View style={styles.navRow}>
                                 <TouchableOpacity
-                                    testID="made-button"
-                                    style={styles.onboardingOverlay.primaryButton}
-                                    onPress={() => sim.recordPutt(true)}
+                                    testID="previous-button"
+                                    style={[
+                                        styles.onboardingOverlay.secondaryButton,
+                                        sim.holeNumber === 1 && { opacity: 0.5 },
+                                    ]}
+                                    onPress={sim.goToPreviousHole}
+                                    disabled={sim.holeNumber === 1}
                                 >
-                                    <Text style={styles.onboardingOverlay.primaryButtonText}>Made</Text>
+                                    <Text style={styles.onboardingOverlay.secondaryButtonText}>Previous</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    testID="missed-button"
-                                    style={styles.onboardingOverlay.secondaryButton}
-                                    onPress={() => sim.recordPutt(false)}
+                                    testID="next-button"
+                                    style={styles.onboardingOverlay.primaryButton}
+                                    onPress={sim.goToNextHole}
                                 >
-                                    <Text style={styles.onboardingOverlay.secondaryButtonText}>Missed</Text>
+                                    <Text style={styles.onboardingOverlay.primaryButtonText}>Next</Text>
                                 </TouchableOpacity>
                             </View>
                         </>

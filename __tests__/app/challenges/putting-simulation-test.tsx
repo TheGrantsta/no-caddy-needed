@@ -30,19 +30,28 @@ jest.mock('../../../service/DbService', () => ({
 }));
 
 describe('PuttingSimulation screen', () => {
-    it('renders in-progress phase immediately', () => {
+    it('renders in-progress phase with number picker', () => {
         const { getByText, getByTestId } = render(<PuttingSimulation />);
 
         expect(getByText(/Hole 1 of 18/)).toBeTruthy();
-        expect(getByTestId('made-button')).toBeTruthy();
-        expect(getByTestId('missed-button')).toBeTruthy();
+        expect(getByTestId('putt-count-display')).toBeTruthy();
+        expect(getByTestId('decrease-putts-button')).toBeTruthy();
+        expect(getByTestId('increase-putts-button')).toBeTruthy();
+        expect(getByTestId('next-button')).toBeTruthy();
     });
 
-    it('shows complete view after 18 putts', () => {
+    it('shows Previous and Next buttons', () => {
+        const { getByTestId } = render(<PuttingSimulation />);
+
+        expect(getByTestId('previous-button')).toBeTruthy();
+        expect(getByTestId('next-button')).toBeTruthy();
+    });
+
+    it('shows complete view after 18 holes', () => {
         const { getByTestId, getByText } = render(<PuttingSimulation />);
 
         for (let i = 0; i < 18; i++) {
-            fireEvent.press(getByTestId('made-button'));
+            fireEvent.press(getByTestId('next-button'));
         }
 
         expect(getByText(/Round complete/)).toBeTruthy();
@@ -55,7 +64,7 @@ describe('PuttingSimulation screen', () => {
         const { insertDrillResultService } = require('../../../service/DbService');
 
         for (let i = 0; i < 18; i++) {
-            fireEvent.press(getByTestId('made-button'));
+            fireEvent.press(getByTestId('next-button'));
         }
 
         fireEvent.press(getByTestId('save-button'));
@@ -69,17 +78,26 @@ describe('PuttingSimulation screen', () => {
         expect(typeof passed).toBe('boolean');
     });
 
-    it('resets to in-progress on try again', () => {
+    it('allows navigating between holes', () => {
+        const { getByTestId, getByText } = render(<PuttingSimulation />);
+
+        fireEvent.press(getByTestId('next-button'));
+        expect(getByText(/Hole 2 of 18/)).toBeTruthy();
+
+        fireEvent.press(getByTestId('previous-button'));
+        expect(getByText(/Hole 1 of 18/)).toBeTruthy();
+    });
+
+    it('resets to hole 1 on try again', () => {
         const { getByTestId, getByText } = render(<PuttingSimulation />);
 
         for (let i = 0; i < 18; i++) {
-            fireEvent.press(getByTestId('made-button'));
+            fireEvent.press(getByTestId('next-button'));
         }
 
         fireEvent.press(getByTestId('try-again-button'));
 
         expect(getByText(/Hole 1 of 18/)).toBeTruthy();
-        expect(getByTestId('made-button')).toBeTruthy();
-        expect(getByTestId('missed-button')).toBeTruthy();
+        expect(getByTestId('next-button')).toBeTruthy();
     });
 });

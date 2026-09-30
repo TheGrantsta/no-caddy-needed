@@ -8,102 +8,117 @@ describe('useShortPuttingLadderSimulation', () => {
             expect(result.current.phase).toBe('in-progress');
         });
 
-        it('starts at level 4 ft', () => {
+        it('starts at level 4 ft (index 0)', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
+            expect(result.current.levelIndex).toBe(0);
             expect(result.current.currentLevel).toBe(4);
         });
 
-        it('starts with zero attempts', () => {
+        it('starts with currentResult as 1 (make)', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
-            expect(result.current.totalAttempts).toBe(0);
+            expect(result.current.currentResult).toBe(1);
         });
 
         it('is not complete initially', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
             expect(result.current.isComplete).toBe(false);
         });
+
+        it('has 7 levels total', () => {
+            const { result } = renderHook(() => useShortPuttingLadderSimulation());
+            expect(result.current.levelCount).toBe(7);
+        });
     });
 
-    describe('recordMake()', () => {
-        it('advances to next level on make', () => {
+    describe('setResult()', () => {
+        it('sets current result to make (1)', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
 
             act(() => {
-                result.current.recordMake();
+                result.current.setResult(1);
             });
 
+            expect(result.current.currentResult).toBe(1);
+        });
+
+        it('sets current result to miss (0)', () => {
+            const { result } = renderHook(() => useShortPuttingLadderSimulation());
+
+            act(() => {
+                result.current.setResult(0);
+            });
+
+            expect(result.current.currentResult).toBe(0);
+        });
+    });
+
+    describe('goToNextLevel()', () => {
+        it('advances to next level', () => {
+            const { result } = renderHook(() => useShortPuttingLadderSimulation());
+
+            act(() => {
+                result.current.setResult(1);
+                result.current.goToNextLevel();
+            });
+
+            expect(result.current.levelIndex).toBe(1);
             expect(result.current.currentLevel).toBe(5);
-            expect(result.current.totalAttempts).toBe(1);
         });
 
-        it('increments attempts on make', () => {
+        it('does not advance past level 10', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
 
-            act(() => {
-                result.current.recordMake();
-            });
-
-            expect(result.current.totalAttempts).toBe(1);
-
-            act(() => {
-                result.current.recordMake();
-            });
-
-            expect(result.current.totalAttempts).toBe(2);
-        });
-
-        it('advances through all levels to 10 ft', () => {
-            const { result } = renderHook(() => useShortPuttingLadderSimulation());
-
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 7; i++) {
                 act(() => {
-                    result.current.recordMake();
+                    result.current.setResult(1);
+                    result.current.goToNextLevel();
                 });
             }
 
+            expect(result.current.levelIndex).toBe(6);
             expect(result.current.currentLevel).toBe(10);
-            expect(result.current.totalAttempts).toBe(6);
+        });
+
+        it('saves current result before advancing', () => {
+            const { result } = renderHook(() => useShortPuttingLadderSimulation());
+
+            act(() => {
+                result.current.setResult(0);
+                result.current.goToNextLevel();
+            });
+
+            expect(result.current.results[0]).toBe(0);
+            expect(result.current.levelIndex).toBe(1);
         });
     });
 
-    describe('recordMiss()', () => {
-        it('stays at same level on miss', () => {
+    describe('goToPreviousLevel()', () => {
+        it('goes back to previous level', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
 
             act(() => {
-                result.current.recordMake(); // advance to 5 ft
+                result.current.goToNextLevel();
+                result.current.goToNextLevel();
             });
 
-            const levelBefore = result.current.currentLevel;
+            expect(result.current.levelIndex).toBe(2);
 
             act(() => {
-                result.current.recordMiss();
+                result.current.goToPreviousLevel();
             });
 
-            expect(result.current.currentLevel).toBe(levelBefore);
-        });
-
-        it('increments attempts on miss', () => {
-            const { result } = renderHook(() => useShortPuttingLadderSimulation());
-
-            act(() => {
-                result.current.recordMiss();
-            });
-
-            expect(result.current.totalAttempts).toBe(1);
-        });
-
-        it('allows retrying at same level', () => {
-            const { result } = renderHook(() => useShortPuttingLadderSimulation());
-
-            act(() => {
-                result.current.recordMiss();
-                result.current.recordMiss();
-                result.current.recordMake();
-            });
-
+            expect(result.current.levelIndex).toBe(1);
             expect(result.current.currentLevel).toBe(5);
-            expect(result.current.totalAttempts).toBe(3);
+        });
+
+        it('does not go before level 4', () => {
+            const { result } = renderHook(() => useShortPuttingLadderSimulation());
+
+            act(() => {
+                result.current.goToPreviousLevel();
+            });
+
+            expect(result.current.levelIndex).toBe(0);
         });
     });
 
@@ -112,36 +127,51 @@ describe('useShortPuttingLadderSimulation', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
 
             act(() => {
-                result.current.recordMake();
-            });
-
-            act(() => {
+                result.current.setResult(1);
                 result.current.finish();
             });
 
             expect(result.current.phase).toBe('complete');
         });
 
-        it('records levelReached at finish', () => {
+        it('saves all results', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
 
             act(() => {
-                result.current.recordMake();
-                result.current.recordMake();
+                result.current.setResult(1);
+                result.current.goToNextLevel();
+                result.current.setResult(0);
+                result.current.goToNextLevel();
+                result.current.setResult(1);
                 result.current.finish();
             });
 
-            expect(result.current.levelReached).toBe(6);
+            expect(result.current.results).toEqual([1, 0, 1]);
+        });
+
+        it('calculates total makes on finish', () => {
+            const { result } = renderHook(() => useShortPuttingLadderSimulation());
+
+            act(() => {
+                result.current.setResult(1);
+                result.current.goToNextLevel();
+                result.current.setResult(1);
+                result.current.goToNextLevel();
+                result.current.setResult(0);
+                result.current.finish();
+            });
+
+            expect(result.current.totalMakes).toBe(2);
         });
     });
 
     describe('reset()', () => {
-        it('returns to in-progress at level 4 with zero attempts', () => {
+        it('returns to in-progress at level 4', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
 
             act(() => {
-                result.current.recordMake();
-                result.current.recordMake();
+                result.current.setResult(1);
+                result.current.goToNextLevel();
                 result.current.finish();
             });
 
@@ -150,28 +180,8 @@ describe('useShortPuttingLadderSimulation', () => {
             });
 
             expect(result.current.phase).toBe('in-progress');
+            expect(result.current.levelIndex).toBe(0);
             expect(result.current.currentLevel).toBe(4);
-            expect(result.current.totalAttempts).toBe(0);
-        });
-    });
-
-    describe('isComplete', () => {
-        it('is true only after finish', () => {
-            const { result } = renderHook(() => useShortPuttingLadderSimulation());
-
-            expect(result.current.isComplete).toBe(false);
-
-            act(() => {
-                result.current.recordMake();
-            });
-
-            expect(result.current.isComplete).toBe(false);
-
-            act(() => {
-                result.current.finish();
-            });
-
-            expect(result.current.isComplete).toBe(true);
         });
     });
 });

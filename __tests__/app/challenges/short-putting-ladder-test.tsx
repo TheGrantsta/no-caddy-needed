@@ -33,60 +33,80 @@ describe('ShortPuttingLadder screen', () => {
     it('renders in-progress phase with current level', () => {
         const { getByText, getByTestId } = render(<ShortPuttingLadder />);
 
+        expect(getByText(/Level 1 of 7/)).toBeTruthy();
         expect(getByText(/Distance/)).toBeTruthy();
         expect(getByText(/4 ft/)).toBeTruthy();
-        expect(getByTestId('make-button')).toBeTruthy();
-        expect(getByTestId('miss-button')).toBeTruthy();
-        expect(getByTestId('finish-button')).toBeTruthy();
+        expect(getByTestId('result-display')).toBeTruthy();
     });
 
-    it('advances level on make', () => {
+    it('shows result picker for make/miss', () => {
+        const { getByTestId, getByText } = render(<ShortPuttingLadder />);
+
+        expect(getByTestId('decrease-result-button')).toBeTruthy();
+        expect(getByTestId('increase-result-button')).toBeTruthy();
+        expect(getByText('Make')).toBeTruthy();
+    });
+
+    it('toggles result between make and miss', () => {
+        const { getByTestId, getByText } = render(<ShortPuttingLadder />);
+
+        fireEvent.press(getByTestId('decrease-result-button'));
+
+        expect(getByText('Miss')).toBeTruthy();
+
+        fireEvent.press(getByTestId('increase-result-button'));
+
+        expect(getByText('Make')).toBeTruthy();
+    });
+
+    it('navigates to next level with Next button', () => {
         const { getByText, getByTestId } = render(<ShortPuttingLadder />);
 
-        fireEvent.press(getByTestId('make-button'));
+        fireEvent.press(getByTestId('next-button'));
 
+        expect(getByText(/Level 2 of 7/)).toBeTruthy();
         expect(getByText(/5 ft/)).toBeTruthy();
     });
 
-    it('stays at level on miss', () => {
-        const { getByText, getByTestId } = render(<ShortPuttingLadder />);
+    it('shows Finish button on last level', () => {
+        const { getByTestId, getByText } = render(<ShortPuttingLadder />);
 
-        fireEvent.press(getByTestId('make-button'));
-        fireEvent.press(getByTestId('miss-button'));
+        for (let i = 0; i < 6; i++) {
+            fireEvent.press(getByTestId('next-button'));
+        }
 
-        expect(getByText(/5 ft/)).toBeTruthy();
+        expect(getByText('Finish')).toBeTruthy();
     });
 
     it('shows complete view after finish', () => {
         const { getByText, getByTestId } = render(<ShortPuttingLadder />);
 
-        fireEvent.press(getByTestId('make-button'));
-        fireEvent.press(getByTestId('make-button'));
-        fireEvent.press(getByTestId('finish-button'));
+        for (let i = 0; i < 7; i++) {
+            fireEvent.press(getByTestId('next-button'));
+        }
 
         expect(getByText(/Challenge complete/)).toBeTruthy();
         expect(getByTestId('play-again-button')).toBeTruthy();
     });
 
-    it('displays level reached and attempts on completion', () => {
+    it('displays makes and levels on completion', () => {
         const { getByText, getByTestId } = render(<ShortPuttingLadder />);
 
-        fireEvent.press(getByTestId('make-button'));
-        fireEvent.press(getByTestId('make-button'));
-        fireEvent.press(getByTestId('make-button'));
-        fireEvent.press(getByTestId('finish-button'));
+        for (let i = 0; i < 7; i++) {
+            fireEvent.press(getByTestId('next-button'));
+        }
 
-        expect(getByText('7 ft')).toBeTruthy();
-        expect(getByText(/3 attempt/)).toBeTruthy();
+        expect(getByText(/makes/)).toBeTruthy();
+        expect(getByText(/levels/)).toBeTruthy();
     });
 
     it('auto-saves result when finishing', async () => {
         const { getByTestId } = render(<ShortPuttingLadder />);
         const { insertDrillResultService } = require('../../../service/DbService');
 
-        fireEvent.press(getByTestId('make-button'));
-        fireEvent.press(getByTestId('make-button'));
-        fireEvent.press(getByTestId('finish-button'));
+        for (let i = 0; i < 7; i++) {
+            fireEvent.press(getByTestId('next-button'));
+        }
 
         await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -98,21 +118,22 @@ describe('ShortPuttingLadder screen', () => {
     it('resets to level 4 on play again', () => {
         const { getByText, getByTestId } = render(<ShortPuttingLadder />);
 
-        fireEvent.press(getByTestId('make-button'));
-        fireEvent.press(getByTestId('make-button'));
-        fireEvent.press(getByTestId('finish-button'));
+        for (let i = 0; i < 7; i++) {
+            fireEvent.press(getByTestId('next-button'));
+        }
 
         fireEvent.press(getByTestId('play-again-button'));
 
-        expect(getByText(/Distance/)).toBeTruthy();
+        expect(getByText(/Level 1 of 7/)).toBeTruthy();
         expect(getByText(/4 ft/)).toBeTruthy();
     });
 
     it('displays performance bands on completion', () => {
         const { getByText, getByTestId } = render(<ShortPuttingLadder />);
 
-        fireEvent.press(getByTestId('make-button'));
-        fireEvent.press(getByTestId('finish-button'));
+        for (let i = 0; i < 7; i++) {
+            fireEvent.press(getByTestId('next-button'));
+        }
 
         expect(getByText('Pro')).toBeTruthy();
         expect(getByText('15 Handicap')).toBeTruthy();

@@ -1,51 +1,75 @@
 import { useReducer, useCallback } from 'react';
 
 export type SimulationPhase = 'in-progress' | 'complete';
+const LEVELS = [4, 5, 6, 7, 8, 9, 10]; // 7 levels total
 const MIN_LEVEL = 4;
 const MAX_LEVEL = 10;
 
 interface State {
     phase: SimulationPhase;
-    currentLevel: number;
-    totalAttempts: number;
-    levelReached: number;
+    levelIndex: number; // 0-6 corresponding to levels 4-10
+    results: (0 | 1)[]; // 0=miss, 1=make, length matches number of levels attempted
+    currentResult: 0 | 1; // pending entry at current level
 }
 
 type Action =
-    | { type: 'recordMake' }
-    | { type: 'recordMiss' }
+    | { type: 'setResult'; result: 0 | 1 }
+    | { type: 'goToNextLevel' }
+    | { type: 'goToPreviousLevel' }
     | { type: 'finish' }
     | { type: 'reset' };
 
 function reducer(state: State, action: Action): State {
     switch (action.type) {
-        case 'recordMake': {
-            const nextLevel = Math.min(state.currentLevel + 1, MAX_LEVEL);
+        case 'setResult': {
+            const newResults = [...state.results];
+            newResults[state.levelIndex] = action.result;
             return {
                 ...state,
-                currentLevel: nextLevel,
-                totalAttempts: state.totalAttempts + 1,
+                results: newResults,
+                currentResult: action.result,
             };
         }
-        case 'recordMiss': {
+        case 'goToNextLevel': {
+            if (state.levelIndex >= LEVELS.length - 1) return state;
+            const newResults = [...state.results];
+            newResults[state.levelIndex] = state.currentResult;
+            const nextIndex = state.levelIndex + 1;
             return {
                 ...state,
-                totalAttempts: state.totalAttempts + 1,
+                levelIndex: nextIndex,
+                results: newResults,
+                currentResult: newResults[nextIndex] || 1,
+            };
+        }
+        case 'goToPreviousLevel': {
+            if (state.levelIndex <= 0) return state;
+            const newResults = [...state.results];
+            newResults[state.levelIndex] = state.currentResult;
+            const prevIndex = state.levelIndex - 1;
+            return {
+                ...state,
+                levelIndex: prevIndex,
+                results: newResults,
+                currentResult: newResults[prevIndex] || 1,
             };
         }
         case 'finish': {
+            const finalResults = [...state.results];
+            finalResults[state.levelIndex] = state.currentResult;
+            const makes = finalResults.filter(r => r === 1).length;
             return {
                 ...state,
                 phase: 'complete',
-                levelReached: state.currentLevel,
+                results: finalResults,
             };
         }
         case 'reset': {
             return {
                 phase: 'in-progress',
-                currentLevel: MIN_LEVEL,
-                totalAttempts: 0,
-                levelReached: 0,
+                levelIndex: 0,
+                results: [],
+                currentResult: 1,
             };
         }
         default:
@@ -56,17 +80,21 @@ function reducer(state: State, action: Action): State {
 export function useShortPuttingLadderSimulation() {
     const [state, dispatch] = useReducer(reducer, {
         phase: 'in-progress',
-        currentLevel: MIN_LEVEL,
-        totalAttempts: 0,
-        levelReached: 0,
+        levelIndex: 0,
+        results: [],
+        currentResult: 1,
     });
 
-    const recordMake = useCallback(() => {
-        dispatch({ type: 'recordMake' });
+    const setResult = useCallback((result: 0 | 1) => {
+        dispatch({ type: 'setResult', result });
     }, []);
 
-    const recordMiss = useCallback(() => {
-        dispatch({ type: 'recordMiss' });
+    const goToNextLevel = useCallback(() => {
+        dispatch({ type: 'goToNextLevel' });
+    }, []);
+
+    const goToPreviousLevel = useCallback(() => {
+        dispatch({ type: 'goToPreviousLevel' });
     }, []);
 
     const finish = useCallback(() => {
@@ -77,19 +105,25 @@ export function useShortPuttingLadderSimulation() {
         dispatch({ type: 'reset' });
     }, []);
 
+    const currentLevel = LEVELS[state.levelIndex];
+    const totalAttempts = state.results.length + (state.levelIndex < state.results.length ? 0 : 1);
+    const totalMakes = state.results.filter(r => r === 1).length;
     const isComplete = state.phase === 'complete';
 
     return {
         phase: state.phase,
-        currentLevel: state.currentLevel,
-        totalAttempts: state.totalAttempts,
-        levelReached: state.levelReached,
-        recordMake,
-        recordMiss,
+        levelIndex: state.levelIndex,
+        currentLevel,
+        currentResult: state.currentResult,
+        totalAttempts,
+        totalMakes,
+        results: state.results,
+        setResult,
+        goToNextLevel,
+        goToPreviousLevel,
         finish,
         reset,
         isComplete,
-        minLevel: MIN_LEVEL,
-        maxLevel: MAX_LEVEL,
+        levelCount: LEVELS.length,
     };
 }

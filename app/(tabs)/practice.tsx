@@ -12,6 +12,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { getAllDrillHistoryService, getSettingsService, saveSettingsService } from "@/service/DbService";
 import { logEvent } from "@/service/FirebaseService";
 import PracticeAreasSection from "@/components/PracticeAreasSection";
+import PracticeChallengesSection from "@/components/PracticeChallengesSection";
 import PracticeToolsSection from "@/components/PracticeToolsSection";
 import DrillHistorySection from "@/components/DrillHistorySection";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
@@ -35,7 +36,7 @@ export default function Practice() {
   const [displayedDrillHistory, setDisplayedDrillHistory] = useState<any[]>([]);
   const [isLoadingMore, , setIsLoadingMore] = useToggle(false);
 
-  const SECTION_ORDER = ['areas', 'tools', 'history'];
+  const SECTION_ORDER = ['areas', 'challenges', 'tools', 'history'];
   const {
     section,
     displaySection,
@@ -59,6 +60,7 @@ export default function Practice() {
   const handleSubMenuWithLogging = (sectionName: string) => {
     handleSubMenu(sectionName);
     if (sectionName === 'areas') logEvent('view_areas');
+    if (sectionName === 'challenges') logEvent('view_challenges');
     if (sectionName === 'tools') logEvent('view_tools');
     if (sectionName === 'history') logEvent('view_history');
   };
@@ -136,6 +138,10 @@ export default function Practice() {
 
         {displaySection('areas') && (
           <PracticeAreasSection fadeAnim={sectionFadeAnim} slideAnim={sectionSlideAnim} />
+        )}
+
+        {displaySection('challenges') && (
+          <PracticeChallengesSection fadeAnim={sectionFadeAnim} slideAnim={sectionSlideAnim} />
         )}
 
         {displaySection('tools') && (

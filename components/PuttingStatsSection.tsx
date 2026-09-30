@@ -2,18 +2,13 @@ import React from 'react';
 import { Animated, Text, View } from 'react-native';
 import { useStyles } from '../hooks/useStyles';
 import { getPuttingMakeRatesService, formatPuttCount } from '../service/DbService';
+import { formatPgaRate } from '../assets/pgaPuttingBenchmarks';
 
 interface Props {
     fadeAnim: Animated.Value;
     slideAnim: Animated.Value;
     filteredRoundIds?: Set<number>;
 }
-
-const PUTTING_PRO_RATES: Record<number, string> = {
-    1: '100%*', 2: '99%*', 3: '99%', 4: '91%', 5: '81%', 6: '70%', 7: '61%', 8: '53%', 9: '46%', 10: '41%',
-    11: '37%*', 12: '33%*', 13: '31%*', 14: '28%*', 15: '25%*', 16: '23%*', 17: '21%*', 18: '19%*', 19: '18%*', 20: '16%*',
-    25: '10%*', 30: '7%*', 35: '5%*', 40: '3%*', 45: '2%*', 50: '1%*',
-};
 
 export default function PuttingStatsSection({
     fadeAnim,
@@ -28,7 +23,7 @@ export default function PuttingStatsSection({
             const puttsSegment = row.putts > 0 ? ` of ${formatPuttCount(row.putts)}` : '';
             return [
                 String(row.distance),
-                `${row.makeRate}${puttsSegment} (${PUTTING_PRO_RATES[row.distance] || '-'})`,
+                `${row.makeRate}${puttsSegment} (${formatPgaRate(row.distance)})`,
             ];
         });
     };

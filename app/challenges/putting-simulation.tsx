@@ -17,11 +17,11 @@ interface BandInfo {
 }
 
 const PERFORMANCE_BANDS: Record<PerformanceBand, BandInfo> = {
-  pro: { label: 'PGA Pro', maxPutts: 28, color: '#00C851' },
-  d1: { label: 'D1 College', maxPutts: 31, color: '#2D5A3D' },
-  scratch: { label: 'Scratch', maxPutts: 34, color: '#4A7C59' },
-  '5hcp': { label: '5 Handicap', maxPutts: 37, color: '#6B9B7F' },
-  '10hcp': { label: '10 Handicap', maxPutts: 40, color: '#8CBBA4' },
+  pro: { label: 'PGA Pro', maxPutts: 29, color: '#00C851' },
+  d1: { label: 'D1 College', maxPutts: 30, color: '#2D5A3D' },
+  scratch: { label: 'Scratch', maxPutts: 31, color: '#4A7C59' },
+  '5hcp': { label: '5 Handicap', maxPutts: 32, color: '#6B9B7F' },
+  '10hcp': { label: '10 Handicap', maxPutts: 34, color: '#8CBBA4' },
   '15hcp': { label: '15 Handicap', maxPutts: 999, color: '#ADCFC9' },
 };
 

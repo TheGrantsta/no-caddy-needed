@@ -104,8 +104,8 @@ describe('UpAndDownChallenge screen', () => {
             fireEvent.press(getByTestId('next-button'));
         }
 
-        expect(getByText('PGA Pro')).toBeTruthy();
-        expect(getByText('D1 College')).toBeTruthy();
+        expect(getByText('Pro')).toBeTruthy();
         expect(getByText('Scratch')).toBeTruthy();
+        expect(getByText('5 Handicap')).toBeTruthy();
     });
 });

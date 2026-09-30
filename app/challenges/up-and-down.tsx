@@ -8,7 +8,7 @@ import { useUpAndDownSimulation } from '@/hooks/useUpAndDownSimulation';
 import { insertDrillResultService } from '@/service/DbService';
 import { useEffect, useRef } from 'react';
 
-type PerformanceBand = 'pro' | 'd1' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
+type PerformanceBand = 'pro' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
 
 interface BandInfo {
     label: string;
@@ -17,11 +17,10 @@ interface BandInfo {
 }
 
 const PERFORMANCE_BANDS: Record<PerformanceBand, BandInfo> = {
-    pro: { label: 'PGA Pro', minPercentage: 80, color: '#00C851' },
-    d1: { label: 'D1 College', minPercentage: 70, color: '#2D5A3D' },
-    scratch: { label: 'Scratch', minPercentage: 60, color: '#4A7C59' },
-    '5hcp': { label: '5 Handicap', minPercentage: 50, color: '#6B9B7F' },
-    '10hcp': { label: '10 Handicap', minPercentage: 40, color: '#8CBBA4' },
+    pro: { label: 'Pro', minPercentage: 75, color: '#00C851' },
+    scratch: { label: 'Scratch', minPercentage: 65, color: '#2D5A3D' },
+    '5hcp': { label: '5 Handicap', minPercentage: 55, color: '#6B9B7F' },
+    '10hcp': { label: '10 Handicap', minPercentage: 45, color: '#8CBBA4' },
     '15hcp': { label: '15 Handicap', minPercentage: 30, color: '#ADCFC9' },
 };
 
@@ -33,11 +32,10 @@ export default function UpAndDownChallenge() {
     const hasSaved = useRef(false);
 
     const getPerformanceBand = (): PerformanceBand => {
-        if (sim.successPercentage >= 80) return 'pro';
-        if (sim.successPercentage >= 70) return 'd1';
-        if (sim.successPercentage >= 60) return 'scratch';
-        if (sim.successPercentage >= 50) return '5hcp';
-        if (sim.successPercentage >= 40) return '10hcp';
+        if (sim.successPercentage >= 75) return 'pro';
+        if (sim.successPercentage >= 65) return 'scratch';
+        if (sim.successPercentage >= 55) return '5hcp';
+        if (sim.successPercentage >= 45) return '10hcp';
         return '15hcp';
     };
 

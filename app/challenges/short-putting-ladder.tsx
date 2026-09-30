@@ -18,11 +18,11 @@ interface BandInfo {
 
 const PERFORMANCE_BANDS: Record<PerformanceBand, BandInfo> = {
     '15hcp': { label: '15 Handicap', maxAttempts: Infinity, color: '#ADCFC9' },
-    '10hcp': { label: '10 Handicap', maxAttempts: 18, color: '#8CBBA4' },
-    '5hcp': { label: '5 Handicap', maxAttempts: 15, color: '#6B9B7F' },
-    scratch: { label: 'Scratch', maxAttempts: 12, color: '#4A7C59' },
-    d1: { label: 'D1 College', maxAttempts: 10, color: '#2D5A3D' },
-    pro: { label: 'Pro', maxAttempts: 8, color: '#00C851' },
+    '10hcp': { label: '10 Handicap', maxAttempts: 19, color: '#8CBBA4' },
+    '5hcp': { label: '5 Handicap', maxAttempts: 17, color: '#6B9B7F' },
+    scratch: { label: 'Scratch', maxAttempts: 15, color: '#4A7C59' },
+    d1: { label: 'D1 College', maxAttempts: 13, color: '#2D5A3D' },
+    pro: { label: 'Pro', maxAttempts: 11, color: '#00C851' },
 };
 
 export default function ShortPuttingLadder() {
@@ -33,11 +33,11 @@ export default function ShortPuttingLadder() {
     const hasSaved = useRef(false);
 
     const getPerformanceBand = (): PerformanceBand => {
-        if (sim.totalAttempts <= 8) return 'pro';
-        if (sim.totalAttempts <= 10) return 'd1';
-        if (sim.totalAttempts <= 12) return 'scratch';
-        if (sim.totalAttempts <= 15) return '5hcp';
-        if (sim.totalAttempts <= 18) return '10hcp';
+        if (sim.totalAttempts <= 11) return 'pro';
+        if (sim.totalAttempts <= 13) return 'd1';
+        if (sim.totalAttempts <= 15) return 'scratch';
+        if (sim.totalAttempts <= 17) return '5hcp';
+        if (sim.totalAttempts <= 19) return '10hcp';
         return '15hcp';
     };
 
@@ -45,7 +45,7 @@ export default function ShortPuttingLadder() {
     useEffect(() => {
         if (sim.phase === 'complete' && !hasSaved.current) {
             hasSaved.current = true;
-            insertDrillResultService('Short-Putting Ladder', sim.totalAttempts <= 8, null, sim.totalAttempts);
+            insertDrillResultService('Short-Putting Ladder', sim.totalAttempts <= 11, null, sim.totalAttempts);
         }
     }, [sim.phase, sim.totalAttempts]);
 

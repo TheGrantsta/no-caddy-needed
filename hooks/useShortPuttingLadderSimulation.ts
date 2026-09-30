@@ -8,12 +8,12 @@ const MAX_LEVEL = 10;
 interface State {
     phase: SimulationPhase;
     levelIndex: number; // 0-6 corresponding to levels 4-10
-    results: (0 | 1)[]; // 0=miss, 1=make, length matches number of levels attempted
-    currentResult: 0 | 1; // pending entry at current level
+    results: number[]; // attempts at each level (1-10)
+    currentResult: number; // pending entry at current level (1-10)
 }
 
 type Action =
-    | { type: 'setResult'; result: 0 | 1 }
+    | { type: 'setResult'; result: number }
     | { type: 'goToNextLevel' }
     | { type: 'goToPreviousLevel' }
     | { type: 'finish' }
@@ -106,8 +106,7 @@ export function useShortPuttingLadderSimulation() {
     }, []);
 
     const currentLevel = LEVELS[state.levelIndex];
-    const totalAttempts = state.results.length + (state.levelIndex < state.results.length ? 0 : 1);
-    const totalMakes = state.results.filter(r => r === 1).length;
+    const totalAttempts = state.results.reduce((sum, attempts) => sum + attempts, 0);
     const isComplete = state.phase === 'complete';
 
     return {
@@ -116,7 +115,6 @@ export function useShortPuttingLadderSimulation() {
         currentLevel,
         currentResult: state.currentResult,
         totalAttempts,
-        totalMakes,
         results: state.results,
         setResult,
         goToNextLevel,

@@ -31,7 +31,7 @@ describe('useShortPuttingLadderSimulation', () => {
     });
 
     describe('setResult()', () => {
-        it('sets current result to make (1)', () => {
+        it('sets current result to attempts (1-10)', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
 
             act(() => {
@@ -39,16 +39,18 @@ describe('useShortPuttingLadderSimulation', () => {
             });
 
             expect(result.current.currentResult).toBe(1);
-        });
-
-        it('sets current result to miss (0)', () => {
-            const { result } = renderHook(() => useShortPuttingLadderSimulation());
 
             act(() => {
-                result.current.setResult(0);
+                result.current.setResult(5);
             });
 
-            expect(result.current.currentResult).toBe(0);
+            expect(result.current.currentResult).toBe(5);
+
+            act(() => {
+                result.current.setResult(10);
+            });
+
+            expect(result.current.currentResult).toBe(10);
         });
     });
 
@@ -83,11 +85,11 @@ describe('useShortPuttingLadderSimulation', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
 
             act(() => {
-                result.current.setResult(0);
+                result.current.setResult(3);
                 result.current.goToNextLevel();
             });
 
-            expect(result.current.results[0]).toBe(0);
+            expect(result.current.results[0]).toBe(3);
             expect(result.current.levelIndex).toBe(1);
         });
     });
@@ -149,19 +151,19 @@ describe('useShortPuttingLadderSimulation', () => {
             expect(result.current.results).toEqual([1, 0, 1]);
         });
 
-        it('calculates total makes on finish', () => {
+        it('calculates total attempts on finish', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
 
             act(() => {
-                result.current.setResult(1);
+                result.current.setResult(2);
+                result.current.goToNextLevel();
+                result.current.setResult(3);
                 result.current.goToNextLevel();
                 result.current.setResult(1);
-                result.current.goToNextLevel();
-                result.current.setResult(0);
                 result.current.finish();
             });
 
-            expect(result.current.totalMakes).toBe(2);
+            expect(result.current.totalAttempts).toBe(6); // 2 + 3 + 1
         });
     });
 

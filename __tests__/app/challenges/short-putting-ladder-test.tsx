@@ -39,24 +39,25 @@ describe('ShortPuttingLadder screen', () => {
         expect(getByTestId('result-display')).toBeTruthy();
     });
 
-    it('shows result picker for make/miss', () => {
+    it('shows attempts picker (1-10)', () => {
         const { getByTestId, getByText } = render(<ShortPuttingLadder />);
 
         expect(getByTestId('decrease-result-button')).toBeTruthy();
         expect(getByTestId('increase-result-button')).toBeTruthy();
-        expect(getByText('Make')).toBeTruthy();
+        expect(getByText('1 attempt')).toBeTruthy();
     });
 
-    it('toggles result between make and miss', () => {
+    it('increments/decrements attempts (1-10)', () => {
         const { getByTestId, getByText } = render(<ShortPuttingLadder />);
 
-        fireEvent.press(getByTestId('decrease-result-button'));
-
-        expect(getByText('Miss')).toBeTruthy();
+        fireEvent.press(getByTestId('increase-result-button'));
+        expect(getByText('2 attempts')).toBeTruthy();
 
         fireEvent.press(getByTestId('increase-result-button'));
+        expect(getByText('3 attempts')).toBeTruthy();
 
-        expect(getByText('Make')).toBeTruthy();
+        fireEvent.press(getByTestId('decrease-result-button'));
+        expect(getByText('2 attempts')).toBeTruthy();
     });
 
     it('navigates to next level with Next button', () => {
@@ -89,14 +90,14 @@ describe('ShortPuttingLadder screen', () => {
         expect(getByTestId('play-again-button')).toBeTruthy();
     });
 
-    it('displays makes and levels on completion', () => {
+    it('displays total attempts and levels on completion', () => {
         const { getByText, getByTestId } = render(<ShortPuttingLadder />);
 
         for (let i = 0; i < 7; i++) {
             fireEvent.press(getByTestId('next-button'));
         }
 
-        expect(getByText(/makes/)).toBeTruthy();
+        expect(getByText(/total attempts/)).toBeTruthy();
         expect(getByText(/levels/)).toBeTruthy();
     });
 

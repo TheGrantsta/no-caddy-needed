@@ -33,12 +33,11 @@ export default function ShortPuttingLadder() {
     const hasSaved = useRef(false);
 
     const getPerformanceBand = (): PerformanceBand => {
-        const makes = sim.results.filter(r => r === 1).length;
-        if (makes <= 8) return 'pro';
-        if (makes <= 10) return 'd1';
-        if (makes <= 12) return 'scratch';
-        if (makes <= 15) return '5hcp';
-        if (makes <= 18) return '10hcp';
+        if (sim.totalAttempts <= 8) return 'pro';
+        if (sim.totalAttempts <= 10) return 'd1';
+        if (sim.totalAttempts <= 12) return 'scratch';
+        if (sim.totalAttempts <= 15) return '5hcp';
+        if (sim.totalAttempts <= 18) return '10hcp';
         return '15hcp';
     };
 
@@ -46,9 +45,9 @@ export default function ShortPuttingLadder() {
     useEffect(() => {
         if (sim.phase === 'complete' && !hasSaved.current) {
             hasSaved.current = true;
-            insertDrillResultService('Short-Putting Ladder', sim.totalMakes >= 5, null, sim.totalMakes);
+            insertDrillResultService('Short-Putting Ladder', sim.totalAttempts <= 8, null, sim.totalAttempts);
         }
-    }, [sim.phase, sim.totalMakes]);
+    }, [sim.phase, sim.totalAttempts]);
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>
@@ -65,33 +64,33 @@ export default function ShortPuttingLadder() {
                                     <Text style={styles.subHeaderText}>{sim.currentLevel} ft</Text>
                                 </View>
 
-                                {/* Result picker for make/miss */}
+                                {/* Attempts picker (1-10) */}
                                 <View style={[styles.navRow, { marginVertical: 24, justifyContent: 'center', alignItems: 'center' }]}>
                                     <TouchableOpacity
                                         testID="decrease-result-button"
-                                        onPress={() => sim.setResult(0)}
-                                        disabled={sim.currentResult === 0}
+                                        onPress={() => sim.setResult(sim.currentResult - 1)}
+                                        disabled={sim.currentResult <= 1}
                                     >
                                         <MaterialIcons
                                             name="remove-circle"
                                             size={40}
-                                            color={sim.currentResult === 0 ? colours.gray : colours.primary}
+                                            color={sim.currentResult <= 1 ? colours.gray : colours.primary}
                                         />
                                     </TouchableOpacity>
                                     <View style={{ marginHorizontal: 20 }}>
                                         <Text testID="result-display" style={styles.headerText}>
-                                            {sim.currentResult === 1 ? 'Make' : 'Miss'}
+                                            {sim.currentResult} {sim.currentResult === 1 ? 'attempt' : 'attempts'}
                                         </Text>
                                     </View>
                                     <TouchableOpacity
                                         testID="increase-result-button"
-                                        onPress={() => sim.setResult(1)}
-                                        disabled={sim.currentResult === 1}
+                                        onPress={() => sim.setResult(sim.currentResult + 1)}
+                                        disabled={sim.currentResult >= 10}
                                     >
                                         <MaterialIcons
                                             name="add-circle"
                                             size={40}
-                                            color={sim.currentResult === 1 ? colours.gray : colours.primary}
+                                            color={sim.currentResult >= 10 ? colours.gray : colours.primary}
                                         />
                                     </TouchableOpacity>
                                 </View>
@@ -160,7 +159,7 @@ export default function ShortPuttingLadder() {
                                 <View style={{ marginBottom: 32, paddingVertical: 20, paddingHorizontal: 16, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.gray }}>
                                     <Text style={[styles.normalText, { color: colours.gray, marginBottom: 12 }]}>Results</Text>
                                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <Text style={styles.subHeaderText}>{sim.totalMakes} makes</Text>
+                                        <Text style={styles.subHeaderText}>{sim.totalAttempts} total attempts</Text>
                                         <Text style={[styles.normalText, { color: colours.gray }]}>
                                             {sim.results.length} {sim.results.length === 1 ? 'level' : 'levels'}
                                         </Text>

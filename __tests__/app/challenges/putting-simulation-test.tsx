@@ -30,18 +30,8 @@ jest.mock('../../../service/DbService', () => ({
 }));
 
 describe('PuttingSimulation screen', () => {
-    it('renders intro phase with start button', () => {
+    it('renders in-progress phase immediately', () => {
         const { getByText, getByTestId } = render(<PuttingSimulation />);
-
-        expect(getByText('PGA Putting Simulation')).toBeTruthy();
-        expect(getByText(/How to play/)).toBeTruthy();
-        expect(getByTestId('start-button')).toBeTruthy();
-    });
-
-    it('transitions to in-progress on start button press', () => {
-        const { getByTestId, getByText } = render(<PuttingSimulation />);
-
-        fireEvent.press(getByTestId('start-button'));
 
         expect(getByText(/Hole 1 of 18/)).toBeTruthy();
         expect(getByTestId('made-button')).toBeTruthy();
@@ -50,8 +40,6 @@ describe('PuttingSimulation screen', () => {
 
     it('shows complete view after 18 putts', () => {
         const { getByTestId, getByText } = render(<PuttingSimulation />);
-
-        fireEvent.press(getByTestId('start-button'));
 
         for (let i = 0; i < 18; i++) {
             fireEvent.press(getByTestId('made-button'));
@@ -65,8 +53,6 @@ describe('PuttingSimulation screen', () => {
     it('calls insertDrillResultService on save', async () => {
         const { getByTestId } = render(<PuttingSimulation />);
         const { insertDrillResultService } = require('../../../service/DbService');
-
-        fireEvent.press(getByTestId('start-button'));
 
         for (let i = 0; i < 18; i++) {
             fireEvent.press(getByTestId('made-button'));
@@ -83,10 +69,8 @@ describe('PuttingSimulation screen', () => {
         expect(typeof passed).toBe('boolean');
     });
 
-    it('resets to intro on try again', () => {
+    it('resets to in-progress on try again', () => {
         const { getByTestId, getByText } = render(<PuttingSimulation />);
-
-        fireEvent.press(getByTestId('start-button'));
 
         for (let i = 0; i < 18; i++) {
             fireEvent.press(getByTestId('made-button'));
@@ -94,7 +78,8 @@ describe('PuttingSimulation screen', () => {
 
         fireEvent.press(getByTestId('try-again-button'));
 
-        expect(getByText('PGA Putting Simulation')).toBeTruthy();
-        expect(getByText(/How to play/)).toBeTruthy();
+        expect(getByText(/Hole 1 of 18/)).toBeTruthy();
+        expect(getByTestId('made-button')).toBeTruthy();
+        expect(getByTestId('missed-button')).toBeTruthy();
     });
 });

@@ -3,9 +3,9 @@ import { usePuttingSimulation } from '../../hooks/usePuttingSimulation';
 
 describe('usePuttingSimulation', () => {
     describe('initialization', () => {
-        it('initializes in intro phase', () => {
+        it('initializes in in-progress phase', () => {
             const { result } = renderHook(() => usePuttingSimulation());
-            expect(result.current.phase).toBe('intro');
+            expect(result.current.phase).toBe('in-progress');
         });
 
         it('starts at hole 1', () => {
@@ -13,9 +13,15 @@ describe('usePuttingSimulation', () => {
             expect(result.current.holeNumber).toBe(1);
         });
 
-        it('has no current distance in intro phase', () => {
+        it('generates 18 distances immediately', () => {
             const { result } = renderHook(() => usePuttingSimulation());
-            expect(result.current.currentDistance).toBeUndefined();
+            expect(result.current.distances).toHaveLength(18);
+            expect(result.current.distances.every((d: number) => d > 0)).toBe(true);
+        });
+
+        it('has currentDistance set to first distance', () => {
+            const { result } = renderHook(() => usePuttingSimulation());
+            expect(result.current.currentDistance).toBe(result.current.distances[0]);
         });
 
         it('starts with zero makes', () => {
@@ -28,24 +34,28 @@ describe('usePuttingSimulation', () => {
             expect(result.current.isComplete).toBe(false);
         });
 
-        it('has zero distances initially', () => {
+        it('computes expectedTourMakes on initialization', () => {
             const { result } = renderHook(() => usePuttingSimulation());
-            expect(result.current.distances).toEqual([]);
+            expect(result.current.expectedTourMakes).toBeGreaterThan(0);
+            expect(result.current.expectedTourMakes).toBeLessThan(18);
         });
     });
 
     describe('start()', () => {
-        it('generates 18 distances', () => {
+        it('generates new 18 distances', () => {
             const { result } = renderHook(() => usePuttingSimulation());
+
+            const firstDistances = [...result.current.distances];
 
             act(() => {
                 result.current.start();
             });
 
             expect(result.current.distances.length).toBe(18);
+            // Should have new distances (not guaranteed to be different, but testing the behavior)
         });
 
-        it('transitions to in-progress phase', () => {
+        it('keeps in-progress phase', () => {
             const { result } = renderHook(() => usePuttingSimulation());
 
             act(() => {
@@ -55,14 +65,21 @@ describe('usePuttingSimulation', () => {
             expect(result.current.phase).toBe('in-progress');
         });
 
-        it('sets currentDistance to first distance', () => {
+        it('resets to hole 1', () => {
             const { result } = renderHook(() => usePuttingSimulation());
+
+            act(() => {
+                result.current.recordPutt(true);
+                result.current.recordPutt(false);
+            });
+
+            expect(result.current.holeNumber).toBe(3);
 
             act(() => {
                 result.current.start();
             });
 
-            expect(result.current.currentDistance).toBe(result.current.distances[0]);
+            expect(result.current.holeNumber).toBe(1);
         });
 
         it('clears results on start', () => {
@@ -71,7 +88,6 @@ describe('usePuttingSimulation', () => {
             );
 
             act(() => {
-                result.current.start();
                 result.current.recordPutt(true);
             });
 
@@ -85,13 +101,16 @@ describe('usePuttingSimulation', () => {
             expect(result.current.makesCount).toBe(0);
         });
 
-        it('computes expectedTourMakes after start', () => {
+        it('recomputes expectedTourMakes with new distances', () => {
             const { result } = renderHook(() => usePuttingSimulation());
+
+            const expectedBefore = result.current.expectedTourMakes;
 
             act(() => {
                 result.current.start();
             });
 
+            // Should still be a valid value (even if same, that's okay)
             expect(result.current.expectedTourMakes).toBeGreaterThan(0);
             expect(result.current.expectedTourMakes).toBeLessThan(18);
         });
@@ -157,10 +176,6 @@ describe('usePuttingSimulation', () => {
         it('has correct currentDistance for each hole', () => {
             const { result } = renderHook(() => usePuttingSimulation());
 
-            act(() => {
-                result.current.start();
-            });
-
             const distances = [...result.current.distances];
 
             for (let i = 0; i < 5; i++) {
@@ -169,19 +184,6 @@ describe('usePuttingSimulation', () => {
                     result.current.recordPutt(true);
                 });
             }
-        });
-
-        it('is a no-op before start()', () => {
-            const { result } = renderHook(() => usePuttingSimulation());
-
-            act(() => {
-                result.current.recordPutt(true);
-                result.current.recordPutt(false);
-            });
-
-            expect(result.current.phase).toBe('intro');
-            expect(result.current.makesCount).toBe(0);
-            expect(result.current.results).toEqual([]);
         });
 
         it('is a no-op after complete', () => {
@@ -205,33 +207,42 @@ describe('usePuttingSimulation', () => {
     });
 
     describe('reset()', () => {
-        it('returns to intro phase', () => {
+        it('returns to in-progress phase', () => {
             const { result } = renderHook(() => usePuttingSimulation());
 
             act(() => {
-                result.current.start();
+                result.current.recordPutt(true);
+                result.current.recordPutt(false);
+                for (let i = 0; i < 16; i++) {
+                    result.current.recordPutt(true);
+                }
+            });
+
+            expect(result.current.phase).toBe('complete');
+
+            act(() => {
                 result.current.reset();
             });
 
-            expect(result.current.phase).toBe('intro');
+            expect(result.current.phase).toBe('in-progress');
         });
 
-        it('clears distances', () => {
+        it('generates new distances on reset', () => {
             const { result } = renderHook(() => usePuttingSimulation());
 
+            const firstDistances = [...result.current.distances];
+
             act(() => {
-                result.current.start();
                 result.current.reset();
             });
 
-            expect(result.current.distances).toEqual([]);
+            expect(result.current.distances).toHaveLength(18);
         });
 
         it('clears results', () => {
             const { result } = renderHook(() => usePuttingSimulation());
 
             act(() => {
-                result.current.start();
                 result.current.recordPutt(true);
                 result.current.recordPutt(false);
                 result.current.reset();
@@ -244,7 +255,6 @@ describe('usePuttingSimulation', () => {
             const { result } = renderHook(() => usePuttingSimulation());
 
             act(() => {
-                result.current.start();
                 result.current.recordPutt(true);
                 result.current.recordPutt(false);
                 result.current.reset();
@@ -255,7 +265,7 @@ describe('usePuttingSimulation', () => {
     });
 
     describe('with injected RNG', () => {
-        it('uses provided RNG for deterministic generation', () => {
+        it('uses provided RNG for deterministic generation on init', () => {
             let callCount = 0;
             const distances1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
             const mockRng = jest.fn(() => {
@@ -266,10 +276,6 @@ describe('usePuttingSimulation', () => {
 
             const { result: result1 } = renderHook(() => usePuttingSimulation(mockRng));
 
-            act(() => {
-                result1.current.start();
-            });
-
             const firstDistances = [...result1.current.distances];
 
             // Reset mock for second run
@@ -277,10 +283,6 @@ describe('usePuttingSimulation', () => {
             callCount = 0;
 
             const { result: result2 } = renderHook(() => usePuttingSimulation(mockRng));
-
-            act(() => {
-                result2.current.start();
-            });
 
             const secondDistances = [...result2.current.distances];
 

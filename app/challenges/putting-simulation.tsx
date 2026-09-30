@@ -1,17 +1,9 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import Chevrons from '@/components/Chevrons';
 import { useStyles } from '@/hooks/useStyles';
 import { useAppToast } from '@/hooks/useAppToast';
 import { usePuttingSimulation } from '@/hooks/usePuttingSimulation';
 import { insertDrillResultService } from '@/service/DbService';
-
-const HOW_TO_PLAY = [
-    'Setup: pick 18 realistic putts around a practice green, one per "hole"',
-    'Distance: the app gives you a random distance for each hole',
-    'Putt: physically hit the putt, then tap Made or Missed',
-    'Compare: after 18 holes see your makes vs the PGA Tour average for those same distances',
-];
 
 export default function PuttingSimulation() {
     const styles = useStyles();
@@ -28,20 +20,6 @@ export default function PuttingSimulation() {
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
                 <View style={styles.container}>
-                    {sim.phase === 'intro' && (
-                        <>
-                            <Text style={styles.headerText}>PGA Putting Simulation</Text>
-                            <Chevrons heading="How to play" points={HOW_TO_PLAY} />
-                            <TouchableOpacity
-                                testID="start-button"
-                                style={styles.onboardingOverlay.primaryButton}
-                                onPress={sim.start}
-                            >
-                                <Text style={styles.onboardingOverlay.primaryButtonText}>Start</Text>
-                            </TouchableOpacity>
-                        </>
-                    )}
-
                     {sim.phase === 'in-progress' && (
                         <>
                             <Text style={styles.headerText}>Hole {sim.holeNumber} of {sim.totalHoles}</Text>

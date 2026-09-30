@@ -11,20 +11,18 @@ import SubMenu from "@/components/SubMenu";
 import { MaterialIcons } from "@expo/vector-icons";
 import { getAllDrillHistoryService, getSettingsService, saveSettingsService } from "@/service/DbService";
 import { logEvent } from "@/service/FirebaseService";
-import PracticeAreasSection from "@/components/PracticeAreasSection";
 import PracticeChallengesSection from "@/components/PracticeChallengesSection";
 import PracticeToolsSection from "@/components/PracticeToolsSection";
 import DrillHistorySection from "@/components/DrillHistorySection";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
 
 const ONBOARDING_STEPS = [
-  { text: 'Practice with purpose — use short game drills to sharpen your putting, chipping, pitching and bunker play.' },
+  { text: 'Practice with purpose — use challenges and tools to sharpen your game.' },
   { text: 'Try the tools section for tempo training and random shot selection to keep your practice varied.' },
-  { text: 'Check your history to track drill results over time and spot areas for improvement.' },
+  { text: 'Check your history to track results over time and spot areas for improvement.' },
 ];
 
 const ITEMS_PER_BATCH = 10;
-const PRINCIPLES = ['Deliberate: purposeful practice', 'Variety: mix up your practice to keep it interesting & challenging', 'Accountability: track progress & measure your performance', 'Stress: practice under pressure', 'Data: use your 7 Deadly Sins stats as a guide; focus your practice on what will make the biggest difference'];
 
 export default function Practice() {
   const styles = useStyles();
@@ -36,7 +34,7 @@ export default function Practice() {
   const [displayedDrillHistory, setDisplayedDrillHistory] = useState<any[]>([]);
   const [isLoadingMore, , setIsLoadingMore] = useToggle(false);
 
-  const SECTION_ORDER = ['areas', 'challenges', 'tools', 'history'];
+  const SECTION_ORDER = ['challenges', 'tools', 'history'];
   const {
     section,
     displaySection,
@@ -59,7 +57,6 @@ export default function Practice() {
 
   const handleSubMenuWithLogging = (sectionName: string) => {
     handleSubMenu(sectionName);
-    if (sectionName === 'areas') logEvent('view_areas');
     if (sectionName === 'challenges') logEvent('view_challenges');
     if (sectionName === 'tools') logEvent('view_tools');
     if (sectionName === 'history') logEvent('view_history');
@@ -135,10 +132,6 @@ export default function Practice() {
             </Text>
           </View>
         </View>
-
-        {displaySection('areas') && (
-          <PracticeAreasSection fadeAnim={sectionFadeAnim} slideAnim={sectionSlideAnim} />
-        )}
 
         {displaySection('challenges') && (
           <PracticeChallengesSection fadeAnim={sectionFadeAnim} slideAnim={sectionSlideAnim} />

@@ -114,61 +114,6 @@ function ThemedApp() {
             },
           }} />
         <Stack.Screen
-          name="areas/putting"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: colours.primary,
-            },
-            headerTintColor: colours.background,
-            headerBackButtonDisplayMode: 'minimal',
-          }} />
-        <Stack.Screen
-          name="areas/chipping"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: colours.primary,
-            },
-            headerTintColor: colours.background,
-            headerBackButtonDisplayMode: 'minimal',
-          }} />
-        <Stack.Screen
-          name="areas/pitching"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: colours.primary,
-            },
-            headerTintColor: colours.background,
-            headerBackButtonDisplayMode: 'minimal',
-          }} />
-        <Stack.Screen
-          name="areas/bunker"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: colours.primary,
-            },
-            headerTintColor: colours.background,
-            headerBackButtonDisplayMode: 'minimal',
-          }} />
-        <Stack.Screen
-          name="areas/full-swing"
-          options={{
-            headerTitle: () => <LogoTitle />,
-            headerTitleAlign: "center",
-            headerStyle: {
-              backgroundColor: colours.primary,
-            },
-            headerTintColor: colours.background,
-            headerBackButtonDisplayMode: 'minimal',
-          }} />
-        <Stack.Screen
           name="challenges/putting-simulation"
           options={{
             headerTitle: () => <LogoTitle />,

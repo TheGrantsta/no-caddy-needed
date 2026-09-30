@@ -1,5 +1,4 @@
 import { getTwoDigitDayAndMonth } from '@/utils/DateFormatter';
-import { DrillData, GameData } from '@/types/ShortGame';
 import type { DistanceUnit } from './UnitsService';
 import {
     getWedgeChartDistanceNames,
@@ -7,10 +6,6 @@ import {
     insertWedgeChart,
     insertDrillResult,
     getAllDrillHistory,
-    getDrillsByCategory,
-    insertDrill,
-    softDeleteDrill,
-    restoreDrill,
     insertHoleDeadlySins,
     getDeadlySinsForRound,
     getAllDeadlySinsRoundTotals,
@@ -49,10 +44,6 @@ import {
     getAllRoundsWithPlayersAndScores,
     getSettings,
     saveSettings,
-    getGamesByCategory,
-    insertGame,
-    softDeleteGame,
-    restoreGame,
     getAllPracticeReminders,
     insertPracticeReminder,
     deletePracticeReminder,
@@ -119,72 +110,6 @@ export const saveWedgeChartService = async (data: WedgeChartData): Promise<boole
 export const insertDrillResultService = (name: string, result: boolean, drillId: number | null = null, score: number | null = null) => {
     return insertDrillResult(name, result, drillId, score);
 }
-
-export const getDrillsByCategoryService = (category: string): DrillData[] => {
-    const rows = getDrillsByCategory(category) as {
-        Id: number;
-        Category: string;
-        Label: string;
-        IconName: string;
-        Target: string;
-        Objective: string;
-        SetUp: string;
-        HowToPlay: string;
-    }[];
-
-    return rows.map(row => ({
-        id: row.Id,
-        label: row.Label,
-        iconName: row.IconName as DrillData['iconName'],
-        target: row.Target,
-        objective: row.Objective,
-        setup: row.SetUp,
-        howToPlay: row.HowToPlay,
-    }));
-};
-
-export const insertDrillService = (category: string, label: string, iconName: string, target: string, objective: string, setUp: string, howToPlay: string): Promise<boolean> => {
-    return insertDrill(category, label, iconName, target, objective, setUp, howToPlay);
-};
-
-export const deleteDrillService = (id: number): Promise<boolean> => {
-    return softDeleteDrill(id);
-};
-
-export const restoreDrillService = (id: number): Promise<boolean> => {
-    return restoreDrill(id);
-};
-
-export const getGamesByCategoryService = (category: string): GameData[] => {
-    const rows = getGamesByCategory(category) as {
-        Id: number;
-        Category: string;
-        Header: string;
-        Objective: string;
-        SetUp: string;
-        HowToPlay: string;
-    }[];
-
-    return rows.map(row => ({
-        id: row.Id,
-        header: row.Header,
-        objective: row.Objective,
-        setup: row.SetUp,
-        howToPlay: row.HowToPlay,
-    }));
-};
-
-export const insertGameService = (category: string, header: string, objective: string, setUp: string, howToPlay: string): Promise<boolean> => {
-    return insertGame(category, header, objective, setUp, howToPlay);
-};
-
-export const deleteGameService = (id: number): Promise<boolean> => {
-    return softDeleteGame(id);
-};
-
-export const restoreGameService = (id: number): Promise<boolean> => {
-    return restoreGame(id);
-};
 
 export const getAllDrillHistoryService = () => {
     let history: any[] = [];

@@ -1,6 +1,4 @@
 import * as SQLite from 'expo-sqlite';
-import { drillSeedData } from '../data/drillSeedData';
-import { gameSeedData } from '../data/gameSeedData';
 import { logError } from '../service/ErrorLoggingService';
 
 const dbName = 'NoCaddyNeeded.db';
@@ -78,14 +76,12 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS WedgeChartDistanceNames (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, SortOrder INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS WedgeChartEntries (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL, DistanceName TEXT NOT NULL, Distance INTEGER NOT NULL, ClubSortOrder INTEGER NOT NULL, DistanceSortOrder INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS DrillHistory (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, Result BOOLEAN NOT NULL, DrillId INTEGER, Created_At TEXT NOT NULL);
-        CREATE TABLE IF NOT EXISTS Drills (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Label TEXT NOT NULL, IconName TEXT NOT NULL, Target TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsDeleted INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS HoleDeadlySins (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, ThreePutts INTEGER NOT NULL DEFAULT 0, DoubleBogeys INTEGER NOT NULL DEFAULT 0, BogeysPar5 INTEGER NOT NULL DEFAULT 0, BogeysInside9Iron INTEGER NOT NULL DEFAULT 0, DoubleChips INTEGER NOT NULL DEFAULT 0, TroubleOffTee INTEGER NOT NULL DEFAULT 0, Penalties INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, CourseName TEXT, Created_At TEXT NOT NULL, IsScoreOnly INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
         CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0, ReviewPromptShown INTEGER NOT NULL DEFAULT 0, PreShotReminderEnabled INTEGER NOT NULL DEFAULT 1, PreShotRoutineText TEXT NOT NULL DEFAULT '', WhatsNewVersionSeen TEXT NOT NULL DEFAULT '', SettingsOnboardingSeen INTEGER NOT NULL DEFAULT 0, PerformOnboardingSeen INTEGER NOT NULL DEFAULT 0, TempoBpm INTEGER NOT NULL DEFAULT 60, Units TEXT NOT NULL DEFAULT 'yards', SkipStatsFlowEnabled INTEGER NOT NULL DEFAULT 0, BadHoleReassuranceEnabled INTEGER NOT NULL DEFAULT 1);
-        CREATE TABLE IF NOT EXISTS Games (Id INTEGER PRIMARY KEY AUTOINCREMENT, Category TEXT NOT NULL, Header TEXT NOT NULL, Objective TEXT NOT NULL, SetUp TEXT NOT NULL, HowToPlay TEXT NOT NULL, IsDeleted INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS PracticeReminders (Id INTEGER PRIMARY KEY AUTOINCREMENT, Label TEXT NOT NULL, ScheduledFor TEXT NOT NULL, NotificationId TEXT, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS HiddenRecents (Id INTEGER PRIMARY KEY AUTOINCREMENT, Type TEXT NOT NULL, Name TEXT NOT NULL, UNIQUE(Type, Name));
         CREATE TABLE IF NOT EXISTS HoleNotes (Id INTEGER PRIMARY KEY AUTOINCREMENT, CourseName TEXT NOT NULL, HoleNumber INTEGER NOT NULL, Note TEXT NOT NULL, Updated_At TEXT NOT NULL, UNIQUE(CourseName, HoleNumber));
@@ -134,16 +130,6 @@ export const initialize = async () => {
             columnsToAdd: ['DrillId INTEGER', 'Score INTEGER'],
             columnsToRemove: [],
         },
-        {
-            table: 'Games',
-            columnsToAdd: ['IsDeleted INTEGER NOT NULL DEFAULT 0'],
-            columnsToRemove: ['IsActive'],
-        },
-        {
-            table: 'Drills',
-            columnsToAdd: ['IsDeleted INTEGER NOT NULL DEFAULT 0'],
-            columnsToRemove: ['IsActive'],
-        },
     ];
 
     for (const migration of migrations) {
@@ -160,27 +146,12 @@ export const initialize = async () => {
     `);
 
     syncDb.execSync('DROP TABLE IF EXISTS DeadlySinsRounds;');
+    syncDb.execSync('DROP TABLE IF EXISTS Drills;');
+    syncDb.execSync('DROP TABLE IF EXISTS Games;');
     syncDb.execSync(
         'DELETE FROM HoleDeadlySins WHERE Id NOT IN (SELECT MAX(Id) FROM HoleDeadlySins GROUP BY RoundId, HoleNumber);'
     );
 
-    const drillCount = syncDb.getAllSync('SELECT COUNT(*) as count FROM Drills') as { count: number }[];
-    if (drillCount.length > 0 && drillCount[0].count === 0) {
-        const escape = (s: string) => s.replace(/'/g, "''");
-        const values = drillSeedData.map(d =>
-            `('${escape(d.category)}', '${escape(d.label)}', '${escape(d.iconName)}', '${escape(d.target)}', '${escape(d.objective)}', '${escape(d.setUp)}', '${escape(d.howToPlay)}')`
-        ).join(', ');
-        await db.execAsync(`INSERT INTO Drills (Category, Label, IconName, Target, Objective, SetUp, HowToPlay) VALUES ${values};`);
-    }
-
-    const gameCount = syncDb.getAllSync('SELECT COUNT(*) as count FROM Games') as { count: number }[];
-    if (gameCount.length > 0 && gameCount[0].count === 0) {
-        const escape = (s: string) => s.replace(/'/g, "''");
-        const values = gameSeedData.map(g =>
-            `('${escape(g.category)}', '${escape(g.header)}', '${escape(g.objective)}', '${escape(g.setUp)}', '${escape(g.howToPlay)}')`
-        ).join(', ');
-        await db.execAsync(`INSERT INTO Games (Category, Header, Objective, SetUp, HowToPlay) VALUES ${values};`);
-    }
 };
 
 export const insertDrillResult = async (name: string, result: boolean, drillId: number | null = null, score: number | null = null) => {
@@ -480,81 +451,6 @@ export const getAllDrillHistory = () => {
     return get(sqlStatement);
 }
 
-export const getDrillsByCategory = (category: string) => {
-    return getSyncDb().getAllSync(
-        'SELECT * FROM Drills WHERE Category = ? AND IsDeleted = 0 ORDER BY Label ASC;',
-        [category]
-    );
-};
-
-export const insertDrill = async (category: string, label: string, iconName: string, target: string, objective: string, setUp: string, howToPlay: string): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-
-        const statement = await db.prepareAsync(
-            'INSERT INTO Drills (Category, Label, IconName, Target, Objective, SetUp, HowToPlay) VALUES ($Category, $Label, $IconName, $Target, $Objective, $SetUp, $HowToPlay);'
-        );
-
-        try {
-            await statement.executeAsync({ $Category: category, $Label: label, $IconName: iconName, $Target: target, $Objective: objective, $SetUp: setUp, $HowToPlay: howToPlay });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.insertDrill', e);
-        success = false;
-        void logError('db.insertDrill', e);
-    }
-
-    return success;
-};
-
-export const softDeleteDrill = async (id: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-
-        const statement = await db.prepareAsync(
-            'UPDATE Drills SET IsDeleted = $IsDeleted WHERE Id = $Id;'
-        );
-
-        try {
-            await statement.executeAsync({ $IsDeleted: 1, $Id: id });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.softDeleteDrill', e);
-        success = false;
-        void logError('db.softDeleteDrill', e);
-    }
-
-    return success;
-};
-
-export const restoreDrill = async (id: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-
-        const statement = await db.prepareAsync(
-            'UPDATE Drills SET IsDeleted = $IsDeleted WHERE Id = $Id;'
-        );
-
-        try {
-            await statement.executeAsync({ $IsDeleted: 0, $Id: id });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.restoreDrill', e);
-        success = false;
-        void logError('db.restoreDrill', e);
-    }
-
-    return success;
-};
 
 export const insertRound = async (courseName: string, isScoreOnly: boolean): Promise<number | null> => {
     try {
@@ -944,81 +840,6 @@ export const saveSettings = async (notificationsEnabled: number, voice: string, 
     return success;
 };
 
-export const getGamesByCategory = (category: string) => {
-    return getSyncDb().getAllSync(
-        'SELECT * FROM Games WHERE Category = ? AND IsDeleted = 0 ORDER BY Header ASC;',
-        [category]
-    );
-};
-
-export const insertGame = async (category: string, header: string, objective: string, setUp: string, howToPlay: string): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-
-        const statement = await db.prepareAsync(
-            'INSERT INTO Games (Category, Header, Objective, SetUp, HowToPlay, IsDeleted) VALUES ($Category, $Header, $Objective, $SetUp, $HowToPlay, $IsDeleted);'
-        );
-
-        try {
-            await statement.executeAsync({ $Category: category, $Header: header, $Objective: objective, $SetUp: setUp, $HowToPlay: howToPlay, $IsDeleted: 0 });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.insertGame', e);
-        success = false;
-        void logError('db.insertGame', e);
-    }
-
-    return success;
-};
-
-export const restoreGame = async (id: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-
-        const statement = await db.prepareAsync(
-            'UPDATE Games SET IsDeleted = $IsDeleted WHERE Id = $Id;'
-        );
-
-        try {
-            await statement.executeAsync({ $IsDeleted: 0, $Id: id });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.restoreGame', e);
-        success = false;
-        void logError('db.restoreGame', e);
-    }
-
-    return success;
-};
-
-export const softDeleteGame = async (id: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-
-        const statement = await db.prepareAsync(
-            'UPDATE Games SET IsDeleted = $IsDeleted WHERE Id = $Id;'
-        );
-
-        try {
-            await statement.executeAsync({ $IsDeleted: 1, $Id: id });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.softDeleteGame', e);
-        success = false;
-        void logError('db.softDeleteGame', e);
-    }
-
-    return success;
-};
 
 export const insertPracticeReminder = async (label: string, scheduledFor: string, notificationId: string | null): Promise<boolean> => {
     let success = true;

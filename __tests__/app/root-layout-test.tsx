@@ -150,11 +150,6 @@ describe('RootLayout', () => {
         expect(names).toContain('+not-found');
         expect(names).toContain('settings');
         expect(names).toContain('play/scorecard');
-        expect(names).toContain('areas/putting');
-        expect(names).toContain('areas/chipping');
-        expect(names).toContain('areas/pitching');
-        expect(names).toContain('areas/bunker');
-        expect(names).toContain('areas/full-swing');
         expect(names).toContain('tools/random');
         expect(names).toContain('tools/tempo');
         expect(names).toContain('tools/wind');

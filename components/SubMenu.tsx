@@ -2,7 +2,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
-    showSubMenu: 'practice' | 'play' | 'perform' | 'putting' | 'chipping' | 'bunker' | 'pitching' | 'full-swing';
+    showSubMenu: 'practice' | 'play' | 'perform';
     selectedItem: string;
     handleSubMenu: (arg: string) => void;
 }
@@ -11,23 +11,12 @@ const allSubMenuItems = [
     { testId: 'play-sub-menu-score', name: 'play-score', title: 'Play' },
     { testId: 'play-sub-menu-distances', name: 'play-distances', title: 'Distances' },
     { testId: 'play-sub-menu-wedge-chart', name: 'play-wedge-chart', title: 'Wedge chart' },
-    { testId: 'practice-sub-menu-areas', name: 'areas', title: 'Areas' },
     { testId: 'practice-sub-menu-challenges', name: 'challenges', title: 'Challenges' },
     { testId: 'practice-sub-menu-tools', name: 'tools', title: 'Tools' },
     { testId: 'practice-sub-menu-history', name: 'history', title: 'History' },
     { testId: 'perform-sub-menu-sins', name: 'sins', title: 'Deadly Sins' },
     { testId: 'perform-sub-menu-putting', name: 'putting', title: 'Putting' },
     { testId: 'perform-sub-menu-proximity', name: 'proximity', title: 'Proximity' },
-    { testId: 'putting-sub-menu-putting-drills', name: 'putting-drills', title: 'Drills' },
-    { testId: 'putting-sub-menu-putting-games', name: 'putting-games', title: 'Games' },
-    { testId: 'chipping-sub-menu-chipping-drills', name: 'chipping-drills', title: 'Drills' },
-    { testId: 'chipping-sub-menu-chipping-games', name: 'chipping-games', title: 'Games' },
-    { testId: 'pitching-sub-menu-pitching-drills', name: 'pitching-drills', title: 'Drills' },
-    { testId: 'pitching-sub-menu-pitching-games', name: 'pitching-games', title: 'Games' },
-    { testId: 'bunker-sub-menu-bunker-drills', name: 'bunker-drills', title: 'Drills' },
-    { testId: 'bunker-sub-menu-bunker-games', name: 'bunker-games', title: 'Games' },
-    { testId: 'full-swing-sub-menu-full-swing-drills', name: 'full-swing-drills', title: 'Drills' },
-    { testId: 'full-swing-sub-menu-full-swing-games', name: 'full-swing-games', title: 'Games' },
 ]
 
 const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {

@@ -93,16 +93,6 @@ describe('Practice page ', () => {
 
         expect(getByText('Practice')).toBeTruthy();
         expect(getByText('Making practice time effective')).toBeTruthy();
-        expect(getByText('Practice areas')).toBeTruthy();
-    });
-
-    it('renders correctly practice area options', () => {
-        const { getByText } = render(<View />);
-
-        expect(getByText('Putting')).toBeTruthy();
-        expect(getByText('Chipping')).toBeTruthy();
-        expect(getByText('Pitching')).toBeTruthy();
-        expect(getByText('Bunker play')).toBeTruthy();
     });
 
     it('renders correctly tool options', () => {
@@ -289,13 +279,4 @@ describe('Practice page ', () => {
         );
     });
 
-    it('practiceAreasSectionIsLabelledPracticeAreas', () => {
-        const { getByText } = render(<View />);
-        expect(getByText('Practice areas')).toBeTruthy();
-    });
-
-    it('showsFullSwingTileInPracticeAreas', () => {
-        const { getByText } = render(<View />);
-        expect(getByText('Full swing')).toBeTruthy();
-    });
 });

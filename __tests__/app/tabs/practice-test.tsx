@@ -100,36 +100,6 @@ describe('Practice', () => {
         expect(getByText('Making practice time effective')).toBeTruthy();
     });
 
-    it('showsShortGameSectionByDefault', () => {
-        const { getByText } = render(<Practice />);
-        expect(getByText('Practice areas')).toBeTruthy();
-    });
-
-    it('displaysPuttingInShortGameSection', () => {
-        const { getByText } = render(<Practice />);
-        expect(getByText('Putting')).toBeTruthy();
-    });
-
-    it('displaysChippingInShortGameSection', () => {
-        const { getByText } = render(<Practice />);
-        expect(getByText('Chipping')).toBeTruthy();
-    });
-
-    it('displaysPitchingInShortGameSection', () => {
-        const { getByText } = render(<Practice />);
-        expect(getByText('Pitching')).toBeTruthy();
-    });
-
-    it('displaysBunkerPlayInShortGameSection', () => {
-        const { getByText } = render(<Practice />);
-        expect(getByText('Bunker play')).toBeTruthy();
-    });
-
-    it('displaysPrinciplesChevrons', () => {
-        const { getByText } = render(<Practice />);
-        expect(getByText('Principles')).toBeTruthy();
-    });
-
     it('showsToolsSectionWhenToolsSubMenuPressed', () => {
         const { getByTestId, getByText } = render(<Practice />);
         fireEvent.press(getByTestId('practice-sub-menu-tools'));
@@ -257,16 +227,6 @@ describe('Practice', () => {
             expect(mockLogEvent).toHaveBeenCalledWith('view_history');
         });
 
-        it('logs view_areas when Areas sub-menu tab pressed', () => {
-            const { getByTestId } = render(<Practice />);
-
-            fireEvent.press(getByTestId('practice-sub-menu-tools'));
-            mockLogEvent.mockClear();
-
-            fireEvent.press(getByTestId('practice-sub-menu-areas'));
-
-            expect(mockLogEvent).toHaveBeenCalledWith('view_areas');
-        });
     });
 
     describe('onRefresh', () => {

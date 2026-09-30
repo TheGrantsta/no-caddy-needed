@@ -22,17 +22,17 @@ describe('SubMenu component', () => {
     describe('Practice sub menu', () => {
         it('renders practice menu items', () => {
             const { getByText } = render(
-                <SubMenu showSubMenu="practice" selectedItem="areas" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="practice" selectedItem="challenges" handleSubMenu={mockHandleSubMenu} />
             );
 
-            expect(getByText('Areas')).toBeTruthy();
+            expect(getByText('Challenges')).toBeTruthy();
             expect(getByText('Tools')).toBeTruthy();
             expect(getByText('History')).toBeTruthy();
         });
 
         it('calls handleSubMenu when Tools is pressed', () => {
             const { getByTestId } = render(
-                <SubMenu showSubMenu="practice" selectedItem="areas" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="practice" selectedItem="challenges" handleSubMenu={mockHandleSubMenu} />
             );
 
             fireEvent.press(getByTestId('practice-sub-menu-tools'));
@@ -42,7 +42,7 @@ describe('SubMenu component', () => {
 
         it('calls handleSubMenu when History is pressed', () => {
             const { getByTestId } = render(
-                <SubMenu showSubMenu="practice" selectedItem="areas" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="practice" selectedItem="challenges" handleSubMenu={mockHandleSubMenu} />
             );
 
             fireEvent.press(getByTestId('practice-sub-menu-history'));
@@ -129,57 +129,4 @@ describe('SubMenu component', () => {
         });
     });
 
-    describe('Putting sub menu', () => {
-        it('renders putting menu items', () => {
-            const { getByText } = render(
-                <SubMenu showSubMenu="putting" selectedItem="putting-drills" handleSubMenu={mockHandleSubMenu} />
-            );
-
-            expect(getByText('Drills')).toBeTruthy();
-            expect(getByText('Games')).toBeTruthy();
-        });
-
-        it('calls handleSubMenu when Games is pressed', () => {
-            const { getByTestId } = render(
-                <SubMenu showSubMenu="putting" selectedItem="putting-drills" handleSubMenu={mockHandleSubMenu} />
-            );
-
-            fireEvent.press(getByTestId('putting-sub-menu-putting-games'));
-
-            expect(mockHandleSubMenu).toHaveBeenCalledWith('putting-games');
-        });
-    });
-
-    describe('Chipping sub menu', () => {
-        it('renders chipping menu items', () => {
-            const { getByTestId } = render(
-                <SubMenu showSubMenu="chipping" selectedItem="chipping-drills" handleSubMenu={mockHandleSubMenu} />
-            );
-
-            expect(getByTestId('chipping-sub-menu-chipping-drills')).toBeTruthy();
-            expect(getByTestId('chipping-sub-menu-chipping-games')).toBeTruthy();
-        });
-    });
-
-    describe('Pitching sub menu', () => {
-        it('renders pitching menu items', () => {
-            const { getByTestId } = render(
-                <SubMenu showSubMenu="pitching" selectedItem="pitching-drills" handleSubMenu={mockHandleSubMenu} />
-            );
-
-            expect(getByTestId('pitching-sub-menu-pitching-drills')).toBeTruthy();
-            expect(getByTestId('pitching-sub-menu-pitching-games')).toBeTruthy();
-        });
-    });
-
-    describe('Bunker sub menu', () => {
-        it('renders bunker menu items', () => {
-            const { getByTestId } = render(
-                <SubMenu showSubMenu="bunker" selectedItem="bunker-drills" handleSubMenu={mockHandleSubMenu} />
-            );
-
-            expect(getByTestId('bunker-sub-menu-bunker-drills')).toBeTruthy();
-            expect(getByTestId('bunker-sub-menu-bunker-games')).toBeTruthy();
-        });
-    });
 });

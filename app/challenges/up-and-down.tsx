@@ -89,10 +89,10 @@ export default function UpAndDownChallenge() {
                             title="Challenge complete"
                             summary={
                                 <View style={{ marginBottom: 8, paddingVertical: 16, paddingHorizontal: 12, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.gray }}>
-                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 8 }]}>Up-and-down rate</Text>
+                                    <Text style={[styles.normalText, { color: colours.primary, marginBottom: 8 }]}>Up-and-down rate</Text>
                                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                         <Text style={styles.subHeaderText}>{sim.successPercentage}%</Text>
-                                        <Text style={[styles.normalText, { color: colours.gray }]}>
+                                        <Text style={[styles.normalText, { color: colours.primary }]}>
                                             {sim.upAndDownCount} of {sim.totalHoles}
                                         </Text>
                                     </View>

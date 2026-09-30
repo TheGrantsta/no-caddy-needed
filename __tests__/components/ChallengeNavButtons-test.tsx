@@ -12,8 +12,10 @@ jest.mock('@/context/ThemeContext', () => ({
 jest.mock('@/hooks/useStyles', () => ({
     useStyles: () => ({
         navRow: { flexDirection: 'row' },
-        buttonOutlined: { borderWidth: 2 },
-        buttonFilled: { backgroundColor: '#2D5A3D' },
+        playScreen: {
+            previousHoleButton: { borderWidth: 2 },
+            nextHoleButton: { backgroundColor: '#2D5A3D' },
+        },
         buttonText: { fontSize: 16 },
     }),
 }));

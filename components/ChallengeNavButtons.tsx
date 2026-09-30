@@ -30,16 +30,10 @@ export default function ChallengeNavButtons({
                 onPress={onPrevious}
                 disabled={previousDisabled}
                 style={[
-                    styles.buttonOutlined,
+                    styles.playScreen.previousHoleButton,
                     {
                         flex: 1,
-                        paddingVertical: 14,
-                        paddingHorizontal: 16,
                         borderRadius: 12,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        flexDirection: 'row',
-                        gap: 8,
                         opacity: previousDisabled ? 0.5 : 1,
                     },
                 ]}
@@ -58,15 +52,10 @@ export default function ChallengeNavButtons({
                 testID={nextTestID}
                 onPress={onNext}
                 style={[
-                    styles.buttonFilled,
+                    styles.playScreen.nextHoleButton,
                     {
                         flex: 1,
-                        paddingVertical: 14,
-                        paddingHorizontal: 16,
                         borderRadius: 12,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        flexDirection: 'row',
                         gap: 8,
                     },
                 ]}

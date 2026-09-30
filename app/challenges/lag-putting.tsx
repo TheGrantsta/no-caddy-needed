@@ -7,6 +7,11 @@ import { useAppToast } from '@/hooks/useAppToast';
 import { useLagPuttingSimulation } from '@/hooks/useLagPuttingSimulation';
 import { insertDrillResultService } from '@/service/DbService';
 import { useEffect, useRef } from 'react';
+import Chevrons from '@/components/Chevrons';
+
+const setupPoints: string[] = ['Place tee 1 in the ground', 'Tee 2 21\' away', 'Tee 3 a further 9\' away'];
+
+const howToPlayPoints: string[] = ['First putt must reach tee 2', 'Each following putt must advance past the previous ball & stop before tee 3', 'Count how many putts land successfully in sequence before one fails'];
 
 type PerformanceBand = 'beginner' | 'mid' | 'single' | 'scratch' | 'pro';
 
@@ -53,10 +58,10 @@ export default function LagPutting() {
                 <View style={styles.container}>
                     {sim.phase === 'in-progress' && (
                         <>
-                            <Text style={styles.headerText}>Lag Putting Drill</Text>
+                            <Text style={styles.headerText}>Lag Putting Challenge</Text>
 
                             <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
-                                <Text style={[styles.normalText, { color: colours.gray, marginBottom: 16 }]}>Total putts</Text>
+                                <Text style={[styles.normalText, { marginBottom: 16 }]}>Total putts</Text>
                                 <View style={[styles.navRow, { marginBottom: 32, justifyContent: 'center', alignItems: 'center' }]}>
                                     <TouchableOpacity
                                         testID="decrease-score-button"
@@ -95,13 +100,10 @@ export default function LagPutting() {
                                     <Text style={styles.onboardingOverlay.primaryButtonText}>Finish</Text>
                                 </TouchableOpacity>
 
-                                <View style={{ paddingVertical: 16, paddingHorizontal: 12, backgroundColor: colours.background, borderRadius: 8 }}>
-                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 12 }]}>Task</Text>
-                                    <Text style={[styles.normalText, { color: colours.text, marginBottom: 8 }]}>• Start at Tee 1</Text>
-                                    <Text style={[styles.normalText, { color: colours.text, marginBottom: 8 }]}>• First putt must reach Tee 2 (~21 ft)</Text>
-                                    <Text style={[styles.normalText, { color: colours.text, marginBottom: 8 }]}>• Each following putt must advance past the previous ball and stop before Tee 3 (~30 ft)</Text>
-                                    <Text style={[styles.normalText, { color: colours.text }]}>• Count how many putts land successfully in sequence before one fails</Text>
-                                </View>
+                                <Chevrons heading='Set up' points={setupPoints} />
+
+                                <Chevrons heading='How to play' points={howToPlayPoints} />
+
                             </View>
                         </>
                     )}
@@ -112,12 +114,12 @@ export default function LagPutting() {
 
                             <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
                                 <View style={{ marginBottom: 32, paddingVertical: 20, paddingHorizontal: 16, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.gray }}>
-                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 12 }]}>Result</Text>
+                                    <Text style={[styles.normalText, { marginBottom: 12 }]}>Result</Text>
                                     <Text style={styles.subHeaderText}>Score: {sim.score}</Text>
                                 </View>
 
                                 {/* Performance bands */}
-                                <Text style={[styles.normalText, { color: colours.gray, marginBottom: 16 }]}>Your level</Text>
+                                <Text style={[styles.normalText, { marginBottom: 16 }]}>Your level</Text>
                                 {Object.entries(PERFORMANCE_BANDS).reverse().map(([key, band]) => {
                                     const userBand = getPerformanceBand();
                                     const isUserBand = key === userBand;
@@ -135,7 +137,7 @@ export default function LagPutting() {
                                                 backgroundColor: isUserBand ? band.color : 'transparent',
                                                 borderRadius: 8,
                                                 borderWidth: isUserBand ? 0 : 1,
-                                                borderColor: colours.gray,
+                                                borderColor: colours.primary,
                                             }}
                                         >
                                             <Text

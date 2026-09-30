@@ -33,8 +33,8 @@ describe('LagPutting screen', () => {
     it('renders score picker with instructions', () => {
         const { getByText, getByTestId } = render(<LagPutting />);
 
-        expect(getByText(/Lag Putting Drill/)).toBeTruthy();
-        expect(getByText(/Task/)).toBeTruthy();
+        expect(getByText(/Lag Putting Challenge/)).toBeTruthy();
+        expect(getByText(/Set up/)).toBeTruthy();
         expect(getByTestId('score-display')).toBeTruthy();
         expect(getByTestId('submit-button')).toBeTruthy();
     });
@@ -42,8 +42,8 @@ describe('LagPutting screen', () => {
     it('shows task instructions', () => {
         const { getByText } = render(<LagPutting />);
 
-        expect(getByText(/Start at Tee 1/)).toBeTruthy();
-        expect(getByText(/First putt must reach Tee 2/)).toBeTruthy();
+        expect(getByText(/Place tee 1 in the ground/)).toBeTruthy();
+        expect(getByText(/First putt must reach tee 2/)).toBeTruthy();
     });
 
     it('increments/decrements score (0-15)', () => {
@@ -103,7 +103,7 @@ describe('LagPutting screen', () => {
 
         fireEvent.press(getByTestId('play-again-button'));
 
-        expect(getByText(/Lag Putting Drill/)).toBeTruthy();
+        expect(getByText(/Lag Putting Challenge/)).toBeTruthy();
         expect(getByText('0')).toBeTruthy();
     });
 

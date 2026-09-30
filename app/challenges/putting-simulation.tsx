@@ -22,7 +22,7 @@ const PERFORMANCE_BANDS: Record<PerformanceBand, BandInfo> = {
   scratch: { label: 'Scratch', maxPutts: 31, color: '#4A7C59' },
   '5hcp': { label: '5 Handicap', maxPutts: 32, color: '#6B9B7F' },
   '10hcp': { label: '10 Handicap', maxPutts: 34, color: '#8CBBA4' },
-  '15hcp': { label: '15 Handicap', maxPutts: 999, color: '#ADCFC9' },
+  '15hcp': { label: '15 Handicap', maxPutts: 36, color: '#ADCFC9' },
 };
 
 export default function PuttingSimulation() {

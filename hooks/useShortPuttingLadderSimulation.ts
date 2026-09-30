@@ -1,6 +1,5 @@
 import { useReducer, useCallback } from 'react';
-
-export type SimulationPhase = 'in-progress' | 'complete';
+import { SimulationPhase, clampValue, writeAtIndex } from '../utils/simulationState';
 const LEVELS = [4, 5, 6, 7, 8, 9, 10]; // 7 levels total
 const MIN_LEVEL = 4;
 const MAX_LEVEL = 10;
@@ -22,8 +21,7 @@ type Action =
 function reducer(state: State, action: Action): State {
     switch (action.type) {
         case 'setResult': {
-            const newResults = [...state.results];
-            newResults[state.levelIndex] = action.result;
+            const newResults = writeAtIndex(state.results, state.levelIndex, action.result);
             return {
                 ...state,
                 results: newResults,
@@ -32,8 +30,7 @@ function reducer(state: State, action: Action): State {
         }
         case 'goToNextLevel': {
             if (state.levelIndex >= LEVELS.length - 1) return state;
-            const newResults = [...state.results];
-            newResults[state.levelIndex] = state.currentResult;
+            const newResults = writeAtIndex(state.results, state.levelIndex, state.currentResult);
             const nextIndex = state.levelIndex + 1;
             return {
                 ...state,
@@ -44,8 +41,7 @@ function reducer(state: State, action: Action): State {
         }
         case 'goToPreviousLevel': {
             if (state.levelIndex <= 0) return state;
-            const newResults = [...state.results];
-            newResults[state.levelIndex] = state.currentResult;
+            const newResults = writeAtIndex(state.results, state.levelIndex, state.currentResult);
             const prevIndex = state.levelIndex - 1;
             return {
                 ...state,
@@ -55,9 +51,7 @@ function reducer(state: State, action: Action): State {
             };
         }
         case 'finish': {
-            const finalResults = [...state.results];
-            finalResults[state.levelIndex] = state.currentResult;
-            const makes = finalResults.filter(r => r === 1).length;
+            const finalResults = writeAtIndex(state.results, state.levelIndex, state.currentResult);
             return {
                 ...state,
                 phase: 'complete',

@@ -1,7 +1,6 @@
 import { useReducer, useCallback } from 'react';
+import { SimulationPhase, clampValue, writeAtIndex } from '../utils/simulationState';
 import { getExpectedMakes } from '../assets/pgaPuttingBenchmarks';
-
-export type SimulationPhase = 'in-progress' | 'complete';
 const TOTAL_HOLES = 18;
 const BASE_DISTANCES = [3, 8, 40, 14, 2, 5, 33, 16, 24, 9, 18, 52, 2, 28, 6, 4, 11, 21];
 
@@ -35,9 +34,8 @@ type Action =
 function reducer(state: State, action: Action): State {
     switch (action.type) {
         case 'setPutts': {
-            const clamped = Math.max(1, Math.min(5, action.count));
-            const newPutts = [...state.putts];
-            newPutts[action.hole - 1] = clamped;
+            const clamped = clampValue(action.count, 1, 5);
+            const newPutts = writeAtIndex(state.putts, action.hole - 1, clamped);
             return {
                 ...state,
                 putts: newPutts,
@@ -52,8 +50,7 @@ function reducer(state: State, action: Action): State {
                     phase: 'complete',
                 };
             }
-            const newPutts = [...state.putts];
-            newPutts[state.holeNumber - 1] = state.currentPutts;
+            const newPutts = writeAtIndex(state.putts, state.holeNumber - 1, state.currentPutts);
             return {
                 ...state,
                 holeNumber: nextHole,
@@ -64,8 +61,7 @@ function reducer(state: State, action: Action): State {
         case 'goToPreviousHole': {
             if (state.holeNumber <= 1) return state;
             const prevHole = state.holeNumber - 1;
-            const newPutts = [...state.putts];
-            newPutts[state.holeNumber - 1] = state.currentPutts;
+            const newPutts = writeAtIndex(state.putts, state.holeNumber - 1, state.currentPutts);
             return {
                 ...state,
                 holeNumber: prevHole,

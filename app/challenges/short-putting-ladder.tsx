@@ -1,28 +1,25 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ScrollView, Text, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useAppToast } from '@/hooks/useAppToast';
 import { useShortPuttingLadderSimulation } from '@/hooks/useShortPuttingLadderSimulation';
 import { insertDrillResultService } from '@/service/DbService';
+import ChallengeNumberPicker from '@/components/ChallengeNumberPicker';
+import ChallengeNavButtons from '@/components/ChallengeNavButtons';
+import ChallengeCompleteView from '@/components/ChallengeCompleteView';
+import { resolveBand } from '@/utils/performanceBands';
 import { useEffect, useRef } from 'react';
 
 type PerformanceBand = 'pro' | 'd1' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
 
-interface BandInfo {
-    label: string;
-    maxAttempts: number;
-    color: string;
-}
-
-const PERFORMANCE_BANDS: Record<PerformanceBand, BandInfo> = {
-    '15hcp': { label: '15 Handicap', maxAttempts: Infinity, color: '#ADCFC9' },
-    '10hcp': { label: '10 Handicap', maxAttempts: 19, color: '#8CBBA4' },
-    '5hcp': { label: '5 Handicap', maxAttempts: 17, color: '#6B9B7F' },
-    scratch: { label: 'Scratch', maxAttempts: 15, color: '#4A7C59' },
-    d1: { label: 'D1 College', maxAttempts: 13, color: '#2D5A3D' },
+const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; maxAttempts: number; color: string }> = {
     pro: { label: 'Pro', maxAttempts: 11, color: '#00C851' },
+    d1: { label: 'D1 College', maxAttempts: 13, color: '#2D5A3D' },
+    scratch: { label: 'Scratch', maxAttempts: 15, color: '#4A7C59' },
+    '5hcp': { label: '5 Handicap', maxAttempts: 17, color: '#6B9B7F' },
+    '10hcp': { label: '10 Handicap', maxAttempts: 19, color: '#8CBBA4' },
+    '15hcp': { label: '15 Handicap', maxAttempts: 100, color: '#ADCFC9' },
 };
 
 export default function ShortPuttingLadder() {
@@ -32,14 +29,16 @@ export default function ShortPuttingLadder() {
     const sim = useShortPuttingLadderSimulation();
     const hasSaved = useRef(false);
 
-    const getPerformanceBand = (): PerformanceBand => {
-        if (sim.totalAttempts <= 11) return 'pro';
-        if (sim.totalAttempts <= 13) return 'd1';
-        if (sim.totalAttempts <= 15) return 'scratch';
-        if (sim.totalAttempts <= 17) return '5hcp';
-        if (sim.totalAttempts <= 19) return '10hcp';
-        return '15hcp';
-    };
+    const bandDefinitions = [
+        { key: 'pro' as const, threshold: 11 },
+        { key: 'd1' as const, threshold: 13 },
+        { key: 'scratch' as const, threshold: 15 },
+        { key: '5hcp' as const, threshold: 17 },
+        { key: '10hcp' as const, threshold: 19 },
+        { key: '15hcp' as const, threshold: 100 },
+    ];
+
+    const userBandKey = resolveBand(sim.totalAttempts, bandDefinitions, 'lte');
 
     // Auto-save when round completes
     useEffect(() => {
@@ -64,162 +63,47 @@ export default function ShortPuttingLadder() {
                                     <Text style={styles.subHeaderText}>{sim.currentLevel} ft</Text>
                                 </View>
 
-                                {/* Putts picker (1-10) */}
                                 <Text style={[styles.normalText, { marginBottom: 16 }]}>Putts</Text>
-                                <View style={[styles.navRow, { marginBottom: 32, justifyContent: 'center', alignItems: 'center' }]}>
-                                    <TouchableOpacity
-                                        testID="decrease-result-button"
-                                        onPress={() => sim.setResult(sim.currentResult - 1)}
-                                        disabled={sim.currentResult <= 1}
-                                    >
-                                        <MaterialIcons
-                                            name="remove-circle"
-                                            size={40}
-                                            color={sim.currentResult <= 1 ? colours.tertiary : colours.primary}
-                                        />
-                                    </TouchableOpacity>
-                                    <View style={{ marginHorizontal: 20 }}>
-                                        <Text testID="result-display" style={styles.headerText}>
-                                            {sim.currentResult}
-                                        </Text>
-                                    </View>
-                                    <TouchableOpacity
-                                        testID="increase-result-button"
-                                        onPress={() => sim.setResult(sim.currentResult + 1)}
-                                        disabled={sim.currentResult >= 10}
-                                    >
-                                        <MaterialIcons
-                                            name="add-circle"
-                                            size={40}
-                                            color={sim.currentResult >= 10 ? colours.tertiary : colours.primary}
-                                        />
-                                    </TouchableOpacity>
-                                </View>
+                                <ChallengeNumberPicker
+                                    value={sim.currentResult}
+                                    onChange={sim.setResult}
+                                    min={1}
+                                    max={10}
+                                    decreaseTestID="decrease-result-button"
+                                    increaseTestID="increase-result-button"
+                                    displayTestID="result-display"
+                                />
 
-                                {/* Navigation buttons - match other challenges style */}
-                                <View style={[styles.navRow, { gap: 12, marginTop: 24 }]}>
-                                    <TouchableOpacity
-                                        testID="previous-button"
-                                        style={[
-                                            {
-                                                flex: 1,
-                                                borderWidth: 2,
-                                                borderColor: colours.primary,
-                                                borderRadius: 8,
-                                                paddingVertical: 14,
-                                                paddingHorizontal: 16,
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                flexDirection: 'row',
-                                                gap: 8,
-                                            },
-                                            sim.levelIndex === 0 && { opacity: 0.5 },
-                                        ]}
-                                        onPress={sim.goToPreviousLevel}
-                                        disabled={sim.levelIndex === 0}
-                                    >
-                                        <MaterialIcons name="chevron-left" size={24} color={colours.primary} />
-                                        <Text style={[styles.normalText, { color: colours.primary, fontWeight: '600' }]}>
-                                            Previous
-                                        </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        testID="next-button"
-                                        style={{
-                                            flex: 1,
-                                            backgroundColor: colours.primary,
-                                            borderRadius: 8,
-                                            paddingVertical: 14,
-                                            paddingHorizontal: 16,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            flexDirection: 'row',
-                                            gap: 8,
-                                        }}
-                                        onPress={sim.levelIndex === sim.levelCount - 1 ? sim.finish : sim.goToNextLevel}
-                                    >
-                                        <Text style={[styles.normalText, { color: colours.white, fontWeight: '600' }]}>
-                                            {sim.levelIndex === sim.levelCount - 1 ? 'Finish' : 'Next'}
-                                        </Text>
-                                        <MaterialIcons
-                                            name={sim.levelIndex === sim.levelCount - 1 ? 'check' : 'chevron-right'}
-                                            size={24}
-                                            color={colours.white}
-                                        />
-                                    </TouchableOpacity>
-                                </View>
+                                <ChallengeNavButtons
+                                    onPrevious={sim.goToPreviousLevel}
+                                    onNext={sim.levelIndex === sim.levelCount - 1 ? sim.finish : sim.goToNextLevel}
+                                    previousDisabled={sim.levelIndex === 0}
+                                    isLastStep={sim.levelIndex === sim.levelCount - 1}
+                                />
                             </View>
                         </>
                     )}
 
                     {sim.phase === 'complete' && (
-                        <>
-                            <Text style={styles.headerText}>Challenge complete</Text>
-
-                            <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
-                                <View style={{ marginBottom: 32, paddingVertical: 20, paddingHorizontal: 16, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.gray }}>
-                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 12 }]}>Result</Text>
+                        <ChallengeCompleteView
+                            title="Challenge complete"
+                            summary={
+                                <View style={{ marginBottom: 8, paddingVertical: 16, paddingHorizontal: 12, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.gray }}>
+                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 8 }]}>Result</Text>
                                     <Text style={styles.subHeaderText}>Total attempts: {sim.totalAttempts}</Text>
                                 </View>
-
-                                {/* Performance bands */}
-                                <Text style={[styles.normalText, { color: colours.gray, marginBottom: 16 }]}>Your level</Text>
-                                {Object.entries(PERFORMANCE_BANDS).reverse().map(([key, band]) => {
-                                    const userBand = getPerformanceBand();
-                                    const isUserBand = key === userBand;
-
-                                    return (
-                                        <View
-                                            key={key}
-                                            style={{
-                                                flexDirection: 'row',
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                                paddingVertical: 12,
-                                                paddingHorizontal: 12,
-                                                marginBottom: 8,
-                                                backgroundColor: isUserBand ? band.color : 'transparent',
-                                                borderRadius: 8,
-                                                borderWidth: isUserBand ? 0 : 1,
-                                                borderColor: colours.gray,
-                                            }}
-                                        >
-                                            <Text
-                                                style={[
-                                                    styles.normalText,
-                                                    {
-                                                        color: isUserBand ? colours.white : colours.text,
-                                                        fontWeight: isUserBand ? '600' : '400',
-                                                    }
-                                                ]}
-                                            >
-                                                {band.label}
-                                            </Text>
-                                            <Text
-                                                style={[
-                                                    styles.normalText,
-                                                    {
-                                                        color: isUserBand ? colours.white : colours.gray,
-                                                        fontWeight: isUserBand ? '600' : '400',
-                                                    }
-                                                ]}
-                                            >
-                                                ≤ {band.maxAttempts === Infinity ? '18+' : band.maxAttempts}
-                                            </Text>
-                                        </View>
-                                    );
-                                })}
-
-                                {/* Play Again button */}
-                                <TouchableOpacity
-                                    testID="play-again-button"
-                                    style={[styles.onboardingOverlay.primaryButton, { marginTop: 32 }]}
-                                    onPress={sim.reset}
-                                >
-                                    <Text style={styles.onboardingOverlay.primaryButtonText}>Play Again</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </>
+                            }
+                            bands={Object.entries(PERFORMANCE_BANDS)
+                                .sort((a, b) => b[1].maxAttempts - a[1].maxAttempts)
+                                .map(([key, band]) => ({
+                                    key,
+                                    label: band.label,
+                                    thresholdLabel: `≤ ${band.maxAttempts === 100 ? '18+' : band.maxAttempts}`,
+                                    color: band.color,
+                                }))}
+                            userBandKey={userBandKey}
+                            onPlayAgain={sim.reset}
+                        />
                     )}
                 </View>
             </ScrollView>

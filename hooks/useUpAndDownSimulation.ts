@@ -1,7 +1,6 @@
 import { useReducer, useCallback } from 'react';
+import { SimulationPhase, clampValue, writeAtIndex } from '../utils/simulationState';
 import { shuffleDistances } from '../assets/upAndDownDistances';
-
-export type SimulationPhase = 'in-progress' | 'complete';
 const TOTAL_HOLES = 9;
 
 interface State {
@@ -21,9 +20,8 @@ type Action =
 function reducer(state: State, action: Action): State {
     switch (action.type) {
         case 'setShots': {
-            const clamped = Math.max(1, Math.min(4, action.count));
-            const newShots = [...state.shots];
-            newShots[action.hole - 1] = clamped;
+            const clamped = clampValue(action.count, 1, 4);
+            const newShots = writeAtIndex(state.shots, action.hole - 1, clamped);
             return {
                 ...state,
                 shots: newShots,
@@ -38,8 +36,7 @@ function reducer(state: State, action: Action): State {
                     phase: 'complete',
                 };
             }
-            const newShots = [...state.shots];
-            newShots[state.holeNumber - 1] = state.currentShots;
+            const newShots = writeAtIndex(state.shots, state.holeNumber - 1, state.currentShots);
             return {
                 ...state,
                 holeNumber: nextHole,
@@ -50,8 +47,7 @@ function reducer(state: State, action: Action): State {
         case 'goToPreviousHole': {
             if (state.holeNumber <= 1) return state;
             const prevHole = state.holeNumber - 1;
-            const newShots = [...state.shots];
-            newShots[state.holeNumber - 1] = state.currentShots;
+            const newShots = writeAtIndex(state.shots, state.holeNumber - 1, state.currentShots);
             return {
                 ...state,
                 holeNumber: prevHole,

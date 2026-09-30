@@ -39,25 +39,26 @@ describe('ShortPuttingLadder screen', () => {
         expect(getByTestId('result-display')).toBeTruthy();
     });
 
-    it('shows attempts picker (1-10)', () => {
+    it('shows putts picker (1-10)', () => {
         const { getByTestId, getByText } = render(<ShortPuttingLadder />);
 
+        expect(getByText('Putts')).toBeTruthy();
         expect(getByTestId('decrease-result-button')).toBeTruthy();
         expect(getByTestId('increase-result-button')).toBeTruthy();
-        expect(getByText('1 attempt')).toBeTruthy();
+        expect(getByText('1')).toBeTruthy();
     });
 
-    it('increments/decrements attempts (1-10)', () => {
-        const { getByTestId, getByText } = render(<ShortPuttingLadder />);
+    it('increments/decrements putts (1-10)', () => {
+        const { getByTestId, getByText, getAllByText } = render(<ShortPuttingLadder />);
 
         fireEvent.press(getByTestId('increase-result-button'));
-        expect(getByText('2 attempts')).toBeTruthy();
+        expect(getAllByText('2')[0]).toBeTruthy();
 
         fireEvent.press(getByTestId('increase-result-button'));
-        expect(getByText('3 attempts')).toBeTruthy();
+        expect(getAllByText('3')[0]).toBeTruthy();
 
         fireEvent.press(getByTestId('decrease-result-button'));
-        expect(getByText('2 attempts')).toBeTruthy();
+        expect(getAllByText('2')[0]).toBeTruthy();
     });
 
     it('navigates to next level with Next button', () => {

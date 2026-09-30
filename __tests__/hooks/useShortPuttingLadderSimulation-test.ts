@@ -14,7 +14,7 @@ describe('useShortPuttingLadderSimulation', () => {
             expect(result.current.currentLevel).toBe(4);
         });
 
-        it('starts with currentResult as 1 (make)', () => {
+        it('starts with currentResult as 1', () => {
             const { result } = renderHook(() => useShortPuttingLadderSimulation());
             expect(result.current.currentResult).toBe(1);
         });

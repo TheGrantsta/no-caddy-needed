@@ -64,8 +64,9 @@ export default function ShortPuttingLadder() {
                                     <Text style={styles.subHeaderText}>{sim.currentLevel} ft</Text>
                                 </View>
 
-                                {/* Attempts picker (1-10) */}
-                                <View style={[styles.navRow, { marginVertical: 24, justifyContent: 'center', alignItems: 'center' }]}>
+                                {/* Putts picker (1-10) */}
+                                <Text style={[styles.normalText, { color: colours.gray, marginBottom: 16 }]}>Putts</Text>
+                                <View style={[styles.navRow, { marginBottom: 32, justifyContent: 'center', alignItems: 'center' }]}>
                                     <TouchableOpacity
                                         testID="decrease-result-button"
                                         onPress={() => sim.setResult(sim.currentResult - 1)}
@@ -79,7 +80,7 @@ export default function ShortPuttingLadder() {
                                     </TouchableOpacity>
                                     <View style={{ marginHorizontal: 20 }}>
                                         <Text testID="result-display" style={styles.headerText}>
-                                            {sim.currentResult} {sim.currentResult === 1 ? 'attempt' : 'attempts'}
+                                            {sim.currentResult}
                                         </Text>
                                     </View>
                                     <TouchableOpacity

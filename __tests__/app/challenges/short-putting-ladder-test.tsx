@@ -98,7 +98,7 @@ describe('ShortPuttingLadder screen', () => {
             fireEvent.press(getByTestId('next-button'));
         }
 
-        expect(getByText(/total attempts/)).toBeTruthy();
+        expect(getByText(/Total attempts/)).toBeTruthy();
     });
 
     it('auto-saves result when finishing', async () => {

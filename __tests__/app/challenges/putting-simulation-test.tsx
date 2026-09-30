@@ -54,12 +54,11 @@ describe('PuttingSimulation screen', () => {
             fireEvent.press(getByTestId('next-button'));
         }
 
-        expect(getByText(/Round complete/)).toBeTruthy();
-        expect(getByTestId('save-button')).toBeTruthy();
-        expect(getByTestId('try-again-button')).toBeTruthy();
+        expect(getByText(/Simulation complete/)).toBeTruthy();
+        expect(getByTestId('play-again-button')).toBeTruthy();
     });
 
-    it('calls insertDrillResultService on save', async () => {
+    it('auto-saves result when completing', async () => {
         const { getByTestId } = render(<PuttingSimulation />);
         const { insertDrillResultService } = require('../../../service/DbService');
 
@@ -67,15 +66,12 @@ describe('PuttingSimulation screen', () => {
             fireEvent.press(getByTestId('next-button'));
         }
 
-        fireEvent.press(getByTestId('save-button'));
-
-        // Wait for async call
+        // Wait for auto-save
         await new Promise((resolve) => setTimeout(resolve, 100));
 
         expect(insertDrillResultService).toHaveBeenCalled();
-        const [name, passed] = insertDrillResultService.mock.calls[0];
+        const [name] = insertDrillResultService.mock.calls[0];
         expect(name).toBe('Putting Simulation');
-        expect(typeof passed).toBe('boolean');
     });
 
     it('allows navigating between holes', () => {
@@ -88,14 +84,14 @@ describe('PuttingSimulation screen', () => {
         expect(getByText(/Hole 1 of 18/)).toBeTruthy();
     });
 
-    it('resets to hole 1 on try again', () => {
+    it('resets to hole 1 on play again', () => {
         const { getByTestId, getByText } = render(<PuttingSimulation />);
 
         for (let i = 0; i < 18; i++) {
             fireEvent.press(getByTestId('next-button'));
         }
 
-        fireEvent.press(getByTestId('try-again-button'));
+        fireEvent.press(getByTestId('play-again-button'));
 
         expect(getByText(/Hole 1 of 18/)).toBeTruthy();
         expect(getByTestId('next-button')).toBeTruthy();

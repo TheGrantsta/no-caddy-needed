@@ -10,14 +10,14 @@ describe('upAndDownDistances', () => {
             expect(UP_AND_DOWN_DISTANCES.every((d: number) => d > 0)).toBe(true);
         });
 
-        it('distances are in realistic chip/pitch range', () => {
-            const allInRange = UP_AND_DOWN_DISTANCES.every((d: number) => d >= 20 && d <= 80);
+        it('distances are in realistic short-game range (5-20 yards)', () => {
+            const allInRange = UP_AND_DOWN_DISTANCES.every((d: number) => d >= 5 && d <= 20);
             expect(allInRange).toBe(true);
         });
 
         it('contains the expected distances', () => {
             expect(UP_AND_DOWN_DISTANCES.sort((a, b) => a - b)).toEqual(
-                [28, 35, 38, 42, 48, 52, 55, 62, 68]
+                [5, 6, 7, 9, 10, 12, 15, 18, 20]
             );
         });
     });

@@ -191,6 +191,17 @@ function ThemedApp() {
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen
+          name="challenges/short-putting-ladder"
+          options={{
+            headerTitle: () => <LogoTitle />,
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: colours.primary,
+            },
+            headerTintColor: colours.background,
+            headerBackButtonDisplayMode: 'minimal',
+          }} />
+        <Stack.Screen
           name="tools/random"
           options={{
             headerTitle: () => <LogoTitle />,

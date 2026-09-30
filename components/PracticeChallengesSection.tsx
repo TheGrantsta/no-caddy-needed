@@ -39,6 +39,16 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
                         </View>
                     </Link>
                 </View>
+                <View style={styles.navRow}>
+                    <Link href="../challenges/short-putting-ladder" style={styles.navCardLink}>
+                        <View style={styles.navCard}>
+                            <View style={styles.iconCircle}>
+                                <MaterialIcons name="stairs" size={36} color={colours.white} />
+                            </View>
+                            <Text style={styles.navCardLabel}>Short-Putting Ladder</Text>
+                        </View>
+                    </Link>
+                </View>
             </View>
         </Animated.View>
     );

@@ -59,25 +59,52 @@ export default function PuttingSimulation() {
                                 </TouchableOpacity>
                             </View>
 
-                            {/* Navigation buttons */}
-                            <View style={styles.navRow}>
+                            {/* Navigation buttons - match Play section style */}
+                            <View style={[styles.navRow, { gap: 12 }]}>
                                 <TouchableOpacity
                                     testID="previous-button"
                                     style={[
-                                        styles.onboardingOverlay.secondaryButton,
+                                        {
+                                            flex: 1,
+                                            borderWidth: 2,
+                                            borderColor: colours.primary,
+                                            borderRadius: 8,
+                                            paddingVertical: 14,
+                                            paddingHorizontal: 16,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            flexDirection: 'row',
+                                            gap: 8,
+                                        },
                                         sim.holeNumber === 1 && { opacity: 0.5 },
                                     ]}
                                     onPress={sim.goToPreviousHole}
                                     disabled={sim.holeNumber === 1}
                                 >
-                                    <Text style={styles.onboardingOverlay.secondaryButtonText}>Previous</Text>
+                                    <MaterialIcons name="chevron-left" size={24} color={colours.primary} />
+                                    <Text style={[styles.normalText, { color: colours.primary, fontWeight: '600' }]}>
+                                        Previous
+                                    </Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     testID="next-button"
-                                    style={styles.onboardingOverlay.primaryButton}
+                                    style={{
+                                        flex: 1,
+                                        backgroundColor: colours.primary,
+                                        borderRadius: 8,
+                                        paddingVertical: 14,
+                                        paddingHorizontal: 16,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        flexDirection: 'row',
+                                        gap: 8,
+                                    }}
                                     onPress={sim.goToNextHole}
                                 >
-                                    <Text style={styles.onboardingOverlay.primaryButtonText}>Next</Text>
+                                    <Text style={[styles.normalText, { color: colours.white, fontWeight: '600' }]}>
+                                        Next
+                                    </Text>
+                                    <MaterialIcons name="chevron-right" size={24} color={colours.white} />
                                 </TouchableOpacity>
                             </View>
                         </>

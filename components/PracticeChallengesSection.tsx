@@ -14,51 +14,32 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
     const styles = useStyles();
     const colours = useThemeColours();
 
+    const challenges = [
+        { href: '../challenges/putting-simulation', icon: 'adjust', label: 'Putting Simulation' },
+        { href: '../challenges/up-and-down', icon: 'flag', label: 'Up-and-Down' },
+        { href: '../challenges/short-putting-ladder', icon: 'stairs', label: 'Short-Putting Ladder' },
+        { href: '../challenges/lag-putting', icon: 'trending-up', label: 'Lag Putting' },
+    ];
+
     return (
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideAnim }] }}>
             <Text style={[styles.subHeaderText, styles.marginTop]}>Challenges</Text>
 
             <View style={styles.navGrid}>
-                <View style={styles.navRow}>
-                    <Link href="../challenges/putting-simulation" style={styles.navCardLink}>
-                        <View style={styles.navCard}>
-                            <View style={styles.iconCircle}>
-                                <MaterialIcons name="adjust" size={36} color={colours.white} />
-                            </View>
-                            <Text style={styles.navCardLabel}>Putting Simulation</Text>
-                        </View>
-                    </Link>
-                </View>
-                <View style={styles.navRow}>
-                    <Link href="../challenges/up-and-down" style={styles.navCardLink}>
-                        <View style={styles.navCard}>
-                            <View style={styles.iconCircle}>
-                                <MaterialIcons name="flag" size={36} color={colours.white} />
-                            </View>
-                            <Text style={styles.navCardLabel}>Up-and-Down</Text>
-                        </View>
-                    </Link>
-                </View>
-                <View style={styles.navRow}>
-                    <Link href="../challenges/short-putting-ladder" style={styles.navCardLink}>
-                        <View style={styles.navCard}>
-                            <View style={styles.iconCircle}>
-                                <MaterialIcons name="stairs" size={36} color={colours.white} />
-                            </View>
-                            <Text style={styles.navCardLabel}>Short-Putting Ladder</Text>
-                        </View>
-                    </Link>
-                </View>
-                <View style={styles.navRow}>
-                    <Link href="../challenges/lag-putting" style={styles.navCardLink}>
-                        <View style={styles.navCard}>
-                            <View style={styles.iconCircle}>
-                                <MaterialIcons name="trending-up" size={36} color={colours.white} />
-                            </View>
-                            <Text style={styles.navCardLabel}>Lag Putting</Text>
-                        </View>
-                    </Link>
-                </View>
+                {[0, 2].map((startIdx) => (
+                    <View key={`row-${startIdx}`} style={styles.navRow}>
+                        {challenges.slice(startIdx, startIdx + 2).map((challenge) => (
+                            <Link key={challenge.label} href={challenge.href} style={styles.navCardLink}>
+                                <View style={styles.navCard}>
+                                    <View style={styles.iconCircle}>
+                                        <MaterialIcons name={challenge.icon as any} size={36} color={colours.white} />
+                                    </View>
+                                    <Text style={styles.navCardLabel}>{challenge.label}</Text>
+                                </View>
+                            </Link>
+                        ))}
+                    </View>
+                ))}
             </View>
         </Animated.View>
     );

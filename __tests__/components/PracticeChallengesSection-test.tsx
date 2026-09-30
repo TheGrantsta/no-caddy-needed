@@ -34,7 +34,7 @@ describe('PracticeChallengesSection', () => {
         expect(getByText('Challenges')).toBeTruthy();
     });
 
-    it('renders Putting Simulation challenge card', () => {
+    it('renders all four challenge cards', () => {
         const fadeAnim = new Animated.Value(1);
         const slideAnim = new Animated.Value(0);
 
@@ -43,5 +43,9 @@ describe('PracticeChallengesSection', () => {
         );
 
         expect(getByText('Putting Simulation')).toBeTruthy();
+        expect(getByText('Up-and-Down')).toBeTruthy();
+        expect(getByText('Short-Putting Ladder')).toBeTruthy();
+        expect(getByText('Lag Putting')).toBeTruthy();
     });
+
 });

@@ -65,7 +65,7 @@ export default function ShortPuttingLadder() {
                                 </View>
 
                                 {/* Putts picker (1-10) */}
-                                <Text style={[styles.normalText, { color: colours.gray, marginBottom: 16 }]}>Putts</Text>
+                                <Text style={[styles.normalText, { marginBottom: 16 }]}>Putts</Text>
                                 <View style={[styles.navRow, { marginBottom: 32, justifyContent: 'center', alignItems: 'center' }]}>
                                     <TouchableOpacity
                                         testID="decrease-result-button"
@@ -75,7 +75,7 @@ export default function ShortPuttingLadder() {
                                         <MaterialIcons
                                             name="remove-circle"
                                             size={40}
-                                            color={sim.currentResult <= 1 ? colours.gray : colours.primary}
+                                            color={sim.currentResult <= 1 ? colours.tertiary : colours.primary}
                                         />
                                     </TouchableOpacity>
                                     <View style={{ marginHorizontal: 20 }}>
@@ -91,7 +91,7 @@ export default function ShortPuttingLadder() {
                                         <MaterialIcons
                                             name="add-circle"
                                             size={40}
-                                            color={sim.currentResult >= 10 ? colours.gray : colours.primary}
+                                            color={sim.currentResult >= 10 ? colours.tertiary : colours.primary}
                                         />
                                     </TouchableOpacity>
                                 </View>

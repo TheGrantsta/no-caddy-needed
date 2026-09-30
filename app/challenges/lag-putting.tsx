@@ -71,7 +71,7 @@ export default function LagPutting() {
                                         <MaterialIcons
                                             name="remove-circle"
                                             size={40}
-                                            color={sim.score <= 0 ? colours.gray : colours.primary}
+                                            color={sim.score <= 0 ? colours.tertiary : colours.primary}
                                         />
                                     </TouchableOpacity>
                                     <View style={{ marginHorizontal: 20 }}>
@@ -87,7 +87,7 @@ export default function LagPutting() {
                                         <MaterialIcons
                                             name="add-circle"
                                             size={40}
-                                            color={sim.score >= 15 ? colours.gray : colours.primary}
+                                            color={sim.score >= 15 ? colours.tertiary : colours.primary}
                                         />
                                     </TouchableOpacity>
                                 </View>

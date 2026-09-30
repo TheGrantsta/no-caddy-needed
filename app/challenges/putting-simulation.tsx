@@ -11,18 +11,18 @@ import { useEffect, useRef } from 'react';
 type PerformanceBand = 'pro' | 'd1' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
 
 interface BandInfo {
-  label: string;
-  maxPutts: number;
-  color: string;
+    label: string;
+    maxPutts: number;
+    color: string;
 }
 
 const PERFORMANCE_BANDS: Record<PerformanceBand, BandInfo> = {
-  pro: { label: 'PGA Pro', maxPutts: 29, color: '#00C851' },
-  d1: { label: 'D1 College', maxPutts: 30, color: '#2D5A3D' },
-  scratch: { label: 'Scratch', maxPutts: 31, color: '#4A7C59' },
-  '5hcp': { label: '5 Handicap', maxPutts: 32, color: '#6B9B7F' },
-  '10hcp': { label: '10 Handicap', maxPutts: 34, color: '#8CBBA4' },
-  '15hcp': { label: '15 Handicap', maxPutts: 36, color: '#ADCFC9' },
+    pro: { label: 'PGA Pro', maxPutts: 29, color: '#00C851' },
+    d1: { label: 'D1 College', maxPutts: 30, color: '#2D5A3D' },
+    scratch: { label: 'Scratch', maxPutts: 31, color: '#4A7C59' },
+    '5hcp': { label: '5 Handicap', maxPutts: 32, color: '#6B9B7F' },
+    '10hcp': { label: '10 Handicap', maxPutts: 34, color: '#8CBBA4' },
+    '15hcp': { label: '15 Handicap', maxPutts: 36, color: '#ADCFC9' },
 };
 
 export default function PuttingSimulation() {
@@ -77,7 +77,7 @@ export default function PuttingSimulation() {
                                         <MaterialIcons
                                             name="remove-circle"
                                             size={40}
-                                            color={sim.currentPutts <= 1 ? colours.gray : colours.primary}
+                                            color={sim.currentPutts <= 1 ? colours.tertiary : colours.primary}
                                         />
                                     </TouchableOpacity>
                                     <View style={{ marginHorizontal: 20 }}>
@@ -93,7 +93,7 @@ export default function PuttingSimulation() {
                                         <MaterialIcons
                                             name="add-circle"
                                             size={40}
-                                            color={sim.currentPutts >= 5 ? colours.gray : colours.primary}
+                                            color={sim.currentPutts >= 5 ? colours.tertiary : colours.primary}
                                         />
                                     </TouchableOpacity>
                                 </View>

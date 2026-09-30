@@ -74,7 +74,7 @@ export default function UpAndDownChallenge() {
                                         <MaterialIcons
                                             name="remove-circle"
                                             size={40}
-                                            color={sim.currentShots <= 1 ? colours.gray : colours.primary}
+                                            color={sim.currentShots <= 1 ? colours.tertiary : colours.primary}
                                         />
                                     </TouchableOpacity>
                                     <View style={{ marginHorizontal: 20 }}>
@@ -90,7 +90,7 @@ export default function UpAndDownChallenge() {
                                         <MaterialIcons
                                             name="add-circle"
                                             size={40}
-                                            color={sim.currentShots >= 4 ? colours.gray : colours.primary}
+                                            color={sim.currentShots >= 4 ? colours.tertiary : colours.primary}
                                         />
                                     </TouchableOpacity>
                                 </View>

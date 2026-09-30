@@ -1,8 +1,22 @@
 import { useReducer, useCallback } from 'react';
-import { pickWeightedDistances, getExpectedMakes } from '../assets/pgaPuttingBenchmarks';
+import { getExpectedMakes } from '../assets/pgaPuttingBenchmarks';
 
 export type SimulationPhase = 'in-progress' | 'complete';
 const TOTAL_HOLES = 18;
+const BASE_DISTANCES = [3, 8, 40, 14, 2, 5, 33, 16, 24, 9, 18, 52, 2, 28, 6, 4, 11, 21];
+
+function shuffleDistances(rng?: () => number): number[] {
+    const distances = [...BASE_DISTANCES];
+    const randomFn = rng || Math.random;
+
+    // Fisher-Yates shuffle
+    for (let i = distances.length - 1; i > 0; i--) {
+        const j = Math.floor(randomFn() * (i + 1));
+        [distances[i], distances[j]] = [distances[j], distances[i]];
+    }
+
+    return distances;
+}
 
 interface State {
     phase: SimulationPhase;
@@ -76,7 +90,7 @@ function reducer(state: State, action: Action): State {
 export function usePuttingSimulation(rng?: () => number) {
     const [state, dispatch] = useReducer(reducer, {
         phase: 'in-progress',
-        distances: pickWeightedDistances(TOTAL_HOLES, rng),
+        distances: shuffleDistances(rng),
         holeNumber: 1,
         putts: new Array(TOTAL_HOLES).fill(1),
         currentPutts: 1,
@@ -95,11 +109,11 @@ export function usePuttingSimulation(rng?: () => number) {
     }, []);
 
     const start = useCallback(() => {
-        dispatch({ type: 'reset', distances: pickWeightedDistances(TOTAL_HOLES, rng) });
+        dispatch({ type: 'reset', distances: shuffleDistances(rng) });
     }, [rng]);
 
     const reset = useCallback(() => {
-        dispatch({ type: 'reset', distances: pickWeightedDistances(TOTAL_HOLES, rng) });
+        dispatch({ type: 'reset', distances: shuffleDistances(rng) });
     }, [rng]);
 
     const currentDistance = state.distances[state.holeNumber - 1];

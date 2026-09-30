@@ -25,7 +25,7 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
                             <View style={styles.iconCircle}>
                                 <MaterialIcons name="adjust" size={36} color={colours.white} />
                             </View>
-                            <Text style={styles.navCardLabel}>PGA Putting Simulation</Text>
+                            <Text style={styles.navCardLabel}>Putting Simulation</Text>
                         </View>
                     </Link>
                 </View>

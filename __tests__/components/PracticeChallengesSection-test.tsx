@@ -34,7 +34,7 @@ describe('PracticeChallengesSection', () => {
         expect(getByText('Challenges')).toBeTruthy();
     });
 
-    it('renders PGA Putting Simulation challenge card', () => {
+    it('renders Putting Simulation challenge card', () => {
         const fadeAnim = new Animated.Value(1);
         const slideAnim = new Animated.Value(0);
 
@@ -42,6 +42,6 @@ describe('PracticeChallengesSection', () => {
             <PracticeChallengesSection fadeAnim={fadeAnim} slideAnim={slideAnim} />
         );
 
-        expect(getByText('PGA Putting Simulation')).toBeTruthy();
+        expect(getByText('Putting Simulation')).toBeTruthy();
     });
 });

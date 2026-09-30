@@ -65,7 +65,7 @@ describe('PuttingSimulation screen', () => {
 
         expect(insertDrillResultService).toHaveBeenCalled();
         const [name, passed] = insertDrillResultService.mock.calls[0];
-        expect(name).toBe('PGA Putting Simulation');
+        expect(name).toBe('Putting Simulation');
         expect(typeof passed).toBe('boolean');
     });
 

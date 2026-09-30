@@ -12,7 +12,7 @@ export default function PuttingSimulation() {
 
     const handleSave = async () => {
         const passed = sim.makesCount >= sim.expectedTourMakes;
-        const success = await insertDrillResultService('PGA Putting Simulation', passed, null, sim.makesCount);
+        const success = await insertDrillResultService('Putting Simulation', passed, null, sim.makesCount);
         showResult(success, 'Result saved', 'Result not saved');
     };
 

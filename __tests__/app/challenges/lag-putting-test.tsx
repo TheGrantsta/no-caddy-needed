@@ -30,28 +30,40 @@ jest.mock('../../../service/DbService', () => ({
 }));
 
 describe('LagPutting screen', () => {
-    it('renders putt 1 with reach Tee 2 instruction', () => {
+    it('renders score picker with instructions', () => {
         const { getByText, getByTestId } = render(<LagPutting />);
 
-        expect(getByText(/Putt 1 of/)).toBeTruthy();
-        expect(getByTestId('in-window-button')).toBeTruthy();
-        expect(getByTestId('short-button')).toBeTruthy();
+        expect(getByText(/Lag Putting Drill/)).toBeTruthy();
+        expect(getByText(/Task/)).toBeTruthy();
+        expect(getByTestId('score-display')).toBeTruthy();
+        expect(getByTestId('submit-button')).toBeTruthy();
     });
 
-    it('advances to putt 2 on successful putt 1', () => {
-        const { getByText, getByTestId } = render(<LagPutting />);
+    it('shows task instructions', () => {
+        const { getByText } = render(<LagPutting />);
 
-        fireEvent.press(getByTestId('in-window-button'));
-
-        expect(getByText(/Putt 2 of/)).toBeTruthy();
-        expect(getByTestId('past-tee3-button')).toBeTruthy();
+        expect(getByText(/Hit putts from 30–45 ft/)).toBeTruthy();
     });
 
-    it('shows complete view after drill ends', () => {
+    it('increments/decrements score (0-15)', () => {
+        const { getByTestId, getByText, getAllByText } = render(<LagPutting />);
+
+        fireEvent.press(getByTestId('increase-score-button'));
+        expect(getAllByText('1')[0]).toBeTruthy();
+
+        fireEvent.press(getByTestId('increase-score-button'));
+        expect(getAllByText('2')[0]).toBeTruthy();
+
+        fireEvent.press(getByTestId('decrease-score-button'));
+        expect(getAllByText('1')[0]).toBeTruthy();
+    });
+
+    it('shows complete view after submit', () => {
         const { getByText, getByTestId } = render(<LagPutting />);
 
-        fireEvent.press(getByTestId('in-window-button'));
-        fireEvent.press(getByTestId('short-button'));
+        fireEvent.press(getByTestId('increase-score-button'));
+        fireEvent.press(getByTestId('increase-score-button'));
+        fireEvent.press(getByTestId('submit-button'));
 
         expect(getByText(/Challenge complete/)).toBeTruthy();
         expect(getByTestId('play-again-button')).toBeTruthy();
@@ -60,20 +72,20 @@ describe('LagPutting screen', () => {
     it('displays score on completion', () => {
         const { getByText, getByTestId } = render(<LagPutting />);
 
-        fireEvent.press(getByTestId('in-window-button')); // putt 1
-        fireEvent.press(getByTestId('in-window-button')); // putt 2
-        fireEvent.press(getByTestId('in-window-button')); // putt 3
-        fireEvent.press(getByTestId('short-button'));     // putt 4 - ends
+        fireEvent.press(getByTestId('increase-score-button'));
+        fireEvent.press(getByTestId('increase-score-button'));
+        fireEvent.press(getByTestId('increase-score-button'));
+        fireEvent.press(getByTestId('submit-button'));
 
         expect(getByText(/Score: 3/)).toBeTruthy();
     });
 
-    it('auto-saves result when completing', async () => {
+    it('auto-saves result when submitting', async () => {
         const { getByTestId } = render(<LagPutting />);
         const { insertDrillResultService } = require('../../../service/DbService');
 
-        fireEvent.press(getByTestId('in-window-button'));
-        fireEvent.press(getByTestId('short-button'));
+        fireEvent.press(getByTestId('increase-score-button'));
+        fireEvent.press(getByTestId('submit-button'));
 
         await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -82,22 +94,23 @@ describe('LagPutting screen', () => {
         expect(name).toBe('Lag Putting');
     });
 
-    it('resets to putt 1 on play again', () => {
+    it('resets to score 0 on play again', () => {
         const { getByText, getByTestId } = render(<LagPutting />);
 
-        fireEvent.press(getByTestId('in-window-button'));
-        fireEvent.press(getByTestId('short-button'));
+        fireEvent.press(getByTestId('increase-score-button'));
+        fireEvent.press(getByTestId('submit-button'));
 
         fireEvent.press(getByTestId('play-again-button'));
 
-        expect(getByText(/Putt 1 of/)).toBeTruthy();
+        expect(getByText(/Lag Putting Drill/)).toBeTruthy();
+        expect(getByText('0')).toBeTruthy();
     });
 
     it('displays performance levels on completion', () => {
         const { getByText, getByTestId } = render(<LagPutting />);
 
-        fireEvent.press(getByTestId('in-window-button'));
-        fireEvent.press(getByTestId('short-button'));
+        fireEvent.press(getByTestId('increase-score-button'));
+        fireEvent.press(getByTestId('submit-button'));
 
         expect(getByText('Beginner')).toBeTruthy();
         expect(getByText('Pro')).toBeTruthy();

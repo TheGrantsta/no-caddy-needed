@@ -1,5 +1,6 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useAppToast } from '@/hooks/useAppToast';
@@ -38,7 +39,7 @@ export default function LagPutting() {
         return 'beginner';
     };
 
-    // Auto-save when drill completes
+    // Auto-save when completing
     useEffect(() => {
         if (sim.phase === 'complete' && !hasSaved.current) {
             hasSaved.current = true;
@@ -52,83 +53,54 @@ export default function LagPutting() {
                 <View style={styles.container}>
                     {sim.phase === 'in-progress' && (
                         <>
-                            <Text style={styles.headerText}>Putt {sim.puttNumber} of 6+</Text>
+                            <Text style={styles.headerText}>Lag Putting Drill</Text>
 
                             <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
-                                {sim.puttNumber === 1 ? (
-                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 32 }]}>
-                                        Reach Tee 2 (7 paces)
+                                <View style={{ marginBottom: 32, paddingVertical: 16, paddingHorizontal: 12, backgroundColor: colours.background, borderRadius: 8 }}>
+                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 12 }]}>Task</Text>
+                                    <Text style={[styles.normalText, { color: colours.text }]}>
+                                        Hit putts from 30–45 ft on a flat green. No hole needed. Start at Tee 1. First putt must reach Tee 2 (~21 ft). Each following putt must advance past the previous ball and stop before Tee 3 (~30 ft). Count how many putts land successfully in sequence before one fails.
                                     </Text>
-                                ) : (
-                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 32 }]}>
-                                        Stop before Tee 3, past ball {sim.puttNumber - 1}
-                                    </Text>
-                                )}
+                                </View>
 
-                                <Text style={[styles.normalText, { color: colours.gray, marginBottom: 16 }]}>
-                                    Successful putts: {sim.score}
-                                </Text>
-
-                                <View style={[styles.navRow, { gap: 12, marginTop: 24 }]}>
+                                <Text style={[styles.normalText, { color: colours.gray, marginBottom: 16 }]}>Successful putts</Text>
+                                <View style={[styles.navRow, { marginBottom: 32, justifyContent: 'center', alignItems: 'center' }]}>
                                     <TouchableOpacity
-                                        testID="in-window-button"
-                                        style={{
-                                            flex: 1,
-                                            backgroundColor: colours.primary,
-                                            borderRadius: 8,
-                                            paddingVertical: 14,
-                                            paddingHorizontal: 16,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                        }}
-                                        onPress={sim.recordInWindow}
+                                        testID="decrease-score-button"
+                                        onPress={() => sim.setScore(sim.score - 1)}
+                                        disabled={sim.score <= 0}
                                     >
-                                        <Text style={[styles.normalText, { color: colours.white, fontWeight: '600' }]}>
-                                            {sim.puttNumber === 1 ? 'Reached' : 'In window'}
+                                        <MaterialIcons
+                                            name="remove-circle"
+                                            size={40}
+                                            color={sim.score <= 0 ? colours.gray : colours.primary}
+                                        />
+                                    </TouchableOpacity>
+                                    <View style={{ marginHorizontal: 20 }}>
+                                        <Text testID="score-display" style={styles.headerText}>
+                                            {sim.score}
                                         </Text>
+                                    </View>
+                                    <TouchableOpacity
+                                        testID="increase-score-button"
+                                        onPress={() => sim.setScore(sim.score + 1)}
+                                        disabled={sim.score >= 15}
+                                    >
+                                        <MaterialIcons
+                                            name="add-circle"
+                                            size={40}
+                                            color={sim.score >= 15 ? colours.gray : colours.primary}
+                                        />
                                     </TouchableOpacity>
                                 </View>
 
-                                <View style={[styles.navRow, { gap: 12, marginTop: 12 }]}>
-                                    <TouchableOpacity
-                                        testID="short-button"
-                                        style={{
-                                            flex: 1,
-                                            borderWidth: 2,
-                                            borderColor: colours.primary,
-                                            borderRadius: 8,
-                                            paddingVertical: 14,
-                                            paddingHorizontal: 16,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                        }}
-                                        onPress={sim.recordShortOfPrevious}
-                                    >
-                                        <Text style={[styles.normalText, { color: colours.primary, fontWeight: '600' }]}>
-                                            {sim.puttNumber === 1 ? 'Short of Tee 2' : 'Short of ball'}
-                                        </Text>
-                                    </TouchableOpacity>
-                                    {sim.puttNumber > 1 && (
-                                        <TouchableOpacity
-                                            testID="past-tee3-button"
-                                            style={{
-                                                flex: 1,
-                                                borderWidth: 2,
-                                                borderColor: colours.primary,
-                                                borderRadius: 8,
-                                                paddingVertical: 14,
-                                                paddingHorizontal: 16,
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                            }}
-                                            onPress={sim.recordPastTee3}
-                                        >
-                                            <Text style={[styles.normalText, { color: colours.primary, fontWeight: '600' }]}>
-                                                Past Tee 3
-                                            </Text>
-                                        </TouchableOpacity>
-                                    )}
-                                </View>
+                                <TouchableOpacity
+                                    testID="submit-button"
+                                    style={[styles.onboardingOverlay.primaryButton]}
+                                    onPress={sim.submit}
+                                >
+                                    <Text style={styles.onboardingOverlay.primaryButtonText}>Submit</Text>
+                                </TouchableOpacity>
                             </View>
                         </>
                     )}

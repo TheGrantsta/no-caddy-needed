@@ -8,14 +8,9 @@ describe('useLagPuttingSimulation', () => {
             expect(result.current.phase).toBe('in-progress');
         });
 
-        it('starts at putt 1', () => {
+        it('starts with score 0', () => {
             const { result } = renderHook(() => useLagPuttingSimulation());
-            expect(result.current.puttNumber).toBe(1);
-        });
-
-        it('starts with empty results', () => {
-            const { result } = renderHook(() => useLagPuttingSimulation());
-            expect(result.current.results).toEqual([]);
+            expect(result.current.score).toBe(0);
         });
 
         it('is not complete initially', () => {
@@ -24,105 +19,55 @@ describe('useLagPuttingSimulation', () => {
         });
     });
 
-    describe('putt 1 handling', () => {
-        it('restarts if putt 1 is short of Tee 2', () => {
+    describe('setScore()', () => {
+        it('sets score value', () => {
             const { result } = renderHook(() => useLagPuttingSimulation());
 
             act(() => {
-                result.current.recordShortOfPrevious();
+                result.current.setScore(5);
             });
 
-            expect(result.current.phase).toBe('in-progress');
-            expect(result.current.puttNumber).toBe(1);
-            expect(result.current.results).toEqual([]);
+            expect(result.current.score).toBe(5);
         });
 
-        it('advances to putt 2 if putt 1 reaches Tee 2', () => {
+        it('clamps score to 0-15 range', () => {
             const { result } = renderHook(() => useLagPuttingSimulation());
 
             act(() => {
-                result.current.recordInWindow();
+                result.current.setScore(-1);
             });
 
-            expect(result.current.puttNumber).toBe(2);
-            expect(result.current.results).toEqual([1]);
-        });
-    });
-
-    describe('putt 2+ handling', () => {
-        it('continues if putt is in window and past previous', () => {
-            const { result } = renderHook(() => useLagPuttingSimulation());
+            expect(result.current.score).toBe(0);
 
             act(() => {
-                result.current.recordInWindow(); // putt 1
-                result.current.recordInWindow(); // putt 2
+                result.current.setScore(20);
             });
 
-            expect(result.current.puttNumber).toBe(3);
-            expect(result.current.results).toEqual([1, 1]);
-        });
-
-        it('ends drill if putt is short of previous', () => {
-            const { result } = renderHook(() => useLagPuttingSimulation());
-
-            act(() => {
-                result.current.recordInWindow(); // putt 1
-                result.current.recordShortOfPrevious(); // putt 2
-            });
-
-            expect(result.current.phase).toBe('complete');
-            expect(result.current.score).toBe(1);
-        });
-
-        it('ends drill if putt goes beyond Tee 3', () => {
-            const { result } = renderHook(() => useLagPuttingSimulation());
-
-            act(() => {
-                result.current.recordInWindow(); // putt 1
-                result.current.recordPastTee3(); // putt 2
-            });
-
-            expect(result.current.phase).toBe('complete');
-            expect(result.current.score).toBe(1);
+            expect(result.current.score).toBe(15);
         });
     });
 
-    describe('score calculation', () => {
-        it('calculates score as number of successful putts', () => {
+    describe('submit()', () => {
+        it('transitions to complete phase', () => {
             const { result } = renderHook(() => useLagPuttingSimulation());
 
             act(() => {
-                result.current.recordInWindow(); // putt 1
-                result.current.recordInWindow(); // putt 2
-                result.current.recordInWindow(); // putt 3
-                result.current.recordShortOfPrevious(); // putt 4 - ends
+                result.current.setScore(5);
+                result.current.submit();
             });
 
-            expect(result.current.score).toBe(3);
-        });
-
-        it('handles maximum sequence', () => {
-            const { result } = renderHook(() => useLagPuttingSimulation());
-
-            for (let i = 0; i < 6; i++) {
-                act(() => {
-                    result.current.recordInWindow();
-                });
-            }
-
-            expect(result.current.puttNumber).toBe(7);
-            expect(result.current.score).toBe(6);
+            expect(result.current.phase).toBe('complete');
+            expect(result.current.isComplete).toBe(true);
         });
     });
 
     describe('reset()', () => {
-        it('returns to in-progress at putt 1 with empty results', () => {
+        it('returns to in-progress with score 0', () => {
             const { result } = renderHook(() => useLagPuttingSimulation());
 
             act(() => {
-                result.current.recordInWindow();
-                result.current.recordInWindow();
-                result.current.recordShortOfPrevious();
+                result.current.setScore(7);
+                result.current.submit();
             });
 
             act(() => {
@@ -130,28 +75,8 @@ describe('useLagPuttingSimulation', () => {
             });
 
             expect(result.current.phase).toBe('in-progress');
-            expect(result.current.puttNumber).toBe(1);
-            expect(result.current.results).toEqual([]);
-        });
-    });
-
-    describe('isComplete', () => {
-        it('is true only after drill ends', () => {
-            const { result } = renderHook(() => useLagPuttingSimulation());
-
+            expect(result.current.score).toBe(0);
             expect(result.current.isComplete).toBe(false);
-
-            act(() => {
-                result.current.recordInWindow();
-            });
-
-            expect(result.current.isComplete).toBe(false);
-
-            act(() => {
-                result.current.recordShortOfPrevious();
-            });
-
-            expect(result.current.isComplete).toBe(true);
         });
     });
 });

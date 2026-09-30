@@ -26,48 +26,74 @@ export default function PuttingSimulation() {
                     {sim.phase === 'in-progress' && (
                         <>
                             <Text style={styles.headerText}>Hole {sim.holeNumber} of {sim.totalHoles}</Text>
-                            <Text style={styles.subHeaderText}>{sim.currentDistance} ft</Text>
 
-                            {/* Number picker for putts */}
-                            <View style={[styles.navRow, { marginVertical: 20, justifyContent: 'center', alignItems: 'center' }]}>
-                                <TouchableOpacity
-                                    testID="decrease-putts-button"
-                                    onPress={() => sim.setPutts(sim.currentPutts - 1)}
-                                    disabled={sim.currentPutts <= 1}
-                                >
-                                    <MaterialIcons
-                                        name="remove-circle"
-                                        size={40}
-                                        color={sim.currentPutts <= 1 ? colours.gray : colours.primary}
-                                    />
-                                </TouchableOpacity>
-                                <View style={{ marginHorizontal: 20 }}>
-                                    <Text testID="putt-count-display" style={styles.headerText}>
-                                        {sim.currentPutts} {sim.currentPutts === 1 ? 'putt' : 'putts'}
-                                    </Text>
+                            {/* Main content container with padding */}
+                            <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
+                                <Text style={[styles.subHeaderText, { marginBottom: 24 }]}>{sim.currentDistance} ft</Text>
+
+                                {/* Number picker for putts */}
+                                <View style={[styles.navRow, { marginVertical: 24, justifyContent: 'center', alignItems: 'center' }]}>
+                                    <TouchableOpacity
+                                        testID="decrease-putts-button"
+                                        onPress={() => sim.setPutts(sim.currentPutts - 1)}
+                                        disabled={sim.currentPutts <= 1}
+                                    >
+                                        <MaterialIcons
+                                            name="remove-circle"
+                                            size={40}
+                                            color={sim.currentPutts <= 1 ? colours.gray : colours.primary}
+                                        />
+                                    </TouchableOpacity>
+                                    <View style={{ marginHorizontal: 20 }}>
+                                        <Text testID="putt-count-display" style={styles.headerText}>
+                                            {sim.currentPutts} {sim.currentPutts === 1 ? 'putt' : 'putts'}
+                                        </Text>
+                                    </View>
+                                    <TouchableOpacity
+                                        testID="increase-putts-button"
+                                        onPress={() => sim.setPutts(sim.currentPutts + 1)}
+                                        disabled={sim.currentPutts >= 5}
+                                    >
+                                        <MaterialIcons
+                                            name="add-circle"
+                                            size={40}
+                                            color={sim.currentPutts >= 5 ? colours.gray : colours.primary}
+                                        />
+                                    </TouchableOpacity>
                                 </View>
-                                <TouchableOpacity
-                                    testID="increase-putts-button"
-                                    onPress={() => sim.setPutts(sim.currentPutts + 1)}
-                                    disabled={sim.currentPutts >= 5}
-                                >
-                                    <MaterialIcons
-                                        name="add-circle"
-                                        size={40}
-                                        color={sim.currentPutts >= 5 ? colours.gray : colours.primary}
-                                    />
-                                </TouchableOpacity>
-                            </View>
 
-                            {/* Navigation buttons - match Play section style */}
-                            <View style={[styles.navRow, { gap: 12 }]}>
-                                <TouchableOpacity
-                                    testID="previous-button"
-                                    style={[
-                                        {
+                                {/* Navigation buttons - match Play section style */}
+                                <View style={[styles.navRow, { gap: 12, marginTop: 24 }]}>
+                                    <TouchableOpacity
+                                        testID="previous-button"
+                                        style={[
+                                            {
+                                                flex: 1,
+                                                borderWidth: 2,
+                                                borderColor: colours.primary,
+                                                borderRadius: 8,
+                                                paddingVertical: 14,
+                                                paddingHorizontal: 16,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                flexDirection: 'row',
+                                                gap: 8,
+                                            },
+                                            sim.holeNumber === 1 && { opacity: 0.5 },
+                                        ]}
+                                        onPress={sim.goToPreviousHole}
+                                        disabled={sim.holeNumber === 1}
+                                    >
+                                        <MaterialIcons name="chevron-left" size={24} color={colours.primary} />
+                                        <Text style={[styles.normalText, { color: colours.primary, fontWeight: '600' }]}>
+                                            Previous
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        testID="next-button"
+                                        style={{
                                             flex: 1,
-                                            borderWidth: 2,
-                                            borderColor: colours.primary,
+                                            backgroundColor: colours.primary,
                                             borderRadius: 8,
                                             paddingVertical: 14,
                                             paddingHorizontal: 16,
@@ -75,37 +101,15 @@ export default function PuttingSimulation() {
                                             alignItems: 'center',
                                             flexDirection: 'row',
                                             gap: 8,
-                                        },
-                                        sim.holeNumber === 1 && { opacity: 0.5 },
-                                    ]}
-                                    onPress={sim.goToPreviousHole}
-                                    disabled={sim.holeNumber === 1}
-                                >
-                                    <MaterialIcons name="chevron-left" size={24} color={colours.primary} />
-                                    <Text style={[styles.normalText, { color: colours.primary, fontWeight: '600' }]}>
-                                        Previous
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    testID="next-button"
-                                    style={{
-                                        flex: 1,
-                                        backgroundColor: colours.primary,
-                                        borderRadius: 8,
-                                        paddingVertical: 14,
-                                        paddingHorizontal: 16,
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        flexDirection: 'row',
-                                        gap: 8,
-                                    }}
-                                    onPress={sim.goToNextHole}
-                                >
-                                    <Text style={[styles.normalText, { color: colours.white, fontWeight: '600' }]}>
-                                        Next
-                                    </Text>
-                                    <MaterialIcons name="chevron-right" size={24} color={colours.white} />
-                                </TouchableOpacity>
+                                        }}
+                                        onPress={sim.goToNextHole}
+                                    >
+                                        <Text style={[styles.normalText, { color: colours.white, fontWeight: '600' }]}>
+                                            Next
+                                        </Text>
+                                        <MaterialIcons name="chevron-right" size={24} color={colours.white} />
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </>
                     )}

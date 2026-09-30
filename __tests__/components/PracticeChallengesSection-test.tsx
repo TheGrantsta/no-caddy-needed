@@ -42,10 +42,10 @@ describe('PracticeChallengesSection', () => {
             <PracticeChallengesSection fadeAnim={fadeAnim} slideAnim={slideAnim} />
         );
 
-        expect(getByText('Putting Simulation')).toBeTruthy();
-        expect(getByText('Up-and-Down')).toBeTruthy();
-        expect(getByText('Short-Putting Ladder')).toBeTruthy();
-        expect(getByText('Lag Putting')).toBeTruthy();
+        expect(getByText('Putting sim')).toBeTruthy();
+        expect(getByText('Up & down')).toBeTruthy();
+        expect(getByText('Short putting')).toBeTruthy();
+        expect(getByText('Lag putting')).toBeTruthy();
     });
 
 });

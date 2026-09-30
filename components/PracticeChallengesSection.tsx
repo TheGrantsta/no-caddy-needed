@@ -15,10 +15,10 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
     const colours = useThemeColours();
 
     const challenges = [
-        { href: '../challenges/putting-simulation', icon: 'adjust', label: 'Putting Simulation' },
-        { href: '../challenges/up-and-down', icon: 'flag', label: 'Up-and-Down' },
-        { href: '../challenges/short-putting-ladder', icon: 'stairs', label: 'Short-Putting Ladder' },
-        { href: '../challenges/lag-putting', icon: 'trending-up', label: 'Lag Putting' },
+        { href: '../challenges/putting-simulation', icon: 'adjust', label: 'Putting sim' },
+        { href: '../challenges/up-and-down', icon: 'flag', label: 'Up & down' },
+        { href: '../challenges/short-putting-ladder', icon: 'stairs', label: 'Short putting' },
+        { href: '../challenges/lag-putting', icon: 'trending-up', label: 'Lag putting' },
     ];
 
     return (

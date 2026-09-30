@@ -29,8 +29,10 @@ export default function PuttingSimulation() {
 
                             {/* Main content container with padding */}
                             <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
-                                <Text style={[styles.normalText, { color: colours.gray, marginBottom: 8 }]}>Distance</Text>
-                                <Text style={[styles.subHeaderText, { marginBottom: 24 }]}>{sim.currentDistance} ft</Text>
+                                <View style={{ flexDirection: 'row', alignItems: 'baseline', marginBottom: 24, gap: 8 }}>
+                                    <Text style={styles.subHeaderText}>Distance</Text>
+                                    <Text style={styles.subHeaderText}>{sim.currentDistance} ft</Text>
+                                </View>
 
                                 {/* Number picker for putts */}
                                 <View style={[styles.navRow, { marginVertical: 24, justifyContent: 'center', alignItems: 'center' }]}>

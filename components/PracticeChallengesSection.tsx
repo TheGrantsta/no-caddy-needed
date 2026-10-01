@@ -4,6 +4,7 @@ import { Link } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
+import Chevrons from './Chevrons';
 
 interface Props {
     fadeAnim: Animated.Value;
@@ -20,6 +21,8 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
         { href: '../challenges/short-putting-ladder', icon: 'stairs', label: 'Short putting' },
         { href: '../challenges/lag-putting', icon: 'trending-up', label: 'Lag putting' },
     ];
+
+    const points: string[] = ['Delilberate: practice with a purpose', 'Variety: keep it interesing & challenging', 'Accountability: track progress & measure your performance', 'Stress: practice under pressure'];
 
     return (
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideAnim }] }}>
@@ -40,6 +43,10 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
                         ))}
                     </View>
                 ))}
+            </View>
+
+            <View style={styles.contentSection}>
+                <Chevrons heading='Principles' points={points} />
             </View>
         </Animated.View>
     );

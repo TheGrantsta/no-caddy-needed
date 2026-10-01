@@ -1,5 +1,6 @@
 import { insertHoleSinDetails, getHoleSinDetails, deleteHoleSinDetailsByHole, getAllHoleSinDetails, initialize } from '../../database/db';
-import * as SQLite from 'expo-sqlite';
+import { logError } from '../../service/ErrorLoggingService';
+import * as _SQLite from 'expo-sqlite'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 const mockExecAsync = jest.fn();
 const mockGetAllSync = jest.fn();
@@ -16,6 +17,10 @@ jest.mock('expo-sqlite', () => ({
         execSync: mockExecSync,
     })),
     openDatabaseSync: jest.fn(() => ({ getAllSync: mockGetAllSync, execSync: mockExecSync })),
+}));
+
+jest.mock('../../service/ErrorLoggingService', () => ({
+    logError: jest.fn(),
 }));
 
 beforeAll(async () => {
@@ -164,6 +169,15 @@ describe('insertHoleSinDetails', () => {
 
         const result = await insertHoleSinDetails(1, 1, 'Driver');
         expect(result).toBe(false);
+    });
+it('logsErrorOnceInsertholesindetailsFailureCase', async () => {
+        const mockLogError = logError as jest.Mock;
+        mockPrepareAsync.mockRejectedValueOnce(new Error('error'));
+
+        await insertHoleSinDetails(1, 1);
+
+        expect(mockLogError).toHaveBeenCalledTimes(1);
+        expect(mockLogError).toHaveBeenCalledWith('db.insertHoleSinDetails', expect.any(Error));
     });
 });
 

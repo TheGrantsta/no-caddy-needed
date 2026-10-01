@@ -24,7 +24,7 @@ const ONBOARDING_STEPS = [
 const WHATS_NEW = [
   'Smoother screen transitions when switching between Play, Practice and Performance sections',
   'Show pre-shot routine when entering scores',
-  'Improved wind direction layout and distance entry',
+  'Drills replaced with challenges to focus on skill development and performance improvement',
 ];
 
 const APP_VERSION = Constants.expoConfig?.version ?? '';
@@ -40,7 +40,7 @@ export default function HomeScreen() {
     settings.homeOnboardingSeen && settings.whatsNewVersionSeen !== APP_VERSION
   );
 
-  const { refreshing, onRefresh } = useFakeRefresh(() => {});
+  const { refreshing, onRefresh } = useFakeRefresh(() => { });
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);

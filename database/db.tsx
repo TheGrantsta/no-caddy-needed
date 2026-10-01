@@ -604,7 +604,6 @@ export const addHiddenRecent = async (type: 'course' | 'player', name: string): 
     } catch (e) {
         void logError('db.addHiddenRecent', e);
         success = false;
-        void logError('db.addHiddenRecent', e);
     } finally {
         await statement.finalizeAsync();
     }

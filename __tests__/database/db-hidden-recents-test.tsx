@@ -1,5 +1,6 @@
 import { addHiddenRecent, getDistinctCourseNames, getDistinctPlayerNames, initialize } from '../../database/db';
-import * as SQLite from 'expo-sqlite';
+import { logError } from '../../service/ErrorLoggingService';
+import * as _SQLite from 'expo-sqlite'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 const mockExecAsync = jest.fn();
 const mockGetAllSync = jest.fn();
@@ -16,6 +17,10 @@ jest.mock('expo-sqlite', () => ({
         execSync: mockExecSync,
     })),
     openDatabaseSync: jest.fn(() => ({ getAllSync: mockGetAllSync, execSync: mockExecSync })),
+}));
+
+jest.mock('../../service/ErrorLoggingService', () => ({
+    logError: jest.fn(),
 }));
 
 beforeAll(async () => {
@@ -73,6 +78,14 @@ describe('addHiddenRecent', () => {
         mockStatementExecuteAsync.mockRejectedValue(new Error('db error'));
         await addHiddenRecent('course', 'St Andrews');
         expect(mockStatementFinalizeAsync).toHaveBeenCalledTimes(1);
+    });
+
+    it('logsErrorOnceWhenInsertFails', async () => {
+        const mockLogError = logError as jest.Mock;
+        mockStatementExecuteAsync.mockRejectedValue(new Error('db error'));
+        await addHiddenRecent('course', 'St Andrews');
+        expect(mockLogError).toHaveBeenCalledTimes(1);
+        expect(mockLogError).toHaveBeenCalledWith('db.addHiddenRecent', expect.any(Error));
     });
 });
 

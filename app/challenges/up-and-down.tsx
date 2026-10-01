@@ -88,7 +88,7 @@ export default function UpAndDownChallenge() {
                         <ChallengeCompleteView
                             title="Challenge complete"
                             summary={
-                                <View style={{ marginBottom: 8, paddingVertical: 16, paddingHorizontal: 12, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.gray }}>
+                                <View style={{ marginBottom: 8, paddingVertical: 16, paddingHorizontal: 12, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.primary }}>
                                     <Text style={[styles.normalText, { color: colours.primary, marginBottom: 8 }]}>Up-and-down rate</Text>
                                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                         <Text style={styles.subHeaderText}>{sim.successPercentage}%</Text>

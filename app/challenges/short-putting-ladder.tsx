@@ -63,7 +63,7 @@ export default function ShortPuttingLadder() {
                                     <Text style={styles.subHeaderText}>{sim.currentLevel} ft</Text>
                                 </View>
 
-                                <Text style={[styles.normalText, { marginBottom: 16 }]}>Putts</Text>
+                                <Text style={[styles.subHeaderText, { marginBottom: 16 }]}>Putts</Text>
                                 <ChallengeNumberPicker
                                     value={sim.currentResult}
                                     onChange={sim.setResult}
@@ -88,8 +88,8 @@ export default function ShortPuttingLadder() {
                         <ChallengeCompleteView
                             title="Challenge complete"
                             summary={
-                                <View style={{ marginBottom: 8, paddingVertical: 16, paddingHorizontal: 12, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.gray }}>
-                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 8 }]}>Result</Text>
+                                <View style={{ marginBottom: 8, paddingVertical: 16, paddingHorizontal: 12, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.primary }}>
+                                    <Text style={styles.subHeaderText}>Result</Text>
                                     <Text style={styles.subHeaderText}>Total attempts: {sim.totalAttempts}</Text>
                                 </View>
                             }

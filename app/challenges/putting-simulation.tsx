@@ -91,7 +91,7 @@ export default function PuttingSimulation() {
                             title="Simulation complete"
                             summary={
                                 <View style={{ marginBottom: 16 }}>
-                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 8 }]}>Total putts</Text>
+                                    <Text style={styles.subHeaderText}>Total putts</Text>
                                     <Text style={styles.subHeaderText}>{totalPutts}</Text>
                                 </View>
                             }

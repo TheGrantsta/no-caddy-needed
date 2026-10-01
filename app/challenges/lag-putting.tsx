@@ -59,7 +59,7 @@ export default function LagPutting() {
                             <Text style={styles.headerText}>Lag Putting Challenge</Text>
 
                             <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
-                                <Text style={[styles.normalText, { marginBottom: 16 }]}>Total putts</Text>
+                                <Text style={styles.subHeaderText}>Total putts</Text>
                                 <ChallengeNumberPicker
                                     value={sim.score}
                                     onChange={sim.setScore}
@@ -90,8 +90,8 @@ export default function LagPutting() {
                         <ChallengeCompleteView
                             title="Challenge complete"
                             summary={
-                                <View style={{ marginBottom: 8, paddingVertical: 16, paddingHorizontal: 12, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.gray }}>
-                                    <Text style={[styles.normalText, { marginBottom: 8 }]}>Result</Text>
+                                <View style={{ marginBottom: 8, paddingVertical: 16, paddingHorizontal: 12, backgroundColor: colours.background, borderRadius: 8, borderWidth: 1, borderColor: colours.primary }}>
+                                    <Text style={styles.subHeaderText}>Result</Text>
                                     <Text style={styles.subHeaderText}>Score: {sim.score}</Text>
                                 </View>
                             }

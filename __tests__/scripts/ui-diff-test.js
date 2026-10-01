@@ -1,3 +1,4 @@
+/* eslint-env node, jest */
 /**
  * @jest-environment node
  */

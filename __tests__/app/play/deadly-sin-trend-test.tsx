@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, within } from '@testing-library/react-native';
 import DeadlySinTrendScreen from '../../../app/play/deadly-sin-trend';
-import { getAllDeadlySinsRoundsService, getAllHoleSinDetailsService, DeadlySinsRound, HoleSinDetails } from '../../../service/DbService';
+import { getAllDeadlySinsRoundsService, getAllHoleSinDetailsService, DeadlySinsRound, _HoleSinDetails } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,

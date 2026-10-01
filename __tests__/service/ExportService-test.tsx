@@ -1,7 +1,7 @@
 import * as ExportService from '../../service/ExportService';
 import * as DbService from '../../service/DbService';
 import * as FileSystem from 'expo-file-system/legacy';
-import * as Sharing from 'expo-sharing';
+import * as _Sharing from 'expo-sharing';
 
 jest.mock('../../service/DbService', () => ({
     getAllRoundHistoryService: jest.fn(),

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { _Text, _View } from 'react-native';
 import { render } from '@testing-library/react-native';
 import PuttingProximityChart from '../../components/PuttingProximityChart';
 import { PuttingProximity } from '../../service/DbService';

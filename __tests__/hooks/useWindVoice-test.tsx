@@ -233,7 +233,7 @@ describe('useWindVoice', () => {
 	});
 
 	it('should reset adjustedYards when mic is turned off by user', async () => {
-		let resultHandler: ((event: any) => void) | null = null;
+		let _resultHandler: ((event: any) => void) | null = null;
 
 		mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
 			if (eventName === 'result') {
@@ -401,7 +401,7 @@ describe('useWindVoice', () => {
 	});
 
 	it('resets adjustedDisplayValue when mic is turned off by user', async () => {
-		let resultHandler: ((event: any) => void) | null = null;
+		let _resultHandler: ((event: any) => void) | null = null;
 
 		mockUseSpeechRecognitionEvent.mockImplementation((eventName: string, handler: (event: any) => void) => {
 			if (eventName === 'result') {

@@ -93,7 +93,7 @@ jest.mock('expo-router', () => {
         </View>
     );
 
-    const Tabs = ({ children, screenOptions }: { children: React.ReactNode; screenOptions: any }) => (
+    const Tabs = ({ children, _screenOptions }: { children: React.ReactNode; screenOptions: any }) => (
         <View testID="tab-bar">
             {children}
         </View>

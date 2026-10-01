@@ -58,7 +58,7 @@ jest.mock('../../service/FirebaseService', () => ({
 }));
 
 jest.mock('@react-navigation/native', () => ({
-    useFocusEffect: jest.fn((callback) => {
+    useFocusEffect: jest.fn((_callback) => {
         // In tests, don't call the callback to avoid infinite re-renders
     }),
 }));

@@ -1,4 +1,4 @@
-import { resolveBand, BandComparator, BandDefinition } from '../../utils/performanceBands';
+import { resolveBand, _BandComparator, BandDefinition } from '../../utils/performanceBands';
 
 describe('resolveBand', () => {
     const bandLadderGte: BandDefinition<string>[] = [

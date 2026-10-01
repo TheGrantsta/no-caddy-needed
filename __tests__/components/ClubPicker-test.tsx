@@ -88,7 +88,7 @@ describe('ClubPicker', () => {
 
     it('updates button text after selection', async () => {
         const onSelectClub = jest.fn();
-        const { getByTestId, getByText, queryByText } = render(
+        const { getByTestId, _getByText, _queryByText } = render(
             <ClubPicker clubs={mockClubs} onSelectClub={onSelectClub} />
         );
 

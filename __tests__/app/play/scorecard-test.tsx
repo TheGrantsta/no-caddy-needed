@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { act, render, fireEvent, waitFor, within } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService, getAllRoundHistoryService, getRoundScoreBreakdownService, getClubDistancesService, getHoleSinDetailsService, replaceHoleSinDetailsService, deleteHoleSinDetailsService, getPuttingStatsService, insertPuttingStatsService, PENALTY_TYPES, DOUBLE_CHIP_REASONS } from '../../../service/DbService';
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService, getAllRoundHistoryService, getRoundScoreBreakdownService, getClubDistancesService, getHoleSinDetailsService, replaceHoleSinDetailsService, deleteHoleSinDetailsService, getPuttingStatsService, insertPuttingStatsService, _PENALTY_TYPES, _DOUBLE_CHIP_REASONS } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -75,7 +75,7 @@ const mockDeleteRound = deleteRoundService as jest.Mock;
 const mockGetHoleDeadlySinsService = getHoleDeadlySinsService as jest.Mock;
 const mockReplaceHoleDeadlySinsService = replaceHoleDeadlySinsService as jest.Mock;
 const mockGetHolesWithSinsForRoundService = getHolesWithSinsForRoundService as jest.Mock;
-const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
+const _mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
 const mockGetAllRoundHistory = getAllRoundHistoryService as jest.Mock;
 const mockGetRoundScoreBreakdown = getRoundScoreBreakdownService as jest.Mock;
 const mockGetClubDistances = getClubDistancesService as jest.Mock;
@@ -83,7 +83,7 @@ const mockGetHoleSinDetails = getHoleSinDetailsService as jest.Mock;
 const mockReplaceHoleSinDetails = replaceHoleSinDetailsService as jest.Mock;
 const mockDeleteHoleSinDetails = deleteHoleSinDetailsService as jest.Mock;
 const mockGetPuttingStats = getPuttingStatsService as jest.Mock;
-const mockInsertPuttingStats = insertPuttingStatsService as jest.Mock;
+const _mockInsertPuttingStats = insertPuttingStatsService as jest.Mock;
 
 const makeHistoryRound = (id: number) => ({
     Id: id, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: null, Created_At: '',

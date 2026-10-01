@@ -33,7 +33,7 @@ import {
     insertHoleSinDetailsService,
     getHoleSinDetailsService,
     deleteHoleSinDetailsService,
-    PENALTY_TYPES,
+    _PENALTY_TYPES,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
@@ -191,14 +191,14 @@ const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
 const mockSaveHoleNote = saveHoleNoteService as jest.Mock;
 const mockGetParAverages = getParAveragesService as jest.Mock;
 const mockGetHoleDeadlySins = getHoleDeadlySinsService as jest.Mock;
-const mockGetHoleScores = getHoleScoresService as jest.Mock;
+const _mockGetHoleScores = getHoleScoresService as jest.Mock;
 const mockGetHolesWithSinsForRound = getHolesWithSinsForRoundService as jest.Mock;
 const mockHapticsImpact = Haptics.impactAsync as jest.Mock;
-const mockInsertHoleSinDetails = insertHoleSinDetailsService as jest.Mock;
-const mockGetHoleSinDetails = getHoleSinDetailsService as jest.Mock;
+const _mockInsertHoleSinDetails = insertHoleSinDetailsService as jest.Mock;
+const _mockGetHoleSinDetails = getHoleSinDetailsService as jest.Mock;
 const mockDeleteHoleSinDetailsService = deleteHoleSinDetailsService as jest.Mock;
-const mockGetPuttingStats = getPuttingStatsService as jest.Mock;
-const mockInsertPuttingStats = insertPuttingStatsService as jest.Mock;
+const _mockGetPuttingStats = getPuttingStatsService as jest.Mock;
+const _mockInsertPuttingStats = insertPuttingStatsService as jest.Mock;
 
 describe('Play screen', () => {
     beforeEach(() => {
@@ -988,7 +988,7 @@ describe('Play screen', () => {
                 { Id: 1, RoundId: 5, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
             ]);
 
-            const { getByText, getByTestId, queryByText, queryByTestId } = render(<Play />);
+            const { getByText, getByTestId, _queryByText, _queryByTestId } = render(<Play />);
 
             await act(async () => {
                 fireEvent.press(getByTestId('continue-round-button'));
@@ -1054,7 +1054,7 @@ describe('Play screen', () => {
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
 
-            const { getByTestId, getByText } = render(<Play />);
+            const { getByTestId, _getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');

@@ -76,7 +76,7 @@ describe('Dropdown', () => {
 
     it('displays selected option in toggle button', () => {
         const onSelectOption = jest.fn();
-        const { getByText, queryByText } = render(
+        const { getByText, _queryByText } = render(
             <Dropdown options={mockOptions} selectedOption="Option B" testIDPrefix="test" onSelectOption={onSelectOption} />
         );
 

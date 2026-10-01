@@ -1,7 +1,7 @@
 import {
     getRoundScoreBreakdownService,
-    getHolesPlayedForRoundService,
-    getDeadlySinsForRoundService,
+    _getHolesPlayedForRoundService,
+    _getDeadlySinsForRoundService,
 } from '../../service/DbService';
 import {
     getRoundById,
@@ -19,7 +19,7 @@ jest.mock('../../database/db', () => ({
 
 const mockGetRoundById = getRoundById as jest.Mock;
 const mockGetDeadlySinsForRound = getDeadlySinsForRound as jest.Mock;
-const mockGetHolesPlayedForRound = require('../../database/db').getHolesPlayedForRound as jest.Mock;
+const _mockGetHolesPlayedForRound = require('../../database/db').getHolesPlayedForRound as jest.Mock;
 const mockGetAllPuttingStatsWithThreePutts = require('../../database/db').getAllPuttingStatsWithThreePutts as jest.Mock;
 
 describe('getRoundScoreBreakdownService', () => {

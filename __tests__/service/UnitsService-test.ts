@@ -1,4 +1,4 @@
-import { yardsToMetres, metresToYards, yardsToDisplayUnit, displayUnitToYards, extractDistanceAndUnit, DistanceUnit, METRES_PER_YARD } from '../../service/UnitsService';
+import { yardsToMetres, metresToYards, yardsToDisplayUnit, displayUnitToYards, extractDistanceAndUnit, _DistanceUnit, METRES_PER_YARD } from '../../service/UnitsService';
 
 describe('UnitsService', () => {
 	describe('yardsToMetres', () => {

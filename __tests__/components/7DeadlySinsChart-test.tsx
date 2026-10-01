@@ -245,7 +245,7 @@ describe('DeadlySinsChart component', () => {
                 { Id: 2, RoundId: 1, HoleNumber: 2, TroubleOffTeeClub: 'Driver', PenaltyType: undefined, BogeysInside9IronClub: undefined },
             ]);
 
-            const { getByTestId, queryByTestId } = render(<DeadlySinsChart rounds={troubleRounds} />);
+            const { _getByTestId, queryByTestId } = render(<DeadlySinsChart rounds={troubleRounds} />);
 
             const breakdownSection = queryByTestId('7deadly-sins-breakdown-section-0');
             expect(breakdownSection).toBeTruthy();

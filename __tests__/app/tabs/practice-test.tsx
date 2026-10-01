@@ -1,5 +1,5 @@
 import React, { act } from 'react';
-import { Animated, FlatList, ScrollView } from 'react-native';
+import { Animated, _FlatList, ScrollView } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import Practice from '../../../app/(tabs)/practice';
 import {
@@ -30,7 +30,7 @@ jest.mock('react-native-gesture-handler', () => {
 });
 
 jest.mock('@react-navigation/native', () => ({
-    useFocusEffect: jest.fn((callback) => {
+    useFocusEffect: jest.fn((_callback) => {
         // In tests, don't call the callback to avoid infinite re-renders
         // The callback is still set up, just not executed
     }),

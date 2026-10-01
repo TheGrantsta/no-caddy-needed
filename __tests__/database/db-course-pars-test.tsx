@@ -1,5 +1,5 @@
 import { getHoleParsForCourse, initialize } from '../../database/db';
-import * as SQLite from 'expo-sqlite';
+import * as _SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
 const mockGetAllSync = jest.fn();

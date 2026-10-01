@@ -7,7 +7,6 @@ describe('Colour palettes', () => {
 
     it('dark theme keeps original primary accent', () => {
         expect(darkGreen.primary).toBe('#2D5A3D');
-        expect(darkGreen.mutedYellow).toBe('#e6be36');
     });
 
     it('darkGreen has expected background value', () => {

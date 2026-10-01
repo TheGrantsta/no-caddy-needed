@@ -8,7 +8,6 @@ export type ThemeColours = {
     red: string;
     white: string;
     black: string;
-    mutedYellow: string;
     errorText: string;
     backgroundLight: string;
     border: string;
@@ -26,7 +25,6 @@ export const darkGreen: ThemeColours = {
     white: '#fff',
     red: '#fd0303',
     black: '#000',
-    mutedYellow: '#e6be36',
     errorText: '#fd0303',
     backgroundLight: '#fff',
     border: '#fff',

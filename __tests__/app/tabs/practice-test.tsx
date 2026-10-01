@@ -6,7 +6,6 @@ import {
     getSettingsService,
     saveSettingsService,
     getAllDrillHistoryService,
-    getDrillStatsByTypeService,
 } from '../../../service/DbService';
 import { logEvent } from '../../../service/FirebaseService';
 
@@ -52,7 +51,6 @@ jest.mock('../../../service/DbService', () => ({
     getSettingsService: jest.fn(),
     saveSettingsService: jest.fn().mockResolvedValue(true),
     getAllDrillHistoryService: jest.fn().mockReturnValue([]),
-    getDrillStatsByTypeService: jest.fn().mockReturnValue([]),
 }));
 
 jest.mock('../../../service/FirebaseService', () => ({
@@ -62,7 +60,6 @@ jest.mock('../../../service/FirebaseService', () => ({
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
 const mockGetAllDrillHistoryService = getAllDrillHistoryService as jest.Mock;
-const mockGetDrillStatsByTypeService = getDrillStatsByTypeService as jest.Mock;
 const mockLogEvent = logEvent as jest.Mock;
 
 const defaultSettings = {
@@ -82,7 +79,6 @@ describe('Practice', () => {
         jest.clearAllMocks();
         mockGetSettingsService.mockReturnValue(defaultSettings);
         mockGetAllDrillHistoryService.mockReturnValue([]);
-        mockGetDrillStatsByTypeService.mockReturnValue([]);
     });
 
     it('rendersWithoutCrashing', () => {

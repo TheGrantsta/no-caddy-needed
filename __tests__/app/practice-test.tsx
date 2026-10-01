@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import View from '../../app/(tabs)/practice';
-import { getAllDrillHistoryService, getDrillStatsByTypeService, getSettingsService, saveSettingsService } from '@/service/DbService';
+import { getAllDrillHistoryService, getSettingsService, saveSettingsService } from '@/service/DbService';
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -27,7 +27,6 @@ jest.mock('../../hooks/useOrientation', () => ({
 
 jest.mock('../../service/DbService', () => ({
     getAllDrillHistoryService: jest.fn(),
-    getDrillStatsByTypeService: jest.fn(),
     getSettingsService: jest.fn().mockReturnValue({
         theme: 'dark',
         notificationsEnabled: true,
@@ -42,7 +41,6 @@ jest.mock('../../service/DbService', () => ({
 
 // Explicitly cast as Jest mock functions
 const mockedGetAllDrillHistoryService = getAllDrillHistoryService as jest.Mock;
-const mockedGetDrillStatsByTypeService = getDrillStatsByTypeService as jest.Mock;
 const mockGetSettingsService = getSettingsService as jest.Mock;
 
 jest.mock('react-native-gesture-handler', () => {
@@ -76,7 +74,6 @@ describe('Practice page ', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockedGetAllDrillHistoryService.mockReturnValue([{ Id: 1, Name: 'Fake', Result: 1, Score: 5, Created_At: '' }]);
-        mockedGetDrillStatsByTypeService.mockReturnValue([]);
         mockGetSettingsService.mockReturnValue({
             theme: 'dark',
             notificationsEnabled: true,

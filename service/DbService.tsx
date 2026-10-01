@@ -127,55 +127,6 @@ export const getAllDrillHistoryService = () => {
     return history;
 }
 
-export type DrillStats = {
-    name: string;
-    total: number;
-    met: number;
-    successRate: number;
-    averageScore: number | null;
-    minScore: number | null;
-    maxScore: number | null;
-};
-
-export const getDrillStatsByTypeService = (): DrillStats[] => {
-    const drills = getAllDrillHistory();
-    const statsMap = new Map<string, { total: number; met: number; scores: number[] }>();
-
-    drills.forEach((drill) => {
-        const name = drill.Name;
-        const current = statsMap.get(name) || { total: 0, met: 0, scores: [] };
-        current.total += 1;
-        if (drill.Result === 1) {
-            current.met += 1;
-        }
-        if (drill.Score !== null && drill.Score !== undefined) {
-            current.scores.push(drill.Score);
-        }
-        statsMap.set(name, current);
-    });
-
-    const stats: DrillStats[] = [];
-    statsMap.forEach((value, key) => {
-        const avgScore = value.scores.length > 0
-            ? Math.round((value.scores.reduce((a, b) => a + b, 0) / value.scores.length) * 10) / 10
-            : null;
-        const minScore = value.scores.length > 0 ? Math.min(...value.scores) : null;
-        const maxScore = value.scores.length > 0 ? Math.max(...value.scores) : null;
-
-        stats.push({
-            name: key,
-            total: value.total,
-            met: value.met,
-            successRate: Math.round((value.met / value.total) * 100),
-            averageScore: avgScore,
-            minScore,
-            maxScore
-        });
-    });
-
-    return stats.sort((a, b) => b.total - a.total);
-}
-
 export type DeadlySinsRound = {
     Id: number;
     ThreePutts: number;

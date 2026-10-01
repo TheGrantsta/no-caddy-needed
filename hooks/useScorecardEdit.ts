@@ -1,27 +1,6 @@
 import { useState, useCallback } from 'react';
 import { DeadlySinsValues, RoundHoleScore } from '../service/DbService';
 
-export interface ScorecardEditState {
-    isEditing: boolean;
-    editedScores: RoundHoleScore[];
-    selectedScore: { holeNumber: number; playerId: number } | null;
-    showSaveConfirm: boolean;
-    showDeleteConfirm: boolean;
-    editedSins: DeadlySinsValues | null;
-    sinsHoleNumber: number | null;
-    selectedOffTeeClub: string | undefined;
-    selectedPenaltyType: string | undefined;
-    selectedBogeysClub: string | undefined;
-    selectedDoubleChipReason: string | undefined;
-    sinDetailsClubError: boolean;
-    sinDetailsPenaltyError: boolean;
-    sinDetailsBogeysClubError: boolean;
-    sinDetailsDoubleChipReasonError: boolean;
-    hadPriorSinDetails: boolean;
-    puttingStats: { firstPutt?: number; secondPutt?: number; secondIsLong: boolean } | null;
-    hadPriorPuttingStats: boolean;
-}
-
 const INITIAL_SINS: DeadlySinsValues = {
     threePutts: false,
     doubleBogeys: false,

@@ -35,7 +35,7 @@ const WedgeChartGrid = ({ data, suggestedClubs, unit = 'yards' }: Props) => {
             </View>
 
             {/* Data rows for each club number */}
-            {data.clubs.map((club, clubIdx) => (
+            {data.clubs.map((club, _clubIdx) => (
                 <View key={`row-${club.club}`} style={styles.wedgeChartGrid.dataRow}>
                     <View style={styles.wedgeChartGrid.swingTypeCell}>
                         <Text style={styles.wedgeChartGrid.swingTypeText}>

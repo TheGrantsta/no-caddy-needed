@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useToggle } from '../hooks/useToggle';
 import { Image, LogBox, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';

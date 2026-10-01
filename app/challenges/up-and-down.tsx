@@ -2,7 +2,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
-import { useAppToast } from '@/hooks/useAppToast';
 import { useUpAndDownSimulation } from '@/hooks/useUpAndDownSimulation';
 import { insertDrillResultService } from '@/service/DbService';
 import ChallengeNumberPicker from '@/components/ChallengeNumberPicker';
@@ -25,7 +24,6 @@ const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; minPercentage:
 export default function UpAndDownChallenge() {
     const styles = useStyles();
     const colours = useThemeColours();
-    const { showResult } = useAppToast();
     const sim = useUpAndDownSimulation();
     const hasSaved = useRef(false);
 

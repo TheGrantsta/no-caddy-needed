@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';

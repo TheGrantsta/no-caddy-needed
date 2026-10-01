@@ -2,18 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import { Animated, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import HoleScoreInput from '../../components/HoleScoreInput';
 import HoleNoteInput from '../../components/HoleNoteInput';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
-import PuttingStatsInput from '../../components/PuttingStatsInput';
-import SinDetailsInput from '../../components/SinDetailsInput';
-import WindDisplay from '../../components/WindDisplay';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import WedgeChartScreen from '../play/wedge-chart';
-import PlayerSetup from '../../components/PlayerSetup';
 import Scorecard from '../../components/Scorecard';
 import CtaButton from '../../components/CtaButton';
 import {
@@ -48,11 +44,8 @@ import {
     deleteHoleSinDetailsService,
     Round,
     RoundPlayer,
-    DeadlySinsRound,
     DeadlySinsValues,
     MultiplayerRoundScorecard,
-    ParAverages,
-    PuttingStats,
     ClubDistance,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
@@ -67,7 +60,6 @@ import { useFakeRefresh } from '../../hooks/useFakeRefresh';
 import { useSectionTransition } from '../../hooks/useSectionTransition';
 import { useToggle } from '../../hooks/useToggle';
 import { useHoleLifecycle } from '../../hooks/useHoleLifecycle';
-import PhaseScore from '../../components/PhaseScore';
 import PhaseStats from '../../components/PhaseStats';
 import PhaseSinDetails from '../../components/PhaseSinDetails';
 import PhasePutting from '../../components/PhasePutting';
@@ -90,12 +82,6 @@ const BAD_HOLE_MESSAGES = [
     'One bad hole doesn\'t define your round. Keep grinding.',
     'Just a bump in the road. You\'ve got this!',
 ];
-
-const formatScore = (score: number): string => {
-    if (score === 0) return 'E';
-    if (score > 0) return `+${score}`;
-    return `${score}`;
-};
 
 export default function Play() {
     const styles = useStyles();
@@ -170,7 +156,6 @@ export default function Play() {
         () => setRoundHistory(getAllRoundHistoryService())
     );
 
-    const router = useRouter();
     const [settings, setSettings] = useState(getSettingsService());
     const [showOnboarding, , setShowOnboarding] = useToggle(false);
     const [historyFilter, setHistoryFilter] = useState<1 | 10 | 'all'>('all');
@@ -684,10 +669,6 @@ export default function Play() {
     );
     const parAverages = useMemo(
         () => getParAveragesService(filteredRoundHistory),
-        [filteredRoundHistory]
-    );
-    const filteredRoundIds = useMemo(
-        () => new Set(filteredRoundHistory.map(r => r.Id)),
         [filteredRoundHistory]
     );
     return (

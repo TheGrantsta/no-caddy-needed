@@ -34,7 +34,7 @@ export default function RoundEntry({
     historyFilter,
     onHistoryFilterChange,
     incompleteRound,
-    notificationId,
+    _notificationId,
     showPlayerSetup,
     onShowPlayerSetup,
     onCancelPlayerSetup,

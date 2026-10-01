@@ -13,11 +13,11 @@ interface Props {
 }
 
 export default function PhaseStats({
-    holeNumber,
+    _holeNumber,
     holePar,
     sins,
     onSinsChange,
-    players,
+    _players,
     userScore,
 }: Props) {
     return (

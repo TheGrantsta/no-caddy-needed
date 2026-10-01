@@ -1,15 +1,5 @@
 import { useState, useCallback } from 'react';
-import { DeadlySinsValues, RoundHoleScore } from '../service/DbService';
-
-const INITIAL_SINS: DeadlySinsValues = {
-    threePutts: false,
-    doubleBogeys: false,
-    bogeysPar5: false,
-    bogeysInside9Iron: false,
-    doubleChips: false,
-    troubleOffTee: false,
-    penalties: false,
-};
+import { RoundHoleScore } from '../service/DbService';
 
 export function useScorecardEdit() {
     const [isEditing, setIsEditing] = useState(false);

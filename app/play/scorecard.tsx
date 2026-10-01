@@ -1,14 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import RoundScorecard from '../../components/RoundScorecard';
 import Scorecard from '../../components/Scorecard';
 import ScoreEditor from '../../components/ScoreEditor';
 import SinEditPanel from '../../components/SinEditPanel';
 import ScorecardActionButtons from '../../components/ScorecardActionButtons';
-import CtaButton from '../../components/CtaButton';
 import { useAppToast } from '../../hooks/useAppToast';
 import { useScorecardEdit } from '../../hooks/useScorecardEdit';
 import {
@@ -28,15 +26,12 @@ import {
     deleteHoleSinDetailsService,
     getPuttingStatsService,
     insertPuttingStatsService,
-    RoundHoleScore,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
     DeadlySinsValues,
     Round,
     RoundScoreBreakdown,
     ClubDistance,
-    HoleSinDetailsInput,
-    PuttingStats,
 } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';

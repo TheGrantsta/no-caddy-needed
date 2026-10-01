@@ -2,7 +2,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
-import { useAppToast } from '@/hooks/useAppToast';
 import { useLagPuttingSimulation } from '@/hooks/useLagPuttingSimulation';
 import { insertDrillResultService } from '@/service/DbService';
 import ChallengeNumberPicker from '@/components/ChallengeNumberPicker';
@@ -28,7 +27,6 @@ const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; minScore: numb
 export default function LagPutting() {
     const styles = useStyles();
     const colours = useThemeColours();
-    const { showResult } = useAppToast();
     const sim = useLagPuttingSimulation();
     const hasSaved = useRef(false);
 

@@ -20,7 +20,7 @@ type Props = {
 };
 
 const PuttingStatsInput = ({
-    holePar,
+    _holePar,
     threePuttSelected,
     onStatsChange,
     initialFirstPutt,

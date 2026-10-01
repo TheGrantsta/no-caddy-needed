@@ -928,16 +928,6 @@ function get(sql: string) {
     return rows;
 };
 
-type SinFrequencies = {
-    ThreePutts: number; DoubleBogeys: number; BogeysPar5: number;
-    BogeysInside9Iron: number; DoubleChips: number; TroubleOffTee: number; Penalties: number;
-};
-
-const ZERO_SIN_FREQUENCIES: SinFrequencies = {
-    ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0,
-    BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0,
-};
-
 export const getAllRoundHoleScoresWithContext = () => {
     const sql = `
         SELECT rhs.RoundId, r.CourseName, r.Created_At, rhs.HoleNumber, rhs.HolePar, rhs.Score

@@ -47,7 +47,7 @@ describe('LagPutting screen', () => {
     });
 
     it('increments/decrements score (0-15)', () => {
-        const { getByTestId, getByText, getAllByText } = render(<LagPutting />);
+        const { getByTestId, _getByText, getAllByText } = render(<LagPutting />);
 
         fireEvent.press(getByTestId('increase-score-button'));
         expect(getAllByText('1')[0]).toBeTruthy();

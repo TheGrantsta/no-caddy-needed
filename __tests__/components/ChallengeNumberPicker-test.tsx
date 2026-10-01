@@ -17,7 +17,7 @@ jest.mock('@/hooks/useStyles', () => ({
 }));
 
 jest.mock('@expo/vector-icons', () => ({
-    MaterialIcons: ({ name, size, color, testID }: any) => null,
+    MaterialIcons: ({ _name, _size, _color, _testID }: any) => null,
 }));
 
 describe('ChallengeNumberPicker', () => {

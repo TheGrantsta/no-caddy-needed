@@ -1,8 +1,6 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
-import { useThemeColours } from '@/context/ThemeContext';
-import { useAppToast } from '@/hooks/useAppToast';
 import { usePuttingSimulation } from '@/hooks/usePuttingSimulation';
 import { insertDrillResultService } from '@/service/DbService';
 import ChallengeNumberPicker from '@/components/ChallengeNumberPicker';
@@ -24,8 +22,6 @@ const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; maxPutts: numb
 
 export default function PuttingSimulation() {
     const styles = useStyles();
-    const colours = useThemeColours();
-    const { showResult } = useAppToast();
     const sim = usePuttingSimulation();
     const hasSaved = useRef(false);
 
@@ -91,7 +87,7 @@ export default function PuttingSimulation() {
                             title="Simulation complete"
                             summary={
                                 <View style={{ marginBottom: 16 }}>
-                                    <Text style={[styles.normalText, { color: colours.gray, marginBottom: 8 }]}>Total putts</Text>
+                                    <Text style={styles.subHeaderText}>Total putts</Text>
                                     <Text style={styles.subHeaderText}>{totalPutts}</Text>
                                 </View>
                             }

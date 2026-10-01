@@ -394,39 +394,6 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
-    drill: StyleSheet.create({
-        contentText: {
-            marginTop: 5,
-            fontSize: fontSizes.normal,
-            color: c.white,
-        },
-        toggleWrapper: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            width: 150,
-        },
-        toggleContainer: {
-            width: 45,
-            height: 15,
-            borderRadius: 10,
-            backgroundColor: c.backgroundLight,
-            justifyContent: 'center',
-        },
-        toggleOn: {
-            backgroundColor: c.primary,
-        },
-        toggleCircle: {
-            width: 20,
-            height: 20,
-            borderRadius: 10,
-            backgroundColor: c.backgroundLight,
-            alignSelf: 'flex-start',
-        },
-        circleOn: {
-            alignSelf: 'flex-end',
-        },
-    }),
-
     holeScoreInput: StyleSheet.create({
         container: {
             paddingTop: 15,
@@ -1525,28 +1492,6 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
-    themedText: StyleSheet.create({
-        default: {
-            fontSize: fontSizes.smallText,
-            lineHeight: 24,
-        },
-        defaultSemiBold: {
-            fontSize: fontSizes.smallText,
-            lineHeight: 24,
-            fontWeight: '600',
-        },
-        title: {
-            fontSize: fontSizes.header,
-            fontWeight: 'bold',
-            lineHeight: 32,
-        },
-        link: {
-            lineHeight: 30,
-            fontSize: fontSizes.smallText,
-            color: '#0a7ea4',
-        },
-    }),
-
     errorBoundary: StyleSheet.create({
         container: {
             flex: 1,
@@ -1704,14 +1649,6 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
-    practiceScreen: StyleSheet.create({
-        page: {
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-    }),
-
     screenWrapper: StyleSheet.create({
         container: {
             flex: 1,
@@ -1791,19 +1728,6 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 10,
             fontSize: 18,
             fontWeight: 'bold',
-        },
-    }),
-
-    notFound: StyleSheet.create({
-        container: {
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 20,
-        },
-        link: {
-            marginTop: 15,
-            paddingVertical: 15,
         },
     }),
 

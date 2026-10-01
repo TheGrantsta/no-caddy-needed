@@ -30,7 +30,7 @@ export default function Reminders() {
         return d;
     });
     const [refreshKey, setRefreshKey] = useState(0);
-    const [swipedOpen, setSwipedOpen] = useState<Set<number>>(new Set());
+    const [, setSwipedOpen] = useState<Set<number>>(new Set());
     const [isSaving, setIsSaving] = useState(false);
 
     const { refreshing, onRefresh } = useFakeRefresh(() => {

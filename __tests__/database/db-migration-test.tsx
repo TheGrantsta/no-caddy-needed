@@ -1,11 +1,11 @@
 import { initialize, amendTable, deleteRound } from '../../database/db';
-import * as SQLite from 'expo-sqlite';
+import * as _SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
 const mockGetAllSync = jest.fn();
 const mockExecSync = jest.fn();
-const mockStatementExecuteAsync = jest.fn();
-const mockStatementFinalizeAsync = jest.fn().mockResolvedValue(undefined);
+const _mockStatementExecuteAsync = jest.fn();
+const _mockStatementFinalizeAsync = jest.fn().mockResolvedValue(undefined);
 const mockPrepareAsync = jest.fn();
 
 jest.mock('expo-sqlite', () => ({

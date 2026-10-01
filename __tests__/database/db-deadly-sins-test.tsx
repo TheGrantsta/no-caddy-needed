@@ -1,5 +1,6 @@
 import { insertHoleDeadlySins, getDeadlySinsForRound, getAllDeadlySinsRoundTotals, getHoleDeadlySins, deleteHoleDeadlySinsByHole, getHolesWithSinsForRound, initialize } from '../../database/db';
-import * as SQLite from 'expo-sqlite';
+import { logError } from '../../service/ErrorLoggingService';
+import * as _SQLite from 'expo-sqlite'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 const mockExecAsync = jest.fn();
 const mockGetAllSync = jest.fn();
@@ -16,6 +17,10 @@ jest.mock('expo-sqlite', () => ({
         execSync: mockExecSync,
     })),
     openDatabaseSync: jest.fn(() => ({ getAllSync: mockGetAllSync, execSync: mockExecSync })),
+}));
+
+jest.mock('../../service/ErrorLoggingService', () => ({
+    logError: jest.fn(),
 }));
 
 beforeAll(async () => {
@@ -87,6 +92,16 @@ describe('insertHoleDeadlySins', () => {
         const result = await insertHoleDeadlySins(1, 1, allFalse);
 
         expect(result).toBe(false);
+    });
+
+    it('logsErrorOnceWhenInsertFails', async () => {
+        const mockLogError = logError as jest.Mock;
+        mockPrepareAsync.mockRejectedValue(new Error('DB error'));
+
+        await insertHoleDeadlySins(1, 1, allFalse);
+
+        expect(mockLogError).toHaveBeenCalledTimes(1);
+        expect(mockLogError).toHaveBeenCalledWith('db.insertHoleDeadlySins', expect.any(Error));
     });
 
     it('includes all seven sin columns in the SQL', async () => {
@@ -336,6 +351,16 @@ describe('deleteHoleDeadlySinsByHole', () => {
         const result = await deleteHoleDeadlySinsByHole(1, 1);
 
         expect(result).toBe(false);
+    });
+
+    it('logsErrorOnceWhenDeleteFails', async () => {
+        const mockLogError = logError as jest.Mock;
+        mockPrepareAsync.mockRejectedValue(new Error('DB error'));
+
+        await deleteHoleDeadlySinsByHole(1, 1);
+
+        expect(mockLogError).toHaveBeenCalledTimes(1);
+        expect(mockLogError).toHaveBeenCalledWith('db.deleteHoleDeadlySinsByHole', expect.any(Error));
     });
 
     it('finalizes statement after successful delete', async () => {

@@ -8,7 +8,6 @@ import ClearWedgeChartButton from '../../components/ClearWedgeChartButton';
 import ClearWedgeChartConfirmation from '../../components/ClearWedgeChartConfirmation';
 import { getWedgeChartService, saveWedgeChartService, WedgeChartData, getSettingsService, saveSettingsService } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
-import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
 import { useToggle } from '../../hooks/useToggle';
@@ -21,7 +20,6 @@ const ONBOARDING_STEPS = [
 
 export default function WedgeChartScreen() {
     const styles = useStyles();
-    const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
     const { showResult } = useAppToast();
     const [data, setData] = useState(getWedgeChartService());

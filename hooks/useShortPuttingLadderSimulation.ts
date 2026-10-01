@@ -1,8 +1,6 @@
 import { useReducer, useCallback } from 'react';
-import { SimulationPhase, clampValue, writeAtIndex } from '../utils/simulationState';
+import { SimulationPhase, writeAtIndex } from '../utils/simulationState';
 const LEVELS = [4, 5, 6, 7, 8, 9, 10]; // 7 levels total
-const MIN_LEVEL = 4;
-const MAX_LEVEL = 10;
 
 interface State {
     phase: SimulationPhase;

@@ -1,12 +1,11 @@
 import React, { act } from 'react';
-import { Animated, FlatList, ScrollView } from 'react-native';
+import { Animated, _FlatList, ScrollView } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import Practice from '../../../app/(tabs)/practice';
 import {
     getSettingsService,
     saveSettingsService,
     getAllDrillHistoryService,
-    getDrillStatsByTypeService,
 } from '../../../service/DbService';
 import { logEvent } from '../../../service/FirebaseService';
 
@@ -31,7 +30,7 @@ jest.mock('react-native-gesture-handler', () => {
 });
 
 jest.mock('@react-navigation/native', () => ({
-    useFocusEffect: jest.fn((callback) => {
+    useFocusEffect: jest.fn((_callback) => {
         // In tests, don't call the callback to avoid infinite re-renders
         // The callback is still set up, just not executed
     }),
@@ -52,7 +51,6 @@ jest.mock('../../../service/DbService', () => ({
     getSettingsService: jest.fn(),
     saveSettingsService: jest.fn().mockResolvedValue(true),
     getAllDrillHistoryService: jest.fn().mockReturnValue([]),
-    getDrillStatsByTypeService: jest.fn().mockReturnValue([]),
 }));
 
 jest.mock('../../../service/FirebaseService', () => ({
@@ -62,7 +60,6 @@ jest.mock('../../../service/FirebaseService', () => ({
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockSaveSettingsService = saveSettingsService as jest.Mock;
 const mockGetAllDrillHistoryService = getAllDrillHistoryService as jest.Mock;
-const mockGetDrillStatsByTypeService = getDrillStatsByTypeService as jest.Mock;
 const mockLogEvent = logEvent as jest.Mock;
 
 const defaultSettings = {
@@ -82,7 +79,6 @@ describe('Practice', () => {
         jest.clearAllMocks();
         mockGetSettingsService.mockReturnValue(defaultSettings);
         mockGetAllDrillHistoryService.mockReturnValue([]);
-        mockGetDrillStatsByTypeService.mockReturnValue([]);
     });
 
     it('rendersWithoutCrashing', () => {

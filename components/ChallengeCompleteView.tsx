@@ -42,7 +42,7 @@ export default function ChallengeCompleteView({
                 </View>
             )}
 
-            <Text style={[styles.normalText, { color: colours.gray, marginBottom: 16, marginTop: summary ? 0 : 24 }]}>
+            <Text style={[styles.normalText, { color: colours.primary, marginBottom: 16, marginTop: summary ? 0 : 24 }]}>
                 {bandsSectionLabel}
             </Text>
 
@@ -58,7 +58,7 @@ export default function ChallengeCompleteView({
                             backgroundColor: isUserBand ? band.color : 'transparent',
                             borderRadius: 8,
                             borderWidth: isUserBand ? 0 : 1,
-                            borderColor: isUserBand ? 'transparent' : colours.gray,
+                            borderColor: isUserBand ? 'transparent' : colours.primary,
                         }}
                     >
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -73,7 +73,7 @@ export default function ChallengeCompleteView({
                             <Text
                                 style={[
                                     styles.normalText,
-                                    { color: isUserBand ? colours.white : colours.gray },
+                                    { color: isUserBand ? colours.white : colours.primary },
                                 ]}
                             >
                                 {band.thresholdLabel}

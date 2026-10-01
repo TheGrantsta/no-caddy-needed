@@ -50,7 +50,7 @@ export default function SinEditPanel({
     selectedDoubleChipReason,
     onDoubleChipReasonChange,
     showDoubleChipReasonError,
-    puttingStats,
+    _puttingStats,
     onPuttingStatsChange,
     initialFirstPutt,
     initialSecondPutt,

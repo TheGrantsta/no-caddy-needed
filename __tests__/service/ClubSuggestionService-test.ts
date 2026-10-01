@@ -1,4 +1,4 @@
-import { findClubSuggestions, ClubSuggestion, findNearestClubDistance, ClubDistanceSuggestion } from '../../service/ClubSuggestionService';
+import { findClubSuggestions, _ClubSuggestion, findNearestClubDistance, _ClubDistanceSuggestion } from '../../service/ClubSuggestionService';
 import { WedgeChartData, ClubDistance } from '../../service/DbService';
 
 describe('findClubSuggestions', () => {

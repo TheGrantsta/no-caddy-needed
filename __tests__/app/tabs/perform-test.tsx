@@ -1,5 +1,5 @@
 import React, { act } from 'react';
-import { Animated, FlatList, ScrollView } from 'react-native';
+import { Animated, _FlatList, ScrollView } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import Perform from '../../../app/(tabs)/perform';
 

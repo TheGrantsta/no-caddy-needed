@@ -49,7 +49,7 @@ describe('ShortPuttingLadder screen', () => {
     });
 
     it('increments/decrements putts (1-10)', () => {
-        const { getByTestId, getByText, getAllByText } = render(<ShortPuttingLadder />);
+        const { getByTestId, _getByText, getAllByText } = render(<ShortPuttingLadder />);
 
         fireEvent.press(getByTestId('increase-result-button'));
         expect(getAllByText('2')[0]).toBeTruthy();

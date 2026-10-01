@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColours } from '@/context/ThemeContext';
-import { DeadlySinsRound, getAllHoleSinDetailsService, HoleSinDetails } from '@/service/DbService';
+import { DeadlySinsRound, getAllHoleSinDetailsService } from '@/service/DbService';
 import { sortDeadlySinsByFrequency, SIN_DETAIL_FIELDS } from '@/service/deadlySinCategories';
 import { useStyles } from '@/hooks/useStyles';
 

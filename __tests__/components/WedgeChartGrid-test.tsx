@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react-native';
+import { render, _screen } from '@testing-library/react-native';
 import WedgeChartGrid from '@/components/WedgeChartGrid';
 import { WedgeChartData } from '@/service/DbService';
 
@@ -91,7 +91,7 @@ describe('WedgeChartGrid', () => {
             { club: '58°', name: 'Three-quarter', distance: 39 },
         ];
 
-        const { UNSAFE_getAllByType, queryByText } = render(
+        const { _UNSAFE_getAllByType, queryByText } = render(
             <WedgeChartGrid data={dataWithMultipleDistances} suggestedClubs={suggestedClubs} />,
         );
 

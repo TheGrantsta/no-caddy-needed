@@ -55,7 +55,7 @@ export default function Random() {
     const { landscapePadding } = useOrientation();
     const [formState, resetForm] = useForm({ range: '30-100', increment: '10' });
     const [randomNumber, setRandomNumber] = useState(0);
-    const [micActive, toggleMic, setMicActive] = useToggle(false);
+    const [micActive, , setMicActive] = useToggle(false);
     const isStoppingRef = useRef(false);
 
     const { refreshing, onRefresh } = useFakeRefresh(() => {

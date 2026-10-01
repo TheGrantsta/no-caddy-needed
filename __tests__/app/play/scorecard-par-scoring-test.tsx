@@ -2,18 +2,18 @@ import React from 'react';
 import { act, render, fireEvent, waitFor } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
 import {
-    getRoundScorecardService,
+    _getRoundScorecardService,
     getMultiplayerScorecardService,
     updateScorecardService,
-    deleteRoundService,
+    _deleteRoundService,
     getHoleDeadlySinsService,
-    replaceHoleDeadlySinsService,
+    _replaceHoleDeadlySinsService,
     getHolesWithSinsForRoundService,
-    loadCourseNotesService,
-    getPuttingStatsService,
-    insertPuttingStatsService,
-    PENALTY_TYPES,
-    DOUBLE_CHIP_REASONS,
+    _loadCourseNotesService,
+    _getPuttingStatsService,
+    _insertPuttingStatsService,
+    _PENALTY_TYPES,
+    _DOUBLE_CHIP_REASONS,
 } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, _fireEvent } from '@testing-library/react-native';
 import Wind from '../../../app/tools/wind';
 
 jest.mock('../../../context/ThemeContext', () => ({

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Animated, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from "react";
+import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";

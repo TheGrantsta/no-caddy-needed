@@ -9,6 +9,7 @@ import ChallengeCompleteView from '@/components/ChallengeCompleteView';
 import { resolveBand } from '@/utils/performanceBands';
 import { useEffect, useRef } from 'react';
 import Chevrons from '@/components/Chevrons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const setupPoints: string[] = ['Place tee 1 in the ground', 'Tee 2 21\' away', 'Tee 3 a further 9\' away'];
 
@@ -73,7 +74,10 @@ export default function LagPutting() {
                                     style={[styles.onboardingOverlay.primaryButton, { marginBottom: 32 }]}
                                     onPress={sim.submit}
                                 >
-                                    <Text style={styles.onboardingOverlay.primaryButtonText}>Finish</Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                                        <Text style={styles.onboardingOverlay.primaryButtonText}>Finish</Text>
+                                        <MaterialIcons name="check" size={20} color={colours.white} />
+                                    </View>
                                 </TouchableOpacity>
 
                                 <Chevrons heading='Setup' points={setupPoints} />

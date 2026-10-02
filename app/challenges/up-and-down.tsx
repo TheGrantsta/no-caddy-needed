@@ -42,7 +42,7 @@ export default function UpAndDownChallenge() {
     useEffect(() => {
         if (sim.phase === 'complete' && !hasSaved.current) {
             hasSaved.current = true;
-            insertDrillResultService('Up-and-Down Challenge', sim.upAndDownCount >= 5, null, sim.successPercentage);
+            insertDrillResultService('Up-and-down Challenge', sim.upAndDownCount >= 5, null, sim.successPercentage);
         }
     }, [sim.phase, sim.upAndDownCount, sim.successPercentage]);
 

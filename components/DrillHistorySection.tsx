@@ -65,7 +65,7 @@ export default function DrillHistorySection({
 
                             {displayedDrillHistory.map((item, index) => {
                                 const formattedScore = item.Score !== undefined
-                                    ? item.Name === 'Up-and-Down Challenge'
+                                    ? item.Name === 'Up-and-down Challenge'
                                         ? `${item.Score}%`
                                         : String(item.Score)
                                     : '—';

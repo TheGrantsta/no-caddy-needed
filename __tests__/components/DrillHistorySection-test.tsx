@@ -29,9 +29,9 @@ describe('DrillHistorySection', () => {
         jest.clearAllMocks();
     });
 
-    it('displays Up-and-Down Challenge score with percent sign', () => {
+    it('displays Up-and-down Challenge score with percent sign', () => {
         const drillHistory = [
-            { Name: 'Up-and-Down Challenge', Score: 100, Created_At: '01/10' },
+            { Name: 'Up-and-down Challenge', Score: 100, Created_At: '01/10' },
         ];
 
         const { getByText } = render(
@@ -42,7 +42,7 @@ describe('DrillHistorySection', () => {
                 allDrillHistory={drillHistory}
                 displayedDrillHistory={drillHistory}
                 isLoadingMore={false}
-                onLoadMore={() => {}}
+                onLoadMore={() => { }}
             />
         );
 
@@ -62,7 +62,7 @@ describe('DrillHistorySection', () => {
                 allDrillHistory={drillHistory}
                 displayedDrillHistory={drillHistory}
                 isLoadingMore={false}
-                onLoadMore={() => {}}
+                onLoadMore={() => { }}
             />
         );
 
@@ -83,7 +83,7 @@ describe('DrillHistorySection', () => {
                 allDrillHistory={drillHistory}
                 displayedDrillHistory={drillHistory}
                 isLoadingMore={false}
-                onLoadMore={() => {}}
+                onLoadMore={() => { }}
             />
         );
 

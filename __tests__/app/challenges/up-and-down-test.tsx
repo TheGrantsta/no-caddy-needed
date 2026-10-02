@@ -71,7 +71,7 @@ describe('UpAndDownChallenge screen', () => {
 
         expect(insertDrillResultService).toHaveBeenCalled();
         const [name] = insertDrillResultService.mock.calls[0];
-        expect(name).toBe('Up-and-Down Challenge');
+        expect(name).toBe('Up-and-down Challenge');
     });
 
     it('allows navigating between holes', () => {

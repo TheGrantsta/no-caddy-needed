@@ -13,7 +13,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 const setupPoints: string[] = ['Place tee 1 in the ground', 'Tee 2 21\' away', 'Tee 3 a further 9\' away'];
 
-const howToPlayPoints: string[] = ['First putt must reach tee 2', 'Each following putt must advance past the previous ball & stop before tee 3', 'Count how many putts land successfully in sequence before one fails'];
+const howToPlayPoints: string[] = ['First putt must reach tee 2', 'Each following putt must stop past the previous ball & before tee 3', 'Count successful putts in sequence before one fails'];
 
 type PerformanceBand = 'pro' | 'scratch' | 'single' | 'mid' | 'beginner';
 
@@ -75,15 +75,18 @@ export default function LagPutting() {
                                     onPress={sim.submit}
                                 >
                                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                                        <Text style={styles.onboardingOverlay.primaryButtonText}>Finish</Text>
+                                        <Text style={styles.onboardingOverlay.primaryButtonText}>Submit</Text>
                                         <MaterialIcons name="check" size={20} color={colours.white} />
                                     </View>
                                 </TouchableOpacity>
 
-                                <Chevrons heading='Setup' points={setupPoints} />
+                                <View style={styles.contentSection}>
+                                    <Chevrons heading='Setup' points={setupPoints} />
+                                </View>
 
-                                <Chevrons heading='How to play' points={howToPlayPoints} />
-
+                                <View style={styles.contentSection}>
+                                    <Chevrons heading='How to play' points={howToPlayPoints} />
+                                </View>
                             </View>
                         </>
                     )}

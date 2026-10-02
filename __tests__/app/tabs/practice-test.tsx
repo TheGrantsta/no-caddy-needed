@@ -123,7 +123,7 @@ describe('Practice', () => {
     it('showsNoDrillHistoryWhenEmpty', () => {
         const { getByTestId, getByText } = render(<Practice />);
         fireEvent.press(getByTestId('practice-sub-menu-history'));
-        expect(getByText('No test history yet')).toBeTruthy();
+        expect(getByText('No challenge history yet')).toBeTruthy();
     });
 
     it('showsDrillHistoryTextWhenDataExists', () => {

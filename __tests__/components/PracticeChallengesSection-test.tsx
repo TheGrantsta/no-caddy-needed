@@ -43,7 +43,7 @@ describe('PracticeChallengesSection', () => {
         );
 
         expect(getByText('Putting sim')).toBeTruthy();
-        expect(getByText('Up & down')).toBeTruthy();
+        expect(getByText('Up-and-down')).toBeTruthy();
         expect(getByText('Short putting')).toBeTruthy();
         expect(getByText('Lag putting')).toBeTruthy();
     });

@@ -83,10 +83,10 @@ describe('Perform page ', () => {
         it('shows the onboarding overlay when not seen before', () => {
             mockGetSettingsService.mockReturnValue({ ...baseSettings, performOnboardingSeen: false });
 
-            const { getByTestId, getByText } = render(<View />);
+            const { getByTestId, queryAllByText } = render(<View />);
 
             expect(getByTestId('onboarding-overlay')).toBeTruthy();
-            expect(getByText('Performance guide')).toBeTruthy();
+            expect(queryAllByText('Performance').length).toBeGreaterThan(0);
         });
 
         it('hides the onboarding overlay when already seen', () => {

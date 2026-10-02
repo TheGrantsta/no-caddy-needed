@@ -24,7 +24,7 @@ export default function WedgeChartHeader({ onInfoPress }: Props) {
                 <Text style={[styles.headerText, styles.marginTop]}>Wedge chart</Text>
             </View>
             <Text style={[styles.normalText, styles.marginBottom]}>
-                Wedge carry distances NOT total
+                Carry distance, not total
             </Text>
         </View>
     );

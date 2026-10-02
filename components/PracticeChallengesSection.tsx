@@ -17,7 +17,7 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
 
     const challenges = [
         { href: '../challenges/putting-simulation', icon: 'adjust', label: 'Putting sim' },
-        { href: '../challenges/up-and-down', icon: 'flag', label: 'Up & down' },
+        { href: '../challenges/up-and-down', icon: 'flag', label: 'Up-and-down' },
         { href: '../challenges/short-putting-ladder', icon: 'stairs', label: 'Short putting' },
         { href: '../challenges/lag-putting', icon: 'trending-up', label: 'Lag putting' },
     ];

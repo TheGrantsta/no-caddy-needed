@@ -77,7 +77,7 @@ export default function DistancesScreen() {
             <OnboardingOverlay
                 visible={showOnboarding}
                 onDismiss={handleDismissOnboarding}
-                title="Club Distances"
+                title="Distances"
                 steps={ONBOARDING_STEPS}
             />
         </GestureHandlerRootView>

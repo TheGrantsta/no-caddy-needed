@@ -140,7 +140,7 @@ describe('Practice page ', () => {
         fireEvent.press(subMenuItem);
 
         // With infinite scroll, there's one header row with these labels
-        expect(getAllByText('Test').length).toBeGreaterThanOrEqual(1);
+        expect(getAllByText('Challenge').length).toBeGreaterThanOrEqual(1);
         expect(getAllByText('Score').length).toBeGreaterThanOrEqual(1);
         expect(getAllByText('Date').length).toBeGreaterThanOrEqual(1);
     });
@@ -154,7 +154,7 @@ describe('Practice page ', () => {
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('No test history yet')).toBeTruthy();
+        expect(getByText('No challenge history yet')).toBeTruthy();
     });
 
     it('renders correctly drill history items', () => {

@@ -153,7 +153,7 @@ export default function Perform() {
       <OnboardingOverlay
         visible={showOnboarding}
         onDismiss={handleDismissOnboarding}
-        title="Performance guide"
+        title="Performance"
         steps={ONBOARDING_STEPS}
       />
     </GestureHandlerRootView>

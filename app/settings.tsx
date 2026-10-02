@@ -192,7 +192,7 @@ export default function Settings() {
       <OnboardingOverlay
         visible={showOnboarding}
         onDismiss={handleDismissOnboarding}
-        title="Settings guide"
+        title="Settings"
         steps={ONBOARDING_STEPS}
       />
     </GestureHandlerRootView >

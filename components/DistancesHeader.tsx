@@ -24,7 +24,7 @@ export default function DistancesHeader({ onInfoPress }: Props) {
                 <Text style={[styles.headerText, styles.marginTop]}>Distances</Text>
             </View>
             <Text style={[styles.normalText, styles.marginBottom]}>
-                Club carry distances NOT total
+                Carry distance, not total
             </Text>
         </View>
     );

@@ -17,7 +17,7 @@ import DrillHistorySection from "@/components/DrillHistorySection";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
 
 const ONBOARDING_STEPS = [
-  { text: 'Practice with purpose — use challenges and tools to sharpen your game.' },
+  { text: 'Practise with purpose — use challenges and tools to sharpen your game.' },
   { text: 'Try the tools section for tempo training and random shot selection to keep your practice varied.' },
   { text: 'Check your history to track results over time and spot areas for improvement.' },
 ];

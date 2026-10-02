@@ -799,7 +799,7 @@ export default function Play() {
                                             <TouchableOpacity testID="putting-info-button" onPress={() => setShowPuttingInfo(true)} style={{ padding: 4 }}>
                                                 <MaterialIcons name="info-outline" size={24} color={colours.primary} />
                                             </TouchableOpacity>
-                                            <Text style={styles.normalText}>Hole {currentHole} — Putting Stats</Text>
+                                            <Text style={styles.normalText}>Hole {currentHole} — Putting stats</Text>
                                         </View>
                                         <PhasePutting
                                             key={`putting-${currentHole}`}
@@ -911,7 +911,7 @@ export default function Play() {
 
             <AcknowledgeOverlay
                 visible={showPuttingInfo}
-                title="Putting Stats"
+                title="Putting stats"
                 text={
                     "If you 1-putted (holed out with the first putt), submit with 2nd-putt default value of 0.\n\n" +
                     "Short and Long refer to whether your ball finished short of the hole or past it — not left or right.\n\n" +

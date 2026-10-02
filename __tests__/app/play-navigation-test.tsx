@@ -389,7 +389,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('play-sub-menu-distances'));
 
-            expect(getByText('Club carry distances NOT total')).toBeTruthy();
+            expect(getByText('Carry distance, not total')).toBeTruthy();
         });
 
         it('shows wedge chart section when Wedge chart is pressed', async () => {
@@ -408,7 +408,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('play-sub-menu-wedge-chart'));
 
-            expect(getByText('Wedge carry distances NOT total')).toBeTruthy();
+            expect(getByText('Carry distance, not total')).toBeTruthy();
         });
 
         it('returns to score input when Play is pressed after switching', async () => {
@@ -439,7 +439,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('play-sub-menu-distances'));
 
-            expect(getByText('Club carry distances NOT total')).toBeTruthy();
+            expect(getByText('Carry distance, not total')).toBeTruthy();
             expect(queryByTestId('start-round-button')).toBeNull();
         });
 
@@ -448,7 +448,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('play-sub-menu-wedge-chart'));
 
-            expect(getByText('Wedge carry distances NOT total')).toBeTruthy();
+            expect(getByText('Carry distance, not total')).toBeTruthy();
             expect(queryByTestId('start-round-button')).toBeNull();
         });
 

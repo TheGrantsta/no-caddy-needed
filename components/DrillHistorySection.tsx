@@ -44,7 +44,7 @@ export default function DrillHistorySection({
                         <>
                             <View style={styles.divider} />
                             <Text style={styles.normalText}>
-                                No test history yet
+                                No challenge history yet
                             </Text>
                         </>
                     )}
@@ -53,7 +53,7 @@ export default function DrillHistorySection({
                         <View>
                             <View style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 10, marginTop: 10 }}>
                                 <Text style={[styles.subHeaderText, { flex: 0.6 }]} numberOfLines={1}>
-                                    Test
+                                    Challenge
                                 </Text>
                                 <Text style={[styles.subHeaderText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
                                     Score

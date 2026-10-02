@@ -241,7 +241,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                     testID="wind-aim-hint"
                     style={styles.windDisplay.aimHint}
                 >
-                    Aim your phone at the target
+                    Point your phone at your target
                 </Text>
             )}
         </View>

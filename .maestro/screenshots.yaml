@@ -123,7 +123,7 @@ appId: com.grantsta.golf.nocaddyneeded
 
 # Screenshot 5: Wedge Chart
 - extendedWaitUntil:
-    visible: "Wedge carry distances NOT total"
+    visible: "Carry distance, not total"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/02C-play-wedge-chart
 

@@ -105,9 +105,9 @@ describe('Random number generator page', () => {
         const { getByText } = render(<Random />);
 
         expect(getByText('Purpose')).toBeTruthy();
-        expect(getByText('Random: mimic play when practising')).toBeTruthy();
+        expect(getByText('Realism: mimic play when practising')).toBeTruthy();
         expect(getByText('Focus: use your pre-shot routine')).toBeTruthy();
-        expect(getByText('Evaluate: use your post-shot routine')).toBeTruthy();
+        expect(getByText('Evaluation: use your post-shot routine')).toBeTruthy();
     });
 
     it('shows error when range is empty and Run is pressed', () => {

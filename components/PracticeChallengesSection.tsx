@@ -22,7 +22,7 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
         { href: '../challenges/lag-putting', icon: 'trending-up', label: 'Lag putting' },
     ];
 
-    const points: string[] = ['Purpose: practice with intent', 'Variety: keep it interesing & challenging', 'Accountability: track progress & measure your performance', 'Pressure: practice under stress'];
+    const points: string[] = ['Purpose: practise with intent', 'Variety: keep it interesting & challenging', 'Accountability: track progress & measure your performance', 'Pressure: practise under stress'];
 
     return (
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideAnim }] }}>

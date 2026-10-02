@@ -54,7 +54,7 @@ export default function LagPutting() {
                 <View style={styles.container}>
                     {sim.phase === 'in-progress' && (
                         <>
-                            <Text style={styles.headerText}>Lag Putting Challenge</Text>
+                            <Text style={styles.headerText}>Lag putting challenge</Text>
 
                             <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
                                 <Text style={styles.subHeaderText}>Total putts</Text>
@@ -76,7 +76,7 @@ export default function LagPutting() {
                                     <Text style={styles.onboardingOverlay.primaryButtonText}>Finish</Text>
                                 </TouchableOpacity>
 
-                                <Chevrons heading='Set up' points={setupPoints} />
+                                <Chevrons heading='Setup' points={setupPoints} />
 
                                 <Chevrons heading='How to play' points={howToPlayPoints} />
 

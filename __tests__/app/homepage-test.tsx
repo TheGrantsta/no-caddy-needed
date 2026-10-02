@@ -105,9 +105,9 @@ describe('renders homepage', () => {
         const { getByText } = render(<Homepage />);
 
         expect(getByText('Golf, simplified')).toBeTruthy();
-        expect(getByText('Simply: hit it, find it, hit it again')).toBeTruthy();
-        expect(getByText('Point: get the ball in the hole with the fewest shots')).toBeTruthy();
-        expect(getByText('Have fun: golf is a game!')).toBeTruthy();
+        expect(getByText('Method: hit it, find it, hit it again')).toBeTruthy();
+        expect(getByText('Objective: get the ball in the hole with the fewest shots')).toBeTruthy();
+        expect(getByText('Enjoyment: golf is a game')).toBeTruthy();
     });
 
     it('shows footer text on homepage', () => {

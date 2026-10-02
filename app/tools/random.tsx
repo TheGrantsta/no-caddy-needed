@@ -129,7 +129,7 @@ export default function Random() {
         formState.increment.onChange(formattedText);
     }
 
-    const points = ['Random: mimic play when practising', 'Focus: use your pre-shot routine', 'Evaluate: use your post-shot routine'];
+    const points = ['Realism: mimic play when practising', 'Focus: use your pre-shot routine', 'Evaluation: use your post-shot routine'];
 
     const localStyles = styles.randomTool;
 

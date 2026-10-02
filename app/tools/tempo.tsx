@@ -95,7 +95,7 @@ export default function Tempo() {
         }
     }
 
-    const points = ['Tempo: focus on flow & not mechanics', 'Fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Misconception: amateurs believe they swing "too fast" even though they swing slower than professionals - sequence over speed']
+    const points = ['Focus: flow, not mechanics', 'Fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Misconception: amateurs believe they swing "too fast" even though they swing slower than professionals — sequence over speed']
 
     const localStyles = styles.tempoTool;
 

@@ -33,8 +33,8 @@ describe('LagPutting screen', () => {
     it('renders score picker with instructions', () => {
         const { getByText, getByTestId } = render(<LagPutting />);
 
-        expect(getByText(/Lag Putting Challenge/)).toBeTruthy();
-        expect(getByText(/Set up/)).toBeTruthy();
+        expect(getByText(/Lag putting challenge/)).toBeTruthy();
+        expect(getByText(/Setup/)).toBeTruthy();
         expect(getByTestId('score-display')).toBeTruthy();
         expect(getByTestId('submit-button')).toBeTruthy();
     });
@@ -103,7 +103,7 @@ describe('LagPutting screen', () => {
 
         fireEvent.press(getByTestId('play-again-button'));
 
-        expect(getByText(/Lag Putting Challenge/)).toBeTruthy();
+        expect(getByText(/Lag putting challenge/)).toBeTruthy();
         expect(getByText('0')).toBeTruthy();
     });
 

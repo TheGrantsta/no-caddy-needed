@@ -62,7 +62,7 @@ describe('NetworkStatus component', () => {
             jest.advanceTimersByTime(350);
         });
 
-        expect(getByText("You're offline - data is saved locally")).toBeTruthy();
+        expect(getByText("You're offline — data is saved locally")).toBeTruthy();
     });
 
     it('triggers hide animation when connection is restored', async () => {

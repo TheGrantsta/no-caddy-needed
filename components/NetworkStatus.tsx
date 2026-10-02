@@ -60,7 +60,7 @@ export default function NetworkStatus() {
             testID="offline-banner"
         >
             <MaterialIcons name="wifi-off" size={18} color={colours.white} />
-            <Text style={s.text}>You're offline - data is saved locally</Text>
+            <Text style={s.text}>You're offline — data is saved locally</Text>
         </Animated.View>
     );
 }

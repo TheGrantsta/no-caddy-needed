@@ -628,7 +628,7 @@ export default function Play() {
 
         const success = await endRoundService(activeRoundId);
 
-        showResult(success, 'Round saved', 'Round not saved');
+        showResult(success, 'Round saved', 'Failed to save round');
 
         const scorecard = getMultiplayerScorecardService(activeRoundId);
         if (scorecard) {

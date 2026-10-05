@@ -374,3 +374,63 @@ appId: com.grantsta.golf.nocaddyneeded
     id: "next-hole-button"
 - tapOn:
     id: "next-hole-button"
+
+# Hole 5 — Par 4
+- extendedWaitUntil:
+    visible:
+      id: "par-4-button"
+    timeout: 10000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Select penalty
+- extendedWaitUntil:
+    visible:
+      id: "7deadly-sins-toggle-double-chips"
+    timeout: 5000
+- tapOn:
+    id: "7deadly-sins-toggle-double-chips"
+- tapOn:
+    id: "next-hole-button"
+
+# Regression test: select double chips reason
+- extendedWaitUntil:
+    visible:
+      id: "double-chip-reason-picker-dropdown-toggle"
+    timeout: 5000
+- tapOn:
+    id: "double-chip-reason-picker-dropdown-toggle"
+
+# Wait for dropdown to show options
+- extendedWaitUntil:
+    visible:
+      id: "double-chip-reason-picker-option-Short sided"
+    timeout: 3000
+- tapOn:
+    id: "double-chip-reason-picker-option-Short sided"
+
+# Driver is now selected in the dropdown - move to putting screen
+- tapOn:
+    id: "next-hole-button"
+
+# Enter first putt
+- extendedWaitUntil:
+    visible:
+      id: "first-putt-input"
+    timeout: 3000
+- tapOn:
+    id: "first-putt-input"
+- inputText: "5"
+- hideKeyboard
+
+# Complete the hole
+- extendedWaitUntil:
+    visible:
+      id: "next-hole-button"
+    timeout: 10000
+- tapOn:
+    id: "next-hole-button"
+- tapOn:
+    id: "next-hole-button"

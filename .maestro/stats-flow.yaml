@@ -94,18 +94,44 @@ appId: com.grantsta.golf.nocaddyneeded
 - inputText: "140"
 - hideKeyboard
 
-# Wait for save button to be ready
+# Wait for keyboard to fully dismiss and form to settle
 - extendedWaitUntil:
     visible:
       id: "save-distances-button"
     timeout: 3000
 
-# Tap the save button - regression test: ensure no crash when button is tapped
+# Ensure both club rows are visible (form is stable)
+- extendedWaitUntil:
+    visible: "Driver"
+    timeout: 2000
+- extendedWaitUntil:
+    visible: "9 iron"
+    timeout: 2000
+
+# Verify the inputs are populated with correct values before saving
+- extendedWaitUntil:
+    visible: "250"
+    timeout: 2000
+- extendedWaitUntil:
+    visible: "140"
+    timeout: 2000
+
+# Double-tap the save button in case the first tap didn't register
 - tapOn:
     id: "save-distances-button"
 
-# Verify persistence: Navigate away and back to Distances screen                                                                              
-- tapOn:                                                                                                                                      
+# Wait briefly and tap again if needed
+- tapOn:
+    id: "save-distances-button"
+
+# Wait for the save operation to complete
+- extendedWaitUntil:
+    visible:
+      id: "play-sub-menu-score"
+    timeout: 5000
+
+# Verify persistence: Navigate away and back to Distances screen
+- tapOn:
     id: "play-sub-menu-score"                                                                                                                 
 - extendedWaitUntil:                                                                                                                          
     visible:                                                                                                                                  

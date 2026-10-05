@@ -539,6 +539,94 @@ describe('PuttingStatsInput', () => {
             expect(onStatsChange).toHaveBeenCalledWith(20, 10, false);
         });
 
+        it('clears second putt error when first putt is increased to resolve it', () => {
+            const onStatsChange = jest.fn();
+            const onSecondPuttErrorChange = jest.fn();
+            const { getByTestId, queryByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={2}
+                    initialSecondPutt={3}
+                    initialSecondIsLong={false}
+                    onSecondPuttErrorChange={onSecondPuttErrorChange}
+                />
+            );
+
+            // Error should be showing because 3 >= 2 and Short
+            expect(queryByTestId('second-putt-error')).toBeTruthy();
+            onSecondPuttErrorChange.mockClear();
+            onStatsChange.mockClear();
+
+            // Increase first putt to 21 to resolve the error
+            const firstPuttInput = getByTestId('first-putt-input');
+            fireEvent.changeText(firstPuttInput, '21');
+
+            // Error should be cleared and callbacks fired
+            expect(queryByTestId('second-putt-error')).toBeFalsy();
+            expect(onSecondPuttErrorChange).toHaveBeenCalledWith(false);
+            expect(onStatsChange).toHaveBeenCalledWith(21, 3, false);
+        });
+
+        it('clears second putt error when first putt is cleared', () => {
+            const onStatsChange = jest.fn();
+            const onSecondPuttErrorChange = jest.fn();
+            const { getByTestId, queryByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={2}
+                    initialSecondPutt={3}
+                    initialSecondIsLong={false}
+                    onSecondPuttErrorChange={onSecondPuttErrorChange}
+                />
+            );
+
+            expect(queryByTestId('second-putt-error')).toBeTruthy();
+            onSecondPuttErrorChange.mockClear();
+            onStatsChange.mockClear();
+
+            // Clear first putt field
+            const firstPuttInput = getByTestId('first-putt-input');
+            fireEvent.changeText(firstPuttInput, '');
+
+            // Error should be cleared
+            expect(queryByTestId('second-putt-error')).toBeFalsy();
+            expect(onSecondPuttErrorChange).toHaveBeenCalledWith(false);
+            expect(onStatsChange).toHaveBeenCalledWith(undefined, 3, false);
+        });
+
+        it('shows second putt error when first putt is lowered below second', () => {
+            const onStatsChange = jest.fn();
+            const onSecondPuttErrorChange = jest.fn();
+            const { getByTestId, queryByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={20}
+                    initialSecondPutt={10}
+                    initialSecondIsLong={false}
+                    onSecondPuttErrorChange={onSecondPuttErrorChange}
+                />
+            );
+
+            // No error should be showing (10 < 20)
+            expect(queryByTestId('second-putt-error')).toBeFalsy();
+            onSecondPuttErrorChange.mockClear();
+            onStatsChange.mockClear();
+
+            // Lower first putt to 5, making 10 > 5
+            const firstPuttInput = getByTestId('first-putt-input');
+            fireEvent.changeText(firstPuttInput, '5');
+
+            // Error should now be showing
+            expect(queryByTestId('second-putt-error')).toBeTruthy();
+            expect(onSecondPuttErrorChange).toHaveBeenCalledWith(true);
+        });
+
         it('clears second putt error when switching to Long', () => {
             const onStatsChange = jest.fn();
             const { getByTestId, queryByTestId } = render(

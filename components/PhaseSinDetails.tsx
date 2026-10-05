@@ -22,7 +22,6 @@ interface Props {
 }
 
 export default function PhaseSinDetails({
-    holeNumber,
     clubDistances,
     deadlySinsValues,
     selectedOffTeeClub,
@@ -41,21 +40,20 @@ export default function PhaseSinDetails({
     return (
         <View>
             <SinDetailsInput
-                holeNumber={holeNumber}
-                clubDistances={clubDistances}
-                deadlySinsValues={deadlySinsValues}
+                sins={deadlySinsValues}
+                clubs={clubDistances}
                 selectedOffTeeClub={selectedOffTeeClub}
-                sinDetailsClubError={sinDetailsClubError}
-                selectedPenaltyType={selectedPenaltyType}
-                sinDetailsPenaltyError={sinDetailsPenaltyError}
-                selectedBogeysClub={selectedBogeysClub}
-                sinDetailsBogeysClubError={sinDetailsBogeysClubError}
-                selectedDoubleChipReason={selectedDoubleChipReason}
-                sinDetailsDoubleChipReasonError={sinDetailsDoubleChipReasonError}
                 onOffTeeClubChange={onOffTeeClubChange}
+                showOffTeeClubError={sinDetailsClubError}
+                selectedPenaltyType={selectedPenaltyType}
                 onPenaltyTypeChange={onPenaltyTypeChange}
+                showPenaltyTypeError={sinDetailsPenaltyError}
+                selectedBogeysClub={selectedBogeysClub}
                 onBogeysClubChange={onBogeysClubChange}
+                showBogeysClubError={sinDetailsBogeysClubError}
+                selectedDoubleChipReason={selectedDoubleChipReason}
                 onDoubleChipReasonChange={onDoubleChipReasonChange}
+                showDoubleChipReasonError={sinDetailsDoubleChipReasonError}
             />
         </View>
     );

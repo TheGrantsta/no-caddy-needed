@@ -335,13 +335,21 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "next-hole-button"
 
-# Regression test: Select club for trouble off tee (this used to crash)
+# Regression test: Select club for bogeys inside 9-iron sin
 - extendedWaitUntil:
     visible:
-      id: "club-picker-option-9 iron"
+      id: "bogeys-club-picker-dropdown-toggle"
+    timeout: 5000
+- tapOn:
+    id: "bogeys-club-picker-dropdown-toggle"
+
+# Wait for dropdown to show options
+- extendedWaitUntil:
+    visible:
+      id: "bogeys-club-picker-option-9 iron"
     timeout: 3000
 - tapOn:
-    id: "club-picker-option-9 iron"
+    id: "bogeys-club-picker-option-9 iron"
 
 # 9 iron is now selected in the dropdown - move to putting screen
 - tapOn:

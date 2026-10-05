@@ -40,8 +40,10 @@ class ErrorBoundary extends Component<Props, State> {
                         onPress={this.handleRetry}
                         testID="error-boundary-retry-button"
                     >
-                        <MaterialIcons name="refresh" size={20} color="white" />
-                        <Text style={styles.buttonText}>Try Again</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                            <MaterialIcons name="refresh" size={20} color="white" />
+                            <Text style={styles.buttonText}>Try Again</Text>
+                        </View>
                     </TouchableOpacity>
                 </View>
             );

@@ -102,7 +102,7 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "save-distances-button"
 
-# Wait briefly for async save to complete, then navigate back to Play tab
+# Wait briefly for async save to complete
 - extendedWaitUntil:
     visible:
       id: "play-sub-menu-score"

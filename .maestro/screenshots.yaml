@@ -171,7 +171,7 @@ appId: com.grantsta.golf.nocaddyneeded
 # Screenshot 7: History
 - tapOn: "History"
 - extendedWaitUntil:
-    visible: "No test history yet"
+    visible: "No challenge history yet"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/03C-practice-history
 

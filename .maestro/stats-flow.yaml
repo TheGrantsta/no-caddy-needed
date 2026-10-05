@@ -256,5 +256,55 @@ appId: com.grantsta.golf.nocaddyneeded
 - hideKeyboard
 
 # Complete the hole
+- extendedWaitUntil:
+    visible:
+      id: "next-hole-button"
+    timeout: 10000
+- tapOn:
+    id: "next-hole-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Hole 3 — Par 4
+- extendedWaitUntil:
+    visible:
+      id: "par-4-button"
+    timeout: 10000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Select penalty
+- extendedWaitUntil:
+    visible:
+      id: "7deadly-sins-toggle-three-putts"
+    timeout: 5000
+- tapOn:
+    id: "7deadly-sins-toggle-three-putts"
+- tapOn:
+    id: "next-hole-button"
+
+# Enter first putt
+- extendedWaitUntil:
+    visible:
+      id: "first-putt-input"
+    timeout: 3000
+- tapOn:
+    id: "first-putt-input"
+- inputText: "3"
+- hideKeyboard
+
+# Enter second putt
+- extendedWaitUntil:
+    visible:
+      id: "second-putt-input"
+    timeout: 3000
+- tapOn:
+    id: "second-putt-input"
+- inputText: "2"
+- hideKeyboard
+
+# Complete the hole
 - tapOn:
     id: "next-hole-button"

@@ -130,35 +130,28 @@ appId: com.grantsta.golf.nocaddyneeded
       id: "play-sub-menu-score"
     timeout: 5000
 
-# Verify persistence: Navigate away and back to Distances screen
+# Navigate to play screen
 - tapOn:
     id: "play-sub-menu-score"                                                                                                                 
 - extendedWaitUntil:                                                                                                                          
     visible:                                                                                                                                  
         id: "start-round-button"                                                                                                                
-    timeout: 5000                                                                                                                             
-      
-# Navigate back to Distances                                                                                                                  
-- tapOn:                                                                                                                                      
-    id: "play-sub-menu-distances"                                                                                                             
+    timeout: 5000
 
-# Verify the clubs are still there (proves save worked)                                                                                       
-- extendedWaitUntil:                                                                                                                          
-    visible: "Driver"                                                                                                                         
-    timeout: 5000                                                                                                                             
+# Start round
+- tapOn:
+    id: "start-round-button"
 
-- extendedWaitUntil:                                                                                                                          
-    visible: "250"                                                                                                                            
-    timeout: 5000                                                                                                                             
-    
-- extendedWaitUntil:                                                                                                                          
-    visible: "9 iron"                                                                                                                         
-    timeout: 5000                                                                                                                             
-    
-- extendedWaitUntil:                                                                                                                          
-    visible: "140"                                                                                                                            
-    timeout: 5000              
+# Wait for course name input
+- extendedWaitUntil:
+    visible:
+      id: "course-name-input"
+    timeout: 5000
 
-# If we reach here without crashing, the regression test passed
-# Note: Data persistence testing requires a properly initialized database.
-# The regression test focuses on: button is tappable without crashing the app.
+# Enter course name and start
+- tapOn:
+    id: "course-name-input"
+- inputText: "Stats Flow Test Course"
+- hideKeyboard
+- tapOn:
+    id: "start-button"

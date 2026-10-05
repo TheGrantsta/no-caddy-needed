@@ -54,12 +54,21 @@ const PuttingStatsInput = ({
         setFirstPutt(value);
         if (!value || value.trim() === '') {
             const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(secondPutt))) : undefined;
+            setSecondPuttError(false);
             onStatsChange(undefined, second, secondIsLong);
             return;
         }
         if (!isNaN(parseInt(value))) {
             const first = Math.max(0, Math.min(MAX_FIRST_PUTT_DISTANCE, parseInt(value)));
             const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(secondPutt))) : undefined;
+
+            // Re-validate: if second putt is marked Short and > 0, it must be strictly less than first putt
+            if (!secondIsLong && second !== undefined && second > 0 && second >= first) {
+                setSecondPuttError(true);
+            } else {
+                setSecondPuttError(false);
+            }
+
             onStatsChange(first, second, secondIsLong);
         }
     };

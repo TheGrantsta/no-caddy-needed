@@ -1,0 +1,286 @@
+appId: com.grantsta.golf.nocaddyneeded
+---
+# E2E: Multi-step stats flow with deadly sins
+# Tests that the stats flow (score → stats → sin details → putting → next hole) works correctly
+# when deadly sins (Trouble off tee, Bogeys inside 9-iron) are selected with clubs available.
+
+# Launch fresh — clears DB and app state
+- launchApp:
+    clearState: true
+
+# ======== HOME ONBOARDING ========
+# Wait for home onboarding (first-launch)
+- extendedWaitUntil:
+    visible:
+      id: "next-button"
+    timeout: 90000
+
+# Complete home onboarding (2 steps, then done)
+- tapOn:
+    id: "next-button"
+- tapOn:
+    id: "next-button"
+- tapOn:
+    id: "done-button"
+
+# Wait for home screen
+- extendedWaitUntil:
+    visible: "No caddy needed!"
+    timeout: 45000
+
+# ======== ADD CLUBS ========
+# Navigate to Play screen (do NOT enable Score-only mode; we need the multi-step stats flow)
+- tapOn:
+    id: "home-play-link"
+
+# Wait for Play screen to be ready
+# Play onboarding overlay may appear; wait for start-round-button to ensure it's behind/dismissed
+- extendedWaitUntil:
+    visible:
+      id: "start-round-button"
+    timeout: 20000
+
+# Give UI a moment to settle (onboarding animation may still be running)
+- wait: 800
+
+# Tap Done to dismiss any remaining onboarding overlay
+- tapOn:
+    text: "Done"
+
+# Wait a bit more
+- wait: 500
+
+# Navigate to Distances via SubMenu
+- tapOn:
+    id: "play-sub-menu-distances"
+
+# Distances opens with onboarding (empty list, first visit)
+- extendedWaitUntil:
+    visible:
+      id: "next-button"
+    timeout: 5000
+- tapOn:
+    id: "next-button"
+- tapOn:
+    id: "next-button"
+- tapOn:
+    id: "done-button"
+
+# Wait for Distances list
+- extendedWaitUntil:
+    visible:
+      id: "add-club-button"
+    timeout: 5000
+
+# Add two clubs: Driver (250) and 9 Iron (140)
+- tapOn:
+    id: "add-club-button"
+- tapOn:
+    id: "add-club-button"
+
+# Fill in club data
+- tapOn:
+    id: "club-input-0"
+- inputText: "Driver"
+- tapOn:
+    id: "distance-input-0"
+- inputText: "250"
+- hideKeyboard
+- tapOn:
+    id: "club-input-1"
+- inputText: "9 Iron"
+- tapOn:
+    id: "distance-input-1"
+- inputText: "140"
+- hideKeyboard
+
+# Save clubs
+- tapOn:
+    id: "save-distances-button"
+
+# Assert save succeeded
+- extendedWaitUntil:
+    visible: "Clubs saved"
+    timeout: 5000
+
+# Return to Play score screen (swipe from left edge to pop stacked distances)
+- swipe:
+    direction: RIGHT
+    duration: 300
+
+# Wait for Play screen to be ready (StartRound button should be visible)
+- extendedWaitUntil:
+    visible:
+      id: "start-round-button"
+    timeout: 10000
+
+# ======== START ROUND ========
+- tapOn:
+    id: "start-round-button"
+
+# Enter course name and start
+- extendedWaitUntil:
+    visible:
+      id: "course-name-input"
+    timeout: 5000
+- tapOn:
+    id: "course-name-input"
+- inputText: "Stats Flow Test"
+- hideKeyboard
+- tapOn:
+    id: "start-button"
+
+# ======== HOLE 1: TROUBLE OFF TEE ========
+# Wait for hole scoring (par is determined by course; we use default par-4)
+- extendedWaitUntil:
+    visible:
+      id: "par-4-button"
+    timeout: 10000
+
+# Select par and go to stats
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Now in stats phase; select Trouble off tee
+- extendedWaitUntil:
+    visible:
+      id: "7deadly-sins-toggle-trouble-off-tee"
+    timeout: 5000
+- tapOn:
+    id: "7deadly-sins-toggle-trouble-off-tee"
+
+# Go to sin details
+- tapOn:
+    id: "next-hole-button"
+
+# Assert "Club used off the tee" label is visible (regression: this used to crash)
+- extendedWaitUntil:
+    visible: "Club used off the tee"
+    timeout: 5000
+
+# Assert ErrorBoundary ("Something went wrong") is NOT shown
+- assertNotVisible:
+    text: "Something went wrong"
+
+# Select Driver from club picker
+- tapOn:
+    id: "club-picker-dropdown-toggle"
+
+# Wait for dropdown to appear
+- extendedWaitUntil:
+    visible:
+      id: "club-picker-option-Driver"
+    timeout: 5000
+- tapOn:
+    id: "club-picker-option-Driver"
+
+# Confirm Driver was selected
+- assertVisible:
+    text: "Driver"
+
+# Go to putting
+- tapOn:
+    id: "next-hole-button"
+
+# Enter first putt
+- extendedWaitUntil:
+    visible:
+      id: "first-putt-input"
+    timeout: 5000
+- tapOn:
+    id: "first-putt-input"
+- inputText: "20"
+- hideKeyboard
+
+# Go to next hole
+- tapOn:
+    id: "next-hole-button"
+
+# ======== HOLE 2: BOGEYS INSIDE 9-IRON ========
+- extendedWaitUntil:
+    visible:
+      id: "par-4-button"
+    timeout: 5000
+
+# Select par and go to stats
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"
+
+# Select Bogeys inside 9-iron
+- extendedWaitUntil:
+    visible:
+      id: "7deadly-sins-toggle-bogeys-inside-9iron"
+    timeout: 5000
+- tapOn:
+    id: "7deadly-sins-toggle-bogeys-inside-9iron"
+
+# Go to sin details
+- tapOn:
+    id: "next-hole-button"
+
+# Assert "Approach club" label is visible
+- extendedWaitUntil:
+    visible: "Approach club"
+    timeout: 5000
+
+# Select 9 Iron from club picker
+- tapOn:
+    id: "bogeys-club-picker-dropdown-toggle"
+
+# Wait for dropdown
+- extendedWaitUntil:
+    visible:
+      id: "bogeys-club-picker-option-9 Iron"
+    timeout: 5000
+- tapOn:
+    id: "bogeys-club-picker-option-9 Iron"
+
+# Confirm 9 Iron was selected
+- assertVisible:
+    text: "9 Iron"
+
+# Go to putting
+- tapOn:
+    id: "next-hole-button"
+
+# Enter first putt
+- extendedWaitUntil:
+    visible:
+      id: "first-putt-input"
+    timeout: 5000
+- tapOn:
+    id: "first-putt-input"
+- inputText: "20"
+- hideKeyboard
+
+# Go to next hole (hole 3)
+- tapOn:
+    id: "next-hole-button"
+
+# ======== END ROUND ========
+# Wait for hole 3, then end the round
+- extendedWaitUntil:
+    visible:
+      id: "par-4-button"
+    timeout: 5000
+
+# Tap End Round (available once we're past hole 1)
+- tapOn:
+    id: "end-round-button"
+
+# Confirm end round
+- extendedWaitUntil:
+    visible:
+      id: "confirm-end-round-button"
+    timeout: 5000
+- tapOn:
+    id: "confirm-end-round-button"
+
+# Assert scorecard is displayed
+- extendedWaitUntil:
+    visible: "Scorecard"
+    timeout: 10000

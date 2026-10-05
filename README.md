@@ -113,7 +113,11 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    
 4. Workflow
 
-  How it works: normal push, hook runs tests → then ui:check diffs current Maestro screenshots against .maestro/baselines/. Fails with exit 1 if any screenshot exceeds the 0.5% pixel diff threshold.
+  The pre-push hook (`npm run test:e2e` and `npm run test:e2e:stats`) runs two end-to-end flows:
+  - **start-round.yaml**: score-only mode, full 18-hole round with default par scores
+  - **stats-flow.yaml**: multi-step stats flow with deadly sins (Trouble off tee, Bogeys inside 9-iron) selected, with club picker interaction
+
+  Then ui:check diffs current Maestro screenshots against .maestro/baselines/. Fails with exit 1 if any screenshot exceeds the 0.5% pixel diff threshold.
 
 ### Normal push
 

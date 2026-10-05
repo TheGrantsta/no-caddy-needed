@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
     "test:e2e": "maestro test .maestro/start-round.yaml",
+    "test:e2e:stats": "maestro test .maestro/stats-flow.yaml",
     "ui:check": "node scripts/ui-diff.js",
     "ui:update": "node scripts/ui-update.js",
     "metrics": "node scripts/metrics.js",

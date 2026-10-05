@@ -107,15 +107,3 @@ appId: com.grantsta.golf.nocaddyneeded
     visible:
       id: "play-sub-menu-score"
     timeout: 5000
-
-# ✅ TEST COMPLETE: Clubs saved successfully!
-#
-# Regression test verification:
-# ✓ Clubs can be added and saved without crashing (prevents DB save failures)
-# ✓ Club distances persisted (Driver 250, 9 Iron 140)
-# ✓ Database operations complete successfully
-#
-# Note: The full multi-step flow (score → stats → deadly sins → putting)
-# is covered by unit tests in PuttingStatsInput-test.tsx for the validation
-# logic, and the start-round.yaml E2E test for the basic scoring flow.
-# This test ensures club distances are available when stats mode is active.

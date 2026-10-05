@@ -155,3 +155,24 @@ appId: com.grantsta.golf.nocaddyneeded
 - hideKeyboard
 - tapOn:
     id: "start-button"
+
+# Navigate back to Distances screen
+- tapOn:
+    id: "play-sub-menu-distances"
+- extendedWaitUntil:
+    visible: "Carry distance, not total"
+    timeout: 5000
+
+# Navigate back to play screen
+- tapOn:
+    id: "play-sub-menu-score"
+
+# Hole 1 — Par 4
+- extendedWaitUntil:
+    visible:
+      id: "par-4-button"
+    timeout: 10000
+- tapOn:
+    id: "par-4-button"
+- tapOn:
+    id: "next-hole-button"

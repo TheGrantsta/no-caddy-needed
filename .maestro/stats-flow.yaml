@@ -338,10 +338,10 @@ appId: com.grantsta.golf.nocaddyneeded
 # Regression test: Select club for trouble off tee (this used to crash)
 - extendedWaitUntil:
     visible:
-      id: "club-picker-option-9-iron"
+      id: "club-picker-option-9 iron"
     timeout: 3000
 - tapOn:
-    id: "club-picker-option-9-iron"
+    id: "club-picker-option-9 iron"
 
 # 9 iron is now selected in the dropdown - move to putting screen
 - tapOn:

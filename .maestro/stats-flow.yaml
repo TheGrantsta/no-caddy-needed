@@ -164,3 +164,37 @@ appId: com.grantsta.golf.nocaddyneeded
     id: "7deadly-sins-toggle-trouble-off-tee"
 - tapOn:
     id: "next-hole-button"
+
+# Regression test: Select club for trouble off tee (this used to crash)
+- extendedWaitUntil:
+    visible:
+      id: "club-picker-dropdown-toggle"
+    timeout: 5000
+- tapOn:
+    id: "club-picker-dropdown-toggle"
+
+# Wait for dropdown to show options
+- extendedWaitUntil:
+    visible:
+      id: "club-picker-option-Driver"
+    timeout: 3000
+- tapOn:
+    id: "club-picker-option-Driver"
+
+# Driver is now selected in the dropdown - move to putting screen
+- tapOn:
+    id: "next-hole-button"
+
+# Enter first putt
+- extendedWaitUntil:
+    visible:
+      id: "first-putt-input"
+    timeout: 3000
+- tapOn:
+    id: "first-putt-input"
+- inputText: "1"
+- hideKeyboard
+
+# Complete the hole
+- tapOn:
+    id: "next-hole-button"

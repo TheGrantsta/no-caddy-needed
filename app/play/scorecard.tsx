@@ -287,6 +287,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
             loadData();
             edit.resetScorecardAfterSave();
+            setEditing(false);
         } else {
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
             edit.setShowSaveConfirm(false);

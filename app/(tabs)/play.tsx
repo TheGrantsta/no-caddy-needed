@@ -904,17 +904,11 @@ export default function Play() {
                         roundId={activeRoundId || 0}
                         scorecardData={scorecardData}
                         onDone={() => {
+                            // Exit edit mode - don't reload data to avoid scroll lock
                             setScorecardEditMode(false);
                             setSelectedScorecardScore(null);
                             setScorecardDisplaySins(null);
                             setScorecardSinHoles(new Set());
-                            // Reload scorecard data to show updated scores
-                            if (activeRoundId) {
-                                const updated = getMultiplayerScorecardService(activeRoundId);
-                                if (updated) {
-                                    setScorecardData(updated);
-                                }
-                            }
                         }}
                         onCancel={() => {
                             setScorecardEditMode(false);

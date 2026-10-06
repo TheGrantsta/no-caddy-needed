@@ -12,6 +12,7 @@ import OnboardingOverlay from '../../components/OnboardingOverlay';
 import WedgeChartScreen from '../play/wedge-chart';
 import Scorecard from '../../components/Scorecard';
 import CtaButton from '../../components/CtaButton';
+import ScorecardInlineEditor from '../../components/ScorecardInlineEditor';
 import {
     startRoundService,
     endRoundService,
@@ -88,6 +89,7 @@ export default function Play() {
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
+    const [scorecardEditMode, setScorecardEditMode] = useState(false);
 
     // Use lifecycle hook for hole state management
     const lifecycle = useHoleLifecycle();
@@ -858,7 +860,7 @@ export default function Play() {
                     </Animated.View>
                 )}
 
-                {scorecardData && displaySection('play-score') && (
+                {scorecardData && displaySection('play-score') && !scorecardEditMode && (
                     <View style={styles.container}>
                         <Text style={localStyles.scorecardHeader}>Scorecard</Text>
                         <Scorecard
@@ -886,7 +888,37 @@ export default function Play() {
                             icon="check-circle"
                             onPress={handleScorecardDone}
                         />
+                        <TouchableOpacity
+                            testID="scorecard-edit-button"
+                            style={[styles.tertiaryLink, { marginTop: 12 }]}
+                            onPress={() => setScorecardEditMode(true)}
+                        >
+                            <MaterialIcons name="edit" size={20} color={colours.primary} />
+                            <Text style={styles.tertiaryLinkText}>Edit scores</Text>
+                        </TouchableOpacity>
                     </View>
+                )}
+
+                {scorecardData && displaySection('play-score') && scorecardEditMode && (
+                    <ScorecardInlineEditor
+                        roundId={activeRoundId || 0}
+                        scorecardData={scorecardData}
+                        onDone={() => {
+                            setScorecardEditMode(false);
+                            setSelectedScorecardScore(null);
+                            // Reload scorecard data to show updated scores
+                            if (activeRoundId) {
+                                const updated = getMultiplayerScorecardService(activeRoundId);
+                                if (updated) {
+                                    setScorecardData(updated);
+                                }
+                            }
+                        }}
+                        onCancel={() => {
+                            setScorecardEditMode(false);
+                            setSelectedScorecardScore(null);
+                        }}
+                    />
                 )}
 
                 {displaySection('play-distances') && (

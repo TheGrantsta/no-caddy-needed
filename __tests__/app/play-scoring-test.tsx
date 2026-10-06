@@ -1388,6 +1388,62 @@ describe('Play screen', () => {
             });
         });
 
+        it('shows Edit link alongside Done on scorecard', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockEndRound.mockResolvedValue(true);
+            const mockScorecard = {
+                round: { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                players: [
+                    { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+                ],
+                holeScores: [
+                    { Id: 1, RoundId: 1, RoundPlayerId: 1, HoleNumber: 1, HolePar: 4, Score: 5 },
+                ],
+            };
+            mockGetMultiplayerScorecard.mockReturnValue(mockScorecard);
+
+            const { getByTestId } = render(<Play />);
+
+            await startAndEndRound(getByTestId);
+
+            await waitFor(() => {
+                expect(getByTestId('scorecard-done-button')).toBeTruthy();
+                expect(getByTestId('scorecard-edit-button')).toBeTruthy();
+            });
+        });
+
+        it('enters inline edit mode when Edit link pressed', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockEndRound.mockResolvedValue(true);
+            const mockScorecard = {
+                round: { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+                players: [
+                    { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+                ],
+                holeScores: [
+                    { Id: 1, RoundId: 1, RoundPlayerId: 1, HoleNumber: 1, HolePar: 4, Score: 5 },
+                ],
+            };
+            mockGetMultiplayerScorecard.mockReturnValue(mockScorecard);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+
+            await startAndEndRound(getByTestId);
+
+            await waitFor(() => {
+                expect(getByTestId('scorecard-edit-button')).toBeTruthy();
+            });
+
+            fireEvent.press(getByTestId('scorecard-edit-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('inline-editor-scorecard')).toBeTruthy();
+                expect(queryByTestId('scorecard-done-button')).toBeNull();
+            });
+        });
+
         describe('7 Deadly Sins on complete scorecard', () => {
             it('showsDeadlySinsTallyWhenUserHoleSelectedOnCompleteScorecard', async () => {
                 mockStartRound.mockResolvedValue(1);

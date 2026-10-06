@@ -33,6 +33,7 @@ jest.mock('../../service/DbService', () => ({
     getHoleSinDetailsService: jest.fn().mockReturnValue(null),
     getPuttingStatsService: jest.fn().mockReturnValue(null),
     getClubDistancesService: jest.fn().mockReturnValue([]),
+    getHolesWithSinsForRoundService: jest.fn().mockReturnValue(new Set()),
 }));
 
 const mockScorecardData = {
@@ -152,5 +153,64 @@ describe('ScorecardInlineEditor', () => {
         await waitFor(() => {
             expect(mockOnDone).toHaveBeenCalled();
         });
+    });
+
+    it('shows select score prompt before a score is chosen', () => {
+        const { getByText } = render(
+            <ScorecardInlineEditor
+                roundId={1}
+                scorecardData={mockScorecardData}
+                onDone={jest.fn()}
+                onCancel={jest.fn()}
+            />
+        );
+
+        expect(getByText('Select the score to be amended')).toBeTruthy();
+    });
+
+    it('hides select score prompt once a score is chosen', async () => {
+        const { getByTestId, queryByText } = render(
+            <ScorecardInlineEditor
+                roundId={1}
+                scorecardData={mockScorecardData}
+                onDone={jest.fn()}
+                onCancel={jest.fn()}
+            />
+        );
+
+        fireEvent.press(getByTestId('score-cell-1-1'));
+
+        await waitFor(() => {
+            expect(queryByText('Select the score to be amended')).toBeNull();
+        });
+    });
+
+    it('never shows edit button or delete round link', () => {
+        const { queryByTestId } = render(
+            <ScorecardInlineEditor
+                roundId={1}
+                scorecardData={mockScorecardData}
+                onDone={jest.fn()}
+                onCancel={jest.fn()}
+            />
+        );
+
+        expect(queryByTestId('edit-scorecard-button')).toBeNull();
+        expect(queryByTestId('delete-round-button')).toBeNull();
+    });
+
+    it('calls getHolesWithSinsForRoundService on mount', () => {
+        const { getHolesWithSinsForRoundService } = require('../../service/DbService');
+
+        render(
+            <ScorecardInlineEditor
+                roundId={1}
+                scorecardData={mockScorecardData}
+                onDone={jest.fn()}
+                onCancel={jest.fn()}
+            />
+        );
+
+        expect(getHolesWithSinsForRoundService).toHaveBeenCalledWith(1);
     });
 });

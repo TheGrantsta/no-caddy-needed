@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Text } from 'react-native';
 import Scorecard from './Scorecard';
 import ScoreEditor from './ScoreEditor';
 import SinEditPanel from './SinEditPanel';
 import { useScorecardEdit } from '../hooks/useScorecardEdit';
 import { useStyles } from '../hooks/useStyles';
+import { useThemeColours } from '../context/ThemeContext';
 import { useAppToast } from '../hooks/useAppToast';
 import {
     updateScorecardService,
@@ -16,6 +17,7 @@ import {
     getHoleSinDetailsService,
     getPuttingStatsService,
     getClubDistancesService,
+    getHolesWithSinsForRoundService,
     DeadlySinsValues,
 } from '../service/DbService';
 import { MultiplayerRoundScorecard } from '../service/DbService';
@@ -35,15 +37,17 @@ export default function ScorecardInlineEditor({
     onCancel,
 }: ScorecardInlineEditorProps) {
     const styles = useStyles();
+    const colours = useThemeColours();
     const { showResult } = useAppToast();
     const edit = useScorecardEdit();
     const [clubDistances, setClubDistances] = useState<any[]>([]);
-    const [sinHoles] = useState<Set<number>>(new Set());
+    const [sinHoles, setSinHoles] = useState<Set<number>>(new Set());
 
     useEffect(() => {
         // Initialize edit state with current scorecard data
         edit.setEditedScores([...scorecardData.holeScores.map(s => ({ ...s }))]);
         setClubDistances(getClubDistancesService());
+        setSinHoles(getHolesWithSinsForRoundService(roundId));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [scorecardData.holeScores]);
 
@@ -176,8 +180,6 @@ export default function ScorecardInlineEditor({
     };
 
     const handleCancelEdit = () => {
-        edit.setIsEditing(false);
-        edit.setSelectedScore(null);
         onCancel();
     };
 
@@ -193,6 +195,12 @@ export default function ScorecardInlineEditor({
                     sinHoles={sinHoles}
                 />
             </View>
+
+            {!edit.selectedScore && (
+                <View style={[styles.headerContainer, { paddingVertical: 16 }]}>
+                    <Text style={{ color: colours.text, fontSize: 16, fontWeight: '600' }}>Select the score to be amended</Text>
+                </View>
+            )}
 
             {edit.selectedScore && (
                 <View testID="inline-editor-score-editor" style={styles.container}>
@@ -243,7 +251,7 @@ export default function ScorecardInlineEditor({
 
             <View style={styles.container}>
                 <ScorecardActionButtons
-                    isEditing={edit.selectedScore !== null}
+                    isEditing={true}
                     showSaveConfirm={edit.showSaveConfirm}
                     showDeleteConfirm={false}
                     onEdit={() => { }}

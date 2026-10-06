@@ -906,6 +906,8 @@ export default function Play() {
                         onDone={() => {
                             setScorecardEditMode(false);
                             setSelectedScorecardScore(null);
+                            setScorecardDisplaySins(null);
+                            setScorecardSinHoles(new Set());
                             // Reload scorecard data to show updated scores
                             if (activeRoundId) {
                                 const updated = getMultiplayerScorecardService(activeRoundId);
@@ -917,6 +919,8 @@ export default function Play() {
                         onCancel={() => {
                             setScorecardEditMode(false);
                             setSelectedScorecardScore(null);
+                            setScorecardDisplaySins(null);
+                            setScorecardSinHoles(new Set());
                         }}
                     />
                 )}

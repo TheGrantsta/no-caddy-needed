@@ -430,41 +430,36 @@ export default function Play() {
 
     const handlePreviousHole = async () => {
         navDirectionRef.current = 'previous';
-        if (holePhase === 'score') {
-            if (currentHole <= 1) return;
-            const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
-            await addMultiplayerHoleScoresService(activeRoundId!, holeNumber, holePar, scores);
-            const prevHole = currentHole - 1;
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            setCurrentNoteText(courseNotes[prevHole] ?? '');
-            setCurrentHole(prevHole);
-            const holeData = loadHoleForScore(prevHole);
-            setCurrentHoleData(holeData);
-        } else if (holePhase === 'stats') {
-            await insertHoleDeadlySinsService(activeRoundId!, currentHole, deadlySinsValues);
-            if (activeCourseName !== null) {
-                await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
-                setCourseNotes(prev => ({ ...prev, [currentHole]: currentNoteText.trim() }));
-            }
-            setHolePhase('score');
-            const holeData = loadHoleForScore(currentHole);
-            setCurrentHoleData(holeData);
-            setSelectedOffTeeClub(undefined);
-            setSinDetailsClubError(false);
-            setSelectedPenaltyType(undefined);
-            setSinDetailsPenaltyError(false);
-            setSelectedDoubleChipReason(undefined);
-            setSinDetailsDoubleChipReasonError(false);
-        } else if (holePhase === 'sinDetails') {
-            setHolePhase('stats');
-        } else if (holePhase === 'putting') {
-            const shouldShowSinDetails = deadlySinsValues.troubleOffTee || deadlySinsValues.penalties || deadlySinsValues.bogeysInside9Iron || deadlySinsValues.doubleChips;
-            if (shouldShowSinDetails) {
-                setHolePhase('sinDetails');
-            } else {
-                setHolePhase('stats');
+        if (currentHole <= 1) return;
+
+        // From any phase, save current hole data and go to previous hole's score phase
+        if (holePhase !== 'score') {
+            // Save current hole's stats/sins/note before leaving
+            if (holePhase === 'stats' || holePhase === 'sinDetails' || holePhase === 'putting') {
+                await insertHoleDeadlySinsService(activeRoundId!, currentHole, deadlySinsValues);
+                if (activeCourseName !== null) {
+                    await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
+                    setCourseNotes(prev => ({ ...prev, [currentHole]: currentNoteText.trim() }));
+                }
             }
         }
+
+        // Navigate to previous hole in score phase
+        const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
+        await addMultiplayerHoleScoresService(activeRoundId!, holeNumber, holePar, scores);
+        const prevHole = currentHole - 1;
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setCurrentNoteText(courseNotes[prevHole] ?? '');
+        setCurrentHole(prevHole);
+        const holeData = loadHoleForScore(prevHole);
+        setCurrentHoleData(holeData);
+        setHolePhase('score');
+        setSelectedOffTeeClub(undefined);
+        setSinDetailsClubError(false);
+        setSelectedPenaltyType(undefined);
+        setSinDetailsPenaltyError(false);
+        setSelectedDoubleChipReason(undefined);
+        setSinDetailsDoubleChipReasonError(false);
     };
 
     const handleNextHole = async () => {

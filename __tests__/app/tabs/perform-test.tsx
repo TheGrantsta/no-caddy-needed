@@ -172,7 +172,7 @@ describe('Perform', () => {
 
             // Simulate adding a round
             getAllRoundHistoryService.mockReturnValue([
-                { Id: 1, TotalScore: 75, StrokeTotal: null, StartTime: '2026-08-03T09:00:00Z', EndTime: '2026-08-03T14:30:00Z', IsCompleted: 1, CourseName: 'Test Course', Created_At: '01 Jan', HolesPlayed: 18 },
+                { Id: 1, TotalScore: 75, StrokeTotal: null, StartTime: '2026-08-03T09:00:00Z', EndTime: '2026-08-03T14:30:00Z', IsCompleted: 1, IsScoreOnly: 0, CourseName: 'Test Course', Created_At: '01 Jan', HolesPlayed: 18 },
             ]);
 
             // Trigger the focus effect - this should call getAllRoundHistoryService again
@@ -219,6 +219,7 @@ describe('Perform', () => {
                     StartTime: '2026-08-03T09:00:00Z',
                     EndTime: '2026-08-03T14:30:00Z',
                     IsCompleted: 1,
+                    IsScoreOnly: 0,
                     CourseName: 'Test Course',
                     Created_At: '01 Jan',
                     HolesPlayed: 18,
@@ -255,6 +256,7 @@ describe('Perform', () => {
                     StartTime: '2026-08-03T09:00:00Z',
                     EndTime: '2026-08-03T14:30:00Z',
                     IsCompleted: 1,
+                    IsScoreOnly: 0,
                     CourseName: 'Test Course',
                     Created_At: '01 Jan',
                     HolesPlayed: 18,

@@ -52,7 +52,9 @@ export default function Perform() {
   }, []);
 
   useFocusEffect(refreshHistoryData);
-  const filteredRoundHistory = roundsFilter === 'all' ? roundHistory : roundHistory.slice(0, roundsFilter);
+  // Exclude score-only and incomplete rounds from performance stats
+  const completedRounds = roundHistory.filter(r => r.IsScoreOnly === 0 && r.IsCompleted === 1);
+  const filteredRoundHistory = roundsFilter === 'all' ? completedRounds : completedRounds.slice(0, roundsFilter);
   const filteredRoundIds = new Set(filteredRoundHistory.map(r => r.Id));
   const roundIdsFilter = roundsFilter === 'all' ? undefined : filteredRoundIds;
 
@@ -112,7 +114,7 @@ export default function Perform() {
         </View>
 
         {/* Filter buttons */}
-        {roundHistory.length > 0 && (
+        {completedRounds.length > 0 && (
           <View style={[styles.playScreen.filterContainer, { paddingVertical: 12 }]}>
             <Text testID="filter-label" style={{ color: colours.text, fontSize: 14, fontWeight: '500', marginRight: 12 }}>Show</Text>
             {([1, 10, 'all'] as const).map(f => (

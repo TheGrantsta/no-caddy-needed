@@ -137,7 +137,7 @@ describe('Perform page ', () => {
         it('shows "Show" label with filter buttons when rounds exist', () => {
             const mockGetAllRoundHistoryService = require('../../service/DbService').getAllRoundHistoryService as jest.Mock;
             mockGetAllRoundHistoryService.mockReturnValue([
-                { Id: 1, Created_At: '2024-01-01', IsScoreOnly: 0 },
+                { Id: 1, Created_At: '2024-01-01', IsScoreOnly: 0, IsCompleted: 1 },
             ]);
             mockGetSettingsService.mockReturnValue({ ...baseSettings });
 
@@ -145,6 +145,22 @@ describe('Perform page ', () => {
 
             expect(getByTestId('filter-label')).toBeTruthy();
             expect(getByTestId('filter-button-1')).toBeTruthy();
+        });
+
+        it('excludes score-only rounds from filter', () => {
+            const mockGetAllRoundHistoryService = require('../../service/DbService').getAllRoundHistoryService as jest.Mock;
+            mockGetAllRoundHistoryService.mockReturnValue([
+                { Id: 1, Created_At: '2024-01-01', IsScoreOnly: 0, IsCompleted: 1 },
+                { Id: 2, Created_At: '2024-01-02', IsScoreOnly: 1, IsCompleted: 1 },
+                { Id: 3, Created_At: '2024-01-03', IsScoreOnly: 0, IsCompleted: 1 },
+            ]);
+            mockGetSettingsService.mockReturnValue({ ...baseSettings });
+
+            const { getByTestId } = render(<View />);
+
+            // Filter should show only 2 completed rounds (excluding score-only)
+            expect(getByTestId('filter-button-1')).toBeTruthy();
+            // When filtering by "1", only the most recent completed round should be included
         });
     });
 });

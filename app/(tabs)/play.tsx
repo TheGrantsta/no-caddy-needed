@@ -848,14 +848,14 @@ export default function Play() {
                                         <TouchableOpacity
                                             testID="cancel-end-round-button"
                                             onPress={handleCancelEndRound}
-                                            style={[styles.mediumButton, { backgroundColor: colours.red }]}
+                                            style={styles.mediumButton}
                                         >
                                             <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             testID="confirm-end-round-button"
                                             onPress={handleConfirmEndRound}
-                                            style={styles.mediumButton}
+                                            style={[styles.mediumButton, { backgroundColor: colours.green }]}
                                         >
                                             <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Confirm</Text>
                                         </TouchableOpacity>

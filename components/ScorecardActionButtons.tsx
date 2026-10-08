@@ -77,14 +77,14 @@ export default function ScorecardActionButtons({
                         <TouchableOpacity
                             testID="cancel-delete-button"
                             onPress={onCancelDelete}
-                            style={[styles.mediumButton, { backgroundColor: colours.red }]}
+                            style={styles.mediumButton}
                         >
                             <Text style={styles.buttonText}>Cancel</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             testID="confirm-delete-button"
                             onPress={onConfirmDelete}
-                            style={styles.mediumButton}
+                            style={[styles.mediumButton, { backgroundColor: colours.red }]}
                         >
                             <Text style={styles.buttonText}>Confirm</Text>
                         </TouchableOpacity>
@@ -117,7 +117,7 @@ export default function ScorecardActionButtons({
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         testID="cancel-save-button"
-                        style={[styles.mediumButton, { backgroundColor: colours.red }]}
+                        style={styles.mediumButton}
                         onPress={onCancelSave}
                     >
                         <Text style={styles.buttonText}>Cancel</Text>

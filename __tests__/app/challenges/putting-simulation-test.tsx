@@ -6,6 +6,10 @@ jest.mock('@react-navigation/native', () => ({
     useNavigation: () => ({ goBack: jest.fn() }),
 }));
 
+jest.mock('expo-router', () => ({
+    useRouter: () => ({ back: jest.fn() }),
+}));
+
 jest.mock('react-native-gesture-handler', () => ({
     GestureHandlerRootView: ({ children }: any) => children,
 }));

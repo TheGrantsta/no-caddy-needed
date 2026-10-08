@@ -876,20 +876,19 @@ export default function Play() {
                                 <View style={{ gap: 16, marginTop: 20 }}>
                                     <View style={{ alignItems: 'center' }}>
                                         <Text style={[styles.headerText, { marginBottom: 8 }]}>End round?</Text>
-                                        <Text style={[styles.subHeaderText, { color: colours.text }]}>Hole {currentHole} of {Object.keys(courseHolePars).length}</Text>
                                     </View>
                                     <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 10 }}>
                                         <TouchableOpacity
                                             testID="cancel-end-round-button"
                                             onPress={handleCancelEndRound}
-                                            style={styles.mediumButton}
+                                            style={[styles.mediumButton, { backgroundColor: colours.red }]}
                                         >
                                             <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity
                                             testID="confirm-end-round-button"
                                             onPress={handleConfirmEndRound}
-                                            style={[styles.mediumButton, { backgroundColor: colours.green }]}
+                                            style={styles.mediumButton}
                                         >
                                             <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Confirm</Text>
                                         </TouchableOpacity>

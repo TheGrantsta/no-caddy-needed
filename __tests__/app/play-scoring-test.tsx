@@ -1665,7 +1665,7 @@ describe('Play screen', () => {
             expect(callsAfterAll[callsAfterAll.length - 1][0]).toHaveLength(3);
         });
 
-        it('shows "End round?" text with hole count in confirmation dialog', async () => {
+        it('shows "End round?" confirmation dialog', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockGetCourseHolePars.mockReturnValue({
@@ -1684,7 +1684,7 @@ describe('Play screen', () => {
                 })),
             });
 
-            const { getByTestId, getByText, queryByText } = render(<Play />);
+            const { getByTestId, getByText } = render(<Play />);
 
             fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
@@ -1697,13 +1697,10 @@ describe('Play screen', () => {
             // Show end round confirmation
             fireEvent.press(getByTestId('end-round-button'));
 
-            // Verify both the title and hole count are shown
+            // Verify the title is shown
             await waitFor(() => {
                 expect(getByText(/End round\?/)).toBeTruthy();
             });
-
-            // Hole count should display (the "of" indicator and total count)
-            expect(queryByText(/of/)).toBeTruthy();
         });
     });
 });

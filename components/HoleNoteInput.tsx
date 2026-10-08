@@ -49,10 +49,10 @@ const HoleNoteInput = ({ note, onNoteChange }: Props) => {
             <TouchableOpacity
                 testID="add-note-button"
                 onPress={() => setIsEditing(true)}
-                style={styles.holeNoteInput.addButton}
+                style={[styles.holeNoteInput.noteRow, { justifyContent: 'space-between' }]}
             >
-                <MaterialIcons name="add-comment" size={18} color={colours.primary} />
                 <Text style={styles.holeNoteInput.addButtonText}>Add note</Text>
+                <MaterialIcons name="sticky-note-2" size={18} color={colours.primary} />
             </TouchableOpacity>
         </View>
     );

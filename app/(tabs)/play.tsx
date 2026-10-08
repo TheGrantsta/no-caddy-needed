@@ -162,6 +162,7 @@ export default function Play() {
     const [showOnboarding, , setShowOnboarding] = useToggle(false);
     const [historyFilter, setHistoryFilter] = useState<1 | 10 | 'all'>('all');
     const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
+    const [showEndIncompleteRoundConfirm, setShowEndIncompleteRoundConfirm] = useState(false);
     const [courseHolePars, setCourseHolePars] = useState<Record<number, number>>({});
     const [activeCourseName, setActiveCourseName] = useState<string | null>(null);
     const [scorecardSinHoles, setScorecardSinHoles] = useState<Set<number>>(new Set());
@@ -278,7 +279,11 @@ export default function Play() {
         setIncompleteRound(null);
     };
 
-    const handleEndIncompleteRound = async () => {
+    const handleEndIncompleteRound = () => {
+        setShowEndIncompleteRoundConfirm(true);
+    };
+
+    const handleConfirmEndIncompleteRound = async () => {
         if (!incompleteRound) return;
         await endRoundService(incompleteRound.Id);
         if (notificationId) {
@@ -288,8 +293,14 @@ export default function Play() {
         }
         setIncompleteRound(null);
         setPlayers([]);
+        setShowEndIncompleteRoundConfirm(false);
         const history = getAllRoundHistoryService();
         setRoundHistory(history);
+        showResult(true, 'Round ended', '');
+    };
+
+    const handleCancelEndIncompleteRound = () => {
+        setShowEndIncompleteRoundConfirm(false);
     };
 
     const handleStartRound = async (playerNames: string[], courseName: string) => {
@@ -723,6 +734,30 @@ export default function Play() {
                         onShowOnboarding={handleShowOnboarding}
                         showOnboarding={showOnboarding}
                     />
+                )}
+
+                {showEndIncompleteRoundConfirm && !isRoundActive && (
+                    <View style={{ gap: 16, marginTop: 20 }}>
+                        <View style={{ alignItems: 'center' }}>
+                            <Text style={[styles.headerText, { marginBottom: 8 }]}>End round?</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 10 }}>
+                            <TouchableOpacity
+                                testID="cancel-end-round-button"
+                                onPress={handleCancelEndIncompleteRound}
+                                style={styles.mediumButton}
+                            >
+                                <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                testID="confirm-end-round-button"
+                                onPress={handleConfirmEndIncompleteRound}
+                                style={[styles.mediumButton, { backgroundColor: colours.green }]}
+                            >
+                                <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Confirm</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                 )}
 
                 {isRoundActive && !scorecardData && displaySection('play-score') && (

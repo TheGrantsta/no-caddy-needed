@@ -393,16 +393,41 @@ describe('Play screen', () => {
                 expect(queryByTestId('continue-round-button')).toBeNull();
             });
 
-            it('shouldEndIncompleteRoundWhenEndRoundLinkPressed', async () => {
+            it('shouldShowConfirmationWhenEndIncompleteRoundLinkPressed', async () => {
+                mockEndRound.mockResolvedValue(true);
+                const { getByTestId, getByText } = render(<Play />);
+                await act(async () => {
+                    fireEvent.press(getByTestId('end-incomplete-round-link'));
+                });
+                expect(getByText(/End round\?/)).toBeTruthy();
+                expect(getByTestId('confirm-end-round-button')).toBeTruthy();
+            });
+
+            it('shouldEndIncompleteRoundWhenConfirmPressed', async () => {
                 mockEndRound.mockResolvedValue(true);
                 mockGetAllRoundHistory.mockReturnValue([]);
                 const { getByTestId, queryByTestId } = render(<Play />);
                 await act(async () => {
                     fireEvent.press(getByTestId('end-incomplete-round-link'));
                 });
+                await act(async () => {
+                    fireEvent.press(getByTestId('confirm-end-round-button'));
+                });
                 expect(mockEndRound).toHaveBeenCalledWith(42);
                 expect(getByTestId('start-round-button')).toBeTruthy();
                 expect(queryByTestId('continue-round-button')).toBeNull();
+            });
+
+            it('shouldNotEndIncompleteRoundWhenCancelPressed', async () => {
+                const { getByTestId, queryByTestId } = render(<Play />);
+                await act(async () => {
+                    fireEvent.press(getByTestId('end-incomplete-round-link'));
+                });
+                await act(async () => {
+                    fireEvent.press(getByTestId('cancel-end-round-button'));
+                });
+                expect(mockEndRound).not.toHaveBeenCalled();
+                expect(queryByTestId('confirm-end-round-button')).toBeNull();
             });
 
             it('shouldResumeAtNextHoleAfterLastSavedHole', async () => {

@@ -51,6 +51,7 @@ export default function ScorecardInlineEditor({
     const edit = useScorecardEdit();
     const [clubDistances, setClubDistances] = useState<any[]>([]);
     const [sinHoles, setSinHoles] = useState<Set<number>>(new Set());
+    const [originalSinsForHole, setOriginalSinsForHole] = useState<DeadlySinsValues | null>(null);
 
     useEffect(() => {
         // Initialize edit state with current scorecard data
@@ -60,9 +61,7 @@ export default function ScorecardInlineEditor({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [scorecardData.holeScores]);
 
-    const handleScoreSelect = (holeNumber: number, playerId: number) => {
-        edit.setSelectedScore({ holeNumber, playerId });
-
+    const loadScoreDataForHole = (holeNumber: number, playerId: number) => {
         const selectedPlayer = scorecardData.players.find(p => p.Id === playerId);
         const isUserPlayer = selectedPlayer?.IsUser === 1;
 
@@ -70,6 +69,7 @@ export default function ScorecardInlineEditor({
             const sins = getHoleDeadlySinsService(roundId, holeNumber);
             const sinValues = sins || INITIAL_SINS;
             edit.setEditedSins(sinValues);
+            setOriginalSinsForHole(sinValues);
             edit.setSinsHoleNumber(holeNumber);
             const existingDetails = getHoleSinDetailsService(roundId, holeNumber);
             edit.setSelectedOffTeeClub(existingDetails?.TroubleOffTeeClub);
@@ -85,6 +85,7 @@ export default function ScorecardInlineEditor({
             edit.setHadPriorPuttingStats(!!existingPuttingStats);
         } else {
             edit.setEditedSins(null);
+            setOriginalSinsForHole(null);
             edit.setSinsHoleNumber(null);
             edit.setSelectedOffTeeClub(undefined);
             edit.setSelectedPenaltyType(undefined);
@@ -94,7 +95,26 @@ export default function ScorecardInlineEditor({
         }
     };
 
+    const handleScoreSelect = (holeNumber: number, playerId: number) => {
+        if (edit.selectedScore && hasPendingSinEdits()) {
+            showResult(false, 'Unsaved edits', 'Save or discard changes before switching holes');
+            return;
+        }
+
+        edit.setSelectedScore({ holeNumber, playerId });
+        loadScoreDataForHole(holeNumber, playerId);
+    };
+
     const handleSinsChange = (values: DeadlySinsValues) => edit.setEditedSins(values);
+
+    const sinsDiffer = (sins1: DeadlySinsValues | null, sins2: DeadlySinsValues | null): boolean => {
+        if (!sins1 || !sins2) return sins1 !== sins2;
+        return JSON.stringify(sins1) !== JSON.stringify(sins2);
+    };
+
+    const hasPendingSinEdits = (): boolean => {
+        return sinsDiffer(edit.editedSins, originalSinsForHole);
+    };
 
     const getSelectedScoreValue = (): number => {
         if (!edit.selectedScore) return 0;

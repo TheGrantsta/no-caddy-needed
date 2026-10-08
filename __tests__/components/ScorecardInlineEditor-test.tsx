@@ -271,4 +271,32 @@ describe('ScorecardInlineEditor', () => {
             expect(queryByTestId('score-editor-par-5')).toBeNull();
         });
     });
+
+    it('allows hole switching when no sins are edited', async () => {
+        const { getByTestId, queryByTestId } = render(
+            <ScorecardInlineEditor
+                roundId={1}
+                scorecardData={mockScorecardData}
+                onDone={jest.fn()}
+                onCancel={jest.fn()}
+            />
+        );
+
+        // Select hole 1, player 1 (user player)
+        fireEvent.press(getByTestId('score-cell-1-1'));
+
+        await waitFor(() => {
+            expect(getByTestId('sin-edit-panel')).toBeTruthy();
+        });
+
+        // Switch to hole 1, player 2 (non-user player)
+        // Since sins haven't been edited (editedSins === originalSinsForHole),
+        // the switch should succeed and sin panel should disappear
+        fireEvent.press(getByTestId('score-cell-1-2'));
+
+        await waitFor(() => {
+            // Sin panel should not exist for non-user player
+            expect(queryByTestId('sin-edit-panel')).toBeNull();
+        });
+    });
 });

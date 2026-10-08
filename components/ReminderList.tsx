@@ -22,7 +22,8 @@ export default function ReminderList({
 
     if (reminders.length === 0) {
         return (
-            <View style={styles.contentSection}>
+            <View>
+                <View style={styles.divider} />
                 <Text style={styles.normalText}>No reminders set</Text>
             </View>
         );

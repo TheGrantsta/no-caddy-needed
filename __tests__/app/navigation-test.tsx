@@ -1,6 +1,5 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { TouchableOpacity } from 'react-native';
 import TabLayout from '../../app/(tabs)/_layout';
 import Homepage from '../../app/(tabs)/index';
 
@@ -18,25 +17,6 @@ jest.mock('../../context/ThemeContext', () => ({
 const mockPush = jest.fn();
 const mockNavigate = jest.fn();
 
-jest.mock('expo-router', () => ({
-    Tabs: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    Link: ({ href, children }: { href: string; children: React.ReactNode }) => (
-        <MockPressable testID={`link-${href}`} onPress={() => mockPush(href)}>
-            {children}
-        </MockPressable>
-    ),
-    useRouter: () => ({
-        push: mockPush,
-        navigate: mockNavigate,
-    }),
-}));
-
-// Mock Pressable for Link testing
-const MockPressable = ({ children, testID, onPress }: any) => (
-    <TouchableOpacity testID={testID} onPress={onPress}>
-        {children}
-    </TouchableOpacity>
-);
 
 jest.mock('../../hooks/useStyles', () => ({
     useStyles: () => require('../../assets/styles').default,
@@ -109,6 +89,11 @@ jest.mock('expo-router', () => {
             </View>
         ),
         useSegments: () => ['(tabs)', 'practice'],
+        useRouter: () => ({
+            push: mockPush,
+            navigate: mockNavigate,
+        }),
+        useLocalSearchParams: () => ({}),
     };
 });
 

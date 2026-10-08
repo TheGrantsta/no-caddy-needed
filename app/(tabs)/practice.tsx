@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useLocalSearchParams } from "expo-router";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
 import { useOrientation } from "@/hooks/useOrientation";
@@ -28,13 +29,14 @@ export default function Practice() {
   const styles = useStyles();
   const colours = useThemeColours();
   const { landscapePadding } = useOrientation();
+  const { section: requestedSection, t } = useLocalSearchParams<{ section?: string; t?: string }>();
   const [showOnboarding, setShowOnboarding] = useState(() => !getSettingsService().practiceOnboardingSeen);
   const [loading, setLoading] = useState(true);
   const [allDrillHistory, setAllDrillHistory] = useState<any[]>([]);
   const [displayedDrillHistory, setDisplayedDrillHistory] = useState<any[]>([]);
   const [isLoadingMore, , setIsLoadingMore] = useToggle(false);
 
-  const SECTION_ORDER = ['challenges', 'tools', 'history'];
+  const SECTION_ORDER = ['challenges', 'tools', 'history'] as const;
   const {
     section,
     displaySection,
@@ -55,12 +57,12 @@ export default function Practice() {
     setShowOnboarding(true);
   };
 
-  const handleSubMenuWithLogging = (sectionName: string) => {
+  const handleSubMenuWithLogging = React.useCallback((sectionName: string) => {
     handleSubMenu(sectionName);
     if (sectionName === 'challenges') logEvent('view_challenges');
     if (sectionName === 'tools') logEvent('view_tools');
     if (sectionName === 'history') logEvent('view_history');
-  };
+  }, [handleSubMenu]);
 
   const fetchData = () => {
     try {
@@ -90,6 +92,12 @@ export default function Practice() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (requestedSection && SECTION_ORDER.includes(requestedSection as typeof SECTION_ORDER[number])) {
+      handleSubMenuWithLogging(requestedSection as typeof SECTION_ORDER[number]);
+    }
+  }, [requestedSection, t, handleSubMenuWithLogging, SECTION_ORDER]);
 
   return (
     <GestureHandlerRootView style={styles.flexOne}>

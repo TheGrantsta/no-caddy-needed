@@ -63,11 +63,14 @@ jest.mock('@react-navigation/native', () => ({
     }),
 }));
 
+const mockUseLocalSearchParams = jest.fn().mockReturnValue({});
+
 jest.mock('expo-router', () => ({
     Link: ({ children }: any) => {
         const { View } = require('react-native');
         return <View>{children}</View>;
     },
+    useLocalSearchParams: () => mockUseLocalSearchParams(),
 }));
 
 describe('Practice page ', () => {

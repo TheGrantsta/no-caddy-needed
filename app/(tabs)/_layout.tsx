@@ -1,4 +1,4 @@
-import { Tabs, useSegments } from 'expo-router';
+import { Tabs, useSegments, useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -7,11 +7,16 @@ import ScreenWrapper from '@/components/ScreenWrapper';
 import { getPracticeRemindersService } from '@/service/DbService';
 import fontSizes from '@/assets/font-sizes';
 
+const isOverdue = () => {
+  const reminders = getPracticeRemindersService();
+  return reminders.some(r => new Date(r.ScheduledFor) < new Date());
+};
+
 export default function TabLayout() {
   const colours = useThemeColours();
+  const router = useRouter();
   useSegments(); // Re-render on navigation changes so overdue badge stays current
-  const reminders = getPracticeRemindersService();
-  const hasOverdue = reminders.some(r => new Date(r.ScheduledFor) < new Date());
+  const hasOverdue = isOverdue();
 
   return (
     <ScreenWrapper>
@@ -76,6 +81,18 @@ export default function TabLayout() {
               </View>
             )
           }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              if (navigation.isFocused()) return;
+              if (!isOverdue()) return;
+              e.preventDefault();
+              router.navigate({
+                pathname: '/practice',
+                params: { section: 'tools', t: String(Date.now()) }
+              });
+              router.push('/tools/reminders');
+            }
+          })}
         />
         <Tabs.Screen
           name="perform"

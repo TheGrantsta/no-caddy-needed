@@ -36,11 +36,14 @@ jest.mock('@react-navigation/native', () => ({
     }),
 }));
 
+const mockUseLocalSearchParams = jest.fn().mockReturnValue({});
+
 jest.mock('expo-router', () => ({
     Link: ({ children }: any) => {
         const { View } = require('react-native');
         return <View>{children}</View>;
     },
+    useLocalSearchParams: () => mockUseLocalSearchParams(),
 }));
 
 jest.mock('@expo/vector-icons', () => ({
@@ -306,6 +309,43 @@ describe('Practice', () => {
             );
 
             animSpy.mockRestore();
+        });
+    });
+
+    describe('Section param from deep link', () => {
+        it('opensToolsSectionWhenSectionParamIsTools', () => {
+            mockUseLocalSearchParams.mockReturnValue({ section: 'tools' });
+            const { getByText } = render(<Practice />);
+            expect(getByText('Practice tools')).toBeTruthy();
+        });
+
+        it('defaultsToChallengesWhenNoSectionParam', () => {
+            mockUseLocalSearchParams.mockReturnValue({});
+            const { getByText } = render(<Practice />);
+            expect(getByText('Making practice time effective')).toBeTruthy();
+        });
+
+        it('ignoresUnknownSectionParam', () => {
+            mockUseLocalSearchParams.mockReturnValue({ section: 'unknown' });
+            const { getByText } = render(<Practice />);
+            expect(getByText('Making practice time effective')).toBeTruthy();
+        });
+
+        it('reappliesToolsSectionWhenNonceChanges', () => {
+            const { getByTestId, getByText, rerender } = render(<Practice />);
+
+            // Start at challenges
+            expect(getByText('Making practice time effective')).toBeTruthy();
+
+            // Move to history
+            fireEvent.press(getByTestId('practice-sub-menu-history'));
+            expect(getByText('No challenge history yet')).toBeTruthy();
+
+            // Deep link with new nonce should re-apply tools
+            mockUseLocalSearchParams.mockReturnValue({ section: 'tools', t: String(Date.now()) });
+            rerender(<Practice />);
+
+            expect(getByText('Practice tools')).toBeTruthy();
         });
     });
 

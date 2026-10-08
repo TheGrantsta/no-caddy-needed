@@ -95,7 +95,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
 
     return (
         <View>
-            <View style={{ paddingHorizontal: 8 }}>
+            <View style={{ paddingHorizontal: 8, marginBottom: 16 }}>
                 <Text style={styles.holeScoreInput.playerName}>Deadly Sins</Text>
             </View>
             <View style={s.container}>

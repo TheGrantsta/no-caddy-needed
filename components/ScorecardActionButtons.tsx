@@ -71,24 +71,24 @@ export default function ScorecardActionButtons({
                 <View style={{ gap: 16 }}>
                     <View style={{ alignItems: 'center', gap: 8 }}>
                         <Text style={[styles.headerText]}>Delete round?</Text>
-                        <Text style={[styles.subHeaderText, { color: colours.text }]}>This cannot be undone</Text>
                     </View>
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             testID="cancel-delete-button"
                             onPress={onCancelDelete}
-                            style={styles.mediumButton}
+                            style={[styles.mediumButton, { backgroundColor: colours.red }]}
                         >
                             <Text style={styles.buttonText}>Cancel</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             testID="confirm-delete-button"
                             onPress={onConfirmDelete}
-                            style={[styles.mediumButton, { backgroundColor: colours.red }]}
+                            style={styles.mediumButton}
                         >
                             <Text style={styles.buttonText}>Confirm</Text>
                         </TouchableOpacity>
                     </View>
+                    <Text style={[styles.subHeaderText, { color: colours.text, textAlign: 'center' }]}>This cannot be undone</Text>
                 </View>
             )}
 

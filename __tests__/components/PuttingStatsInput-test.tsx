@@ -14,6 +14,8 @@ jest.mock('@/context/ThemeContext', () => ({
     useThemeColours: () => ({
         primary: '#2D5A3D',
         background: '#25292e',
+        red: '#ff0000',
+        errorText: '#fd0303',
     }),
 }));
 
@@ -813,6 +815,72 @@ describe('PuttingStatsInput', () => {
 
             expect(getByText('1st Putt (ft)')).toBeTruthy();
             expect(getByText('2nd Putt (ft)')).toBeTruthy();
+        });
+    });
+
+    describe('error styling', () => {
+        it('renders first putt input with red border when showFirstPuttError is true', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    showFirstPuttError={true}
+                />
+            );
+
+            const input = getByTestId('first-putt-input');
+            expect(input.props.style.borderColor).toBe('#ff0000');
+            expect(input.props.style.color).toBe('#ff0000');
+        });
+
+        it('renders first putt input with primary border when showFirstPuttError is false', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    showFirstPuttError={false}
+                />
+            );
+
+            const input = getByTestId('first-putt-input');
+            expect(input.props.style.borderColor).toBe('#2D5A3D');
+            expect(input.props.style.color).toBe('#2D5A3D');
+        });
+
+        it('renders second putt input with red border when showSecondPuttRequiredError is true', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={true}
+                    onStatsChange={onStatsChange}
+                    showSecondPuttRequiredError={true}
+                />
+            );
+
+            const input = getByTestId('second-putt-input');
+            expect(input.props.style.borderColor).toBe('#ff0000');
+            expect(input.props.style.color).toBe('#ff0000');
+        });
+
+        it('renders second putt input with primary border when no errors', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    showSecondPuttRequiredError={false}
+                />
+            );
+
+            const input = getByTestId('second-putt-input');
+            expect(input.props.style.borderColor).toBe('#2D5A3D');
+            expect(input.props.style.color).toBe('#2D5A3D');
         });
     });
 });

@@ -142,12 +142,12 @@ const PuttingStatsInput = ({
                     maxLength={3}
                     style={{
                         borderWidth: 1,
-                        borderColor: colours.primary,
+                        borderColor: showFirstPuttError ? colours.red : colours.primary,
                         borderRadius: 8,
                         padding: 12,
                         fontSize: 16,
                         textAlign: 'center',
-                        color: colours.primary,
+                        color: showFirstPuttError ? colours.red : colours.primary,
                     }}
                     placeholder="e.g. 20"
                     placeholderTextColor={colours.primary}
@@ -172,12 +172,12 @@ const PuttingStatsInput = ({
                         style={{
                             flex: 1,
                             borderWidth: 1,
-                            borderColor: colours.primary,
+                            borderColor: secondPuttError || showSecondPuttRequiredError ? colours.red : colours.primary,
                             borderRadius: 8,
                             padding: 12,
                             fontSize: 16,
                             textAlign: 'center',
-                            color: colours.primary,
+                            color: secondPuttError || showSecondPuttRequiredError ? colours.red : colours.primary,
                         }}
                         placeholder="0"
                         placeholderTextColor={colours.primary}

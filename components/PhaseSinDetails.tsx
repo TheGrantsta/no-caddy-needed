@@ -1,6 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import SinDetailsInput from './SinDetailsInput';
+import { useStyles } from '../hooks/useStyles';
 import { DeadlySinsValues, ClubDistance } from '../service/DbService';
 
 interface Props {
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export default function PhaseSinDetails({
+    holeNumber,
     clubDistances,
     deadlySinsValues,
     selectedOffTeeClub,
@@ -37,8 +39,13 @@ export default function PhaseSinDetails({
     onBogeysClubChange,
     onDoubleChipReasonChange,
 }: Props) {
+    const styles = useStyles();
+
     return (
         <View>
+            <View style={{ paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <Text style={styles.normalText}>Hole {holeNumber} — Sin Details</Text>
+            </View>
             <SinDetailsInput
                 sins={deadlySinsValues}
                 clubs={clubDistances}

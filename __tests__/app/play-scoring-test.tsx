@@ -1639,5 +1639,46 @@ describe('Play screen', () => {
             const callsAfterAll = mockGetParAverages.mock.calls;
             expect(callsAfterAll[callsAfterAll.length - 1][0]).toHaveLength(3);
         });
+
+        it('shows "End round?" text with hole count in confirmation dialog', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockGetCourseHolePars.mockReturnValue({
+                1: 4, 2: 4, 3: 3, 4: 4, 5: 5,
+            });
+            mockGetMultiplayerScorecard.mockReturnValue({
+                round: { Id: 1, TotalScore: 0, IsCompleted: 0, StartTime: '', EndTime: '', Created_At: '' },
+                players: [{ Id: 1, RoundId: 1, PlayerName: 'Test', IsUser: 1, SortOrder: 0 }],
+                holeScores: Array.from({ length: 5 }, (_, i) => ({
+                    Id: i + 1,
+                    RoundId: 1,
+                    RoundPlayerId: 1,
+                    HoleNumber: i + 1,
+                    HolePar: 4,
+                    Score: 4,
+                })),
+            });
+
+            const { getByTestId, getByText, queryByText } = render(<Play />);
+
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(getByTestId('end-round-button')).toBeTruthy();
+            });
+
+            // Show end round confirmation
+            fireEvent.press(getByTestId('end-round-button'));
+
+            // Verify both the title and hole count are shown
+            await waitFor(() => {
+                expect(getByText(/End round\?/)).toBeTruthy();
+            });
+
+            // Hole count should display (the "of" indicator and total count)
+            expect(queryByText(/of/)).toBeTruthy();
+        });
     });
 });

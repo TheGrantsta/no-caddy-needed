@@ -213,4 +213,62 @@ describe('ScorecardInlineEditor', () => {
 
         expect(getHolesWithSinsForRoundService).toHaveBeenCalledWith(1);
     });
+
+    it('does not load sins for non-user player', async () => {
+        const { getByTestId, queryByTestId } = render(
+            <ScorecardInlineEditor
+                roundId={1}
+                scorecardData={mockScorecardData}
+                onDone={jest.fn()}
+                onCancel={jest.fn()}
+            />
+        );
+
+        // Select non-user player (Alice)
+        fireEvent.press(getByTestId('score-cell-1-2'));
+
+        await waitFor(() => {
+            // Sin edit panel should not appear for non-user player
+            expect(queryByTestId('sin-edit-panel')).toBeNull();
+        });
+    });
+
+    it('allows adding sins on hole with none by defaulting to INITIAL_SINS', async () => {
+        const { getByTestId, queryByTestId } = render(
+            <ScorecardInlineEditor
+                roundId={1}
+                scorecardData={mockScorecardData}
+                onDone={jest.fn()}
+                onCancel={jest.fn()}
+            />
+        );
+
+        // Select user player score on hole with no sins
+        fireEvent.press(getByTestId('score-cell-1-1'));
+
+        await waitFor(() => {
+            // Sin panel should exist with defaulted values even though getHoleDeadlySinsService returns null
+            expect(queryByTestId('sin-edit-panel')).toBeTruthy();
+        });
+    });
+
+    it('hides par change buttons in post-round editor', async () => {
+        const { getByTestId, queryByTestId } = render(
+            <ScorecardInlineEditor
+                roundId={1}
+                scorecardData={mockScorecardData}
+                onDone={jest.fn()}
+                onCancel={jest.fn()}
+            />
+        );
+
+        fireEvent.press(getByTestId('score-cell-1-1'));
+
+        await waitFor(() => {
+            // Par change buttons should not exist in inline editor
+            expect(queryByTestId('score-editor-par-3')).toBeNull();
+            expect(queryByTestId('score-editor-par-4')).toBeNull();
+            expect(queryByTestId('score-editor-par-5')).toBeNull();
+        });
+    });
 });

@@ -61,7 +61,7 @@ export default function SinEditPanel({
     const userScore = editedScores.find(s => s.HoleNumber === selectedHoleNumber && s.RoundPlayerId === playerId)?.Score;
 
     return (
-        <View>
+        <View testID="sin-edit-panel">
             <DeadlySinsTally
                 key={selectedHoleNumber}
                 onEndRound={() => { }}

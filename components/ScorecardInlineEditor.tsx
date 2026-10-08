@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text } from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity } from 'react-native';
 import Scorecard from './Scorecard';
-import ScoreEditor from './ScoreEditor';
 import SinEditPanel from './SinEditPanel';
 import { useScorecardEdit } from '../hooks/useScorecardEdit';
 import { useStyles } from '../hooks/useStyles';
@@ -22,6 +21,16 @@ import {
 } from '../service/DbService';
 import { MultiplayerRoundScorecard } from '../service/DbService';
 import ScorecardActionButtons from './ScorecardActionButtons';
+
+const INITIAL_SINS: DeadlySinsValues = {
+    threePutts: false,
+    doubleBogeys: false,
+    bogeysPar5: false,
+    bogeysInside9Iron: false,
+    doubleChips: false,
+    troubleOffTee: false,
+    penalties: false,
+};
 
 type ScorecardInlineEditorProps = {
     roundId: number;
@@ -53,9 +62,14 @@ export default function ScorecardInlineEditor({
 
     const handleScoreSelect = (holeNumber: number, playerId: number) => {
         edit.setSelectedScore({ holeNumber, playerId });
-        const sins = getHoleDeadlySinsService(roundId, holeNumber);
-        if (sins) {
-            edit.setEditedSins(sins);
+
+        const selectedPlayer = scorecardData.players.find(p => p.Id === playerId);
+        const isUserPlayer = selectedPlayer?.IsUser === 1;
+
+        if (isUserPlayer) {
+            const sins = getHoleDeadlySinsService(roundId, holeNumber);
+            const sinValues = sins || INITIAL_SINS;
+            edit.setEditedSins(sinValues);
             edit.setSinsHoleNumber(holeNumber);
             const existingDetails = getHoleSinDetailsService(roundId, holeNumber);
             edit.setSelectedOffTeeClub(existingDetails?.TroubleOffTeeClub);
@@ -94,12 +108,6 @@ export default function ScorecardInlineEditor({
         if (!edit.selectedScore) return '';
         const player = scorecardData.players.find(p => p.Id === edit.selectedScore.playerId);
         return player ? player.PlayerName : '';
-    };
-
-    const getSelectedHolePar = (): number => {
-        if (!edit.selectedScore) return 4;
-        const score = edit.editedScores.find(s => s.HoleNumber === edit.selectedScore.holeNumber);
-        return score ? score.HolePar : 4;
     };
 
     const handleIncrement = () => {
@@ -204,15 +212,26 @@ export default function ScorecardInlineEditor({
 
             {edit.selectedScore && (
                 <View testID="inline-editor-score-editor" style={styles.container}>
-                    <ScoreEditor
-                        holeNumber={edit.selectedScore.holeNumber}
-                        playerName={getSelectedPlayerName()}
-                        score={getSelectedScoreValue()}
-                        holePar={getSelectedHolePar()}
-                        onIncrement={handleIncrement}
-                        onDecrement={handleDecrement}
-                        onParChange={() => { }}
-                    />
+                    <Text style={[styles.scoreEditor.headerText]}>#{edit.selectedScore.holeNumber} - {getSelectedPlayerName()}</Text>
+                    <View style={[styles.scoreEditor.stepperRow]}>
+                        <TouchableOpacity
+                            testID="score-editor-decrement"
+                            onPress={handleDecrement}
+                            style={styles.scoreEditor.stepperButton}
+                        >
+                            <Text style={styles.scoreEditor.stepperButtonText}>-</Text>
+                        </TouchableOpacity>
+                        <Text testID="score-editor-value" style={styles.scoreEditor.scoreText}>
+                            {getSelectedScoreValue()}
+                        </Text>
+                        <TouchableOpacity
+                            testID="score-editor-increment"
+                            onPress={handleIncrement}
+                            style={styles.scoreEditor.stepperButton}
+                        >
+                            <Text style={styles.scoreEditor.stepperButtonText}>+</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             )}
 

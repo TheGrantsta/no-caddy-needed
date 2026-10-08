@@ -59,7 +59,7 @@ describe('SubMenu component', () => {
 
             expect(getByText('Play')).toBeTruthy();
             expect(getByText('Distances')).toBeTruthy();
-            expect(getByText('Wedge chart')).toBeTruthy();
+            expect(getByText('Wedge Chart')).toBeTruthy();
         });
 
         it('calls handleSubMenu when Distances is pressed', () => {
@@ -72,7 +72,7 @@ describe('SubMenu component', () => {
             expect(mockHandleSubMenu).toHaveBeenCalledWith('play-distances');
         });
 
-        it('calls handleSubMenu when Wedge chart is pressed', () => {
+        it('calls handleSubMenu when Wedge Chart is pressed', () => {
             const { getByTestId } = render(
                 <SubMenu showSubMenu="play" selectedItem="play-score" handleSubMenu={mockHandleSubMenu} />
             );

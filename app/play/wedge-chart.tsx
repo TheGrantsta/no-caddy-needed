@@ -78,7 +78,7 @@ export default function WedgeChartScreen() {
             <OnboardingOverlay
                 visible={showOnboarding}
                 onDismiss={handleDismissOnboarding}
-                title="Wedge chart"
+                title="Wedge Chart"
                 steps={ONBOARDING_STEPS}
             />
         </GestureHandlerRootView>

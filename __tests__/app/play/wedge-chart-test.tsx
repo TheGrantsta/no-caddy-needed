@@ -89,7 +89,7 @@ describe('Wedge Chart screen', () => {
 
     it('renders wedge chart heading', () => {
         const { getByText } = render(<WedgeChartScreen />);
-        expect(getByText('Wedge chart')).toBeTruthy();
+        expect(getByText('Wedge Chart')).toBeTruthy();
     });
 
     it('renders wedge distances subtitle', () => {

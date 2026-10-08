@@ -21,7 +21,7 @@ export default function WedgeChartHeader({ onInfoPress }: Props) {
                 >
                     <MaterialIcons name="info-outline" size={24} color={colours.primary} />
                 </TouchableOpacity>
-                <Text style={[styles.headerText, styles.marginTop]}>Wedge chart</Text>
+                <Text style={[styles.headerText, styles.marginTop]}>Wedge Chart</Text>
             </View>
             <Text style={[styles.normalText, styles.marginBottom]}>
                 Carry distance, not total

@@ -10,7 +10,7 @@ type Props = {
 const allSubMenuItems = [
     { testId: 'play-sub-menu-score', name: 'play-score', title: 'Play' },
     { testId: 'play-sub-menu-distances', name: 'play-distances', title: 'Distances' },
-    { testId: 'play-sub-menu-wedge-chart', name: 'play-wedge-chart', title: 'Wedge chart' },
+    { testId: 'play-sub-menu-wedge-chart', name: 'play-wedge-chart', title: 'Wedge Chart' },
     { testId: 'practice-sub-menu-challenges', name: 'challenges', title: 'Challenges' },
     { testId: 'practice-sub-menu-tools', name: 'tools', title: 'Tools' },
     { testId: 'practice-sub-menu-history', name: 'history', title: 'History' },

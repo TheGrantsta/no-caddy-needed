@@ -71,7 +71,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const { showResult, showError } = useAppToast();
+    const { showResult, showInfo } = useAppToast();
     const router = useRouter();
 
     const [multiplayerScorecard, setMultiplayerScorecard] = useState<MultiplayerRoundScorecard | null>(null);
@@ -171,7 +171,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const handleSinPress = (holeNumber: number) => {
         const sins = getHoleDeadlySinsService(Number(roundId), holeNumber);
         const names = sins ? SIN_LABELS.filter(({ key }) => sins[key]).map(({ label }) => label) : [];
-        showError(names.length > 0
+        showInfo(names.length > 0
             ? `Hole ${holeNumber}: ${names.join(', ')}`
             : `Hole ${holeNumber}: deadly sin logged`);
     };

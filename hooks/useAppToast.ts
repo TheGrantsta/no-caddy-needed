@@ -30,6 +30,18 @@ export const useAppToast = () => {
         });
     };
 
+    const showInfo = (message: string) => {
+        toast.show(message, {
+            type: 'normal',
+            textStyle: { color: colours.text, fontSize: fontSizes.normal, padding: 5, width: '100%' },
+            style: {
+                borderLeftColor: colours.tertiary,
+                borderLeftWidth: 10,
+                backgroundColor: colours.background,
+            },
+        });
+    };
+
     const showResult = (success: boolean, successMessage: string, errorMessage: string) => {
         if (success) {
             showSuccess(successMessage);
@@ -38,5 +50,5 @@ export const useAppToast = () => {
         }
     };
 
-    return { showSuccess, showError, showResult };
+    return { showSuccess, showError, showInfo, showResult };
 };

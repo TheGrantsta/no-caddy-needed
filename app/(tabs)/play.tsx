@@ -441,6 +441,10 @@ export default function Play() {
                     await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
                     setCourseNotes(prev => ({ ...prev, [currentHole]: currentNoteText.trim() }));
                 }
+                // Save putting stats if in putting phase
+                if (holePhase === 'putting' && puttingStats) {
+                    await insertPuttingStatsService(activeRoundId!, currentHole, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong);
+                }
             }
         }
 

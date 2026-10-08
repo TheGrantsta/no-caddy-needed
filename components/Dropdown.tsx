@@ -41,7 +41,7 @@ const Dropdown = ({
                     paddingHorizontal: 12,
                     borderRadius: 8,
                     borderWidth: 1,
-                    borderColor: colours.primary,
+                    borderColor: showError ? colours.red : colours.primary,
                     backgroundColor: 'transparent',
                     flexDirection: 'row',
                     justifyContent: 'space-between',
@@ -50,14 +50,14 @@ const Dropdown = ({
             >
                 <Text
                     style={{
-                        color: colours.primary,
+                        color: showError ? colours.red : colours.primary,
                         fontSize: fontSizes.smallText,
                         fontWeight: '500',
                     }}
                 >
                     {selectedOption || placeholder}
                 </Text>
-                <MaterialIcons name="expand-more" size={20} color={colours.primary} />
+                <MaterialIcons name="expand-more" size={20} color={showError ? colours.red : colours.primary} />
             </TouchableOpacity>
 
             <Modal

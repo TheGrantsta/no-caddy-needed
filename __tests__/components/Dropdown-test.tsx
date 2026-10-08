@@ -6,6 +6,7 @@ jest.mock('@/context/ThemeContext', () => ({
         primary: '#2D5A3D',
         background: '#25292e',
         errorText: '#fd0303',
+        red: '#ff0000',
         divider: '#333',
     }),
 }));
@@ -99,5 +100,27 @@ describe('Dropdown', () => {
         );
 
         expect(getByTestId('test-error')).toBeTruthy();
+    });
+
+    it('renders red border when showError is true', () => {
+        const onSelectOption = jest.fn();
+        const { getByTestId } = render(
+            <Dropdown options={mockOptions} testIDPrefix="test" onSelectOption={onSelectOption} showError={true} />
+        );
+
+        const toggle = getByTestId('test-dropdown-toggle');
+        const styles = toggle.props.style;
+        expect(styles.borderColor).toBe('#ff0000');
+    });
+
+    it('renders primary border when showError is false', () => {
+        const onSelectOption = jest.fn();
+        const { getByTestId } = render(
+            <Dropdown options={mockOptions} testIDPrefix="test" onSelectOption={onSelectOption} showError={false} />
+        );
+
+        const toggle = getByTestId('test-dropdown-toggle');
+        const styles = toggle.props.style;
+        expect(styles.borderColor).toBe('#2D5A3D');
     });
 });

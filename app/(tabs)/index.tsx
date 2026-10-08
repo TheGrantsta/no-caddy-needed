@@ -17,14 +17,14 @@ import AcknowledgeOverlay from '@/components/AcknowledgeOverlay';
 const ONBOARDING_STEPS = [
   { text: 'Welcome to No Caddy Needed — your personal golf companion for smarter play, practice and performance.' },
   { text: 'Use the Play, Practice and Performance sections to track rounds, sharpen your short game and review your stats.' },
-  { text: 'Pull down to refresh at any time. Tap the info icon to see this guide again.' },
+  { text: 'Tap the info icon at any time to see this guide again.' },
 ];
 
 // What's new for the current version — shown once per version to existing users.
 const WHATS_NEW = [
-  'Smoother screen transitions when switching between Play, Practice and Performance sections',
-  'Show pre-shot routine when entering scores',
-  'Drills replaced with challenges to focus on skill development and performance improvement',
+  'Track your pre-shot routine when entering scores for faster scoring',
+  'Challenges help you focus on short-game skills that matter most',
+  'Smoother transitions between play tracking, practice, and performance review',
 ];
 
 const APP_VERSION = Constants.expoConfig?.version ?? '';

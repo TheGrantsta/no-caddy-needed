@@ -16,7 +16,7 @@ export default function ClearDistancesConfirmation({ onCancel, onConfirm }: Prop
             <TouchableOpacity
                 testID="cancel-clear-button"
                 onPress={onCancel}
-                style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.errorText }}
+                style={{ padding: 12, paddingHorizontal: 20, borderRadius: 8, backgroundColor: colours.red }}
             >
                 <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
             </TouchableOpacity>

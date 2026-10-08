@@ -117,7 +117,7 @@ export default function ScorecardActionButtons({
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         testID="cancel-save-button"
-                        style={styles.mediumButton}
+                        style={[styles.mediumButton, { backgroundColor: colours.red }]}
                         onPress={onCancelSave}
                     >
                         <Text style={styles.buttonText}>Cancel</Text>

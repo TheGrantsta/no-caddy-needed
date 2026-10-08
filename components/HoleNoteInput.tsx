@@ -37,7 +37,7 @@ const HoleNoteInput = ({ note, onNoteChange }: Props) => {
                 <View style={styles.holeNoteInput.noteRow}>
                     <Text testID="hole-note-text" style={styles.holeNoteInput.noteText}>{note}</Text>
                     <TouchableOpacity testID="edit-note-button" onPress={() => setIsEditing(true)}>
-                        <MaterialIcons name="edit" size={18} color={colours.primary} />
+                        <MaterialIcons name="sticky-note-2" size={18} color={colours.primary} />
                     </TouchableOpacity>
                 </View>
             </View>

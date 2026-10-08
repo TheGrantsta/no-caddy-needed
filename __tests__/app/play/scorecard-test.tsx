@@ -707,6 +707,17 @@ describe('Scorecard screen', () => {
             expect(queryByTestId('confirm-delete-button')).toBeNull();
             expect(getByTestId('delete-round-button')).toBeTruthy();
         });
+
+        it('shows delete confirmation message with warning about irreversibility', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId, getByText } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('delete-round-button'));
+
+            expect(getByText('Delete round?')).toBeTruthy();
+            expect(getByText('This cannot be undone')).toBeTruthy();
+        });
     });
 
     describe('Par editing', () => {

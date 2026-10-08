@@ -237,7 +237,7 @@ export default function Play() {
             }),
         ]).start();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentHole, holePhase]);
+    }, [currentHole, holePhase, activeRoundId]);
 
 
     const handleDismissOnboarding = async () => {

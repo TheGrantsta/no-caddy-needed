@@ -25,7 +25,7 @@ export default function DeadlySinsSection({
         : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
 
     return (
-        <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
+        <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateX: slideAnim }], marginTop: 20 }]}>
             {filteredDeadlySinsRounds.length > 0 && !filteredDeadlySinsRounds.every(r => r.Total === 0) ? (
                 <DeadlySinsChart rounds={filteredDeadlySinsRounds} filter={roundsFilter} />
             ) : (

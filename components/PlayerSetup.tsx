@@ -82,7 +82,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
         <View style={s.container}>
             <TextInput
                 testID="course-name-input"
-                style={s.courseNameInput}
+                style={[s.courseNameInput, courseNameError ? styles.textInputError : {}]}
                 placeholder="Course name"
                 placeholderTextColor={colours.tertiary}
                 value={courseName}

@@ -244,6 +244,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         textInputError: {
             borderColor: c.borderError,
+            color: c.red,
         },
         row: {
             flexDirection: 'row',

@@ -4,11 +4,12 @@ import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useUpAndDownSimulation } from '@/hooks/useUpAndDownSimulation';
 import { insertDrillResultService } from '@/service/DbService';
+import { useAppToast } from '@/hooks/useAppToast';
 import ChallengeNumberPicker from '@/components/ChallengeNumberPicker';
 import ChallengeNavButtons from '@/components/ChallengeNavButtons';
 import ChallengeCompleteView from '@/components/ChallengeCompleteView';
 import { resolveBand } from '@/utils/performanceBands';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 type PerformanceBand = 'pro' | 'd1' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
 
@@ -25,7 +26,13 @@ export default function UpAndDownChallenge() {
     const styles = useStyles();
     const colours = useThemeColours();
     const sim = useUpAndDownSimulation();
+    const { showResult } = useAppToast();
     const hasSaved = useRef(false);
+
+    const handlePlayAgain = useCallback(() => {
+        hasSaved.current = false;
+        sim.reset();
+    }, [sim]);
 
     const bandDefinitions = [
         { key: 'pro' as const, threshold: 80 },
@@ -43,8 +50,9 @@ export default function UpAndDownChallenge() {
         if (sim.phase === 'complete' && !hasSaved.current) {
             hasSaved.current = true;
             insertDrillResultService('Up-and-down Challenge', sim.upAndDownCount >= 5, null, sim.successPercentage);
+            showResult(true, 'Result saved', '');
         }
-    }, [sim.phase, sim.upAndDownCount, sim.successPercentage]);
+    }, [sim.phase, sim.upAndDownCount, sim.successPercentage, showResult]);
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>
@@ -105,7 +113,7 @@ export default function UpAndDownChallenge() {
                                     color: band.color,
                                 }))}
                             userBandKey={userBandKey}
-                            onPlayAgain={sim.reset}
+                            onPlayAgain={handlePlayAgain}
                         />
                     )}
                 </View>

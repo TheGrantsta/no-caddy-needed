@@ -4,11 +4,12 @@ import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useShortPuttingLadderSimulation } from '@/hooks/useShortPuttingLadderSimulation';
 import { insertDrillResultService } from '@/service/DbService';
+import { useAppToast } from '@/hooks/useAppToast';
 import ChallengeNumberPicker from '@/components/ChallengeNumberPicker';
 import ChallengeNavButtons from '@/components/ChallengeNavButtons';
 import ChallengeCompleteView from '@/components/ChallengeCompleteView';
 import { resolveBand } from '@/utils/performanceBands';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 type PerformanceBand = 'pro' | 'd1' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
 
@@ -25,7 +26,13 @@ export default function ShortPuttingLadder() {
     const styles = useStyles();
     const colours = useThemeColours();
     const sim = useShortPuttingLadderSimulation();
+    const { showResult } = useAppToast();
     const hasSaved = useRef(false);
+
+    const handlePlayAgain = useCallback(() => {
+        hasSaved.current = false;
+        sim.reset();
+    }, [sim]);
 
     const bandDefinitions = [
         { key: 'pro' as const, threshold: 11 },
@@ -43,8 +50,9 @@ export default function ShortPuttingLadder() {
         if (sim.phase === 'complete' && !hasSaved.current) {
             hasSaved.current = true;
             insertDrillResultService('Short-Putting Ladder', sim.totalAttempts <= 11, null, sim.totalAttempts);
+            showResult(true, 'Result saved', '');
         }
-    }, [sim.phase, sim.totalAttempts]);
+    }, [sim.phase, sim.totalAttempts, showResult]);
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>
@@ -100,7 +108,7 @@ export default function ShortPuttingLadder() {
                                     color: band.color,
                                 }))}
                             userBandKey={userBandKey}
-                            onPlayAgain={sim.reset}
+                            onPlayAgain={handlePlayAgain}
                         />
                     )}
                 </View>

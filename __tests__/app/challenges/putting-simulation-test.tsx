@@ -30,6 +30,10 @@ jest.mock('../../../service/DbService', () => ({
 }));
 
 describe('PuttingSimulation screen', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
     it('renders in-progress phase with number picker', () => {
         const { getByText, getByTestId } = render(<PuttingSimulation />);
 
@@ -95,5 +99,31 @@ describe('PuttingSimulation screen', () => {
 
         expect(getByText(/Hole 1 of 18/)).toBeTruthy();
         expect(getByTestId('next-button')).toBeTruthy();
+    });
+
+    it('saves result again when playing again', async () => {
+        const { getByTestId } = render(<PuttingSimulation />);
+        const { insertDrillResultService } = require('../../../service/DbService');
+
+        // First completion
+        for (let i = 0; i < 18; i++) {
+            fireEvent.press(getByTestId('next-button'));
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const firstCallCount = insertDrillResultService.mock.calls.length;
+        expect(firstCallCount).toBe(1);
+
+        // Play again
+        fireEvent.press(getByTestId('play-again-button'));
+
+        // Second completion
+        for (let i = 0; i < 18; i++) {
+            fireEvent.press(getByTestId('next-button'));
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const secondCallCount = insertDrillResultService.mock.calls.length;
+        expect(secondCallCount).toBe(2);
     });
 });

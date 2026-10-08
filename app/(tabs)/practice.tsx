@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useFocusEffect } from "expo-router";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
 import { useOrientation } from "@/hooks/useOrientation";
@@ -98,6 +98,12 @@ export default function Practice() {
       handleSubMenuWithLogging(requestedSection as typeof SECTION_ORDER[number]);
     }
   }, [requestedSection, t, handleSubMenuWithLogging, SECTION_ORDER]);
+
+  const refreshHistoryData = useCallback(() => {
+    fetchData();
+  }, []);
+
+  useFocusEffect(refreshHistoryData);
 
   return (
     <GestureHandlerRootView style={styles.flexOne}>

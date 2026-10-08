@@ -71,6 +71,9 @@ jest.mock('expo-router', () => ({
         return <View>{children}</View>;
     },
     useLocalSearchParams: () => mockUseLocalSearchParams(),
+    useFocusEffect: jest.fn((_callback) => {
+        // In tests, don't call the callback to avoid infinite re-renders
+    }),
 }));
 
 describe('Practice page ', () => {

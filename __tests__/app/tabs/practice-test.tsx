@@ -37,6 +37,7 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 const mockUseLocalSearchParams = jest.fn().mockReturnValue({});
+let capturedFocusEffect: (() => void) | null = null;
 
 jest.mock('expo-router', () => ({
     Link: ({ children }: any) => {
@@ -44,6 +45,7 @@ jest.mock('expo-router', () => ({
         return <View>{children}</View>;
     },
     useLocalSearchParams: () => mockUseLocalSearchParams(),
+    useFocusEffect: (cb: () => void) => { capturedFocusEffect = cb; },
 }));
 
 jest.mock('@expo/vector-icons', () => ({
@@ -80,8 +82,40 @@ const defaultSettings = {
 describe('Practice', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        capturedFocusEffect = null;
         mockGetSettingsService.mockReturnValue(defaultSettings);
         mockGetAllDrillHistoryService.mockReturnValue([]);
+    });
+
+    describe('Focus effect refresh', () => {
+        it('callsUseFocusEffectOnMount', () => {
+            mockGetAllDrillHistoryService.mockReturnValue([]);
+
+            render(<Practice />);
+
+            // useFocusEffect should be called and the callback captured
+            expect(capturedFocusEffect).not.toBeNull();
+        });
+
+        it('refreshesDrillHistoryWhenScreenGainsFocus', () => {
+            mockGetAllDrillHistoryService.mockReturnValue([
+                { Id: 1, Name: 'Putting Simulation', Result: 1, Score: 5, Created_At: '2025-03-17T13:01:00.684Z' },
+            ]);
+            mockGetAllDrillHistoryService.mockClear();
+
+            render(<Practice />);
+
+            // After mount, getAllDrillHistoryService should have been called at least once
+            const initialCallCount = mockGetAllDrillHistoryService.mock.calls.length;
+
+            // Trigger the focus effect
+            if (capturedFocusEffect) {
+                capturedFocusEffect();
+            }
+
+            // Focus effect should have called getAllDrillHistoryService again
+            expect(mockGetAllDrillHistoryService.mock.calls.length).toBeGreaterThan(initialCallCount);
+        });
     });
 
     it('rendersWithoutCrashing', () => {

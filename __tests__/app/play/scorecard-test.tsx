@@ -1348,5 +1348,15 @@ describe('Scorecard screen', () => {
             // insertPuttingStatsService should be called if stats were changed
             // (exact call verification depends on whether stats were modified in test)
         });
+
+        it('shows standardized score selection prompt', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByText } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByText('Edit'));
+
+            expect(getByText('Select a score to edit')).toBeTruthy();
+        });
     });
 });

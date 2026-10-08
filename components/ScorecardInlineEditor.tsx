@@ -226,7 +226,7 @@ export default function ScorecardInlineEditor({
 
             {!edit.selectedScore && (
                 <View style={[styles.headerContainer, { paddingVertical: 16 }]}>
-                    <Text style={{ color: colours.text, fontSize: 16, fontWeight: '600' }}>Select the score to be amended</Text>
+                    <Text style={{ color: colours.text, fontSize: 16, fontWeight: '600' }}>Select a score to edit</Text>
                 </View>
             )}
 

@@ -165,7 +165,7 @@ describe('ScorecardInlineEditor', () => {
             />
         );
 
-        expect(getByText('Select the score to be amended')).toBeTruthy();
+        expect(getByText('Select a score to edit')).toBeTruthy();
     });
 
     it('hides select score prompt once a score is chosen', async () => {
@@ -181,7 +181,7 @@ describe('ScorecardInlineEditor', () => {
         fireEvent.press(getByTestId('score-cell-1-1'));
 
         await waitFor(() => {
-            expect(queryByText('Select the score to be amended')).toBeNull();
+            expect(queryByText('Select a score to edit')).toBeNull();
         });
     });
 

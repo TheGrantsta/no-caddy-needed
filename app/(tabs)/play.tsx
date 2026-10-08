@@ -934,7 +934,7 @@ export default function Play() {
                             onPress={() => setScorecardEditMode(true)}
                         >
                             <MaterialIcons name="edit" size={20} color={colours.primary} />
-                            <Text style={styles.tertiaryLinkText}>Edit scores</Text>
+                            <Text style={styles.tertiaryLinkText}>Edit</Text>
                         </TouchableOpacity>
                     </View>
                 )}

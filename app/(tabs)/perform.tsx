@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
+import { useFocusEffect } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
@@ -30,6 +31,7 @@ export default function Perform() {
   const [proximityThreePuttOnly, , setProximityThreePuttOnly] = useToggle(false);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [showOnboarding, , setShowOnboarding] = useToggle(!settings.performOnboardingSeen);
+  const [roundHistory, setRoundHistory] = useState(() => getAllRoundHistoryService());
 
   const SECTION_ORDER = ['sins', 'putting', 'proximity'];
   const {
@@ -44,7 +46,12 @@ export default function Perform() {
     handleSubMenu('sins');
   });
 
-  const roundHistory = getAllRoundHistoryService();
+  const refreshHistoryData = useCallback(() => {
+    setRoundHistory(getAllRoundHistoryService());
+    setSettings(getSettingsService());
+  }, []);
+
+  useFocusEffect(refreshHistoryData);
   const filteredRoundHistory = roundsFilter === 'all' ? roundHistory : roundHistory.slice(0, roundsFilter);
   const filteredRoundIds = new Set(filteredRoundHistory.map(r => r.Id));
   const roundIdsFilter = roundsFilter === 'all' ? undefined : filteredRoundIds;

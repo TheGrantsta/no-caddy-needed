@@ -3,6 +3,13 @@ import { Animated, _FlatList, ScrollView } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import Perform from '../../../app/(tabs)/perform';
 
+let capturedFocusEffect: (() => void) | null = null;
+
+jest.mock('expo-router', () => ({
+    useFocusEffect: (cb: () => void) => { capturedFocusEffect = cb; },
+    useRouter: () => ({ push: jest.fn() }),
+}));
+
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
 }));
@@ -91,6 +98,7 @@ jest.mock('../../../service/DbService', () => ({
 describe('Perform', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        capturedFocusEffect = null;
         const { getSettingsService } = require('../../../service/DbService');
         getSettingsService.mockReturnValue({ performOnboardingSeen: true, units: 'yards' });
     });
@@ -139,6 +147,43 @@ describe('Perform', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText('Your personal putting make rates')).toBeTruthy();
+        });
+    });
+
+    describe('Focus effect refresh', () => {
+        it('callsUseFocusEffectOnMount', () => {
+            const { getAllRoundHistoryService } = require('../../../service/DbService');
+            getAllRoundHistoryService.mockReturnValue([]);
+
+            render(<Perform />);
+
+            // useFocusEffect should be called and the callback captured
+            expect(capturedFocusEffect).not.toBeNull();
+        });
+
+        it('refreshesRoundHistoryWhenScreenGainsFocus', async () => {
+            const { getAllRoundHistoryService } = require('../../../service/DbService');
+            getAllRoundHistoryService.mockReturnValue([]);
+
+            const { queryByTestId } = render(<Perform />);
+
+            // Filter should not be visible with 0 rounds
+            expect(queryByTestId('filter-button-1')).toBeNull();
+
+            // Simulate adding a round
+            getAllRoundHistoryService.mockReturnValue([
+                { Id: 1, TotalScore: 75, StrokeTotal: null, StartTime: '2026-08-03T09:00:00Z', EndTime: '2026-08-03T14:30:00Z', IsCompleted: 1, CourseName: 'Test Course', Created_At: '01 Jan', HolesPlayed: 18 },
+            ]);
+
+            // Trigger the focus effect - this should call getAllRoundHistoryService again
+            await act(async () => {
+                if (capturedFocusEffect) {
+                    capturedFocusEffect();
+                }
+            });
+
+            // Filter should now be visible (because getAllRoundHistoryService was called again)
+            expect(queryByTestId('filter-button-1')).toBeTruthy();
         });
     });
 

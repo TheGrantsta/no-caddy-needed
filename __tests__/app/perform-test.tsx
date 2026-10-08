@@ -72,6 +72,13 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
+jest.mock('expo-router', () => ({
+    useFocusEffect: jest.fn((_callback) => {
+        // Don't call the callback to avoid infinite re-renders
+    }),
+    useRouter: () => ({ push: jest.fn() }),
+}));
+
 describe('Perform page ', () => {
     beforeEach(() => {
         jest.clearAllMocks();

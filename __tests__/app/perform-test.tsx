@@ -132,4 +132,19 @@ describe('Perform page ', () => {
             });
         });
     });
+
+    describe('Performance filter', () => {
+        it('shows "Show" label with filter buttons when rounds exist', () => {
+            const mockGetAllRoundHistoryService = require('../../service/DbService').getAllRoundHistoryService as jest.Mock;
+            mockGetAllRoundHistoryService.mockReturnValue([
+                { Id: 1, Created_At: '2024-01-01', IsScoreOnly: 0 },
+            ]);
+            mockGetSettingsService.mockReturnValue({ ...baseSettings });
+
+            const { getByTestId } = render(<View />);
+
+            expect(getByTestId('filter-label')).toBeTruthy();
+            expect(getByTestId('filter-button-1')).toBeTruthy();
+        });
+    });
 });

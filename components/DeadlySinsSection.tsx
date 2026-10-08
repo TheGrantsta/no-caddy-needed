@@ -33,7 +33,7 @@ export default function DeadlySinsSection({
                     <View style={styles.divider} />
 
                     <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
-                        No deadly sins data for selected rounds
+                        {filteredDeadlySinsRounds.length === 0 ? 'Complete a round to see stats' : 'No deadly sins data for selected rounds'}
                     </Text>
                 </>
             )}

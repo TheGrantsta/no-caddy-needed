@@ -114,6 +114,7 @@ export default function Perform() {
         {/* Filter buttons */}
         {roundHistory.length > 0 && (
           <View style={[styles.playScreen.filterContainer, { paddingVertical: 12 }]}>
+            <Text testID="filter-label" style={{ color: colours.text, fontSize: 14, fontWeight: '500', marginRight: 12 }}>Show</Text>
             {([1, 10, 'all'] as const).map(f => (
               <TouchableOpacity
                 key={String(f)}

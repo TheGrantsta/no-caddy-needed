@@ -55,7 +55,11 @@ export default function ProximitySection({
                     <View style={styles.divider} />
 
                     <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
-                        No putting data for selected rounds
+                        {filteredRoundIds && filteredRoundIds.size === 0
+                            ? 'Complete a round to see stats'
+                            : proximityThreePuttOnly
+                            ? 'No 3-putts in selected rounds'
+                            : 'No putting data for selected rounds'}
                     </Text>
                 </>
             )}

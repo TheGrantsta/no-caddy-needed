@@ -81,12 +81,11 @@ describe('Tabs layout — Practice overdue badge', () => {
         expect(queryByTestId('tab-active-indicator')).toBeNull();
     });
 
-    it('shouldUseAMutedGreenForActiveTabTintColour', () => {
+    it('shouldUseAppPrimaryColorForActiveTabTintColour', () => {
         render(<TabLayout />);
         const { Tabs } = require('expo-router');
         const activeTint = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarActiveTintColor;
-        expect(activeTint).not.toBe('#00C851');
-        expect(activeTint).not.toBe('#2D5A3D');
+        expect(activeTint).toBe('#2D5A3D'); // Primary green color
     });
 
     it('shouldUseEnlargedIconSize', () => {

@@ -6,6 +6,7 @@ import { useThemeColours } from '@/context/ThemeContext';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { getPracticeRemindersService } from '@/service/DbService';
 import fontSizes from '@/assets/font-sizes';
+import { navigateToReminders } from '@/service/NavigationService';
 
 const isOverdue = () => {
   const reminders = getPracticeRemindersService();
@@ -86,11 +87,7 @@ export default function TabLayout() {
               if (navigation.isFocused()) return;
               if (!isOverdue()) return;
               e.preventDefault();
-              router.navigate({
-                pathname: '/practice',
-                params: { section: 'tools', t: String(Date.now()) }
-              });
-              router.push('/tools/reminders');
+              navigateToReminders(router);
             }
           })}
         />

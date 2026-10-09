@@ -56,6 +56,10 @@ jest.mock('expo-router', () => {
     return {
         Stack,
         Link: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+        useRouter: jest.fn(() => ({
+            navigate: jest.fn(),
+            push: jest.fn(),
+        })),
     };
 });
 
@@ -73,9 +77,19 @@ jest.mock('@react-navigation/native', () => ({
     ThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+jest.mock('../../service/NavigationService', () => ({
+    navigateToReminders: jest.fn(),
+}));
+
+jest.mock('../../service/BackgroundTaskService', () => ({
+    registerOverdueReminderTask: jest.fn().mockResolvedValue(undefined),
+}));
+
 jest.mock('expo-notifications', () => ({
     setNotificationHandler: jest.fn(),
     requestPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted' }),
+    addNotificationResponseReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
+    getLastNotificationResponseAsync: jest.fn().mockResolvedValue(null),
 }));
 
 const mockInitialize = initialize as jest.Mock;

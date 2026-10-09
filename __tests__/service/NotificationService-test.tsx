@@ -91,6 +91,7 @@ describe('NotificationService', () => {
                 content: {
                     title: 'Practice reminder',
                     body: 'Morning putting',
+                    data: { type: 'practice-reminder' },
                 },
                 trigger: {
                     type: 'date',
@@ -143,6 +144,7 @@ describe('NotificationService', () => {
                 content: {
                     title: 'Practice reminder',
                     body: 'Putting practice — reduce 3-putts',
+                    data: { type: 'practice-reminder' },
                 },
                 trigger: {
                     type: 'calendar',

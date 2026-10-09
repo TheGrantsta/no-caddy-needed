@@ -55,7 +55,7 @@ export const schedulePracticeReminder = async (label: string, date: Date): Promi
     if (!Notifications) return null;
     try {
         const id = await Notifications.scheduleNotificationAsync({
-            content: { title: 'Practice reminder', body: label },
+            content: { title: 'Practice reminder', body: label, data: { type: 'practice-reminder' } },
             trigger: { type: 'date', date },
         });
         return id;
@@ -69,7 +69,7 @@ export const scheduleDailyOverdueReminder = async (label: string): Promise<strin
     if (!Notifications) return null;
     try {
         const id = await Notifications.scheduleNotificationAsync({
-            content: { title: 'Practice reminder', body: label },
+            content: { title: 'Practice reminder', body: label, data: { type: 'practice-reminder' } },
             trigger: { type: 'calendar', repeats: true, hour: 7, minute: 0 },
         });
         return id;

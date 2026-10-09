@@ -14,6 +14,7 @@ import { ToastProvider } from 'react-native-toast-notifications';
 import NetworkStatus from '@/components/NetworkStatus';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { useTheme } from '@/context/ThemeContext';
+import { useNotificationDeepLink } from '@/hooks/useNotificationDeepLink';
 
 LogBox.ignoreLogs([
     'SafeAreaView has been deprecated',
@@ -95,6 +96,7 @@ function ThemedToastProvider({ children }: { children: React.ReactNode }) {
 
 function ThemedApp() {
   const { colours } = useTheme();
+  useNotificationDeepLink();
 
   return (
     <ThemeProvider value={DarkTheme}>

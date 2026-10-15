@@ -3,7 +3,11 @@ import { render, fireEvent } from '@testing-library/react-native';
 import LagPutting from '../../../app/challenges/lag-putting';
 
 jest.mock('@react-navigation/native', () => ({
-    useNavigation: () => ({ goBack: jest.fn() }),
+    useNavigation: () => ({ goBack: jest.fn(), setOptions: jest.fn() }),
+}));
+
+jest.mock('expo-router', () => ({
+    useRouter: () => ({ back: jest.fn() }),
 }));
 
 jest.mock('react-native-gesture-handler', () => ({

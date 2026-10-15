@@ -3,7 +3,11 @@ import { render, fireEvent } from '@testing-library/react-native';
 import UpAndDownChallenge from '../../../app/challenges/up-and-down';
 
 jest.mock('@react-navigation/native', () => ({
-    useNavigation: () => ({ goBack: jest.fn() }),
+    useNavigation: () => ({ goBack: jest.fn(), setOptions: jest.fn() }),
+}));
+
+jest.mock('expo-router', () => ({
+    useRouter: () => ({ back: jest.fn() }),
 }));
 
 jest.mock('react-native-gesture-handler', () => ({

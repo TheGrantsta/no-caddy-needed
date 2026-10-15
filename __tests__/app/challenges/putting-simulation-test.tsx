@@ -3,7 +3,7 @@ import { render, fireEvent } from '@testing-library/react-native';
 import PuttingSimulation from '../../../app/challenges/putting-simulation';
 
 jest.mock('@react-navigation/native', () => ({
-    useNavigation: () => ({ goBack: jest.fn() }),
+    useNavigation: () => ({ goBack: jest.fn(), setOptions: jest.fn() }),
 }));
 
 jest.mock('expo-router', () => ({

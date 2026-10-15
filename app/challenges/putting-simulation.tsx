@@ -1,6 +1,8 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { usePuttingSimulation } from '@/hooks/usePuttingSimulation';
@@ -10,7 +12,7 @@ import ChallengeNumberPicker from '@/components/ChallengeNumberPicker';
 import ChallengeNavButtons from '@/components/ChallengeNavButtons';
 import ChallengeCompleteView from '@/components/ChallengeCompleteView';
 import { resolveBand } from '@/utils/performanceBands';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useLayoutEffect } from 'react';
 
 type PerformanceBand = 'pro' | 'd1' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
 
@@ -27,6 +29,7 @@ export default function PuttingSimulation() {
     const styles = useStyles();
     const colours = useThemeColours();
     const router = useRouter();
+    const navigation = useNavigation();
     const sim = usePuttingSimulation();
     const { showResult } = useAppToast();
     const hasSaved = useRef(false);
@@ -41,6 +44,17 @@ export default function PuttingSimulation() {
             router.back();
         }
     }, [sim.phase, router]);
+
+    // Configure header back button to use custom handleBack logic
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerLeft: () => (
+                <TouchableOpacity onPress={handleBack} testID="header-back-button">
+                    <MaterialIcons name="arrow-back" size={24} color={colours.background} />
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation, handleBack, colours.background]);
 
     const handleConfirmQuit = useCallback(() => {
         setShowQuitConfirm(false);
@@ -77,17 +91,6 @@ export default function PuttingSimulation() {
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
                 <View style={styles.container}>
-                    {/* Back button */}
-                    {sim.phase !== 'complete' && (
-                        <TouchableOpacity
-                            onPress={handleBack}
-                            style={{ padding: 12, alignItems: 'flex-start', marginBottom: 8 }}
-                            testID="back-button"
-                        >
-                            <Text style={{ color: colours.primary, fontWeight: '600' }}>← Back</Text>
-                        </TouchableOpacity>
-                    )}
-
                     {sim.phase === 'in-progress' && (
                         <>
                             <Text style={styles.headerText}>Hole {sim.holeNumber} of {sim.totalHoles}</Text>

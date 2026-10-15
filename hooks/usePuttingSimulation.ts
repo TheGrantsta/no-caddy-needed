@@ -1,20 +1,14 @@
 import { useReducer, useCallback } from 'react';
 import { SimulationPhase, clampValue, writeAtIndex } from '../utils/simulationState';
 import { getExpectedMakes } from '../assets/pgaPuttingBenchmarks';
+import { shuffleWithoutAdjacentCategories } from '../utils/puttDistribution';
+
 const TOTAL_HOLES = 18;
 const BASE_DISTANCES = [3, 8, 40, 14, 2, 5, 33, 16, 24, 9, 18, 52, 2, 28, 6, 4, 11, 21];
 
 function shuffleDistances(rng?: () => number): number[] {
     const distances = [...BASE_DISTANCES];
-    const randomFn = rng || Math.random;
-
-    // Fisher-Yates shuffle
-    for (let i = distances.length - 1; i > 0; i--) {
-        const j = Math.floor(randomFn() * (i + 1));
-        [distances[i], distances[j]] = [distances[j], distances[i]];
-    }
-
-    return distances;
+    return shuffleWithoutAdjacentCategories(distances, rng);
 }
 
 interface State {

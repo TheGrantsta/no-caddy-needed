@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { usePuttingSimulation } from '../../hooks/usePuttingSimulation';
+import { getPuttCategory } from '../../utils/puttDistribution';
 
 describe('usePuttingSimulation', () => {
     describe('initialization', () => {
@@ -263,6 +264,47 @@ describe('usePuttingSimulation', () => {
             const expectedAfter = result.current.expectedTourMakes;
 
             expect(expectedAfter).toBe(expectedBefore);
+        });
+    });
+
+    describe('no adjacent same-category putts', () => {
+        it('shouldNotHaveAdjacentSameCategoryOnInit', () => {
+            const { result } = renderHook(() => usePuttingSimulation());
+
+            const distances = result.current.distances;
+            for (let i = 0; i < distances.length - 1; i++) {
+                const cat1 = getPuttCategory(distances[i]);
+                const cat2 = getPuttCategory(distances[i + 1]);
+                expect(cat1).not.toBe(cat2);
+            }
+        });
+
+        it('shouldNotHaveAdjacentSameCategoryAfterReset', () => {
+            const { result } = renderHook(() => usePuttingSimulation());
+
+            act(() => {
+                result.current.reset();
+            });
+
+            const distances = result.current.distances;
+            for (let i = 0; i < distances.length - 1; i++) {
+                const cat1 = getPuttCategory(distances[i]);
+                const cat2 = getPuttCategory(distances[i + 1]);
+                expect(cat1).not.toBe(cat2);
+            }
+        });
+
+        it('shouldNotHaveAdjacentSameCategoryOverMultipleRandomRuns', () => {
+            for (let run = 0; run < 20; run++) {
+                const { result } = renderHook(() => usePuttingSimulation());
+
+                const distances = result.current.distances;
+                for (let i = 0; i < distances.length - 1; i++) {
+                    const cat1 = getPuttCategory(distances[i]);
+                    const cat2 = getPuttCategory(distances[i + 1]);
+                    expect(cat1).not.toBe(cat2);
+                }
+            }
         });
     });
 });

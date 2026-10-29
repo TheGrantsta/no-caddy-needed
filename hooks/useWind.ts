@@ -8,6 +8,13 @@ const devWarn = (...args: unknown[]) => {
     }
 };
 
+// Dev-only, for expected conditions. console.log does not raise the dev warning toast.
+const devLog = (...args: unknown[]) => {
+    if (__DEV__) {
+        console.log('[useWind]', ...args);
+    }
+};
+
 let Location: typeof import('expo-location') | null = null;
 try {
     Location = require('expo-location');
@@ -85,7 +92,7 @@ export const useWind = () => {
             setWind(next);
         } catch (e) {
             // keep the previous wind value until a fetch succeeds again
-            devWarn('could not refresh wind (no GPS fix, offline, or weather API error):', e);
+            devLog('could not refresh wind (no GPS fix, offline, or weather API error):', e);
         }
     }, []);
 

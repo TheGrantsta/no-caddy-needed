@@ -144,9 +144,17 @@ describe('Perform', () => {
             expect(queryByText('Release to update')).toBeNull();
         });
 
-        it('onRefreshResetsSectionToDeadlySins', () => {
-            const { getByTestId, getByText } = render(<Perform />);
+        it('onRefreshKeepsCurrentSubMenuSection', async () => {
+            const { UNSAFE_getByType, getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
+
+            await act(async () => {
+                await UNSAFE_getByType(ScrollView).props.refreshControl.props.onRefresh();
+            });
+            act(() => {
+                jest.advanceTimersByTime(750);
+            });
+
             expect(getByText('Your personal putting make rates')).toBeTruthy();
         });
     });
@@ -341,6 +349,46 @@ describe('Perform', () => {
             const { getByTestId, getByText } = render(<Perform />);
             expect(getByTestId('perform-sub-menu-putting')).toBeTruthy();
             expect(getByText('Putting')).toBeTruthy();
+        });
+
+        describe('up and down placement', () => {
+            const { getUpAndDownRateService } = require('../../../service/DbService');
+
+            beforeEach(() => {
+                getUpAndDownRateService.mockReturnValue({ rate: '75%', upAndDowns: 3, attempts: 4 });
+            });
+
+            afterEach(() => {
+                getUpAndDownRateService.mockReturnValue({ rate: '-', upAndDowns: 0, attempts: 0 });
+            });
+
+            it('shouldShowUpAndDownUnderProximitySubMenu', () => {
+                const { getByTestId, getByText } = render(<Perform />);
+                fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+                expect(getByText('Up & down')).toBeTruthy();
+            });
+
+            it('shouldShowUpAndDownAboveProximityStats', () => {
+                const collectText = (node: any, acc: string[] = []): string[] => {
+                    if (node == null) return acc;
+                    if (typeof node === 'string') { acc.push(node); return acc; }
+                    if (Array.isArray(node)) { node.forEach(child => collectText(child, acc)); return acc; }
+                    collectText(node.children, acc);
+                    return acc;
+                };
+                const { getByTestId, toJSON } = render(<Perform />);
+                fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+
+                const texts = collectText(toJSON());
+                expect(texts.indexOf('Up & down')).toBeGreaterThanOrEqual(0);
+                expect(texts.indexOf('Up & down')).toBeLessThan(texts.indexOf('Show 3-Putts Only'));
+            });
+
+            it('shouldNotShowUpAndDownUnderPuttingSubMenu', () => {
+                const { getByTestId, queryByTestId } = render(<Perform />);
+                fireEvent.press(getByTestId('perform-sub-menu-putting'));
+                expect(queryByTestId('up-and-down-rate')).toBeNull();
+            });
         });
 
         it('showsPuttingSectionWhenPuttingSubMenuPressed', () => {

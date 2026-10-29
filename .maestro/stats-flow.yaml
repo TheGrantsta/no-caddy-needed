@@ -473,7 +473,7 @@ appId: com.grantsta.golf.nocaddyneeded
     text: ".*Done.*"
     index: 0
 
-- tapOn: "Putting"
+- tapOn: "Proximity"
 - extendedWaitUntil:
     visible:
       id: "up-and-down-rate"

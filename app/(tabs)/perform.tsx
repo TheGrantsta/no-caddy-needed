@@ -43,14 +43,13 @@ export default function Perform() {
     slideAnim: sectionSlideAnim
   } = useSectionTransition(SECTION_ORDER);
 
-  const { refreshing, onRefresh } = useFakeRefresh(() => {
-    handleSubMenu('sins');
-  });
-
   const refreshHistoryData = useCallback(() => {
     setRoundHistory(getAllRoundHistoryService());
     setSettings(getSettingsService());
   }, []);
+
+  // Pull-to-refresh reloads data but keeps the sub-menu the user is on
+  const { refreshing, onRefresh } = useFakeRefresh(refreshHistoryData);
 
   useFocusEffect(refreshHistoryData);
   // Exclude score-only and incomplete rounds from performance stats
@@ -150,7 +149,7 @@ export default function Perform() {
           />
         )}
 
-        {displaySection('putting') && (
+        {displaySection('proximity') && (
           <UpAndDownSection
             fadeAnim={sectionFadeAnim}
             slideAnim={sectionSlideAnim}

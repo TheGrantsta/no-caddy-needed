@@ -1,4 +1,5 @@
 import { render, fireEvent } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import PuttingStatsInput from '../../components/PuttingStatsInput';
 
 jest.mock('@/hooks/useStyles', () => ({
@@ -968,6 +969,81 @@ describe('PuttingStatsInput', () => {
             fireEvent.press(getByTestId('second-putt-toggle-long'));
 
             expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, true, true);
+        });
+    });
+
+    describe('green in regulation layout', () => {
+        const collectTestIds = (node: any, acc: string[] = []): string[] => {
+            if (!node || typeof node !== 'object') return acc;
+            if (Array.isArray(node)) {
+                node.forEach(child => collectTestIds(child, acc));
+                return acc;
+            }
+            if (node.props?.testID) acc.push(node.props.testID);
+            collectTestIds(node.children, acc);
+            return acc;
+        };
+
+        it('shouldRenderGreenInRegulationBelowSecondPutt', () => {
+            const { toJSON } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />
+            );
+
+            const ids = collectTestIds(toJSON());
+            expect(ids.indexOf('gir-toggle-no')).toBeGreaterThan(ids.indexOf('second-putt-toggle-long'));
+        });
+
+        it('shouldRenderGreenInRegulationLabelInlineWithToggle', () => {
+            const { toJSON } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />
+            );
+
+            const findRowContaining = (node: any, testID: string): any => {
+                if (!node || typeof node !== 'object') return null;
+                if (Array.isArray(node)) {
+                    for (const child of node) {
+                        const found = findRowContaining(child, testID);
+                        if (found) return found;
+                    }
+                    return null;
+                }
+                const children = Array.isArray(node.children) ? node.children : [];
+                if (children.some((child: any) => child?.props?.testID === testID)) return node;
+                return findRowContaining(node.children, testID);
+            };
+
+            const row = findRowContaining(toJSON(), 'gir-label');
+            const flatStyle = Object.assign({}, ...[row?.props.style].flat(Infinity).filter(Boolean));
+            expect(flatStyle.flexDirection).toBe('row');
+            expect(row.children).toHaveLength(2);
+        });
+    });
+
+    describe('green in regulation label', () => {
+        it('shouldLabelGreenInRegulationWithoutQuestionMark', () => {
+            const { getByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />
+            );
+
+            expect(getByTestId('gir-label').props.children).toBe('Green in regulation');
+        });
+    });
+
+    describe('green in regulation toggle sizing', () => {
+        it('shouldSizeGreenInRegulationOptionsLikeShortLongOptions', () => {
+            const { getByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />
+            );
+
+            const shortStyle = StyleSheet.flatten(getByTestId('second-putt-toggle-short').props.style);
+            const noStyle = StyleSheet.flatten(getByTestId('gir-toggle-no').props.style);
+            const yesStyle = StyleSheet.flatten(getByTestId('gir-toggle-yes').props.style);
+
+            expect(shortStyle.width).toBeGreaterThan(0);
+            expect(noStyle.width).toBe(shortStyle.width);
+            expect(yesStyle.width).toBe(shortStyle.width);
+            expect(noStyle.paddingVertical).toBe(shortStyle.paddingVertical);
+            expect(noStyle.paddingHorizontal).toBe(shortStyle.paddingHorizontal);
         });
     });
 });

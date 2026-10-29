@@ -6,6 +6,8 @@ import fontSizes from '@/assets/font-sizes';
 
 const MAX_FIRST_PUTT_DISTANCE = 300;
 const MAX_SECOND_PUTT_DISTANCE = 100;
+// Shared by the Short/Long and Green in regulation toggles so every option is the same width
+const TOGGLE_OPTION_WIDTH = 68;
 
 type Props = {
     holePar: number;
@@ -141,51 +143,6 @@ const PuttingStatsInput = ({
                 </View>
             )}
 
-            {/* Green in Regulation */}
-            <View style={{ marginBottom: 16 }}>
-                <Text testID="gir-label" style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Green in regulation?</Text>
-                <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: colours.primary, borderRadius: 8, overflow: 'hidden', alignSelf: 'flex-start' }}>
-                    <TouchableOpacity
-                        testID="gir-toggle-no"
-                        onPress={() => handleGreenInRegulationChange(false)}
-                        style={{
-                            paddingVertical: 10,
-                            paddingHorizontal: 12,
-                            backgroundColor: !greenInRegulation ? colours.primary : colours.background,
-                        }}
-                    >
-                        <Text
-                            testID={!greenInRegulation ? 'gir-toggle-no-selected' : undefined}
-                            style={[
-                                styles.holeScoreInput.playerName,
-                                { marginBottom: 0, fontSize: 14, color: !greenInRegulation ? colours.background : colours.primary },
-                            ]}
-                        >
-                            No
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        testID="gir-toggle-yes"
-                        onPress={() => handleGreenInRegulationChange(true)}
-                        style={{
-                            paddingVertical: 10,
-                            paddingHorizontal: 12,
-                            backgroundColor: greenInRegulation ? colours.primary : colours.background,
-                        }}
-                    >
-                        <Text
-                            testID={greenInRegulation ? 'gir-toggle-yes-selected' : undefined}
-                            style={[
-                                styles.holeScoreInput.playerName,
-                                { marginBottom: 0, fontSize: 14, color: greenInRegulation ? colours.background : colours.primary },
-                            ]}
-                        >
-                            Yes
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
             {/* First Putt */}
             <View style={{ marginBottom: 16 }}>
                 <Text testID="first-putt-label" style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>1st Putt (ft)</Text>
@@ -244,6 +201,8 @@ const PuttingStatsInput = ({
                             style={{
                                 paddingVertical: 10,
                                 paddingHorizontal: 12,
+                                width: TOGGLE_OPTION_WIDTH,
+                                alignItems: 'center',
                                 backgroundColor: !secondIsLong ? colours.primary : colours.background,
                             }}
                         >
@@ -262,6 +221,8 @@ const PuttingStatsInput = ({
                             style={{
                                 paddingVertical: 10,
                                 paddingHorizontal: 12,
+                                width: TOGGLE_OPTION_WIDTH,
+                                alignItems: 'center',
                                 backgroundColor: secondIsLong ? colours.primary : colours.background,
                             }}
                         >
@@ -286,6 +247,54 @@ const PuttingStatsInput = ({
                         2nd putt distance is required for a 3-putt
                     </Text>
                 )}
+            </View>
+            {/* Green in Regulation */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <Text testID="gir-label" style={styles.holeScoreInput.playerName}>Green in regulation</Text>
+                <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: colours.primary, borderRadius: 8, overflow: 'hidden' }}>
+                    <TouchableOpacity
+                        testID="gir-toggle-no"
+                        onPress={() => handleGreenInRegulationChange(false)}
+                        style={{
+                            paddingVertical: 10,
+                            paddingHorizontal: 12,
+                            width: TOGGLE_OPTION_WIDTH,
+                            alignItems: 'center',
+                            backgroundColor: !greenInRegulation ? colours.primary : colours.background,
+                        }}
+                    >
+                        <Text
+                            testID={!greenInRegulation ? 'gir-toggle-no-selected' : undefined}
+                            style={[
+                                styles.holeScoreInput.playerName,
+                                { marginBottom: 0, fontSize: 14, color: !greenInRegulation ? colours.background : colours.primary },
+                            ]}
+                        >
+                            No
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        testID="gir-toggle-yes"
+                        onPress={() => handleGreenInRegulationChange(true)}
+                        style={{
+                            paddingVertical: 10,
+                            paddingHorizontal: 12,
+                            width: TOGGLE_OPTION_WIDTH,
+                            alignItems: 'center',
+                            backgroundColor: greenInRegulation ? colours.primary : colours.background,
+                        }}
+                    >
+                        <Text
+                            testID={greenInRegulation ? 'gir-toggle-yes-selected' : undefined}
+                            style={[
+                                styles.holeScoreInput.playerName,
+                                { marginBottom: 0, fontSize: 14, color: greenInRegulation ? colours.background : colours.primary },
+                            ]}
+                        >
+                            Yes
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     );

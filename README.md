@@ -139,6 +139,16 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
       SKIP_UI_CHECK=1 git push
    ```
 
+   This skips only the visual regression check. The Maestro flows still run.
+
+### Skip all UI and flow checks
+
+   ```
+      SKIP_ALL_CHECKS=1 git push
+   ```
+
+   This skips the visual regression check and both Maestro flows. Unit tests and coverage still run.
+
 ## App Store submission
 
 App Store needs images with 1242x2688px but the screen shots produced using maestro have an output of 1320x2868px.

@@ -212,4 +212,19 @@ describe('Tabs layout — Practice overdue badge', () => {
             expect(mockPush).toHaveBeenCalled();
         });
     });
+
+    describe('tab button test ids', () => {
+        it('shouldGiveEachTabButtonAStableTestIdForEndToEndTests', () => {
+            const { Tabs } = require('expo-router');
+            render(<TabLayout />);
+
+            const testIdFor = (name: string) =>
+                (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === name)[0].options.tabBarButtonTestID;
+
+            expect(testIdFor('index')).toBe('tab-home');
+            expect(testIdFor('play')).toBe('tab-play');
+            expect(testIdFor('practice')).toBe('tab-practice');
+            expect(testIdFor('perform')).toBe('tab-perform');
+        });
+    });
 });

@@ -44,6 +44,7 @@ export default function TabLayout() {
           name="index"
           options={{
             title: 'Home',
+            tabBarButtonTestID: 'tab-home',
             tabBarIcon: ({ color }) => (
               <MaterialIcons name='home' color={color} size={32} />
             )
@@ -53,6 +54,7 @@ export default function TabLayout() {
           name="play"
           options={{
             title: 'Play',
+            tabBarButtonTestID: 'tab-play',
             tabBarIcon: ({ color }) => (
               <MaterialIcons name='sports-golf' color={color} size={32} />
             )
@@ -62,6 +64,7 @@ export default function TabLayout() {
           name="practice"
           options={{
             title: 'Practice',
+            tabBarButtonTestID: 'tab-practice',
             tabBarIcon: ({ color }) => (
               <View>
                 <MaterialIcons name='golf-course' color={color} size={32} />
@@ -95,6 +98,7 @@ export default function TabLayout() {
           name="perform"
           options={{
             title: 'Performance',
+            tabBarButtonTestID: 'tab-perform',
             tabBarIcon: ({ color }) => (
               <MaterialIcons name='lightbulb' color={color} size={32} />
             )

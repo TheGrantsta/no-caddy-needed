@@ -251,6 +251,19 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "next-hole-button"
 
+# Hole hit in regulation (tap before typing so no keyboard is open)
+- extendedWaitUntil:
+    visible:
+      id: "gir-toggle-yes"
+    timeout: 3000
+- tapOn:
+    id: "gir-toggle-yes"
+# Wait for the selected state to render; assertVisible does not retry
+- extendedWaitUntil:
+    visible:
+      id: "gir-toggle-yes-selected"
+    timeout: 3000
+
 # Enter first putt
 - extendedWaitUntil:
     visible:
@@ -260,12 +273,6 @@ appId: com.grantsta.golf.nocaddyneeded
     id: "first-putt-input"
 - inputText: "2"
 - hideKeyboard
-
-# Hole hit in regulation
-- tapOn:
-    id: "gir-toggle-yes"
-- assertVisible:
-    id: "gir-toggle-yes-selected"
 
 # Complete the hole
 - extendedWaitUntil:
@@ -316,18 +323,19 @@ appId: com.grantsta.golf.nocaddyneeded
     id: "second-putt-input"
 - inputText: "2"
 - hideKeyboard
+# Number pad has no Return key, so tap the header to make sure the keyboard is closed before Next
+- tapOn:
+    text: "Hole .* — Putting stats"
 
 # Entering putts must not change GIR
 - assertVisible:
     id: "gir-toggle-no-selected"
 
-# Complete the hole
+# Keyboard was already closed by the header tap, so a single Next moves on
 - extendedWaitUntil:
     visible:
       id: "next-hole-button"
     timeout: 10000
-- tapOn:
-    id: "next-hole-button"
 - tapOn:
     id: "next-hole-button"
 
@@ -454,7 +462,8 @@ appId: com.grantsta.golf.nocaddyneeded
 # ======== UP AND DOWN ON PERFORM ========
 # Missed greens: holes 1, 3, 4, 5 (hole 2 was in regulation).
 # One-putts from a missed green: holes 1, 4, 5 => 3 of 4 = 75%.
-- tapOn: "Home"
+- tapOn:
+    id: "tab-home"
 - tapOn:
     id: "home-perform-link"
 

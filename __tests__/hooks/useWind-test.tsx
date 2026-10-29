@@ -24,10 +24,12 @@ const mockFetchWind = fetchWind as jest.Mock;
 
 describe('useWind', () => {
     let warnSpy: jest.SpyInstance;
+    let logSpy: jest.SpyInstance;
 
     beforeEach(() => {
         jest.clearAllMocks();
         warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
         mockHasServices.mockResolvedValue(true);
         mockGetPermission.mockResolvedValue({ status: 'granted' });
         mockRequestPermission.mockResolvedValue({ status: 'granted' });
@@ -37,6 +39,7 @@ describe('useWind', () => {
 
     afterEach(() => {
         warnSpy.mockRestore();
+        logSpy.mockRestore();
     });
 
     it('startsWithNullWindAndZeroHeading', () => {
@@ -134,13 +137,15 @@ describe('useWind', () => {
             });
         });
 
-        it('warnsWhenRefreshWindFails', async () => {
+        it('logsWithoutWarningWhenRefreshWindFails', async () => {
             mockGetPosition.mockRejectedValueOnce(new Error('no gps fix'));
 
             const { result } = renderHook(() => useWind());
             await act(async () => { await result.current.refreshWind(); });
 
-            expect(warnSpy).toHaveBeenCalledWith(
+            // An expected no-GPS-fix case should not raise a warning toast in dev builds
+            expect(warnSpy).not.toHaveBeenCalledWith('[useWind]', expect.stringContaining('could not refresh wind'), expect.anything());
+            expect(logSpy).toHaveBeenCalledWith(
                 '[useWind]',
                 expect.stringContaining('could not refresh wind'),
                 expect.any(Error)

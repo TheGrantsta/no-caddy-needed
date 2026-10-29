@@ -85,6 +85,7 @@ describe('Export database queries', () => {
             expect(sqlArg.toUpperCase()).toContain('PUTTINGSTATS');
             expect(sqlArg.toUpperCase()).toContain('ROUNDS');
             expect(sqlArg.toUpperCase()).toContain('HOLENUMBER');
+            expect(sqlArg.toUpperCase()).toContain('GREENINREGULATION');
             expect(sqlArg.toUpperCase()).toContain('FIRSTPUTTDISTANCE');
             expect(sqlArg.toUpperCase()).toContain('SECONDPUTTDISTANCE');
             expect(sqlArg.toUpperCase()).toContain('THIRDPUTTDISTANCE');

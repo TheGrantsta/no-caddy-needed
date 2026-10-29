@@ -10,6 +10,8 @@ import {
     getActiveRoundService,
     getAllRoundHistoryService,
     insertHoleDeadlySinsService,
+    insertPuttingStatsService,
+    getPuttingStatsService,
     getAllDeadlySinsRoundsService,
     getClubDistancesService,
     addRoundPlayersService,
@@ -637,6 +639,81 @@ describe('Play screen', () => {
 
             await waitFor(() => {
                 expect(mockSaveHoleNote).toHaveBeenCalledWith('St Andrews', 1, 'aim left');
+            });
+        });
+
+        describe('green in regulation on the putting screen', () => {
+            const advanceToPuttingPhase = async (getByTestId: (id: string) => any) => {
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+                await waitFor(() => expect(getByTestId('first-putt-input')).toBeTruthy());
+            };
+
+            const startRoundOnHoleOne = async (getByTestId: (id: string) => any) => {
+                fireEvent.press(getByTestId('start-round-button'));
+                fireEvent.changeText(getByTestId('course-name-input'), 'Augusta');
+                fireEvent.press(getByTestId('start-button'));
+                await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
+            };
+
+            it('shouldSaveGreenInRegulationTrueWhenYesSelectedOnPuttingScreen', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+                const { getByTestId } = render(<Play />);
+                await startRoundOnHoleOne(getByTestId);
+                await advanceToPuttingPhase(getByTestId);
+
+                fireEvent.press(getByTestId('gir-toggle-yes'));
+                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+
+                await waitFor(() => {
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, true);
+                });
+            });
+
+            it('shouldShowSavedGreenInRegulationWhenPuttingScreenReopened', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+                (getPuttingStatsService as jest.Mock).mockReturnValue({
+                    Id: 1, RoundId: 1, HoleNumber: 1, FirstPuttDistance: 20, SecondPuttDistance: 0,
+                    SecondPuttIsLong: 0, ThirdPuttDistance: undefined, ThirdPuttIsLong: undefined, GreenInRegulation: true,
+                });
+
+                const { getByTestId } = render(<Play />);
+                await startRoundOnHoleOne(getByTestId);
+                await advanceToPuttingPhase(getByTestId);
+
+                expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+                (getPuttingStatsService as jest.Mock).mockReturnValue(null);
+            });
+
+            it('shouldSaveGreenInRegulationFalseByDefaultOnPuttingScreen', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+                const { getByTestId } = render(<Play />);
+                await startRoundOnHoleOne(getByTestId);
+                await advanceToPuttingPhase(getByTestId);
+
+                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+
+                await waitFor(() => {
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, false);
+                });
             });
         });
 

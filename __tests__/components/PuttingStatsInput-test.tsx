@@ -66,7 +66,7 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('first-putt-input');
             fireEvent.changeText(input, '25');
 
-            expect(onStatsChange).toHaveBeenCalledWith(25, undefined, expect.any(Boolean));
+            expect(onStatsChange).toHaveBeenCalledWith(25, undefined, expect.any(Boolean), expect.any(Boolean));
         });
 
         it('calls onStatsChange with undefined when first putt field is cleared', () => {
@@ -85,7 +85,7 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('first-putt-input');
             fireEvent.changeText(input, '');
 
-            expect(onStatsChange).toHaveBeenCalledWith(undefined, undefined, expect.any(Boolean));
+            expect(onStatsChange).toHaveBeenCalledWith(undefined, undefined, expect.any(Boolean), expect.any(Boolean));
         });
     });
 
@@ -174,7 +174,7 @@ describe('PuttingStatsInput', () => {
             const longButton = getByTestId('second-putt-toggle-long');
             fireEvent.press(longButton);
 
-            expect(onStatsChange).toHaveBeenCalledWith(20, 5, true);
+            expect(onStatsChange).toHaveBeenCalledWith(20, 5, true, false);
         });
     });
 
@@ -237,7 +237,7 @@ describe('PuttingStatsInput', () => {
             fireEvent.changeText(secondPuttInput, '');
 
             // Should be called because blank is always allowed (means no second putt)
-            expect(onStatsChange).toHaveBeenCalledWith(undefined, undefined, false);
+            expect(onStatsChange).toHaveBeenCalledWith(undefined, undefined, false, false);
         });
 
         it('allows second putt = 0 even with empty first putt', () => {
@@ -257,7 +257,7 @@ describe('PuttingStatsInput', () => {
             fireEvent.changeText(secondPuttInput, '0');
 
             // Should be called because 0 is always allowed (means no second putt)
-            expect(onStatsChange).toHaveBeenCalledWith(undefined, 0, false);
+            expect(onStatsChange).toHaveBeenCalledWith(undefined, 0, false, false);
         });
 
         it('allows second putt = 0 even with first putt = 0', () => {
@@ -277,7 +277,7 @@ describe('PuttingStatsInput', () => {
             const secondPuttInput = getByTestId('second-putt-input');
             fireEvent.changeText(secondPuttInput, '0');
 
-            expect(onStatsChange).toHaveBeenCalledWith(0, 0, false);
+            expect(onStatsChange).toHaveBeenCalledWith(0, 0, false, false);
         });
 
         it('allows second putt > 0 when first putt is filled in', () => {
@@ -296,7 +296,7 @@ describe('PuttingStatsInput', () => {
             const secondPuttInput = getByTestId('second-putt-input');
             fireEvent.changeText(secondPuttInput, '5');
 
-            expect(onStatsChange).toHaveBeenCalledWith(20, 5, false);
+            expect(onStatsChange).toHaveBeenCalledWith(20, 5, false, false);
         });
 
         it('does not allow short second putt >= first putt', () => {
@@ -344,7 +344,7 @@ describe('PuttingStatsInput', () => {
             const secondPuttInput = getByTestId('second-putt-input');
             fireEvent.changeText(secondPuttInput, '10');
 
-            expect(onStatsChange).toHaveBeenCalledWith(20, 10, false);
+            expect(onStatsChange).toHaveBeenCalledWith(20, 10, false, false);
         });
 
         it('allows long second putt > first putt', () => {
@@ -365,7 +365,7 @@ describe('PuttingStatsInput', () => {
             const secondPuttInput = getByTestId('second-putt-input');
             fireEvent.changeText(secondPuttInput, '25');
 
-            expect(onStatsChange).toHaveBeenCalledWith(10, 25, true);
+            expect(onStatsChange).toHaveBeenCalledWith(10, 25, true, false);
         });
 
         it('does not flip toggle to Short when second putt exceeds first putt', () => {
@@ -538,7 +538,7 @@ describe('PuttingStatsInput', () => {
             fireEvent.changeText(secondPuttInput, '10');
             expect(queryByTestId('second-putt-error')).toBeFalsy();
             expect(onSecondPuttErrorChange).toHaveBeenCalledWith(false);
-            expect(onStatsChange).toHaveBeenCalledWith(20, 10, false);
+            expect(onStatsChange).toHaveBeenCalledWith(20, 10, false, false);
         });
 
         it('clears second putt error when first putt is increased to resolve it', () => {
@@ -568,7 +568,7 @@ describe('PuttingStatsInput', () => {
             // Error should be cleared and callbacks fired
             expect(queryByTestId('second-putt-error')).toBeFalsy();
             expect(onSecondPuttErrorChange).toHaveBeenCalledWith(false);
-            expect(onStatsChange).toHaveBeenCalledWith(21, 3, false);
+            expect(onStatsChange).toHaveBeenCalledWith(21, 3, false, false);
         });
 
         it('clears second putt error when first putt is cleared', () => {
@@ -597,7 +597,7 @@ describe('PuttingStatsInput', () => {
             // Error should be cleared
             expect(queryByTestId('second-putt-error')).toBeFalsy();
             expect(onSecondPuttErrorChange).toHaveBeenCalledWith(false);
-            expect(onStatsChange).toHaveBeenCalledWith(undefined, 3, false);
+            expect(onStatsChange).toHaveBeenCalledWith(undefined, 3, false, false);
         });
 
         it('shows second putt error when first putt is lowered below second', () => {
@@ -652,7 +652,7 @@ describe('PuttingStatsInput', () => {
             fireEvent.press(longButton);
 
             expect(queryByTestId('second-putt-error')).toBeFalsy();
-            expect(onStatsChange).toHaveBeenCalledWith(10, 15, true);
+            expect(onStatsChange).toHaveBeenCalledWith(10, 15, true, false);
         });
     });
 
@@ -736,7 +736,7 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('first-putt-input');
             fireEvent.changeText(input, '500');
 
-            expect(onStatsChange).toHaveBeenCalledWith(300, undefined, expect.any(Boolean));
+            expect(onStatsChange).toHaveBeenCalledWith(300, undefined, expect.any(Boolean), expect.any(Boolean));
         });
 
         it('clamps first putt to min 0', () => {
@@ -754,7 +754,7 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('first-putt-input');
             fireEvent.changeText(input, '-5');
 
-            expect(onStatsChange).toHaveBeenCalledWith(0, undefined, expect.any(Boolean));
+            expect(onStatsChange).toHaveBeenCalledWith(0, undefined, expect.any(Boolean), expect.any(Boolean));
         });
     });
 
@@ -881,6 +881,93 @@ describe('PuttingStatsInput', () => {
             const input = getByTestId('second-putt-input');
             expect(input.props.style.borderColor).toBe('#2D5A3D');
             expect(input.props.style.color).toBe('#2D5A3D');
+        });
+    });
+
+    describe('green in regulation toggle', () => {
+        it('shouldDefaultGreenInRegulationToNoWhenNoInitialValueGiven', () => {
+            const { getByTestId, queryByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />
+            );
+
+            expect(getByTestId('gir-toggle-no-selected')).toBeTruthy();
+            expect(queryByTestId('gir-toggle-yes-selected')).toBeNull();
+        });
+
+        it('shouldShowYesSelectedWhenInitialGreenInRegulationIsTrue', () => {
+            const { getByTestId, queryByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} initialGreenInRegulation={true} />
+            );
+
+            expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+            expect(queryByTestId('gir-toggle-no-selected')).toBeNull();
+        });
+
+        it('shouldEmitGreenInRegulationTrueWhenYesPressed', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} />
+            );
+
+            fireEvent.press(getByTestId('gir-toggle-yes'));
+
+            expect(onStatsChange).toHaveBeenLastCalledWith(undefined, undefined, false, true);
+            expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+        });
+
+        it('shouldEmitGreenInRegulationFalseWhenSwitchedBackToNo', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} initialGreenInRegulation={true} />
+            );
+
+            fireEvent.press(getByTestId('gir-toggle-no'));
+
+            expect(onStatsChange).toHaveBeenLastCalledWith(undefined, undefined, false, false);
+        });
+
+        it('shouldKeepGreenInRegulationWhenFirstPuttChanges', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} initialGreenInRegulation={true} />
+            );
+
+            fireEvent.changeText(getByTestId('first-putt-input'), '20');
+
+            expect(onStatsChange).toHaveBeenLastCalledWith(20, undefined, false, true);
+        });
+
+        it('shouldKeepGreenInRegulationWhenSecondPuttChanges', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} initialFirstPutt={20} initialGreenInRegulation={true} />
+            );
+
+            fireEvent.changeText(getByTestId('second-putt-input'), '3');
+
+            expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, true);
+        });
+
+        it('shouldKeepGreenInRegulationWhenFirstPuttCleared', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} initialFirstPutt={20} initialGreenInRegulation={true} />
+            );
+
+            fireEvent.changeText(getByTestId('first-putt-input'), '');
+
+            expect(onStatsChange).toHaveBeenLastCalledWith(undefined, undefined, false, true);
+        });
+
+        it('shouldKeepGreenInRegulationWhenPuttDirectionToggled', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} initialFirstPutt={20} initialSecondPutt={3} initialGreenInRegulation={true} />
+            );
+
+            fireEvent.press(getByTestId('second-putt-toggle-long'));
+
+            expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, true, true);
         });
     });
 });

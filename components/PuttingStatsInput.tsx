@@ -10,10 +10,11 @@ const MAX_SECOND_PUTT_DISTANCE = 100;
 type Props = {
     holePar: number;
     threePuttSelected: boolean;
-    onStatsChange: (firstPuttDistance: number | undefined, secondPuttDistance: number | undefined, secondPuttIsLong: boolean) => void;
+    onStatsChange: (firstPuttDistance: number | undefined, secondPuttDistance: number | undefined, secondPuttIsLong: boolean, greenInRegulation: boolean) => void;
     initialFirstPutt?: number;
     initialSecondPutt?: number;
     initialSecondIsLong?: boolean;
+    initialGreenInRegulation?: boolean;
     showFirstPuttError?: boolean;
     showSecondPuttRequiredError?: boolean;
     onSecondPuttErrorChange?: (hasError: boolean) => void;
@@ -26,6 +27,7 @@ const PuttingStatsInput = ({
     initialFirstPutt,
     initialSecondPutt,
     initialSecondIsLong = false,
+    initialGreenInRegulation = false,
     showFirstPuttError = false,
     showSecondPuttRequiredError = false,
     onSecondPuttErrorChange,
@@ -35,6 +37,7 @@ const PuttingStatsInput = ({
     const [firstPutt, setFirstPutt] = useState(initialFirstPutt !== undefined ? String(initialFirstPutt) : '');
     const [secondPutt, setSecondPutt] = useState(initialSecondPutt !== undefined ? String(initialSecondPutt) : '');
     const [secondIsLong, setSecondIsLong] = useState(initialSecondIsLong);
+    const [greenInRegulation, setGreenInRegulation] = useState(initialGreenInRegulation);
 
     // Initialize error state: if short second putt >= first putt
     const initializeError = () => {
@@ -55,7 +58,7 @@ const PuttingStatsInput = ({
         if (!value || value.trim() === '') {
             const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(secondPutt))) : undefined;
             setSecondPuttError(false);
-            onStatsChange(undefined, second, secondIsLong);
+            onStatsChange(undefined, second, secondIsLong, greenInRegulation);
             return;
         }
         if (!isNaN(parseInt(value))) {
@@ -69,7 +72,7 @@ const PuttingStatsInput = ({
                 setSecondPuttError(false);
             }
 
-            onStatsChange(first, second, secondIsLong);
+            onStatsChange(first, second, secondIsLong, greenInRegulation);
         }
     };
 
@@ -79,7 +82,7 @@ const PuttingStatsInput = ({
             // Blank field means undefined second putt
             const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(MAX_FIRST_PUTT_DISTANCE, parseInt(firstPutt))) : undefined;
             setSecondPuttError(false);
-            onStatsChange(first, undefined, secondIsLong);
+            onStatsChange(first, undefined, secondIsLong, greenInRegulation);
             return;
         }
         if (!isNaN(parseInt(value))) {
@@ -98,7 +101,7 @@ const PuttingStatsInput = ({
             }
 
             setSecondPuttError(false);
-            onStatsChange(first, second, secondIsLong);
+            onStatsChange(first, second, secondIsLong, greenInRegulation);
         }
     };
 
@@ -115,7 +118,14 @@ const PuttingStatsInput = ({
 
         setSecondPuttError(false);
         setSecondIsLong(value);
-        onStatsChange(first, second, value);
+        onStatsChange(first, second, value, greenInRegulation);
+    };
+
+    const handleGreenInRegulationChange = (value: boolean) => {
+        setGreenInRegulation(value);
+        const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(MAX_FIRST_PUTT_DISTANCE, parseInt(firstPutt))) : undefined;
+        const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(secondPutt))) : undefined;
+        onStatsChange(first, second, secondIsLong, value);
     };
 
     return (
@@ -130,6 +140,51 @@ const PuttingStatsInput = ({
                     </View>
                 </View>
             )}
+
+            {/* Green in Regulation */}
+            <View style={{ marginBottom: 16 }}>
+                <Text testID="gir-label" style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Green in regulation?</Text>
+                <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: colours.primary, borderRadius: 8, overflow: 'hidden', alignSelf: 'flex-start' }}>
+                    <TouchableOpacity
+                        testID="gir-toggle-no"
+                        onPress={() => handleGreenInRegulationChange(false)}
+                        style={{
+                            paddingVertical: 10,
+                            paddingHorizontal: 12,
+                            backgroundColor: !greenInRegulation ? colours.primary : colours.background,
+                        }}
+                    >
+                        <Text
+                            testID={!greenInRegulation ? 'gir-toggle-no-selected' : undefined}
+                            style={[
+                                styles.holeScoreInput.playerName,
+                                { marginBottom: 0, fontSize: 14, color: !greenInRegulation ? colours.background : colours.primary },
+                            ]}
+                        >
+                            No
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        testID="gir-toggle-yes"
+                        onPress={() => handleGreenInRegulationChange(true)}
+                        style={{
+                            paddingVertical: 10,
+                            paddingHorizontal: 12,
+                            backgroundColor: greenInRegulation ? colours.primary : colours.background,
+                        }}
+                    >
+                        <Text
+                            testID={greenInRegulation ? 'gir-toggle-yes-selected' : undefined}
+                            style={[
+                                styles.holeScoreInput.playerName,
+                                { marginBottom: 0, fontSize: 14, color: greenInRegulation ? colours.background : colours.primary },
+                            ]}
+                        >
+                            Yes
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
 
             {/* First Putt */}
             <View style={{ marginBottom: 16 }}>

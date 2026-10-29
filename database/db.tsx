@@ -85,7 +85,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS PracticeReminders (Id INTEGER PRIMARY KEY AUTOINCREMENT, Label TEXT NOT NULL, ScheduledFor TEXT NOT NULL, NotificationId TEXT, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS HiddenRecents (Id INTEGER PRIMARY KEY AUTOINCREMENT, Type TEXT NOT NULL, Name TEXT NOT NULL, UNIQUE(Type, Name));
         CREATE TABLE IF NOT EXISTS HoleNotes (Id INTEGER PRIMARY KEY AUTOINCREMENT, CourseName TEXT NOT NULL, HoleNumber INTEGER NOT NULL, Note TEXT NOT NULL, Updated_At TEXT NOT NULL, UNIQUE(CourseName, HoleNumber));
-        CREATE TABLE IF NOT EXISTS PuttingStats (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, FirstPuttDistance INTEGER NOT NULL, SecondPuttDistance INTEGER NOT NULL, SecondPuttIsLong INTEGER NOT NULL DEFAULT 0, ThirdPuttDistance INTEGER, ThirdPuttIsLong INTEGER, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
+        CREATE TABLE IF NOT EXISTS PuttingStats (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, FirstPuttDistance INTEGER NOT NULL, SecondPuttDistance INTEGER NOT NULL, SecondPuttIsLong INTEGER NOT NULL DEFAULT 0, ThirdPuttDistance INTEGER, ThirdPuttIsLong INTEGER, GreenInRegulation INTEGER NOT NULL DEFAULT 0, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS HoleSinDetails (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, TroubleOffTeeClub TEXT, PenaltyType TEXT, BogeysInside9IronClub TEXT, DoubleChipsReason TEXT, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
     `);
 
@@ -128,6 +128,11 @@ export const initialize = async () => {
         {
             table: 'DrillHistory',
             columnsToAdd: ['DrillId INTEGER', 'Score INTEGER'],
+            columnsToRemove: [],
+        },
+        {
+            table: 'PuttingStats',
+            columnsToAdd: ['GreenInRegulation INTEGER NOT NULL DEFAULT 0'],
             columnsToRemove: [],
         },
     ];
@@ -308,12 +313,12 @@ export const getRoundHoleScoresByHole = (roundId: number, holeNumber: number) =>
     );
 };
 
-export const insertPuttingStats = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean): Promise<boolean> => {
+export const insertPuttingStats = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean, greenInRegulation: boolean = false): Promise<boolean> => {
     let success = true;
     try {
         const db = await SQLite.openDatabaseAsync(dbName);
         const statement = await db.prepareAsync(
-            'INSERT INTO PuttingStats (RoundId, HoleNumber, FirstPuttDistance, SecondPuttDistance, SecondPuttIsLong, ThirdPuttDistance, ThirdPuttIsLong) VALUES ($RoundId, $HoleNumber, $FirstPuttDistance, $SecondPuttDistance, $SecondPuttIsLong, $ThirdPuttDistance, $ThirdPuttIsLong);'
+            'INSERT INTO PuttingStats (RoundId, HoleNumber, FirstPuttDistance, SecondPuttDistance, SecondPuttIsLong, ThirdPuttDistance, ThirdPuttIsLong, GreenInRegulation) VALUES ($RoundId, $HoleNumber, $FirstPuttDistance, $SecondPuttDistance, $SecondPuttIsLong, $ThirdPuttDistance, $ThirdPuttIsLong, $GreenInRegulation);'
         );
         try {
             await statement.executeAsync({
@@ -324,6 +329,7 @@ export const insertPuttingStats = async (roundId: number, holeNumber: number, fi
                 $SecondPuttIsLong: secondPuttIsLong ? 1 : 0,
                 $ThirdPuttDistance: thirdPuttDistance ?? null,
                 $ThirdPuttIsLong: thirdPuttIsLong ? 1 : 0,
+                $GreenInRegulation: greenInRegulation ? 1 : 0,
             });
         } finally {
             await statement.finalizeAsync();
@@ -344,7 +350,7 @@ export const getPuttingStats = (roundId: number, holeNumber: number) => {
 
 export const getAllPuttingStatsWithThreePutts = () => {
     return getSyncDb().getAllSync(
-        `SELECT ps.RoundId, ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, COALESCE(hds.ThreePutts, 0) AS ThreePutts
+        `SELECT ps.RoundId, ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.GreenInRegulation, COALESCE(hds.ThreePutts, 0) AS ThreePutts
          FROM PuttingStats ps
          LEFT JOIN HoleDeadlySins hds ON hds.RoundId = ps.RoundId AND hds.HoleNumber = ps.HoleNumber;`
     );
@@ -933,7 +939,7 @@ export const getAllHoleDeadlySinsWithContext = () => {
 export const getAllPuttingStatsWithContext = () => {
     const sql = `
         SELECT ps.RoundId, r.CourseName, r.Created_At, ps.HoleNumber, ps.FirstPuttDistance,
-               ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.ThirdPuttDistance, ps.ThirdPuttIsLong
+               ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.ThirdPuttDistance, ps.ThirdPuttIsLong, ps.GreenInRegulation
         FROM PuttingStats ps
         JOIN Rounds r ON ps.RoundId = r.Id
         WHERE r.IsCompleted = 1

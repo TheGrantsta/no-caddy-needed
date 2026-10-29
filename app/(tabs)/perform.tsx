@@ -7,6 +7,7 @@ import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import DeadlySinsSection from '../../components/DeadlySinsSection';
 import PuttingStatsSection from '../../components/PuttingStatsSection';
+import UpAndDownSection from '../../components/UpAndDownSection';
 import ProximitySection from '../../components/ProximitySection';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
@@ -143,6 +144,14 @@ export default function Perform() {
 
         {displaySection('putting') && (
           <PuttingStatsSection
+            fadeAnim={sectionFadeAnim}
+            slideAnim={sectionSlideAnim}
+            filteredRoundIds={roundIdsFilter}
+          />
+        )}
+
+        {displaySection('putting') && (
+          <UpAndDownSection
             fadeAnim={sectionFadeAnim}
             slideAnim={sectionSlideAnim}
             filteredRoundIds={roundIdsFilter}

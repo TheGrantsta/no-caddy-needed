@@ -1349,6 +1349,58 @@ describe('Scorecard screen', () => {
             // (exact call verification depends on whether stats were modified in test)
         });
 
+        describe('green in regulation on scorecard edit', () => {
+            const savedPuttingRow = {
+                Id: 1,
+                RoundId: 1,
+                HoleNumber: 1,
+                FirstPuttDistance: 20,
+                SecondPuttDistance: 0,
+                SecondPuttIsLong: 0,
+                ThirdPuttDistance: undefined,
+                ThirdPuttIsLong: undefined,
+                GreenInRegulation: true,
+            };
+
+            beforeEach(() => {
+                mockGetPuttingStats.mockReturnValue(savedPuttingRow);
+            });
+
+            afterEach(() => {
+                mockGetPuttingStats.mockReturnValue(null);
+            });
+
+            it('shouldShowSavedGreenInRegulationWhenEditingHole', async () => {
+                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+                const { getByTestId } = render(<ScorecardScreen />);
+                fireEvent.press(getByTestId('edit-scorecard-button'));
+                fireEvent.press(getByTestId('score-cell-1-1'));
+
+                await waitFor(() => {
+                    expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+                });
+            });
+
+            it('shouldSaveGreenInRegulationWhenToggledOnScorecardEdit', async () => {
+                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+                mockUpdateScorecard.mockResolvedValue(true);
+
+                const { getByTestId } = render(<ScorecardScreen />);
+                fireEvent.press(getByTestId('edit-scorecard-button'));
+                fireEvent.press(getByTestId('score-cell-1-1'));
+                await waitFor(() => expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy());
+
+                fireEvent.press(getByTestId('gir-toggle-no'));
+                fireEvent.press(getByTestId('save-scorecard-button'));
+                fireEvent.press(getByTestId('confirm-save-button'));
+
+                await waitFor(() => {
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, false);
+                });
+            });
+        });
+
         it('shows standardized score selection prompt', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 

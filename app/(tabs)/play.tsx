@@ -390,6 +390,7 @@ export default function Play() {
             firstPutt: saved.FirstPuttDistance,
             secondPutt: saved.SecondPuttDistance,
             secondIsLong: saved.SecondPuttIsLong === 1,
+            greenInRegulation: saved.GreenInRegulation,
         } : null);
     };
 
@@ -443,7 +444,7 @@ export default function Play() {
                 }
                 // Save putting stats if in putting phase
                 if (holePhase === 'putting' && puttingStats) {
-                    await insertPuttingStatsService(activeRoundId!, currentHole, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong);
+                    await insertPuttingStatsService(activeRoundId!, currentHole, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong, undefined, undefined, puttingStats.greenInRegulation);
                 }
             }
         }
@@ -571,7 +572,7 @@ export default function Play() {
             if (puttingSecondPuttError) {
                 return;
             }
-            await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong);
+            await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong, undefined, undefined, puttingStats.greenInRegulation);
             if (isTripleBogeyOrWorse(currentHoleData) && settings.badHoleReassuranceEnabled) {
                 setReassuranceMessage(BAD_HOLE_MESSAGES[Math.floor(Math.random() * BAD_HOLE_MESSAGES.length)]);
                 setShowBadHoleReassurance(true);
@@ -846,8 +847,8 @@ export default function Play() {
                                             puttingSecondPuttError={puttingSecondPuttError}
                                             puttingSecondPuttRequiredError={puttingSecondPuttRequiredError}
                                             showPuttingInfo={showPuttingInfo}
-                                            onStatsChange={(firstPutt, secondPutt, secondIsLong) => {
-                                                setPuttingStats({ firstPutt, secondPutt, secondIsLong });
+                                            onStatsChange={(firstPutt, secondPutt, secondIsLong, greenInRegulation) => {
+                                                setPuttingStats({ firstPutt, secondPutt, secondIsLong, greenInRegulation });
                                                 if (firstPutt !== undefined) setPuttingFirstPuttError(false);
                                                 if (secondPutt !== undefined) setPuttingSecondPuttRequiredError(false);
                                             }}

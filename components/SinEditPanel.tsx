@@ -23,11 +23,12 @@ interface Props {
     selectedDoubleChipReason?: string;
     onDoubleChipReasonChange: (reason: string | undefined) => void;
     showDoubleChipReasonError: boolean;
-    puttingStats: { firstPutt?: number; secondPutt?: number; secondIsLong: boolean } | null;
-    onPuttingStatsChange: (firstPutt?: number, secondPutt?: number, secondIsLong?: boolean) => void;
+    puttingStats: { firstPutt?: number; secondPutt?: number; secondIsLong: boolean; greenInRegulation: boolean } | null;
+    onPuttingStatsChange: (firstPutt?: number, secondPutt?: number, secondIsLong?: boolean, greenInRegulation?: boolean) => void;
     initialFirstPutt?: number;
     initialSecondPutt?: number;
     initialSecondIsLong: boolean;
+    initialGreenInRegulation?: boolean;
     editedScores: RoundHoleScore[];
     playerId?: number;
 }
@@ -55,6 +56,7 @@ export default function SinEditPanel({
     initialFirstPutt,
     initialSecondPutt,
     initialSecondIsLong,
+    initialGreenInRegulation,
     editedScores,
     playerId,
 }: Props) {
@@ -96,12 +98,13 @@ export default function SinEditPanel({
                 key={`putting-stats-${selectedHoleNumber}`}
                 holePar={holePar}
                 threePuttSelected={editedSins.threePutts ?? false}
-                onStatsChange={(firstPutt, secondPutt, secondIsLong) => {
-                    onPuttingStatsChange(firstPutt, secondPutt, secondIsLong);
+                onStatsChange={(firstPutt, secondPutt, secondIsLong, greenInRegulation) => {
+                    onPuttingStatsChange(firstPutt, secondPutt, secondIsLong, greenInRegulation);
                 }}
                 initialFirstPutt={initialFirstPutt}
                 initialSecondPutt={initialSecondPutt}
                 initialSecondIsLong={initialSecondIsLong}
+                initialGreenInRegulation={initialGreenInRegulation}
             />
         </View>
     );

@@ -150,13 +150,37 @@ describe('useHoleLifecycle', () => {
     describe('putting stats state', () => {
         it('updates putting stats', () => {
             const { result } = renderHook(() => useHoleLifecycle());
-            const stats = { firstPutt: 20, secondPutt: undefined, secondIsLong: false };
+            const stats = { firstPutt: 20, secondPutt: undefined, secondIsLong: false, greenInRegulation: false };
 
             act(() => {
                 result.current.setPuttingStats(stats);
             });
 
             expect(result.current.puttingStats).toEqual(stats);
+        });
+
+        it('shouldKeepGreenInRegulationWithPuttingStats', () => {
+            const { result } = renderHook(() => useHoleLifecycle());
+            const stats = { firstPutt: 20, secondPutt: 0, secondIsLong: false, greenInRegulation: true };
+
+            act(() => {
+                result.current.setPuttingStats(stats);
+            });
+
+            expect(result.current.puttingStats?.greenInRegulation).toBe(true);
+        });
+
+        it('shouldClearGreenInRegulationWhenNewHoleStarts', () => {
+            const { result } = renderHook(() => useHoleLifecycle());
+
+            act(() => {
+                result.current.setPuttingStats({ firstPutt: 20, secondPutt: 0, secondIsLong: false, greenInRegulation: true });
+            });
+            act(() => {
+                result.current.resetForNewHole();
+            });
+
+            expect(result.current.puttingStats).toBeNull();
         });
 
         it('validates first putt is set', () => {

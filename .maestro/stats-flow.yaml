@@ -195,6 +195,12 @@ appId: com.grantsta.golf.nocaddyneeded
 - inputText: "1"
 - hideKeyboard
 
+# GIR defaults to No
+- assertVisible:
+    id: "gir-toggle-no-selected"
+- assertNotVisible:
+    id: "gir-toggle-yes-selected"
+
 # Complete the hole
 - extendedWaitUntil:
     visible:
@@ -255,6 +261,12 @@ appId: com.grantsta.golf.nocaddyneeded
 - inputText: "2"
 - hideKeyboard
 
+# Hole hit in regulation
+- tapOn:
+    id: "gir-toggle-yes"
+- assertVisible:
+    id: "gir-toggle-yes-selected"
+
 # Complete the hole
 - extendedWaitUntil:
     visible:
@@ -304,6 +316,10 @@ appId: com.grantsta.golf.nocaddyneeded
     id: "second-putt-input"
 - inputText: "2"
 - hideKeyboard
+
+# Entering putts must not change GIR
+- assertVisible:
+    id: "gir-toggle-no-selected"
 
 # Complete the hole
 - extendedWaitUntil:
@@ -434,3 +450,37 @@ appId: com.grantsta.golf.nocaddyneeded
     id: "next-hole-button"
 - tapOn:
     id: "next-hole-button"
+
+# ======== UP AND DOWN ON PERFORM ========
+# Missed greens: holes 1, 3, 4, 5 (hole 2 was in regulation).
+# One-putts from a missed green: holes 1, 4, 5 => 3 of 4 = 75%.
+- tapOn: "Home"
+- tapOn:
+    id: "home-perform-link"
+
+# Dismiss the Perform onboarding (same sequence as screenshots.yaml)
+- extendedWaitUntil:
+    visible:
+      id: "next-button"
+    timeout: 15000
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+- tapOn:
+    text: ".*Next.*"
+    index: 0
+- tapOn:
+    text: ".*Done.*"
+    index: 0
+
+- tapOn: "Putting"
+- extendedWaitUntil:
+    visible:
+      id: "up-and-down-rate"
+    timeout: 5000
+- assertVisible:
+    id: "up-and-down-rate"
+    text: "75%"
+- assertVisible:
+    id: "up-and-down-detail"
+    text: "3 of 4 missed greens"

@@ -13,6 +13,7 @@ jest.mock('../../service/DbService', () => ({
     saveSettingsService: jest.fn().mockResolvedValue(true),
     getAllDeadlySinsRoundsService: jest.fn().mockReturnValue([]),
     getAllRoundHistoryService: jest.fn().mockReturnValue([]),
+    getUpAndDownRateService: jest.fn().mockReturnValue({ rate: '-', upAndDowns: 0, attempts: 0 }),
     getPuttingMakeRatesService: jest.fn().mockReturnValue([]),
     getPuttingProximityService: jest.fn().mockReturnValue([]),
     getAllHoleSinDetailsService: jest.fn().mockReturnValue([]),

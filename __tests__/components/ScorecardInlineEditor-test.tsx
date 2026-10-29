@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import ScorecardInlineEditor from '../../components/ScorecardInlineEditor';
+import { getPuttingStatsService, insertPuttingStatsService } from '../../service/DbService';
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -297,6 +298,90 @@ describe('ScorecardInlineEditor', () => {
         await waitFor(() => {
             // Sin panel should not exist for non-user player
             expect(queryByTestId('sin-edit-panel')).toBeNull();
+        });
+    });
+
+    describe('green in regulation on a user hole', () => {
+        const savedPuttingRow = {
+            Id: 1,
+            RoundId: 1,
+            HoleNumber: 1,
+            FirstPuttDistance: 20,
+            SecondPuttDistance: 0,
+            SecondPuttIsLong: 0,
+            ThirdPuttDistance: null,
+            ThirdPuttIsLong: null,
+            GreenInRegulation: true,
+        };
+
+        beforeEach(() => {
+            (getPuttingStatsService as jest.Mock).mockReturnValue(savedPuttingRow);
+        });
+
+        afterEach(() => {
+            (getPuttingStatsService as jest.Mock).mockReturnValue(null);
+        });
+
+        it('shouldShowSavedGreenInRegulationWhenEditingUserHole', async () => {
+            const { getByTestId } = render(
+                <ScorecardInlineEditor
+                    roundId={1}
+                    scorecardData={mockScorecardData}
+                    onDone={mockOnDone}
+                    onCancel={mockOnCancel}
+                />
+            );
+
+            fireEvent.press(getByTestId('score-cell-1-1'));
+
+            await waitFor(() => {
+                expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+            });
+        });
+
+        it('shouldSaveEditedGreenInRegulationWhenScorecardSaved', async () => {
+            const { getByTestId } = render(
+                <ScorecardInlineEditor
+                    roundId={1}
+                    scorecardData={mockScorecardData}
+                    onDone={mockOnDone}
+                    onCancel={mockOnCancel}
+                />
+            );
+
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            await waitFor(() => expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy());
+
+            fireEvent.press(getByTestId('gir-toggle-no'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            await waitFor(() => expect(getByTestId('confirm-save-button')).toBeTruthy());
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, false);
+            });
+        });
+
+        it('shouldKeepSavedGreenInRegulationWhenScorecardSavedWithoutChanges', async () => {
+            const { getByTestId } = render(
+                <ScorecardInlineEditor
+                    roundId={1}
+                    scorecardData={mockScorecardData}
+                    onDone={mockOnDone}
+                    onCancel={mockOnCancel}
+                />
+            );
+
+            fireEvent.press(getByTestId('score-cell-1-1'));
+            await waitFor(() => expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy());
+
+            fireEvent.press(getByTestId('save-scorecard-button'));
+            await waitFor(() => expect(getByTestId('confirm-save-button')).toBeTruthy());
+            fireEvent.press(getByTestId('confirm-save-button'));
+
+            await waitFor(() => {
+                expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, true);
+            });
         });
     });
 });

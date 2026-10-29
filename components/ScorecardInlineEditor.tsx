@@ -81,6 +81,7 @@ export default function ScorecardInlineEditor({
                 firstPutt: existingPuttingStats.FirstPuttDistance,
                 secondPutt: existingPuttingStats.SecondPuttDistance || undefined,
                 secondIsLong: !!existingPuttingStats.SecondPuttIsLong,
+                greenInRegulation: !!existingPuttingStats.GreenInRegulation,
             } : null);
             edit.setHadPriorPuttingStats(!!existingPuttingStats);
         } else {
@@ -192,7 +193,7 @@ export default function ScorecardInlineEditor({
                 }
             }
             if (edit.sinsHoleNumber !== null && edit.puttingStats) {
-                await insertPuttingStatsService(roundId, edit.sinsHoleNumber, edit.puttingStats.firstPutt ?? 0, edit.puttingStats.secondPutt ?? 0, edit.puttingStats.secondIsLong);
+                await insertPuttingStatsService(roundId, edit.sinsHoleNumber, edit.puttingStats.firstPutt ?? 0, edit.puttingStats.secondPutt ?? 0, edit.puttingStats.secondIsLong, undefined, undefined, edit.puttingStats.greenInRegulation);
             }
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
             edit.resetScorecardAfterSave();
@@ -276,12 +277,13 @@ export default function ScorecardInlineEditor({
                         onDoubleChipReasonChange={edit.setSelectedDoubleChipReason}
                         showDoubleChipReasonError={edit.sinDetailsDoubleChipReasonError}
                         puttingStats={edit.puttingStats}
-                        onPuttingStatsChange={(firstPutt, secondPutt, secondIsLong) => {
-                            edit.setPuttingStats(firstPutt !== undefined ? { firstPutt, secondPutt, secondIsLong: secondIsLong ?? false } : null);
+                        onPuttingStatsChange={(firstPutt, secondPutt, secondIsLong, greenInRegulation) => {
+                            edit.setPuttingStats(firstPutt !== undefined ? { firstPutt, secondPutt, secondIsLong: secondIsLong ?? false, greenInRegulation: greenInRegulation ?? false } : null);
                         }}
                         initialFirstPutt={edit.puttingStats?.firstPutt}
                         initialSecondPutt={edit.puttingStats?.secondPutt}
                         initialSecondIsLong={edit.puttingStats?.secondIsLong ?? false}
+                            initialGreenInRegulation={edit.puttingStats?.greenInRegulation ?? false}
                         editedScores={edit.editedScores}
                         playerId={scorecardData.players.find(p => p.Id === edit.selectedScore.playerId)?.Id}
                     />

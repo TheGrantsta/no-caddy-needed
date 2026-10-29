@@ -146,6 +146,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                 firstPutt: existingPuttingStats.FirstPuttDistance,
                 secondPutt: existingPuttingStats.SecondPuttDistance || undefined,
                 secondIsLong: !!existingPuttingStats.SecondPuttIsLong,
+                greenInRegulation: !!existingPuttingStats.GreenInRegulation,
             } : null);
             edit.setHadPriorPuttingStats(!!existingPuttingStats);
         } else {
@@ -279,7 +280,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                 }
             }
             if (edit.sinsHoleNumber !== null && edit.puttingStats) {
-                await insertPuttingStatsService(Number(roundId), edit.sinsHoleNumber, edit.puttingStats.firstPutt ?? 0, edit.puttingStats.secondPutt ?? 0, edit.puttingStats.secondIsLong);
+                await insertPuttingStatsService(Number(roundId), edit.sinsHoleNumber, edit.puttingStats.firstPutt ?? 0, edit.puttingStats.secondPutt ?? 0, edit.puttingStats.secondIsLong, undefined, undefined, edit.puttingStats.greenInRegulation);
             } else if (edit.sinsHoleNumber !== null && edit.hadPriorPuttingStats && !edit.puttingStats) {
                 // Putting stats were cleared - they're already deleted by insertPuttingStatsService when stats exist
                 // No-op here; just document the behavior
@@ -392,12 +393,13 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                 onDoubleChipReasonChange={edit.setSelectedDoubleChipReason}
                                 showDoubleChipReasonError={edit.sinDetailsDoubleChipReasonError}
                                 puttingStats={edit.puttingStats}
-                                onPuttingStatsChange={(firstPutt, secondPutt, secondIsLong) => {
-                                    edit.setPuttingStats(firstPutt !== undefined ? { firstPutt, secondPutt, secondIsLong: secondIsLong ?? false } : null);
+                                onPuttingStatsChange={(firstPutt, secondPutt, secondIsLong, greenInRegulation) => {
+                                    edit.setPuttingStats(firstPutt !== undefined ? { firstPutt, secondPutt, secondIsLong: secondIsLong ?? false, greenInRegulation: greenInRegulation ?? false } : null);
                                 }}
                                 initialFirstPutt={edit.puttingStats?.firstPutt}
                                 initialSecondPutt={edit.puttingStats?.secondPutt}
                                 initialSecondIsLong={edit.puttingStats?.secondIsLong ?? false}
+                                    initialGreenInRegulation={edit.puttingStats?.greenInRegulation ?? false}
                                 editedScores={edit.editedScores}
                                 playerId={multiplayerScorecard?.players.find(p => p.Id === edit.selectedScore.playerId)?.Id}
                             />

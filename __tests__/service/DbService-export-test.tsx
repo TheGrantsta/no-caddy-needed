@@ -69,5 +69,17 @@ describe('Export service wrappers', () => {
             expect(result[1]).toHaveProperty('ThirdPuttDistance', 5);
             expect(result[1]).toHaveProperty('ThirdPuttIsLong', true);
         });
+
+        it('shouldExportGreenInRegulationAsBoolean', () => {
+            mockGetAllPuttingStatsWithContext.mockReturnValue([
+                { RoundId: 1, CourseName: 'Pine Valley', Created_At: '2026-07-20', HoleNumber: 1, FirstPuttDistance: 8, SecondPuttDistance: 0, SecondPuttIsLong: 0, ThirdPuttDistance: null, ThirdPuttIsLong: null, GreenInRegulation: 1 },
+                { RoundId: 1, CourseName: 'Pine Valley', Created_At: '2026-07-20', HoleNumber: 2, FirstPuttDistance: 3, SecondPuttDistance: 0, SecondPuttIsLong: 0, ThirdPuttDistance: null, ThirdPuttIsLong: null, GreenInRegulation: 0 },
+            ]);
+
+            const result = getAllPuttingStatsDetailService();
+
+            expect(result[0]).toHaveProperty('GreenInRegulation', true);
+            expect(result[1]).toHaveProperty('GreenInRegulation', false);
+        });
     });
 });

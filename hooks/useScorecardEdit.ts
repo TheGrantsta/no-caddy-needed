@@ -18,7 +18,7 @@ export function useScorecardEdit() {
     const [sinDetailsBogeysClubError, setSinDetailsBogeysClubError] = useState(false);
     const [sinDetailsDoubleChipReasonError, setSinDetailsDoubleChipReasonError] = useState(false);
     const [hadPriorSinDetails, setHadPriorSinDetails] = useState(false);
-    const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt?: number; secondIsLong: boolean } | null>(null);
+    const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt?: number; secondIsLong: boolean; greenInRegulation: boolean } | null>(null);
     const [hadPriorPuttingStats, setHadPriorPuttingStats] = useState(false);
 
     const resetEditState = useCallback(() => {

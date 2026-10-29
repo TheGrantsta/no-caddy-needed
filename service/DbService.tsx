@@ -208,9 +208,9 @@ export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {
     }));
 };
 
-export const insertPuttingStatsService = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean): Promise<boolean> => {
+export const insertPuttingStatsService = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean, greenInRegulation: boolean = false): Promise<boolean> => {
     await deletePuttingStatsByHole(roundId, holeNumber);
-    return insertPuttingStats(roundId, holeNumber, firstPuttDistance, secondPuttDistance, secondPuttIsLong, thirdPuttDistance, thirdPuttIsLong);
+    return insertPuttingStats(roundId, holeNumber, firstPuttDistance, secondPuttDistance, secondPuttIsLong, thirdPuttDistance, thirdPuttIsLong, greenInRegulation);
 };
 
 export const getPuttingStatsService = (roundId: number, holeNumber: number): PuttingStats | null => {
@@ -226,6 +226,7 @@ export const getPuttingStatsService = (roundId: number, holeNumber: number): Put
         SecondPuttIsLong: row.SecondPuttIsLong,
         ThirdPuttDistance: row.ThirdPuttDistance ?? undefined,
         ThirdPuttIsLong: row.ThirdPuttIsLong ?? undefined,
+        GreenInRegulation: row.GreenInRegulation === 1,
     };
 };
 
@@ -283,6 +284,33 @@ export const getPuttingMakeRatesService = (roundIds?: Set<number>): PuttingMakeR
             putts: bucket ? bucket.total : 0,
         };
     });
+};
+
+export type UpAndDownRate = {
+    rate: string;
+    upAndDowns: number;
+    attempts: number;
+};
+
+// Up and down = missed the green, then holed out in one putt. Attempts are missed-green holes.
+export const getUpAndDownRateService = (roundIds?: Set<number>): UpAndDownRate => {
+    const rows = getAllPuttingStatsWithThreePutts() as any[];
+    let attempts = 0;
+    let upAndDowns = 0;
+
+    rows.forEach((row) => {
+        if (roundIds && !roundIds.has(row.RoundId)) return;
+        if (row.GreenInRegulation === 1) return;
+
+        attempts += 1;
+        if (row.SecondPuttDistance === 0) upAndDowns += 1;
+    });
+
+    return {
+        rate: attempts > 0 ? `${Math.round((upAndDowns / attempts) * 100)}%` : '-',
+        upAndDowns,
+        attempts,
+    };
 };
 
 export const PROXIMITY_DISTANCE_BUCKETS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50];
@@ -452,6 +480,7 @@ export type PuttingStats = {
     SecondPuttIsLong: number;
     ThirdPuttDistance?: number;
     ThirdPuttIsLong?: number;
+    GreenInRegulation: boolean;
 };
 
 export type HoleSinDetails = {
@@ -842,6 +871,7 @@ export type PuttingStatDetail = {
     SecondPuttIsLong: boolean;
     ThirdPuttDistance: number | null;
     ThirdPuttIsLong: boolean | null;
+    GreenInRegulation: boolean;
 };
 
 export const getAllPuttingStatsDetailService = (): PuttingStatDetail[] => {
@@ -856,5 +886,6 @@ export const getAllPuttingStatsDetailService = (): PuttingStatDetail[] => {
         SecondPuttIsLong: row.SecondPuttIsLong === 1,
         ThirdPuttDistance: row.ThirdPuttDistance,
         ThirdPuttIsLong: row.ThirdPuttIsLong === null ? null : row.ThirdPuttIsLong === 1,
+        GreenInRegulation: row.GreenInRegulation === 1,
     }));
 };

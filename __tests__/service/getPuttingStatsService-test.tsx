@@ -50,6 +50,7 @@ describe('getPuttingStatsService', () => {
             SecondPuttIsLong: 0,
             ThirdPuttDistance: undefined,
             ThirdPuttIsLong: undefined,
+            GreenInRegulation: false,
         });
     });
 
@@ -72,6 +73,45 @@ describe('getPuttingStatsService', () => {
         expect(result?.ThirdPuttDistance).toBe(4);
         expect(result?.ThirdPuttIsLong).toBe(0);
     });
+
+    it('shouldMapGreenInRegulationTrueWhenStoredAsOne', () => {
+        mockGetPuttingStats.mockReturnValue([
+            {
+                Id: 3,
+                RoundId: 1,
+                HoleNumber: 7,
+                FirstPuttDistance: 12,
+                SecondPuttDistance: 0,
+                SecondPuttIsLong: 0,
+                ThirdPuttDistance: null,
+                ThirdPuttIsLong: null,
+                GreenInRegulation: 1,
+            },
+        ]);
+
+        const result = getPuttingStatsService(1, 7);
+
+        expect(result?.GreenInRegulation).toBe(true);
+    });
+
+    it('shouldMapGreenInRegulationFalseWhenColumnMissingFromRow', () => {
+        mockGetPuttingStats.mockReturnValue([
+            {
+                Id: 4,
+                RoundId: 1,
+                HoleNumber: 8,
+                FirstPuttDistance: 12,
+                SecondPuttDistance: 0,
+                SecondPuttIsLong: 0,
+                ThirdPuttDistance: null,
+                ThirdPuttIsLong: null,
+            },
+        ]);
+
+        const result = getPuttingStatsService(1, 8);
+
+        expect(result?.GreenInRegulation).toBe(false);
+    });
 });
 
 describe('insertPuttingStatsService', () => {
@@ -86,7 +126,7 @@ describe('insertPuttingStatsService', () => {
         await insertPuttingStatsService(1, 5, 25, 8, false);
 
         expect(mockDeletePuttingStatsByHole).toHaveBeenCalledWith(1, 5);
-        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 5, 25, 8, false, undefined, undefined);
+        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 5, 25, 8, false, undefined, undefined, false);
     });
 
     it('inserts putting stats with third putt data', async () => {
@@ -95,7 +135,7 @@ describe('insertPuttingStatsService', () => {
 
         await insertPuttingStatsService(1, 6, 35, 12, true, 4, false);
 
-        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 6, 35, 12, true, 4, false);
+        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 6, 35, 12, true, 4, false, false);
     });
 
     it('returns false if insert fails', async () => {
@@ -105,5 +145,26 @@ describe('insertPuttingStatsService', () => {
         const result = await insertPuttingStatsService(1, 5, 25, 8, false);
 
         expect(result).toBe(false);
+    });
+
+});
+
+describe('insertPuttingStatsService green in regulation', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockDeletePuttingStatsByHole.mockResolvedValue(true);
+        mockInsertPuttingStats.mockResolvedValue(true);
+    });
+
+    it('shouldForwardGreenInRegulationTrueToInsert', async () => {
+        await insertPuttingStatsService(1, 9, 15, 0, false, undefined, undefined, true);
+
+        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 9, 15, 0, false, undefined, undefined, true);
+    });
+
+    it('shouldDefaultGreenInRegulationToFalseWhenOmitted', async () => {
+        await insertPuttingStatsService(1, 9, 15, 0, false);
+
+        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 9, 15, 0, false, undefined, undefined, false);
     });
 });

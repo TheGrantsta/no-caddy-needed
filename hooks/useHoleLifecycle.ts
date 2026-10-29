@@ -7,6 +7,7 @@ export interface PuttingStats {
     firstPutt?: number;
     secondPutt?: number;
     secondIsLong: boolean;
+    greenInRegulation: boolean;
 }
 
 const INITIAL_SINS: DeadlySinsValues = {

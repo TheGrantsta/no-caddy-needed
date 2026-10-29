@@ -869,3 +869,45 @@ describe('Rounds IsScoreOnly post-migration inference', () => {
         expect(updateCalls[0][0]).toContain('PuttingStats');
     });
 });
+
+describe('PuttingStats GreenInRegulation migration', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('shouldAddGreenInRegulationColumnToPuttingStatsWhenMissing', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(PuttingStats)') return [
+                { name: 'Id' },
+                { name: 'RoundId' },
+                { name: 'HoleNumber' },
+                { name: 'FirstPuttDistance' },
+                { name: 'SecondPuttDistance' },
+                { name: 'SecondPuttIsLong' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE PuttingStats ADD COLUMN GreenInRegulation INTEGER NOT NULL DEFAULT 0'
+        );
+    });
+
+    it('shouldNotAddGreenInRegulationColumnWhenAlreadyPresent', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(PuttingStats)') return [
+                { name: 'Id' },
+                { name: 'GreenInRegulation' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).not.toHaveBeenCalledWith(
+            expect.stringContaining('ADD COLUMN GreenInRegulation')
+        );
+    });
+});

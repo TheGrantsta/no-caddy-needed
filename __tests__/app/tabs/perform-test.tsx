@@ -44,6 +44,7 @@ jest.mock('../../../service/DbService', () => ({
     getAllDeadlySinsRoundsService: jest.fn().mockReturnValue([]),
     getAllRoundHistoryService: jest.fn().mockReturnValue([]),
     formatPuttCount: (count: number) => count > 99 ? '99+' : String(count),
+    getUpAndDownRateService: jest.fn().mockReturnValue({ rate: '-', upAndDowns: 0, attempts: 0 }),
     getPuttingMakeRatesService: jest.fn().mockReturnValue([
         { distance: 1, makeRate: '98%', putts: 45 },
         { distance: 2, makeRate: '95%', putts: 38 },

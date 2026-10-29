@@ -6,12 +6,12 @@ import { DeadlySinsValues } from '../service/DbService';
 interface Props {
     holePar: number;
     deadlySinsValues: DeadlySinsValues;
-    puttingStats: { firstPutt?: number; secondPutt?: number; secondIsLong: boolean } | null;
+    puttingStats: { firstPutt?: number; secondPutt?: number; secondIsLong: boolean; greenInRegulation: boolean } | null;
     puttingFirstPuttError: boolean;
     puttingSecondPuttError: boolean;
     puttingSecondPuttRequiredError: boolean;
     showPuttingInfo: boolean;
-    onStatsChange: (firstPutt: number | undefined, secondPutt: number | undefined, secondIsLong: boolean) => void;
+    onStatsChange: (firstPutt: number | undefined, secondPutt: number | undefined, secondIsLong: boolean, greenInRegulation: boolean) => void;
     onErrorChange: (hasError: boolean) => void;
     onShowInfo: (show: boolean) => void;
 }
@@ -37,6 +37,7 @@ export default function PhasePutting({
                 initialFirstPutt={puttingStats?.firstPutt}
                 initialSecondPutt={puttingStats?.secondPutt}
                 initialSecondIsLong={puttingStats?.secondIsLong ?? false}
+                initialGreenInRegulation={puttingStats?.greenInRegulation ?? false}
                 showFirstPuttError={puttingFirstPuttError}
                 showSecondPuttRequiredError={puttingSecondPuttRequiredError}
                 onSecondPuttErrorChange={onErrorChange}

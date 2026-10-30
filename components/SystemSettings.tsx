@@ -91,7 +91,7 @@ export default function SystemSettings({
                     testIDPrefix="units"
                 />
                 <Text style={[styles.smallText, { paddingHorizontal: 16, marginTop: 4 }]}>
-                    Applies to club distances, the wedge chart, wind adjustments and the up-and-down challenge. Putting distances stay in feet.
+                    Applies to distances, wedge chart and wind. Putting stays in feet.
                 </Text>
             </View>
         </>

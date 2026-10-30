@@ -29,7 +29,7 @@ describe('SystemSettings units note', () => {
             />
         );
 
-        expect(getByText(/Applies to club distances, the wedge chart, wind adjustments and the up-and-down challenge/)).toBeTruthy();
+        expect(getByText(/Applies to distances, wedge chart and wind/)).toBeTruthy();
     });
 
     it('shouldNoteThatPuttingStaysInFeet', () => {
@@ -43,6 +43,6 @@ describe('SystemSettings units note', () => {
             />
         );
 
-        expect(getByText(/Putting distances stay in feet/)).toBeTruthy();
+        expect(getByText(/Putting stays in feet/)).toBeTruthy();
     });
 });

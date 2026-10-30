@@ -28,8 +28,9 @@ describe('DoubleChipReasonPicker', () => {
         expect(call.options).toContain('Thinned');
         expect(call.options).toContain('Hero shot');
         expect(call.options).toContain('Wrong club selection');
+        expect(call.options).toContain('Wrong shot selection');
         expect(call.options).toContain('Other');
-        expect(call.options).toHaveLength(6);
+        expect(call.options).toHaveLength(7);
     });
 
     it('passes selectedReason to Dropdown', () => {

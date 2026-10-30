@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import HoleScoreInput from '../../components/HoleScoreInput';
 import { RoundPlayer } from '../../service/DbService';
 
@@ -281,6 +282,23 @@ describe('HoleScoreInput', () => {
 
             expect(getByRole('button', { name: 'Decrease score for You' })).toBeTruthy();
             expect(getByRole('button', { name: 'Increase score for You' })).toBeTruthy();
+        });
+    });
+
+    describe('tap target size', () => {
+        it('shouldMakeScoreSteppersAtLeast48pt', () => {
+            const { getByTestId } = render(
+                <HoleScoreInput
+                    holeNumber={1}
+                    players={[{ Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 }]}
+                    onScoresChange={jest.fn()}
+                    initialPar={4}
+                />
+            );
+            const style = StyleSheet.flatten(getByTestId('increment-1').props.style);
+
+            expect(style.width).toBeGreaterThanOrEqual(48);
+            expect(style.height).toBeGreaterThanOrEqual(48);
         });
     });
 });

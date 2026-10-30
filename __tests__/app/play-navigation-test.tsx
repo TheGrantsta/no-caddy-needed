@@ -250,6 +250,14 @@ describe('Play screen', () => {
             );
         });
 
+        it('shouldGiveNextHoleButtonAtLeast48ptHeight', async () => {
+            const utils = render(<Play />);
+            await startRound(utils);
+
+            const style = StyleSheet.flatten(utils.getByTestId('next-hole-button').props.style);
+            expect(style.minHeight).toBeGreaterThanOrEqual(48);
+        });
+
         it('shows a strong skip-next icon on the Next hole button', async () => {
             const utils = render(<Play />);
             await startRound(utils);

@@ -1046,4 +1046,16 @@ describe('PuttingStatsInput', () => {
             expect(noStyle.paddingHorizontal).toBe(shortStyle.paddingHorizontal);
         });
     });
+
+    describe('toggle text size', () => {
+        it('shouldUse16ptTextForShortLongAndYesNoToggles', () => {
+            const { getByText } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />
+            );
+
+            ['Short', 'Long', 'No', 'Yes'].forEach(label => {
+                expect(StyleSheet.flatten(getByText(label).props.style).fontSize).toBeGreaterThanOrEqual(16);
+            });
+        });
+    });
 });

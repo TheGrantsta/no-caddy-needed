@@ -209,7 +209,7 @@ const PuttingStatsInput = ({
                             <Text
                                 style={[
                                     styles.holeScoreInput.playerName,
-                                    { marginBottom: 0, fontSize: 14, color: !secondIsLong ? colours.background : colours.primary },
+                                    { marginBottom: 0, fontSize: 16, color: !secondIsLong ? colours.background : colours.primary },
                                 ]}
                             >
                                 Short
@@ -229,7 +229,7 @@ const PuttingStatsInput = ({
                             <Text
                                 style={[
                                     styles.holeScoreInput.playerName,
-                                    { marginBottom: 0, fontSize: 14, color: secondIsLong ? colours.background : colours.primary },
+                                    { marginBottom: 0, fontSize: 16, color: secondIsLong ? colours.background : colours.primary },
                                 ]}
                             >
                                 Long
@@ -267,7 +267,7 @@ const PuttingStatsInput = ({
                             testID={!greenInRegulation ? 'gir-toggle-no-selected' : undefined}
                             style={[
                                 styles.holeScoreInput.playerName,
-                                { marginBottom: 0, fontSize: 14, color: !greenInRegulation ? colours.background : colours.primary },
+                                { marginBottom: 0, fontSize: 16, color: !greenInRegulation ? colours.background : colours.primary },
                             ]}
                         >
                             No
@@ -288,7 +288,7 @@ const PuttingStatsInput = ({
                             testID={greenInRegulation ? 'gir-toggle-yes-selected' : undefined}
                             style={[
                                 styles.holeScoreInput.playerName,
-                                { marginBottom: 0, fontSize: 14, color: greenInRegulation ? colours.background : colours.primary },
+                                { marginBottom: 0, fontSize: 16, color: greenInRegulation ? colours.background : colours.primary },
                             ]}
                         >
                             Yes

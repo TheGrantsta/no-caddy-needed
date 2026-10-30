@@ -93,7 +93,7 @@ export default function Perform() {
         <View style={styles.container}>
           <View style={styles.header}>
             <View style={styles.titleRow}>
-              <TouchableOpacity
+              <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"
                 testID="perform-info-button"
                 onPress={handleShowOnboarding}
                 style={{ padding: 4 }}

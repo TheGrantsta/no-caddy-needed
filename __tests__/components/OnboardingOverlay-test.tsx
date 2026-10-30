@@ -156,4 +156,23 @@ describe('OnboardingOverlay', () => {
         expect(queryByTestId('next-button')).toBeNull();
         expect(queryByTestId('skip-button')).toBeNull();
     });
+
+    describe('accessibility', () => {
+        it('shouldExposeNavigationButtonsWithButtonRole', () => {
+            const { getByRole } = render(
+                <OnboardingOverlay visible title="Test" steps={[{ text: 'one' }, { text: 'two' }]} onDismiss={jest.fn()} />
+            );
+
+            expect(getByRole('button', { name: 'Next' })).toBeTruthy();
+            expect(getByRole('button', { name: 'Skip' })).toBeTruthy();
+        });
+
+        it('shouldBlockInteractionWithScreenBehindWhileVisible', () => {
+            const { getByTestId } = render(
+                <OnboardingOverlay visible title="Test" steps={[{ text: 'one' }]} onDismiss={jest.fn()} />
+            );
+
+            expect(getByTestId('onboarding-overlay-content').props.accessibilityViewIsModal).toBe(true);
+        });
+    });
 });

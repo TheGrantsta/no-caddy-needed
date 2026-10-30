@@ -81,6 +81,9 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initi
                             <View style={styles.holeScoreInput.stepperRow}>
                                 <TouchableOpacity
                                     testID={`decrement-${player.Id}`}
+                                    accessibilityRole="button"
+                                    accessibilityLabel={`Decrease score for ${player.PlayerName}`}
+                                    hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                                     onPress={() => handleDecrement(player.Id)}
                                     style={styles.holeScoreInput.stepperButton}
                                 >
@@ -91,6 +94,9 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initi
                                 </Text>
                                 <TouchableOpacity
                                     testID={`increment-${player.Id}`}
+                                    accessibilityRole="button"
+                                    accessibilityLabel={`Increase score for ${player.PlayerName}`}
+                                    hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                                     onPress={() => handleIncrement(player.Id)}
                                     style={styles.holeScoreInput.stepperButton}
                                 >

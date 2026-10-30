@@ -267,4 +267,20 @@ describe('HoleScoreInput', () => {
         expect(getByTestId('player-score-1')).toHaveTextContent('5');
         expect(getByTestId('player-score-2')).toHaveTextContent('4');
     });
+
+    describe('score steppers accessibility', () => {
+        it('shouldLabelSteppersWithPlayerName', () => {
+            const { getByRole } = render(
+                <HoleScoreInput
+                    holeNumber={1}
+                    players={[{ Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 }]}
+                    onScoresChange={jest.fn()}
+                    initialPar={4}
+                />
+            );
+
+            expect(getByRole('button', { name: 'Decrease score for You' })).toBeTruthy();
+            expect(getByRole('button', { name: 'Increase score for You' })).toBeTruthy();
+        });
+    });
 });

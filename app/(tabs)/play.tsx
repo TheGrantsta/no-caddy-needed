@@ -829,7 +829,7 @@ export default function Play() {
                                 {holePhase === 'putting' && (
                                     <View>
                                         <View style={{ paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                                            <TouchableOpacity testID="putting-info-button" onPress={() => setShowPuttingInfo(true)} style={{ padding: 4 }}>
+                                            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help" testID="putting-info-button" onPress={() => setShowPuttingInfo(true)} style={{ padding: 4 }}>
                                                 <MaterialIcons name="info-outline" size={24} color={colours.primary} />
                                             </TouchableOpacity>
                                             <Text style={styles.normalText}>Hole {currentHole} — Putting stats</Text>

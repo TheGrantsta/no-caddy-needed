@@ -129,4 +129,19 @@ describe('SubMenu component', () => {
         });
     });
 
+    describe('accessibility', () => {
+        it('shouldExposeEachSubMenuItemAsTabWithItsTitle', () => {
+            const { getByRole } = render(<SubMenu showSubMenu="play" selectedItem="play-score" handleSubMenu={jest.fn()} />);
+
+            expect(getByRole('tab', { name: 'Play' })).toBeTruthy();
+            expect(getByRole('tab', { name: 'Distances' })).toBeTruthy();
+        });
+
+        it('shouldMarkOnlySelectedItemAsSelected', () => {
+            const { getByRole } = render(<SubMenu showSubMenu="play" selectedItem="play-distances" handleSubMenu={jest.fn()} />);
+
+            expect(getByRole('tab', { name: 'Distances', selected: true })).toBeTruthy();
+            expect(getByRole('tab', { name: 'Play', selected: false })).toBeTruthy();
+        });
+    });
 });

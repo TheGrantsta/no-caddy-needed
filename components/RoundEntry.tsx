@@ -79,7 +79,7 @@ export default function RoundEntry({
             <View style={styles.container}>
                 <View style={styles.header}>
                     <View style={styles.titleRow}>
-                        <TouchableOpacity
+                        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"
                             testID="play-onboarding-info-button"
                             onPress={onShowOnboarding}
                             style={{ padding: 4 }}

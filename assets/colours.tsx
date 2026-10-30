@@ -18,7 +18,7 @@ export type ThemeColours = {
 export const darkGreen: ThemeColours = {
     primary: '#2D5A3D',
     secondary: '#FFFFFF26',
-    tertiary: '#8FA79A',
+    tertiary: '#557266',
     background: '#f5f5f0',
     backgroundAlternate: '#FFFFFF26',
     text: '#1A1A2EA6',

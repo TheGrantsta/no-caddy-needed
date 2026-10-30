@@ -27,7 +27,13 @@ const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {
         <View style={styles.subMenu.subMenuContainer}>
             {subMenuItems.map((item) => (
                 <View key={item.testId} style={[styles.subMenu.subMenuItemContainer, selectedItem === item.name ? styles.subMenu.subMenuItemContainerSelected : null]}>
-                    <TouchableOpacity testID={item.testId} onPress={() => handleSubMenu(item.name)}>
+                    <TouchableOpacity
+                        testID={item.testId}
+                        onPress={() => handleSubMenu(item.name)}
+                        accessibilityRole="tab"
+                        accessibilityLabel={item.title}
+                        accessibilityState={{ selected: selectedItem === item.name }}
+                    >
                         <Text style={[styles.subMenu.subMenuItem, selectedItem === item.name ? styles.subMenu.subMenuItemSelected : null]}>
                             {item.title}
                         </Text>

@@ -15,7 +15,7 @@ export default function WedgeChartHeader({ onInfoPress }: Props) {
     return (
         <View style={styles.header}>
             <View style={styles.titleRow}>
-                <TouchableOpacity
+                <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"
                     testID="info-button"
                     onPress={onInfoPress}
                 >

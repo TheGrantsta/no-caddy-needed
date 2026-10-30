@@ -47,7 +47,7 @@ const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
             animationType="fade"
             testID="onboarding-overlay"
         >
-            <View style={s.overlay}>
+            <View style={s.overlay} testID="onboarding-overlay-content" accessibilityViewIsModal>
                 <View style={s.container}>
                     <Text style={s.title}>{title}</Text>
                     <Text style={s.stepText}>{steps[currentStep].text}</Text>
@@ -71,7 +71,7 @@ const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
 
                     <View style={s.buttonContainer}>
                         {!isFirstStep ? (
-                            <TouchableOpacity
+                            <TouchableOpacity accessibilityRole="button"
                                 testID="back-button"
                                 onPress={handleBack}
                                 style={s.secondaryButton}
@@ -79,7 +79,7 @@ const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
                                 <Text style={s.secondaryButtonText}>Back</Text>
                             </TouchableOpacity>
                         ) : !isSingleStep ? (
-                            <TouchableOpacity
+                            <TouchableOpacity accessibilityRole="button"
                                 testID="skip-button"
                                 onPress={onDismiss}
                                 style={s.secondaryButton}
@@ -91,7 +91,7 @@ const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
                         )}
 
                         {isLastStep || isSingleStep ? (
-                            <TouchableOpacity
+                            <TouchableOpacity accessibilityRole="button"
                                 testID="done-button"
                                 onPress={onDismiss}
                                 style={s.primaryButton}
@@ -99,7 +99,7 @@ const OnboardingOverlay = ({ visible, onDismiss, title, steps }: Props) => {
                                 <Text style={s.primaryButtonText}>Done</Text>
                             </TouchableOpacity>
                         ) : (
-                            <TouchableOpacity
+                            <TouchableOpacity accessibilityRole="button"
                                 testID="next-button"
                                 onPress={handleNext}
                                 style={s.primaryButton}

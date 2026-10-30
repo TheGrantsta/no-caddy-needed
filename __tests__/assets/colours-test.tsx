@@ -28,4 +28,20 @@ describe('Colour palettes', () => {
 
         expect(dark).toBeDefined();
     });
+
+    describe('contrast', () => {
+        const luminance = (hex: string) => {
+            const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255);
+            const channel = (c: number) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+            return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+        };
+        const contrastRatio = (a: string, b: string) => {
+            const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+            return (hi + 0.05) / (lo + 0.05);
+        };
+
+        it('shouldKeepTertiaryTextReadableOnBackground', () => {
+            expect(contrastRatio(darkGreen.tertiary, darkGreen.background)).toBeGreaterThanOrEqual(4.5);
+        });
+    });
 });

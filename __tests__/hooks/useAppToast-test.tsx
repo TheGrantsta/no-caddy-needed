@@ -30,7 +30,7 @@ describe('useAppToast', () => {
         }));
         expect(mockShow).toHaveBeenCalledWith('Operation completed', expect.objectContaining({
             style: expect.objectContaining({
-                borderLeftColor: '#8FA79A',
+                borderLeftColor: '#557266',
                 borderLeftWidth: 10,
                 backgroundColor: '#2D5A3D',
             }),

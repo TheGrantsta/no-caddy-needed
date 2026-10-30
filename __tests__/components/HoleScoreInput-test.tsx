@@ -179,13 +179,10 @@ describe('HoleScoreInput', () => {
         ]);
     });
 
-    it('resets scores to new par when par changes', () => {
+    it('moves untouched scores to new par when par changes', () => {
         const { getByTestId } = render(
             <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
-
-        fireEvent.press(getByTestId('increment-1'));
-        expect(getByTestId('player-score-1')).toHaveTextContent('5');
 
         fireEvent.press(getByTestId('par-3-button'));
 
@@ -299,6 +296,28 @@ describe('HoleScoreInput', () => {
 
             expect(style.width).toBeGreaterThanOrEqual(48);
             expect(style.height).toBeGreaterThanOrEqual(48);
+        });
+    });
+
+    describe('changing par keeps scores already changed', () => {
+        it('shouldKeepAScoreTheGolferChangedWhenParIsChanged', () => {
+            const { getByTestId } = render(
+                <HoleScoreInput
+                    holeNumber={1}
+                    players={[
+                        { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
+                        { Id: 2, RoundId: 1, PlayerName: 'Alex', IsUser: 0, SortOrder: 1 },
+                    ]}
+                    onScoresChange={jest.fn()}
+                    initialPar={4}
+                />
+            );
+
+            fireEvent.press(getByTestId('increment-1'));
+            fireEvent.press(getByTestId('par-3-button'));
+
+            expect(getByTestId('player-score-1')).toHaveTextContent('5');
+            expect(getByTestId('player-score-2')).toHaveTextContent('3');
         });
     });
 });

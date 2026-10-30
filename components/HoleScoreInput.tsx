@@ -35,11 +35,12 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initi
 
     const { par, scores } = state;
 
+    // Only scores still sitting at the old par follow the new par; scores the golfer changed are kept
     const handleParChange = (newPar: number) => {
-        const reset: Record<number, number> = {};
-        players.forEach(p => { reset[p.Id] = newPar; });
-        setState({ par: newPar, scores: reset });
-        onScoresChange(holeNumber, newPar, buildScoresArray(players, reset, newPar));
+        const updated: Record<number, number> = {};
+        players.forEach(p => { updated[p.Id] = scores[p.Id] === par ? newPar : scores[p.Id]; });
+        setState({ par: newPar, scores: updated });
+        onScoresChange(holeNumber, newPar, buildScoresArray(players, updated, newPar));
     };
 
     const handleIncrement = (playerId: number) => {

@@ -1667,6 +1667,33 @@ describe('Play screen', () => {
         });
     });
 
+    describe('Autosave hole score', () => {
+        it('shouldSaveScoreAsSoonAsStepperChangesBeforeNextIsPressed', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+            const { getByTestId } = render(<Play />);
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            await act(async () => {
+                fireEvent.press(getByTestId('start-button'));
+            });
+            await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
+            mockAddMultiplayerHoleScores.mockClear();
+
+            const shownBefore = Number(getByTestId('player-score-1').props.children);
+            fireEvent.press(getByTestId('increment-1'));
+
+            expect(mockAddMultiplayerHoleScores).toHaveBeenCalledWith(
+                1,
+                1,
+                expect.any(Number),
+                [expect.objectContaining({ playerId: 1, score: shownBefore + 1 })]
+            );
+        });
+    });
+
     describe('Hole save failure', () => {
         it('shows error toast when a hole score cannot be saved', async () => {
             mockStartRound.mockResolvedValue(1);

@@ -345,6 +345,10 @@ export default function Play() {
 
     const handleScoresChange = (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => {
         setCurrentHoleData({ holeNumber, holePar, scores });
+        // Autosave so a score survives the app closing before Next is pressed
+        if (activeRoundId !== null && holePhase === 'score') {
+            void addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
+        }
     };
 
     const buildDefaultHoleData = () => {

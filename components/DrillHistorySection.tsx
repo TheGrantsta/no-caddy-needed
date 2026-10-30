@@ -52,13 +52,13 @@ export default function DrillHistorySection({
                     {allDrillHistory.length > 0 && (
                         <View>
                             <View style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 10, marginTop: 10 }}>
-                                <Text style={[styles.subHeaderText, { flex: 0.6 }]} numberOfLines={1}>
+                                <Text style={[styles.normalText, { flex: 0.6 }]} numberOfLines={1}>
                                     Challenge
                                 </Text>
-                                <Text style={[styles.subHeaderText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
+                                <Text style={[styles.normalText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
                                     Score
                                 </Text>
-                                <Text style={[styles.subHeaderText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
+                                <Text style={[styles.normalText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
                                     Date
                                 </Text>
                             </View>

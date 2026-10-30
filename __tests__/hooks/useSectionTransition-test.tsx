@@ -71,4 +71,24 @@ describe('useSectionTransition', () => {
         expect(result.current.fadeAnim).toBeDefined();
         expect(result.current.slideAnim).toBeDefined();
     });
+
+    describe('replay', () => {
+        afterEach(() => {
+            jest.useRealTimers();
+        });
+
+        it('shouldStartFadeInToFullyVisibleWhenReplayed', () => {
+            const { Animated } = require('react-native');
+            const timingSpy = jest.spyOn(Animated, 'timing');
+            const { result } = renderHook(() => useSectionTransition(['play-score', 'play-distances']));
+            timingSpy.mockClear();
+
+            act(() => {
+                result.current.replay();
+            });
+
+            expect(timingSpy).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ toValue: 1 }));
+            timingSpy.mockRestore();
+        });
+    });
 });

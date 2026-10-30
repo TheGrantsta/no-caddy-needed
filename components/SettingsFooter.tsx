@@ -6,10 +6,11 @@ import CtaButton from './CtaButton';
 
 interface Props {
     onExportStats: () => void;
+    exporting?: boolean;
     onRateApp: () => void;
 }
 
-export default function SettingsFooter({ onExportStats, onRateApp }: Props) {
+export default function SettingsFooter({ onExportStats, onRateApp, exporting = false }: Props) {
     const styles = useStyles();
 
     return (
@@ -17,9 +18,10 @@ export default function SettingsFooter({ onExportStats, onRateApp }: Props) {
             <View style={styles.contentSection}>
                 <CtaButton
                     testID="export-stats-button"
-                    label="Export my stats"
+                    label={exporting ? 'Preparing export…' : 'Export stats for AI coaching'}
                     icon="ios-share"
                     onPress={onExportStats}
+                    disabled={exporting}
                 />
             </View>
 

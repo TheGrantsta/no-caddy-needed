@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
+import { useConfirmBeforeLeaving } from '@/hooks/useConfirmBeforeLeaving';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useShortPuttingLadderSimulation } from '@/hooks/useShortPuttingLadderSimulation';
 import { insertDrillResultService } from '@/service/DbService';
@@ -34,6 +35,7 @@ export default function ShortPuttingLadder() {
     const { showResult } = useAppToast();
     const hasSaved = useRef(false);
     const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+    const { leave } = useConfirmBeforeLeaving(sim.phase === 'in-progress', () => setShowQuitConfirm(true));
 
     const handleBack = useCallback(() => {
         if (sim.phase === 'in-progress') {
@@ -45,8 +47,8 @@ export default function ShortPuttingLadder() {
 
     const handleConfirmQuit = useCallback(() => {
         setShowQuitConfirm(false);
-        router.back();
-    }, [router]);
+        leave();
+    }, [leave]);
 
     useLayoutEffect(() => {
         navigation.setOptions({

@@ -31,6 +31,7 @@ export default function ReminderList({
 
     return (
         <>
+            <Text style={{ color: colours.text, fontSize: 12, marginTop: 20, marginHorizontal: 8 }}>Swipe left to delete</Text>
             {reminders.map((reminder) => {
                 const overdue = new Date(reminder.ScheduledFor) < new Date();
                 return (
@@ -51,8 +52,11 @@ export default function ReminderList({
                             <View style={{ padding: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <View>
                                     <Text style={styles.normalText}>{reminder.Label}</Text>
-                                    <Text style={[styles.normalText, { color: overdue ? colours.red : colours.text }]}>{new Date(reminder.ScheduledFor).toLocaleDateString()}</Text>
+                                    <Text style={[styles.normalText, { color: overdue ? colours.red : colours.text }]}>
+                                        {`${new Date(reminder.ScheduledFor).toLocaleDateString()} at ${new Date(reminder.ScheduledFor).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`}
+                                    </Text>
                                     {overdue && <Text style={{ color: colours.red, fontSize: 12, fontWeight: 'bold' }}>Overdue</Text>}
+                                    {!reminder.NotificationId && <Text style={{ color: colours.text, fontSize: 12 }}>Notifications off</Text>}
                                 </View>
                             </View>
                         </ReanimatedSwipeable>

@@ -90,6 +90,9 @@ export default function SystemSettings({
                     onChange={onUnitsChange}
                     testIDPrefix="units"
                 />
+                <Text style={[styles.smallText, { paddingHorizontal: 16, marginTop: 4 }]}>
+                    Applies to club distances, the wedge chart, wind adjustments and the up-and-down challenge. Putting distances stay in feet.
+                </Text>
             </View>
         </>
     );

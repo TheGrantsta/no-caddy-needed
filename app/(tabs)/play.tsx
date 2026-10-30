@@ -151,7 +151,8 @@ export default function Play() {
         displaySection,
         handleSubMenu,
         fadeAnim: sectionFadeAnim,
-        slideAnim: sectionSlideAnim
+        slideAnim: sectionSlideAnim,
+        replay: replaySectionTransition,
     } = useSectionTransition(SECTION_ORDER);
 
     const { refreshing, onRefresh } = useFakeRefresh(
@@ -279,6 +280,7 @@ export default function Play() {
         const holeData = loadHoleForScore(resumeHole, incompleteRound.Id, holePars);
         setCurrentHoleData(holeData);
         setIncompleteRound(null);
+        replaySectionTransition();
     };
 
     const handleEndIncompleteRound = () => {
@@ -338,6 +340,7 @@ export default function Play() {
             };
             setCurrentHoleData(holeData);
             setShowPlayerSetup(false);
+            replaySectionTransition();
             const nId = await scheduleRoundReminder();
             setNotificationId(nId);
         } else {
@@ -684,12 +687,6 @@ export default function Play() {
     );
     return (
         <GestureHandlerRootView style={styles.flexOne}>
-            {refreshing && (
-                <View style={styles.updateOverlay}>
-                    <Text style={styles.updateText}>Release to update</Text>
-                </View>
-            )}
-
             <ScrollView
                 ref={scrollRef}
                 keyboardShouldPersistTaps="handled"

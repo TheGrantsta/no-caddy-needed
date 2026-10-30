@@ -6,6 +6,7 @@ import {
     cancelPracticeReminder,
     scheduleDailyOverdueReminder,
     upgradeOverdueRemindersService,
+    ensureNotificationPermission,
 } from '../../service/NotificationService';
 import { getPracticeRemindersService, updatePracticeReminderNotificationIdService, getSettingsService } from '../../service/DbService';
 import * as Notifications from 'expo-notifications';
@@ -26,6 +27,8 @@ jest.mock('expo-notifications', () => ({
     cancelScheduledNotificationAsync: jest.fn(),
     getAllScheduledNotificationsAsync: jest.fn(),
     setNotificationHandler: jest.fn(),
+    getPermissionsAsync: jest.fn(),
+    requestPermissionsAsync: jest.fn(),
 }));
 
 const mockSchedule = Notifications.scheduleNotificationAsync as jest.Mock;
@@ -269,6 +272,36 @@ describe('NotificationService', () => {
 
             expect(id).toBeNull();
             expect(mockSchedule).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('ensureNotificationPermission', () => {
+        it('shouldReturnTrueWithoutPromptingWhenAlreadyGranted', async () => {
+            (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValueOnce({ granted: true });
+
+            const granted = await ensureNotificationPermission();
+
+            expect(granted).toBe(true);
+            expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
+        });
+
+        it('shouldRequestPermissionWhenNotYetAskedAndReturnResult', async () => {
+            (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValueOnce({ granted: false, canAskAgain: true });
+            (Notifications.requestPermissionsAsync as jest.Mock).mockResolvedValueOnce({ granted: true });
+
+            const granted = await ensureNotificationPermission();
+
+            expect(Notifications.requestPermissionsAsync).toHaveBeenCalledTimes(1);
+            expect(granted).toBe(true);
+        });
+
+        it('shouldReturnFalseWhenPermissionDenied', async () => {
+            (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValueOnce({ granted: false, canAskAgain: false });
+            (Notifications.requestPermissionsAsync as jest.Mock).mockResolvedValueOnce({ granted: false });
+
+            const granted = await ensureNotificationPermission();
+
+            expect(granted).toBe(false);
         });
     });
 });

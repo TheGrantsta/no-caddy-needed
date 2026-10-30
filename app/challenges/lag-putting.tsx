@@ -3,6 +3,7 @@ import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { useStyles } from '@/hooks/useStyles';
+import { useConfirmBeforeLeaving } from '@/hooks/useConfirmBeforeLeaving';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useLagPuttingSimulation } from '@/hooks/useLagPuttingSimulation';
 import { insertDrillResultService } from '@/service/DbService';
@@ -37,6 +38,7 @@ export default function LagPutting() {
     const { showResult } = useAppToast();
     const hasSaved = useRef(false);
     const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+    const { leave } = useConfirmBeforeLeaving(sim.phase === 'in-progress', () => setShowQuitConfirm(true));
 
     const handleBack = useCallback(() => {
         if (sim.phase === 'in-progress') {
@@ -48,8 +50,8 @@ export default function LagPutting() {
 
     const handleConfirmQuit = useCallback(() => {
         setShowQuitConfirm(false);
-        router.back();
-    }, [router]);
+        leave();
+    }, [leave]);
 
     useLayoutEffect(() => {
         navigation.setOptions({

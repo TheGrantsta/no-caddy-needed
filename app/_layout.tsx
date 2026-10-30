@@ -287,11 +287,6 @@ export default function RootLayout() {
         await initialize();
         await registerOverdueReminderTask();
 
-        // Request notification permissions if available
-        if (Notifications) {
-          Notifications.requestPermissionsAsync();
-        }
-
         await new Promise(resolve => setTimeout(resolve, 3000));
         await SplashScreen.hideAsync();
       } catch (e) {

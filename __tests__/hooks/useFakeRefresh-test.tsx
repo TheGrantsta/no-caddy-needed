@@ -51,10 +51,14 @@ describe('useFakeRefresh', () => {
         expect(mockRefetch).toHaveBeenCalledTimes(1);
     });
 
-    it('uses custom delay parameter', () => {
-        const mockRefetch = jest.fn();
-        const { result } = renderHook(() => useFakeRefresh(mockRefetch, 500));
+    it('stopsRefreshingAsSoonAsRefetchFinishesWithNoArtificialDelay', async () => {
+        const mockRefetch = jest.fn().mockResolvedValue(undefined);
+        const { result } = renderHook(() => useFakeRefresh(mockRefetch));
 
-        expect(result.current).toBeDefined();
+        await act(async () => {
+            await result.current.onRefresh();
+        });
+
+        expect(result.current.refreshing).toBe(false);
     });
 });

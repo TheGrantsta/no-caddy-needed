@@ -272,29 +272,20 @@ describe('Practice', () => {
             jest.useRealTimers();
         });
 
-        it('onRefreshShowsRefreshingOverlay', () => {
-            const { UNSAFE_getByType, getByText } = render(<Practice />);
-            const scrollView = UNSAFE_getByType(ScrollView);
-
+        it('onRefreshShowsSpinnerWhileRefreshing', () => {
+            const { UNSAFE_getByType } = render(<Practice />);
             act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
+                UNSAFE_getByType(ScrollView).props.refreshControl.props.onRefresh();
             });
-
-            expect(getByText('Release to update')).toBeTruthy();
+            expect(UNSAFE_getByType(ScrollView).props.refreshControl.props.refreshing).toBe(true);
         });
 
-        it('onRefreshHidesOverlayAfterTimeout', async () => {
-            const { UNSAFE_getByType, queryByText } = render(<Practice />);
-            const scrollView = UNSAFE_getByType(ScrollView);
-
+        it('onRefreshStopsSpinnerWhenRefetchFinishes', async () => {
+            const { UNSAFE_getByType } = render(<Practice />);
             await act(async () => {
-                await scrollView.props.refreshControl.props.onRefresh();
+                await UNSAFE_getByType(ScrollView).props.refreshControl.props.onRefresh();
             });
-            act(() => {
-                jest.advanceTimersByTime(750);
-            });
-
-            expect(queryByText('Release to update')).toBeNull();
+            expect(UNSAFE_getByType(ScrollView).props.refreshControl.props.refreshing).toBe(false);
         });
 
         it('onRefreshCallsFetchData', () => {

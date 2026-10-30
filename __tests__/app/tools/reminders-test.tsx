@@ -3,7 +3,7 @@ import { ScrollView } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Reminders from '../../../app/tools/reminders';
 import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService } from '../../../service/DbService';
-import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService } from '../../../service/NotificationService';
+import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService, ensureNotificationPermission } from '../../../service/NotificationService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -56,6 +56,7 @@ jest.mock('../../../service/NotificationService', () => ({
     schedulePracticeReminder: jest.fn(),
     cancelPracticeReminder: jest.fn(),
     upgradeOverdueRemindersService: jest.fn().mockResolvedValue(undefined),
+    ensureNotificationPermission: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock('../../../service/DbService', () => ({
@@ -76,6 +77,7 @@ describe('Reminders screen', () => {
         jest.clearAllMocks();
         mockGetPracticeRemindersService.mockReturnValue([]);
         mockSchedulePracticeReminder.mockResolvedValue('notif-id-1');
+        (ensureNotificationPermission as jest.Mock).mockResolvedValue(true);
     });
 
     // Renders and flushes the mount effect (upgradeOverdueRemindersService().then(loadReminders))
@@ -131,11 +133,32 @@ describe('Reminders screen', () => {
         fireEvent.press(getByTestId('save-reminder-button'));
         fireEvent.press(getByTestId('save-reminder-button'));
 
-        // Resolve all pending saves
+        // Wait for the first save to reach scheduling (it awaits permission first), then resolve it
+        await waitFor(() => expect(resolvers.length).toBeGreaterThan(0));
         await act(async () => { resolvers.forEach(r => r()); });
 
         // Should only save once despite two taps
         expect(mockAddPracticeReminderService).toHaveBeenCalledTimes(1);
+    });
+
+    it('shouldAskForPermissionBeforeSchedulingFirstReminder', async () => {
+        const { getByTestId } = await renderReminders();
+        fireEvent.press(getByTestId('add-reminder-button'));
+        fireEvent.changeText(getByTestId('reminder-label-input'), 'Chip');
+        await act(async () => { fireEvent.press(getByTestId('save-reminder-button')); });
+
+        expect(ensureNotificationPermission).toHaveBeenCalledTimes(1);
+    });
+
+    it('shouldSaveReminderWithoutNotificationWhenPermissionDenied', async () => {
+        (ensureNotificationPermission as jest.Mock).mockResolvedValue(false);
+        const { getByTestId } = await renderReminders();
+        fireEvent.press(getByTestId('add-reminder-button'));
+        fireEvent.changeText(getByTestId('reminder-label-input'), 'Chip');
+        await act(async () => { fireEvent.press(getByTestId('save-reminder-button')); });
+
+        expect(mockSchedulePracticeReminder).not.toHaveBeenCalled();
+        expect(mockAddPracticeReminderService).toHaveBeenCalledWith('Chip', expect.any(String), null);
     });
 
     it('shouldShowErrorWhenSavingWithEmptyLabel', async () => {
@@ -253,29 +276,20 @@ describe('Reminders screen', () => {
             jest.useRealTimers();
         });
 
-        it('onRefreshShowsRefreshingOverlay', async () => {
-            const { UNSAFE_getByType, getByText } = await renderReminders();
-            const scrollView = UNSAFE_getByType(ScrollView);
-
+        it('onRefreshShowsSpinnerWhileRefreshing', async () => {
+            const { UNSAFE_getByType } = await renderReminders();
             act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
+                UNSAFE_getByType(ScrollView).props.refreshControl.props.onRefresh();
             });
-
-            expect(getByText('Release to update')).toBeTruthy();
+            expect(UNSAFE_getByType(ScrollView).props.refreshControl.props.refreshing).toBe(true);
         });
 
-        it('onRefreshHidesOverlayAfterTimeout', async () => {
-            const { UNSAFE_getByType, queryByText } = await renderReminders();
-            const scrollView = UNSAFE_getByType(ScrollView);
-
+        it('onRefreshStopsSpinnerWhenRefetchFinishes', async () => {
+            const { UNSAFE_getByType } = await renderReminders();
             await act(async () => {
-                await scrollView.props.refreshControl.props.onRefresh();
+                await UNSAFE_getByType(ScrollView).props.refreshControl.props.onRefresh();
             });
-            act(() => {
-                jest.advanceTimersByTime(750);
-            });
-
-            expect(queryByText('Release to update')).toBeNull();
+            expect(UNSAFE_getByType(ScrollView).props.refreshControl.props.refreshing).toBe(false);
         });
 
         it('onRefreshReloadsReminders', async () => {

@@ -1,9 +1,10 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, act } from '@testing-library/react-native';
 import UpAndDownChallenge from '../../../app/challenges/up-and-down';
 
+const mockAddListener = jest.fn(() => jest.fn());
 jest.mock('@react-navigation/native', () => ({
-    useNavigation: () => ({ goBack: jest.fn(), setOptions: jest.fn() }),
+    useNavigation: () => ({ goBack: jest.fn(), setOptions: jest.fn(), addListener: mockAddListener }),
 }));
 
 jest.mock('expo-router', () => ({
@@ -136,5 +137,19 @@ describe('UpAndDownChallenge distance units', () => {
 
         expect(getByText(/^\d+ m$/)).toBeTruthy();
         expect(queryByText(/ yd$/)).toBeNull();
+    });
+
+    it('asksBeforeLeavingWhenSwipeOrHardwareBackDuringRun', () => {
+        mockAddListener.mockClear();
+        const { getByText } = render(<UpAndDownChallenge />);
+        const listener = mockAddListener.mock.calls.find((c: any[]) => c[0] === 'beforeRemove')?.[1];
+        const event = { preventDefault: jest.fn(), data: { action: {} } };
+
+        act(() => {
+            listener?.(event);
+        });
+
+        expect(event.preventDefault).toHaveBeenCalled();
+        expect(getByText('Quit challenge?')).toBeTruthy();
     });
 });

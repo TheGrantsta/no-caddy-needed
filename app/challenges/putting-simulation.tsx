@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
+import { useConfirmBeforeLeaving } from '@/hooks/useConfirmBeforeLeaving';
 import { useThemeColours } from '@/context/ThemeContext';
 import { usePuttingSimulation } from '@/hooks/usePuttingSimulation';
 import { insertDrillResultService } from '@/service/DbService';
@@ -34,6 +35,7 @@ export default function PuttingSimulation() {
     const { showResult } = useAppToast();
     const hasSaved = useRef(false);
     const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+    const { leave } = useConfirmBeforeLeaving(sim.phase === 'in-progress', () => setShowQuitConfirm(true));
 
     const totalPutts = sim.putts.reduce((sum, p) => sum + p, 0);
 
@@ -58,8 +60,8 @@ export default function PuttingSimulation() {
 
     const handleConfirmQuit = useCallback(() => {
         setShowQuitConfirm(false);
-        router.back();
-    }, [router]);
+        leave();
+    }, [leave]);
 
     const handlePlayAgain = useCallback(() => {
         hasSaved.current = false;

@@ -105,3 +105,13 @@ export const cancelPracticeReminder = async (notificationId: string | null): Pro
         console.log(e);
     }
 };
+
+// Asks for notification permission the first time a reminder is saved, not at app launch.
+// Returns whether reminders can be delivered.
+export const ensureNotificationPermission = async (): Promise<boolean> => {
+    if (!Notifications) return false;
+    const current = await Notifications.getPermissionsAsync();
+    if (current.granted) return true;
+    const requested = await Notifications.requestPermissionsAsync();
+    return requested.granted;
+};

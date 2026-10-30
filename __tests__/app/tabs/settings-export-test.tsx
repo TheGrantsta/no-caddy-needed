@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react-native';
+import { render, fireEvent, screen, act } from '@testing-library/react-native';
 import Settings from '../../../app/settings';
 import * as ExportService from '../../../service/ExportService';
 import * as Sharing from 'expo-sharing';
@@ -125,7 +125,7 @@ describe('Settings - Export stats button', () => {
 
         const testPayload = {
             generatedAt: '2026-08-04T10:00:00Z',
-            roundHistory: [],
+            roundHistory: [{ Id: 1 }],
             deadlySinsRounds: [],
             puttingMakeRates: [],
             puttingProximity: [],
@@ -170,7 +170,7 @@ describe('Settings - Export stats button', () => {
         const mockWriteFile = ExportService.writeStatsExportFile as jest.Mock;
         const mockIsAvailable = Sharing.isAvailableAsync as jest.Mock;
 
-        const testPayload = { generatedAt: '2026-08-04T10:00:00Z' };
+        const testPayload = { generatedAt: '2026-08-04T10:00:00Z', roundHistory: [{ Id: 1 }] };
         mockBuildPayload.mockReturnValue(testPayload);
         mockFormatText.mockReturnValue('test');
         mockWriteFile.mockResolvedValue('/test');
@@ -182,7 +182,43 @@ describe('Settings - Export stats button', () => {
 
         await new Promise(resolve => setTimeout(resolve, 100));
 
-        expect(mockShowError).toHaveBeenCalledWith('Failed to export stats');
+        expect(mockShowError).toHaveBeenCalledWith('Sharing is not available on this device');
+    });
+
+    it('labelsExportButtonForAiCoaching', () => {
+        render(<Settings />);
+
+        expect(screen.getByText('Export stats for AI coaching')).toBeTruthy();
+    });
+
+    it('shouldNotWriteOrShareWhenThereIsNothingToExport', async () => {
+        const mockBuildPayload = ExportService.buildStatsExportPayload as jest.Mock;
+        const mockWriteFile = ExportService.writeStatsExportFile as jest.Mock;
+        const mockShareAsync = Sharing.shareAsync as jest.Mock;
+        mockBuildPayload.mockReturnValue({ roundHistory: [], drillHistory: [] });
+
+        render(<Settings />);
+        fireEvent.press(screen.getByTestId('export-stats-button'));
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        expect(mockShowError).toHaveBeenCalledWith('No stats to export yet');
+        expect(mockWriteFile).not.toHaveBeenCalled();
+        expect(mockShareAsync).not.toHaveBeenCalled();
+    });
+
+    it('showsPreparingLabelWhileExportIsRunning', async () => {
+        const mockBuildPayload = ExportService.buildStatsExportPayload as jest.Mock;
+        const mockWriteFile = ExportService.writeStatsExportFile as jest.Mock;
+        mockBuildPayload.mockReturnValue({ roundHistory: [{ Id: 1 }], drillHistory: [] });
+        let finishWrite: (uri: string) => void = () => {};
+        mockWriteFile.mockImplementation(() => new Promise<string>(resolve => { finishWrite = resolve; }));
+
+        render(<Settings />);
+        fireEvent.press(screen.getByTestId('export-stats-button'));
+
+        expect(screen.getByText('Preparing export…')).toBeTruthy();
+
+        await act(async () => { finishWrite('/cache/export.txt'); });
     });
 
     it('shows error toast when file write fails', async () => {
@@ -190,7 +226,7 @@ describe('Settings - Export stats button', () => {
         const mockFormatText = ExportService.formatStatsExportText as jest.Mock;
         const mockWriteFile = ExportService.writeStatsExportFile as jest.Mock;
 
-        mockBuildPayload.mockReturnValue({});
+        mockBuildPayload.mockReturnValue({ roundHistory: [{ Id: 1 }] });
         mockFormatText.mockReturnValue('test');
         mockWriteFile.mockRejectedValue(new Error('Write failed'));
 

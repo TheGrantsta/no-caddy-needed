@@ -9,7 +9,7 @@ import { useForm } from '../../hooks/useForm';
 import { useToggle } from '../../hooks/useToggle';
 import { validateNonEmpty } from '../../assets/validation';
 import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, PracticeReminder } from '@/service/DbService';
-import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService } from '../../service/NotificationService';
+import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService, ensureNotificationPermission } from '../../service/NotificationService';
 import ReminderList from '@/components/ReminderList';
 import ReminderForm from '@/components/ReminderForm';
 
@@ -26,7 +26,7 @@ export default function Reminders() {
     const [reminderDate, setReminderDate] = useState(() => {
         const d = new Date();
         d.setDate(d.getDate() + 1);
-        d.setHours(12, 0, 0, 0);
+        d.setHours(9, 0, 0, 0);
         return d;
     });
     const [refreshKey, setRefreshKey] = useState(0);
@@ -60,14 +60,16 @@ export default function Reminders() {
         try {
             const scheduledDate = new Date(reminderDate);
             scheduledDate.setHours(9, 0, 0, 0);
-            const notificationId = await schedulePracticeReminder(formState.label.value, scheduledDate);
+            // Permission is requested here, on the first reminder, rather than at app launch
+            const allowed = await ensureNotificationPermission();
+            const notificationId = allowed ? await schedulePracticeReminder(formState.label.value, scheduledDate) : null;
             await addPracticeReminderService(formState.label.value, scheduledDate.toISOString(), notificationId);
             loadReminders();
             toggleAddForm(false);
             resetForm();
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(12, 0, 0, 0);
+            tomorrow.setHours(9, 0, 0, 0);
             setReminderDate(tomorrow);
         } finally {
             setIsSaving(false);
@@ -82,11 +84,6 @@ export default function Reminders() {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            {refreshing && (
-                <View style={styles.updateOverlay}>
-                    <Text style={styles.updateText}>Release to update</Text>
-                </View>
-            )}
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colours.primary} />
             }>

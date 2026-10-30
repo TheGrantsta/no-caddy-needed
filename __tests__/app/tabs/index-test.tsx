@@ -154,37 +154,15 @@ describe('HomeScreen', () => {
         );
     });
 
-    describe('onRefresh', () => {
-        beforeEach(() => {
-            jest.useFakeTimers();
+    describe('pull to refresh', () => {
+        it('shouldNotOfferPullToRefreshOnHome', () => {
+            const { UNSAFE_getByType } = render(<HomeScreen />);
+
+            expect(UNSAFE_getByType(ScrollView).props.refreshControl).toBeUndefined();
         });
 
-        afterEach(() => {
-            jest.clearAllTimers();
-            jest.useRealTimers();
-        });
-
-        it('onRefreshShowsRefreshingOverlay', () => {
-            const { UNSAFE_getByType, getByText } = render(<HomeScreen />);
-            const scrollView = UNSAFE_getByType(ScrollView);
-
-            act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
-            });
-
-            expect(getByText('Release to update')).toBeTruthy();
-        });
-
-        it('onRefreshHidesOverlayAfterTimeout', async () => {
-            const { UNSAFE_getByType, queryByText } = render(<HomeScreen />);
-            const scrollView = UNSAFE_getByType(ScrollView);
-
-            await act(async () => {
-                await scrollView.props.refreshControl.props.onRefresh();
-            });
-            act(() => {
-                jest.advanceTimersByTime(750);
-            });
+        it('shouldNotShowReleaseToUpdateBannerOnHome', () => {
+            const { queryByText } = render(<HomeScreen />);
 
             expect(queryByText('Release to update')).toBeNull();
         });

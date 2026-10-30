@@ -7,7 +7,9 @@ export const useSectionTransition = (sectionOrder: string[]) => {
     const sectionFadeAnim = useRef(new Animated.Value(0)).current;
     const sectionSlideAnim = useRef(new Animated.Value(0)).current;
 
-    useEffect(() => {
+    // Fades the section in. Also exposed so a screen can replay it when content appears
+    // without a section change (the first mount may have left the fade stuck at 0).
+    const playTransition = () => {
         const offset = sectionDirectionRef.current === 'next' ? 40 : -40;
         sectionFadeAnim.setValue(0);
         sectionSlideAnim.setValue(offset);
@@ -23,6 +25,10 @@ export const useSectionTransition = (sectionOrder: string[]) => {
                 useNativeDriver: true,
             }),
         ]).start();
+    };
+
+    useEffect(() => {
+        playTransition();
     }, [section, sectionFadeAnim, sectionSlideAnim]);
 
     const handleSubMenu = (sectionName: string) => {
@@ -40,6 +46,7 @@ export const useSectionTransition = (sectionOrder: string[]) => {
         section,
         displaySection,
         handleSubMenu,
+        replay: playTransition,
         fadeAnim: sectionFadeAnim,
         slideAnim: sectionSlideAnim,
     };

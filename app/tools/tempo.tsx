@@ -1,19 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
-import { ScrollView, View, Text, RefreshControl } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import Chevrons from '@/components/Chevrons';
 import TempoSlider from '@/components/TempoSlider';
 import TempoDisplay from '@/components/TempoDisplay';
 import TempoControls from '@/components/TempoControls';
-import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { useOrientation } from '@/hooks/useOrientation';
-import { useFakeRefresh } from '@/hooks/useFakeRefresh';
 import { getSettingsService, saveSettingsService } from '@/service/DbService';
 
 export default function Tempo() {
-    const colours = useThemeColours();
     const styles = useStyles();
     const { landscapePadding } = useOrientation();
     const [isPlaying, setIsPlaying] = useState(false);
@@ -60,12 +57,6 @@ export default function Tempo() {
         }
     };
 
-    const { refreshing, onRefresh } = useFakeRefresh(async () => {
-        setTempo(getSettingsService().tempoBpm);
-        setIsPlaying(false);
-        await stopLoop();
-    });
-
     const startLoop = async () => {
         const interval = (60 / tempo) * 1000;
 
@@ -101,21 +92,7 @@ export default function Tempo() {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            {refreshing && (
-                <View style={styles.updateOverlay}>
-                    <Text style={styles.updateText}>
-                        Release to update
-                    </Text>
-                </View>
-            )}
-
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
-                <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                    colors={[colours.primary]}
-                    tintColor={colours.primary} />
-            }>
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
                 <View style={styles.container}>
                     <View style={styles.headerContainer}>
                         <Text style={[styles.headerText, styles.marginTop]}>

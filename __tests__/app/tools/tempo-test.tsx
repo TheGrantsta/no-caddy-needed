@@ -235,67 +235,10 @@ describe('Tempo training page', () => {
         consoleSpy.mockRestore();
     });
 
-    it('onRefreshShowsRefreshingOverlay', () => {
-        const { UNSAFE_getByType, getByText } = render(<Tempo />);
-        const scrollView = UNSAFE_getByType(ScrollView);
+    it('shouldNotOfferPullToRefreshSoTempoIsNotResetByScrolling', () => {
+        const { UNSAFE_getByType } = render(<Tempo />);
 
-        act(() => {
-            scrollView.props.refreshControl.props.onRefresh();
-        });
-
-        expect(getByText('Release to update')).toBeTruthy();
-    });
-
-    it('onRefreshHidesOverlayAfterTimeout', async () => {
-        const { UNSAFE_getByType, queryByText } = render(<Tempo />);
-        const scrollView = UNSAFE_getByType(ScrollView);
-
-        await act(async () => {
-            await scrollView.props.refreshControl.props.onRefresh();
-        });
-
-        act(() => {
-            jest.runAllTimers();
-        });
-
-        expect(queryByText('Release to update')).toBeNull();
-    });
-
-    it('onRefreshResetsTempoTo60', () => {
-        const { UNSAFE_getByType, getByTestId, getByText } = render(<Tempo />);
-
-        fireEvent(getByTestId('tempo-slider'), 'valueChange', 120);
-        expect(getByText('Beats per minute: 120')).toBeTruthy();
-
-        const scrollView = UNSAFE_getByType(ScrollView);
-        act(() => {
-            scrollView.props.refreshControl.props.onRefresh();
-        });
-        act(() => {
-            jest.runAllTimers();
-        });
-
-        expect(getByText('Beats per minute: 60')).toBeTruthy();
-    });
-
-    it('onRefreshSetsIsPlayingFalse', async () => {
-        const { UNSAFE_getByType, getByText } = render(<Tempo />);
-
-        fireEvent.press(getByText('Play'));
-        expect(getByText('Stop')).toBeTruthy();
-
-        const scrollView = UNSAFE_getByType(ScrollView);
-        act(() => {
-            scrollView.props.refreshControl.props.onRefresh();
-        });
-
-        // Only advance to 750ms to fire the refresh timeout without triggering
-        // the repeating 1000ms interval (which would cause an infinite loop).
-        await act(async () => {
-            jest.advanceTimersByTime(750);
-        });
-
-        expect(getByText('Play')).toBeTruthy();
+        expect(UNSAFE_getByType(ScrollView).props.refreshControl).toBeUndefined();
     });
 
     it('requestsBackgroundPlaybackSoTheBeatContinuesWhenAppIsBackgrounded', () => {

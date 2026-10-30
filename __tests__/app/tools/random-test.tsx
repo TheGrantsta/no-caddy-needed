@@ -383,93 +383,12 @@ describe('Random number generator page', () => {
         expect(Speech.stop).toHaveBeenCalled();
     });
 
-    describe('onRefresh', () => {
-        beforeEach(() => {
-            jest.useFakeTimers();
-        });
+    describe('pull to refresh', () => {
+        it('shouldNotOfferPullToRefreshSoRandomNumberIsNotResetByScrolling', () => {
+            const { UNSAFE_getByType } = render(<Random />);
 
-        afterEach(() => {
-            jest.clearAllTimers();
-            jest.useRealTimers();
-        });
-
-        it('onRefreshShowsRefreshingOverlay', () => {
-            const { UNSAFE_getByType, getByText } = render(<Random />);
-            const scrollView = UNSAFE_getByType(ScrollView);
-
-            act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
-            });
-
-            expect(getByText('Release to update')).toBeTruthy();
-        });
-
-        it('onRefreshHidesOverlayAfterTimeout', async () => {
-            const { UNSAFE_getByType, queryByText } = render(<Random />);
-            const scrollView = UNSAFE_getByType(ScrollView);
-
-            await act(async () => {
-                await scrollView.props.refreshControl.props.onRefresh();
-            });
-            act(() => {
-                jest.advanceTimersByTime(750);
-            });
-
-            expect(queryByText('Release to update')).toBeNull();
-        });
-
-        it('onRefreshResetsRangeAndIncrementToDefaults', () => {
-            const { UNSAFE_getByType, getByDisplayValue } = render(<Random />);
-
-            fireEvent.changeText(getByDisplayValue('30-100'), '50-150');
-            fireEvent.changeText(getByDisplayValue('10'), '5');
-
-            const scrollView = UNSAFE_getByType(ScrollView);
-            act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
-            });
-            act(() => {
-                jest.advanceTimersByTime(750);
-            });
-
-            expect(getByDisplayValue('30-100')).toBeTruthy();
-            expect(getByDisplayValue('10')).toBeTruthy();
-        });
-
-        it('onRefreshClearsErrorMessages', () => {
-            const { UNSAFE_getByType, getByDisplayValue, getByTestId, queryByText } = render(<Random />);
-
-            fireEvent.changeText(getByDisplayValue('30-100'), '');
-            fireEvent.changeText(getByDisplayValue('10'), '');
-            fireEvent.press(getByTestId('save-button'));
-
-            const scrollView = UNSAFE_getByType(ScrollView);
-            act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
-            });
-            act(() => {
-                jest.advanceTimersByTime(750);
-            });
-
-            expect(queryByText('Range cannot be empty')).toBeNull();
-            expect(queryByText('Increment cannot be empty')).toBeNull();
-        });
-
-        it('onRefreshResetsRandomNumber', () => {
-            const { UNSAFE_getByType, getByTestId, queryByText } = render(<Random />);
-
-            fireEvent.press(getByTestId('save-button'));
-            expect(queryByText('50')).toBeTruthy();
-
-            const scrollView = UNSAFE_getByType(ScrollView);
-            act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
-            });
-            act(() => {
-                jest.advanceTimersByTime(750);
-            });
-
-            expect(queryByText('50')).toBeNull();
+            expect(UNSAFE_getByType(ScrollView).props.refreshControl).toBeUndefined();
         });
     });
+
 });

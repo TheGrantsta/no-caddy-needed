@@ -1,14 +1,16 @@
 import { useState } from 'react';
 
-export const useFakeRefresh = (refetchFn: () => void | Promise<void>, delay: number = 750) => {
+// Drives the pull-to-refresh spinner for the duration of the refetch
+export const useFakeRefresh = (refetchFn: () => void | Promise<void>) => {
     const [refreshing, setRefreshing] = useState(false);
 
     const onRefresh = async () => {
         setRefreshing(true);
-        await refetchFn();
-        setTimeout(() => {
+        try {
+            await refetchFn();
+        } finally {
             setRefreshing(false);
-        }, delay);
+        }
     };
 
     return { refreshing, onRefresh };

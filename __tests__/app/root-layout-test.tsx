@@ -141,6 +141,12 @@ describe('RootLayout', () => {
         expect(mockInitialize).toHaveBeenCalledTimes(1);
     });
 
+    it('shouldNotAskForNotificationPermissionAtLaunch', async () => {
+        const Notifications = require('expo-notifications');
+        await renderReady();
+        expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
+    });
+
     it('hidesSplashScreenAfterSetup', async () => {
         await renderReady();
         expect(mockHideAsync).toHaveBeenCalledTimes(1);

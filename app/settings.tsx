@@ -26,6 +26,7 @@ export default function Settings() {
   const styles = useStyles();
   const { landscapePadding } = useOrientation();
   const { showResult, showError } = useAppToast();
+  const [exporting, setExporting] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [routineText, setRoutineText] = useState(settings.preShotRoutineText);
   const [showOnboarding, , setShowOnboarding] = useToggle(!settings.settingsOnboardingSeen);
@@ -133,14 +134,20 @@ export default function Settings() {
   };
 
   const handleExportStats = async () => {
+    setExporting(true);
     try {
       const payload = buildStatsExportPayload();
+      if ((payload.roundHistory?.length ?? 0) === 0 && (payload.drillHistory?.length ?? 0) === 0) {
+        showError('No stats to export yet');
+        return;
+      }
+
       const text = formatStatsExportText(payload);
       const fileUri = await writeStatsExportFile(text);
 
       const isAvailable = await Sharing.isAvailableAsync();
       if (!isAvailable) {
-        showError('Failed to export stats');
+        showError('Sharing is not available on this device');
         return;
       }
 
@@ -150,6 +157,8 @@ export default function Settings() {
       });
     } catch {
       showError('Failed to export stats');
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -191,6 +200,7 @@ export default function Settings() {
 
         <SettingsFooter
           onExportStats={handleExportStats}
+          exporting={exporting}
           onRateApp={openStoreReviewService}
         />
       </ScrollView>

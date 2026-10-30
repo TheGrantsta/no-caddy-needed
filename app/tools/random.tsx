@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ScrollView, View, Text, RefreshControl } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getRandomNumber } from '../../assets/random-number';
 import * as Speech from 'expo-speech';
@@ -9,9 +9,7 @@ import RandomNumberForm from '@/components/RandomNumberForm';
 import RandomNumberDisplay from '@/components/RandomNumberDisplay';
 import RandomNumberActions from '@/components/RandomNumberActions';
 import { useStyles } from '@/hooks/useStyles';
-import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
-import { useFakeRefresh } from '@/hooks/useFakeRefresh';
 import { useForm } from '../../hooks/useForm';
 import { useToggle } from '../../hooks/useToggle';
 import { validateRange, validateNumber } from '../../assets/validation';
@@ -51,17 +49,11 @@ const getVoiceOptions = async (voice: string): Promise<Record<string, unknown>> 
 
 export default function Random() {
     const styles = useStyles();
-    const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const [formState, resetForm] = useForm({ range: '30-100', increment: '10' });
+    const [formState] = useForm({ range: '30-100', increment: '10' });
     const [randomNumber, setRandomNumber] = useState(0);
     const [micActive, , setMicActive] = useToggle(false);
     const isStoppingRef = useRef(false);
-
-    const { refreshing, onRefresh } = useFakeRefresh(() => {
-        resetForm();
-        setRandomNumber(0);
-    });
 
     useSpeechRecognitionEvent('result', (event: SpeechRecognitionEvent) => {
         if (isStoppingRef.current) return;
@@ -135,20 +127,7 @@ export default function Random() {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            {refreshing && (
-                <View style={styles.updateOverlay}>
-                    <Text style={styles.updateText}>
-                        Release to update
-                    </Text>
-                </View>
-            )}
-
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
-                <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                    tintColor={colours.primary} />
-            }>
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
                 <View>
                     <View style={styles.headerContainer}>
                         <Text style={[styles.headerText, styles.marginTop]}>

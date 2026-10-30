@@ -83,14 +83,6 @@ export default function Perform() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SubMenu showSubMenu='perform' selectedItem={section} handleSubMenu={handleSubMenuWithLogging} />
 
-      {refreshing && (
-        <View style={styles.updateOverlay}>
-          <Text style={styles.updateText}>
-            Release to update
-          </Text>
-        </View>
-      )}
-
       <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
         <RefreshControl
           refreshing={refreshing}

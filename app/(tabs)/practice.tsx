@@ -109,14 +109,6 @@ export default function Practice() {
     <GestureHandlerRootView style={styles.flexOne}>
       <SubMenu showSubMenu='practice' selectedItem={section} handleSubMenu={handleSubMenuWithLogging} />
 
-      {refreshing && (
-        <View style={styles.updateOverlay}>
-          <Text style={styles.updateText}>
-            Release to update
-          </Text>
-        </View>
-      )}
-
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}

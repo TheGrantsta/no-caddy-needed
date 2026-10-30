@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Constants from 'expo-constants';
 import { useStyles } from '@/hooks/useStyles';
-import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
-import { useFakeRefresh } from '@/hooks/useFakeRefresh';
 import { getSettingsService, saveSettingsService } from '@/service/DbService';
 import HomeHeader from '@/components/HomeHeader';
 import HomeIntro from '@/components/HomeIntro';
@@ -31,7 +29,6 @@ const APP_VERSION = Constants.expoConfig?.version ?? '';
 
 export default function HomeScreen() {
   const styles = useStyles();
-  const colours = useThemeColours();
   const { landscapePadding } = useOrientation();
   const settings = getSettingsService();
   const [showOnboarding, setShowOnboarding] = useState(!settings.homeOnboardingSeen);
@@ -40,7 +37,6 @@ export default function HomeScreen() {
     settings.homeOnboardingSeen && settings.whatsNewVersionSeen !== APP_VERSION
   );
 
-  const { refreshing, onRefresh } = useFakeRefresh(() => { });
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -61,17 +57,9 @@ export default function HomeScreen() {
 
   return (
     <GestureHandlerRootView style={[styles.flexOne]}>
-      {refreshing && (
-        <View style={styles.updateOverlay}>
-          <Text style={styles.updateText}>Release to update</Text>
-        </View>
-      )}
       <ScrollView
         style={[styles.scrollContainer]}
         contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colours.primary} />
-        }
       >
         <HomeHeader onInfoPress={handleShowOnboarding} />
 

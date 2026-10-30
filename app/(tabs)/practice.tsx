@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useLocalSearchParams, useFocusEffect } from "expo-router";
+import { useLocalSearchParams, useFocusEffect, useRouter } from "expo-router";
 import { useStyles } from "@/hooks/useStyles";
 import { useThemeColours } from "@/context/ThemeContext";
 import { useOrientation } from "@/hooks/useOrientation";
@@ -10,7 +10,7 @@ import { useSectionTransition } from "@/hooks/useSectionTransition";
 import { useToggle } from "@/hooks/useToggle";
 import SubMenu from "@/components/SubMenu";
 import { MaterialIcons } from "@expo/vector-icons";
-import { getAllDrillHistoryService, getSettingsService, saveSettingsService } from "@/service/DbService";
+import { getAllDrillHistoryService, getPracticeRemindersService, getSettingsService, saveSettingsService } from "@/service/DbService";
 import { logEvent } from "@/service/FirebaseService";
 import PracticeChallengesSection from "@/components/PracticeChallengesSection";
 import PracticeToolsSection from "@/components/PracticeToolsSection";
@@ -33,6 +33,8 @@ export default function Practice() {
   const [showOnboarding, setShowOnboarding] = useState(() => !getSettingsService().practiceOnboardingSeen);
   const [loading, setLoading] = useState(true);
   const [allDrillHistory, setAllDrillHistory] = useState<any[]>([]);
+  const [overdueReminderCount, setOverdueReminderCount] = useState(0);
+  const router = useRouter();
   const [displayedDrillHistory, setDisplayedDrillHistory] = useState<any[]>([]);
   const [isLoadingMore, , setIsLoadingMore] = useToggle(false);
 
@@ -69,6 +71,8 @@ export default function Practice() {
       const items = getAllDrillHistoryService();
       setAllDrillHistory(items);
       setDisplayedDrillHistory(items.slice(0, ITEMS_PER_BATCH));
+      const now = new Date();
+      setOverdueReminderCount(getPracticeRemindersService().filter(r => new Date(r.ScheduledFor) < now).length);
     } catch (e) {
       console.error("Error fetching drill history:", e);
     } finally {
@@ -121,6 +125,16 @@ export default function Practice() {
       >
 
         <View style={styles.container}>
+          {overdueReminderCount > 0 && (
+            <TouchableOpacity
+              testID="overdue-reminder-banner"
+              onPress={() => router.push('/tools/reminders')}
+              style={{ marginHorizontal: 16, marginTop: 12, padding: 12, borderRadius: 8, borderWidth: 1, borderColor: colours.red }}
+            >
+              <Text style={{ color: colours.text, fontWeight: '600' }}>You have an overdue practice reminder</Text>
+              <Text style={{ color: colours.primary, fontWeight: '600', marginTop: 4 }}>View reminders</Text>
+            </TouchableOpacity>
+          )}
           <View style={styles.header}>
             <View style={styles.titleRow}>
               <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"

@@ -118,100 +118,16 @@ describe('Tabs layout — Practice overdue badge', () => {
         expect(queryByTestId('practice-overdue-badge')).toBeNull();
     });
 
-    describe('Tab press deep link to overdue reminder', () => {
-        beforeEach(() => {
-            mockNavigate.mockClear();
-            mockPush.mockClear();
-        });
-
-        it('deepLinksToRemindersWhenOverdueAndComingFromAnotherTab', () => {
-            mockGetPracticeRemindersService.mockReturnValue([
-                { Id: 1, Label: 'Morning putting', ScheduledFor: '2020-01-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2019-12-31T09:00:00.000Z' }
-            ]);
-            mockUseSegments.mockReturnValue(['(tabs)', 'home']);
-
-            render(<TabLayout />);
-
+    describe('Practice tab press', () => {
+        it('shouldNotRedirectToRemindersWhenPracticeTabPressedWhileOverdue', () => {
             const { Tabs } = require('expo-router');
-            const practiceScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'practice');
-            const listeners = practiceScreen[0].listeners;
-            const mockEvent = { preventDefault: jest.fn() };
-            const mockNavigation = { isFocused: () => false };
-
-            listeners({ navigation: mockNavigation }).tabPress(mockEvent);
-
-            expect(mockEvent.preventDefault).toHaveBeenCalled();
-            expect(mockNavigate).toHaveBeenCalledWith({
-                pathname: '/practice',
-                params: expect.objectContaining({ section: 'tools' })
-            });
-            expect(mockPush).toHaveBeenCalledWith('/tools/reminders');
-        });
-
-        it('doesNotInterceptTabPressWhenPracticeIsAlreadyFocused', () => {
-            mockGetPracticeRemindersService.mockReturnValue([
-                { Id: 1, Label: 'Morning putting', ScheduledFor: '2020-01-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2019-12-31T09:00:00.000Z' }
-            ]);
-            mockUseSegments.mockReturnValue(['(tabs)', 'practice']);
-
             render(<TabLayout />);
-
-            const { Tabs } = require('expo-router');
             const practiceScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'practice');
-            const listeners = practiceScreen[0].listeners;
-            const mockEvent = { preventDefault: jest.fn() };
-            const mockNavigation = { isFocused: () => true };
 
-            listeners({ navigation: mockNavigation }).tabPress(mockEvent);
-
-            expect(mockEvent.preventDefault).not.toHaveBeenCalled();
-            expect(mockNavigate).not.toHaveBeenCalled();
-            expect(mockPush).not.toHaveBeenCalled();
-        });
-
-        it('doesNotInterceptTabPressWhenNothingIsOverdue', () => {
-            mockGetPracticeRemindersService.mockReturnValue([]);
-            mockUseSegments.mockReturnValue(['(tabs)', 'home']);
-
-            render(<TabLayout />);
-
-            const { Tabs } = require('expo-router');
-            const practiceScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'practice');
-            const listeners = practiceScreen[0].listeners;
-            const mockEvent = { preventDefault: jest.fn() };
-            const mockNavigation = { isFocused: () => false };
-
-            listeners({ navigation: mockNavigation }).tabPress(mockEvent);
-
-            expect(mockEvent.preventDefault).not.toHaveBeenCalled();
-            expect(mockNavigate).not.toHaveBeenCalled();
-            expect(mockPush).not.toHaveBeenCalled();
-        });
-
-        it('rechecksOverdueAtPressTimeNotRenderTime', () => {
-            mockGetPracticeRemindersService.mockReturnValue([]);
-            mockUseSegments.mockReturnValue(['(tabs)', 'home']);
-
-            render(<TabLayout />);
-
-            // Now simulate a reminder becoming overdue (before the press)
-            mockGetPracticeRemindersService.mockReturnValue([
-                { Id: 1, Label: 'Morning putting', ScheduledFor: '2020-01-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2019-12-31T09:00:00.000Z' }
-            ]);
-
-            const { Tabs } = require('expo-router');
-            const practiceScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'practice');
-            const listeners = practiceScreen[0].listeners;
-            const mockEvent = { preventDefault: jest.fn() };
-            const mockNavigation = { isFocused: () => false };
-
-            listeners({ navigation: mockNavigation }).tabPress(mockEvent);
-
-            expect(mockEvent.preventDefault).toHaveBeenCalled();
-            expect(mockNavigate).toHaveBeenCalled();
-            expect(mockPush).toHaveBeenCalled();
+            expect(practiceScreen[0].listeners).toBeUndefined();
         });
     });
+
 
     describe('tab button test ids', () => {
         it('shouldGiveEachTabButtonAStableTestIdForEndToEndTests', () => {

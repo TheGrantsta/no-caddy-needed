@@ -39,6 +39,7 @@ jest.mock('@react-navigation/native', () => ({
 const mockUseLocalSearchParams = jest.fn().mockReturnValue({});
 let capturedFocusEffect: (() => void) | null = null;
 
+const mockRouterPush = jest.fn();
 jest.mock('expo-router', () => ({
     Link: ({ children }: any) => {
         const { View } = require('react-native');
@@ -46,6 +47,7 @@ jest.mock('expo-router', () => ({
     },
     useLocalSearchParams: () => mockUseLocalSearchParams(),
     useFocusEffect: (cb: () => void) => { capturedFocusEffect = cb; },
+    useRouter: () => ({ push: mockRouterPush }),
 }));
 
 jest.mock('@expo/vector-icons', () => ({
@@ -56,6 +58,7 @@ jest.mock('../../../service/DbService', () => ({
     getSettingsService: jest.fn(),
     saveSettingsService: jest.fn().mockResolvedValue(true),
     getAllDrillHistoryService: jest.fn().mockReturnValue([]),
+    getPracticeRemindersService: jest.fn().mockReturnValue([]),
 }));
 
 jest.mock('../../../service/FirebaseService', () => ({
@@ -374,4 +377,27 @@ describe('Practice', () => {
         });
     });
 
+    describe('overdue reminder banner', () => {
+        const overdueReminder = { Id: 1, Label: 'Chip', ScheduledFor: '2020-01-01T09:00:00.000Z', NotificationId: 'n1', Created_At: '2019-12-31T09:00:00.000Z' };
+
+        it('shouldShowOverdueBannerWithLinkToRemindersWhenReminderIsOverdue', () => {
+            const { getPracticeRemindersService } = require('../../../service/DbService');
+            getPracticeRemindersService.mockReturnValue([overdueReminder]);
+            mockRouterPush.mockClear();
+
+            const { getByText } = render(<Practice />);
+            expect(getByText('You have an overdue practice reminder')).toBeTruthy();
+
+            fireEvent.press(getByText('View reminders'));
+            expect(mockRouterPush).toHaveBeenCalledWith('/tools/reminders');
+
+            getPracticeRemindersService.mockReturnValue([]);
+        });
+
+        it('shouldNotShowOverdueBannerWhenNoReminderIsOverdue', () => {
+            const { queryByText } = render(<Practice />);
+
+            expect(queryByText('You have an overdue practice reminder')).toBeNull();
+        });
+    });
 });

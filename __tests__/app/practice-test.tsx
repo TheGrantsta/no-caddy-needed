@@ -37,6 +37,7 @@ jest.mock('../../service/DbService', () => ({
         practiceOnboardingSeen: true,
     }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
+    getPracticeRemindersService: jest.fn().mockReturnValue([]),
 }));
 
 // Explicitly cast as Jest mock functions
@@ -71,6 +72,7 @@ jest.mock('expo-router', () => ({
         return <View>{children}</View>;
     },
     useLocalSearchParams: () => mockUseLocalSearchParams(),
+    useRouter: () => ({ push: jest.fn() }),
     useFocusEffect: jest.fn((_callback) => {
         // In tests, don't call the callback to avoid infinite re-renders
     }),

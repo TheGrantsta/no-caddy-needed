@@ -30,7 +30,7 @@ export default function SettingsToggleRow({
         },
         button: {
             flex: 1,
-            paddingHorizontal: 24,
+            paddingHorizontal: 8,
             paddingVertical: 12,
             marginHorizontal: 0,
             borderRadius: 8,

@@ -200,23 +200,26 @@ describe('DeadlySinsTally component', () => {
             }));
         });
 
-        it('toggle indicator is unfilled when value is false', () => {
+        it('toggle indicator is off when value is false', () => {
             const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
 
-            const indicator = getByTestId('7deadly-sins-indicator-three-putts');
-            const style = StyleSheet.flatten(indicator.props.style);
-            expect(style.backgroundColor).toBe('transparent');
+            expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(false);
         });
 
-        it('toggle indicator is red with a cross when value is true', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+        it('toggle indicator is on with a red track when value is true', () => {
+            const { getByTestId, UNSAFE_getByProps } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
 
             fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
 
-            const indicator = getByTestId('7deadly-sins-indicator-three-putts');
-            const style = StyleSheet.flatten(indicator.props.style);
-            expect(style.backgroundColor).toBe('#fd0303'); // c.red
-            expect(indicator).toHaveTextContent('✗');
+            expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(true);
+            const switchElement = UNSAFE_getByProps({ testID: '7deadly-sins-indicator-three-putts' });
+            expect(switchElement.props.trackColor.true).toBe('#fd0303'); // c.red
+        });
+
+        it('shows the switch off when a sin has not happened', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+
+            expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBeDefined();
         });
     });
 
@@ -660,6 +663,56 @@ describe('DeadlySinsTally component', () => {
             // pressing should go from false → true
             fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
             expect(mockOnValuesChange).toHaveBeenCalledWith(expect.objectContaining({ threePutts: true }));
+        });
+    });
+
+    describe('auto-set sin captions', () => {
+        it('explainsDoubleBogeyAutoRule', () => {
+            const { getByText } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled holePar={4} userScore={6} />);
+
+            expect(getByText('Auto: 2 or more over par')).toBeTruthy();
+        });
+
+        it('explainsBogeysOnPar5AutoRule', () => {
+            const { getByText } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled holePar={5} userScore={6} />);
+
+            expect(getByText('Auto: 6 or more on a par 5')).toBeTruthy();
+        });
+    });
+
+    describe('tappable rows', () => {
+        it('shouldShowEachRowAsBorderedCardWithoutTint', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+
+            const style = StyleSheet.flatten(getByTestId('7deadly-sins-toggle-three-putts').props.style);
+            expect(style.borderWidth).toBeGreaterThanOrEqual(1);
+            expect(style.borderRadius).toBeGreaterThanOrEqual(8);
+            expect(style.backgroundColor).toBeUndefined();
+        });
+
+        it('shouldShowHintThatAnyRowCanBeTapped', () => {
+            const { getByText } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+
+            expect(getByText('Tap a row to mark it')).toBeTruthy();
+        });
+    });
+
+    describe('list readability', () => {
+        it('shouldAlignHintWithCardEdgeAndUseLargerDarkerText', () => {
+            const { getByText } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+            const style = StyleSheet.flatten(getByText('Tap a row to mark it').props.style);
+
+            expect(style.paddingHorizontal).toBe(20);
+            expect(style.fontSize).toBe(17);
+            expect(style.color).toBe('#2D5A3D'); // c.primary
+        });
+
+        it('shouldGiveEachCardMoreSpaceBelowIt', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+            const style = StyleSheet.flatten(getByTestId('7deadly-sins-toggle-three-putts').props.style);
+
+            expect(style.marginBottom).toBeGreaterThanOrEqual(12);
         });
     });
 });

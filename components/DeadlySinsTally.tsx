@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
+import { useThemeColours } from '@/context/ThemeContext';
 import { DeadlySinsValues } from '../service/DbService';
 import CtaButton from './CtaButton';
 
@@ -36,6 +37,7 @@ const sinFields: { slug: string; label: string; key: keyof DeadlySinsValues }[] 
 
 const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues }: Props) => {
     const styles = useStyles();
+    const colours = useThemeColours();
     const s = styles.deadlySinsTally;
     const [roundActive, setRoundActive] = useState(roundControlled === true);
     const [values, setValues] = useState<DeadlySinsValues>({
@@ -98,18 +100,20 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
             <View style={{ paddingHorizontal: 8, marginTop: 16, marginBottom: 16 }}>
                 <Text style={styles.holeScoreInput.playerName}>Deadly Sins</Text>
             </View>
+            <Text style={s.hint}>Tap a row to mark it</Text>
             <View style={s.container}>
                 {sinFields.map((field) => {
                     if (field.slug === 'bogeys-par5') {
                         if (holePar !== 5) return null;
                         if (isAutoBogeyPar5) {
                             return (
-                                <View key={field.slug} style={s.row}>
-                                    <Text style={s.label}>{field.label}</Text>
-                                    <View style={s.controls}>
-                                        <View testID="7deadly-sins-auto-bogeys-par5" style={[s.button, s.buttonActive]}>
-                                            <Text style={s.buttonText}>✗</Text>
-                                        </View>
+                                <View key={field.slug} testID="7deadly-sins-auto-row-bogeys-par5" style={s.row}>
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={s.label}>{field.label}</Text>
+                                        <Text style={s.autoCaption}>Auto: 6 or more on a par 5</Text>
+                                    </View>
+                                    <View style={s.controls} pointerEvents="none">
+                                        <Switch testID="7deadly-sins-auto-bogeys-par5" value disabled trackColor={{ false: colours.tertiary, true: colours.red }} />
                                     </View>
                                 </View>
                             );
@@ -118,12 +122,13 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                     if (field.slug === 'double-bogeys') {
                         if (!isAutoDoubleBogey) return null;
                         return (
-                            <View key={field.slug} style={s.row}>
-                                <Text style={s.label}>{field.label}</Text>
-                                <View style={s.controls}>
-                                    <View testID="7deadly-sins-auto-double-bogeys" style={[s.button, s.buttonActive]}>
-                                        <Text style={s.buttonText}>✗</Text>
-                                    </View>
+                            <View key={field.slug} testID="7deadly-sins-auto-row-double-bogeys" style={s.row}>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={s.label}>{field.label}</Text>
+                                    <Text style={s.autoCaption}>Auto: 2 or more over par</Text>
+                                </View>
+                                <View style={s.controls} pointerEvents="none">
+                                    <Switch testID="7deadly-sins-auto-double-bogeys" value disabled trackColor={{ false: colours.tertiary, true: colours.red }} />
                                 </View>
                             </View>
                         );
@@ -134,15 +139,16 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                             testID={`7deadly-sins-toggle-${field.slug}`}
                             onPress={() => handleToggle(field.key)}
                             activeOpacity={0.6}
-                            style={s.row}
+                            style={s.tappableRow}
                         >
                             <Text style={s.label}>{field.label}</Text>
                             <View style={s.controls}>
-                                <View
-                                    testID={`7deadly-sins-indicator-${field.slug}`}
-                                    style={[s.button, values[field.key] ? s.buttonActive : s.buttonInactive]}
-                                >
-                                    {values[field.key] ? <Text style={s.buttonText}>✗</Text> : null}
+                                <View style={s.controls} pointerEvents="none">
+                                    <Switch
+                                        testID={`7deadly-sins-indicator-${field.slug}`}
+                                        value={values[field.key]}
+                                        trackColor={{ false: colours.tertiary, true: colours.red }}
+                                    />
                                 </View>
                             </View>
                         </TouchableOpacity>

@@ -1630,10 +1630,13 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.background,
         },
         historyDateColumn: {
-            width: '65%',
+            width: 70,
+        },
+        historyCourseColumn: {
+            flex: 1,
         },
         historyTotalColumn: {
-            width: '20%',
+            width: 56,
             textAlign: 'center',
         },
         historyNarrowColumn: {

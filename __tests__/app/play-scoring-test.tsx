@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Play from '../../app/(tabs)/play';
 import * as Haptics from 'expo-haptics';
@@ -277,7 +278,7 @@ describe('Play screen', () => {
             expect(getByTestId('round-history-scroll')).toBeTruthy();
         });
 
-        it('renders date column at 55%, strokes column at 30%, and 7DS column at 15%', () => {
+        it('renders date column at a fixed 70pt and strokes column at a fixed 56pt', () => {
             mockGetAllRoundHistory.mockReturnValue([
                 { Id: 1, TotalScore: 3, StrokeTotal: 72, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
             ]);
@@ -287,8 +288,47 @@ describe('Play screen', () => {
             const dateHeader = getByTestId('round-history-header-date');
             const strokesHeader = getByTestId('round-history-header-strokes');
 
-            expect(dateHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '65%' })]));
-            expect(strokesHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: '20%' })]));
+            expect(dateHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: 70 })]));
+            expect(strokesHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: 56 })]));
+        });
+
+        it('centres the score header and score values within the strokes column', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 3, StrokeTotal: 28, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '29/10', CourseName: 'Test', HolesPlayed: 7 },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+            const headerStyle = StyleSheet.flatten(getByTestId('round-history-header-strokes').props.style);
+            const valueStyle = StyleSheet.flatten(getByTestId('round-history-strokes-1').props.style);
+
+            expect(headerStyle.textAlign).toBe('center');
+            expect(valueStyle.textAlign).toBe('center');
+            expect(valueStyle.flex).toBe(1);
+        });
+
+        it('shouldAlignRoundHistoryHeaderLabelsWithValuesByRemovingHeaderPadding', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 3, StrokeTotal: 28, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '29/10', CourseName: 'Test', HolesPlayed: 7 },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+            const headerIds = ['round-history-header-date', 'round-history-header-course', 'round-history-header-strokes'];
+
+            headerIds.forEach(id => {
+                expect(StyleSheet.flatten(getByTestId(id).props.style).padding ?? 0).toBe(0);
+            });
+        });
+
+        it('shouldGiveStartRoundButtonSpaceAboveAndBelow', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 3, StrokeTotal: 28, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '29/10', CourseName: 'Test', HolesPlayed: 18 },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+            const style = StyleSheet.flatten(getByTestId('start-round-button').props.style);
+
+            expect(style.marginTop).toBeGreaterThanOrEqual(20);
+            expect(style.marginBottom).toBeGreaterThanOrEqual(16);
         });
 
         it('renders round history rows as tappable', () => {
@@ -320,7 +360,8 @@ describe('Play screen', () => {
 
             const { getByText } = render(<Play />);
 
-            expect(getByText('15/06 St Andrews')).toBeTruthy();
+            expect(getByText('15/06')).toBeTruthy();
+            expect(getByText('St Andrews')).toBeTruthy();
         });
 
         it('does not show course name text when CourseName is null', () => {

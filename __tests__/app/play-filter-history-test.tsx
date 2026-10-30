@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, within } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import Play from '../../app/(tabs)/play';
 
 import {
@@ -212,6 +213,20 @@ describe('Play screen', () => {
             expect(getWidth(btn1)).toBeDefined();
             expect(getWidth(btn1)).toEqual(getWidth(btn10));
             expect(getWidth(btn1)).toEqual(getWidth(btnAll));
+        });
+
+        it('shouldGiveDateItsOwnFixedWidthColumnWithCourseNameInTheRemainingSpace', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 28, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '29/10', CourseName: 'Stats Flow Test Course', HolesPlayed: 7, StrokeTotal: 28 },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+            const row = within(getByTestId('round-history-row-1'));
+            const dateStyle = StyleSheet.flatten(row.getByText('29/10').props.style);
+            const courseStyle = StyleSheet.flatten(row.getByText('Stats Flow Test Course (7)').props.style);
+
+            expect(dateStyle.width).toBe(70);
+            expect(courseStyle.flex).toBe(1);
         });
 
         it('shows all rounds by default', () => {

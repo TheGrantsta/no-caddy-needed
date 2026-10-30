@@ -123,7 +123,7 @@ export default function RoundEntry({
                         label="Start round"
                         icon="play-arrow"
                         onPress={onShowPlayerSetup}
-                        style={styles.marginTop}
+                        style={{ marginTop: 20, marginBottom: 16 }}
                     />
                 )}
 
@@ -170,8 +170,9 @@ export default function RoundEntry({
                     <View style={{ padding: 5 }}>
                         <Text style={styles.subHeaderText}>Round history</Text>
                         <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colours.primary }]}>
-                            <Text testID="round-history-header-date" style={[styles.smallText, localStyles.historyDateColumn]}>Date Course</Text>
-                            <Text testID="round-history-header-strokes" style={[styles.smallText, localStyles.historyTotalColumn, { textAlign: 'left' }]}>Score</Text>
+                            <Text testID="round-history-header-date" style={[styles.smallTextNoPadding, localStyles.historyDateColumn]}>Date</Text>
+                            <Text testID="round-history-header-course" style={[styles.smallTextNoPadding, localStyles.historyCourseColumn]}>Course</Text>
+                            <Text testID="round-history-header-strokes" style={[styles.smallTextNoPadding, localStyles.historyTotalColumn]}>Score</Text>
                         </View>
                         <ScrollView testID="round-history-scroll" style={localStyles.roundHistoryScroll} nestedScrollEnabled>
                             {filteredRoundHistory.map((round) => (
@@ -181,12 +182,14 @@ export default function RoundEntry({
                                     onPress={() => router.push({ pathname: '/play/scorecard', params: { roundId: String(round.Id) } })}
                                 >
                                     <View style={[styles.row, { paddingVertical: 6, borderBottomWidth: 0.5, borderBottomColor: colours.primary }]}>
-                                        <Text style={[styles.smallTextNoPadding, localStyles.historyDateColumn]}>
-                                            {round.CourseName ? `${round.Created_At} ${round.CourseName}` : round.Created_At}
-                                            {round.HolesPlayed < 18 ? ` (${round.HolesPlayed})` : ''}
+                                        <Text testID={`round-history-date-${round.Id}`} style={[styles.smallTextNoPadding, localStyles.historyDateColumn]}>
+                                            {round.Created_At}
+                                        </Text>
+                                        <Text style={[styles.smallTextNoPadding, localStyles.historyCourseColumn]}>
+                                            {[round.CourseName, round.HolesPlayed < 18 ? `(${round.HolesPlayed})` : null].filter(Boolean).join(' ')}
                                         </Text>
                                         <View style={[styles.row, localStyles.historyTotalColumn]}>
-                                            <Text testID={`round-history-strokes-${round.Id}`} style={styles.smallTextNoPadding}>
+                                            <Text testID={`round-history-strokes-${round.Id}`} style={[styles.smallTextNoPadding, { flex: 1, textAlign: 'center' }]}>
                                                 {round.StrokeTotal !== null && round.StrokeTotal !== undefined ? String(round.StrokeTotal) : '-'}
                                             </Text>
                                         </View>

@@ -88,6 +88,24 @@ describe('Tabs layout — Practice overdue badge', () => {
         expect(activeTint).toBe('#2D5A3D'); // Primary green color
     });
 
+    it('shouldUseLoopIconForPracticeTab', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const practiceScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'practice');
+        const icon = practiceScreen[0].options.tabBarIcon({ color: '#4A9068', focused: false });
+        const { getByText } = render(icon);
+        expect(getByText(/Icon: loop/)).toBeTruthy();
+    });
+
+    it('shouldUseBarChartIconForPerformanceTab', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const performScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'perform');
+        const icon = performScreen[0].options.tabBarIcon({ color: '#4A9068', focused: false });
+        const { getByText } = render(icon);
+        expect(getByText(/Icon: bar-chart/)).toBeTruthy();
+    });
+
     it('shouldUseEnlargedIconSize', () => {
         render(<TabLayout />);
         const { Tabs } = require('expo-router');

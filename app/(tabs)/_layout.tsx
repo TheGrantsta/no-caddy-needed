@@ -65,7 +65,7 @@ export default function TabLayout() {
             tabBarButtonTestID: 'tab-practice',
             tabBarIcon: ({ color }) => (
               <View>
-                <MaterialIcons name='golf-course' color={color} size={32} />
+                <MaterialIcons name='loop' color={color} size={32} />
                 {hasOverdue && (
                   <View
                     testID="practice-overdue-badge"
@@ -90,7 +90,7 @@ export default function TabLayout() {
             title: 'Performance',
             tabBarButtonTestID: 'tab-perform',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='lightbulb' color={color} size={32} />
+              <MaterialIcons name='bar-chart' color={color} size={32} />
             )
           }}
         />

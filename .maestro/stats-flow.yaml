@@ -134,17 +134,6 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "start-button"
 
-# Navigate back to Distances screen
-- tapOn:
-    id: "play-sub-menu-distances"
-- extendedWaitUntil:
-    visible: "Carry distance, not total"
-    timeout: 5000
-
-# Navigate back to play screen
-- tapOn:
-    id: "play-sub-menu-score"
-
 # Hole 1 — Par 4
 - extendedWaitUntil:
     visible:
@@ -206,8 +195,6 @@ appId: com.grantsta.golf.nocaddyneeded
     visible:
       id: "next-hole-button"
     timeout: 10000
-- tapOn:
-    id: "next-hole-button"
 - tapOn:
     id: "next-hole-button"
 
@@ -279,8 +266,6 @@ appId: com.grantsta.golf.nocaddyneeded
     visible:
       id: "next-hole-button"
     timeout: 10000
-- tapOn:
-    id: "next-hole-button"
 - tapOn:
     id: "next-hole-button"
 
@@ -396,8 +381,6 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 10000
 - tapOn:
     id: "next-hole-button"
-- tapOn:
-    id: "next-hole-button"
 
 # Hole 5 — Par 4
 - extendedWaitUntil:
@@ -454,8 +437,6 @@ appId: com.grantsta.golf.nocaddyneeded
     visible:
       id: "next-hole-button"
     timeout: 10000
-- tapOn:
-    id: "next-hole-button"
 - tapOn:
     id: "next-hole-button"
 

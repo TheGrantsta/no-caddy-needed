@@ -27,6 +27,7 @@ export default function Practice() {
   const { section: requestedSection, t } = useLocalSearchParams<{ section?: string; t?: string }>();
   const [showOnboarding, setShowOnboarding] = useState(() => !getSettingsService().practiceOnboardingSeen);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [allDrillHistory, setAllDrillHistory] = useState<any[]>([]);
   const [overdueReminderCount, setOverdueReminderCount] = useState(0);
   const router = useRouter();
@@ -68,8 +69,10 @@ export default function Practice() {
       setDisplayedDrillHistory(items.slice(0, ITEMS_PER_BATCH));
       const now = new Date();
       setOverdueReminderCount(getPracticeRemindersService().filter(r => new Date(r.ScheduledFor) < now).length);
+      setLoadFailed(false);
     } catch (e) {
       console.error("Error fetching drill history:", e);
+      setLoadFailed(true);
     } finally {
       setLoading(false);
     }
@@ -161,6 +164,7 @@ export default function Practice() {
             fadeAnim={sectionFadeAnim}
             slideAnim={sectionSlideAnim}
             loading={loading}
+            loadFailed={loadFailed}
             allDrillHistory={allDrillHistory}
             displayedDrillHistory={displayedDrillHistory}
             isLoadingMore={isLoadingMore}

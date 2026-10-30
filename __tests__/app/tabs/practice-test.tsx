@@ -1,6 +1,6 @@
 import React, { act } from 'react';
 import { Animated, _FlatList, ScrollView } from 'react-native';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import Practice from '../../../app/(tabs)/practice';
 import {
     getSettingsService,
@@ -398,6 +398,21 @@ describe('Practice', () => {
             const { queryByText } = render(<Practice />);
 
             expect(queryByText('You have an overdue practice reminder')).toBeNull();
+        });
+    });
+
+    describe('history load failure', () => {
+        it('shouldShowRetryMessageWhenHistoryFailsToLoad', async () => {
+            mockUseLocalSearchParams.mockReturnValue({});
+            mockGetAllDrillHistoryService.mockImplementation(() => { throw new Error('db down'); });
+            const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+            const { getByText, getByTestId } = render(<Practice />);
+            fireEvent.press(getByTestId('practice-sub-menu-history'));
+
+            await waitFor(() => expect(getByText("Couldn't load your history. Pull down to try again.")).toBeTruthy());
+            consoleSpy.mockRestore();
+            mockGetAllDrillHistoryService.mockReturnValue([]);
         });
     });
 });

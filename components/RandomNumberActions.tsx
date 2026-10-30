@@ -9,6 +9,7 @@ interface Props {
     onGenerate: () => void;
     speechRecognitionAvailable: boolean;
     micActive: boolean;
+    micDenied?: boolean;
     onMicToggle: () => void;
 }
 
@@ -16,6 +17,7 @@ export default function RandomNumberActions({
     onGenerate,
     speechRecognitionAvailable,
     micActive,
+    micDenied = false,
     onMicToggle,
 }: Props) {
     const styles = useStyles();
@@ -46,6 +48,11 @@ export default function RandomNumberActions({
                         color={micActive ? colours.background : colours.text}
                     />
                 </TouchableOpacity>
+            )}
+            {speechRecognitionAvailable && micDenied && (
+                <Text testID="mic-denied-message" style={{ color: colours.errorText, textAlign: 'center', marginTop: 8 }}>
+                    Microphone access is off; turn it on in Settings
+                </Text>
             )}
         </View>
     );

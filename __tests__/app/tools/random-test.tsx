@@ -391,4 +391,16 @@ describe('Random number generator page', () => {
         });
     });
 
+    describe('microphone permission denied', () => {
+        it('shouldExplainMicrophoneIsOffWhenPermissionDenied', async () => {
+            mockRequestPermissions.mockResolvedValueOnce({ granted: false });
+            const { getByTestId, getByText } = render(<Random />);
+
+            await act(async () => {
+                fireEvent.press(getByTestId('mic-button'));
+            });
+
+            expect(getByText('Microphone access is off; turn it on in Settings')).toBeTruthy();
+        });
+    });
 });

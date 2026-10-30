@@ -53,6 +53,7 @@ export default function Random() {
     const [formState] = useForm({ range: '30-100', increment: '10' });
     const [randomNumber, setRandomNumber] = useState(0);
     const [micActive, , setMicActive] = useToggle(false);
+    const [micDenied, setMicDenied] = useState(false);
     const isStoppingRef = useRef(false);
 
     useSpeechRecognitionEvent('result', (event: SpeechRecognitionEvent) => {
@@ -77,6 +78,7 @@ export default function Random() {
         if (!micActive) {
             isStoppingRef.current = false;
             const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+            setMicDenied(!granted);
             if (granted) {
                 ExpoSpeechRecognitionModule.start({ lang: 'en-GB', continuous: true, interimResults: true });
                 setMicActive(true);
@@ -150,6 +152,7 @@ export default function Random() {
                             onGenerate={handleGenerate}
                             speechRecognitionAvailable={speechRecognitionAvailable}
                             micActive={micActive}
+                            micDenied={micDenied}
                             onMicToggle={handleMicToggle}
                         />
 

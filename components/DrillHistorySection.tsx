@@ -14,6 +14,7 @@ interface Props {
     fadeAnim: Animated.Value;
     slideAnim: Animated.Value;
     loading: boolean;
+    loadFailed?: boolean;
     allDrillHistory: DrillItem[];
     displayedDrillHistory: DrillItem[];
     isLoadingMore: boolean;
@@ -24,6 +25,7 @@ export default function DrillHistorySection({
     fadeAnim,
     slideAnim,
     loading,
+    loadFailed = false,
     allDrillHistory,
     displayedDrillHistory,
     isLoadingMore,
@@ -44,7 +46,7 @@ export default function DrillHistorySection({
                         <>
                             <View style={styles.divider} />
                             <Text style={styles.normalText}>
-                                No challenge history yet
+                                {loadFailed ? "Couldn't load your history. Pull down to try again." : 'No challenge history yet'}
                             </Text>
                         </>
                     )}

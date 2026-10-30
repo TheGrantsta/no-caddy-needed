@@ -6,6 +6,7 @@ import Play from '../../app/(tabs)/play';
 import {
     startRoundService,
     addMultiplayerHoleScoresService,
+    getHoleScoresService,
     getActiveRoundService,
     getAllRoundHistoryService,
     insertHoleDeadlySinsService,
@@ -151,6 +152,7 @@ jest.mock('react-native-gesture-handler', () => {
 
 const mockStartRound = startRoundService as jest.Mock;
 const mockAddMultiplayerHoleScores = addMultiplayerHoleScoresService as jest.Mock;
+const mockGetHoleScores = getHoleScoresService as jest.Mock;
 const mockGetActiveRound = getActiveRoundService as jest.Mock;
 const mockGetAllRoundHistory = getAllRoundHistoryService as jest.Mock;
 const mockInsertHoleDeadlySins = insertHoleDeadlySinsService as jest.Mock;
@@ -210,6 +212,43 @@ describe('Play screen', () => {
             });
             return utils;
         };
+
+        it('shouldUseCoursePar_WhenResumingHoleWithNoSavedScores', async () => {
+            const { getCourseHoleParsService } = require('../../service/DbService');
+            getCourseHoleParsService.mockReturnValue({ 2: 3 });
+            mockGetHoleScores.mockReturnValue(null);
+
+            const utils = await resumeAtHole(1);
+            await act(async () => {
+                fireEvent.press(utils.getByTestId('next-hole-button'));
+            });
+
+            expect(mockAddMultiplayerHoleScores).toHaveBeenCalledWith(
+                5,
+                2,
+                3,
+                [expect.objectContaining({ playerId: 1, score: 3 })]
+            );
+            getCourseHoleParsService.mockReturnValue({});
+        });
+
+        it('shouldSaveResumedHoleWithItsSavedScoreWhenNextPressedUntouched', async () => {
+            mockGetHoleScores.mockImplementation((_roundId: number, hole: number) =>
+                hole === 2 ? { holePar: 5, scores: { 1: 6 } } : null
+            );
+
+            const utils = await resumeAtHole(1);
+            await act(async () => {
+                fireEvent.press(utils.getByTestId('next-hole-button'));
+            });
+
+            expect(mockAddMultiplayerHoleScores).toHaveBeenCalledWith(
+                5,
+                2,
+                5,
+                [expect.objectContaining({ playerId: 1, score: 6 })]
+            );
+        });
 
         it('shows a strong skip-next icon on the Next hole button', async () => {
             const utils = render(<Play />);

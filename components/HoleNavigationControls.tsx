@@ -35,7 +35,7 @@ export default function HoleNavigationControls({
     return (
         <View>
             <View style={localStyles.navigationButtonsContainer}>
-                {holePhase === 'score' && currentHole > 1 && (
+                {currentHole > 1 && (
                     <TouchableOpacity
                         testID="previous-hole-button"
                         onPress={onPreviousHole}

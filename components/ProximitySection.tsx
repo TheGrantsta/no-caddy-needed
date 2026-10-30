@@ -1,6 +1,7 @@
 import React from 'react';
 import { Animated, Switch, Text, View } from 'react-native';
 import PuttingProximityChart from './PuttingProximityChart';
+import StatsEmptyState from './StatsEmptyState';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import { getPuttingProximityService } from '../service/DbService';
@@ -11,6 +12,7 @@ interface Props {
     proximityThreePuttOnly: boolean;
     onProximityFilterChange: (value: boolean) => void;
     filteredRoundIds?: Set<number>;
+    onStartRound?: () => void;
 }
 
 export default function ProximitySection({
@@ -19,6 +21,7 @@ export default function ProximitySection({
     proximityThreePuttOnly,
     onProximityFilterChange,
     filteredRoundIds,
+    onStartRound,
 }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
@@ -47,20 +50,20 @@ export default function ProximitySection({
                     <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, filteredRoundIds)} />
 
                     <Text style={[styles.normalText, styles.marginTop, { alignSelf: 'center' }]}>
-                        Where your missed first putts finish
+                        Where your missed first putts finish. "3-Putts Only" counts just the holes where you three-putted.
                     </Text>
                 </>
             ) : (
                 <>
                     <View style={styles.divider} />
 
-                    <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
-                        {filteredRoundIds && filteredRoundIds.size === 0
-                            ? 'Complete a round to see stats'
-                            : proximityThreePuttOnly
-                            ? 'No 3-putts in selected rounds'
-                            : 'No putting data for selected rounds'}
-                    </Text>
+                    {filteredRoundIds && filteredRoundIds.size === 0 ? (
+                        <StatsEmptyState onStartRound={onStartRound} />
+                    ) : (
+                        <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
+                            {proximityThreePuttOnly ? 'No 3-putts in selected rounds' : 'No putting data for selected rounds'}
+                        </Text>
+                    )}
                 </>
             )}
         </Animated.View>

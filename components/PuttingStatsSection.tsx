@@ -3,17 +3,20 @@ import { Animated, Text, View } from 'react-native';
 import { useStyles } from '../hooks/useStyles';
 import { getPuttingMakeRatesService, formatPuttCount } from '../service/DbService';
 import { formatPgaRate } from '../assets/pgaPuttingBenchmarks';
+import StatsEmptyState from './StatsEmptyState';
 
 interface Props {
     fadeAnim: Animated.Value;
     slideAnim: Animated.Value;
     filteredRoundIds?: Set<number>;
+    onStartRound?: () => void;
 }
 
 export default function PuttingStatsSection({
     fadeAnim,
     slideAnim,
     filteredRoundIds,
+    onStartRound,
 }: Props) {
     const styles = useStyles();
 
@@ -58,6 +61,10 @@ export default function PuttingStatsSection({
                         Your personal putting make rates
                     </Text>
 
+                    <Text style={[styles.smallText, { alignSelf: 'center', textAlign: 'center', paddingHorizontal: 16 }]}>
+                        Share of putts holed from each distance. Brackets show the PGA Tour average.
+                    </Text>
+
                     <Text style={[styles.smallestText, styles.marginBottom, { paddingHorizontal: 16, marginTop: 12 }]}>
                         * Estimated or extrapolated from PGA tour data
                     </Text>
@@ -66,9 +73,13 @@ export default function PuttingStatsSection({
                 <>
                     <View style={styles.divider} />
 
-                    <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
-                        {filteredRoundIds && filteredRoundIds.size === 0 ? 'Complete a round to see stats' : 'No putting data for selected rounds'}
-                    </Text>
+                    {filteredRoundIds && filteredRoundIds.size === 0 ? (
+                        <StatsEmptyState onStartRound={onStartRound} />
+                    ) : (
+                        <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
+                            No putting data for selected rounds
+                        </Text>
+                    )}
                 </>
             )}
         </Animated.View>

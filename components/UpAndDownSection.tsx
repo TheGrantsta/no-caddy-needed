@@ -28,6 +28,9 @@ export default function UpAndDownSection({
             <View style={{ alignItems: 'center', marginTop: 8 }}>
                 <Text testID="up-and-down-rate" style={[styles.normalText, { fontSize: 32, fontWeight: 'bold' }]}>{rate}</Text>
                 <Text testID="up-and-down-detail" style={[styles.normalText, { marginTop: 4 }]}>{`${upAndDowns} of ${attempts} missed greens`}</Text>
+            <Text style={[styles.smallText, { textAlign: 'center', marginTop: 8, paddingHorizontal: 16 }]}>
+                Holed in one putt after missing the green.
+            </Text>
             </View>
         </Animated.View>
     );

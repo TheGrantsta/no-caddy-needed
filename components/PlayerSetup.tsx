@@ -87,6 +87,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
                 placeholderTextColor={colours.tertiary}
                 value={courseName}
                 onChangeText={handleCourseNameChange}
+                returnKeyType="done"
             />
 
             {courseNameError && (
@@ -126,6 +127,7 @@ const PlayerSetup = ({ onStartRound, onCancel, recentCourseNames, recentPlayerNa
                 <View key={index} style={s.playerRow}>
                     <TextInput
                         testID={`player-name-input-${index}`}
+                        returnKeyType="done"
                         style={s.input}
                         placeholder="Player name"
                         placeholderTextColor={colours.tertiary}

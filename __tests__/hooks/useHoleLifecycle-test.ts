@@ -274,4 +274,21 @@ describe('useHoleLifecycle', () => {
             expect(result.current.deadlySinsValues.threePutts).toBe(false);
         });
     });
+
+    describe('resetForNewHole', () => {
+        it('shouldClearBogeysClubSelectionAndItsErrorSoItDoesNotCarryToAnotherHole', () => {
+            const { result } = renderHook(() => useHoleLifecycle());
+
+            act(() => {
+                result.current.setSelectedBogeysClub('9 iron');
+                result.current.setSinDetailsBogeysClubError(true);
+            });
+            act(() => {
+                result.current.resetForNewHole();
+            });
+
+            expect(result.current.selectedBogeysClub).toBeUndefined();
+            expect(result.current.sinDetailsBogeysClubError).toBe(false);
+        });
+    });
 });

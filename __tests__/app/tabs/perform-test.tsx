@@ -5,9 +5,10 @@ import Perform from '../../../app/(tabs)/perform';
 
 let capturedFocusEffect: (() => void) | null = null;
 
+const mockRouterPush = jest.fn();
 jest.mock('expo-router', () => ({
     useFocusEffect: (cb: () => void) => { capturedFocusEffect = cb; },
-    useRouter: () => ({ push: jest.fn() }),
+    useRouter: () => ({ push: mockRouterPush }),
 }));
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -351,6 +352,41 @@ describe('Perform', () => {
             expect(getByText('Putting')).toBeTruthy();
         });
 
+        it('shouldLabelRoundFilterAsLastRoundLastTenAndAll', () => {
+            const { getAllRoundHistoryService } = require('../../../service/DbService');
+            getAllRoundHistoryService.mockReturnValue([
+                { Id: 1, TotalScore: 72, IsCompleted: 1, IsScoreOnly: 0, StartTime: '', EndTime: '', Created_At: '29/10', CourseName: 'Test', HolesPlayed: 18, StrokeTotal: 72 },
+            ]);
+
+            const { getByText, getByTestId } = render(<Perform />);
+
+            expect(getByText('Last round')).toBeTruthy();
+            expect(getByText('Last 10')).toBeTruthy();
+            expect(getByText('All')).toBeTruthy();
+            expect(getByTestId('filter-button-1')).toBeTruthy();
+            getAllRoundHistoryService.mockReturnValue([]);
+        });
+
+        it('shouldStartRoundFromSharedEmptyStateOnSinsWhenNoRounds', () => {
+            const { getAllDeadlySinsRoundsService } = require('../../../service/DbService');
+            getAllDeadlySinsRoundsService.mockReturnValue([]);
+            mockRouterPush.mockClear();
+            const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-sins'));
+
+            fireEvent.press(getByText('Start a round'));
+
+            expect(mockRouterPush).toHaveBeenCalledWith('/play');
+        });
+
+        it('shouldExplainProximityChartAndThreePuttFilter', () => {
+            const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+
+            expect(getByText(/Where your missed first putts finish/)).toBeTruthy();
+            expect(getByText(/counts just the holes where you three-putted/)).toBeTruthy();
+        });
+
         describe('up and down placement', () => {
             const { getUpAndDownRateService } = require('../../../service/DbService');
 
@@ -468,7 +504,7 @@ describe('Perform', () => {
         it('showsProximitySectionWhenProximitySubMenuPressed', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
-            expect(getByText('Where your missed first putts finish')).toBeTruthy();
+            expect(getByText(/Where your missed first putts finish/)).toBeTruthy();
         });
 
         it('logsViewProximityAnalyticsEventWhenProximitySubMenuTabPressed', () => {

@@ -578,6 +578,12 @@ describe('Settings page', () => {
             expect(UNSAFE_getByType(ScrollView).props.overScrollMode).toBe('never');
         });
 
+        it('shouldLetTapsPassThroughToButtonsWhileKeyboardIsOpen', () => {
+            const { UNSAFE_getByType } = render(<Settings />);
+
+            expect(UNSAFE_getByType(ScrollView).props.keyboardShouldPersistTaps).toBe('handled');
+        });
+
         it('shouldNotHaveRefreshControlOnSettings', () => {
             const { UNSAFE_getByType } = render(<Settings />);
 

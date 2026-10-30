@@ -16,6 +16,30 @@ jest.mock('../../service/DbService', () => ({
 }));
 
 describe('PuttingStatsSection', () => {
+    it('shouldShowSharedEmptyStateWithStartRoundWhenNoRoundsSelected', () => {
+        const { getPuttingMakeRatesService } = require('../../service/DbService');
+        getPuttingMakeRatesService.mockReturnValueOnce([]);
+        const onStartRound = jest.fn();
+
+        const { getByText } = render(
+            <PuttingStatsSection fadeAnim={new Animated.Value(1)} slideAnim={new Animated.Value(0)} filteredRoundIds={new Set()} onStartRound={onStartRound} />
+        );
+
+        expect(getByText(/Rounds saved in score-only mode do not count/)).toBeTruthy();
+        expect(getByText('Start a round')).toBeTruthy();
+    });
+
+    it('shouldExplainWhatMakeRateMeansUnderTheTable', () => {
+        const fadeAnim = new Animated.Value(1);
+        const slideAnim = new Animated.Value(0);
+
+        const { getByText } = render(
+            <PuttingStatsSection fadeAnim={fadeAnim} slideAnim={slideAnim} />
+        );
+
+        expect(getByText(/Share of putts holed from each distance/)).toBeTruthy();
+    });
+
     it('renders with personal putting data', () => {
         const fadeAnim = new Animated.Value(1);
         const slideAnim = new Animated.Value(0);

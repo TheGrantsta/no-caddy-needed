@@ -1657,6 +1657,41 @@ describe('Play screen', () => {
         });
     });
 
+    describe('Keyboard handling', () => {
+        it('shouldLetTapsPassThroughToButtonsWhileKeyboardIsOpen', () => {
+            const { UNSAFE_getAllByType } = render(<Play />);
+            const { ScrollView } = require('react-native');
+            const scrolls = UNSAFE_getAllByType(ScrollView);
+
+            expect(scrolls.some((sv: any) => sv.props.keyboardShouldPersistTaps === 'handled')).toBe(true);
+        });
+    });
+
+    describe('Hole save failure', () => {
+        it('shows error toast when a hole score cannot be saved', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(false);
+
+            const { getByTestId } = render(<Play />);
+            fireEvent.press(getByTestId('start-round-button'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            await act(async () => {
+                fireEvent.press(getByTestId('start-button'));
+            });
+            await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            expect(mockToastShow).toHaveBeenCalledWith(
+                'Could not save hole',
+                expect.objectContaining({ type: 'danger' })
+            );
+        });
+    });
+
     describe('Analytics tracking', () => {
         it('logs start_round event when start round button pressed and round starts', async () => {
             mockStartRound.mockResolvedValue(1);

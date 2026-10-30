@@ -1,4 +1,7 @@
-import { getPracticeRemindersService, updatePracticeReminderNotificationIdService } from './DbService';
+import { getPracticeRemindersService, updatePracticeReminderNotificationIdService, getSettingsService } from './DbService';
+
+// The Notifications switch in Settings silences every reminder the app schedules
+const remindersAllowed = (): boolean => getSettingsService().notificationsEnabled;
 
 let Notifications: typeof import('expo-notifications') | null = null;
 
@@ -9,6 +12,7 @@ try {
 }
 
 export const scheduleRoundReminder = async (): Promise<string | null> => {
+    if (!remindersAllowed()) return null;
     if (!Notifications) return null;
     try {
         const id = await Notifications.scheduleNotificationAsync({
@@ -52,6 +56,7 @@ export const cancelAllRoundReminders = async (): Promise<void> => {
 };
 
 export const schedulePracticeReminder = async (label: string, date: Date): Promise<string | null> => {
+    if (!remindersAllowed()) return null;
     if (!Notifications) return null;
     try {
         const id = await Notifications.scheduleNotificationAsync({
@@ -66,6 +71,7 @@ export const schedulePracticeReminder = async (label: string, date: Date): Promi
 };
 
 export const scheduleDailyOverdueReminder = async (label: string): Promise<string | null> => {
+    if (!remindersAllowed()) return null;
     if (!Notifications) return null;
     try {
         const id = await Notifications.scheduleNotificationAsync({

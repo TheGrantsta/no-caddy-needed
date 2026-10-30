@@ -3,12 +3,14 @@ import { Animated, Text, View } from 'react-native';
 import DeadlySinsChart from './DeadlySinsChart';
 import { useStyles } from '../hooks/useStyles';
 import { getAllDeadlySinsRoundsService } from '../service/DbService';
+import StatsEmptyState from './StatsEmptyState';
 
 interface Props {
     fadeAnim: Animated.Value;
     slideAnim: Animated.Value;
     roundsFilter: 1 | 10 | 'all';
     filteredRoundIds: Set<number>;
+    onStartRound?: () => void;
 }
 
 export default function DeadlySinsSection({
@@ -16,6 +18,7 @@ export default function DeadlySinsSection({
     slideAnim,
     roundsFilter,
     filteredRoundIds,
+    onStartRound,
 }: Props) {
     const styles = useStyles();
 
@@ -32,9 +35,13 @@ export default function DeadlySinsSection({
                 <>
                     <View style={styles.divider} />
 
-                    <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
-                        {filteredDeadlySinsRounds.length === 0 ? 'Complete a round to see stats' : 'No deadly sins data for selected rounds'}
-                    </Text>
+                    {filteredDeadlySinsRounds.length === 0 ? (
+                        <StatsEmptyState onStartRound={onStartRound} />
+                    ) : (
+                        <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
+                            No deadly sins data for selected rounds
+                        </Text>
+                    )}
                 </>
             )}
         </Animated.View>

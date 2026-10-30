@@ -7,13 +7,16 @@ import {
     scheduleDailyOverdueReminder,
     upgradeOverdueRemindersService,
 } from '../../service/NotificationService';
-import { getPracticeRemindersService, updatePracticeReminderNotificationIdService } from '../../service/DbService';
+import { getPracticeRemindersService, updatePracticeReminderNotificationIdService, getSettingsService } from '../../service/DbService';
 import * as Notifications from 'expo-notifications';
 
 jest.mock('../../service/DbService', () => ({
     getPracticeRemindersService: jest.fn(),
     updatePracticeReminderNotificationIdService: jest.fn().mockResolvedValue(undefined),
+    getSettingsService: jest.fn(() => ({ notificationsEnabled: true })),
 }));
+
+const mockGetSettings = getSettingsService as jest.Mock;
 
 const mockGetPracticeReminders = getPracticeRemindersService as jest.Mock;
 const mockUpdateNotificationId = updatePracticeReminderNotificationIdService as jest.Mock;
@@ -235,6 +238,37 @@ describe('NotificationService', () => {
             await cancelPracticeReminder(null);
 
             expect(mockCancel).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('notifications switch', () => {
+        beforeEach(() => {
+            mockGetSettings.mockReturnValue({ notificationsEnabled: false });
+        });
+
+        afterEach(() => {
+            mockGetSettings.mockReturnValue({ notificationsEnabled: true });
+        });
+
+        it('shouldNotSchedulePracticeReminderWhenNotificationsOff', async () => {
+            const id = await schedulePracticeReminder('Chip 10 balls', new Date('2026-11-01T09:00:00Z'));
+
+            expect(id).toBeNull();
+            expect(mockSchedule).not.toHaveBeenCalled();
+        });
+
+        it('shouldNotScheduleRoundReminderWhenNotificationsOff', async () => {
+            const id = await scheduleRoundReminder();
+
+            expect(id).toBeNull();
+            expect(mockSchedule).not.toHaveBeenCalled();
+        });
+
+        it('shouldNotScheduleDailyOverdueReminderWhenNotificationsOff', async () => {
+            const id = await scheduleDailyOverdueReminder('Chip 10 balls');
+
+            expect(id).toBeNull();
+            expect(mockSchedule).not.toHaveBeenCalled();
         });
     });
 });

@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
@@ -50,6 +50,8 @@ export default function Perform() {
 
   // Pull-to-refresh reloads data but keeps the sub-menu the user is on
   const { refreshing, onRefresh } = useFakeRefresh(refreshHistoryData);
+  const router = useRouter();
+  const startRound = () => router.push('/play');
 
   useFocusEffect(refreshHistoryData);
   // Exclude score-only and incomplete rounds from performance stats
@@ -122,10 +124,10 @@ export default function Perform() {
                 key={String(f)}
                 testID={`filter-button-${f}`}
                 onPress={() => setRoundsFilter(f)}
-                style={[styles.playScreen.filterButton, roundsFilter === f && styles.playScreen.filterButtonSelected]}
+                style={[styles.playScreen.filterButton, { width: 92 }, roundsFilter === f && styles.playScreen.filterButtonSelected]}
               >
                 <Text style={[styles.playScreen.filterButtonText, roundsFilter === f && styles.playScreen.filterButtonTextSelected]}>
-                  {f === 'all' ? 'All' : String(f)}
+                  {f === 'all' ? 'All' : f === 1 ? 'Last round' : `Last ${f}`}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -138,6 +140,7 @@ export default function Perform() {
             slideAnim={sectionSlideAnim}
             roundsFilter={roundsFilter}
             filteredRoundIds={filteredRoundIds}
+            onStartRound={startRound}
           />
         )}
 
@@ -146,6 +149,7 @@ export default function Perform() {
             fadeAnim={sectionFadeAnim}
             slideAnim={sectionSlideAnim}
             filteredRoundIds={roundIdsFilter}
+            onStartRound={startRound}
           />
         )}
 
@@ -164,6 +168,7 @@ export default function Perform() {
             proximityThreePuttOnly={proximityThreePuttOnly}
             onProximityFilterChange={setProximityThreePuttOnly}
             filteredRoundIds={roundIdsFilter}
+            onStartRound={startRound}
           />
         )}
       </ScrollView>

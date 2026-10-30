@@ -274,7 +274,9 @@ export default function Play() {
         const notes = loadCourseNotesService(courseName);
         setCourseNotes(notes);
         setCurrentNoteText(notes[resumeHole] ?? '');
-        const holeData = loadHoleForScore(resumeHole);
+        const holePars = getCourseHoleParsService(courseName);
+        setCourseHolePars(holePars);
+        const holeData = loadHoleForScore(resumeHole, incompleteRound.Id, holePars);
         setCurrentHoleData(holeData);
         setIncompleteRound(null);
     };
@@ -356,11 +358,11 @@ export default function Play() {
         };
     };
 
-    const loadHoleForScore = (holeNumber: number) => {
-        if (!activeRoundId) return buildDefaultHoleData();
-        const saved = getHoleScoresService(activeRoundId, holeNumber);
+    const loadHoleForScore = (holeNumber: number, roundId: number | null = activeRoundId, holePars: Record<number, number> = courseHolePars) => {
+        if (!roundId) return buildDefaultHoleData();
+        const saved = getHoleScoresService(roundId, holeNumber);
         if (!saved) {
-            const par = courseHolePars[holeNumber] ?? 4;
+            const par = holePars[holeNumber] ?? 4;
             return {
                 holeNumber,
                 holePar: par,
@@ -458,13 +460,7 @@ export default function Play() {
         setCurrentHole(prevHole);
         const holeData = loadHoleForScore(prevHole);
         setCurrentHoleData(holeData);
-        setHolePhase('score');
-        setSelectedOffTeeClub(undefined);
-        setSinDetailsClubError(false);
-        setSelectedPenaltyType(undefined);
-        setSinDetailsPenaltyError(false);
-        setSelectedDoubleChipReason(undefined);
-        setSinDetailsDoubleChipReasonError(false);
+        lifecycle.resetForNewHole();
     };
 
     const handleNextHole = async () => {
@@ -495,6 +491,8 @@ export default function Play() {
                 }
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 scrollRef.current?.scrollTo({ y: 0, animated: true });
+            } else {
+                showError('Could not save hole');
             }
         } else if (holePhase === 'stats') {
             await insertHoleDeadlySinsService(activeRoundId, currentHole, deadlySinsValues);
@@ -694,6 +692,7 @@ export default function Play() {
 
             <ScrollView
                 ref={scrollRef}
+                keyboardShouldPersistTaps="handled"
                 style={styles.scrollContainer}
                 contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}
                 refreshControl={

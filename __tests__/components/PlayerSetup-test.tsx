@@ -386,4 +386,19 @@ describe('PlayerSetup', () => {
             expect(mockOnCancel).toHaveBeenCalled();
         });
     });
+
+    describe('keyboard return key', () => {
+        it('shouldShowDoneOnCourseNameKeyboard', () => {
+            const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            expect(getByTestId('course-name-input').props.returnKeyType).toBe('done');
+        });
+
+        it('shouldShowDoneOnPlayerNameKeyboard', () => {
+            const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+            fireEvent.press(getByTestId('add-player-button'));
+
+            expect(getByTestId('player-name-input-0').props.returnKeyType).toBe('done');
+        });
+    });
 });

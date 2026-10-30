@@ -160,6 +160,7 @@ export default function Settings() {
         contentContainerStyle={[styles.scrollContentContainer, landscapePadding, { flexGrow: 1 }]}
         bounces={false}
         overScrollMode="never"
+        keyboardShouldPersistTaps="handled"
       >
         <SettingsHeader onInfoPress={handleShowOnboarding} />
         <SettingsTabBar group={group} onGroupChange={setGroup} />

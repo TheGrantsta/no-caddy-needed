@@ -47,6 +47,14 @@ describe('UpAndDownSection', () => {
         expect(getByTestId('up-and-down-detail').props.children).toBe('1 of 3 missed greens');
     });
 
+    it('shouldExplainUpAndDownAsOnePuttAfterMissingTheGreen', () => {
+        mockGetUpAndDownRate.mockReturnValue({ rate: '75%', upAndDowns: 3, attempts: 4 });
+
+        const { getByText } = renderSection();
+
+        expect(getByText(/Holed in one putt after missing the green/)).toBeTruthy();
+    });
+
     it('shouldShowZeroPercentWhenMissedGreensNeverHoledOut', () => {
         mockGetUpAndDownRate.mockReturnValue({ rate: '0%', upAndDowns: 0, attempts: 2 });
 

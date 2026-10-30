@@ -161,4 +161,18 @@ describe('WedgeChartGrid', () => {
         expect(allText).toContain('58°');
         expect(allText).toContain('Full');
     });
+
+    describe('unit label', () => {
+        it('shouldShowYardsUnitLabelInCornerCellByDefault', () => {
+            const { getByTestId } = render(<WedgeChartGrid data={mockData} suggestedClubs={[]} />);
+
+            expect(getByTestId('wedge-grid-unit').props.children).toBe('yd');
+        });
+
+        it('shouldShowMetresUnitLabelWhenMetresSelected', () => {
+            const { getByTestId } = render(<WedgeChartGrid data={mockData} suggestedClubs={[]} unit="metres" />);
+
+            expect(getByTestId('wedge-grid-unit').props.children).toBe('m');
+        });
+    });
 });

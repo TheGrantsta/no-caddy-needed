@@ -31,6 +31,7 @@ jest.mock('../../../hooks/useAppToast', () => ({
 
 jest.mock('../../../service/DbService', () => ({
     insertDrillResultService: jest.fn(() => Promise.resolve(true)),
+    getSettingsService: jest.fn(() => ({ units: 'yards' })),
 }));
 
 describe('UpAndDownChallenge screen', () => {
@@ -111,5 +112,29 @@ describe('UpAndDownChallenge screen', () => {
         expect(getByText('PGA Pro')).toBeTruthy();
         expect(getByText('D1 College')).toBeTruthy();
         expect(getByText('Scratch')).toBeTruthy();
+    });
+});
+
+describe('UpAndDownChallenge distance units', () => {
+    const { getSettingsService } = require('../../../service/DbService');
+
+    afterEach(() => {
+        getSettingsService.mockImplementation(() => ({ units: 'yards' }));
+    });
+
+    it('shouldShowDistanceInYardsByDefault', () => {
+        const { getByText, queryByText } = render(<UpAndDownChallenge />);
+
+        expect(getByText(/^\d+ yd$/)).toBeTruthy();
+        expect(queryByText(/ m$/)).toBeNull();
+    });
+
+    it('shouldShowDistanceInMetresWhenMetresSelectedInSettings', () => {
+        getSettingsService.mockImplementation(() => ({ units: 'metres' }));
+
+        const { getByText, queryByText } = render(<UpAndDownChallenge />);
+
+        expect(getByText(/^\d+ m$/)).toBeTruthy();
+        expect(queryByText(/ yd$/)).toBeNull();
     });
 });

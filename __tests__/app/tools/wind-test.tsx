@@ -33,6 +33,12 @@ jest.mock('expo-router', () => ({
 const mockRefreshWind = jest.fn().mockResolvedValue(undefined);
 let mockWindValue: { directionFrom: number; speedMph: number } | null = { directionFrom: 100, speedMph: 12 };
 let mockLocationIssue: 'servicesDisabled' | 'permissionDenied' | null = null;
+jest.mock('../../../service/DbService', () => ({
+    getSettingsService: jest.fn(() => ({ units: 'yards', voice: 'female', soundsEnabled: false })),
+    getWedgeChartService: jest.fn(() => ({ distanceNames: [], clubs: [] })),
+    getClubDistancesService: jest.fn(() => []),
+}));
+
 jest.mock('../../../hooks/useWind', () => ({
     useWind: () => ({ wind: mockWindValue, heading: 0, refreshWind: mockRefreshWind, locationIssue: mockLocationIssue }),
 }));

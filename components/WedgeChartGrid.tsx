@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { WedgeChartData } from '@/service/DbService';
-import { yardsToDisplayUnit } from '@/service/UnitsService';
+import { yardsToDisplayUnit, distanceUnitLabel } from '@/service/UnitsService';
 
 type Props = {
     data: WedgeChartData;
@@ -24,7 +24,9 @@ const WedgeChartGrid = ({ data, suggestedClubs, unit = 'yards' }: Props) => {
         <View style={[styles.wedgeChartGrid.container, { alignItems: 'flex-start' }]}>
             {/* Header row with distance names */}
             <View style={styles.wedgeChartGrid.headerRow}>
-                <View style={styles.wedgeChartGrid.labelCell} />
+                <View style={styles.wedgeChartGrid.labelCell}>
+                    <Text testID="wedge-grid-unit" style={styles.wedgeChartGrid.clubHeaderText}>{distanceUnitLabel(unit)}</Text>
+                </View>
                 {data.distanceNames.map(distanceName => (
                     <View key={`header-${distanceName}`} style={styles.wedgeChartGrid.clubHeaderCell}>
                         <Text style={styles.wedgeChartGrid.clubHeaderText}>

@@ -49,7 +49,7 @@ export function useWindVoice(playsLongerPercent: number): {
 	const [isListening, setIsListening] = useState(false);
 	const [adjustedYards, setAdjustedYards] = useState<number | null>(null);
 	const [adjustedDisplayValue, setAdjustedDisplayValue] = useState<number | null>(null);
-	const [distanceUnit, setDistanceUnit] = useState<'yards' | 'metres'>('yards');
+	const [distanceUnit, setDistanceUnit] = useState<'yards' | 'metres'>(() => getSettingsService().units);
 	const isStoppingRef = useRef(false);
 
 	useSpeechRecognitionEvent('result', (event) => {

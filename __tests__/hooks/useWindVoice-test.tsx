@@ -54,6 +54,14 @@ describe('useWindVoice', () => {
 			expect(result.current.isListening).toBe(false);
 		});
 
+		it('shouldUseDistanceUnitFromSettingsBeforeAnyVoiceInput', () => {
+			mockGetSettings.mockReturnValue({ ...defaultSettings, units: 'metres' });
+
+			const { result } = renderHook(() => useWindVoice(0));
+
+			expect(result.current.distanceUnit).toBe('metres');
+		});
+
 		it('should return adjustedYards as null initially', () => {
 			const { result } = renderHook(() => useWindVoice(0));
 			expect(result.current.adjustedYards).toBeNull();

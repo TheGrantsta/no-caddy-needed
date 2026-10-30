@@ -6,6 +6,9 @@ export const yardsToMetres = (yards: number): number => yards * METRES_PER_YARD;
 
 export const metresToYards = (metres: number): number => metres / METRES_PER_YARD;
 
+export const distanceUnitLabel = (unit: DistanceUnit): string =>
+	unit === 'metres' ? 'm' : 'yd';
+
 export const yardsToDisplayUnit = (yards: number, unit: DistanceUnit): number =>
 	unit === 'metres' ? Math.round(yardsToMetres(yards)) : Math.round(yards);
 

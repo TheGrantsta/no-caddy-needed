@@ -1,4 +1,4 @@
-import { yardsToMetres, metresToYards, yardsToDisplayUnit, displayUnitToYards, extractDistanceAndUnit, _DistanceUnit, METRES_PER_YARD } from '../../service/UnitsService';
+import { yardsToMetres, metresToYards, yardsToDisplayUnit, displayUnitToYards, extractDistanceAndUnit, distanceUnitLabel, _DistanceUnit, METRES_PER_YARD } from '../../service/UnitsService';
 
 describe('UnitsService', () => {
 	describe('yardsToMetres', () => {
@@ -142,6 +142,16 @@ describe('UnitsService', () => {
 		it('extracts the last number-unit pair if multiple exist', () => {
 			const result = extractDistanceAndUnit('between 50 and 100 yards');
 			expect(result).toEqual({ value: 100, unit: 'yards' });
+		});
+	});
+
+	describe('distanceUnitLabel', () => {
+		it('returns yd for yards', () => {
+			expect(distanceUnitLabel('yards')).toBe('yd');
+		});
+
+		it('returns m for metres', () => {
+			expect(distanceUnitLabel('metres')).toBe('m');
 		});
 	});
 });

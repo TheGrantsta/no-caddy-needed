@@ -45,7 +45,16 @@ describe('ClubDistanceList component', () => {
         );
 
         expect(getByText('Club')).toBeTruthy();
-        expect(getByText('Distance')).toBeTruthy();
+        expect(getByText('Distance (yd)')).toBeTruthy();
+    });
+
+    it('shouldShowMetresInDistanceHeadingWhenMetresSelected', () => {
+        const { getByText, queryByText } = render(
+            <ClubDistanceList distances={mockDistances} units="metres" />
+        );
+
+        expect(getByText('Distance (m)')).toBeTruthy();
+        expect(queryByText('Distance (yd)')).toBeNull();
     });
 
     it('shows Save button', () => {

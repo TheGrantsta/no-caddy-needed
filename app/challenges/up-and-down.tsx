@@ -6,7 +6,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useUpAndDownSimulation } from '@/hooks/useUpAndDownSimulation';
-import { insertDrillResultService } from '@/service/DbService';
+import { insertDrillResultService, getSettingsService } from '@/service/DbService';
+import { yardsToDisplayUnit, distanceUnitLabel } from '@/service/UnitsService';
 import { useAppToast } from '@/hooks/useAppToast';
 import ChallengeNumberPicker from '@/components/ChallengeNumberPicker';
 import ChallengeNavButtons from '@/components/ChallengeNavButtons';
@@ -31,6 +32,7 @@ export default function UpAndDownChallenge() {
     const router = useRouter();
     const navigation = useNavigation();
     const sim = useUpAndDownSimulation();
+    const { units } = getSettingsService();
     const { showResult } = useAppToast();
     const hasSaved = useRef(false);
     const [showQuitConfirm, setShowQuitConfirm] = useState(false);
@@ -95,7 +97,7 @@ export default function UpAndDownChallenge() {
                             <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'baseline', marginBottom: 24, gap: 8 }}>
                                     <Text style={styles.subHeaderText}>Distance</Text>
-                                    <Text style={styles.subHeaderText}>{sim.currentDistance} yd</Text>
+                                    <Text style={styles.subHeaderText}>{`${yardsToDisplayUnit(sim.currentDistance, units)} ${distanceUnitLabel(units)}`}</Text>
                                 </View>
 
                                 <ChallengeNumberPicker

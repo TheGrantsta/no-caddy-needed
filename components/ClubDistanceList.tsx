@@ -3,7 +3,7 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
-import { yardsToDisplayUnit, displayUnitToYards } from '../service/UnitsService';
+import { yardsToDisplayUnit, displayUnitToYards, distanceUnitLabel } from '../service/UnitsService';
 import CtaButton from './CtaButton';
 
 type ClubDistance = {
@@ -66,7 +66,7 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
                     <Text style={s.headerCell}>Club</Text>
                 </View>
                 <View style={[s.headerCell, s.distanceCell]}>
-                    <Text style={s.headerCell}>Distance</Text>
+                    <Text style={s.headerCell}>{`Distance (${distanceUnitLabel(units)})`}</Text>
                 </View>
             </View>
             {rows.map((row, index) => (

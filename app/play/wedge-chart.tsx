@@ -11,12 +11,7 @@ import { useStyles } from '../../hooks/useStyles';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
 import { useToggle } from '../../hooks/useToggle';
-
-const ONBOARDING_STEPS = [
-    { text: 'Your wedge chart helps you know exactly how far you hit each wedge with different swing lengths.' },
-    { text: 'Add clubs (like PW, GW, SW, LW) and distance types (like Half, 3/4, Full) to build your chart.' },
-    { text: 'Enter your carry distances for each combination to create a reference you can use on the course.' },
-];
+import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 export default function WedgeChartScreen() {
     const styles = useStyles();
@@ -79,7 +74,7 @@ export default function WedgeChartScreen() {
                 visible={showOnboarding}
                 onDismiss={handleDismissOnboarding}
                 title="Wedge Chart"
-                steps={ONBOARDING_STEPS}
+                steps={ONBOARDING_STEPS.wedgeChart}
             />
         </GestureHandlerRootView>
     );

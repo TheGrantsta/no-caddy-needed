@@ -163,7 +163,7 @@ describe('Wedge Chart screen', () => {
             expect(getByTestId('onboarding-overlay')).toBeTruthy();
 
             await act(async () => {
-                fireEvent.press(getByTestId('skip-button'));
+                fireEvent.press(getByTestId('done-button'));
             });
 
             expect(queryByTestId('onboarding-overlay')).toBeNull();
@@ -174,7 +174,7 @@ describe('Wedge Chart screen', () => {
             const { getByTestId } = render(<WedgeChartScreen />);
 
             await act(async () => {
-                fireEvent.press(getByTestId('skip-button'));
+                fireEvent.press(getByTestId('done-button'));
             });
 
             expect(mockSaveSettingsService).toHaveBeenCalledWith(

@@ -509,8 +509,6 @@ describe('Settings page', () => {
 
             const { getByTestId, queryByTestId } = render(<Settings />);
 
-            fireEvent.press(getByTestId('next-button'));
-            fireEvent.press(getByTestId('next-button'));
             fireEvent.press(getByTestId('done-button'));
 
             expect(queryByTestId('onboarding-overlay')).toBeNull();

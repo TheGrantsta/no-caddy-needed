@@ -11,12 +11,7 @@ import HomeNavigation from '@/components/HomeNavigation';
 import HomeGolfSimplified from '@/components/HomeGolfSimplified';
 import OnboardingOverlay from '@/components/OnboardingOverlay';
 import AcknowledgeOverlay from '@/components/AcknowledgeOverlay';
-
-const ONBOARDING_STEPS = [
-  { text: 'Welcome to No Caddy Needed — your personal golf companion for smarter play, practice and performance.' },
-  { text: 'Use the Play, Practice and Performance sections to track rounds, sharpen your short game and review your stats.' },
-  { text: 'Tap the info icon at any time to see this guide again.' },
-];
+import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 // What's new for the current version — shown once per version to existing users.
 const WHATS_NEW = [
@@ -75,7 +70,7 @@ export default function HomeScreen() {
         visible={showOnboarding}
         onDismiss={handleDismissOnboarding}
         title="No Caddy Needed"
-        steps={ONBOARDING_STEPS}
+        steps={ONBOARDING_STEPS.home}
       />
 
       <AcknowledgeOverlay

@@ -136,7 +136,7 @@ describe('HomeScreen', () => {
         expect(getByTestId('onboarding-overlay')).toBeTruthy();
 
         await act(async () => {
-            fireEvent.press(getByTestId('skip-button'));
+            fireEvent.press(getByTestId('done-button'));
         });
 
         expect(queryByTestId('onboarding-overlay')).toBeNull();
@@ -146,7 +146,7 @@ describe('HomeScreen', () => {
         const { getByTestId } = render(<HomeScreen />);
 
         await act(async () => {
-            fireEvent.press(getByTestId('skip-button'));
+            fireEvent.press(getByTestId('done-button'));
         });
 
         expect(mockSaveSettingsService).toHaveBeenCalledWith(

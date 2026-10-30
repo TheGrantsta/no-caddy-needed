@@ -114,7 +114,7 @@ describe('WedgeChartScreen', () => {
         it('saves wedgeChartOnboardingSeen when overlay is dismissed', async () => {
             const { getByTestId } = render(<WedgeChartScreen />);
 
-            fireEvent.press(getByTestId('skip-button'));
+            fireEvent.press(getByTestId('done-button'));
 
             await waitFor(() => {
                 expect(mockSaveSettingsService).toHaveBeenCalledWith({
@@ -128,7 +128,7 @@ describe('WedgeChartScreen', () => {
         it('hides overlay after dismissal', async () => {
             const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
 
-            fireEvent.press(getByTestId('skip-button'));
+            fireEvent.press(getByTestId('done-button'));
 
             await waitFor(() => {
                 expect(queryByTestId('onboarding-overlay')).toBeNull();

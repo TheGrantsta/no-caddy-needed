@@ -15,12 +15,7 @@ import SettingsTabBar from '../components/SettingsTabBar';
 import SystemSettings from '../components/SystemSettings';
 import GolfSettings from '../components/GolfSettings';
 import SettingsFooter from '../components/SettingsFooter';
-
-const ONBOARDING_STEPS = [
-  { text: 'Settings let you tailor No Caddy Needed to how you like to play.' },
-  { text: 'Turn notifications and sounds on or off, and choose the voice for the random number generator.' },
-  { text: 'Set how often you are reminded to practise, edit your pre-shot routine, and rate the app.' },
-];
+import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 export default function Settings() {
   const styles = useStyles();
@@ -209,7 +204,7 @@ export default function Settings() {
         visible={showOnboarding}
         onDismiss={handleDismissOnboarding}
         title="Settings"
-        steps={ONBOARDING_STEPS}
+        steps={ONBOARDING_STEPS.settings}
       />
     </GestureHandlerRootView >
   );

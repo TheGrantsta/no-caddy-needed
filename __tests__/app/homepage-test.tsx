@@ -167,8 +167,6 @@ describe('renders homepage', () => {
 
         expect(getByTestId('onboarding-overlay')).toBeTruthy();
 
-        fireEvent.press(getByTestId('next-button'));
-        fireEvent.press(getByTestId('next-button'));
         fireEvent.press(getByTestId('done-button'));
 
         expect(queryByTestId('onboarding-overlay')).toBeNull();

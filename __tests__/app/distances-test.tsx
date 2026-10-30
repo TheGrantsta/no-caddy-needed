@@ -109,7 +109,7 @@ describe('DistancesScreen', () => {
         it('saves distancesOnboardingSeen when overlay is dismissed', async () => {
             const { getByTestId } = render(<DistancesScreen />);
 
-            fireEvent.press(getByTestId('skip-button'));
+            fireEvent.press(getByTestId('done-button'));
 
             await waitFor(() => {
                 expect(mockSaveSettingsService).toHaveBeenCalledWith({
@@ -124,7 +124,7 @@ describe('DistancesScreen', () => {
         it('hides overlay after dismissal', async () => {
             const { getByTestId, queryByTestId } = render(<DistancesScreen />);
 
-            fireEvent.press(getByTestId('skip-button'));
+            fireEvent.press(getByTestId('done-button'));
 
             await waitFor(() => {
                 expect(queryByTestId('onboarding-overlay')).toBeNull();

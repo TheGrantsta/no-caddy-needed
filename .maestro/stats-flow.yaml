@@ -9,17 +9,13 @@ appId: com.grantsta.golf.nocaddyneeded
     clearState: true
 
 # ======== HOME ONBOARDING ========
-# Wait for home onboarding (first-launch)
+# Wait for home onboarding (first-launch, single step)
 - extendedWaitUntil:
     visible:
-      id: "next-button"
+      id: "done-button"
     timeout: 90000
 
-# Complete home onboarding (2 steps, then done)
-- tapOn:
-    id: "next-button"
-- tapOn:
-    id: "next-button"
+# Complete home onboarding (single step)
 - tapOn:
     id: "done-button"
 
@@ -33,9 +29,7 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "home-play-link"
 
-# Complete play onboarding (2 steps, then done)
-- tapOn:
-    id: "next-button"
+# Complete play onboarding (two steps)
 - tapOn:
     id: "next-button"
 - tapOn:
@@ -52,15 +46,11 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "play-sub-menu-distances"
 
-# Distances opens with onboarding (empty list, first visit)
+# Distances opens with onboarding (empty list, first visit, single step)
 - extendedWaitUntil:
     visible:
-      id: "next-button"
+      id: "done-button"
     timeout: 5000
-- tapOn:
-    id: "next-button"
-- tapOn:
-    id: "next-button"
 - tapOn:
     id: "done-button"
 
@@ -448,20 +438,13 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "home-perform-link"
 
-# Dismiss the Perform onboarding (same sequence as screenshots.yaml)
+# Dismiss the Perform onboarding (single step, same as screenshots.yaml)
 - extendedWaitUntil:
     visible:
-      id: "next-button"
+      id: "done-button"
     timeout: 15000
 - tapOn:
-    text: ".*Next.*"
-    index: 0
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-- tapOn:
-    text: ".*Done.*"
-    index: 0
+    id: "done-button"
 
 - tapOn: "Proximity"
 - extendedWaitUntil:

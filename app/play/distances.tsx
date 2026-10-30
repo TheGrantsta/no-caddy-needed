@@ -11,12 +11,7 @@ import { useStyles } from '../../hooks/useStyles';
 import { useOrientation } from '../../hooks/useOrientation';
 import { useAppToast } from '../../hooks/useAppToast';
 import { useToggle } from '../../hooks/useToggle';
-
-const ONBOARDING_STEPS = [
-    { text: 'Track your club distances to make better decisions on the course.' },
-    { text: 'Add each club in your bag and enter your typical carry distance.' },
-    { text: 'Use this as a quick reference when selecting clubs during your round.' },
-];
+import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 export default function DistancesScreen() {
     const styles = useStyles();
@@ -78,7 +73,7 @@ export default function DistancesScreen() {
                 visible={showOnboarding}
                 onDismiss={handleDismissOnboarding}
                 title="Distances"
-                steps={ONBOARDING_STEPS}
+                steps={ONBOARDING_STEPS.distances}
             />
         </GestureHandlerRootView>
     );

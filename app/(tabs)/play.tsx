@@ -69,12 +69,7 @@ import HoleNavigationControls from '../../components/HoleNavigationControls';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import fontSizes from '../../assets/font-sizes';
 import DistancesScreen from '../play/distances';
-
-const ONBOARDING_STEPS = [
-    { text: 'Start a round to track your scores hole by hole and see your running total.' },
-    { text: 'Add playing partners, set the par for each hole, and record everyone\'s scores.' },
-    { text: 'After your round, review your scorecard and track your 7 Deadly Sins stats over time.' },
-];
+import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 const BAD_HOLE_MESSAGES = [
     'A triple bogey isn\'t the end of the round — plenty of golf left.',
@@ -979,7 +974,7 @@ export default function Play() {
                 visible={showOnboarding}
                 onDismiss={handleDismissOnboarding}
                 title="Play"
-                steps={ONBOARDING_STEPS}
+                steps={ONBOARDING_STEPS.play}
             />
 
             <AcknowledgeOverlay

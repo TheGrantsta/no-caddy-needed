@@ -121,8 +121,6 @@ describe('Perform page ', () => {
 
             const { getByTestId, queryByTestId } = render(<View />);
 
-            fireEvent.press(getByTestId('next-button'));
-            fireEvent.press(getByTestId('next-button'));
             fireEvent.press(getByTestId('done-button'));
 
             expect(queryByTestId('onboarding-overlay')).toBeNull();

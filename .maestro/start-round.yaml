@@ -6,17 +6,13 @@ appId: com.grantsta.golf.nocaddyneeded
 - launchApp:
     clearState: true
 
-# Wait for home onboarding (first-launch)
+# Wait for home onboarding (first-launch, single step)
 - extendedWaitUntil:
     visible:
-      id: "next-button"
+      id: "done-button"
     timeout: 90000
 
-# Complete home onboarding (3 steps)
-- tapOn:
-    id: "next-button"
-- tapOn:
-    id: "next-button"
+# Complete home onboarding (single step)
 - tapOn:
     id: "done-button"
 
@@ -30,23 +26,13 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "home-settings-link"
 
-# Dismiss the "Settings guide" onboarding overlay
+# Dismiss the "Settings guide" onboarding overlay (single step)
 - extendedWaitUntil:
     visible:
-      id: "next-button"
+      id: "done-button"
     timeout: 15000
 
-# Complete the onboarding flow - step 1
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 2
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 3
+# Complete the onboarding flow (single step)
 - tapOn:
     text: ".*Done.*"
     index: 0
@@ -78,10 +64,7 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "home-play-link"
 
-# Complete play onboarding (first-launch)
-- tapOn:
-    text: ".*Next.*"
-    index: 0
+# Complete play onboarding (first-launch, two steps)
 - tapOn:
     text: ".*Next.*"
     index: 0

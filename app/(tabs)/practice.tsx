@@ -16,12 +16,7 @@ import PracticeChallengesSection from "@/components/PracticeChallengesSection";
 import PracticeToolsSection from "@/components/PracticeToolsSection";
 import DrillHistorySection from "@/components/DrillHistorySection";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
-
-const ONBOARDING_STEPS = [
-  { text: 'Practise with purpose — use challenges and tools to sharpen your game.' },
-  { text: 'Try the tools section for tempo training and random shot selection to keep your practice varied.' },
-  { text: 'Check your history to track results over time and spot areas for improvement.' },
-];
+import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 const ITEMS_PER_BATCH = 10;
 
@@ -178,7 +173,7 @@ export default function Practice() {
         visible={showOnboarding}
         onDismiss={handleDismissOnboarding}
         title="Practice"
-        steps={ONBOARDING_STEPS}
+        steps={ONBOARDING_STEPS.practice}
       />
     </GestureHandlerRootView >
   )

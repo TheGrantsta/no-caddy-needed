@@ -12,18 +12,10 @@ appId: com.grantsta.golf.nocaddyneeded
 # Metro bundle compilation after clearState) so we use a generous timeout.
 - extendedWaitUntil:
     visible:
-      id: "next-button"
+      id: "done-button"
     timeout: 90000
 
-# Complete the onboarding flow - step 1
-- tapOn:
-    id: "next-button"
-
-# Complete the onboarding flow - step 2
-- tapOn:
-    id: "next-button"
-
-# Complete the onboarding flow - step 3
+# Complete the onboarding flow (single step)
 - tapOn:
     id: "done-button"
 
@@ -53,11 +45,6 @@ appId: com.grantsta.golf.nocaddyneeded
 
 # Complete the onboarding flow - step 2
 - tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 3
-- tapOn:
     text: ".*Done.*"
     index: 0
 
@@ -80,17 +67,7 @@ appId: com.grantsta.golf.nocaddyneeded
     text: "Distances"
     index: 0
 
-# Complete the onboarding flow - step 1
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 2
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 3
+# Complete the onboarding flow (single step)
 - tapOn:
     text: ".*Done.*"
     index: 0
@@ -106,17 +83,7 @@ appId: com.grantsta.golf.nocaddyneeded
     text: "Wedge chart"
     index: 0
 
-# Complete the onboarding flow - step 1
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 2
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 3
+# Complete the onboarding flow (single step)
 - tapOn:
     text: ".*Done.*"
     index: 0
@@ -139,17 +106,7 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "home-practice-link"
 
-# Complete the onboarding flow - step 1
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 2
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 3
+# Complete the onboarding flow (single step)
 - tapOn:
     text: ".*Done.*"
     index: 0
@@ -190,20 +147,10 @@ appId: com.grantsta.golf.nocaddyneeded
 # Dismiss the "Perform guide" onboarding overlay
 - extendedWaitUntil:
     visible:
-      id: "next-button"
+      id: "done-button"
     timeout: 15000
 
-# Complete the onboarding flow - step 1
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 2
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 3
+# Complete the onboarding flow (single step)
 - tapOn:
     text: ".*Done.*"
     index: 0
@@ -243,20 +190,10 @@ appId: com.grantsta.golf.nocaddyneeded
 # Dismiss the "Settings guide" onboarding overlay
 - extendedWaitUntil:
     visible:
-      id: "next-button"
+      id: "done-button"
     timeout: 15000
 
-# Complete the onboarding flow - step 1
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 2
-- tapOn:
-    text: ".*Next.*"
-    index: 0
-
-# Complete the onboarding flow - step 3
+# Complete the onboarding flow (single step)
 - tapOn:
     text: ".*Done.*"
     index: 0

@@ -17,12 +17,7 @@ import { useSectionTransition } from '../../hooks/useSectionTransition';
 import { useToggle } from '../../hooks/useToggle';
 import { logEvent } from '../../service/FirebaseService';
 import { getSettingsService, saveSettingsService, AppSettings, getAllRoundHistoryService } from '../../service/DbService';
-
-const ONBOARDING_STEPS = [
-  { text: 'Performance helps you make smarter decisions and set realistic expectations on the course.' },
-  { text: 'The Deadly Sins tab tracks your 7 Deadly Sins across rounds, with tap-through trends for each one.' },
-  { text: 'Putting and Proximity tabs show your personal statistics and how you compare to the tour.' },
-];
+import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 export default function Perform() {
   const styles = useStyles();
@@ -169,7 +164,7 @@ export default function Perform() {
         visible={showOnboarding}
         onDismiss={handleDismissOnboarding}
         title="Performance"
-        steps={ONBOARDING_STEPS}
+        steps={ONBOARDING_STEPS.perform}
       />
     </GestureHandlerRootView>
   )

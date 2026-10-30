@@ -228,7 +228,7 @@ describe('Practice', () => {
         expect(getByTestId('onboarding-overlay')).toBeTruthy();
 
         await act(async () => {
-            fireEvent.press(getByTestId('skip-button'));
+            fireEvent.press(getByTestId('done-button'));
         });
 
         expect(queryByTestId('onboarding-overlay')).toBeNull();
@@ -238,7 +238,7 @@ describe('Practice', () => {
         const { getByTestId } = render(<Practice />);
 
         await act(async () => {
-            fireEvent.press(getByTestId('skip-button'));
+            fireEvent.press(getByTestId('done-button'));
         });
 
         expect(mockSaveSettingsService).toHaveBeenCalledWith(

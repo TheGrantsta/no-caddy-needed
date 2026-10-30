@@ -155,7 +155,12 @@ export default function Settings() {
 
   return (
     <GestureHandlerRootView style={styles.flexOne}>
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding, { flexGrow: 1 }]}>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={[styles.scrollContentContainer, landscapePadding, { flexGrow: 1 }]}
+        bounces={false}
+        overScrollMode="never"
+      >
         <SettingsHeader onInfoPress={handleShowOnboarding} />
         <SettingsTabBar group={group} onGroupChange={setGroup} />
 

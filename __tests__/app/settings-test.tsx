@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { ScrollView } from 'react-native';
 import Settings from '../../app/settings';
 import { getSettingsService, saveSettingsService } from '../../service/DbService';
 import { openStoreReviewService } from '../../service/ReviewService';
@@ -561,6 +562,26 @@ describe('Settings page', () => {
                     expect.objectContaining({ units: 'metres' })
                 );
             });
+        });
+    });
+
+    describe('page scrolling', () => {
+        it('shouldDisableBouncingSoPageDoesNotStretchWhenPulledDown', () => {
+            const { UNSAFE_getByType } = render(<Settings />);
+
+            expect(UNSAFE_getByType(ScrollView).props.bounces).toBe(false);
+        });
+
+        it('shouldDisableAndroidOverscrollSoBehaviourMatchesIos', () => {
+            const { UNSAFE_getByType } = render(<Settings />);
+
+            expect(UNSAFE_getByType(ScrollView).props.overScrollMode).toBe('never');
+        });
+
+        it('shouldNotHaveRefreshControlOnSettings', () => {
+            const { UNSAFE_getByType } = render(<Settings />);
+
+            expect(UNSAFE_getByType(ScrollView).props.refreshControl).toBeUndefined();
         });
     });
 });

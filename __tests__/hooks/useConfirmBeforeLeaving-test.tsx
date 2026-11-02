@@ -6,16 +6,13 @@ let capturedListener: ((e: any) => void) | undefined;
 const mockUnsubscribe = jest.fn();
 
 jest.mock('expo-router', () => ({
-    useRouter: () => ({ back: mockRouterBack }),
-}));
-
-jest.mock('@react-navigation/native', () => ({
     useNavigation: () => ({
         addListener: (_event: string, listener: (e: any) => void) => {
             capturedListener = listener;
             return mockUnsubscribe;
         },
     }),
+    useRouter: () => ({ back: mockRouterBack }),
 }));
 
 const fakeLeaveEvent = () => ({ preventDefault: jest.fn(), data: { action: {} } });

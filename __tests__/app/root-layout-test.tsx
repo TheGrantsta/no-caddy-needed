@@ -55,6 +55,9 @@ jest.mock('expo-router', () => {
     Stack.Screen = StackScreen;
     return {
         Stack,
+        DarkTheme: {},
+        DefaultTheme: {},
+        ThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
         Link: ({ children }: { children: React.ReactNode }) => <>{children}</>,
         useRouter: jest.fn(() => ({
             navigate: jest.fn(),
@@ -69,12 +72,6 @@ jest.mock('@expo/vector-icons', () => ({
 
 jest.mock('expo-status-bar', () => ({
     StatusBar: () => null,
-}));
-
-jest.mock('@react-navigation/native', () => ({
-    DarkTheme: {},
-    DefaultTheme: {},
-    ThemeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('../../service/NavigationService', () => ({

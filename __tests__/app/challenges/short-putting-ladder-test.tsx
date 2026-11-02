@@ -3,11 +3,8 @@ import { render, fireEvent, act } from '@testing-library/react-native';
 import ShortPuttingLadder from '../../../app/challenges/short-putting-ladder';
 
 const mockAddListener = jest.fn(() => jest.fn());
-jest.mock('@react-navigation/native', () => ({
-    useNavigation: () => ({ goBack: jest.fn(), setOptions: jest.fn(), addListener: mockAddListener }),
-}));
-
 jest.mock('expo-router', () => ({
+    useNavigation: () => ({ goBack: jest.fn(), setOptions: jest.fn(), addListener: mockAddListener }),
     useRouter: () => ({ back: jest.fn() }),
 }));
 

@@ -1,7 +1,7 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter, useNavigation } from 'expo-router';
+
 import { useStyles } from '@/hooks/useStyles';
 import { useConfirmBeforeLeaving } from '@/hooks/useConfirmBeforeLeaving';
 import { useThemeColours } from '@/context/ThemeContext';

@@ -32,7 +32,12 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
                 {[0, 2].map((startIdx) => (
                     <View key={`row-${startIdx}`} style={styles.navRow}>
                         {challenges.slice(startIdx, startIdx + 2).map((challenge) => (
-                            <Link key={challenge.label} href={challenge.href} style={styles.navCardLink}>
+                            <Link
+                                key={challenge.label}
+                                href={challenge.href}
+                                testID={`challenge-link-${challenge.href.split('/').pop()}`}
+                                style={styles.navCardLink}
+                            >
                                 <View style={styles.navCard}>
                                     <View style={styles.iconCircle}>
                                         <MaterialIcons name={challenge.icon as any} size={36} color={colours.white} />

@@ -1,7 +1,7 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter, useNavigation } from 'expo-router';
+
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useConfirmBeforeLeaving } from '@/hooks/useConfirmBeforeLeaving';
@@ -45,12 +45,12 @@ export default function UpAndDownChallenge() {
         } else {
             router.back();
         }
-    }, [sim.phase, router]);
+    }, [sim.phase, router, setShowQuitConfirm]);
 
     const handleConfirmQuit = useCallback(() => {
         setShowQuitConfirm(false);
         leave();
-    }, [leave]);
+    }, [leave, setShowQuitConfirm]);
 
     useLayoutEffect(() => {
         navigation.setOptions({

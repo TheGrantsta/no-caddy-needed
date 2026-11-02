@@ -29,13 +29,6 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
-jest.mock('@react-navigation/native', () => ({
-    useFocusEffect: jest.fn((_callback) => {
-        // In tests, don't call the callback to avoid infinite re-renders
-        // The callback is still set up, just not executed
-    }),
-}));
-
 const mockUseLocalSearchParams = jest.fn().mockReturnValue({});
 let capturedFocusEffect: (() => void) | null = null;
 

@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { useToggle } from '../hooks/useToggle';
 import { Image, LogBox, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Link, Stack } from 'expo-router';
+import { Link, Stack, DarkTheme, ThemeProvider } from 'expo-router';
 import { MaterialIcons } from "@expo/vector-icons";
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';

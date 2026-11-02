@@ -473,3 +473,109 @@ appId: com.grantsta.golf.nocaddyneeded
 - assertVisible:
     id: "up-and-down-detail"
     text: "3 of 4 missed greens"
+
+# ======== CHALLENGES ========
+# Each challenge screen must load (regression: navigation hooks threw on render after the SDK 58 upgrade),
+# expose its back button, and leave through the quit confirmation back to the Practice cards.
+- tapOn:
+    id: "tab-home"
+- tapOn:
+    id: "home-practice-link"
+- extendedWaitUntil:
+    visible:
+      id: "done-button"
+    timeout: 15000
+- tapOn:
+    id: "done-button"
+
+- extendedWaitUntil:
+    visible:
+      id: "challenge-link-putting-simulation"
+    timeout: 5000
+- tapOn:
+    id: "challenge-link-putting-simulation"
+- extendedWaitUntil:
+    visible:
+      id: "header-back-button"
+    timeout: 5000
+- tapOn:
+    id: "header-back-button"
+- extendedWaitUntil:
+    visible:
+      id: "confirm-quit-button"
+    timeout: 5000
+- tapOn:
+    id: "confirm-quit-button"
+- extendedWaitUntil:
+    visible:
+      id: "challenge-link-putting-simulation"
+    timeout: 5000
+
+- extendedWaitUntil:
+    visible:
+      id: "challenge-link-up-and-down"
+    timeout: 5000
+- tapOn:
+    id: "challenge-link-up-and-down"
+- extendedWaitUntil:
+    visible:
+      id: "header-back-button"
+    timeout: 5000
+- tapOn:
+    id: "header-back-button"
+- extendedWaitUntil:
+    visible:
+      id: "confirm-quit-button"
+    timeout: 5000
+- tapOn:
+    id: "confirm-quit-button"
+- extendedWaitUntil:
+    visible:
+      id: "challenge-link-up-and-down"
+    timeout: 5000
+
+- extendedWaitUntil:
+    visible:
+      id: "challenge-link-short-putting-ladder"
+    timeout: 5000
+- tapOn:
+    id: "challenge-link-short-putting-ladder"
+- extendedWaitUntil:
+    visible:
+      id: "header-back-button"
+    timeout: 5000
+- tapOn:
+    id: "header-back-button"
+- extendedWaitUntil:
+    visible:
+      id: "confirm-quit-button"
+    timeout: 5000
+- tapOn:
+    id: "confirm-quit-button"
+- extendedWaitUntil:
+    visible:
+      id: "challenge-link-short-putting-ladder"
+    timeout: 5000
+
+- extendedWaitUntil:
+    visible:
+      id: "challenge-link-lag-putting"
+    timeout: 5000
+- tapOn:
+    id: "challenge-link-lag-putting"
+- extendedWaitUntil:
+    visible:
+      id: "header-back-button"
+    timeout: 5000
+- tapOn:
+    id: "header-back-button"
+- extendedWaitUntil:
+    visible:
+      id: "confirm-quit-button"
+    timeout: 5000
+- tapOn:
+    id: "confirm-quit-button"
+- extendedWaitUntil:
+    visible:
+      id: "challenge-link-lag-putting"
+    timeout: 5000

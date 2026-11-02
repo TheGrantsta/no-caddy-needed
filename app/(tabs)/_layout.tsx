@@ -23,6 +23,7 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: colours.primary,
+          tabBarInactiveTintColor: colours.tabInactive,
           tabBarLabelStyle: {
             fontSize: fontSizes.smallestText
           },

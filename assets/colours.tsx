@@ -13,6 +13,7 @@ export type ThemeColours = {
     border: string;
     borderError: string;
     green: string;
+    tabInactive: string;
 };
 
 export const darkGreen: ThemeColours = {
@@ -30,6 +31,8 @@ export const darkGreen: ThemeColours = {
     border: '#fff',
     borderError: '#fd0303',
     green: '#13b955',
+    // Muted grey-green for unselected tab icons: readable on the light tab bar, clearly lighter than primary
+    tabInactive: '#7E8A82',
 };
 
 export default darkGreen;

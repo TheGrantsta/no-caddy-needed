@@ -58,12 +58,6 @@ jest.mock('../../service/FirebaseService', () => ({
     logEvent: jest.fn().mockResolvedValue(true),
 }));
 
-jest.mock('@react-navigation/native', () => ({
-    useFocusEffect: jest.fn((_callback) => {
-        // In tests, don't call the callback to avoid infinite re-renders
-    }),
-}));
-
 const mockUseLocalSearchParams = jest.fn().mockReturnValue({});
 
 jest.mock('expo-router', () => ({

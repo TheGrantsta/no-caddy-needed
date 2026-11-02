@@ -4,9 +4,9 @@ import { Animated } from 'react-native';
 import PracticeChallengesSection from '../../components/PracticeChallengesSection';
 
 jest.mock('expo-router', () => ({
-    Link: ({ children }: any) => {
+    Link: ({ children, testID }: any) => {
         const { View } = require('react-native');
-        return <View>{children}</View>;
+        return <View testID={testID}>{children}</View>;
     },
 }));
 
@@ -32,6 +32,20 @@ describe('PracticeChallengesSection', () => {
         );
 
         expect(getByText('Challenges')).toBeTruthy();
+    });
+
+    it('gives each challenge card a test ID named after its screen so E2E flows can open it', () => {
+        const fadeAnim = new Animated.Value(1);
+        const slideAnim = new Animated.Value(0);
+
+        const { getByTestId } = render(
+            <PracticeChallengesSection fadeAnim={fadeAnim} slideAnim={slideAnim} />
+        );
+
+        expect(getByTestId('challenge-link-putting-simulation')).toBeTruthy();
+        expect(getByTestId('challenge-link-up-and-down')).toBeTruthy();
+        expect(getByTestId('challenge-link-short-putting-ladder')).toBeTruthy();
+        expect(getByTestId('challenge-link-lag-putting')).toBeTruthy();
     });
 
     it('renders all four challenge cards', () => {

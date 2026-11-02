@@ -9,7 +9,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
-        "image": "macos-sequoia-15.6-xcode-26.2"
+        "image": "latest"
       }
     },
     "preview": {
@@ -18,7 +18,7 @@
         "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
       },
       "ios": {
-        "image": "macos-sequoia-15.6-xcode-26.2"
+        "image": "latest"
       }
     },
     "production": {
@@ -27,7 +27,7 @@
         "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
       },
       "ios": {
-        "image": "macos-sequoia-15.6-xcode-26.2"
+        "image": "latest"
       }
     }
   },

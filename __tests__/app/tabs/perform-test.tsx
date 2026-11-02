@@ -27,6 +27,8 @@ jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
     return {
         ...GestureHandler,
+        // gesture-handler v3 RefreshControl needs the root-view context that the stub above removes
+        RefreshControl: require('react-native').RefreshControl,
         GestureHandlerRootView: jest.fn().mockImplementation(({ children }) => children),
     };
 });

@@ -92,6 +92,9 @@
           "android": {
             "targetSdkVersion": 36,
             "enableProguardInReleaseBuilds": true
+          },
+          "ios": {
+            "deploymentTarget": "16.4"
           }
         }
       ]

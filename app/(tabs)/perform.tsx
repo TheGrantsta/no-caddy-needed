@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { GestureHandlerRootView, RefreshControl } from 'react-native-gesture-handler';
+import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import SubMenu from '../../components/SubMenu';

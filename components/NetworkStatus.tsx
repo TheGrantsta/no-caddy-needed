@@ -6,6 +6,8 @@ import { useStyles } from '@/hooks/useStyles';
 
 let NetInfo: typeof import('@react-native-community/netinfo').default | null = null;
 try {
+    // Optional native module: a guarded require keeps the app running when NetInfo is unavailable
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     NetInfo = require('@react-native-community/netinfo').default;
 } catch {
     // NetInfo not available (e.g. Expo Go without native module)
@@ -31,6 +33,8 @@ export default function NetworkStatus() {
 
     useEffect(() => {
         if (isConnected === false) {
+            // Shows or hides the banner in response to the external network state
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setShowBanner(true);
             Animated.timing(slideAnim, {
                 toValue: 0,

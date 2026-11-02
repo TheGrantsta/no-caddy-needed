@@ -56,6 +56,8 @@ export default function ScorecardInlineEditor({
     useEffect(() => {
         // Initialize edit state with current scorecard data
         edit.setEditedScores([...scorecardData.holeScores.map(s => ({ ...s }))]);
+        // Initialises the edit state from the scorecard data when it changes
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setClubDistances(getClubDistancesService());
         setSinHoles(getHolesWithSinsForRoundService(roundId));
         // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -53,6 +53,8 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     const isAutoBogeyPar5 = holePar === 5 && userScore !== undefined && userScore >= 6;
 
     useEffect(() => {
+        // Mirrors the auto-set sins from the entered score; the state is intentionally synced from props
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setValues(prev => {
             const nextDoubleBogeys = isAutoDoubleBogey ? true : false;
             const nextBogeysPar5 = isAutoBogeyPar5 ? true : false;

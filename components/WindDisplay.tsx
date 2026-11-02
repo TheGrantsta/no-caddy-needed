@@ -1,6 +1,6 @@
 import { Text, View, TouchableOpacity, TextInput, Animated } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
 import { getWindArrowRotation, getWindEffect, MIN_NOTABLE_PCT } from '@/service/WeatherService';
@@ -39,8 +39,9 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
     const styles = useStyles();
     const [manualEntryOpen, setManualEntryOpen] = useState(false);
     const [manualEntryText, setManualEntryText] = useState('');
-    const manualEntryFadeAnim = useRef(new Animated.Value(0)).current;
-    const manualEntrySlideAnim = useRef(new Animated.Value(0)).current;
+    // Stable Animated.Value instances, held in state so they are never read from a ref during render
+    const [manualEntryFadeAnim] = useState(() => new Animated.Value(0));
+    const [manualEntrySlideAnim] = useState(() => new Animated.Value(0));
 
     useEffect(() => {
         if (manualEntryOpen) {

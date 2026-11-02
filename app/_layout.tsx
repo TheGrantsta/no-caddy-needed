@@ -28,6 +28,8 @@ console.warn = (...args: Parameters<typeof console.warn>) => {
 
 let Notifications: typeof import('expo-notifications') | null = null;
 try {
+  // Guarded require: the notifications native module may be unavailable (e.g. Expo Go)
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   Notifications = require('expo-notifications');
   Notifications?.setNotificationHandler({
     handleNotification: async () => ({
@@ -296,7 +298,7 @@ export default function RootLayout() {
     }
 
     prepareApp();
-  }, []);
+  }, [setAppIsReady]);
 
   if (!appIsReady) {
     return null;

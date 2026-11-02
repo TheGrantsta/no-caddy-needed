@@ -1,15 +1,16 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Animated } from 'react-native';
 
 export const useSectionTransition = (sectionOrder: string[]) => {
     const [section, setSection] = useState(sectionOrder[0]);
     const sectionDirectionRef = useRef<'next' | 'previous'>('next');
-    const sectionFadeAnim = useRef(new Animated.Value(0)).current;
-    const sectionSlideAnim = useRef(new Animated.Value(0)).current;
+    // Stable Animated.Value instances, held in state so they are never read from a ref during render
+    const [sectionFadeAnim] = useState(() => new Animated.Value(0));
+    const [sectionSlideAnim] = useState(() => new Animated.Value(0));
 
     // Fades the section in. Also exposed so a screen can replay it when content appears
     // without a section change (the first mount may have left the fade stuck at 0).
-    const playTransition = () => {
+    const playTransition = useCallback(() => {
         const offset = sectionDirectionRef.current === 'next' ? 40 : -40;
         sectionFadeAnim.setValue(0);
         sectionSlideAnim.setValue(offset);
@@ -25,11 +26,11 @@ export const useSectionTransition = (sectionOrder: string[]) => {
                 useNativeDriver: true,
             }),
         ]).start();
-    };
+    }, [sectionFadeAnim, sectionSlideAnim]);
 
     useEffect(() => {
         playTransition();
-    }, [section, sectionFadeAnim, sectionSlideAnim]);
+    }, [section, playTransition]);
 
     const handleSubMenu = (sectionName: string) => {
         const currentIndex = sectionOrder.indexOf(section);

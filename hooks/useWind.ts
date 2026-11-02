@@ -17,6 +17,8 @@ const devLog = (...args: unknown[]) => {
 
 let Location: typeof import('expo-location') | null = null;
 try {
+    // Guarded require: the native module may be unavailable (e.g. Expo Go), so the app must still load
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     Location = require('expo-location');
 } catch {
     // Native module not available (e.g. Expo Go without a dev build)

@@ -18,9 +18,6 @@ jest.mock('fs', () => ({
 
 // --- Requires (after mocks) ---
 
-const { _execSync } = require('child_process');
-const _fs = require('fs');
-
 // --- Load module under test ---
 
 let metrics;

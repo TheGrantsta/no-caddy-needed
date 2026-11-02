@@ -201,7 +201,7 @@ export default function Play() {
         if (!currentSettings.playOnboardingSeen && history.length === 0 && !activeRound) {
             setShowOnboarding(true);
         }
-    }, []);
+    }, [setShowOnboarding]);
 
 
     // Re-read the history list whenever the screen regains focus (e.g. after a

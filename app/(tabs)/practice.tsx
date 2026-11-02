@@ -19,6 +19,7 @@ import OnboardingOverlay from "@/components/OnboardingOverlay";
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 const ITEMS_PER_BATCH = 10;
+const SECTION_ORDER: string[] = ['challenges', 'tools', 'history'];
 
 export default function Practice() {
   const styles = useStyles();
@@ -33,8 +34,6 @@ export default function Practice() {
   const router = useRouter();
   const [displayedDrillHistory, setDisplayedDrillHistory] = useState<any[]>([]);
   const [isLoadingMore, , setIsLoadingMore] = useToggle(false);
-
-  const SECTION_ORDER = ['challenges', 'tools', 'history'] as const;
   const {
     section,
     displaySection,
@@ -42,8 +41,6 @@ export default function Practice() {
     fadeAnim: sectionFadeAnim,
     slideAnim: sectionSlideAnim
   } = useSectionTransition(SECTION_ORDER);
-
-  const { refreshing, onRefresh } = useFakeRefresh(() => fetchData());
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -78,6 +75,9 @@ export default function Practice() {
     }
   };
 
+  // Pull-to-refresh reloads the drill history (fetchData is declared above)
+  const { refreshing, onRefresh } = useFakeRefresh(() => fetchData());
+
   const loadMoreItems = () => {
     if (isLoadingMore || displayedDrillHistory.length >= allDrillHistory.length) {
       return;
@@ -91,15 +91,19 @@ export default function Practice() {
     }, 100);
   };
 
+  // Mount-time load from SQLite; there is no external change to subscribe to.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, []);
 
+  // Sync the section to a route parameter whenever it changes; the route is an external source.
   useEffect(() => {
     if (requestedSection && SECTION_ORDER.includes(requestedSection as typeof SECTION_ORDER[number])) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       handleSubMenuWithLogging(requestedSection as typeof SECTION_ORDER[number]);
     }
-  }, [requestedSection, t, handleSubMenuWithLogging, SECTION_ORDER]);
+  }, [requestedSection, t, handleSubMenuWithLogging]);
 
   const refreshHistoryData = useCallback(() => {
     fetchData();

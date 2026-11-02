@@ -870,9 +870,7 @@ describe('Play screen', () => {
             const mockScrollTo = jest.fn();
             const realUseRef = jest.requireActual('react').useRef;
             const spy = jest.spyOn(React, 'useRef')
-                .mockImplementationOnce((initial: any) => realUseRef(initial)) // useSectionTransition sectionDirectionRef
-                .mockImplementationOnce((initial: any) => realUseRef(initial)) // useSectionTransition sectionFadeAnim
-                .mockImplementationOnce((initial: any) => realUseRef(initial)) // useSectionTransition sectionSlideAnim
+                .mockImplementationOnce((initial: any) => realUseRef(initial)) // useSectionTransition sectionDirectionRef (its animated values are state, not refs)
                 .mockImplementationOnce(() => {
                     const ref = realUseRef(null);
                     Object.defineProperty(ref, 'current', {

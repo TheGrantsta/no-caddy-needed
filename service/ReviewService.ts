@@ -2,6 +2,8 @@ import { Linking } from 'react-native';
 
 let StoreReview: typeof import('expo-store-review') | null = null;
 try {
+    // Guarded require: the native module may be unavailable (e.g. Expo Go), so the app must still load
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     StoreReview = require('expo-store-review');
 } catch {
     // Native module not available (e.g. Expo Go without a dev build)

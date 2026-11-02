@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useStyles } from '@/hooks/useStyles';
@@ -33,19 +33,19 @@ export default function Reminders() {
     const [, setSwipedOpen] = useState<Set<number>>(new Set());
     const [isSaving, setIsSaving] = useState(false);
 
+    const loadReminders = useCallback(() => {
+        setReminders(sortBySoonest(getPracticeRemindersService()));
+    }, []);
+
     const { refreshing, onRefresh } = useFakeRefresh(() => {
         loadReminders();
         setRefreshKey(prev => prev + 1);
         setSwipedOpen(new Set());
     });
 
-    const loadReminders = () => {
-        setReminders(sortBySoonest(getPracticeRemindersService()));
-    };
-
     useEffect(() => {
         upgradeOverdueRemindersService().then(loadReminders);
-    }, []);
+    }, [loadReminders]);
 
     const handleSaveReminder = async () => {
         if (isSaving) return;

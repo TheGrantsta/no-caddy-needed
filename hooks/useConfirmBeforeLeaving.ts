@@ -5,7 +5,10 @@ import { useRouter, useNavigation } from 'expo-router';
 // while `isActive` is true, and calls `onAttemptLeave` so the screen can ask first.
 // Call `leave()` once the user has confirmed to let the exit through.
 export const useConfirmBeforeLeaving = (isActive: boolean, onAttemptLeave: () => void) => {
-    const navigation = useNavigation();
+    // expo-router's navigation type doesn't declare the 'beforeRemove' event, so describe just that part
+    const navigation = useNavigation() as unknown as {
+        addListener: (type: 'beforeRemove', listener: (e: any) => void) => () => void;
+    };
     const router = useRouter();
     const allowLeaveRef = useRef(false);
     const onAttemptLeaveRef = useRef(onAttemptLeave);

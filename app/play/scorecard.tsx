@@ -83,19 +83,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
 
     const edit = useScorecardEdit();
 
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    // Report edit state up so the pager can lock horizontal swiping. Called from the
-    // edit/cancel/save handlers (user actions) rather than an effect, so it never fires
-    // on mount (which would schedule a pager state update outside test act() blocks).
-    const setEditing = (editing: boolean) => {
-        edit.setIsEditing(editing);
-        onEditingChange(roundId, editing);
-    };
-
-    const loadData = () => {
+    const loadData = useCallback(() => {
         const mp = getMultiplayerScorecardService(Number(roundId));
         setMultiplayerScorecard(mp);
         const sc = mp ? null : getRoundScorecardService(Number(roundId));
@@ -107,6 +95,20 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         if (courseName) {
             setCourseNotes(loadCourseNotesService(courseName));
         }
+    }, [roundId]);
+
+    // Loads the round from SQLite; runs on mount and whenever the round changes.
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadData();
+    }, [loadData]);
+
+    // Report edit state up so the pager can lock horizontal swiping. Called from the
+    // edit/cancel/save handlers (user actions) rather than an effect, so it never fires
+    // on mount (which would schedule a pager state update outside test act() blocks).
+    const setEditing = (editing: boolean) => {
+        edit.setIsEditing(editing);
+        onEditingChange(roundId, editing);
     };
 
     const handleEdit = () => {

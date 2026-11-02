@@ -21,6 +21,8 @@ let ExpoSpeechRecognitionModule: { requestPermissionsAsync: () => Promise<{ gran
 let useSpeechRecognitionEvent: (eventName: string, handler: (event: SpeechRecognitionEvent) => void) => void = () => {};
 let speechRecognitionAvailable = false;
 try {
+    // Optional native module: a guarded require lets the tool still load when it is unavailable
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const mod = require('expo-speech-recognition');
     ExpoSpeechRecognitionModule = mod.ExpoSpeechRecognitionModule;
     useSpeechRecognitionEvent = mod.useSpeechRecognitionEvent;
@@ -56,6 +58,30 @@ export default function Random() {
     const [micDenied, setMicDenied] = useState(false);
     const isStoppingRef = useRef(false);
 
+    // Declared before the speech handler below, which calls it
+    const handleGenerate = async () => {
+        const rangeError = validateRange(formState.range.value, 'Range');
+        const incrementError = validateNumber(formState.increment.value, 'Increment');
+
+        if (rangeError) {
+            formState.range.setError(rangeError);
+        }
+        if (incrementError) {
+            formState.increment.setError(incrementError);
+        }
+
+        if (!rangeError && !incrementError) {
+            const number = getRandomNumber(formState.range.value, formState.increment.value, randomNumber);
+            setRandomNumber(number);
+            const settings = getSettingsService();
+            if (number > 0 && settings.soundsEnabled) {
+                Speech.stop();
+                const options = await getVoiceOptions(settings.voice);
+                Speech.speak(String(number), options);
+            }
+        }
+    };
+
     useSpeechRecognitionEvent('result', (event: SpeechRecognitionEvent) => {
         if (isStoppingRef.current) return;
         const transcript = (event.results[0]?.transcript ?? '').toLowerCase();
@@ -87,29 +113,6 @@ export default function Random() {
             isStoppingRef.current = true;
             ExpoSpeechRecognitionModule.stop();
             setMicActive(false);
-        }
-    };
-
-    const handleGenerate = async () => {
-        const rangeError = validateRange(formState.range.value, 'Range');
-        const incrementError = validateNumber(formState.increment.value, 'Increment');
-
-        if (rangeError) {
-            formState.range.setError(rangeError);
-        }
-        if (incrementError) {
-            formState.increment.setError(incrementError);
-        }
-
-        if (!rangeError && !incrementError) {
-            const number = getRandomNumber(formState.range.value, formState.increment.value, randomNumber);
-            setRandomNumber(number);
-            const settings = getSettingsService();
-            if (number > 0 && settings.soundsEnabled) {
-                Speech.stop();
-                const options = await getVoiceOptions(settings.voice);
-                Speech.speak(String(number), options);
-            }
         }
     };
 

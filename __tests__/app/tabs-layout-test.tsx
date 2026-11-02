@@ -36,7 +36,10 @@ jest.mock('expo-router', () => ({
     useRouter: () => ({ navigate: mockNavigate, push: mockPush }),
 }));
 
-jest.mock('../../components/ScreenWrapper', () => ({ children }: any) => <>{children}</>);
+jest.mock('../../components/ScreenWrapper', () => {
+    const ScreenWrapper = ({ children }: any) => <>{children}</>;
+    return ScreenWrapper;
+});
 
 jest.mock('../../service/DbService', () => ({
     getPracticeRemindersService: jest.fn().mockReturnValue([]),

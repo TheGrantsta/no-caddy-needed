@@ -5,6 +5,8 @@ import { navigateToReminders } from '../service/NavigationService';
 let Notifications: typeof import('expo-notifications') | null = null;
 
 try {
+  // Guarded require: the native module may be unavailable (e.g. Expo Go), so the app must still load
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   Notifications = require('expo-notifications');
 } catch {
   // Native module not available (e.g., Expo Go without dev build)

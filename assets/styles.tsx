@@ -1641,7 +1641,8 @@ export const createStyles = (c: ThemeColours) => ({
         },
         filterButton: {
             paddingVertical: 4,
-            width: 68,
+            paddingHorizontal: 10,
+            minWidth: 68,
             alignItems: 'center',
             borderRadius: 6,
             borderWidth: 1,

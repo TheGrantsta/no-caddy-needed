@@ -191,28 +191,25 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            expect(getByTestId('filter-label')).toBeTruthy();
+            expect(getByTestId('count-segments')).toBeTruthy();
         });
 
-        it('all filter buttons have the same fixed width', () => {
+        it('all filter buttons share the same minimum width so they line up', () => {
             mockGetAllRoundHistory.mockReturnValue([
                 { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01' },
             ]);
 
             const { getByTestId } = render(<Play />);
 
-            const btn1 = getByTestId('filter-button-1');
-            const btn10 = getByTestId('filter-button-10');
-            const btnAll = getByTestId('filter-button-all');
-
-            const getWidth = (el: any) => {
-                const styles = Array.isArray(el.props.style) ? el.props.style : [el.props.style];
-                return styles.find((s: any) => s && s.width !== undefined)?.width;
+            const getFlex = (el: any) => {
+                const styles = Array.isArray(el.props.style) ? el.props.style.flat() : [el.props.style];
+                return styles.find((s: any) => s && s.flex !== undefined)?.flex;
             };
 
-            expect(getWidth(btn1)).toBeDefined();
-            expect(getWidth(btn1)).toEqual(getWidth(btn10));
-            expect(getWidth(btn1)).toEqual(getWidth(btnAll));
+            const flex = getFlex(getByTestId('filter-button-1'));
+            expect(flex).toBe(1);
+            expect(getFlex(getByTestId('filter-button-10'))).toEqual(flex);
+            expect(getFlex(getByTestId('filter-button-all'))).toEqual(flex);
         });
 
         it('shouldGiveDateItsOwnFixedWidthColumnWithCourseNameInTheRemainingSpace', () => {
@@ -238,6 +235,36 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
 
             rounds.forEach(r => expect(getByTestId(`round-history-row-${r.Id}`)).toBeTruthy());
+        });
+
+        it('shows year chips and limits history to that year when a year is pressed', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 3, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '03/01', Year: 2026 },
+                { Id: 2, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '02/12', Year: 2025 },
+                { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/06', Year: 2025 },
+            ]);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+
+            fireEvent.press(getByTestId('year-menu-button'));
+            expect(getByTestId('filter-button-2026')).toBeTruthy();
+            fireEvent.press(getByTestId('filter-button-2025'));
+
+            expect(getByTestId('round-history-row-2')).toBeTruthy();
+            expect(getByTestId('round-history-row-1')).toBeTruthy();
+            expect(queryByTestId('round-history-row-3')).toBeNull();
+        });
+
+        it('shows a year menu when there is a single completed round', () => {
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/06', Year: 2025 },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('year-menu-button')).toBeTruthy();
+            fireEvent.press(getByTestId('year-menu-button'));
+            expect(getByTestId('filter-button-2025')).toBeTruthy();
         });
 
         it('limits round history to 1 when filter 1 is pressed', () => {

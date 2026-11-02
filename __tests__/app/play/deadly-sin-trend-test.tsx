@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, within } from '@testing-library/react-native';
 import DeadlySinTrendScreen from '../../../app/play/deadly-sin-trend';
-import { getAllDeadlySinsRoundsService, getAllHoleSinDetailsService, DeadlySinsRound, _HoleSinDetails } from '../../../service/DbService';
+import { getAllDeadlySinsRoundsService, getAllHoleSinDetailsService, getAllRoundHistoryService, DeadlySinsRound, _HoleSinDetails } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -20,6 +20,7 @@ jest.mock('../../../hooks/useStyles', () => ({
 jest.mock('../../../service/DbService', () => ({
     getAllDeadlySinsRoundsService: jest.fn(),
     getAllHoleSinDetailsService: jest.fn(),
+    getAllRoundHistoryService: jest.fn(),
 }));
 
 jest.mock('react-native-gesture-handler', () => {
@@ -38,6 +39,8 @@ jest.mock('expo-router', () => ({
 
 const mockGetAllDeadlySinsRoundsService = getAllDeadlySinsRoundsService as jest.Mock;
 const mockGetAllHoleSinDetailsService = getAllHoleSinDetailsService as jest.Mock;
+const mockGetAllRoundHistoryService = getAllRoundHistoryService as jest.Mock;
+const DEFAULT_PARAMS = { sinKey: 'ThreePutts', label: '3-putts' };
 
 // The screen is now a horizontal pager of all 7 sins; every page renders the same
 // chart testIDs. Scope the per-page assertions to the active sin's page so they stay
@@ -67,6 +70,40 @@ describe('DeadlySinTrendScreen', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockGetAllHoleSinDetailsService.mockReturnValue([]);
+        mockGetAllRoundHistoryService.mockReturnValue([]);
+        mockUseLocalSearchParams.mockReturnValue(DEFAULT_PARAMS);
+    });
+
+    describe('year filter', () => {
+        const yearHistory = [
+            { Id: 3, Year: 2026 },
+            { Id: 2, Year: 2025 },
+            { Id: 1, Year: 2025 },
+        ];
+
+        it('shouldShowOnlyRoundsFromTheSelectedYear', () => {
+            mockUseLocalSearchParams.mockReturnValue({ ...DEFAULT_PARAMS, filter: '2025' });
+            mockGetAllRoundHistoryService.mockReturnValue(yearHistory);
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([
+                makeRound(3, 3, '03/06'),
+                makeRound(2, 2, '02/06'),
+                makeRound(1, 1, '01/06'),
+            ]);
+
+            const { getAllByTestId } = renderPage();
+
+            expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(2);
+        });
+
+        it('shouldShowEmptyStateWhenTheSelectedYearHasNoRounds', () => {
+            mockUseLocalSearchParams.mockReturnValue({ ...DEFAULT_PARAMS, filter: '2019' });
+            mockGetAllRoundHistoryService.mockReturnValue(yearHistory);
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([makeRound(1, 1, '01/06')]);
+
+            const { getByTestId } = renderPage();
+
+            expect(getByTestId('deadly-sin-trend-empty')).toBeTruthy();
+        });
     });
 
     it('renders the sin label as heading', () => {

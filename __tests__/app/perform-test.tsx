@@ -142,7 +142,7 @@ describe('Perform page ', () => {
 
             const { getByTestId } = render(<View />);
 
-            expect(getByTestId('filter-label')).toBeTruthy();
+            expect(getByTestId('count-segments')).toBeTruthy();
             expect(getByTestId('filter-button-1')).toBeTruthy();
         });
 

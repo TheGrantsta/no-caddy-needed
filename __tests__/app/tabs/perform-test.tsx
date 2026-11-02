@@ -270,6 +270,37 @@ describe('Perform', () => {
             expect(getByTestId('filter-button-all')).toBeTruthy();
         });
 
+        it('showsOneChipPerYearWhenRoundsSpanMoreThanOneYear', () => {
+            const { getAllRoundHistoryService } = require('../../../service/DbService');
+            getAllRoundHistoryService.mockReturnValue([
+                { Id: 2, TotalScore: 1, IsCompleted: 1, IsScoreOnly: 0, Created_At: '01/03', Year: 2026, HolesPlayed: 18, CourseName: 'A', StrokeTotal: null, StartTime: '', EndTime: null },
+                { Id: 1, TotalScore: 1, IsCompleted: 1, IsScoreOnly: 0, Created_At: '01/06', Year: 2025, HolesPlayed: 18, CourseName: 'B', StrokeTotal: null, StartTime: '', EndTime: null },
+            ]);
+
+            const { getByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('year-menu-button'));
+            expect(getByTestId('filter-button-2026')).toBeTruthy();
+            expect(getByTestId('filter-button-2025')).toBeTruthy();
+            getAllRoundHistoryService.mockReturnValue([]);
+        });
+
+        it('marksThePressedYearAsSelectedAndNarrowsTheRoundsUsed', () => {
+            const { getAllRoundHistoryService, getAllDeadlySinsRoundsService } = require('../../../service/DbService');
+            getAllRoundHistoryService.mockReturnValue([
+                { Id: 2, TotalScore: 1, IsCompleted: 1, IsScoreOnly: 0, Created_At: '01/03', Year: 2026, HolesPlayed: 18, CourseName: 'A', StrokeTotal: null, StartTime: '', EndTime: null },
+                { Id: 1, TotalScore: 1, IsCompleted: 1, IsScoreOnly: 0, Created_At: '01/06', Year: 2025, HolesPlayed: 18, CourseName: 'B', StrokeTotal: null, StartTime: '', EndTime: null },
+            ]);
+            getAllDeadlySinsRoundsService.mockReturnValue([]);
+
+            const { getByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('year-menu-button'));
+            fireEvent.press(getByTestId('filter-button-2025'));
+
+            expect(getByTestId('year-menu-button').props.accessibilityState).toEqual({ selected: true, expanded: false });
+            expect(getByTestId('filter-button-all').props.accessibilityState).toEqual({ selected: false });
+            getAllRoundHistoryService.mockReturnValue([]);
+        });
+
         it('verifyFilterLogicAppliedToDeadlySinsRounds', () => {
             const { getAllDeadlySinsRoundsService, getAllRoundHistoryService, getAllHoleSinDetailsService } = require('../../../service/DbService');
             // The perform.tsx screen correctly uses roundHistory.slice(0, filter) to get the N most recent rounds,
@@ -351,7 +382,7 @@ describe('Perform', () => {
 
             const { getByText, getByTestId } = render(<Perform />);
 
-            expect(getByText('Last round')).toBeTruthy();
+            expect(getByText('Last 1')).toBeTruthy();
             expect(getByText('Last 10')).toBeTruthy();
             expect(getByText('All')).toBeTruthy();
             expect(getByTestId('filter-button-1')).toBeTruthy();

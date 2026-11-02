@@ -196,6 +196,37 @@ describe('getAllRoundHistoryService', () => {
         jest.clearAllMocks();
     });
 
+    it('includes the calendar Year of each round for year filtering', () => {
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2025-06-15T10:00:00.000Z', EndTime: null, Created_At: '2025-06-15T10:00:00.000Z', CourseName: null, UserPlayerId: null, StrokeTotal: null, HolesPlayed: 0, IsScoreOnly: 0 },
+        ]);
+
+        const result = getAllRoundHistoryService();
+
+        expect(result[0].Year).toBe(2025);
+    });
+
+    it('assigns the year the round was played, so a late-December round stays in its own year', () => {
+        // Local-time string (no Z) so the assertion holds in any timezone
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '2024-12-31T12:00:00', EndTime: null, Created_At: '2024-12-31T12:00:00', CourseName: null, UserPlayerId: null, StrokeTotal: null, HolesPlayed: 0, IsScoreOnly: 0 },
+        ]);
+
+        const result = getAllRoundHistoryService();
+
+        expect(result[0].Year).toBe(2024);
+    });
+
+    it('leaves Year undefined when the stored date cannot be parsed', () => {
+        mockGetAllRoundsWithPlayersAndScores.mockReturnValue([
+            { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: null, Created_At: 'not-a-date', CourseName: null, UserPlayerId: null, StrokeTotal: null, HolesPlayed: 0, IsScoreOnly: 0 },
+        ]);
+
+        const result = getAllRoundHistoryService();
+
+        expect(result[0].Year).toBeUndefined();
+    });
+
     it('returns empty array when no rounds exist', () => {
         mockGetAllRoundsWithPlayersAndScores.mockReturnValue([]);
 

@@ -426,6 +426,8 @@ export type Round = {
     Created_At: string;
     HolesPlayed: number;
     IsScoreOnly: number;
+    // Calendar year the round was played; undefined when the stored date is unreadable
+    Year?: number;
 };
 
 export type RoundHole = {
@@ -536,7 +538,13 @@ export const getAllRoundHistoryService = (): Round[] => {
         Created_At: getTwoDigitDayAndMonth(row.Created_At),
         HolesPlayed: row.HolesPlayed ?? 0,
         IsScoreOnly: row.IsScoreOnly,
+        Year: getYearOrUndefined(row.Created_At),
     }));
+};
+
+const getYearOrUndefined = (dateAsString: string): number | undefined => {
+    const year = new Date(dateAsString).getFullYear();
+    return Number.isNaN(year) ? undefined : year;
 };
 
 export const deleteRoundService = async (roundId: number): Promise<boolean> => {

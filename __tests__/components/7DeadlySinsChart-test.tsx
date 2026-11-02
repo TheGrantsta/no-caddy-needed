@@ -193,6 +193,16 @@ describe('DeadlySinsChart component', () => {
             );
         });
 
+        it('passes a year filter as its year string in navigation params', () => {
+            const { getByTestId } = render(<DeadlySinsChart rounds={unambiguousRound} filter={{ year: 2025 }} />);
+
+            fireEvent.press(getByTestId('7deadly-sins-chart-bar-row-0'));
+
+            expect(mockPush).toHaveBeenCalledWith(
+                expect.objectContaining({ params: expect.objectContaining({ filter: '2025' }) })
+            );
+        });
+
         it('passes filter=10 as string in navigation params', () => {
             const { getByTestId } = render(<DeadlySinsChart rounds={unambiguousRound} filter={10} />);
 

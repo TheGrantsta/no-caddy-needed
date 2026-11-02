@@ -18,12 +18,14 @@ import { useToggle } from '../../hooks/useToggle';
 import { logEvent } from '../../service/FirebaseService';
 import { getSettingsService, saveSettingsService, AppSettings, getAllRoundHistoryService } from '../../service/DbService';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
+import RoundFilterBar from '../../components/RoundFilterBar';
+import { RoundFilter, applyRoundFilter, getAvailableYears, isAllFilter } from '../../utils/roundFilter';
 
 export default function Perform() {
   const styles = useStyles();
   const colours = useThemeColours();
   const { landscapePadding } = useOrientation();
-  const [roundsFilter, setRoundsFilter] = useState<1 | 10 | 'all'>('all');
+  const [roundsFilter, setRoundsFilter] = useState<RoundFilter>('all');
   const [proximityThreePuttOnly, , setProximityThreePuttOnly] = useToggle(false);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [showOnboarding, , setShowOnboarding] = useToggle(!settings.performOnboardingSeen);
@@ -51,9 +53,10 @@ export default function Perform() {
   useFocusEffect(refreshHistoryData);
   // Exclude score-only and incomplete rounds from performance stats
   const completedRounds = roundHistory.filter(r => r.IsScoreOnly === 0 && r.IsCompleted === 1);
-  const filteredRoundHistory = roundsFilter === 'all' ? completedRounds : completedRounds.slice(0, roundsFilter);
+  const filteredRoundHistory = applyRoundFilter(completedRounds, roundsFilter);
   const filteredRoundIds = new Set(filteredRoundHistory.map(r => r.Id));
-  const roundIdsFilter = roundsFilter === 'all' ? undefined : filteredRoundIds;
+  const roundIdsFilter = isAllFilter(roundsFilter) ? undefined : filteredRoundIds;
+  const availableYears = getAvailableYears(completedRounds);
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -104,21 +107,7 @@ export default function Perform() {
 
         {/* Filter buttons */}
         {completedRounds.length > 0 && (
-          <View style={[styles.playScreen.filterContainer, { paddingVertical: 12 }]}>
-            <Text testID="filter-label" style={{ color: colours.text, fontSize: 14, fontWeight: '500', marginRight: 12 }}>Show</Text>
-            {([1, 10, 'all'] as const).map(f => (
-              <TouchableOpacity
-                key={String(f)}
-                testID={`filter-button-${f}`}
-                onPress={() => setRoundsFilter(f)}
-                style={[styles.playScreen.filterButton, { width: 92 }, roundsFilter === f && styles.playScreen.filterButtonSelected]}
-              >
-                <Text style={[styles.playScreen.filterButtonText, roundsFilter === f && styles.playScreen.filterButtonTextSelected]}>
-                  {f === 'all' ? 'All' : f === 1 ? 'Last round' : `Last ${f}`}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <RoundFilterBar value={roundsFilter} onChange={setRoundsFilter} years={availableYears} />
         )}
 
         {displaySection('sins') && (

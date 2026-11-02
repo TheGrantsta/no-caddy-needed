@@ -2,7 +2,8 @@ import React, { useRef, useState } from 'react';
 import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useLocalSearchParams } from 'expo-router';
-import { getAllDeadlySinsRoundsService } from '../../service/DbService';
+import { DeadlySinsRound, getAllDeadlySinsRoundsService, getAllRoundHistoryService } from '../../service/DbService';
+import { RoundFilter, parseRoundFilter } from '../../utils/roundFilter';
 import { sortDeadlySinsByFrequency } from '../../service/deadlySinCategories';
 import { useStyles } from '../../hooks/useStyles';
 import DeadlySinTrendPage from '@/components/DeadlySinTrendPage';
@@ -10,14 +11,25 @@ import DeadlySinTrendIndicators from '@/components/DeadlySinTrendIndicators';
 
 const MAX_ROUNDS = 20;
 
+// For a year filter, keep only the sin rounds played in that year; count filters keep everything.
+const restrictToYear = (sinRounds: DeadlySinsRound[], filter: RoundFilter): DeadlySinsRound[] => {
+    if (typeof filter === 'number' || filter === 'all') return sinRounds;
+    const yearRoundIds = new Set(
+        getAllRoundHistoryService().filter(r => r.Year === filter.year).map(r => r.Id)
+    );
+    return sinRounds.filter(r => yearRoundIds.has(r.Id));
+};
+
 export default function DeadlySinTrendScreen() {
     const { sinKey, filter } = useLocalSearchParams<{ sinKey: string; label: string; filter?: string }>();
     const styles = useStyles();
     const width = Dimensions.get('window').width;
 
     const allRounds = getAllDeadlySinsRoundsService();
-    const limit = filter === '1' ? 1 : filter === '10' ? 10 : MAX_ROUNDS;
-    const rounds = allRounds.slice().reverse().slice(-limit);
+    const roundFilter = parseRoundFilter(filter);
+    const roundsInFilter = restrictToYear(allRounds, roundFilter);
+    const limit = roundFilter === 1 ? 1 : roundFilter === 10 ? 10 : MAX_ROUNDS;
+    const rounds = roundsInFilter.slice().reverse().slice(-limit);
 
     // Pages follow the same frequency order shown in the Deadly Sins bar chart.
     const categories = sortDeadlySinsByFrequency(rounds);

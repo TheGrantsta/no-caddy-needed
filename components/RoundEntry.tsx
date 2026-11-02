@@ -7,11 +7,13 @@ import PlayerSetup from './PlayerSetup';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import { Round, ParAverages } from '../service/DbService';
+import RoundFilterBar from './RoundFilterBar';
+import { RoundFilter, applyRoundFilter, getAvailableYears } from '../utils/roundFilter';
 
 interface Props {
     roundHistory: Round[];
-    historyFilter: 1 | 10 | 'all';
-    onHistoryFilterChange: (filter: 1 | 10 | 'all') => void;
+    historyFilter: RoundFilter;
+    onHistoryFilterChange: (filter: RoundFilter) => void;
     incompleteRound: { Id: number; CourseName?: string } | null;
     notificationId: string | null;
     showPlayerSetup: boolean;
@@ -53,9 +55,10 @@ export default function RoundEntry({
     const colours = useThemeColours();
 
     const filteredRoundHistory = useMemo(
-        () => historyFilter === 'all' ? roundHistory : roundHistory.slice(0, historyFilter),
+        () => applyRoundFilter(roundHistory, historyFilter),
         [historyFilter, roundHistory]
     );
+    const availableYears = useMemo(() => getAvailableYears(roundHistory), [roundHistory]);
 
     const localStyles = styles.playScreen;
 
@@ -128,21 +131,7 @@ export default function RoundEntry({
                 )}
 
                 {!incompleteRound && roundHistory.length > 0 && (
-                    <View style={localStyles.filterContainer}>
-                        <Text testID="filter-label" style={localStyles.filterLabel}>Show</Text>
-                        {([1, 10, 'all'] as const).map(f => (
-                            <TouchableOpacity
-                                key={String(f)}
-                                testID={`filter-button-${f}`}
-                                onPress={() => onHistoryFilterChange(f)}
-                                style={[localStyles.filterButton, historyFilter === f && localStyles.filterButtonSelected]}
-                            >
-                                <Text style={[localStyles.filterButtonText, historyFilter === f && localStyles.filterButtonTextSelected]}>
-                                    {f === 'all' ? 'All' : String(f)}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
+                    <RoundFilterBar value={historyFilter} onChange={onHistoryFilterChange} years={availableYears} />
                 )}
 
                 {!incompleteRound && roundHistory.length > 0 && (

@@ -4,11 +4,12 @@ import DeadlySinsChart from './DeadlySinsChart';
 import { useStyles } from '../hooks/useStyles';
 import { getAllDeadlySinsRoundsService } from '../service/DbService';
 import StatsEmptyState from './StatsEmptyState';
+import { RoundFilter, isAllFilter } from '../utils/roundFilter';
 
 interface Props {
     fadeAnim: Animated.Value;
     slideAnim: Animated.Value;
-    roundsFilter: 1 | 10 | 'all';
+    roundsFilter: RoundFilter;
     filteredRoundIds: Set<number>;
     onStartRound?: () => void;
 }
@@ -23,7 +24,7 @@ export default function DeadlySinsSection({
     const styles = useStyles();
 
     const deadlySinsRounds = getAllDeadlySinsRoundsService();
-    const filteredDeadlySinsRounds = roundsFilter === 'all'
+    const filteredDeadlySinsRounds = isAllFilter(roundsFilter)
         ? deadlySinsRounds
         : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
 

@@ -5,10 +5,11 @@ import { useThemeColours } from '@/context/ThemeContext';
 import { DeadlySinsRound, getAllHoleSinDetailsService } from '@/service/DbService';
 import { sortDeadlySinsByFrequency, SIN_DETAIL_FIELDS } from '@/service/deadlySinCategories';
 import { useStyles } from '@/hooks/useStyles';
+import { RoundFilter, serializeRoundFilter } from '@/utils/roundFilter';
 
 type Props = {
     rounds: DeadlySinsRound[];
-    filter?: 'all' | 1 | 10;
+    filter?: RoundFilter;
 };
 
 export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
@@ -76,7 +77,7 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
                             style={s.barContainer}
                             onPress={() => router.push({
                                 pathname: '/play/deadly-sin-trend',
-                                params: { sinKey: category.key, label: category.label, filter: String(filter) },
+                                params: { sinKey: category.key, label: category.label, filter: serializeRoundFilter(filter) },
                             })}
                         >
                             <View style={s.labelContainer}>

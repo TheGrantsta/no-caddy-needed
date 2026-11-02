@@ -70,6 +70,7 @@ import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import fontSizes from '../../assets/font-sizes';
 import DistancesScreen from '../play/distances';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
+import { RoundFilter, applyRoundFilter } from '../../utils/roundFilter';
 
 const BAD_HOLE_MESSAGES = [
     'A triple bogey isn\'t the end of the round — plenty of golf left.',
@@ -156,7 +157,7 @@ export default function Play() {
 
     const [settings, setSettings] = useState(getSettingsService());
     const [showOnboarding, , setShowOnboarding] = useToggle(false);
-    const [historyFilter, setHistoryFilter] = useState<1 | 10 | 'all'>('all');
+    const [historyFilter, setHistoryFilter] = useState<RoundFilter>('all');
     const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
     const [showEndIncompleteRoundConfirm, setShowEndIncompleteRoundConfirm] = useState(false);
     const [courseHolePars, setCourseHolePars] = useState<Record<number, number>>({});
@@ -171,8 +172,9 @@ export default function Play() {
     const reassuranceMessage = lifecycle.reassuranceMessage;
     const setReassuranceMessage = lifecycle.setReassuranceMessage;
     const scrollRef = useRef<ScrollView>(null);
-    const contentFadeAnim = useRef(new Animated.Value(0)).current;
-    const contentSlideAnim = useRef(new Animated.Value(0)).current;
+    // Stable Animated.Value instances; held in state so they are not read from a ref during render.
+    const [contentFadeAnim] = useState(() => new Animated.Value(0));
+    const [contentSlideAnim] = useState(() => new Animated.Value(0));
     const navDirectionRef = useRef<'next' | 'previous'>('next');
     const localStyles = styles.playScreen;
     const isLastHole = currentHole >= 18;
@@ -180,6 +182,8 @@ export default function Play() {
     useEffect(() => {
         const activeRound = getActiveRoundService();
         if (activeRound) {
+            // Mount-only hydration from SQLite; there is no external change to subscribe to.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIncompleteRound(activeRound);
             const roundPlayers = getRoundPlayersService(activeRound.Id);
             if (roundPlayers.length > 0) {
@@ -677,7 +681,7 @@ export default function Play() {
     const isRoundActive = activeRoundId !== null;
 
     const filteredRoundHistory = useMemo(
-        () => historyFilter === 'all' ? roundHistory : roundHistory.slice(0, historyFilter),
+        () => applyRoundFilter(roundHistory, historyFilter),
         [roundHistory, historyFilter]
     );
     const parAverages = useMemo(

@@ -19,7 +19,7 @@ import { logEvent } from '../../service/FirebaseService';
 import { getSettingsService, saveSettingsService, AppSettings, getAllRoundHistoryService } from '../../service/DbService';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 import RoundFilterBar from '../../components/RoundFilterBar';
-import { RoundFilter, applyRoundFilter, getAvailableYears, isAllFilter } from '../../utils/roundFilter';
+import { RoundFilter, applyRoundFilter, getAvailableYears } from '../../utils/roundFilter';
 
 export default function Perform() {
   const styles = useStyles();
@@ -51,12 +51,13 @@ export default function Perform() {
   const startRound = () => router.push('/play');
 
   useFocusEffect(refreshHistoryData);
-  // Exclude score-only and incomplete rounds from performance stats
-  const completedRounds = roundHistory.filter(r => r.IsScoreOnly === 0 && r.IsCompleted === 1);
-  const filteredRoundHistory = applyRoundFilter(completedRounds, roundsFilter);
-  const filteredRoundIds = new Set(filteredRoundHistory.map(r => r.Id));
-  const roundIdsFilter = isAllFilter(roundsFilter) ? undefined : filteredRoundIds;
-  const availableYears = getAvailableYears(completedRounds);
+  // The filter selects from every round (same as Play). Score-only and incomplete rounds
+  // are then dropped, because only completed stats rounds have sins, putting and proximity data.
+  const filteredRoundHistory = applyRoundFilter(roundHistory, roundsFilter);
+  const filteredRoundIds = new Set(
+    filteredRoundHistory.filter(r => r.IsScoreOnly === 0 && r.IsCompleted === 1).map(r => r.Id)
+  );
+  const availableYears = getAvailableYears(roundHistory);
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -106,8 +107,10 @@ export default function Perform() {
         </View>
 
         {/* Filter buttons */}
-        {completedRounds.length > 0 && (
-          <RoundFilterBar value={roundsFilter} onChange={setRoundsFilter} years={availableYears} />
+        {roundHistory.length > 0 && (
+          <View style={styles.container}>
+            <RoundFilterBar value={roundsFilter} onChange={setRoundsFilter} years={availableYears} />
+          </View>
         )}
 
         {displaySection('sins') && (
@@ -124,7 +127,7 @@ export default function Perform() {
           <PuttingStatsSection
             fadeAnim={sectionFadeAnim}
             slideAnim={sectionSlideAnim}
-            filteredRoundIds={roundIdsFilter}
+            filteredRoundIds={filteredRoundIds}
             onStartRound={startRound}
           />
         )}
@@ -133,7 +136,7 @@ export default function Perform() {
           <UpAndDownSection
             fadeAnim={sectionFadeAnim}
             slideAnim={sectionSlideAnim}
-            filteredRoundIds={roundIdsFilter}
+            filteredRoundIds={filteredRoundIds}
           />
         )}
 
@@ -143,7 +146,7 @@ export default function Perform() {
             slideAnim={sectionSlideAnim}
             proximityThreePuttOnly={proximityThreePuttOnly}
             onProximityFilterChange={setProximityThreePuttOnly}
-            filteredRoundIds={roundIdsFilter}
+            filteredRoundIds={filteredRoundIds}
             onStartRound={startRound}
           />
         )}

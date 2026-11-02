@@ -4,7 +4,7 @@ import DeadlySinsChart from './DeadlySinsChart';
 import { useStyles } from '../hooks/useStyles';
 import { getAllDeadlySinsRoundsService } from '../service/DbService';
 import StatsEmptyState from './StatsEmptyState';
-import { RoundFilter, isAllFilter } from '../utils/roundFilter';
+import { RoundFilter } from '../utils/roundFilter';
 
 interface Props {
     fadeAnim: Animated.Value;
@@ -24,9 +24,8 @@ export default function DeadlySinsSection({
     const styles = useStyles();
 
     const deadlySinsRounds = getAllDeadlySinsRoundsService();
-    const filteredDeadlySinsRounds = isAllFilter(roundsFilter)
-        ? deadlySinsRounds
-        : deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
+    // Same completed-round set as the putting and proximity sections, so All matches a year that covers every round
+    const filteredDeadlySinsRounds = deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
 
     return (
         <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateX: slideAnim }], marginTop: 20 }]}>

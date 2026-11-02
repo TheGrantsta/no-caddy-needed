@@ -301,6 +301,58 @@ describe('Perform', () => {
             getAllRoundHistoryService.mockReturnValue([]);
         });
 
+        it('allCountsOnlyCompletedStatsRoundsSoItMatchesAYearThatCoversThemAll', () => {
+            const { getAllDeadlySinsRoundsService, getAllRoundHistoryService, getAllHoleSinDetailsService } = require('../../../service/DbService');
+            // Round 2 is score-only: its sins must not count under All, same as under any filter
+            getAllDeadlySinsRoundsService.mockReturnValue([
+                { Id: 1, RoundId: 1, ThreePutts: 10, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 10, Created_At: '01 Jan' },
+                { Id: 2, RoundId: 2, ThreePutts: 100, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 100, Created_At: '02 Jan' },
+            ]);
+            getAllRoundHistoryService.mockReturnValue([
+                { Id: 1, TotalScore: 75, StrokeTotal: null, StartTime: '2026-08-03T09:00:00Z', EndTime: '2026-08-03T14:30:00Z', IsCompleted: 1, IsScoreOnly: 0, CourseName: 'A', Created_At: '01 Jan', HolesPlayed: 18, Year: 2026 },
+                { Id: 2, TotalScore: 78, StrokeTotal: null, StartTime: '2026-08-04T09:00:00Z', EndTime: '2026-08-04T14:30:00Z', IsCompleted: 1, IsScoreOnly: 1, CourseName: 'B', Created_At: '02 Jan', HolesPlayed: 18, Year: 2026 },
+            ]);
+            getAllHoleSinDetailsService.mockReturnValue([]);
+
+            const { getByTestId } = render(<Perform />);
+
+            expect(Number(getByTestId('7deadly-sins-chart-count-0').props.children)).toBe(10);
+        });
+
+        it('offersYearsFromEveryRoundIncludingScoreOnlySoItMatchesPlay', () => {
+            const { getAllRoundHistoryService } = require('../../../service/DbService');
+            getAllRoundHistoryService.mockReturnValue([
+                { Id: 2, TotalScore: 1, IsCompleted: 1, IsScoreOnly: 1, Created_At: '01/03', Year: 2026, HolesPlayed: 18, CourseName: 'A', StrokeTotal: null, StartTime: '', EndTime: null },
+                { Id: 1, TotalScore: 1, IsCompleted: 1, IsScoreOnly: 0, Created_At: '01/06', Year: 2024, HolesPlayed: 18, CourseName: 'B', StrokeTotal: null, StartTime: '', EndTime: null },
+            ]);
+
+            const { getByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('year-menu-button'));
+
+            expect(getByTestId('filter-button-2026')).toBeTruthy();
+            expect(getByTestId('filter-button-2024')).toBeTruthy();
+            getAllRoundHistoryService.mockReturnValue([]);
+        });
+
+        it('lastOneUsesTheLatestRoundOverallSoAScoreOnlyLatestRoundGivesNoStats', () => {
+            const { getAllRoundHistoryService, getAllDeadlySinsRoundsService, getAllHoleSinDetailsService } = require('../../../service/DbService');
+            getAllRoundHistoryService.mockReturnValue([
+                { Id: 2, TotalScore: 1, IsCompleted: 1, IsScoreOnly: 1, Created_At: '02/06', Year: 2026, HolesPlayed: 18, CourseName: 'A', StrokeTotal: null, StartTime: '', EndTime: null },
+                { Id: 1, TotalScore: 1, IsCompleted: 1, IsScoreOnly: 0, Created_At: '01/06', Year: 2026, HolesPlayed: 18, CourseName: 'B', StrokeTotal: null, StartTime: '', EndTime: null },
+            ]);
+            getAllDeadlySinsRoundsService.mockReturnValue([
+                { Id: 1, RoundId: 1, ThreePutts: 10, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 10, Created_At: '01 Jun' },
+            ]);
+            getAllHoleSinDetailsService.mockReturnValue([]);
+
+            const { getByTestId, queryByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('filter-button-1'));
+
+            expect(queryByTestId('7deadly-sins-chart-count-0')).toBeNull();
+            getAllRoundHistoryService.mockReturnValue([]);
+            getAllDeadlySinsRoundsService.mockReturnValue([]);
+        });
+
         it('verifyFilterLogicAppliedToDeadlySinsRounds', () => {
             const { getAllDeadlySinsRoundsService, getAllRoundHistoryService, getAllHoleSinDetailsService } = require('../../../service/DbService');
             // The perform.tsx screen correctly uses roundHistory.slice(0, filter) to get the N most recent rounds,
@@ -334,8 +386,8 @@ describe('Perform', () => {
             };
             getAllDeadlySinsRoundsService.mockReturnValue([round1, round2]);
             getAllRoundHistoryService.mockReturnValue([
-                { Id: 1, TotalScore: 75, StrokeTotal: null, StartTime: '2026-08-03T09:00:00Z', EndTime: '2026-08-03T14:30:00Z', IsCompleted: 1, CourseName: 'Test Course 1', Created_At: '01 Jan', HolesPlayed: 18 },
-                { Id: 2, TotalScore: 78, StrokeTotal: null, StartTime: '2026-08-04T09:00:00Z', EndTime: '2026-08-04T14:30:00Z', IsCompleted: 1, CourseName: 'Test Course 2', Created_At: '02 Jan', HolesPlayed: 18 },
+                { Id: 1, TotalScore: 75, StrokeTotal: null, StartTime: '2026-08-03T09:00:00Z', EndTime: '2026-08-03T14:30:00Z', IsCompleted: 1, IsScoreOnly: 0, CourseName: 'Test Course 1', Created_At: '01 Jan', HolesPlayed: 18 },
+                { Id: 2, TotalScore: 78, StrokeTotal: null, StartTime: '2026-08-04T09:00:00Z', EndTime: '2026-08-04T14:30:00Z', IsCompleted: 1, IsScoreOnly: 0, CourseName: 'Test Course 2', Created_At: '02 Jan', HolesPlayed: 18 },
             ]);
             getAllHoleSinDetailsService.mockReturnValue([]);
 
@@ -555,7 +607,7 @@ describe('Perform', () => {
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
             getPuttingProximityService.mockClear();
             fireEvent(getByTestId('proximity-filter-toggle'), 'valueChange', true);
-            expect(getPuttingProximityService).toHaveBeenCalledWith(true, undefined);
+            expect(getPuttingProximityService).toHaveBeenCalledWith(true, expect.any(Set));
         });
 
         it('toggling switch off calls getPuttingProximityService(false)', () => {
@@ -565,7 +617,7 @@ describe('Perform', () => {
             fireEvent(getByTestId('proximity-filter-toggle'), 'valueChange', true);
             getPuttingProximityService.mockClear();
             fireEvent(getByTestId('proximity-filter-toggle'), 'valueChange', false);
-            expect(getPuttingProximityService).toHaveBeenCalledWith(false, undefined);
+            expect(getPuttingProximityService).toHaveBeenCalledWith(false, expect.any(Set));
         });
     });
 

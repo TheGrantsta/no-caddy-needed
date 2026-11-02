@@ -430,6 +430,22 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "next-hole-button"
 
+# ------- End round -------
+# On the hole screen the link is "end-round-button"; "end-incomplete-round-link" is the Play start screen's link
+- extendedWaitUntil:
+    visible:
+      id: "end-round-button"
+    timeout: 5000
+- tapOn:
+    id: "end-round-button"
+    
+- extendedWaitUntil:
+    visible:
+      id: "confirm-end-round-button"
+    timeout: 5000
+- tapOn:
+    id: "confirm-end-round-button"
+
 # ======== UP AND DOWN ON PERFORM ========
 # Missed greens: holes 1, 3, 4, 5 (hole 2 was in regulation).
 # One-putts from a missed green: holes 1, 4, 5 => 3 of 4 = 75%.

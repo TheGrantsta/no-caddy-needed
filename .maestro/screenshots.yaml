@@ -164,14 +164,14 @@ appId: com.grantsta.golf.nocaddyneeded
 # Screenshot 9: Pros menu
 - tapOn: "Putting"
 - extendedWaitUntil:
-    visible: "Complete a round to see stats"
+    visible: "Complete a round to see stats."
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/04A-perform-putting
 
 # Screenshot 10: Proximity menu
 - tapOn: "Proximity"
 - extendedWaitUntil:
-    visible: "Complete a round to see stats"
+    visible: "Complete a round to see stats."
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/04A-perform-proximity
 

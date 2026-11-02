@@ -6,18 +6,8 @@
     "orientation": "default",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/full-white-logo-transparent.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#2D5A3D"
-    },
     "ios": {
       "supportsTablet": true,
-      "splash": {
-        "image": "./assets/images/full-white-logo-transparent.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#2D5A3D"
-      },
       "bundleIdentifier": "com.grantsta.golf.nocaddyneeded",
       "appStoreUrl": "https://apps.apple.com/app/id6759523224?action=write-review",
       "infoPlist": {
@@ -35,13 +25,8 @@
       "icon": "./assets/images/adaptive-icon-green-background.png"
     },
     "android": {
-      "splash": {
-        "image": "./assets/images/full-white-logo-transparent.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#2D5A3D"
-      },
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/full-white-logo-transparent.png",
+        "foregroundImage": "./assets/images/full-white-logo-transparent-square.png",
         "backgroundColor": "#2D5A3D"
       },
       "package": "com.grantsta.golf.nocaddyneeded",
@@ -53,6 +38,14 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/full-white-logo-transparent.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#2D5A3D"
+        }
+      ],
       [
         "expo-sqlite",
         {

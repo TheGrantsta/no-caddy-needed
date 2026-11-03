@@ -84,6 +84,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0, ReviewPromptShown INTEGER NOT NULL DEFAULT 0, PreShotReminderEnabled INTEGER NOT NULL DEFAULT 1, PreShotRoutineText TEXT NOT NULL DEFAULT '', WhatsNewVersionSeen TEXT NOT NULL DEFAULT '', SettingsOnboardingSeen INTEGER NOT NULL DEFAULT 0, PerformOnboardingSeen INTEGER NOT NULL DEFAULT 0, TempoBpm INTEGER NOT NULL DEFAULT 60, Units TEXT NOT NULL DEFAULT 'yards', SkipStatsFlowEnabled INTEGER NOT NULL DEFAULT 0, BadHoleReassuranceEnabled INTEGER NOT NULL DEFAULT 1);
         CREATE TABLE IF NOT EXISTS PracticeReminders (Id INTEGER PRIMARY KEY AUTOINCREMENT, Label TEXT NOT NULL, ScheduledFor TEXT NOT NULL, NotificationId TEXT, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS HiddenRecents (Id INTEGER PRIMARY KEY AUTOINCREMENT, Type TEXT NOT NULL, Name TEXT NOT NULL, UNIQUE(Type, Name));
+        CREATE TABLE IF NOT EXISTS UiPreferences (Id INTEGER PRIMARY KEY, RoundFilter TEXT NOT NULL DEFAULT 'all');
         CREATE TABLE IF NOT EXISTS HoleNotes (Id INTEGER PRIMARY KEY AUTOINCREMENT, CourseName TEXT NOT NULL, HoleNumber INTEGER NOT NULL, Note TEXT NOT NULL, Updated_At TEXT NOT NULL, UNIQUE(CourseName, HoleNumber));
         CREATE TABLE IF NOT EXISTS PuttingStats (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, FirstPuttDistance INTEGER NOT NULL, SecondPuttDistance INTEGER NOT NULL, SecondPuttIsLong INTEGER NOT NULL DEFAULT 0, ThirdPuttDistance INTEGER, ThirdPuttIsLong INTEGER, GreenInRegulation INTEGER NOT NULL DEFAULT 0, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS HoleSinDetails (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, TroubleOffTeeClub TEXT, PenaltyType TEXT, BogeysInside9IronClub TEXT, DoubleChipsReason TEXT, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
@@ -598,6 +599,29 @@ export const addHiddenRecent = async (type: 'course' | 'player', name: string): 
     } catch (e) {
         void logError('db.addHiddenRecent', e);
         success = false;
+        success = false;
+    } finally {
+        await statement.finalizeAsync();
+    }
+    return success;
+};
+
+// Single-row table for UI preferences that are not part of Settings (Settings is rewritten whole on every save)
+export const getRoundFilterPreference = (): string | null => {
+    const rows = getSyncDb().getAllSync('SELECT RoundFilter FROM UiPreferences WHERE Id = 1;') as { RoundFilter: string }[];
+    return rows[0]?.RoundFilter ?? null;
+};
+
+export const saveRoundFilterPreference = async (value: string): Promise<boolean> => {
+    let success = true;
+    const db = await SQLite.openDatabaseAsync(dbName);
+    const statement = await db.prepareAsync(
+        'INSERT OR REPLACE INTO UiPreferences (Id, RoundFilter) VALUES (1, $RoundFilter);'
+    );
+    try {
+        await statement.executeAsync({ $RoundFilter: value });
+    } catch (e) {
+        void logError('db.saveRoundFilterPreference', e);
         success = false;
     } finally {
         await statement.finalizeAsync();

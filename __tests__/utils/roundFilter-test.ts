@@ -3,6 +3,7 @@ import {
   getAvailableYears,
   isAllFilter,
   parseRoundFilter,
+  resolveRoundFilter,
   serializeRoundFilter,
   RoundFilter,
 } from '../../utils/roundFilter';
@@ -98,6 +99,29 @@ describe('roundFilter', () => {
     it('shouldRejectNonYearNumbersAsAll', () => {
       expect(parseRoundFilter('7')).toBe('all');
       expect(parseRoundFilter('99999')).toBe('all');
+    });
+  });
+
+  describe('resolveRoundFilter', () => {
+    it('shouldKeepACountFilterUnchanged', () => {
+      expect(resolveRoundFilter(10, [2026])).toBe(10);
+      expect(resolveRoundFilter(1, [])).toBe(1);
+    });
+
+    it('shouldKeepAllUnchanged', () => {
+      expect(resolveRoundFilter('all', [2026])).toBe('all');
+    });
+
+    it('shouldKeepAYearThatStillHasRounds', () => {
+      expect(resolveRoundFilter({ year: 2025 }, [2026, 2025])).toEqual({ year: 2025 });
+    });
+
+    it('shouldFallBackToAllWhenTheSelectedYearHasNoRounds', () => {
+      expect(resolveRoundFilter({ year: 2024 }, [2026, 2025])).toBe('all');
+    });
+
+    it('shouldFallBackToAllWhenThereAreNoRoundsAtAll', () => {
+      expect(resolveRoundFilter({ year: 2025 }, [])).toBe('all');
     });
   });
 });

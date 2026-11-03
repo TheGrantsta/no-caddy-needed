@@ -23,3 +23,15 @@ jest.mock('firebase/firestore', () => ({
     collection: jest.fn(() => 'MOCK_COLLECTION_REF'),
     serverTimestamp: jest.fn(() => 'MOCK_TIMESTAMP'),
 }));
+
+// The shared round filter reads and writes SQLite. Screen tests get a default that never touches the
+// database; tests that need the real service or store mock or unmock it themselves.
+jest.mock('./service/RoundFilterPreferenceService', () => ({
+    getRoundFilterPreferenceService: jest.fn(() => 'all'),
+    saveRoundFilterPreferenceService: jest.fn(() => Promise.resolve(true)),
+}));
+
+// Each test starts with no shared round filter, so one test's selection cannot leak into another
+beforeEach(() => {
+    require('./hooks/useRoundFilter').resetRoundFilterStoreForTests();
+});

@@ -19,17 +19,20 @@ import { logEvent } from '../../service/FirebaseService';
 import { getSettingsService, saveSettingsService, AppSettings, getAllRoundHistoryService } from '../../service/DbService';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 import RoundFilterBar from '../../components/RoundFilterBar';
-import { RoundFilter, applyRoundFilter, getAvailableYears } from '../../utils/roundFilter';
+import { applyRoundFilter, getAvailableYears, resolveRoundFilter } from '../../utils/roundFilter';
+import { useRoundFilter } from '../../hooks/useRoundFilter';
 
 export default function Perform() {
   const styles = useStyles();
   const colours = useThemeColours();
   const { landscapePadding } = useOrientation();
-  const [roundsFilter, setRoundsFilter] = useState<RoundFilter>('all');
+  // Shared with Play; the effective filter is derived below once round history is loaded
+  const [storedRoundsFilter, setRoundsFilter] = useRoundFilter();
   const [proximityThreePuttOnly, , setProximityThreePuttOnly] = useToggle(false);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [showOnboarding, , setShowOnboarding] = useToggle(!settings.performOnboardingSeen);
   const [roundHistory, setRoundHistory] = useState(() => getAllRoundHistoryService());
+  const roundsFilter = resolveRoundFilter(storedRoundsFilter, getAvailableYears(roundHistory));
 
   const SECTION_ORDER = ['sins', 'putting', 'proximity'];
   const {

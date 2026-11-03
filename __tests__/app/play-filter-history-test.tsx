@@ -237,6 +237,43 @@ describe('Play screen', () => {
             rounds.forEach(r => expect(getByTestId(`round-history-row-${r.Id}`)).toBeTruthy());
         });
 
+        it('shows the filter selected on Performance, because the selection is shared', () => {
+            const { setRoundFilter } = require('../../hooks/useRoundFilter');
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/06', Year: 2025 },
+            ]);
+            setRoundFilter(10);
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('filter-button-10').props.accessibilityState).toEqual({ selected: true });
+            expect(getByTestId('filter-button-all').props.accessibilityState).toEqual({ selected: false });
+        });
+
+        it('saves the filter when a chip is pressed so it is remembered on the next launch', () => {
+            const { saveRoundFilterPreferenceService } = require('../../service/RoundFilterPreferenceService');
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/06', Year: 2025 },
+            ]);
+
+            const { getByTestId } = render(<Play />);
+            fireEvent.press(getByTestId('filter-button-1'));
+
+            expect(saveRoundFilterPreferenceService).toHaveBeenCalledWith(1);
+        });
+
+        it('falls back to All when the shared year has no rounds on this screen', () => {
+            const { setRoundFilter } = require('../../hooks/useRoundFilter');
+            mockGetAllRoundHistory.mockReturnValue([
+                { Id: 1, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/06', Year: 2025 },
+            ]);
+            setRoundFilter({ year: 2019 });
+
+            const { getByTestId } = render(<Play />);
+
+            expect(getByTestId('filter-button-all').props.accessibilityState).toEqual({ selected: true });
+        });
+
         it('shows year chips and limits history to that year when a year is pressed', () => {
             mockGetAllRoundHistory.mockReturnValue([
                 { Id: 3, TotalScore: 1, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '03/01', Year: 2026 },

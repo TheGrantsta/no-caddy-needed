@@ -70,7 +70,8 @@ import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import fontSizes from '../../assets/font-sizes';
 import DistancesScreen from '../play/distances';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
-import { RoundFilter, applyRoundFilter } from '../../utils/roundFilter';
+import { applyRoundFilter, getAvailableYears, resolveRoundFilter } from '../../utils/roundFilter';
+import { useRoundFilter } from '../../hooks/useRoundFilter';
 
 const BAD_HOLE_MESSAGES = [
     'A triple bogey isn\'t the end of the round — plenty of golf left.',
@@ -157,7 +158,9 @@ export default function Play() {
 
     const [settings, setSettings] = useState(getSettingsService());
     const [showOnboarding, , setShowOnboarding] = useToggle(false);
-    const [historyFilter, setHistoryFilter] = useState<RoundFilter>('all');
+    // Shared with Performance; a stored year with no rounds falls back to All
+    const [storedHistoryFilter, setHistoryFilter] = useRoundFilter();
+    const historyFilter = resolveRoundFilter(storedHistoryFilter, getAvailableYears(roundHistory));
     const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
     const [showEndIncompleteRoundConfirm, setShowEndIncompleteRoundConfirm] = useState(false);
     const [courseHolePars, setCourseHolePars] = useState<Record<number, number>>({});

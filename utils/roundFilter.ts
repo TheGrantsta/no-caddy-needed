@@ -38,3 +38,9 @@ export const parseRoundFilter = (value: string | undefined): RoundFilter => {
   }
   return 'all';
 };
+
+// A saved year can outlive its rounds (for example after a delete); fall back to All when it no longer exists.
+export const resolveRoundFilter = (filter: RoundFilter, years: number[]): RoundFilter => {
+  if (typeof filter === 'object' && !years.includes(filter.year)) return 'all';
+  return filter;
+};

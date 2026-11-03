@@ -353,6 +353,21 @@ describe('Perform', () => {
             getAllDeadlySinsRoundsService.mockReturnValue([]);
         });
 
+        it('shows the filter selected on Play, because the selection is shared', () => {
+            const { setRoundFilter } = require('../../../hooks/useRoundFilter');
+            const { getAllRoundHistoryService } = require('../../../service/DbService');
+            getAllRoundHistoryService.mockReturnValue([
+                { Id: 2, TotalScore: 1, IsCompleted: 1, IsScoreOnly: 0, Created_At: '01/03', Year: 2026, HolesPlayed: 18, CourseName: 'A', StrokeTotal: null, StartTime: '', EndTime: null },
+                { Id: 1, TotalScore: 1, IsCompleted: 1, IsScoreOnly: 0, Created_At: '01/06', Year: 2025, HolesPlayed: 18, CourseName: 'B', StrokeTotal: null, StartTime: '', EndTime: null },
+            ]);
+            setRoundFilter({ year: 2025 });
+
+            const { getByTestId } = render(<Perform />);
+
+            expect(getByTestId('year-menu-button').props.accessibilityState).toEqual({ selected: true, expanded: false });
+            getAllRoundHistoryService.mockReturnValue([]);
+        });
+
         it('verifyFilterLogicAppliedToDeadlySinsRounds', () => {
             const { getAllDeadlySinsRoundsService, getAllRoundHistoryService, getAllHoleSinDetailsService } = require('../../../service/DbService');
             // The perform.tsx screen correctly uses roundHistory.slice(0, filter) to get the N most recent rounds,

@@ -44,7 +44,11 @@ describe('pre-push hook', () => {
     expect(runHook({ SKIP_ALL_CHECKS: '1' })).toEqual(['run test:coverage']);
   });
 
-  it('still runs the Maestro flows when only SKIP_UI_CHECK=1 is set', () => {
-    expect(runHook({ SKIP_UI_CHECK: '1' })).toEqual(ALL_CHECKS);
+  it('runs only unit tests when SKIP_UI_CHECK=1, skipping the visual check and both Maestro flows', () => {
+    expect(runHook({ SKIP_UI_CHECK: '1' })).toEqual(['run test:coverage']);
+  });
+
+  it('runs every check when SKIP_UI_CHECK is set to anything other than 1', () => {
+    expect(runHook({ SKIP_UI_CHECK: '0' })).toEqual(ALL_CHECKS);
   });
 });

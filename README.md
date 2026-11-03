@@ -139,15 +139,9 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
       SKIP_UI_CHECK=1 git push
    ```
 
-   This skips only the visual regression check. The Maestro flows still run.
+   This skips every UI test: the visual regression check and both Maestro flows. Unit tests and coverage still run.
 
-### Skip all UI and flow checks
-
-   ```
-      SKIP_ALL_CHECKS=1 git push
-   ```
-
-   This skips the visual regression check and both Maestro flows. Unit tests and coverage still run.
+   `SKIP_ALL_CHECKS=1 git push` is kept as an alias for the same behaviour.
 
 ## App Store submission
 

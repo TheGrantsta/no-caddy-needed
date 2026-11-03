@@ -1,7 +1,8 @@
 npm run test:coverage
 
-# SKIP_ALL_CHECKS=1 skips the UI visual check and the Maestro flows (unit tests always run)
-if [ "$SKIP_ALL_CHECKS" != "1" ]; then
+# SKIP_UI_CHECK=1 skips all UI tests: the visual check and both Maestro flows (unit tests always run).
+# SKIP_ALL_CHECKS=1 is kept as an alias.
+if [ "$SKIP_UI_CHECK" != "1" ] && [ "$SKIP_ALL_CHECKS" != "1" ]; then
   npm run ui:check
   npm run test:e2e
   npm run test:e2e:stats

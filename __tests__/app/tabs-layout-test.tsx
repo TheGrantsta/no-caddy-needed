@@ -98,6 +98,20 @@ describe('Tabs layout — Practice overdue badge', () => {
         expect(inactiveTint).toBe(require('../../assets/colours').default.tabInactive);
     });
 
+    it('shouldShowTheIndicatorBarOnlyOnTheFocusedTab', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const colours = require('../../assets/colours').default;
+        const homeScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'index');
+
+        const focusedIcon = render(homeScreen[0].options.tabBarIcon({ color: colours.primary, focused: true }));
+        expect(focusedIcon.getByTestId('tab-icon-indicator').props.style.backgroundColor).toBe(colours.primary);
+        focusedIcon.unmount();
+
+        const unfocusedIcon = render(homeScreen[0].options.tabBarIcon({ color: colours.tabInactive, focused: false }));
+        expect(unfocusedIcon.getByTestId('tab-icon-indicator').props.style.backgroundColor).toBe('transparent');
+    });
+
     it('shouldUseLoopIconForPracticeTab', () => {
         render(<TabLayout />);
         const { Tabs } = require('expo-router');

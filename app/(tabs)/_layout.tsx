@@ -1,7 +1,7 @@
 import { Tabs, useSegments } from 'expo-router';
 import React from 'react';
 import { Platform, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import TabBarIcon from '@/components/TabBarIcon';
 import { useThemeColours } from '@/context/ThemeContext';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { getPracticeRemindersService } from '@/service/DbService';
@@ -44,8 +44,8 @@ export default function TabLayout() {
           options={{
             title: 'Home',
             tabBarButtonTestID: 'tab-home',
-            tabBarIcon: ({ color }) => (
-              <MaterialIcons name='home' color={color} size={32} />
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon name='home' color={color} focused={focused} />
             )
           }}
         />
@@ -54,8 +54,8 @@ export default function TabLayout() {
           options={{
             title: 'Play',
             tabBarButtonTestID: 'tab-play',
-            tabBarIcon: ({ color }) => (
-              <MaterialIcons name='sports-golf' color={color} size={32} />
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon name='sports-golf' color={color} focused={focused} />
             )
           }}
         />
@@ -64,9 +64,8 @@ export default function TabLayout() {
           options={{
             title: 'Practice',
             tabBarButtonTestID: 'tab-practice',
-            tabBarIcon: ({ color }) => (
-              <View>
-                <MaterialIcons name='loop' color={color} size={32} />
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon name='loop' color={color} focused={focused}>
                 {hasOverdue && (
                   <View
                     testID="practice-overdue-badge"
@@ -81,7 +80,7 @@ export default function TabLayout() {
                     }}
                   />
                 )}
-              </View>
+              </TabBarIcon>
             )
           }}
         />
@@ -90,8 +89,8 @@ export default function TabLayout() {
           options={{
             title: 'Performance',
             tabBarButtonTestID: 'tab-perform',
-            tabBarIcon: ({ color }) => (
-              <MaterialIcons name='bar-chart' color={color} size={32} />
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon name='bar-chart' color={color} focused={focused} />
             )
           }}
         />

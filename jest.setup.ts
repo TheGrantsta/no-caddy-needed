@@ -1,3 +1,4 @@
+import { resetRoundFilterStoreForTests } from './hooks/useRoundFilter';
 // Suppress act() warnings for mocked async operations
 // These occur because mocked services (mockResolvedValue) complete async state updates
 // after act() blocks finish, but the actual component works correctly in real usage.
@@ -33,5 +34,5 @@ jest.mock('./service/RoundFilterPreferenceService', () => ({
 
 // Each test starts with no shared round filter, so one test's selection cannot leak into another
 beforeEach(() => {
-    require('./hooks/useRoundFilter').resetRoundFilterStoreForTests();
+    resetRoundFilterStoreForTests();
 });

@@ -693,6 +693,8 @@ export default function Play() {
     );
     return (
         <GestureHandlerRootView style={styles.flexOne}>
+            <SubMenu showSubMenu="play" selectedItem={section} handleSubMenu={handleSubMenu} />
+
             <ScrollView
                 ref={scrollRef}
                 keyboardShouldPersistTaps="handled"
@@ -706,8 +708,6 @@ export default function Play() {
                     />
                 }
             >
-
-                <SubMenu showSubMenu="play" selectedItem={section} handleSubMenu={handleSubMenu} />
 
                 {!isRoundActive && !scorecardData && displaySection('play-score') && (
                     <RoundEntry

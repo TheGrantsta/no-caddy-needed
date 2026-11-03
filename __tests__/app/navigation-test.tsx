@@ -62,6 +62,10 @@ jest.mock('../../components/ScreenWrapper', () => {
 });
 
 // Mock Tabs.Screen to capture tab configuration
+jest.mock('react-native-safe-area-context', () => ({
+    useSafeAreaInsets: () => ({ top: 0, bottom: 34, left: 0, right: 0 }),
+}));
+
 jest.mock('expo-router', () => {
     const React = require('react');
     const { View, Text } = require('react-native');

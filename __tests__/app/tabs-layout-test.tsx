@@ -36,6 +36,10 @@ jest.mock('expo-router', () => ({
     useRouter: () => ({ navigate: mockNavigate, push: mockPush }),
 }));
 
+jest.mock('react-native-safe-area-context', () => ({
+    useSafeAreaInsets: () => ({ top: 0, bottom: 34, left: 0, right: 0 }),
+}));
+
 jest.mock('../../components/ScreenWrapper', () => {
     const ScreenWrapper = ({ children }: any) => <>{children}</>;
     return ScreenWrapper;
@@ -84,11 +88,34 @@ describe('Tabs layout — Practice overdue badge', () => {
         expect(queryByTestId('tab-active-indicator')).toBeNull();
     });
 
-    it('shouldUseAppPrimaryColorForActiveTabTintColour', () => {
+    it('shouldShowTheSelectedTabTextInWhite', () => {
         render(<TabLayout />);
         const { Tabs } = require('expo-router');
         const activeTint = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarActiveTintColor;
-        expect(activeTint).toBe('#2D5A3D'); // Primary green color
+        expect(activeTint).toBe(require('../../assets/colours').default.white);
+    });
+
+    it('shouldFillTheSelectedTabWithThePrimaryGreen', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const activeBackground = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarActiveBackgroundColor;
+        expect(activeBackground).toBe(require('../../assets/colours').default.primary);
+    });
+
+    it('shouldExtendTheSelectedFillIntoTheHomeIndicatorAreaWithoutMovingTheContent', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const itemStyle = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarItemStyle;
+        // Item reaches down through the safe-area padding, and nothing inside it is padded away from the bottom edge
+        expect(itemStyle.marginBottom).toBe(-34);
+        expect(itemStyle.paddingBottom).toBe(0);
+    });
+
+    it('shouldLeaveNoGapsBetweenTheFourTabSegments', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const itemStyle = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarItemStyle;
+        expect(itemStyle).toEqual(expect.objectContaining({ marginHorizontal: 0, borderRadius: 0 }));
     });
 
     it('shouldUseMutedTabInactiveColourSoTheSelectedTabStandsOut', () => {
@@ -96,20 +123,6 @@ describe('Tabs layout — Practice overdue badge', () => {
         const { Tabs } = require('expo-router');
         const inactiveTint = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarInactiveTintColor;
         expect(inactiveTint).toBe(require('../../assets/colours').default.tabInactive);
-    });
-
-    it('shouldShowTheIndicatorBarOnlyOnTheFocusedTab', () => {
-        render(<TabLayout />);
-        const { Tabs } = require('expo-router');
-        const colours = require('../../assets/colours').default;
-        const homeScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'index');
-
-        const focusedIcon = render(homeScreen[0].options.tabBarIcon({ color: colours.primary, focused: true }));
-        expect(focusedIcon.getByTestId('tab-icon-indicator').props.style.backgroundColor).toBe(colours.primary);
-        focusedIcon.unmount();
-
-        const unfocusedIcon = render(homeScreen[0].options.tabBarIcon({ color: colours.tabInactive, focused: false }));
-        expect(unfocusedIcon.getByTestId('tab-icon-indicator').props.style.backgroundColor).toBe('transparent');
     });
 
     it('shouldUseLoopIconForPracticeTab', () => {

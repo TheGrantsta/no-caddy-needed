@@ -1,7 +1,8 @@
 import { Tabs, useSegments } from 'expo-router';
 import React from 'react';
 import { Platform, View } from 'react-native';
-import TabBarIcon from '@/components/TabBarIcon';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColours } from '@/context/ThemeContext';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { getPracticeRemindersService } from '@/service/DbService';
@@ -16,14 +17,27 @@ export default function TabLayout() {
   const colours = useThemeColours();
   useSegments(); // Re-render on navigation changes so overdue badge stays current
   const hasOverdue = isOverdue();
+  const { bottom: bottomInset } = useSafeAreaInsets();
 
   return (
     <ScreenWrapper>
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: colours.primary,
+          // Selected tab: white text and icon on a solid primary-green segment that fills the whole tab
+          tabBarActiveTintColor: colours.white,
+          tabBarActiveBackgroundColor: colours.primary,
           tabBarInactiveTintColor: colours.tabInactive,
+          tabBarInactiveBackgroundColor: 'transparent',
+          // Four equal segments that touch edge to edge
+          tabBarItemStyle: {
+            marginHorizontal: 0,
+            paddingHorizontal: 0,
+            // Extend each segment down into the home-indicator area so the fill covers the icon and label
+            marginBottom: -bottomInset,
+            paddingBottom: 0,
+            borderRadius: 0,
+          },
           tabBarLabelStyle: {
             fontSize: fontSizes.smallestText
           },
@@ -44,8 +58,8 @@ export default function TabLayout() {
           options={{
             title: 'Home',
             tabBarButtonTestID: 'tab-home',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name='home' color={color} focused={focused} />
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name='home' color={color} size={32} />
             )
           }}
         />
@@ -54,8 +68,8 @@ export default function TabLayout() {
           options={{
             title: 'Play',
             tabBarButtonTestID: 'tab-play',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name='sports-golf' color={color} focused={focused} />
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name='sports-golf' color={color} size={32} />
             )
           }}
         />
@@ -64,8 +78,9 @@ export default function TabLayout() {
           options={{
             title: 'Practice',
             tabBarButtonTestID: 'tab-practice',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name='loop' color={color} focused={focused}>
+            tabBarIcon: ({ color }) => (
+              <View>
+                <MaterialIcons name='loop' color={color} size={32} />
                 {hasOverdue && (
                   <View
                     testID="practice-overdue-badge"
@@ -80,7 +95,7 @@ export default function TabLayout() {
                     }}
                   />
                 )}
-              </TabBarIcon>
+              </View>
             )
           }}
         />
@@ -89,8 +104,8 @@ export default function TabLayout() {
           options={{
             title: 'Performance',
             tabBarButtonTestID: 'tab-perform',
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name='bar-chart' color={color} focused={focused} />
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name='bar-chart' color={color} size={32} />
             )
           }}
         />

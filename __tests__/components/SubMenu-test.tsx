@@ -144,4 +144,44 @@ describe('SubMenu component', () => {
             expect(getByRole('tab', { name: 'Play', selected: false })).toBeTruthy();
         });
     });
+
+    describe('segmented look', () => {
+        const colours = require('../../assets/colours').default;
+        const { StyleSheet } = require('react-native');
+
+        // Walk up from a menu item's touchable to the segment View that carries the segment styles
+        const segmentOf = (node: any) => {
+            let current = node;
+            while (current && StyleSheet.flatten(current.props.style)?.paddingVertical !== 10) {
+                current = current.parent;
+            }
+            return StyleSheet.flatten(current.props.style);
+        };
+
+        it('shouldFillTheSelectedSegmentWithPrimaryGreen', () => {
+            const { getByTestId } = render(
+                <SubMenu showSubMenu="practice" selectedItem="tools" handleSubMenu={jest.fn()} />
+            );
+
+            expect(segmentOf(getByTestId('practice-sub-menu-tools')).backgroundColor).toBe(colours.primary);
+        });
+
+        it('shouldShowTheSelectedSegmentTextInWhite', () => {
+            const { getByText } = render(
+                <SubMenu showSubMenu="practice" selectedItem="tools" handleSubMenu={jest.fn()} />
+            );
+
+            expect(StyleSheet.flatten(getByText('Tools').props.style).color).toBe(colours.white);
+        });
+
+        it('shouldGiveEveryTheSameEqualWidthSegment', () => {
+            const { getByTestId } = render(
+                <SubMenu showSubMenu="practice" selectedItem="tools" handleSubMenu={jest.fn()} />
+            );
+
+            ['practice-sub-menu-challenges', 'practice-sub-menu-tools', 'practice-sub-menu-history'].forEach(id => {
+                expect(segmentOf(getByTestId(id)).flex).toBe(1);
+            });
+        });
+    });
 });

@@ -366,11 +366,9 @@ export const createStyles = (c: ThemeColours) => ({
     }),
 
     subMenu: StyleSheet.create({
+        // Segmented control look, matching the tab bar: equal segments with no gaps
         subMenuContainer: {
-            padding: 7,
-            paddingBottom: 0,
             flexDirection: 'row',
-            justifyContent: 'space-evenly',
             backgroundColor: c.background,
             borderBottomWidth: 0.5,
             borderBottomColor: c.primary,
@@ -378,19 +376,18 @@ export const createStyles = (c: ThemeColours) => ({
         subMenuItemContainer: {
             flex: 1,
             alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 10,
         },
         subMenuItemContainerSelected: {
-            borderBottomWidth: 4,
-            borderBottomColor: c.primary,
+            backgroundColor: c.primary,
         },
         subMenuItem: {
             color: c.primary,
             fontSize: fontSizes.normal,
         },
         subMenuItemSelected: {
-            textDecorationColor: c.primary,
-            textDecorationStyle: 'solid',
-            color: c.primary,
+            color: c.white,
             fontSize: fontSizes.normal,
         },
     }),

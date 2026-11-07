@@ -185,11 +185,18 @@ describe('Play screen', () => {
         mockGetHolesWithSinsForRound.mockReturnValue(new Set());
     });
 
+    describe('Play header', () => {
+        it('shouldNotShowASecondSettingsButtonNextToPlay', () => {
+            const { queryByTestId } = render(<Play />);
+
+            expect(queryByTestId('play-settings-button')).toBeNull();
+        });
+    });
+
     describe('hole navigation controls', () => {
         const startRound = async (utils: ReturnType<typeof render>) => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
-            fireEvent.press(utils.getByTestId('start-round-button'));
             fireEvent.changeText(utils.getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(utils.getByTestId('start-button'));
             await waitFor(() => expect(utils.getByText('#1')).toBeTruthy());
@@ -356,7 +363,6 @@ describe('Play screen', () => {
             const utils = render(<Play />);
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
-            fireEvent.press(utils.getByTestId('start-round-button'));
             fireEvent.changeText(utils.getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(utils.getByTestId('start-button'));
             await waitFor(() => expect(utils.getByText('#1')).toBeTruthy());
@@ -380,7 +386,6 @@ describe('Play screen', () => {
             const utils = render(<Play />);
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
-            fireEvent.press(utils.getByTestId('start-round-button'));
             fireEvent.changeText(utils.getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(utils.getByTestId('start-button'));
             await waitFor(() => expect(utils.getByText('#1')).toBeTruthy());
@@ -395,141 +400,12 @@ describe('Play screen', () => {
         });
     });
 
-    describe('Sub menu navigation', () => {
-        it('shows sub menu on render', () => {
-            const { getByTestId } = render(<Play />);
-
-            expect(getByTestId('play-sub-menu-score')).toBeTruthy();
-            expect(getByTestId('play-sub-menu-distances')).toBeTruthy();
-            expect(getByTestId('play-sub-menu-wedge-chart')).toBeTruthy();
-        });
-
-        it('shows score input by default during active round', async () => {
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-
-            const { getByTestId, getByText } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-            fireEvent.press(getByTestId('start-button'));
-
-            await waitFor(() => {
-                expect(getByText('#1')).toBeTruthy();
-            });
-        });
-
-        it('shows distances section when Distances is pressed', async () => {
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-            mockGetClubDistances.mockReturnValue([]);
-
-            const { getByTestId, getByText } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-            fireEvent.press(getByTestId('start-button'));
-
-            await waitFor(() => {
-                expect(getByTestId('play-sub-menu-distances')).toBeTruthy();
-            });
-
-            fireEvent.press(getByTestId('play-sub-menu-distances'));
-
-            expect(getByText('Carry distance, not total')).toBeTruthy();
-        });
-
-        it('shows wedge chart section when Wedge chart is pressed', async () => {
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-
-            const { getByTestId, getByText } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-            fireEvent.press(getByTestId('start-button'));
-
-            await waitFor(() => {
-                expect(getByTestId('play-sub-menu-wedge-chart')).toBeTruthy();
-            });
-
-            fireEvent.press(getByTestId('play-sub-menu-wedge-chart'));
-
-            expect(getByText('Carry distance, not total')).toBeTruthy();
-        });
-
-        it('returns to score input when Play is pressed after switching', async () => {
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-            mockGetClubDistances.mockReturnValue([]);
-
-            const { getByTestId, getByText } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-            fireEvent.press(getByTestId('start-button'));
-
-            await waitFor(() => {
-                expect(getByTestId('play-sub-menu-distances')).toBeTruthy();
-            });
-
-            fireEvent.press(getByTestId('play-sub-menu-distances'));
-            fireEvent.press(getByTestId('play-sub-menu-score'));
-
-            expect(getByText('#1')).toBeTruthy();
-        });
-
-        it('shows distances when Distances is pressed without active round', () => {
-            mockGetClubDistances.mockReturnValue([]);
-
-            const { getByTestId, getByText, queryByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('play-sub-menu-distances'));
-
-            expect(getByText('Carry distance, not total')).toBeTruthy();
-            expect(queryByTestId('start-round-button')).toBeNull();
-        });
-
-        it('shows wedge chart when Wedge chart is pressed without active round', () => {
-            const { getByTestId, getByText, queryByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('play-sub-menu-wedge-chart'));
-
-            expect(getByText('Carry distance, not total')).toBeTruthy();
-            expect(queryByTestId('start-round-button')).toBeNull();
-        });
-
-        it('returns to idle state when Play is pressed after viewing distances', () => {
-            mockGetClubDistances.mockReturnValue([]);
-
-            const { getByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('play-sub-menu-distances'));
-            fireEvent.press(getByTestId('play-sub-menu-score'));
-
-            expect(getByTestId('start-round-button')).toBeTruthy();
-        });
-
-        it('hides player setup when switching to distances', () => {
-            const { getByTestId, queryByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            expect(getByTestId('start-button')).toBeTruthy();
-
-            fireEvent.press(getByTestId('play-sub-menu-distances'));
-
-            expect(queryByTestId('start-button')).toBeNull();
-            expect(queryByTestId('add-player-button')).toBeNull();
-        });
-    });
-
     describe('18-Hole limit', () => {
         beforeEach(() => {
             mockGetSettingsService.mockReturnValue({ skipStatsFlowEnabled: true, });
         });
 
         const startRoundAndAdvanceToHole = async (getByTestId: any, getByText: any, targetHole: number) => {
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -604,7 +480,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -620,40 +495,5 @@ describe('Play screen', () => {
     });
 
     describe('Section transition animation', () => {
-        it('triggers Animated.timing when switching to Distances section', async () => {
-            const animSpy = jest.spyOn(Animated, 'timing');
-            const utils = render(<Play />);
-
-            await waitFor(() => expect(utils.getByTestId('play-sub-menu-distances')).toBeTruthy());
-
-            fireEvent.press(utils.getByTestId('play-sub-menu-distances'));
-
-            await waitFor(() => {
-                expect(animSpy).toHaveBeenCalledWith(
-                    expect.any(Animated.Value),
-                    expect.objectContaining({ useNativeDriver: true })
-                );
-            });
-
-            animSpy.mockRestore();
-        });
-
-        it('triggers Animated.timing when switching to Wedge Chart section', async () => {
-            const animSpy = jest.spyOn(Animated, 'timing');
-            const utils = render(<Play />);
-
-            await waitFor(() => expect(utils.getByTestId('play-sub-menu-wedge-chart')).toBeTruthy());
-
-            fireEvent.press(utils.getByTestId('play-sub-menu-wedge-chart'));
-
-            await waitFor(() => {
-                expect(animSpy).toHaveBeenCalledWith(
-                    expect.any(Animated.Value),
-                    expect.objectContaining({ useNativeDriver: true })
-                );
-            });
-
-            animSpy.mockRestore();
-        });
     });
 });

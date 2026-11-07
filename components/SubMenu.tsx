@@ -2,21 +2,21 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
-    showSubMenu: 'practice' | 'play' | 'perform';
+    showSubMenu: 'practice' | 'bag' | 'perform';
     selectedItem: string;
     handleSubMenu: (arg: string) => void;
 }
 
 const allSubMenuItems = [
-    { testId: 'play-sub-menu-score', name: 'play-score', title: 'Play' },
-    { testId: 'play-sub-menu-distances', name: 'play-distances', title: 'Distances' },
-    { testId: 'play-sub-menu-wedge-chart', name: 'play-wedge-chart', title: 'Wedge Chart' },
+    { testId: 'bag-sub-menu-distances', name: 'bag-distances', title: 'Distances' },
+    { testId: 'bag-sub-menu-wedge-chart', name: 'bag-wedge-chart', title: 'Wedge Chart' },
     { testId: 'practice-sub-menu-challenges', name: 'challenges', title: 'Challenges' },
     { testId: 'practice-sub-menu-tools', name: 'tools', title: 'Tools' },
     { testId: 'practice-sub-menu-history', name: 'history', title: 'History' },
     { testId: 'perform-sub-menu-sins', name: 'sins', title: 'Deadly Sins' },
     { testId: 'perform-sub-menu-putting', name: 'putting', title: 'Putting' },
     { testId: 'perform-sub-menu-proximity', name: 'proximity', title: 'Proximity' },
+    { testId: 'perform-sub-menu-rounds', name: 'rounds', title: 'Rounds' },
 ]
 
 const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {

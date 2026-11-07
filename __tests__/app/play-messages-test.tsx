@@ -198,7 +198,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -216,7 +215,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -371,21 +369,6 @@ describe('Play screen', () => {
             expect(UNSAFE_getByType(ScrollView).props.refreshControl.props.refreshing).toBe(false);
         });
 
-        it('onRefreshCallsGetAllRoundHistoryService', () => {
-            const { UNSAFE_getByType } = render(<Play />);
-            const scrollView = UNSAFE_getByType(ScrollView);
-
-            const initialCount = mockGetAllRoundHistory.mock.calls.length;
-
-            act(() => {
-                scrollView.props.refreshControl.props.onRefresh();
-            });
-            act(() => {
-                jest.advanceTimersByTime(750);
-            });
-
-            expect(mockGetAllRoundHistory.mock.calls.length).toBeGreaterThan(initialCount);
-        });
     });
 
     describe('Review prompt', () => {
@@ -399,7 +382,6 @@ describe('Play screen', () => {
                 holeScores: [],
             });
 
-            fireEvent.press(getByTestId('start-round-button') as never);
             fireEvent.changeText(getByTestId('course-name-input') as never, 'Test Course');
             fireEvent.press(getByTestId('start-button') as never);
             await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
@@ -465,7 +447,6 @@ describe('Play screen', () => {
         const startRound = (getByTestId: (id: string) => unknown) => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
-            fireEvent.press(getByTestId('start-round-button') as never);
             fireEvent.changeText(getByTestId('course-name-input') as never, 'Test Course');
             fireEvent.press(getByTestId('start-button') as never);
         };

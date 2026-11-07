@@ -17,6 +17,7 @@ jest.mock('../../service/DbService', () => ({
     getPuttingMakeRatesService: jest.fn().mockReturnValue([]),
     getPuttingProximityService: jest.fn().mockReturnValue([]),
     getAllHoleSinDetailsService: jest.fn().mockReturnValue([]),
+    getParAveragesService: jest.fn().mockReturnValue({ par3: null, par4: null, par5: null }),
 }));
 
 const _mockLogEvent = logEvent as jest.Mock;
@@ -94,7 +95,7 @@ describe('Perform page ', () => {
             const { getByTestId, queryAllByText } = render(<View />);
 
             expect(getByTestId('onboarding-overlay')).toBeTruthy();
-            expect(queryAllByText('Performance').length).toBeGreaterThan(0);
+            expect(queryAllByText('Stats').length).toBeGreaterThan(0);
         });
 
         it('hides the onboarding overlay when already seen', () => {
@@ -129,6 +130,56 @@ describe('Perform page ', () => {
                     expect.objectContaining({ performOnboardingSeen: true })
                 );
             });
+        });
+    });
+
+    describe('Rounds section', () => {
+        const mockGetAllRoundHistoryService = require('../../service/DbService').getAllRoundHistoryService as jest.Mock;
+        const mockGetParAveragesService = require('../../service/DbService').getParAveragesService as jest.Mock;
+
+        const completedRound = { Id: 5, Created_At: '2024-01-01', IsScoreOnly: 0, IsCompleted: 1, StrokeTotal: 84, CourseName: 'Augusta', HolesPlayed: 18 };
+
+        beforeEach(() => {
+            mockGetAllRoundHistoryService.mockReturnValue([completedRound]);
+            mockGetParAveragesService.mockReturnValue({ par3: null, par4: 4.5, par5: null });
+        });
+
+        it('shouldShowRoundHistoryRowsWhenRoundsMenuItemPressed', () => {
+            const { getByTestId } = render(<View />);
+
+            fireEvent.press(getByTestId('perform-sub-menu-rounds'));
+
+            expect(getByTestId('round-history-row-5')).toBeTruthy();
+            expect(getByTestId('round-history-strokes-5')).toHaveTextContent('84');
+        });
+
+        it('shouldShowParAveragesOnTheRoundsSection', () => {
+            const { getByTestId } = render(<View />);
+
+            fireEvent.press(getByTestId('perform-sub-menu-rounds'));
+
+            expect(getByTestId('par-averages-par4')).toHaveTextContent('Par 4: 4.50');
+        });
+
+        it('shouldOfferRoundsAsAStatsSubMenuItem', () => {
+            const { getByTestId } = render(<View />);
+
+            expect(getByTestId('perform-sub-menu-rounds')).toBeTruthy();
+        });
+
+        it('shouldHideRoundHistoryWhenDeadlySinsSectionIsSelected', () => {
+            const { getByTestId, queryByTestId } = render(<View />);
+
+            fireEvent.press(getByTestId('perform-sub-menu-rounds'));
+            fireEvent.press(getByTestId('perform-sub-menu-sins'));
+
+            expect(queryByTestId('round-history-row-5')).toBeNull();
+        });
+
+        it('shouldShowRoundsTitleAsStatsHeader', () => {
+            const { getByText } = render(<View />);
+
+            expect(getByText('Stats')).toBeTruthy();
         });
     });
 

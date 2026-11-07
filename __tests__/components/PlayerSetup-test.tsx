@@ -12,6 +12,18 @@ jest.mock('../../context/ThemeContext', () => ({
     }),
 }));
 
+// Swipeable renders its right actions alongside the content so the delete action can be pressed in tests
+jest.mock('react-native-gesture-handler/ReanimatedSwipeable', () => {
+    const { View: MockView } = require('react-native');
+    const MockSwipeable = ({ children, renderRightActions }: any) => (
+        <MockView>
+            {children}
+            {renderRightActions?.()}
+        </MockView>
+    );
+    return { __esModule: true, default: MockSwipeable };
+});
+
 describe('PlayerSetup', () => {
     const mockOnStartRound = jest.fn();
 
@@ -25,16 +37,30 @@ describe('PlayerSetup', () => {
         expect(getByText('You')).toBeTruthy();
     });
 
+    it('shows Host label beside You', () => {
+        const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+        expect(getByTestId('player-you-host-label')).toHaveTextContent('Host');
+    });
+
     it('shows Add player button', () => {
         const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
 
         expect(getByTestId('add-player-button')).toBeTruthy();
     });
 
-    it('shows Start button', () => {
-        const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+    it('shows Start button labelled Start round', () => {
+        const { getByTestId, getByText } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
 
         expect(getByTestId('start-button')).toBeTruthy();
+        expect(getByText('Start round')).toBeTruthy();
+    });
+
+    it('does not show a Cancel button', () => {
+        const { queryByTestId, queryByText } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+        expect(queryByTestId('cancel-button')).toBeNull();
+        expect(queryByText('Cancel')).toBeNull();
     });
 
     it('adds a player input when Add player is pressed', () => {
@@ -66,6 +92,18 @@ describe('PlayerSetup', () => {
 
         fireEvent.press(getByTestId('remove-player-0'));
         expect(queryByTestId('player-name-input-0')).toBeNull();
+    });
+
+    it('shows add player button again after removing a player when at max', () => {
+        const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+        fireEvent.press(getByTestId('add-player-button'));
+        fireEvent.press(getByTestId('add-player-button'));
+        fireEvent.press(getByTestId('add-player-button'));
+
+        fireEvent.press(getByTestId('remove-player-1'));
+
+        expect(getByTestId('add-player-button')).toBeTruthy();
     });
 
     it('does not call onStartRound when course name is empty', () => {
@@ -108,23 +146,17 @@ describe('PlayerSetup', () => {
         expect(mockOnStartRound).toHaveBeenCalledWith(['Alice'], 'St Andrews');
     });
 
-    it('shows add player button again after removing a player when at max', () => {
-        const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
-
-        fireEvent.press(getByTestId('add-player-button'));
-        fireEvent.press(getByTestId('add-player-button'));
-        fireEvent.press(getByTestId('add-player-button'));
-
-        fireEvent.press(getByTestId('remove-player-1'));
-
-        expect(getByTestId('add-player-button')).toBeTruthy();
-    });
-
-    describe('Course name input', () => {
-        it('renders course name input', () => {
+    describe('Course search field', () => {
+        it('uses a course name placeholder for the text field', () => {
             const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
 
-            expect(getByTestId('course-name-input')).toBeTruthy();
+            expect(getByTestId('course-name-input').props.placeholder).toBe('Course name');
+        });
+
+        it('shows no search icon beside the course name field', () => {
+            const { queryByText } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            expect(queryByText(/Icon: search/)).toBeNull();
         });
 
         it('passes typed course name to onStartRound', () => {
@@ -195,9 +227,32 @@ describe('PlayerSetup', () => {
 
             expect(mockOnStartRound).toHaveBeenCalledWith([], 'Pebble Beach');
         });
+
+        it('filters recent courses to those containing the typed text, ignoring case', () => {
+            const { getByTestId, queryByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews', 'Pebble Beach']} />
+            );
+
+            fireEvent.changeText(getByTestId('course-name-input'), 'PEBB');
+
+            expect(getByTestId('recent-course-Pebble Beach')).toBeTruthy();
+            expect(queryByTestId('recent-course-St Andrews')).toBeNull();
+        });
+
+        it('shows every recent course again when the search text is cleared', () => {
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews', 'Pebble Beach']} />
+            );
+
+            fireEvent.changeText(getByTestId('course-name-input'), 'Pebble');
+            fireEvent.changeText(getByTestId('course-name-input'), '');
+
+            expect(getByTestId('recent-course-St Andrews')).toBeTruthy();
+            expect(getByTestId('recent-course-Pebble Beach')).toBeTruthy();
+        });
     });
 
-    describe('Recent course names', () => {
+    describe('Recent courses', () => {
         it('shows recent course names when provided', () => {
             const { getByText } = render(
                 <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews', 'Pebble Beach']} />
@@ -207,12 +262,35 @@ describe('PlayerSetup', () => {
             expect(getByText('Pebble Beach')).toBeTruthy();
         });
 
-        it('does not show recent section when list is empty', () => {
-            const { queryByText } = render(
+        it('shows a Recent label above the list', () => {
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews']} />
+            );
+
+            expect(getByTestId('recent-courses-label')).toHaveTextContent('Recent');
+        });
+
+        it('shows a swipe hint when there are recent courses', () => {
+            const { getByText } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews']} />
+            );
+
+            expect(getByText('Swipe left on a course to remove it.')).toBeTruthy();
+        });
+
+        it('does not show recent section or swipe hint when list is empty', () => {
+            const { queryByTestId, queryByText } = render(
                 <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={[]} />
             );
 
-            expect(queryByText('Recent')).toBeNull();
+            expect(queryByTestId('recent-courses-label')).toBeNull();
+            expect(queryByText('Swipe left on a course to remove it.')).toBeNull();
+        });
+
+        it('does not show recent section when prop is not provided', () => {
+            const { queryByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            expect(queryByTestId('recent-courses-label')).toBeNull();
         });
 
         it('populates course name input when recent name is tapped', () => {
@@ -239,77 +317,56 @@ describe('PlayerSetup', () => {
             expect(queryByTestId('course-name-error')).toBeNull();
         });
 
-        it('does not show recent section when prop is not provided', () => {
-            const { queryByText } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
-
-            expect(queryByText('Recent')).toBeNull();
-        });
-    });
-
-    describe('Recent player names', () => {
-        it('shows recent player names when provided', () => {
-            const { getByTestId } = render(
-                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={['Alice', 'Bob']} />
-            );
-
-            expect(getByTestId('recent-player-Alice')).toBeTruthy();
-            expect(getByTestId('recent-player-Bob')).toBeTruthy();
-        });
-
-        it('does not show recent players section when list is empty', () => {
-            const { queryByText } = render(
-                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={[]} />
-            );
-
-            expect(queryByText('Recent players')).toBeNull();
-        });
-
-        it('does not show recent players section when prop is not provided', () => {
-            const { queryByText } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
-
-            expect(queryByText('Recent players')).toBeNull();
-        });
-
-        it('adds player to the list when recent player name is tapped', () => {
-            const { getByTestId } = render(
-                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={['Alice']} />
-            );
-
-            fireEvent.press(getByTestId('recent-player-Alice'));
-
-            expect(getByTestId('player-name-input-0').props.value).toBe('Alice');
-        });
-
-        it('does not show recent players section when at max players', () => {
+        it('shows a checkmark only on the course that is currently selected', () => {
             const { getByTestId, queryByTestId } = render(
-                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={['Alice']} />
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews', 'Pebble Beach']} />
             );
 
-            fireEvent.press(getByTestId('add-player-button'));
-            fireEvent.press(getByTestId('add-player-button'));
-            fireEvent.press(getByTestId('add-player-button'));
+            fireEvent.press(getByTestId('recent-course-Pebble Beach'));
 
-            expect(queryByTestId('recent-player-Alice')).toBeNull();
+            expect(getByTestId('recent-course-selected-Pebble Beach')).toBeTruthy();
+            expect(queryByTestId('recent-course-selected-St Andrews')).toBeNull();
+        });
+
+        it('shows no checkmark when the typed course name matches no recent course', () => {
+            const { getByTestId, queryByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews']} />
+            );
+
+            fireEvent.changeText(getByTestId('course-name-input'), 'Augusta');
+
+            expect(queryByTestId('recent-course-selected-St Andrews')).toBeNull();
         });
     });
 
-    describe('Remove recent course', () => {
-        it('showsRemoveButtonForEachRecentCourse', () => {
+    describe('Remove recent course by swiping', () => {
+        it('keeps each recent course row opaque so its delete action is hidden until swiped', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews']} />
+            );
+
+            const rowStyle = StyleSheet.flatten(getByTestId('recent-course-St Andrews').props.style);
+
+            expect(rowStyle.backgroundColor).toBe(require('../../assets/colours').default.backgroundLight);
+        });
+
+        it('shows a delete action for each recent course', () => {
             const { getByTestId } = render(
                 <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews', 'Pebble Beach']} />
             );
 
-            expect(getByTestId('remove-recent-course-St Andrews')).toBeTruthy();
-            expect(getByTestId('remove-recent-course-Pebble Beach')).toBeTruthy();
+            expect(getByTestId('delete-recent-course-St Andrews')).toBeTruthy();
+            expect(getByTestId('delete-recent-course-Pebble Beach')).toBeTruthy();
         });
 
-        it('callsOnRemoveCourseWhenRemoveButtonPressed', () => {
+        it('callsOnRemoveCourseWhenDeleteActionPressed', () => {
             const mockOnRemoveCourse = jest.fn();
             const { getByTestId } = render(
                 <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews']} onRemoveCourse={mockOnRemoveCourse} />
             );
 
-            fireEvent.press(getByTestId('remove-recent-course-St Andrews'));
+            fireEvent.press(getByTestId('delete-recent-course-St Andrews'));
 
             expect(mockOnRemoveCourse).toHaveBeenCalledWith('St Andrews');
         });
@@ -319,71 +376,20 @@ describe('PlayerSetup', () => {
                 <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews', 'Pebble Beach']} />
             );
 
-            fireEvent.press(getByTestId('remove-recent-course-St Andrews'));
+            fireEvent.press(getByTestId('delete-recent-course-St Andrews'));
 
             expect(queryByTestId('recent-course-St Andrews')).toBeNull();
             expect(getByTestId('recent-course-Pebble Beach')).toBeTruthy();
         });
-    });
 
-    describe('Remove recent player', () => {
-        it('showsRemoveButtonForEachRecentPlayer', () => {
-            const { getByTestId } = render(
-                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={['Alice', 'Bob']} />
+        it('hides the swipe hint once no recent courses remain', () => {
+            const { getByTestId, queryByText } = render(
+                <PlayerSetup onStartRound={mockOnStartRound} recentCourseNames={['St Andrews']} />
             );
 
-            expect(getByTestId('remove-recent-player-Alice')).toBeTruthy();
-            expect(getByTestId('remove-recent-player-Bob')).toBeTruthy();
-        });
+            fireEvent.press(getByTestId('delete-recent-course-St Andrews'));
 
-        it('callsOnRemovePlayerWhenRemoveButtonPressed', () => {
-            const mockOnRemovePlayer = jest.fn();
-            const { getByTestId } = render(
-                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={['Alice']} onRemovePlayer={mockOnRemovePlayer} />
-            );
-
-            fireEvent.press(getByTestId('remove-recent-player-Alice'));
-
-            expect(mockOnRemovePlayer).toHaveBeenCalledWith('Alice');
-        });
-
-        it('hidesRemovedPlayerFromListOptimistically', () => {
-            const { getByTestId, queryByTestId } = render(
-                <PlayerSetup onStartRound={mockOnStartRound} recentPlayerNames={['Alice', 'Bob']} />
-            );
-
-            fireEvent.press(getByTestId('remove-recent-player-Alice'));
-
-            expect(queryByTestId('recent-player-Alice')).toBeNull();
-            expect(getByTestId('recent-player-Bob')).toBeTruthy();
-        });
-    });
-
-    describe('Cancel button', () => {
-        it('shows cancel button when onCancel is provided', () => {
-            const mockOnCancel = jest.fn();
-            const { getByTestId } = render(
-                <PlayerSetup onStartRound={mockOnStartRound} onCancel={mockOnCancel} />
-            );
-
-            expect(getByTestId('cancel-button')).toBeTruthy();
-        });
-
-        it('does not show cancel button when onCancel is not provided', () => {
-            const { queryByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
-
-            expect(queryByTestId('cancel-button')).toBeNull();
-        });
-
-        it('calls onCancel when cancel button is pressed', () => {
-            const mockOnCancel = jest.fn();
-            const { getByTestId } = render(
-                <PlayerSetup onStartRound={mockOnStartRound} onCancel={mockOnCancel} />
-            );
-
-            fireEvent.press(getByTestId('cancel-button'));
-
-            expect(mockOnCancel).toHaveBeenCalled();
+            expect(queryByText('Swipe left on a course to remove it.')).toBeNull();
         });
     });
 

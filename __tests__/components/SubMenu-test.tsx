@@ -51,35 +51,35 @@ describe('SubMenu component', () => {
         });
     });
 
-    describe('Play sub menu', () => {
-        it('renders play menu items', () => {
+    describe('My Bag sub menu', () => {
+        it('renders my bag menu items', () => {
             const { getByText } = render(
-                <SubMenu showSubMenu="play" selectedItem="play-score" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="bag" selectedItem="bag-distances" handleSubMenu={mockHandleSubMenu} />
             );
 
-            expect(getByText('Play')).toBeTruthy();
+            expect(getByText('Distances')).toBeTruthy();
             expect(getByText('Distances')).toBeTruthy();
             expect(getByText('Wedge Chart')).toBeTruthy();
         });
 
         it('calls handleSubMenu when Distances is pressed', () => {
             const { getByTestId } = render(
-                <SubMenu showSubMenu="play" selectedItem="play-score" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="bag" selectedItem="bag-distances" handleSubMenu={mockHandleSubMenu} />
             );
 
-            fireEvent.press(getByTestId('play-sub-menu-distances'));
+            fireEvent.press(getByTestId('bag-sub-menu-distances'));
 
-            expect(mockHandleSubMenu).toHaveBeenCalledWith('play-distances');
+            expect(mockHandleSubMenu).toHaveBeenCalledWith('bag-distances');
         });
 
         it('calls handleSubMenu when Wedge Chart is pressed', () => {
             const { getByTestId } = render(
-                <SubMenu showSubMenu="play" selectedItem="play-score" handleSubMenu={mockHandleSubMenu} />
+                <SubMenu showSubMenu="bag" selectedItem="bag-distances" handleSubMenu={mockHandleSubMenu} />
             );
 
-            fireEvent.press(getByTestId('play-sub-menu-wedge-chart'));
+            fireEvent.press(getByTestId('bag-sub-menu-wedge-chart'));
 
-            expect(mockHandleSubMenu).toHaveBeenCalledWith('play-wedge-chart');
+            expect(mockHandleSubMenu).toHaveBeenCalledWith('bag-wedge-chart');
         });
     });
 
@@ -131,17 +131,17 @@ describe('SubMenu component', () => {
 
     describe('accessibility', () => {
         it('shouldExposeEachSubMenuItemAsTabWithItsTitle', () => {
-            const { getByRole } = render(<SubMenu showSubMenu="play" selectedItem="play-score" handleSubMenu={jest.fn()} />);
+            const { getByRole } = render(<SubMenu showSubMenu="bag" selectedItem="bag-distances" handleSubMenu={jest.fn()} />);
 
-            expect(getByRole('tab', { name: 'Play' })).toBeTruthy();
+            expect(getByRole('tab', { name: 'Wedge Chart' })).toBeTruthy();
             expect(getByRole('tab', { name: 'Distances' })).toBeTruthy();
         });
 
         it('shouldMarkOnlySelectedItemAsSelected', () => {
-            const { getByRole } = render(<SubMenu showSubMenu="play" selectedItem="play-distances" handleSubMenu={jest.fn()} />);
+            const { getByRole } = render(<SubMenu showSubMenu="bag" selectedItem="bag-distances" handleSubMenu={jest.fn()} />);
 
             expect(getByRole('tab', { name: 'Distances', selected: true })).toBeTruthy();
-            expect(getByRole('tab', { name: 'Play', selected: false })).toBeTruthy();
+            expect(getByRole('tab', { name: 'Wedge Chart', selected: false })).toBeTruthy();
         });
     });
 

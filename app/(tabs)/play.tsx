@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import { Animated, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -7,9 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import HoleScoreInput from '../../components/HoleScoreInput';
 import HoleNoteInput from '../../components/HoleNoteInput';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
-import SubMenu from '../../components/SubMenu';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
-import WedgeChartScreen from '../play/wedge-chart';
 import Scorecard from '../../components/Scorecard';
 import CtaButton from '../../components/CtaButton';
 import ScorecardInlineEditor from '../../components/ScorecardInlineEditor';
@@ -29,16 +27,13 @@ import {
     getRoundPlayersService,
     getMultiplayerScorecardService,
     getRecentCourseNamesService,
-    getRecentPlayerNamesService,
     hideCourseFromRecentsService,
-    hidePlayerFromRecentsService,
     getHolesPlayedForRoundService,
     getCourseHoleParsService,
     loadCourseNotesService,
     saveHoleNoteService,
     getSettingsService,
     saveSettingsService,
-    getParAveragesService,
     getClubDistancesService,
     insertHoleSinDetailsService,
     getHoleSinDetailsService,
@@ -68,10 +63,7 @@ import RoundEntry from '../../components/RoundEntry';
 import HoleNavigationControls from '../../components/HoleNavigationControls';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import fontSizes from '../../assets/font-sizes';
-import DistancesScreen from '../play/distances';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
-import { applyRoundFilter, getAvailableYears, resolveRoundFilter } from '../../utils/roundFilter';
-import { useRoundFilter } from '../../hooks/useRoundFilter';
 
 const BAD_HOLE_MESSAGES = [
     'A triple bogey isn\'t the end of the round — plenty of golf left.',
@@ -129,38 +121,31 @@ export default function Play() {
     const sinDetailsDoubleChipReasonError = lifecycle.sinDetailsDoubleChipReasonError;
     const setSinDetailsDoubleChipReasonError = lifecycle.setSinDetailsDoubleChipReasonError;
 
-    const [roundHistory, setRoundHistory] = useState<Round[]>([]);
     const [showPuttingInfo, , setShowPuttingInfo] = useToggle(false);
     const [notificationId, setNotificationId] = useState<string | null>(null);
-    const [showPlayerSetup, , setShowPlayerSetup] = useToggle(false);
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
     const [currentHoleData, setCurrentHoleData] = useState<{ holeNumber: number; holePar: number; scores: { playerId: number; playerName: string; score: number }[] } | null>(null);
     const [showEndRoundConfirm, , setShowEndRoundConfirm] = useToggle(false);
     const [scorecardData, setScorecardData] = useState<MultiplayerRoundScorecard | null>(null);
     const [recentCourseNames, setRecentCourseNames] = useState<string[]>([]);
-    const [recentPlayerNames, setRecentPlayerNames] = useState<string[]>([]);
     const { showError, showResult } = useAppToast();
     const { wind, heading, refreshWind } = useWind();
 
-    const SECTION_ORDER = ['play-score', 'play-distances', 'play-wedge-chart'];
+    const SECTION_ORDER = ['play-score'];
     const {
-        section,
         displaySection,
-        handleSubMenu,
         fadeAnim: sectionFadeAnim,
         slideAnim: sectionSlideAnim,
         replay: replaySectionTransition,
     } = useSectionTransition(SECTION_ORDER);
 
     const { refreshing, onRefresh } = useFakeRefresh(
-        () => setRoundHistory(getAllRoundHistoryService())
+        () => setRecentCourseNames(getRecentCourseNamesService())
     );
 
     const [settings, setSettings] = useState(getSettingsService());
     const [showOnboarding, , setShowOnboarding] = useToggle(false);
     // Shared with Performance; a stored year with no rounds falls back to All
-    const [storedHistoryFilter, setHistoryFilter] = useRoundFilter();
-    const historyFilter = resolveRoundFilter(storedHistoryFilter, getAvailableYears(roundHistory));
     const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
     const [showEndIncompleteRoundConfirm, setShowEndIncompleteRoundConfirm] = useState(false);
     const [courseHolePars, setCourseHolePars] = useState<Record<number, number>>({});
@@ -194,9 +179,7 @@ export default function Play() {
             }
         }
         const history = getAllRoundHistoryService();
-        setRoundHistory(history);
         setRecentCourseNames(getRecentCourseNamesService());
-        setRecentPlayerNames(getRecentPlayerNamesService());
         setClubDistances(getClubDistancesService());
 
         const currentSettings = getSettingsService();
@@ -210,7 +193,6 @@ export default function Play() {
     // Re-read the history list whenever the screen regains focus (e.g. after a
     // round is deleted on the scorecard screen and we navigate back here).
     const refreshHistoryData = useCallback(() => {
-        setRoundHistory(getAllRoundHistoryService());
         setSettings(getSettingsService());
     }, []);
 
@@ -252,10 +234,6 @@ export default function Play() {
 
     const handleShowOnboarding = () => {
         setShowOnboarding(true);
-    };
-
-    const handleShowPlayerSetup = () => {
-        setShowPlayerSetup(true);
     };
 
     const handleContinueRound = async () => {
@@ -300,8 +278,6 @@ export default function Play() {
         setIncompleteRound(null);
         setPlayers([]);
         setShowEndIncompleteRoundConfirm(false);
-        const history = getAllRoundHistoryService();
-        setRoundHistory(history);
         showResult(true, 'Round ended', '');
     };
 
@@ -341,7 +317,6 @@ export default function Play() {
                 scores: roundPlayers.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: par })),
             };
             setCurrentHoleData(holeData);
-            setShowPlayerSetup(false);
             replaySectionTransition();
             const nId = await scheduleRoundReminder();
             setNotificationId(nId);
@@ -619,7 +594,6 @@ export default function Play() {
         setSelectedBogeysClub(undefined);
         setSinDetailsBogeysClubError(false);
         setPlayers([]);
-        setShowPlayerSetup(false);
         setCurrentHoleData(null);
         setShowEndRoundConfirm(false);
         setScorecardData(null);
@@ -630,9 +604,7 @@ export default function Play() {
         setActiveCourseName(null);
         setCourseNotes({});
         setCurrentNoteText('');
-        setRoundHistory(getAllRoundHistoryService());
         setRecentCourseNames(getRecentCourseNamesService());
-        setRecentPlayerNames(getRecentPlayerNamesService());
     };
 
     const handleConfirmEndRound = async () => {
@@ -683,18 +655,8 @@ export default function Play() {
 
     const isRoundActive = activeRoundId !== null;
 
-    const filteredRoundHistory = useMemo(
-        () => applyRoundFilter(roundHistory, historyFilter),
-        [roundHistory, historyFilter]
-    );
-    const parAverages = useMemo(
-        () => getParAveragesService(filteredRoundHistory),
-        [filteredRoundHistory]
-    );
     return (
         <GestureHandlerRootView style={styles.flexOne}>
-            <SubMenu showSubMenu="play" selectedItem={section} handleSubMenu={handleSubMenu} />
-
             <ScrollView
                 ref={scrollRef}
                 keyboardShouldPersistTaps="handled"
@@ -711,30 +673,16 @@ export default function Play() {
 
                 {!isRoundActive && !scorecardData && displaySection('play-score') && (
                     <RoundEntry
-                        roundHistory={roundHistory}
-                        historyFilter={historyFilter}
-                        onHistoryFilterChange={setHistoryFilter}
                         incompleteRound={incompleteRound}
-                        notificationId={notificationId}
-                        showPlayerSetup={showPlayerSetup}
-                        onShowPlayerSetup={handleShowPlayerSetup}
-                        onCancelPlayerSetup={() => setShowPlayerSetup(false)}
                         onContinueRound={handleContinueRound}
                         onEndIncompleteRound={handleEndIncompleteRound}
                         recentCourseNames={recentCourseNames}
-                        recentPlayerNames={recentPlayerNames}
                         onStartRound={handleStartRound}
                         onRemoveCourse={(name) => {
                             hideCourseFromRecentsService(name);
                             setRecentCourseNames(getRecentCourseNamesService());
                         }}
-                        onRemovePlayer={(name) => {
-                            hidePlayerFromRecentsService(name);
-                            setRecentPlayerNames(getRecentPlayerNamesService());
-                        }}
-                        parAverages={parAverages}
                         onShowOnboarding={handleShowOnboarding}
-                        showOnboarding={showOnboarding}
                     />
                 )}
 
@@ -972,17 +920,6 @@ export default function Play() {
                     />
                 )}
 
-                {displaySection('play-distances') && (
-                    <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
-                        <DistancesScreen />
-                    </Animated.View>
-                )}
-
-                {displaySection('play-wedge-chart') && (
-                    <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
-                        <WedgeChartScreen />
-                    </Animated.View>
-                )}
             </ScrollView>
 
             <OnboardingOverlay

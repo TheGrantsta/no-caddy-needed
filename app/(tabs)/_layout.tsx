@@ -1,12 +1,11 @@
 import { Tabs, useSegments } from 'expo-router';
 import React from 'react';
-import { Platform, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { View } from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColours } from '@/context/ThemeContext';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { getPracticeRemindersService } from '@/service/DbService';
-import fontSizes from '@/assets/font-sizes';
 
 const isOverdue = () => {
   const reminders = getPracticeRemindersService();
@@ -24,34 +23,51 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          // Selected tab: white text and icon on a solid primary-green segment that fills the whole tab
-          tabBarActiveTintColor: colours.white,
-          tabBarActiveBackgroundColor: colours.primary,
+          // Selected tab: primary-green icon and label on a light green-grey pill
+          tabBarActiveTintColor: colours.primary,
+          tabBarActiveBackgroundColor: colours.primary + '1F',
           tabBarInactiveTintColor: colours.tabInactive,
           tabBarInactiveBackgroundColor: 'transparent',
-          // Four equal segments that touch edge to edge
+          // Each selected pill sits inside the bar with a small inset
           tabBarItemStyle: {
-            marginHorizontal: 0,
+            // Fill the bar's height less the inset, so the selected pill covers icon and label
+            height: 68,
+            marginHorizontal: 4,
+            marginVertical: 4,
             paddingHorizontal: 0,
-            // Extend each segment down into the home-indicator area so the fill covers the icon and label
-            marginBottom: -bottomInset,
-            paddingBottom: 0,
-            borderRadius: 0,
+            paddingVertical: 0,
+            justifyContent: 'center',
+            // Half the item height, so the selected tab is a circle/pill rather than a rounded square
+            borderRadius: 34,
+            // Clip the selected highlight to the rounded shape; it is painted on an inner view
+            overflow: 'hidden',
           },
           tabBarLabelStyle: {
-            fontSize: fontSizes.smallestText
+            fontSize: 11,
+            fontWeight: '600',
           },
-          tabBarStyle: Platform.select({
-            ios: {
-              position: 'absolute',
-              backgroundColor: colours.background,
-              height: 80,
-            },
-            default: {
-              backgroundColor: colours.background,
-              height: 80,
-            },
-          })
+          // Floating rounded bar inset from the screen edges, sitting above the home indicator
+          tabBarStyle: {
+            position: 'absolute',
+            left: 16,
+            right: 16,
+            bottom: bottomInset + 8,
+            height: 76,
+            borderRadius: 32,
+            borderTopWidth: 0,
+            backgroundColor: colours.backgroundLight,
+            shadowColor: colours.black,
+            shadowOpacity: 0.12,
+            shadowRadius: 12,
+            shadowOffset: { width: 0, height: 4 },
+            elevation: 6,
+          },
+          // Leave room under the content so the floating bar never covers the last row of a screen
+          sceneStyle: {
+            // App background, so the navigator's dark-theme black never shows around the floating bar
+            backgroundColor: colours.background,
+            paddingBottom: bottomInset + 76 + 8 + 16,
+          },
         }}>
         <Tabs.Screen
           name="index"
@@ -59,7 +75,7 @@ export default function TabLayout() {
             title: 'Home',
             tabBarButtonTestID: 'tab-home',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='home' color={color} size={32} />
+              <MaterialIcons name='home' color={color} size={28} />
             )
           }}
         />
@@ -69,7 +85,17 @@ export default function TabLayout() {
             title: 'Play',
             tabBarButtonTestID: 'tab-play',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='sports-golf' color={color} size={32} />
+              <Ionicons name='golf-outline' color={color} size={30} />
+            )
+          }}
+        />
+        <Tabs.Screen
+          name="my-bag"
+          options={{
+            title: 'My Bag',
+            tabBarButtonTestID: 'tab-my-bag',
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name='golf-course' color={color} size={28} />
             )
           }}
         />
@@ -80,7 +106,7 @@ export default function TabLayout() {
             tabBarButtonTestID: 'tab-practice',
             tabBarIcon: ({ color }) => (
               <View>
-                <MaterialIcons name='loop' color={color} size={32} />
+                <MaterialIcons name='loop' color={color} size={28} />
                 {hasOverdue && (
                   <View
                     testID="practice-overdue-badge"
@@ -102,10 +128,10 @@ export default function TabLayout() {
         <Tabs.Screen
           name="perform"
           options={{
-            title: 'Performance',
+            title: 'Stats',
             tabBarButtonTestID: 'tab-perform',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='bar-chart' color={color} size={32} />
+              <MaterialIcons name='bar-chart' color={color} size={28} />
             )
           }}
         />

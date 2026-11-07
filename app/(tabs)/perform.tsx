@@ -16,7 +16,8 @@ import { useFakeRefresh } from '../../hooks/useFakeRefresh';
 import { useSectionTransition } from '../../hooks/useSectionTransition';
 import { useToggle } from '../../hooks/useToggle';
 import { logEvent } from '../../service/FirebaseService';
-import { getSettingsService, saveSettingsService, AppSettings, getAllRoundHistoryService } from '../../service/DbService';
+import { getSettingsService, saveSettingsService, AppSettings, getAllRoundHistoryService, getParAveragesService } from '../../service/DbService';
+import RoundHistorySection from '../../components/RoundHistorySection';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 import RoundFilterBar from '../../components/RoundFilterBar';
 import { applyRoundFilter, getAvailableYears, resolveRoundFilter } from '../../utils/roundFilter';
@@ -34,7 +35,7 @@ export default function Perform() {
   const [roundHistory, setRoundHistory] = useState(() => getAllRoundHistoryService());
   const roundsFilter = resolveRoundFilter(storedRoundsFilter, getAvailableYears(roundHistory));
 
-  const SECTION_ORDER = ['sins', 'putting', 'proximity'];
+  const SECTION_ORDER = ['sins', 'putting', 'proximity', 'rounds'];
   const {
     section,
     displaySection,
@@ -103,7 +104,7 @@ export default function Perform() {
                 <MaterialIcons name="info-outline" size={24} color={colours.primary} />
               </TouchableOpacity>
               <Text style={[styles.headerText, styles.marginTop]}>
-                Performance
+                Stats
               </Text>
             </View>
           </View>
@@ -153,12 +154,21 @@ export default function Perform() {
             onStartRound={startRound}
           />
         )}
+
+        {displaySection('rounds') && (
+          <RoundHistorySection
+            rounds={filteredRoundHistory}
+            parAverages={getParAveragesService(filteredRoundHistory)}
+            fadeAnim={sectionFadeAnim}
+            slideAnim={sectionSlideAnim}
+          />
+        )}
       </ScrollView>
 
       <OnboardingOverlay
         visible={showOnboarding}
         onDismiss={handleDismissOnboarding}
-        title="Performance"
+        title="Stats"
         steps={ONBOARDING_STEPS.perform}
       />
     </GestureHandlerRootView>

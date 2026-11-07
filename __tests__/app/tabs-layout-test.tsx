@@ -88,34 +88,83 @@ describe('Tabs layout — Practice overdue badge', () => {
         expect(queryByTestId('tab-active-indicator')).toBeNull();
     });
 
-    it('shouldShowTheSelectedTabTextInWhite', () => {
+    it('shouldShowTheSelectedTabTextAndIconInPrimaryGreen', () => {
         render(<TabLayout />);
         const { Tabs } = require('expo-router');
         const activeTint = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarActiveTintColor;
-        expect(activeTint).toBe(require('../../assets/colours').default.white);
+        expect(activeTint).toBe(require('../../assets/colours').default.primary);
     });
 
-    it('shouldFillTheSelectedTabWithThePrimaryGreen', () => {
+    it('shouldShowTheSelectedTabAsALightTintPillNotASolidBlock', () => {
         render(<TabLayout />);
         const { Tabs } = require('expo-router');
         const activeBackground = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarActiveBackgroundColor;
-        expect(activeBackground).toBe(require('../../assets/colours').default.primary);
+        expect(activeBackground).not.toBe(require('../../assets/colours').default.primary);
+        expect(activeBackground).toMatch(/^#2D5A3D[0-9A-Fa-f]{2}$/);
     });
 
-    it('shouldExtendTheSelectedFillIntoTheHomeIndicatorAreaWithoutMovingTheContent', () => {
+    it('shouldInsetTheSelectedPillWithinTheBarWithRoundedCorners', () => {
         render(<TabLayout />);
         const { Tabs } = require('expo-router');
         const itemStyle = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarItemStyle;
-        // Item reaches down through the safe-area padding, and nothing inside it is padded away from the bottom edge
-        expect(itemStyle.marginBottom).toBe(-34);
-        expect(itemStyle.paddingBottom).toBe(0);
+        expect(itemStyle.borderRadius).toBeGreaterThan(0);
+        expect(itemStyle.marginHorizontal).toBeGreaterThan(0);
+        expect(itemStyle.marginBottom).toBeUndefined();
     });
 
-    it('shouldLeaveNoGapsBetweenTheFourTabSegments', () => {
+    it('shouldRenderTheBarAsAFloatingRoundedPillInsetFromTheScreenEdges', () => {
         render(<TabLayout />);
         const { Tabs } = require('expo-router');
-        const itemStyle = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarItemStyle;
-        expect(itemStyle).toEqual(expect.objectContaining({ marginHorizontal: 0, borderRadius: 0 }));
+        const barStyle = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarStyle;
+        expect(barStyle.position).toBe('absolute');
+        expect(barStyle.borderRadius).toBeGreaterThanOrEqual(24);
+        expect(barStyle.left).toBe(16);
+        expect(barStyle.right).toBe(16);
+        expect(barStyle.backgroundColor).toBe(require('../../assets/colours').default.backgroundLight);
+    });
+
+    it('shouldGiveEachTabEnoughHeightForIconAndLabelSoNeitherIsClipped', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const { screenOptions } = (Tabs as jest.Mock).mock.calls[0][0];
+        const availableHeight = screenOptions.tabBarStyle.height - 2 * screenOptions.tabBarItemStyle.marginVertical;
+        // 28pt icon + label line + the tab's own default item padding
+        expect(availableHeight).toBeGreaterThanOrEqual(60);
+    });
+
+    it('shouldPaintTheTabScenesWithTheAppBackgroundNotTheNavigationDarkThemeBlack', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const sceneStyle = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.sceneStyle;
+        expect(sceneStyle.backgroundColor).toBe(require('../../assets/colours').default.background);
+    });
+
+    it('shouldSizeEachTabPillToFillTheBarHeightSoItCoversIconAndLabel', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const { screenOptions } = (Tabs as jest.Mock).mock.calls[0][0];
+        expect(screenOptions.tabBarItemStyle.height).toBeGreaterThanOrEqual(56);
+    });
+
+    it('shouldRoundTheSelectedTabIntoACircleOrPillAtHalfItsHeight', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const { screenOptions } = (Tabs as jest.Mock).mock.calls[0][0];
+        expect(screenOptions.tabBarItemStyle.borderRadius).toBeGreaterThanOrEqual(screenOptions.tabBarItemStyle.height / 2);
+    });
+
+    it('shouldClipTheSelectedHighlightToTheRoundedTabShape', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const { screenOptions } = (Tabs as jest.Mock).mock.calls[0][0];
+        expect(screenOptions.tabBarItemStyle.overflow).toBe('hidden');
+    });
+
+    it('shouldReserveSpaceAboveTheFloatingBarSoScreenContentIsNotHiddenBehindIt', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const sceneStyle = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.sceneStyle;
+        expect(sceneStyle.paddingBottom).toBeGreaterThanOrEqual(90);
     });
 
     it('shouldUseMutedTabInactiveColourSoTheSelectedTabStandsOut', () => {
@@ -143,20 +192,20 @@ describe('Tabs layout — Practice overdue badge', () => {
         expect(getByText(/Icon: bar-chart/)).toBeTruthy();
     });
 
-    it('shouldUseEnlargedIconSize', () => {
+    it('shouldUseIconSizeMatchingTheDesign', () => {
         render(<TabLayout />);
         const { Tabs } = require('expo-router');
         const firstCall = (Tabs.Screen as jest.Mock).mock.calls[0];
         const icon = firstCall[0].options.tabBarIcon({ color: '#4A9068', focused: false });
         const { getByText } = render(icon);
-        expect(getByText(/Size: 32/)).toBeTruthy();
+        expect(getByText(/Size: 28/)).toBeTruthy();
     });
 
-    it('shouldUseEnlargedLabelFontSize', () => {
+    it('shouldUseSmallLabelFontSizeMatchingTheDesign', () => {
         render(<TabLayout />);
         const { Tabs } = require('expo-router');
         const labelStyle = (Tabs as jest.Mock).mock.calls[0][0].screenOptions.tabBarLabelStyle;
-        expect(labelStyle.fontSize).toBe(14);
+        expect(labelStyle.fontSize).toBe(11);
     });
 
     it('shouldClearOverdueBadgeWhenOverdueReminderIsDeleted', () => {
@@ -184,6 +233,54 @@ describe('Tabs layout — Practice overdue badge', () => {
     });
 
 
+    describe('tab order and labels', () => {
+        it('shouldUseGolfBallIconForPlayTab', () => {
+            render(<TabLayout />);
+            const { Tabs } = require('expo-router');
+            const playScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'play');
+            const icon = playScreen[0].options.tabBarIcon({ color: '#4A9068', focused: false });
+            const { getByText } = render(icon);
+
+            expect(getByText(/Icon: golf-outline/)).toBeTruthy();
+        });
+
+        const tabNamesInOrder = () => {
+            const { Tabs } = require('expo-router');
+            render(<TabLayout />);
+            return (Tabs.Screen as jest.Mock).mock.calls.map((call: any) => call[0].name);
+        };
+
+        it('shouldShowHomePlayMyBagPracticeAndStatsTabsInThatOrder', () => {
+            expect(tabNamesInOrder()).toEqual(['index', 'play', 'my-bag', 'practice', 'perform']);
+        });
+
+        it('shouldLabelThePerformanceRouteTabAsStats', () => {
+            render(<TabLayout />);
+            const { Tabs } = require('expo-router');
+            const performScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'perform');
+
+            expect(performScreen[0].options.title).toBe('Stats');
+        });
+
+        it('shouldLabelTheMyBagTab', () => {
+            render(<TabLayout />);
+            const { Tabs } = require('expo-router');
+            const myBagScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'my-bag');
+
+            expect(myBagScreen[0].options.title).toBe('My Bag');
+        });
+
+        it('shouldUseGolfCourseIconForMyBagTab', () => {
+            render(<TabLayout />);
+            const { Tabs } = require('expo-router');
+            const myBagScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'my-bag');
+            const icon = myBagScreen[0].options.tabBarIcon({ color: '#4A9068', focused: false });
+            const { getByText } = render(icon);
+
+            expect(getByText(/Icon: golf-course/)).toBeTruthy();
+        });
+    });
+
     describe('tab button test ids', () => {
         it('shouldGiveEachTabButtonAStableTestIdForEndToEndTests', () => {
             const { Tabs } = require('expo-router');
@@ -194,6 +291,7 @@ describe('Tabs layout — Practice overdue badge', () => {
 
             expect(testIdFor('index')).toBe('tab-home');
             expect(testIdFor('play')).toBe('tab-play');
+            expect(testIdFor('my-bag')).toBe('tab-my-bag');
             expect(testIdFor('practice')).toBe('tab-practice');
             expect(testIdFor('perform')).toBe('tab-perform');
         });

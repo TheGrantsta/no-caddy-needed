@@ -187,7 +187,6 @@ describe('Play screen', () => {
             mockAddRoundPlayers.mockResolvedValue([1]);
 
             const { getByTestId } = render(<Play />);
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -201,7 +200,6 @@ describe('Play screen', () => {
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
 
             const { getByTestId } = render(<Play />);
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -215,7 +213,6 @@ describe('Play screen', () => {
             mockAddRoundPlayers.mockResolvedValue([1]);
 
             const { getByTestId, queryByTestId } = render(<Play />);
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Play from '../../app/(tabs)/play';
 import * as Haptics from 'expo-haptics';
@@ -25,7 +24,6 @@ import {
     getCourseHoleParsService,
     loadCourseNotesService,
     saveHoleNoteService,
-    getParAveragesService,
     getHoleDeadlySinsService,
     getHolesWithSinsForRoundService,
     deleteHoleSinDetailsService,
@@ -126,7 +124,6 @@ jest.mock('expo-haptics', () => ({
 
 const mockPush = jest.fn();
 const mockSetOptions = jest.fn();
-let capturedFocusEffect: () => void = () => { };
 jest.mock('expo-router', () => {
     const React = require('react');
     const { View } = require('react-native');
@@ -137,7 +134,7 @@ jest.mock('expo-router', () => {
         useNavigation: () => ({
             setOptions: mockSetOptions,
         }),
-        useFocusEffect: (cb: () => void) => { capturedFocusEffect = cb; },
+        useFocusEffect: () => { },
         Link: ({ children, href }: { children: React.ReactNode; href: string }) => (
             <View testID={`link-${href}`}>{children}</View>
         ),
@@ -179,7 +176,6 @@ const mockGetHolesPlayedForRound = getHolesPlayedForRoundService as jest.Mock;
 const mockGetCourseHolePars = getCourseHoleParsService as jest.Mock;
 const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
 const mockSaveHoleNote = saveHoleNoteService as jest.Mock;
-const mockGetParAverages = getParAveragesService as jest.Mock;
 const mockGetHoleDeadlySins = getHoleDeadlySinsService as jest.Mock;
 const mockGetHolesWithSinsForRound = getHolesWithSinsForRoundService as jest.Mock;
 const mockHapticsImpact = Haptics.impactAsync as jest.Mock;
@@ -202,166 +198,10 @@ describe('Play screen', () => {
     });
 
     describe('Idle state', () => {
-        it('shows Start Round button when no active round', () => {
+        it('shows the round setup with a Start round button when no active round', () => {
             const { getByTestId } = render(<Play />);
 
-            expect(getByTestId('start-round-button')).toBeTruthy();
-        });
-
-        it('shows round history when rounds exist', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, StrokeTotal: 75, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
-            ]);
-
-            const { getByText } = render(<Play />);
-
-            expect(getByText('Round history')).toBeTruthy();
-            expect(getByText('15/06')).toBeTruthy();
-            expect(getByText('75')).toBeTruthy();
-        });
-
-        it('shows stroke total in round history', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 0, StrokeTotal: 72, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
-            ]);
-
-            const { getByText } = render(<Play />);
-
-            expect(getByText('72')).toBeTruthy();
-        });
-
-        it('shows dash when no stroke total recorded', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: -2, StrokeTotal: null, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
-            ]);
-
-            const { getByTestId } = render(<Play />);
-
-            expect(getByTestId('round-history-strokes-1').props.children).toBe('-');
-        });
-
-        it('All filter shows all rounds', () => {
-            const rounds = Array.from({ length: 35 }, (_, i) => ({
-                Id: i + 1, TotalScore: i, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
-            }));
-            mockGetAllRoundHistory.mockReturnValue(rounds);
-
-            const { getByTestId } = render(<Play />);
-
-            expect(getByTestId('round-history-row-35')).toBeTruthy();
-        });
-
-        it('shouldRemoveDeletedRoundFromListOnRefocus', () => {
-            const roundA = { Id: 1, TotalScore: 3, StrokeTotal: 75, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' };
-            const roundB = { Id: 2, TotalScore: 1, StrokeTotal: 73, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '16/06' };
-            mockGetAllRoundHistory.mockReturnValue([roundA, roundB]);
-
-            const { getByTestId, queryByTestId } = render(<Play />);
-
-            expect(getByTestId('round-history-row-2')).toBeTruthy();
-
-            // Simulate deleting round 2 elsewhere then returning to this screen.
-            mockGetAllRoundHistory.mockReturnValue([roundA]);
-            act(() => { capturedFocusEffect(); });
-
-            expect(queryByTestId('round-history-row-2')).toBeNull();
-            expect(getByTestId('round-history-row-1')).toBeTruthy();
-        });
-
-        it('renders round history in a scrollable container', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
-            ]);
-
-            const { getByTestId } = render(<Play />);
-
-            expect(getByTestId('round-history-scroll')).toBeTruthy();
-        });
-
-        it('renders date column at a fixed 70pt and strokes column at a fixed 56pt', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, StrokeTotal: 72, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
-            ]);
-
-            const { getByTestId } = render(<Play />);
-
-            const dateHeader = getByTestId('round-history-header-date');
-            const strokesHeader = getByTestId('round-history-header-strokes');
-
-            expect(dateHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: 70 })]));
-            expect(strokesHeader.props.style).toEqual(expect.arrayContaining([expect.objectContaining({ width: 56 })]));
-        });
-
-        it('centres the score header and score values within the strokes column', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, StrokeTotal: 28, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '29/10', CourseName: 'Test', HolesPlayed: 7 },
-            ]);
-
-            const { getByTestId } = render(<Play />);
-            const headerStyle = StyleSheet.flatten(getByTestId('round-history-header-strokes').props.style);
-            const valueStyle = StyleSheet.flatten(getByTestId('round-history-strokes-1').props.style);
-
-            expect(headerStyle.textAlign).toBe('center');
-            expect(valueStyle.textAlign).toBe('center');
-            expect(valueStyle.flex).toBe(1);
-        });
-
-        it('shouldAlignRoundHistoryHeaderLabelsWithValuesByRemovingHeaderPadding', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, StrokeTotal: 28, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '29/10', CourseName: 'Test', HolesPlayed: 7 },
-            ]);
-
-            const { getByTestId } = render(<Play />);
-            const headerIds = ['round-history-header-date', 'round-history-header-course', 'round-history-header-strokes'];
-
-            headerIds.forEach(id => {
-                expect(StyleSheet.flatten(getByTestId(id).props.style).padding ?? 0).toBe(0);
-            });
-        });
-
-        it('shouldGiveStartRoundButtonSpaceAboveAndBelow', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, StrokeTotal: 28, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '29/10', CourseName: 'Test', HolesPlayed: 18 },
-            ]);
-
-            const { getByTestId } = render(<Play />);
-            const style = StyleSheet.flatten(getByTestId('start-round-button').props.style);
-
-            expect(style.marginTop).toBeGreaterThanOrEqual(20);
-            expect(style.marginBottom).toBeGreaterThanOrEqual(16);
-        });
-
-        it('renders round history rows as tappable', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
-            ]);
-
-            const { getByTestId } = render(<Play />);
-
-            expect(getByTestId('round-history-row-1')).toBeTruthy();
-        });
-
-        it('navigates to scorecard when round history row is pressed', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null },
-            ]);
-
-            const { getByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('round-history-row-1'));
-
-            expect(mockPush).toHaveBeenCalledWith({ pathname: '/play/scorecard', params: { roundId: '1' } });
-        });
-
-        it('shows course name in round history when set', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: 'St Andrews' },
-            ]);
-
-            const { getByText } = render(<Play />);
-
-            expect(getByText('15/06')).toBeTruthy();
-            expect(getByText('St Andrews')).toBeTruthy();
+            expect(getByTestId('start-button')).toBeTruthy();
         });
 
         it('does not show course name text when CourseName is null', () => {
@@ -374,16 +214,6 @@ describe('Play screen', () => {
             expect(queryByTestId('round-history-course-1')).toBeNull();
         });
 
-        it('shows holes played in history row when less than 18', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null, HolesPlayed: 9 },
-            ]);
-
-            const { queryByText } = render(<Play />);
-
-            expect(queryByText(/9/)).toBeTruthy();
-        });
-
         it('does not show holes played in history row when 18 holes', () => {
             mockGetAllRoundHistory.mockReturnValue([
                 { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: null, HolesPlayed: 18 },
@@ -392,16 +222,6 @@ describe('Play screen', () => {
             const { queryByText } = render(<Play />);
 
             expect(queryByText(/18 holes/)).toBeNull();
-        });
-
-        it('shows holes played alongside course name when less than 18', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: 'St Andrews', HolesPlayed: 9 },
-            ]);
-
-            const { queryByText } = render(<Play />);
-
-            expect(queryByText(/St Andrews.*9/)).toBeTruthy();
         });
 
         describe('Incomplete round on mount', () => {
@@ -424,7 +244,7 @@ describe('Play screen', () => {
 
             it('shouldNotShowStartRoundButtonWhenIncompleteRoundExists', () => {
                 const { queryByTestId } = render(<Play />);
-                expect(queryByTestId('start-round-button')).toBeNull();
+                expect(queryByTestId('start-button')).toBeNull();
             });
 
             it('shouldResumeRoundWhenContinuePressed', async () => {
@@ -457,7 +277,7 @@ describe('Play screen', () => {
                     fireEvent.press(getByTestId('confirm-end-round-button'));
                 });
                 expect(mockEndRound).toHaveBeenCalledWith(42);
-                expect(getByTestId('start-round-button')).toBeTruthy();
+                expect(getByTestId('start-button')).toBeTruthy();
                 expect(queryByTestId('continue-round-button')).toBeNull();
             });
 
@@ -521,7 +341,6 @@ describe('Play screen', () => {
         it('shows player setup when Start Round is pressed', () => {
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
 
             expect(getByTestId('start-button')).toBeTruthy();
             expect(getByTestId('add-player-button')).toBeTruthy();
@@ -530,37 +349,10 @@ describe('Play screen', () => {
         it('shows recent course names in player setup', () => {
             mockGetRecentCourseNames.mockReturnValue(['St Andrews', 'Pebble Beach']);
 
-            const { getByTestId, getByText } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
+            const { getByText } = render(<Play />);
 
             expect(getByText('St Andrews')).toBeTruthy();
             expect(getByText('Pebble Beach')).toBeTruthy();
-        });
-
-        it('shows recent player names in player setup', () => {
-            mockGetRecentPlayerNames.mockReturnValue(['Alice', 'Bob']);
-
-            const { getByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-
-            expect(getByTestId('recent-player-Alice')).toBeTruthy();
-            expect(getByTestId('recent-player-Bob')).toBeTruthy();
-        });
-
-        it('returns to idle state when cancel is pressed in player setup', () => {
-            const { getByTestId, queryByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            expect(getByTestId('start-button')).toBeTruthy();
-            expect(getByTestId('cancel-button')).toBeTruthy();
-
-            fireEvent.press(getByTestId('cancel-button'));
-
-            expect(getByTestId('start-round-button')).toBeTruthy();
-            expect(queryByTestId('start-button')).toBeNull();
-            expect(queryByTestId('cancel-button')).toBeNull();
         });
 
         it('starts round after player setup is completed', async () => {
@@ -569,7 +361,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -585,7 +376,6 @@ describe('Play screen', () => {
 
             const { getByTestId, getByText } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
             fireEvent.press(getByTestId('start-button'));
 
@@ -601,7 +391,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
             fireEvent.press(getByTestId('start-button'));
 
@@ -617,7 +406,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
             fireEvent.press(getByTestId('start-button'));
 
@@ -632,7 +420,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
             fireEvent.press(getByTestId('start-button'));
 
@@ -648,7 +435,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
             fireEvent.press(getByTestId('start-button'));
 
@@ -664,7 +450,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
             fireEvent.press(getByTestId('start-button'));
 
@@ -695,7 +480,6 @@ describe('Play screen', () => {
             };
 
             const startRoundOnHoleOne = async (getByTestId: (id: string) => any) => {
-                fireEvent.press(getByTestId('start-round-button'));
                 fireEvent.changeText(getByTestId('course-name-input'), 'Augusta');
                 fireEvent.press(getByTestId('start-button'));
                 await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
@@ -807,7 +591,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('add-player-button'));
             fireEvent.changeText(getByTestId('player-name-input-0'), 'Alice');
@@ -830,7 +613,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
             fireEvent.press(getByTestId('start-button'));
 
@@ -851,7 +633,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
             fireEvent.press(getByTestId('start-button'));
 
@@ -868,7 +649,6 @@ describe('Play screen', () => {
 
             const { getByTestId, getByText } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -932,7 +712,6 @@ describe('Play screen', () => {
 
                 const { getByTestId } = render(<Play />);
 
-                fireEvent.press(getByTestId('start-round-button'));
                 fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
                 fireEvent.press(getByTestId('start-button'));
 
@@ -957,7 +736,6 @@ describe('Play screen', () => {
 
             const { getByTestId, _getByText } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -984,7 +762,6 @@ describe('Play screen', () => {
 
             const { getByTestId, getByText } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1009,7 +786,6 @@ describe('Play screen', () => {
 
             const { getByTestId, queryByText } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1026,7 +802,6 @@ describe('Play screen', () => {
 
             const { getByTestId, getByText, queryByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1045,7 +820,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1070,7 +844,6 @@ describe('Play screen', () => {
 
             const { getByTestId, getByText } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1102,7 +875,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1128,7 +900,6 @@ describe('Play screen', () => {
 
                 const { getByTestId } = render(<Play />);
 
-                fireEvent.press(getByTestId('start-round-button'));
                 fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
                 fireEvent.press(getByTestId('start-button'));
 
@@ -1155,7 +926,6 @@ describe('Play screen', () => {
 
                 const { getByTestId } = render(<Play />);
 
-                fireEvent.press(getByTestId('start-round-button'));
                 fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
                 fireEvent.press(getByTestId('start-button'));
 
@@ -1182,7 +952,6 @@ describe('Play screen', () => {
 
                 const { getByTestId } = render(<Play />);
 
-                fireEvent.press(getByTestId('start-round-button'));
                 fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
                 fireEvent.press(getByTestId('start-button'));
 
@@ -1209,7 +978,6 @@ describe('Play screen', () => {
 
                 const { getByTestId } = render(<Play />);
 
-                fireEvent.press(getByTestId('start-round-button'));
                 fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
                 fireEvent.press(getByTestId('start-button'));
 
@@ -1235,7 +1003,6 @@ describe('Play screen', () => {
 
                 const { getByTestId } = render(<Play />);
 
-                fireEvent.press(getByTestId('start-round-button'));
                 fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
                 fireEvent.press(getByTestId('start-button'));
 
@@ -1262,7 +1029,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1281,7 +1047,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1302,7 +1067,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1328,7 +1092,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1342,7 +1105,7 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
-                expect(getByTestId('start-round-button')).toBeTruthy();
+                expect(getByTestId('start-button')).toBeTruthy();
             });
         });
 
@@ -1352,7 +1115,6 @@ describe('Play screen', () => {
 
             const { getByTestId, queryByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1378,7 +1140,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('add-player-button'));
             fireEvent.changeText(getByTestId('player-name-input-0'), 'Alice');
@@ -1444,7 +1205,6 @@ describe('Play screen', () => {
 
             const { getByTestId, getByText } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1462,7 +1222,6 @@ describe('Play screen', () => {
 
     describe('Post-round scorecard', () => {
         const startAndEndRound = async (getByTestId: any) => {
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1537,7 +1296,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('scorecard-done-button'));
 
             await waitFor(() => {
-                expect(getByTestId('start-round-button')).toBeTruthy();
+                expect(getByTestId('start-button')).toBeTruthy();
                 expect(queryByText('Scorecard')).toBeNull();
             });
         });
@@ -1553,7 +1312,7 @@ describe('Play screen', () => {
             await startAndEndRound(getByTestId);
 
             await waitFor(() => {
-                expect(getByTestId('start-round-button')).toBeTruthy();
+                expect(getByTestId('start-button')).toBeTruthy();
             });
         });
 
@@ -1684,7 +1443,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
 
             await act(async () => {
@@ -1715,7 +1473,6 @@ describe('Play screen', () => {
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
 
             const { getByTestId } = render(<Play />);
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             await act(async () => {
                 fireEvent.press(getByTestId('start-button'));
@@ -1742,7 +1499,6 @@ describe('Play screen', () => {
             mockAddMultiplayerHoleScores.mockResolvedValue(false);
 
             const { getByTestId } = render(<Play />);
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             await act(async () => {
                 fireEvent.press(getByTestId('start-button'));
@@ -1767,7 +1523,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             await act(async () => {
                 fireEvent.press(getByTestId('start-button'));
@@ -1797,7 +1552,6 @@ describe('Play screen', () => {
 
             const { getByTestId } = render(<Play />);
 
-            fireEvent.press(getByTestId('start-round-button'));
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
@@ -1813,115 +1567,4 @@ describe('Play screen', () => {
 
     });
 
-    describe('Par averages section', () => {
-        it('shows par averages section when round history exists', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01' },
-            ]);
-
-            const { getByTestId } = render(<Play />);
-
-            expect(getByTestId('par-averages-container')).toBeTruthy();
-        });
-
-        it('hides par averages section when no round history', () => {
-            mockGetAllRoundHistory.mockReturnValue([]);
-
-            const { queryByTestId } = render(<Play />);
-
-            expect(queryByTestId('par-averages-container')).toBeNull();
-        });
-
-        it('shows average score for par 3 holes', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01' },
-            ]);
-            mockGetParAverages.mockReturnValue({ par3: 3.5, par4: null, par5: null });
-
-            const { getByTestId } = render(<Play />);
-
-            expect(getByTestId('par-averages-par3').props.children).toContain('3.50');
-        });
-
-        it('shows dash for par type with no data', () => {
-            mockGetAllRoundHistory.mockReturnValue([
-                { Id: 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '01/01' },
-            ]);
-            mockGetParAverages.mockReturnValue({ par3: null, par4: null, par5: null });
-
-            const { getByTestId } = render(<Play />);
-
-            expect(getByTestId('par-averages-par5').props.children).toContain('-');
-        });
-
-        it('passes filteredRoundHistory to getParAveragesService', () => {
-            const rounds = Array.from({ length: 3 }, (_, i) => ({
-                Id: i + 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
-            }));
-            mockGetAllRoundHistory.mockReturnValue(rounds);
-
-            const { getByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('filter-button-1'));
-
-            const calls = mockGetParAverages.mock.calls;
-            const lastCall = calls[calls.length - 1][0];
-            expect(lastCall).toHaveLength(1);
-        });
-
-        it('recalculates par averages when filter changes', () => {
-            const rounds = Array.from({ length: 3 }, (_, i) => ({
-                Id: i + 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: `${String(i + 1).padStart(2, '0')}/01`,
-            }));
-            mockGetAllRoundHistory.mockReturnValue(rounds);
-
-            const { getByTestId } = render(<Play />);
-
-            fireEvent.press(getByTestId('filter-button-1'));
-            const callsAfterFilter1 = mockGetParAverages.mock.calls;
-            expect(callsAfterFilter1[callsAfterFilter1.length - 1][0]).toHaveLength(1);
-
-            fireEvent.press(getByTestId('filter-button-all'));
-            const callsAfterAll = mockGetParAverages.mock.calls;
-            expect(callsAfterAll[callsAfterAll.length - 1][0]).toHaveLength(3);
-        });
-
-        it('shows "End round?" confirmation dialog', async () => {
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-            mockGetCourseHolePars.mockReturnValue({
-                1: 4, 2: 4, 3: 3, 4: 4, 5: 5,
-            });
-            mockGetMultiplayerScorecard.mockReturnValue({
-                round: { Id: 1, TotalScore: 0, IsCompleted: 0, StartTime: '', EndTime: '', Created_At: '' },
-                players: [{ Id: 1, RoundId: 1, PlayerName: 'Test', IsUser: 1, SortOrder: 0 }],
-                holeScores: Array.from({ length: 5 }, (_, i) => ({
-                    Id: i + 1,
-                    RoundId: 1,
-                    RoundPlayerId: 1,
-                    HoleNumber: i + 1,
-                    HolePar: 4,
-                    Score: 4,
-                })),
-            });
-
-            const { getByTestId, getByText } = render(<Play />);
-
-            fireEvent.press(getByTestId('start-round-button'));
-            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-            fireEvent.press(getByTestId('start-button'));
-
-            await waitFor(() => {
-                expect(getByTestId('end-round-button')).toBeTruthy();
-            });
-
-            // Show end round confirmation
-            fireEvent.press(getByTestId('end-round-button'));
-
-            // Verify the title is shown
-            await waitFor(() => {
-                expect(getByText(/End round\?/)).toBeTruthy();
-            });
-        });
-    });
 });

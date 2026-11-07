@@ -134,18 +134,19 @@ describe('Main Navigation', () => {
             expect(getByTestId('tab-title-play').props.children).toBe('Play');
         });
 
-        it('renders Performance tab with correct title', () => {
+        it('renders Stats tab with correct title', () => {
             const { getByTestId } = render(<TabLayout />);
 
             expect(getByTestId('tab-perform')).toBeTruthy();
-            expect(getByTestId('tab-title-perform').props.children).toBe('Performance');
+            expect(getByTestId('tab-title-perform').props.children).toBe('Stats');
         });
 
-        it('renders all four tabs', () => {
+        it('renders all five tabs', () => {
             const { getByTestId } = render(<TabLayout />);
 
             expect(getByTestId('tab-index')).toBeTruthy();
             expect(getByTestId('tab-play')).toBeTruthy();
+            expect(getByTestId('tab-my-bag')).toBeTruthy();
             expect(getByTestId('tab-practice')).toBeTruthy();
             expect(getByTestId('tab-perform')).toBeTruthy();
         });

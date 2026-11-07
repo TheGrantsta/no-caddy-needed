@@ -392,6 +392,54 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    myBag: StyleSheet.create({
+        sectionLabel: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+            marginTop: 24,
+            marginBottom: 8,
+            marginLeft: 4,
+        },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            overflow: 'hidden',
+        },
+        row: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+            columnGap: 12,
+        },
+        rowDivider: {
+            height: StyleSheet.hairlineWidth,
+            backgroundColor: c.tertiary + '66',
+            marginLeft: 70,
+        },
+        iconTile: {
+            width: 40,
+            height: 40,
+            borderRadius: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        rowText: {
+            flex: 1,
+        },
+        rowTitle: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        rowSubtitle: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginTop: 2,
+        },
+    }),
+
     holeScoreInput: StyleSheet.create({
         container: {
             paddingTop: 15,

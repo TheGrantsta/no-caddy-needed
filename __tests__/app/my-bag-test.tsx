@@ -2,15 +2,7 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import MyBag from '../../app/(tabs)/my-bag';
 
-jest.mock('../../app/play/distances', () => {
-    const { Text: MockText } = require('react-native');
-    return { __esModule: true, default: () => <MockText testID="distances-screen">Distances screen</MockText> };
-});
-
-jest.mock('../../app/play/wedge-chart', () => {
-    const { Text: MockText } = require('react-native');
-    return { __esModule: true, default: () => <MockText testID="wedge-chart-screen">Wedge chart screen</MockText> };
-});
+const mockPush = jest.fn();
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -31,54 +23,76 @@ jest.mock('react-native-gesture-handler', () => {
 });
 
 jest.mock('expo-router', () => ({
-    useRouter: () => ({ push: jest.fn() }),
+    useRouter: () => ({ push: mockPush }),
 }));
 
 describe('My Bag screen', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
     it('shouldShowMyBagTitle', () => {
         const { getByText } = render(<MyBag />);
 
         expect(getByText('My Bag')).toBeTruthy();
     });
 
-    it('shouldShowDistancesByDefault', () => {
-        const { getByTestId, queryByTestId } = render(<MyBag />);
+    it('shouldShowYardagesSectionLabel', () => {
+        const { getByText } = render(<MyBag />);
 
-        expect(getByTestId('distances-screen')).toBeTruthy();
-        expect(queryByTestId('wedge-chart-screen')).toBeNull();
+        expect(getByText('Yardages')).toBeTruthy();
     });
 
-    it('shouldOfferDistancesAndWedgeChartInTheSubMenu', () => {
-        const { getByTestId } = render(<MyBag />);
+    it('shouldShowDistancesRowWithItsSubtitle', () => {
+        const { getByTestId, getByText } = render(<MyBag />);
 
-        expect(getByTestId('bag-sub-menu-distances')).toBeTruthy();
-        expect(getByTestId('bag-sub-menu-wedge-chart')).toBeTruthy();
+        expect(getByTestId('bag-row-distances')).toBeTruthy();
+        expect(getByText('Distances')).toBeTruthy();
+        expect(getByText('Carry and total for every club')).toBeTruthy();
     });
 
-    it('shouldShowWedgeChartWhenWedgeChartSubMenuPressed', () => {
-        const { getByTestId, queryByTestId } = render(<MyBag />);
+    it('shouldShowWedgeChartRowWithItsSubtitle', () => {
+        const { getByTestId, getByText } = render(<MyBag />);
 
-        fireEvent.press(getByTestId('bag-sub-menu-wedge-chart'));
-
-        expect(getByTestId('wedge-chart-screen')).toBeTruthy();
-        expect(queryByTestId('distances-screen')).toBeNull();
+        expect(getByTestId('bag-row-wedge-chart')).toBeTruthy();
+        expect(getByText('Wedge Chart')).toBeTruthy();
+        expect(getByText('Partial-swing yardages')).toBeTruthy();
     });
 
-    it('shouldShowDistancesAgainWhenDistancesSubMenuPressed', () => {
-        const { getByTestId, queryByTestId } = render(<MyBag />);
-
-        fireEvent.press(getByTestId('bag-sub-menu-wedge-chart'));
-        fireEvent.press(getByTestId('bag-sub-menu-distances'));
-
-        expect(getByTestId('distances-screen')).toBeTruthy();
-        expect(queryByTestId('wedge-chart-screen')).toBeNull();
-    });
-
-    it('shouldNotRenderAnyPlayScoreContent', () => {
+    it('shouldNotShowFootnoteAboutTheBagButtonDuringARound', () => {
         const { queryByText } = render(<MyBag />);
 
-        expect(queryByText('Course name')).toBeNull();
-        expect(queryByText(/Start round/)).toBeNull();
+        expect(queryByText(/Also available from the bag button/)).toBeNull();
     });
 
+    it('shouldOpenDistancesScreenWhenDistancesRowPressed', () => {
+        const { getByTestId } = render(<MyBag />);
+
+        fireEvent.press(getByTestId('bag-row-distances'));
+
+        expect(mockPush).toHaveBeenCalledWith('/play/distances');
+    });
+
+    it('shouldOpenWedgeChartScreenWhenWedgeChartRowPressed', () => {
+        const { getByTestId } = render(<MyBag />);
+
+        fireEvent.press(getByTestId('bag-row-wedge-chart'));
+
+        expect(mockPush).toHaveBeenCalledWith('/play/wedge-chart');
+    });
+
+    it('shouldNotShowClubsSection', () => {
+        const { queryByText, queryByTestId } = render(<MyBag />);
+
+        expect(queryByText('Clubs')).toBeNull();
+        expect(queryByText('Clubs in bag')).toBeNull();
+        expect(queryByTestId('bag-row-clubs')).toBeNull();
+    });
+
+    it('shouldNotShowTheInlineSubMenu', () => {
+        const { queryByTestId } = render(<MyBag />);
+
+        expect(queryByTestId('bag-sub-menu-distances')).toBeNull();
+        expect(queryByTestId('bag-sub-menu-wedge-chart')).toBeNull();
+    });
 });

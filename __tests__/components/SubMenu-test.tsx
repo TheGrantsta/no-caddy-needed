@@ -51,38 +51,6 @@ describe('SubMenu component', () => {
         });
     });
 
-    describe('My Bag sub menu', () => {
-        it('renders my bag menu items', () => {
-            const { getByText } = render(
-                <SubMenu showSubMenu="bag" selectedItem="bag-distances" handleSubMenu={mockHandleSubMenu} />
-            );
-
-            expect(getByText('Distances')).toBeTruthy();
-            expect(getByText('Distances')).toBeTruthy();
-            expect(getByText('Wedge Chart')).toBeTruthy();
-        });
-
-        it('calls handleSubMenu when Distances is pressed', () => {
-            const { getByTestId } = render(
-                <SubMenu showSubMenu="bag" selectedItem="bag-distances" handleSubMenu={mockHandleSubMenu} />
-            );
-
-            fireEvent.press(getByTestId('bag-sub-menu-distances'));
-
-            expect(mockHandleSubMenu).toHaveBeenCalledWith('bag-distances');
-        });
-
-        it('calls handleSubMenu when Wedge Chart is pressed', () => {
-            const { getByTestId } = render(
-                <SubMenu showSubMenu="bag" selectedItem="bag-distances" handleSubMenu={mockHandleSubMenu} />
-            );
-
-            fireEvent.press(getByTestId('bag-sub-menu-wedge-chart'));
-
-            expect(mockHandleSubMenu).toHaveBeenCalledWith('bag-wedge-chart');
-        });
-    });
-
     describe('Perform sub menu', () => {
         it('renders perform menu items', () => {
             const { getByText } = render(
@@ -131,17 +99,17 @@ describe('SubMenu component', () => {
 
     describe('accessibility', () => {
         it('shouldExposeEachSubMenuItemAsTabWithItsTitle', () => {
-            const { getByRole } = render(<SubMenu showSubMenu="bag" selectedItem="bag-distances" handleSubMenu={jest.fn()} />);
+            const { getByRole } = render(<SubMenu showSubMenu="practice" selectedItem="challenges" handleSubMenu={jest.fn()} />);
 
-            expect(getByRole('tab', { name: 'Wedge Chart' })).toBeTruthy();
-            expect(getByRole('tab', { name: 'Distances' })).toBeTruthy();
+            expect(getByRole('tab', { name: 'Challenges' })).toBeTruthy();
+            expect(getByRole('tab', { name: 'Tools' })).toBeTruthy();
         });
 
         it('shouldMarkOnlySelectedItemAsSelected', () => {
-            const { getByRole } = render(<SubMenu showSubMenu="bag" selectedItem="bag-distances" handleSubMenu={jest.fn()} />);
+            const { getByRole } = render(<SubMenu showSubMenu="practice" selectedItem="challenges" handleSubMenu={jest.fn()} />);
 
-            expect(getByRole('tab', { name: 'Distances', selected: true })).toBeTruthy();
-            expect(getByRole('tab', { name: 'Wedge Chart', selected: false })).toBeTruthy();
+            expect(getByRole('tab', { name: 'Challenges', selected: true })).toBeTruthy();
+            expect(getByRole('tab', { name: 'Tools', selected: false })).toBeTruthy();
         });
     });
 

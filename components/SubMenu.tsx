@@ -2,14 +2,12 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 
 type Props = {
-    showSubMenu: 'practice' | 'bag' | 'perform';
+    showSubMenu: 'practice' | 'perform';
     selectedItem: string;
     handleSubMenu: (arg: string) => void;
 }
 
 const allSubMenuItems = [
-    { testId: 'bag-sub-menu-distances', name: 'bag-distances', title: 'Distances' },
-    { testId: 'bag-sub-menu-wedge-chart', name: 'bag-wedge-chart', title: 'Wedge Chart' },
     { testId: 'practice-sub-menu-challenges', name: 'challenges', title: 'Challenges' },
     { testId: 'practice-sub-menu-tools', name: 'tools', title: 'Tools' },
     { testId: 'practice-sub-menu-history', name: 'history', title: 'History' },

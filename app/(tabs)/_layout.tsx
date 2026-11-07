@@ -95,7 +95,7 @@ export default function TabLayout() {
             title: 'My Bag',
             tabBarButtonTestID: 'tab-my-bag',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='golf-course' color={color} size={28} />
+              <MaterialIcons name='backpack' color={color} size={28} />
             )
           }}
         />

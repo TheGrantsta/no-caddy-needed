@@ -270,14 +270,14 @@ describe('Tabs layout — Practice overdue badge', () => {
             expect(myBagScreen[0].options.title).toBe('My Bag');
         });
 
-        it('shouldUseGolfCourseIconForMyBagTab', () => {
+        it('shouldUseGolfBagStyleIconForMyBagTab', () => {
             render(<TabLayout />);
             const { Tabs } = require('expo-router');
             const myBagScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'my-bag');
             const icon = myBagScreen[0].options.tabBarIcon({ color: '#4A9068', focused: false });
             const { getByText } = render(icon);
 
-            expect(getByText(/Icon: golf-course/)).toBeTruthy();
+            expect(getByText(/Icon: backpack/)).toBeTruthy();
         });
     });
 

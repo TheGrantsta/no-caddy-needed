@@ -1,48 +1,76 @@
-import { Animated, ScrollView, Text, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import SubMenu from '../../components/SubMenu';
-import DistancesScreen from '../play/distances';
-import WedgeChartScreen from '../play/wedge-chart';
+import type { ComponentProps } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useStyles } from '../../hooks/useStyles';
-import { useSectionTransition } from '../../hooks/useSectionTransition';
+import { useThemeColours } from '../../context/ThemeContext';
 
-const SECTION_ORDER = ['bag-distances', 'bag-wedge-chart'];
+const WEDGE_TILE = '#B5651D';
+
+type BagRowProps = {
+  testID: string;
+  icon: ComponentProps<typeof MaterialIcons>['name'];
+  tileColour: string;
+  title: string;
+  subtitle: string;
+  onPress: () => void;
+  showDivider?: boolean;
+};
+
+const BagRow = ({ testID, icon, tileColour, title, subtitle, onPress, showDivider }: BagRowProps) => {
+  const styles = useStyles();
+  const colours = useThemeColours();
+  const s = styles.myBag;
+
+  return (
+    <>
+      {showDivider && <View style={s.rowDivider} />}
+      <TouchableOpacity testID={testID} onPress={onPress} style={s.row} accessibilityRole="button">
+        <View style={[s.iconTile, { backgroundColor: tileColour }]}>
+          <MaterialIcons name={icon} size={22} color={colours.white} />
+        </View>
+        <View style={s.rowText}>
+          <Text style={s.rowTitle}>{title}</Text>
+          <Text style={s.rowSubtitle}>{subtitle}</Text>
+        </View>
+        <MaterialIcons name="chevron-right" size={24} color={colours.tertiary} />
+      </TouchableOpacity>
+    </>
+  );
+};
 
 export default function MyBag() {
   const styles = useStyles();
-  const {
-    section,
-    displaySection,
-    handleSubMenu,
-    fadeAnim,
-    slideAnim,
-  } = useSectionTransition(SECTION_ORDER);
+  const colours = useThemeColours();
+  const router = useRouter();
+  const s = styles.myBag;
 
   return (
-    <GestureHandlerRootView style={styles.flexOne}>
-      <SubMenu showSubMenu="bag" selectedItem={section} handleSubMenu={handleSubMenu} />
+    <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
+      <View style={styles.container}>
+        <Text style={[styles.headerText, styles.marginTop]}>My Bag</Text>
 
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <View style={styles.titleRow}>
-              <Text style={[styles.headerText, styles.marginTop]}>My Bag</Text>
-            </View>
-          </View>
+        <Text style={s.sectionLabel}>Yardages</Text>
+        <View style={s.card}>
+          <BagRow
+            testID="bag-row-distances"
+            icon="bar-chart"
+            tileColour={colours.primary}
+            title="Distances"
+            subtitle="Carry and total for every club"
+            onPress={() => router.push('/play/distances')}
+          />
+          <BagRow
+            testID="bag-row-wedge-chart"
+            icon="grid-on"
+            tileColour={WEDGE_TILE}
+            title="Wedge Chart"
+            subtitle="Partial-swing yardages"
+            onPress={() => router.push('/play/wedge-chart')}
+            showDivider
+          />
         </View>
-
-        {displaySection('bag-distances') && (
-          <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
-            <DistancesScreen />
-          </Animated.View>
-        )}
-
-        {displaySection('bag-wedge-chart') && (
-          <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
-            <WedgeChartScreen />
-          </Animated.View>
-        )}
-      </ScrollView>
-    </GestureHandlerRootView>
+      </View>
+    </ScrollView>
   );
 }

@@ -756,6 +756,49 @@ describe('Play screen', () => {
                     expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, false);
                 });
             });
+
+            it('shouldSaveGreenInRegulationTrueWhenTwoPuttsAndScoreEqualsParWithoutManualToggle', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+                const { getByTestId } = render(<Play />);
+                await startRoundOnHoleOne(getByTestId);
+                await advanceToPuttingPhase(getByTestId);
+
+                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+                expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+
+                await waitFor(() => {
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 3, false, undefined, undefined, true);
+                });
+            });
+
+            it('shouldSaveGreenInRegulationFalseWhenTwoPuttsButScoreIsBogey', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+                const { getByTestId } = render(<Play />);
+                await startRoundOnHoleOne(getByTestId);
+                fireEvent.press(getByTestId('increment-1'));
+                await advanceToPuttingPhase(getByTestId);
+
+                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+                expect(getByTestId('gir-toggle-no-selected')).toBeTruthy();
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+
+                await waitFor(() => {
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 3, false, undefined, undefined, false);
+                });
+            });
         });
 
         it('starts round with additional players', async () => {

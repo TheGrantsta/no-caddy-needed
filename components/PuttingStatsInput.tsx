@@ -11,6 +11,7 @@ const TOGGLE_OPTION_WIDTH = 68;
 
 type Props = {
     holePar: number;
+    userScore?: number;
     threePuttSelected: boolean;
     onStatsChange: (firstPuttDistance: number | undefined, secondPuttDistance: number | undefined, secondPuttIsLong: boolean, greenInRegulation: boolean) => void;
     initialFirstPutt?: number;
@@ -23,7 +24,8 @@ type Props = {
 };
 
 const PuttingStatsInput = ({
-    _holePar,
+    holePar,
+    userScore,
     threePuttSelected,
     onStatsChange,
     initialFirstPutt,
@@ -40,6 +42,19 @@ const PuttingStatsInput = ({
     const [secondPutt, setSecondPutt] = useState(initialSecondPutt !== undefined ? String(initialSecondPutt) : '');
     const [secondIsLong, setSecondIsLong] = useState(initialSecondIsLong);
     const [greenInRegulation, setGreenInRegulation] = useState(initialGreenInRegulation);
+    // Once the user taps Yes/No, their choice for this hole wins over the automatic default
+    const [greenInRegulationManuallySet, setGreenInRegulationManuallySet] = useState(false);
+
+    // Two putts (both distances entered) with a score equal to par implies the green was hit in regulation.
+    // Only applies when the score is known; otherwise the current value is left untouched.
+    const emitStats = (first: number | undefined, second: number | undefined, secondIsLong: boolean) => {
+        let gir = greenInRegulation;
+        if (userScore !== undefined && !greenInRegulationManuallySet) {
+            gir = first !== undefined && second !== undefined && userScore === holePar;
+            setGreenInRegulation(gir);
+        }
+        onStatsChange(first, second, secondIsLong, gir);
+    };
 
     // Initialize error state: if short second putt >= first putt
     const initializeError = () => {
@@ -60,7 +75,7 @@ const PuttingStatsInput = ({
         if (!value || value.trim() === '') {
             const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(secondPutt))) : undefined;
             setSecondPuttError(false);
-            onStatsChange(undefined, second, secondIsLong, greenInRegulation);
+            emitStats(undefined, second, secondIsLong);
             return;
         }
         if (!isNaN(parseInt(value))) {
@@ -74,7 +89,7 @@ const PuttingStatsInput = ({
                 setSecondPuttError(false);
             }
 
-            onStatsChange(first, second, secondIsLong, greenInRegulation);
+            emitStats(first, second, secondIsLong);
         }
     };
 
@@ -84,7 +99,7 @@ const PuttingStatsInput = ({
             // Blank field means undefined second putt
             const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(MAX_FIRST_PUTT_DISTANCE, parseInt(firstPutt))) : undefined;
             setSecondPuttError(false);
-            onStatsChange(first, undefined, secondIsLong, greenInRegulation);
+            emitStats(first, undefined, secondIsLong);
             return;
         }
         if (!isNaN(parseInt(value))) {
@@ -103,7 +118,7 @@ const PuttingStatsInput = ({
             }
 
             setSecondPuttError(false);
-            onStatsChange(first, second, secondIsLong, greenInRegulation);
+            emitStats(first, second, secondIsLong);
         }
     };
 
@@ -120,10 +135,11 @@ const PuttingStatsInput = ({
 
         setSecondPuttError(false);
         setSecondIsLong(value);
-        onStatsChange(first, second, value, greenInRegulation);
+        emitStats(first, second, value);
     };
 
     const handleGreenInRegulationChange = (value: boolean) => {
+        setGreenInRegulationManuallySet(true);
         setGreenInRegulation(value);
         const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(MAX_FIRST_PUTT_DISTANCE, parseInt(firstPutt))) : undefined;
         const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(secondPutt))) : undefined;

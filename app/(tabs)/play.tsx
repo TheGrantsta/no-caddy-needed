@@ -843,6 +843,10 @@ export default function Play() {
                                         <PhasePutting
                                             key={`putting-${currentHole}`}
                                             holePar={currentHoleData?.holePar ?? 4}
+                                            userScore={currentHoleData?.scores.find(s => {
+                                                const player = players.find(p => p.Id === s.playerId);
+                                                return player && player.IsUser === 1;
+                                            })?.score}
                                             deadlySinsValues={deadlySinsValues}
                                             puttingStats={puttingStats}
                                             puttingFirstPuttError={puttingFirstPuttError}

@@ -970,6 +970,122 @@ describe('PuttingStatsInput', () => {
 
             expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, true, true);
         });
+
+        describe('auto-default when two putts and score equals par', () => {
+            it('shouldDefaultGreenInRegulationToYesWhenTwoPuttsEnteredAndScoreEqualsPar', () => {
+                const onStatsChange = jest.fn();
+                const { getByTestId } = render(
+                    <PuttingStatsInput holePar={4} userScore={4} threePuttSelected={false} onStatsChange={onStatsChange} />
+                );
+
+                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+
+                expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, true);
+                expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+            });
+
+            it('shouldTreatHoledSecondPuttOfZeroAsTwoPutts', () => {
+                const onStatsChange = jest.fn();
+                const { getByTestId } = render(
+                    <PuttingStatsInput holePar={3} userScore={3} threePuttSelected={false} onStatsChange={onStatsChange} />
+                );
+
+                fireEvent.changeText(getByTestId('first-putt-input'), '2');
+                fireEvent.changeText(getByTestId('second-putt-input'), '0');
+
+                expect(onStatsChange).toHaveBeenLastCalledWith(2, 0, false, true);
+            });
+
+            it('shouldKeepGreenInRegulationFalseWhenScoreIsBogeyOnPar4', () => {
+                const onStatsChange = jest.fn();
+                const { getByTestId } = render(
+                    <PuttingStatsInput holePar={4} userScore={5} threePuttSelected={false} onStatsChange={onStatsChange} />
+                );
+
+                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+
+                expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, false);
+                expect(getByTestId('gir-toggle-no-selected')).toBeTruthy();
+            });
+
+            it('shouldKeepGreenInRegulationFalseWhenScoreIsBirdie', () => {
+                const onStatsChange = jest.fn();
+                const { getByTestId } = render(
+                    <PuttingStatsInput holePar={4} userScore={3} threePuttSelected={false} onStatsChange={onStatsChange} />
+                );
+
+                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+
+                expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, false);
+            });
+
+            it('shouldKeepGreenInRegulationFalseWhenOnlyFirstPuttEntered', () => {
+                const onStatsChange = jest.fn();
+                const { getByTestId } = render(
+                    <PuttingStatsInput holePar={4} userScore={4} threePuttSelected={false} onStatsChange={onStatsChange} />
+                );
+
+                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+
+                expect(onStatsChange).toHaveBeenLastCalledWith(20, undefined, false, false);
+            });
+
+            it('shouldRevertGreenInRegulationToNoWhenSecondPuttCleared', () => {
+                const onStatsChange = jest.fn();
+                const { getByTestId } = render(
+                    <PuttingStatsInput holePar={4} userScore={4} threePuttSelected={false} onStatsChange={onStatsChange} />
+                );
+
+                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+                fireEvent.changeText(getByTestId('second-putt-input'), '');
+
+                expect(onStatsChange).toHaveBeenLastCalledWith(20, undefined, false, false);
+                expect(getByTestId('gir-toggle-no-selected')).toBeTruthy();
+            });
+
+            it('shouldKeepManuallySelectedNoWhenPuttsWouldOtherwiseDefaultToYes', () => {
+                const onStatsChange = jest.fn();
+                const { getByTestId } = render(
+                    <PuttingStatsInput holePar={4} userScore={4} threePuttSelected={false} onStatsChange={onStatsChange} />
+                );
+
+                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                fireEvent.press(getByTestId('gir-toggle-no'));
+                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+
+                expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, false);
+                expect(getByTestId('gir-toggle-no-selected')).toBeTruthy();
+            });
+
+            it('shouldKeepManuallySelectedYesWhenScoreIsNotPar', () => {
+                const onStatsChange = jest.fn();
+                const { getByTestId } = render(
+                    <PuttingStatsInput holePar={4} userScore={5} threePuttSelected={false} onStatsChange={onStatsChange} />
+                );
+
+                fireEvent.press(getByTestId('gir-toggle-yes'));
+                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+
+                expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, true);
+                expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+            });
+
+            it('shouldNotOverrideSavedGreenInRegulationWhenUserScoreUnknown', () => {
+                const onStatsChange = jest.fn();
+                const { getByTestId } = render(
+                    <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} initialFirstPutt={20} initialSecondPutt={3} initialGreenInRegulation={true} />
+                );
+
+                fireEvent.changeText(getByTestId('second-putt-input'), '2');
+
+                expect(onStatsChange).toHaveBeenLastCalledWith(20, 2, false, true);
+            });
+        });
     });
 
     describe('green in regulation layout', () => {

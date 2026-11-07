@@ -5,6 +5,7 @@ import { DeadlySinsValues } from '../service/DbService';
 
 interface Props {
     holePar: number;
+    userScore?: number;
     deadlySinsValues: DeadlySinsValues;
     puttingStats: { firstPutt?: number; secondPutt?: number; secondIsLong: boolean; greenInRegulation: boolean } | null;
     puttingFirstPuttError: boolean;
@@ -18,6 +19,7 @@ interface Props {
 
 export default function PhasePutting({
     holePar,
+    userScore,
     deadlySinsValues,
     puttingStats,
     puttingFirstPuttError,
@@ -32,6 +34,7 @@ export default function PhasePutting({
         <View>
             <PuttingStatsInput
                 holePar={holePar}
+                userScore={userScore}
                 threePuttSelected={deadlySinsValues.threePutts}
                 onStatsChange={onStatsChange}
                 initialFirstPutt={puttingStats?.firstPutt}

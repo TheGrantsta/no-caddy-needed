@@ -392,6 +392,110 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    distancesScreen: StyleSheet.create({
+        topBar: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginTop: 8,
+            marginBottom: 16,
+        },
+        circleButton: {
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        title: {
+            color: c.text,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+        },
+        editButton: {
+            minWidth: 72,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+        },
+        editText: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
+        },
+        segment: {
+            flexDirection: 'row',
+            backgroundColor: c.tertiary + '26',
+            borderRadius: 10,
+            padding: 3,
+            marginBottom: 16,
+        },
+        segmentOption: {
+            flex: 1,
+            alignItems: 'center',
+            paddingVertical: 8,
+            borderRadius: 8,
+        },
+        segmentOptionSelected: {
+            backgroundColor: c.backgroundLight,
+        },
+        segmentText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
+        },
+        emptyText: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+            textAlign: 'center',
+            marginTop: 24,
+        },
+    }),
+
+    clubDistanceReadList: StyleSheet.create({
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            overflow: 'hidden',
+        },
+        headerRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+        },
+        headerText: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+        },
+        row: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+        },
+        rowDivider: {
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: c.tertiary + '66',
+        },
+        clubText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        distanceText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            fontVariant: ['tabular-nums'],
+        },
+    }),
+
     myBag: StyleSheet.create({
         sectionLabel: {
             color: c.text,

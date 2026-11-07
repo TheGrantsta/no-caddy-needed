@@ -2,7 +2,6 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import HomeHeader from '../../components/HomeHeader';
 import SettingsHeader from '../../components/SettingsHeader';
-import DistancesHeader from '../../components/DistancesHeader';
 import WedgeChartHeader from '../../components/WedgeChartHeader';
 
 jest.mock('../../hooks/useStyles', () => ({
@@ -18,7 +17,6 @@ describe('info buttons on screen headers', () => {
     const headers: [string, React.ComponentType<{ onInfoPress: () => void }>][] = [
         ['HomeHeader', HomeHeader],
         ['SettingsHeader', SettingsHeader],
-        ['DistancesHeader', DistancesHeader],
         ['WedgeChartHeader', WedgeChartHeader],
     ];
 

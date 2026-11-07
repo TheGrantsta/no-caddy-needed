@@ -132,39 +132,12 @@ describe('DistancesScreen', () => {
         });
     });
 
-    describe('Info icon', () => {
-        it('renders info icon in header', () => {
-            mockGetSettingsService.mockReturnValue({
-                theme: 'dark',
-                notificationsEnabled: true,
-                wedgeChartOnboardingSeen: false,
-                distancesOnboardingSeen: true,
-            });
-
-            const { getByTestId } = render(<DistancesScreen />);
-
-            expect(getByTestId('info-button')).toBeTruthy();
-        });
-
-        it('shows onboarding overlay when info icon is pressed', () => {
-            mockGetSettingsService.mockReturnValue({
-                theme: 'dark',
-                notificationsEnabled: true,
-                wedgeChartOnboardingSeen: false,
-                distancesOnboardingSeen: true,
-            });
-
-            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
-
-            expect(queryByTestId('onboarding-overlay')).toBeNull();
-
-            fireEvent.press(getByTestId('info-button'));
-
-            expect(getByTestId('onboarding-overlay')).toBeTruthy();
-        });
-    });
-
     describe('Clear button', () => {
+        const renderInEditMode = () => {
+            const utils = render(<DistancesScreen />);
+            fireEvent.press(utils.getByTestId('edit-distances-button'));
+            return utils;
+        };
         beforeEach(() => {
             mockGetSettingsService.mockReturnValue({
                 theme: 'dark',
@@ -179,7 +152,7 @@ describe('DistancesScreen', () => {
         });
 
         it('renders clear button when distances list has data', () => {
-            const { getByTestId } = render(<DistancesScreen />);
+            const { getByTestId } = renderInEditMode();
 
             expect(getByTestId('clear-button')).toBeTruthy();
         });
@@ -187,13 +160,13 @@ describe('DistancesScreen', () => {
         it('does not render clear button when distances list is empty', () => {
             mockGetClubDistancesService.mockReturnValue([]);
 
-            const { queryByTestId } = render(<DistancesScreen />);
+            const { queryByTestId } = renderInEditMode();
 
             expect(queryByTestId('clear-button')).toBeNull();
         });
 
         it('shows confirmation button when clear is pressed', () => {
-            const { getByTestId } = render(<DistancesScreen />);
+            const { getByTestId } = renderInEditMode();
 
             fireEvent.press(getByTestId('clear-button'));
 
@@ -201,7 +174,7 @@ describe('DistancesScreen', () => {
         });
 
         it('hides clear button and shows confirm when clear is pressed', () => {
-            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+            const { getByTestId, queryByTestId } = renderInEditMode();
 
             fireEvent.press(getByTestId('clear-button'));
 
@@ -210,7 +183,7 @@ describe('DistancesScreen', () => {
         });
 
         it('clears data when confirm is pressed', async () => {
-            const { getByTestId } = render(<DistancesScreen />);
+            const { getByTestId } = renderInEditMode();
 
             fireEvent.press(getByTestId('clear-button'));
             fireEvent.press(getByTestId('confirm-clear-button'));
@@ -221,7 +194,7 @@ describe('DistancesScreen', () => {
         });
 
         it('shows cancel button when clear is pressed', () => {
-            const { getByTestId } = render(<DistancesScreen />);
+            const { getByTestId } = renderInEditMode();
 
             fireEvent.press(getByTestId('clear-button'));
 
@@ -229,7 +202,7 @@ describe('DistancesScreen', () => {
         });
 
         it('returns to normal state when cancel is pressed', () => {
-            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+            const { getByTestId, queryByTestId } = renderInEditMode();
 
             fireEvent.press(getByTestId('clear-button'));
             expect(queryByTestId('clear-button')).toBeNull();

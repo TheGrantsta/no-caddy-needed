@@ -33,6 +33,12 @@ jest.mock('../../../service/DbService', () => ({
     saveSettingsService: jest.fn().mockResolvedValue(true),
 }));
 
+const mockBack = jest.fn();
+
+jest.mock('expo-router', () => ({
+    useRouter: () => ({ back: mockBack, push: jest.fn() }),
+}));
+
 jest.mock('../../../hooks/useOrientation', () => ({
     useOrientation: () => ({
         isLandscape: false,
@@ -80,23 +86,24 @@ describe('Distances screen', () => {
 
         const { getByTestId, getByText } = render(<DistancesScreen />);
 
-        expect(getByText('Carry distance, not total')).toBeTruthy();
-        expect(getByTestId('club-input-0').props.value).toBe('Driver');
-        expect(getByTestId('distance-input-0').props.value).toBe('250');
+        expect(getByText('Driver')).toBeTruthy();
+        expect(getByTestId('read-club-row-0')).toBeTruthy();
+        expect(getByText('250 yd')).toBeTruthy();
     });
 
     it('shows empty message when no distances exist', () => {
         mockGetClubDistances.mockReturnValue([]);
 
-        const { getByText } = render(<DistancesScreen />);
+        const { getByTestId } = render(<DistancesScreen />);
 
-        expect(getByText('Carry distance, not total')).toBeTruthy();
+        expect(getByTestId('distances-empty')).toBeTruthy();
     });
 
     it('shows add club button', () => {
         mockGetClubDistances.mockReturnValue([]);
 
         const { getByTestId } = render(<DistancesScreen />);
+        fireEvent.press(getByTestId('edit-distances-button'));
 
         expect(getByTestId('add-club-button')).toBeTruthy();
     });
@@ -105,6 +112,7 @@ describe('Distances screen', () => {
         mockGetClubDistances.mockReturnValue([]);
 
         const { getByTestId } = render(<DistancesScreen />);
+        fireEvent.press(getByTestId('edit-distances-button'));
 
         expect(getByTestId('save-distances-button')).toBeTruthy();
     });
@@ -117,6 +125,7 @@ describe('Distances screen', () => {
         mockSaveClubDistances.mockResolvedValue(true);
 
         const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+        fireEvent.press(getByTestId('edit-distances-button'));
 
         // Verify distances are shown
         expect(getByTestId('club-input-0').props.value).toBe('Driver');
@@ -140,6 +149,93 @@ describe('Distances screen', () => {
         await waitFor(() => {
             expect(queryByTestId('club-input-0')).toBeFalsy();
             expect(queryByTestId('club-input-1')).toBeFalsy();
+        });
+    });
+
+    describe('My Bag layout', () => {
+        const twoClubs = [
+            { Id: 1, Club: 'Driver', CarryDistance: 230, TotalDistance: 250, SortOrder: 1 },
+            { Id: 2, Club: '3 Wood', CarryDistance: 210, TotalDistance: 225, SortOrder: 2 },
+        ];
+
+        beforeEach(() => {
+            mockGetClubDistances.mockReturnValue(twoClubs);
+        });
+
+        it('shouldShowBackButtonThatReturnsToMyBag', () => {
+            const { getByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('distances-back-button'));
+
+            expect(mockBack).toHaveBeenCalled();
+        });
+
+        it('shouldShowEditButtonInTheHeader', () => {
+            const { getByTestId } = render(<DistancesScreen />);
+
+            expect(getByTestId('edit-distances-button')).toHaveTextContent('Edit');
+        });
+
+        it('shouldNotShowTheInfoButton', () => {
+            const { queryByTestId } = render(<DistancesScreen />);
+
+            expect(queryByTestId('info-button')).toBeNull();
+        });
+
+        it('shouldShowCarryAndTotalSegments', () => {
+            const { getByTestId } = render(<DistancesScreen />);
+
+            expect(getByTestId('metric-carry')).toBeTruthy();
+            expect(getByTestId('metric-total')).toBeTruthy();
+        });
+
+        it('shouldListClubsReadOnlyByDefault', () => {
+            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+
+            expect(getByTestId('read-club-row-0')).toBeTruthy();
+            expect(queryByTestId('club-input-0')).toBeNull();
+        });
+
+        it('shouldShowCarryColumnByDefault', () => {
+            const { getByTestId, getByText } = render(<DistancesScreen />);
+
+            expect(getByTestId('read-metric-header')).toHaveTextContent('Carry');
+            expect(getByText('230 yd')).toBeTruthy();
+        });
+
+        it('shouldShowTotalColumnWhenTotalSegmentPressed', () => {
+            const { getByTestId, getByText } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('metric-total'));
+
+            expect(getByTestId('read-metric-header')).toHaveTextContent('Total');
+            expect(getByText('250 yd')).toBeTruthy();
+        });
+
+        it('shouldShowEmptyMessageWhenNoClubsAreRecorded', () => {
+            mockGetClubDistances.mockReturnValue([]);
+            const { getByTestId } = render(<DistancesScreen />);
+
+            expect(getByTestId('distances-empty')).toBeTruthy();
+        });
+
+        it('shouldEnterEditModeWhenEditPressed', () => {
+            const { getByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('edit-distances-button'));
+
+            expect(getByTestId('club-input-0').props.value).toBe('Driver');
+            expect(getByTestId('edit-distances-button')).toHaveTextContent('Done');
+        });
+
+        it('shouldReturnToReadOnlyListWhenDonePressed', () => {
+            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('edit-distances-button'));
+            fireEvent.press(getByTestId('edit-distances-button'));
+
+            expect(queryByTestId('club-input-0')).toBeNull();
+            expect(getByTestId('read-club-row-0')).toBeTruthy();
         });
     });
 });

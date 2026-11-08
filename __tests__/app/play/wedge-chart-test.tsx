@@ -107,6 +107,71 @@ describe('Wedge Chart screen', () => {
         expect(getByTestId('add-wedge-club-button')).toBeTruthy();
     });
 
+    it('styles add club like the Distances add club row', () => {
+        const { StyleSheet } = require('react-native');
+        const colours = require('../../../assets/colours').default;
+        const { getByTestId } = render(<WedgeChartScreen />);
+
+        const style = StyleSheet.flatten(getByTestId('add-wedge-club-button').props.style);
+
+        expect(style.backgroundColor).toBe(colours.backgroundLight);
+        expect(style.borderRadius).toBeGreaterThanOrEqual(14);
+        expect(style.alignSelf).toBe('flex-start');
+        expect(style.paddingHorizontal).toBeGreaterThanOrEqual(16);
+    });
+
+    it('aligns the add buttons to the left like the Distances list', () => {
+        const { StyleSheet } = require('react-native');
+        const { getByTestId } = render(<WedgeChartScreen />);
+
+        const row = StyleSheet.flatten(getByTestId('wedge-add-buttons-row').props.style);
+        expect(row.justifyContent).toBe('flex-start');
+    });
+
+    it('leaves space between the add buttons and Save like the Distances list', () => {
+        const { StyleSheet } = require('react-native');
+        const { getByTestId } = render(<WedgeChartScreen />);
+
+        expect(StyleSheet.flatten(getByTestId('save-wedge-chart-button').props.style).marginTop).toBeGreaterThanOrEqual(24);
+    });
+
+    describe('iOS-style grid', () => {
+        const colours = require('../../../assets/colours').default;
+        const { StyleSheet } = require('react-native');
+
+        it('shouldShowTheGridInsideAWhiteRoundedCard', () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+            const style = StyleSheet.flatten(getByTestId('wedge-grid-card').props.style);
+
+            expect(style.backgroundColor).toBe(colours.backgroundLight);
+            expect(style.borderRadius).toBeGreaterThanOrEqual(14);
+        });
+
+        it('shouldShowADashInTheCornerColumnInsteadOfDistanceOrX', () => {
+            const { getByTestId, queryByText } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+
+            expect(getByTestId('wedge-corner-label')).toHaveTextContent('-');
+            expect(queryByText('Distance')).toBeNull();
+            expect(queryByText('X')).toBeNull();
+        });
+
+        it('shouldUseReadablePlaceholderColourForClubNames', () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+
+            expect(getByTestId('wedge-club-input-0').props.placeholderTextColor).toBe(colours.tertiary);
+        });
+
+        it('shouldShowClubNamesWithoutAFilledBackground', () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+
+            expect(StyleSheet.flatten(getByTestId('wedge-club-input-0').props.style).backgroundColor).toBeUndefined();
+        });
+    });
+
     it('shows add distance button', () => {
         mockGetWedgeChartService.mockReturnValue(nonEmptyChart);
         const { getByTestId } = render(<WedgeChartScreen />);

@@ -86,53 +86,55 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
 
     return (
         <View style={s.container}>
-
-            <View style={s.headerRow}>
-                {rows.length > 0 && (
-                    <View style={[s.headerCell, s.labelCell]}>
-                        <Text style={s.input}>X</Text>
-                    </View>
-                )}
-                {rows.map((row, clubIndex) => (
-                    <TextInput
-                        key={`club-${clubIndex}`}
-                        testID={`wedge-club-input-${clubIndex}`}
-                        style={[s.headerInput, s.columnCell]}
-                        value={row.club}
-                        onChangeText={(v) => handleUpdateClub(clubIndex, v)}
-                        placeholder="Club"
-                        placeholderTextColor={colours.backgroundAlternate}
-                    />
-                ))}
-            </View>
-
-            {/* Data rows for each distance */}
-            {distanceNames.map((distanceName, distIndex) => (
-                <View key={distIndex} style={s.row}>
-                    <TextInput
-                        testID={`distance-name-input-${distIndex}`}
-                        style={[s.input, s.labelCell, distIndex === distanceNames.length - 1 && { borderBottomWidth: 0.5, borderBottomColor: colours.primary + '33' }]}
-                        value={distanceName}
-                        onChangeText={(v) => handleUpdateDistanceName(distIndex, v)}
-                        placeholder="Name"
-                        placeholderTextColor={colours.backgroundAlternate}
-                    />
+            <View testID="wedge-grid-card" style={s.card}>
+                <View style={s.headerRow}>
+                    {rows.length > 0 && (
+                        <View style={[s.headerCell, s.labelCell]}>
+                            <Text testID="wedge-corner-label" style={s.cornerLabel}>-</Text>
+                        </View>
+                    )}
                     {rows.map((row, clubIndex) => (
                         <TextInput
-                            key={`${clubIndex}-${distIndex}`}
-                            testID={`wedge-distance-input-${clubIndex}-${distIndex}`}
-                            style={[s.input, s.columnCell, distIndex === distanceNames.length - 1 && { borderBottomWidth: 0.5, borderBottomColor: colours.primary + '33' }]}
-                            value={row.distances[distIndex]}
-                            onChangeText={(v) => handleUpdateDistance(clubIndex, distIndex, v)}
-                            keyboardType="number-pad"
-                            placeholder="0"
-                            placeholderTextColor={colours.backgroundAlternate}
+                            key={`club-${clubIndex}`}
+                            testID={`wedge-club-input-${clubIndex}`}
+                            style={[s.headerInput, s.columnCell]}
+                            value={row.club}
+                            onChangeText={(v) => handleUpdateClub(clubIndex, v)}
+                            placeholder="Club"
+                            placeholderTextColor={colours.tertiary}
                         />
                     ))}
                 </View>
-            ))}
 
-            <View style={s.buttonRow}>
+                {/* Data rows for each distance */}
+                {distanceNames.map((distanceName, distIndex) => (
+                    <View key={distIndex} style={s.row}>
+                        <TextInput
+                            testID={`distance-name-input-${distIndex}`}
+                            style={[s.input, s.labelCell, distIndex === distanceNames.length - 1 && { borderBottomWidth: 0.5, borderBottomColor: colours.primary + '33' }]}
+                            value={distanceName}
+                            onChangeText={(v) => handleUpdateDistanceName(distIndex, v)}
+                            placeholder="Name"
+                            placeholderTextColor={colours.tertiary}
+                        />
+                        {rows.map((row, clubIndex) => (
+                            <TextInput
+                                key={`${clubIndex}-${distIndex}`}
+                                testID={`wedge-distance-input-${clubIndex}-${distIndex}`}
+                                style={[s.input, s.columnCell, distIndex === distanceNames.length - 1 && { borderBottomWidth: 0.5, borderBottomColor: colours.primary + '33' }]}
+                                value={row.distances[distIndex]}
+                                onChangeText={(v) => handleUpdateDistance(clubIndex, distIndex, v)}
+                                keyboardType="number-pad"
+                                placeholder="0"
+                                placeholderTextColor={colours.tertiary}
+                            />
+                        ))}
+                    </View>
+                ))}
+
+            </View>
+
+            <View testID="wedge-add-buttons-row" style={s.buttonRow}>
                 {rows.length < MAX_CLUBS && (
                     <TouchableOpacity
                         testID="add-wedge-club-button"
@@ -157,6 +159,7 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
 
             <CtaButton
                 testID="save-wedge-chart-button"
+                style={s.saveButton}
                 label="Save"
                 icon="save"
                 onPress={handleSave}

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { act } from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import WedgeChart from '../../components/WedgeChart';
+import WedgeChart, { WedgeChartHandle } from '../../components/WedgeChart';
 import type { WedgeChartData } from '../../service/DbService';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -14,6 +14,8 @@ jest.mock('../../context/ThemeContext', () => ({
 }));
 
 describe('WedgeChart component', () => {
+    const chartRef = React.createRef<WedgeChartHandle>();
+
     const emptyData: WedgeChartData = { distanceNames: [], clubs: [] };
 
     const populatedData: WedgeChartData = {
@@ -25,13 +27,13 @@ describe('WedgeChart component', () => {
     };
 
     it('does not render table header with Club label', () => {
-        const { queryByText } = render(<WedgeChart data={emptyData} />);
+        const { queryByText } = render(<WedgeChart ref={chartRef} data={emptyData} />);
 
         expect(queryByText('Club')).toBeNull();
     });
 
     it('renders distance name inputs when data has distance names', () => {
-        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={populatedData} />);
 
         expect(getByTestId('distance-name-input-0').props.value).toBe('1/2');
         expect(getByTestId('distance-name-input-1').props.value).toBe('3/4');
@@ -39,14 +41,14 @@ describe('WedgeChart component', () => {
     });
 
     it('renders club names in inputs', () => {
-        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={populatedData} />);
 
         expect(getByTestId('wedge-club-input-0').props.value).toBe('PW');
         expect(getByTestId('wedge-club-input-1').props.value).toBe('SW');
     });
 
     it('renders distance values in inputs', () => {
-        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={populatedData} />);
 
         expect(getByTestId('wedge-distance-input-0-0').props.value).toBe('90');
         expect(getByTestId('wedge-distance-input-0-2').props.value).toBe('130');
@@ -54,7 +56,7 @@ describe('WedgeChart component', () => {
     });
 
     it('shows add club button when fewer than 4 clubs', () => {
-        const { getByTestId } = render(<WedgeChart data={emptyData} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={emptyData} />);
 
         expect(getByTestId('add-wedge-club-button')).toBeTruthy();
     });
@@ -70,7 +72,7 @@ describe('WedgeChart component', () => {
             ],
         };
 
-        const { queryByTestId } = render(<WedgeChart data={fourClubs} />);
+        const { queryByTestId } = render(<WedgeChart ref={chartRef} data={fourClubs} />);
 
         expect(queryByTestId('add-wedge-club-button')).toBeNull();
     });
@@ -81,15 +83,15 @@ describe('WedgeChart component', () => {
             clubs: [{ club: 'PW', distances: [] }],
         };
 
-        const { getByTestId } = render(<WedgeChart data={dataWithOneClub} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={dataWithOneClub} />);
 
         expect(getByTestId('add-wedge-distance-button')).toBeTruthy();
     });
 
-    it('hides add distance button when no clubs exist', () => {
-        const { queryByTestId } = render(<WedgeChart data={emptyData} />);
+    it('shows add distance button even when no clubs exist', () => {
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={emptyData} />);
 
-        expect(queryByTestId('add-wedge-distance-button')).toBeNull();
+        expect(getByTestId('add-wedge-distance-button')).toBeTruthy();
     });
 
     it('hides add distance button when 6 distances exist', () => {
@@ -98,7 +100,7 @@ describe('WedgeChart component', () => {
             clubs: [{ club: 'PW', distances: [{ name: '1', distance: 100 }, { name: '2', distance: 100 }, { name: '3', distance: 100 }, { name: '4', distance: 100 }, { name: '5', distance: 100 }, { name: '6', distance: 100 }] }],
         };
 
-        const { queryByTestId } = render(<WedgeChart data={sixDistances} />);
+        const { queryByTestId } = render(<WedgeChart ref={chartRef} data={sixDistances} />);
 
         expect(queryByTestId('add-wedge-distance-button')).toBeNull();
     });
@@ -109,7 +111,7 @@ describe('WedgeChart component', () => {
             clubs: [],
         };
 
-        const { getByTestId } = render(<WedgeChart data={dataWithOneDistance} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={dataWithOneDistance} />);
 
         fireEvent.press(getByTestId('add-wedge-club-button'));
 
@@ -123,7 +125,7 @@ describe('WedgeChart component', () => {
             clubs: [{ club: 'PW', distances: [{ name: 'Full', distance: 130 }] }],
         };
 
-        const { getByTestId } = render(<WedgeChart data={dataWithOneClub} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={dataWithOneClub} />);
 
         fireEvent.press(getByTestId('add-wedge-distance-button'));
 
@@ -131,29 +133,23 @@ describe('WedgeChart component', () => {
         expect(getByTestId('wedge-distance-input-0-1')).toBeTruthy();
     });
 
-    it('shows save button', () => {
-        const { getByTestId } = render(<WedgeChart data={emptyData} />);
-
-        expect(getByTestId('save-wedge-chart-button')).toBeTruthy();
-    });
-
     it('calls onSave with chart data when save is pressed', () => {
         const mockOnSave = jest.fn();
-        const { getByTestId } = render(<WedgeChart data={populatedData} onSave={mockOnSave} />);
+        render(<WedgeChart ref={chartRef} data={populatedData} onSave={mockOnSave} />);
 
-        fireEvent.press(getByTestId('save-wedge-chart-button'));
+        act(() => { chartRef.current?.save(); });
 
         expect(mockOnSave).toHaveBeenCalledWith(populatedData);
     });
 
     it('doesNotThrowWhenSavePressedWithoutOnSaveProp', () => {
-        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+        render(<WedgeChart ref={chartRef} data={populatedData} />);
 
-        expect(() => fireEvent.press(getByTestId('save-wedge-chart-button'))).not.toThrow();
+        expect(() => act(() => { chartRef.current?.save(); })).not.toThrow();
     });
 
     it('updatesClubNameWhenInputChanges', () => {
-        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={populatedData} />);
 
         fireEvent.changeText(getByTestId('wedge-club-input-0'), 'LW');
 
@@ -161,7 +157,7 @@ describe('WedgeChart component', () => {
     });
 
     it('updatesDistanceValueWhenInputChanges', () => {
-        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={populatedData} />);
 
         fireEvent.changeText(getByTestId('wedge-distance-input-0-0'), '95');
 
@@ -169,7 +165,7 @@ describe('WedgeChart component', () => {
     });
 
     it('updatesDistanceNameWhenHeaderInputChanges', () => {
-        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={populatedData} />);
 
         fireEvent.changeText(getByTestId('distance-name-input-0'), 'Half');
 
@@ -178,10 +174,10 @@ describe('WedgeChart component', () => {
 
     it('savesUpdatedClubNameAfterEditing', () => {
         const mockOnSave = jest.fn();
-        const { getByTestId } = render(<WedgeChart data={populatedData} onSave={mockOnSave} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={populatedData} onSave={mockOnSave} />);
 
         fireEvent.changeText(getByTestId('wedge-club-input-0'), 'LW');
-        fireEvent.press(getByTestId('save-wedge-chart-button'));
+        act(() => { chartRef.current?.save(); });
 
         expect(mockOnSave).toHaveBeenCalledWith(
             expect.objectContaining({
@@ -202,8 +198,8 @@ describe('WedgeChart component', () => {
             ],
         };
 
-        const { getByTestId } = render(<WedgeChart data={dataWithBlankClub} onSave={mockOnSave} />);
-        fireEvent.press(getByTestId('save-wedge-chart-button'));
+        render(<WedgeChart ref={chartRef} data={dataWithBlankClub} onSave={mockOnSave} />);
+        act(() => { chartRef.current?.save(); });
 
         const saved: WedgeChartData = mockOnSave.mock.calls[0][0];
         expect(saved.clubs).toHaveLength(1);
@@ -217,8 +213,8 @@ describe('WedgeChart component', () => {
             clubs: [{ club: 'PW', distances: [{ name: 'Full', distance: 130 }, { name: '', distance: 0 }] }],
         };
 
-        const { getByTestId } = render(<WedgeChart data={dataWithBlankDistance} onSave={mockOnSave} />);
-        fireEvent.press(getByTestId('save-wedge-chart-button'));
+        render(<WedgeChart ref={chartRef} data={dataWithBlankDistance} onSave={mockOnSave} />);
+        act(() => { chartRef.current?.save(); });
 
         const saved: WedgeChartData = mockOnSave.mock.calls[0][0];
         expect(saved.distanceNames).toEqual(['Full']);
@@ -227,29 +223,29 @@ describe('WedgeChart component', () => {
 
     it('savesNonNumericDistanceAsZero', () => {
         const mockOnSave = jest.fn();
-        const { getByTestId } = render(<WedgeChart data={populatedData} onSave={mockOnSave} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={populatedData} onSave={mockOnSave} />);
 
         fireEvent.changeText(getByTestId('wedge-distance-input-0-0'), 'abc');
-        fireEvent.press(getByTestId('save-wedge-chart-button'));
+        act(() => { chartRef.current?.save(); });
 
         const saved: WedgeChartData = mockOnSave.mock.calls[0][0];
         expect(saved.clubs[0].distances[0].distance).toBe(0);
     });
 
     it('distanceInputUsesNumberPadKeyboard', () => {
-        const { getByTestId } = render(<WedgeChart data={populatedData} />);
+        const { getByTestId } = render(<WedgeChart ref={chartRef} data={populatedData} />);
 
         expect(getByTestId('wedge-distance-input-0-0').props.keyboardType).toBe('number-pad');
     });
 
     it('rendersNoDistanceHeaderInputsForEmptyData', () => {
-        const { queryByTestId } = render(<WedgeChart data={emptyData} />);
+        const { queryByTestId } = render(<WedgeChart ref={chartRef} data={emptyData} />);
 
         expect(queryByTestId('distance-name-input-0')).toBeNull();
     });
 
     it('rendersNoClubRowsForEmptyData', () => {
-        const { queryByTestId } = render(<WedgeChart data={emptyData} />);
+        const { queryByTestId } = render(<WedgeChart ref={chartRef} data={emptyData} />);
 
         expect(queryByTestId('wedge-club-input-0')).toBeNull();
     });

@@ -1,16 +1,19 @@
-import { useState } from 'react';
+import { forwardRef, useImperativeHandle, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import type { WedgeChartData } from '../service/DbService';
 import { yardsToDisplayUnit, displayUnitToYards } from '../service/UnitsService';
-import CtaButton from './CtaButton';
 
 type Props = {
     data: WedgeChartData;
     onSave?: (data: WedgeChartData) => void;
     units?: 'yards' | 'metres';
+};
+
+export type WedgeChartHandle = {
+    save: () => void;
 };
 
 type EditableRow = {
@@ -21,10 +24,10 @@ type EditableRow = {
 const MAX_CLUBS = 4;
 const MAX_DISTANCES = 6;
 
-const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
+const WedgeChart = forwardRef<WedgeChartHandle, Props>(({ data, onSave, units = 'yards' }, ref) => {
     const styles = useStyles();
     const colours = useThemeColours();
-    const s = styles.wedgeChart;
+    const s = styles.wedgeEdit;
     const [distanceNames, setDistanceNames] = useState<string[]>(
         data.distanceNames.length > 0 ? [...data.distanceNames] : []
     );
@@ -59,14 +62,14 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
         setRows(rows.filter((_, i) => i !== index));
     };
 
-    const handleAddClub = () => {
-        if (rows.length >= MAX_CLUBS) return;
-        setRows([...rows, { club: '', distances: distanceNames.map(() => '') }]);
-    };
-
     const handleRemoveDistance = (index: number) => {
         setDistanceNames(distanceNames.filter((_, i) => i !== index));
         setRows(rows.map(r => ({ ...r, distances: r.distances.filter((_, i) => i !== index) })));
+    };
+
+    const handleAddClub = () => {
+        if (rows.length >= MAX_CLUBS) return;
+        setRows([...rows, { club: '', distances: distanceNames.map(() => '') }]);
     };
 
     const handleAddDistance = () => {
@@ -93,66 +96,49 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
         onSave(chartData);
     };
 
+    useImperativeHandle(ref, () => ({ save: handleSave }));
+
     return (
         <View style={s.container}>
-            <View testID="wedge-grid-card" style={s.card}>
+            <View testID="wedge-edit-card" style={s.card}>
                 <View style={s.headerRow}>
-                    {rows.length > 0 && (
-                        <View style={[s.headerCell, s.labelCell]}>
-                            <Text testID="wedge-corner-label" style={s.cornerLabel}>-</Text>
-                        </View>
-                    )}
-                    {rows.map((row, clubIndex) => (
-                        <View key={`club-${clubIndex}`} testID={`wedge-club-column-${clubIndex}`} style={[s.clubHeaderCell, s.columnCell]}>
-                            <TouchableOpacity
-                                testID={`wedge-remove-club-${clubIndex}`}
-                                accessibilityRole="button"
-                                accessibilityLabel={`Remove ${row.club || 'club'}`}
-                                onPress={() => handleRemoveClub(clubIndex)}
-                                style={s.removeClubButton}
-                            >
-                                <MaterialIcons name="remove-circle" size={22} color={colours.red} />
-                            </TouchableOpacity>
-                            <TextInput
-                                testID={`wedge-club-input-${clubIndex}`}
-                                style={s.headerInput}
-                                value={row.club}
-                                onChangeText={(v) => handleUpdateClub(clubIndex, v)}
-                                placeholder="Club"
-                                placeholderTextColor={colours.tertiary}
-                            />
-                        </View>
+                    <Text style={[s.headerText, s.clubCell]}>Wedge</Text>
+                    {distanceNames.map((name, j) => (
+                        <Text key={`header-${j}`} numberOfLines={1} style={[s.headerText, s.valueCell]}>
+                            {name || `Column ${j + 1}`}
+                        </Text>
                     ))}
                 </View>
 
-                {/* Data rows for each distance */}
-                {distanceNames.map((distanceName, distIndex) => (
-                    <View key={distIndex} style={s.row}>
-                        <View testID="wedge-distance-name-cell-0" style={[s.labelCell, s.distanceNameCell, distIndex === distanceNames.length - 1 && { borderBottomWidth: 0.5, borderBottomColor: colours.primary + '33' }]}>
-                            <TouchableOpacity
-                                testID={`wedge-remove-distance-${distIndex}`}
-                                accessibilityRole="button"
-                                accessibilityLabel={`Remove ${distanceName || 'row'}`}
-                                onPress={() => handleRemoveDistance(distIndex)}
-                                style={s.removeClubButton}
-                            >
-                                <MaterialIcons name="remove-circle" size={22} color={colours.red} />
-                            </TouchableOpacity>
-                            <TextInput
-                                testID={`distance-name-input-${distIndex}`}
-                                style={[s.input, s.distanceNameInput]}
-                                                    value={distanceName}
-                            onChangeText={(v) => handleUpdateDistanceName(distIndex, v)}
-                            placeholder="Name"
+                {rows.map((row, clubIndex) => (
+                    <View
+                        key={`club-${clubIndex}`}
+                        testID={`wedge-edit-row-${clubIndex}`}
+                        style={[s.row, clubIndex > 0 && s.rowDivider]}
+                    >
+                        <TouchableOpacity
+                            testID={`wedge-remove-club-${clubIndex}`}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Remove ${row.club || 'wedge'}`}
+                            onPress={() => handleRemoveClub(clubIndex)}
+                            style={s.removeButton}
+                        >
+                            <MaterialIcons name="remove-circle" size={24} color={colours.red} />
+                        </TouchableOpacity>
+                        <TextInput
+                            testID={`wedge-club-input-${clubIndex}`}
+                            style={[s.clubInput, s.clubCell]}
+                            value={row.club}
+                            onChangeText={(v) => handleUpdateClub(clubIndex, v)}
+                            placeholder="Wedge"
                             placeholderTextColor={colours.tertiary}
-                            />
-                        </View>
-                        {rows.map((row, clubIndex) => (
+                        />
+                        {row.distances.map((value, distIndex) => (
                             <TextInput
                                 key={`${clubIndex}-${distIndex}`}
                                 testID={`wedge-distance-input-${clubIndex}-${distIndex}`}
-                                style={[s.input, s.columnCell, distIndex === distanceNames.length - 1 && { borderBottomWidth: 0.5, borderBottomColor: colours.primary + '33' }]}
-                                value={row.distances[distIndex]}
+                                style={[s.valueInput, s.valueCell]}
+                                value={value}
                                 onChangeText={(v) => handleUpdateDistance(clubIndex, distIndex, v)}
                                 keyboardType="number-pad"
                                 placeholder="0"
@@ -162,40 +148,59 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                     </View>
                 ))}
 
-            </View>
-
-            <View testID="wedge-add-buttons-row" style={s.buttonRow}>
                 {rows.length < MAX_CLUBS && (
-                    <TouchableOpacity
-                        testID="add-wedge-club-button"
-                        onPress={handleAddClub}
-                        style={s.addButton}
-                    >
-                        <MaterialIcons name="add" size={20} color={colours.primary} />
-                        <Text style={s.addButtonText}>Add club</Text>
-                    </TouchableOpacity>
-                )}
-                {rows.length > 0 && distanceNames.length < MAX_DISTANCES && (
-                    <TouchableOpacity
-                        testID="add-wedge-distance-button"
-                        onPress={handleAddDistance}
-                        style={s.addButton}
-                    >
-                        <MaterialIcons name="add" size={20} color={colours.primary} />
-                        <Text style={s.addButtonText}>Add distance</Text>
-                    </TouchableOpacity>
+                    <>
+                        {rows.length > 0 && <View style={s.rowDivider} />}
+                        <TouchableOpacity testID="add-wedge-club-button" onPress={handleAddClub} style={s.addRow}>
+                            <MaterialIcons name="add-circle" size={24} color={colours.green} />
+                            <Text style={s.addRowText}>Add wedge</Text>
+                        </TouchableOpacity>
+                    </>
                 )}
             </View>
 
-            <CtaButton
-                testID="save-wedge-chart-button"
-                style={s.saveButton}
-                label="Save"
-                icon="save"
-                onPress={handleSave}
-            />
+            <Text style={s.sectionLabel}>Swing lengths</Text>
+            <View testID="wedge-swing-card" style={s.card}>
+                {distanceNames.map((name, distIndex) => (
+                    <View
+                        key={`distance-${distIndex}`}
+                        testID={`swing-row-${distIndex}`}
+                        style={[s.row, distIndex > 0 && s.rowDivider]}
+                    >
+                        <TouchableOpacity
+                            testID={`wedge-remove-distance-${distIndex}`}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Remove ${name || `column ${distIndex + 1}`}`}
+                            onPress={() => handleRemoveDistance(distIndex)}
+                            style={s.removeButton}
+                        >
+                            <MaterialIcons name="remove-circle" size={24} color={colours.red} />
+                        </TouchableOpacity>
+                        <Text style={s.swingLabel}>{`Column ${distIndex + 1}`}</Text>
+                        <TextInput
+                            testID={`distance-name-input-${distIndex}`}
+                            style={s.swingInput}
+                            value={name}
+                            onChangeText={(v) => handleUpdateDistanceName(distIndex, v)}
+                            placeholder="Name"
+                            placeholderTextColor={colours.tertiary}
+                        />
+                    </View>
+                ))}
+                {distanceNames.length < MAX_DISTANCES && (
+                    <>
+                        {distanceNames.length > 0 && <View style={s.rowDivider} />}
+                        <TouchableOpacity testID="add-wedge-distance-button" onPress={handleAddDistance} style={s.addRow}>
+                            <MaterialIcons name="add-circle" size={24} color={colours.green} />
+                            <Text style={s.addRowText}>Add swing length</Text>
+                        </TouchableOpacity>
+                    </>
+                )}
+            </View>
         </View>
     );
-};
+});
+
+WedgeChart.displayName = 'WedgeChart';
 
 export default WedgeChart;

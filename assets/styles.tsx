@@ -456,6 +456,100 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    wedgeEdit: StyleSheet.create({
+        container: {
+            width: '100%',
+        },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            overflow: 'hidden',
+        },
+        headerRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+        },
+        headerText: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+        },
+        row: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+        },
+        rowDivider: {
+            height: StyleSheet.hairlineWidth,
+            marginLeft: 16,
+            backgroundColor: c.tertiary + '66',
+        },
+        clubCell: {
+            flex: 1,
+            minWidth: 0,
+        },
+        valueCell: {
+            flex: 0,
+            width: 92,
+            textAlign: 'center',
+        },
+        removeButton: {
+            marginRight: 10,
+        },
+        clubInput: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            fontWeight: '700',
+            paddingVertical: 6,
+        },
+        valueInput: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            textAlign: 'center',
+            backgroundColor: c.tertiary + '1A',
+            borderRadius: 10,
+            paddingVertical: 12,
+            marginLeft: 6,
+        },
+        addRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 10,
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+        },
+        addRowText: {
+            color: c.green,
+            fontSize: fontSizes.normal,
+            fontWeight: '500',
+        },
+        sectionLabel: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+            marginTop: 24,
+            marginBottom: 8,
+            marginLeft: 4,
+        },
+        swingLabel: {
+            flex: 1,
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        swingInput: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            textAlign: 'right',
+            minWidth: 80,
+            paddingVertical: 6,
+        },
+    }),
+
     wedgeChartReadList: StyleSheet.create({
         card: {
             backgroundColor: c.backgroundLight,
@@ -1040,6 +1134,25 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             textAlign: 'center',
             marginTop: 24,
+        },
+        cancelText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            fontWeight: '500',
+        },
+        doneButton: {
+            minWidth: 72,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+        },
+        doneText: {
+            color: c.white,
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
         },
         titleSpacer: {
             width: 44,

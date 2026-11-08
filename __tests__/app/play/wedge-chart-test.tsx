@@ -101,14 +101,14 @@ describe('Wedge Chart screen', () => {
     });
 
     it('renders wedge chart heading', () => {
-        const { getByText } = renderInEditMode();
+        const { getByText } = render(<WedgeChartScreen />);
         expect(getByText('Wedge Chart')).toBeTruthy();
     });
 
-    it('renders the carry distance note below the save button', () => {
+    it('renders the carry distance note under the editor', () => {
         const { getByTestId, getByText } = renderInEditMode();
 
-        expect(getByTestId('save-wedge-chart-button')).toBeTruthy();
+        expect(getByTestId('wedge-done-button')).toBeTruthy();
         expect(getByText('Carry distance, not total')).toBeTruthy();
     });
 
@@ -120,49 +120,21 @@ describe('Wedge Chart screen', () => {
     it('shows the back button as a white circle like the Distances heading', () => {
         const { StyleSheet } = require('react-native');
         const colours = require('../../../assets/colours').default;
-        const { getByTestId } = renderInEditMode();
+        const { getByTestId } = render(<WedgeChartScreen />);
         const style = StyleSheet.flatten(getByTestId('wedge-back-button').props.style);
 
         expect(style.backgroundColor).toBe(colours.backgroundLight);
         expect(style.borderRadius).toBe(22);
     });
 
-    it('shows save button', () => {
+    it('shows Done in the header while editing', () => {
         const { getByTestId } = renderInEditMode();
-        expect(getByTestId('save-wedge-chart-button')).toBeTruthy();
+        expect(getByTestId('wedge-done-button')).toBeTruthy();
     });
 
     it('shows add club button', () => {
         const { getByTestId } = renderInEditMode();
         expect(getByTestId('add-wedge-club-button')).toBeTruthy();
-    });
-
-    it('styles add club like the Distances add club row', () => {
-        const { StyleSheet } = require('react-native');
-        const colours = require('../../../assets/colours').default;
-        const { getByTestId } = renderInEditMode();
-
-        const style = StyleSheet.flatten(getByTestId('add-wedge-club-button').props.style);
-
-        expect(style.backgroundColor).toBe(colours.backgroundLight);
-        expect(style.borderRadius).toBeGreaterThanOrEqual(14);
-        expect(style.alignSelf).toBe('flex-start');
-        expect(style.paddingHorizontal).toBeGreaterThanOrEqual(16);
-    });
-
-    it('aligns the add buttons to the left like the Distances list', () => {
-        const { StyleSheet } = require('react-native');
-        const { getByTestId } = renderInEditMode();
-
-        const row = StyleSheet.flatten(getByTestId('wedge-add-buttons-row').props.style);
-        expect(row.justifyContent).toBe('flex-start');
-    });
-
-    it('leaves space between the add buttons and Save like the Distances list', () => {
-        const { StyleSheet } = require('react-native');
-        const { getByTestId } = renderInEditMode();
-
-        expect(StyleSheet.flatten(getByTestId('save-wedge-chart-button').props.style).marginTop).toBeGreaterThanOrEqual(24);
     });
 
     describe('removing individual clubs', () => {
@@ -235,7 +207,7 @@ describe('Wedge Chart screen', () => {
             fireEvent.changeText(getByTestId('distance-name-input-1'), '3/4');
             fireEvent.press(getByTestId('wedge-remove-distance-0'));
 
-            fireEvent.press(getByTestId('save-wedge-chart-button'));
+            fireEvent.press(getByTestId('wedge-done-button'));
 
             await waitFor(() => {
                 expect(mockSaveWedgeChartService).toHaveBeenLastCalledWith(
@@ -253,7 +225,7 @@ describe('Wedge Chart screen', () => {
             fireEvent.changeText(getByTestId('wedge-club-input-1'), 'Sand');
             fireEvent.press(getByTestId('wedge-remove-club-0'));
 
-            fireEvent.press(getByTestId('save-wedge-chart-button'));
+            fireEvent.press(getByTestId('wedge-done-button'));
 
             await waitFor(() => {
                 expect(mockSaveWedgeChartService).toHaveBeenLastCalledWith(
@@ -274,7 +246,7 @@ describe('Wedge Chart screen', () => {
             const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
 
             expect(getByTestId('wedge-read-row-0')).toBeTruthy();
-            expect(queryByTestId('save-wedge-chart-button')).toBeNull();
+            expect(queryByTestId('wedge-done-button')).toBeNull();
         });
 
         it('shouldShowTheCarryBySwingLengthSectionLabel', () => {
@@ -296,8 +268,8 @@ describe('Wedge Chart screen', () => {
 
             fireEvent.press(getByTestId('wedge-edit-button'));
 
-            expect(getByTestId('save-wedge-chart-button')).toBeTruthy();
-            expect(getByTestId('wedge-edit-button')).toHaveTextContent('Done');
+            expect(getByTestId('wedge-done-button')).toBeTruthy();
+            expect(getByTestId('wedge-done-button')).toHaveTextContent('Done');
         });
 
         it('shouldReturnToTheReadOnlyTableWhenDonePressed', () => {
@@ -305,9 +277,9 @@ describe('Wedge Chart screen', () => {
             const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
 
             fireEvent.press(getByTestId('wedge-edit-button'));
-            fireEvent.press(getByTestId('wedge-edit-button'));
+            fireEvent.press(getByTestId('wedge-cancel-button'));
 
-            expect(queryByTestId('save-wedge-chart-button')).toBeNull();
+            expect(queryByTestId('wedge-done-button')).toBeNull();
             expect(getByTestId('wedge-read-row-0')).toBeTruthy();
         });
 
@@ -323,10 +295,12 @@ describe('Wedge Chart screen', () => {
             const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
 
             fireEvent.press(getByTestId('wedge-edit-button'));
-            fireEvent.press(getByTestId('save-wedge-chart-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('wedge-done-button'));
+            });
 
             await waitFor(() => {
-                expect(queryByTestId('save-wedge-chart-button')).toBeNull();
+                expect(queryByTestId('wedge-done-button')).toBeNull();
                 expect(getByTestId('wedge-read-row-0')).toBeTruthy();
             });
         });
@@ -334,26 +308,11 @@ describe('Wedge Chart screen', () => {
 
     describe('back navigation', () => {
         it('shouldShowABackButtonThatReturnsToThePreviousScreen', () => {
-            const { getByTestId } = renderInEditMode();
+            const { getByTestId } = render(<WedgeChartScreen />);
 
             fireEvent.press(getByTestId('wedge-back-button'));
 
             expect(mockBack).toHaveBeenCalled();
-        });
-    });
-
-    describe('column widths', () => {
-        const { StyleSheet } = require('react-native');
-
-        it('shouldMakeTheDistanceNameColumnWiderThanAClubColumn', () => {
-            const { getByTestId } = renderInEditMode();
-            fireEvent.press(getByTestId('add-wedge-club-button'));
-            fireEvent.press(getByTestId('add-wedge-distance-button'));
-
-            const labelWidth = parseFloat(StyleSheet.flatten(getByTestId('wedge-distance-name-cell-0').props.style).width);
-            const clubWidth = parseFloat(StyleSheet.flatten(getByTestId('wedge-club-column-0').props.style).width);
-
-            expect(labelWidth).toBeGreaterThan(clubWidth);
         });
     });
 
@@ -363,20 +322,10 @@ describe('Wedge Chart screen', () => {
 
         it('shouldShowTheGridInsideAWhiteRoundedCard', () => {
             const { getByTestId } = renderInEditMode();
-            const style = StyleSheet.flatten(getByTestId('wedge-grid-card').props.style);
+            const style = StyleSheet.flatten(getByTestId('wedge-edit-card').props.style);
 
             expect(style.backgroundColor).toBe(colours.backgroundLight);
             expect(style.borderRadius).toBeGreaterThanOrEqual(14);
-        });
-
-        it('shouldShowADashInTheCornerColumnInsteadOfDistanceOrX', () => {
-            const { getByTestId, queryByText } = renderInEditMode();
-
-            fireEvent.press(getByTestId('add-wedge-club-button'));
-
-            expect(getByTestId('wedge-corner-label')).toHaveTextContent('-');
-            expect(queryByText('Distance')).toBeNull();
-            expect(queryByText('X')).toBeNull();
         });
 
         it('shouldUseReadablePlaceholderColourForClubNames', () => {
@@ -400,21 +349,8 @@ describe('Wedge Chart screen', () => {
         expect(getByTestId('add-wedge-distance-button')).toBeTruthy();
     });
 
-    it('does not show add distance button when chart is empty', () => {
-        const { queryByTestId } = renderInEditMode();
-        expect(queryByTestId('add-wedge-distance-button')).toBeNull();
-    });
-
-    it('shows add distance button after adding a club', () => {
-        const { getByTestId, queryByTestId } = renderInEditMode();
-
-        // Initially, add distance button should not be visible
-        expect(queryByTestId('add-wedge-distance-button')).toBeNull();
-
-        // Add a club
-        fireEvent.press(getByTestId('add-wedge-club-button'));
-
-        // Now add distance button should be visible
+    it('shows add swing length button even when no wedges exist yet', () => {
+        const { getByTestId } = renderInEditMode();
         expect(getByTestId('add-wedge-distance-button')).toBeTruthy();
     });
 
@@ -468,7 +404,7 @@ describe('Wedge Chart screen', () => {
             const { getByTestId } = renderInEditMode();
 
             await act(async () => {
-                fireEvent.press(getByTestId('save-wedge-chart-button'));
+                fireEvent.press(getByTestId('wedge-done-button'));
             });
 
             expect(mockSaveWedgeChartService).toHaveBeenCalled();

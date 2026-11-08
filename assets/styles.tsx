@@ -875,7 +875,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         headerNumeric: {
             flex: 0,
-            width: 84,
+            width: 120,
             textAlign: 'right',
         },
         row: {
@@ -894,7 +894,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         distanceInput: {
             flex: 0,
-            width: 84,
+            width: 120,
             textAlign: 'right',
         },
         input: {

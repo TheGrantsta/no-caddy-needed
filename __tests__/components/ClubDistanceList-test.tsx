@@ -359,4 +359,15 @@ describe('ClubDistanceList component', () => {
             });
         });
     });
+
+    describe('column width', () => {
+        const { StyleSheet } = require('react-native');
+
+        it('shouldGiveCarryAndTotalColumnsEnoughWidthForHeadersOnOneLine', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} units="yards" />);
+
+            expect(StyleSheet.flatten(getByTestId('edit-header-carry').props.style).width).toBeGreaterThanOrEqual(120);
+            expect(StyleSheet.flatten(getByTestId('edit-header-total').props.style).width).toBeGreaterThanOrEqual(120);
+        });
+    });
 });

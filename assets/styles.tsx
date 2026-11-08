@@ -892,6 +892,12 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
             minWidth: 0,
         },
+        removeButton: {
+            marginRight: 10,
+        },
+        saveButton: {
+            marginTop: 24,
+        },
         distanceInput: {
             flex: 0,
             width: 120,

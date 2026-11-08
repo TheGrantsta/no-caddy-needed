@@ -42,6 +42,10 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
         setRows([...rows, { club: '', distance: '', total: '' }]);
     };
 
+    const handleRemoveRow = (index: number) => {
+        setRows(rows.filter((_, i) => i !== index));
+    };
+
     const handleUpdateRow = (index: number, field: 'club' | 'distance' | 'total', value: string) => {
         const newRows = [...rows];
         newRows[index] = { ...newRows[index], [field]: value };
@@ -73,6 +77,15 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
                 </View>
                 {rows.map((row, index) => (
                     <View key={index} testID={`edit-row-${index}`} style={[s.row, index > 0 && s.rowDivider]}>
+                        <TouchableOpacity
+                            testID={`remove-club-${index}`}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Remove ${row.club || 'club'}`}
+                            onPress={() => handleRemoveRow(index)}
+                            style={s.removeButton}
+                        >
+                            <MaterialIcons name="remove-circle" size={24} color={colours.red} />
+                        </TouchableOpacity>
                         <TextInput
                             testID={`club-input-${index}`}
                             style={[s.input, s.clubCell]}
@@ -121,6 +134,7 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
                 label="Save"
                 icon="save"
                 onPress={handleSave}
+                style={s.saveButton}
             />
         </View>
     );

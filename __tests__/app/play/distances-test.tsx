@@ -1,7 +1,7 @@
-import React, { act } from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react-native';
 import DistancesScreen from '../../../app/play/distances';
-import { getClubDistancesService, saveClubDistancesService } from '../../../service/DbService';
+import { getClubDistancesService } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -64,7 +64,6 @@ jest.mock('react-native-gesture-handler', () => {
 });
 
 const mockGetClubDistances = getClubDistancesService as jest.Mock;
-const mockSaveClubDistances = saveClubDistancesService as jest.Mock;
 
 describe('Distances screen', () => {
     beforeEach(() => {
@@ -117,41 +116,6 @@ describe('Distances screen', () => {
         expect(getByTestId('save-distances-button')).toBeTruthy();
     });
 
-    it('should clear all distances from UI when clear is confirmed', async () => {
-        mockGetClubDistances.mockReturnValue([
-            { Id: 1, Club: 'Driver', CarryDistance: 250, TotalDistance: 270, SortOrder: 1 },
-            { Id: 2, Club: '3 Wood', CarryDistance: 220, TotalDistance: 240, SortOrder: 2 },
-        ]);
-        mockSaveClubDistances.mockResolvedValue(true);
-
-        const { getByTestId, queryByTestId } = render(<DistancesScreen />);
-        fireEvent.press(getByTestId('edit-distances-button'));
-
-        // Verify distances are shown
-        expect(getByTestId('club-input-0').props.value).toBe('Driver');
-        expect(getByTestId('club-input-1').props.value).toBe('3 Wood');
-
-        // Click clear button
-        await act(async () => {
-            fireEvent.press(getByTestId('clear-button'));
-        });
-
-        // Wait for confirm button to appear
-        await waitFor(() => {
-            expect(getByTestId('confirm-clear-button')).toBeTruthy();
-        });
-
-        // Confirm clear
-        await act(async () => {
-            fireEvent.press(getByTestId('confirm-clear-button'));
-        });
-
-        await waitFor(() => {
-            expect(queryByTestId('club-input-0')).toBeFalsy();
-            expect(queryByTestId('club-input-1')).toBeFalsy();
-        });
-    });
-
     describe('My Bag layout', () => {
         const twoClubs = [
             { Id: 1, Club: 'Driver', CarryDistance: 230, TotalDistance: 250, SortOrder: 1 },
@@ -168,6 +132,15 @@ describe('Distances screen', () => {
             fireEvent.press(getByTestId('distances-back-button'));
 
             expect(mockBack).toHaveBeenCalled();
+        });
+
+        it('shouldNotShowClearAllButtonInEditMode', () => {
+            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('edit-distances-button'));
+
+            expect(queryByTestId('clear-button')).toBeNull();
+            expect(queryByTestId('confirm-clear-button')).toBeNull();
         });
 
         it('shouldShowEditButtonInTheHeader', () => {

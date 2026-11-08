@@ -392,4 +392,42 @@ describe('ClubDistanceList component', () => {
             expect(style.alignSelf).toBe('flex-start');
         });
     });
+
+    describe('removing individual clubs', () => {
+        const { StyleSheet } = require('react-native');
+
+        it('shouldShowARemoveControlForEachClub', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+
+            expect(getByTestId('remove-club-0')).toBeTruthy();
+            expect(getByTestId('remove-club-1')).toBeTruthy();
+            expect(getByTestId('remove-club-2')).toBeTruthy();
+        });
+
+        it('shouldRemoveOnlyThePressedClubRow', () => {
+            const { getByTestId, queryByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+
+            fireEvent.press(getByTestId('remove-club-1'));
+
+            expect(getByTestId('club-input-0').props.value).toBe('Driver');
+            expect(getByTestId('club-input-1').props.value).toBe('5 Iron');
+            expect(queryByTestId('club-input-2')).toBeNull();
+        });
+
+        it('shouldSaveTheListWithoutTheRemovedClub', () => {
+            const onSave = jest.fn();
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} onSave={onSave} />);
+
+            fireEvent.press(getByTestId('remove-club-1'));
+            fireEvent.press(getByTestId('save-distances-button'));
+
+            expect(onSave.mock.calls[0][0].map((d: { Club: string }) => d.Club)).toEqual(['Driver', '5 Iron']);
+        });
+
+        it('shouldLeaveSpaceBetweenAddClubAndSaveButtons', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+
+            expect(StyleSheet.flatten(getByTestId('save-distances-button').props.style).marginTop).toBeGreaterThanOrEqual(24);
+        });
+    });
 });

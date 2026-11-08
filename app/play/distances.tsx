@@ -6,8 +6,6 @@ import { useRouter } from 'expo-router';
 import ClubDistanceList from '../../components/ClubDistanceList';
 import ClubDistanceReadList from '../../components/ClubDistanceReadList';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
-import ClearDistancesButton from '../../components/ClearDistancesButton';
-import ClearDistancesConfirmation from '../../components/ClearDistancesConfirmation';
 import { getClubDistancesService, saveClubDistancesService, getSettingsService, saveSettingsService } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
@@ -31,7 +29,6 @@ export default function DistancesScreen() {
     const settings = getSettingsService();
     const distancesIsEmpty = distances.length === 0;
     const [showOnboarding, , setShowOnboarding] = useToggle(!settings.distancesOnboardingSeen && distancesIsEmpty);
-    const [showClearConfirm, , setShowClearConfirm] = useToggle(false);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);
@@ -46,15 +43,6 @@ export default function DistancesScreen() {
             setEditing(false);
         }
         showResult(saved, 'Clubs saved', 'Failed to save clubs');
-    };
-
-    const handleClear = async () => {
-        const saved = await saveClubDistancesService([]);
-        setShowClearConfirm(false);
-        if (saved) {
-            setDistances([]);
-        }
-        showResult(saved, 'Distances cleared', 'Failed to clear distances');
     };
 
     return (
@@ -85,16 +73,6 @@ export default function DistancesScreen() {
                     <>
                         <ClubDistanceList key={distances.length} distances={distances} onSave={handleSave} units={settings.units} />
 
-                        {!distancesIsEmpty && !showClearConfirm && (
-                            <ClearDistancesButton onPress={() => setShowClearConfirm(true)} />
-                        )}
-
-                        {showClearConfirm && (
-                            <ClearDistancesConfirmation
-                                onCancel={() => setShowClearConfirm(false)}
-                                onConfirm={handleClear}
-                            />
-                        )}
                     </>
                 ) : (
                     <>

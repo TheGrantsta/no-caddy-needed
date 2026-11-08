@@ -370,4 +370,26 @@ describe('ClubDistanceList component', () => {
             expect(StyleSheet.flatten(getByTestId('edit-header-total').props.style).width).toBeGreaterThanOrEqual(120);
         });
     });
+
+    describe('add club button', () => {
+        const colours = require('../../assets/colours').default;
+        const { StyleSheet } = require('react-native');
+
+        it('shouldShowAddClubAsARoundedGroupedRowLikeAnIOSListAction', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const style = StyleSheet.flatten(getByTestId('add-club-button').props.style);
+
+            expect(style.backgroundColor).toBe(colours.backgroundLight);
+            expect(style.borderRadius).toBeGreaterThanOrEqual(14);
+            expect(style.justifyContent).toBe('flex-start');
+            expect(style.paddingHorizontal).toBeGreaterThanOrEqual(16);
+        });
+
+        it('shouldSizeAddClubToItsTextRatherThanFillingTheWidth', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const style = StyleSheet.flatten(getByTestId('add-club-button').props.style);
+
+            expect(style.alignSelf).toBe('flex-start');
+        });
+    });
 });

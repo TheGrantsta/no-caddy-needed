@@ -168,6 +168,52 @@ describe('Wedge Chart screen', () => {
             expect(queryByTestId('wedge-club-input-1')).toBeNull();
         });
 
+        it('shouldShowARemoveControlForEachDistanceRow', () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+            fireEvent.press(getByTestId('add-wedge-distance-button'));
+            fireEvent.press(getByTestId('add-wedge-distance-button'));
+
+            expect(getByTestId('wedge-remove-distance-0')).toBeTruthy();
+            expect(getByTestId('wedge-remove-distance-1')).toBeTruthy();
+        });
+
+        it('shouldRemoveOnlyThePressedDistanceRow', () => {
+            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+            fireEvent.press(getByTestId('add-wedge-distance-button'));
+            fireEvent.changeText(getByTestId('distance-name-input-0'), 'Full');
+            fireEvent.press(getByTestId('add-wedge-distance-button'));
+            fireEvent.changeText(getByTestId('distance-name-input-1'), '3/4');
+
+            fireEvent.press(getByTestId('wedge-remove-distance-0'));
+
+            expect(getByTestId('distance-name-input-0').props.value).toBe('3/4');
+            expect(queryByTestId('distance-name-input-1')).toBeNull();
+        });
+
+        it('shouldSaveTheChartWithoutTheRemovedDistanceRow', async () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+            fireEvent.changeText(getByTestId('wedge-club-input-0'), 'Gap');
+            fireEvent.press(getByTestId('add-wedge-distance-button'));
+            fireEvent.changeText(getByTestId('distance-name-input-0'), 'Full');
+            fireEvent.press(getByTestId('add-wedge-distance-button'));
+            fireEvent.changeText(getByTestId('distance-name-input-1'), '3/4');
+            fireEvent.press(getByTestId('wedge-remove-distance-0'));
+
+            fireEvent.press(getByTestId('save-wedge-chart-button'));
+
+            await waitFor(() => {
+                expect(mockSaveWedgeChartService).toHaveBeenLastCalledWith(
+                    expect.objectContaining({ distanceNames: ['3/4'] })
+                );
+            });
+        });
+
         it('shouldSaveTheChartWithoutTheRemovedClub', async () => {
             const { getByTestId } = render(<WedgeChartScreen />);
 
@@ -184,6 +230,21 @@ describe('Wedge Chart screen', () => {
                     expect.objectContaining({ clubs: [expect.objectContaining({ club: 'Sand' })] })
                 );
             });
+        });
+    });
+
+    describe('column widths', () => {
+        const { StyleSheet } = require('react-native');
+
+        it('shouldMakeTheDistanceNameColumnWiderThanAClubColumn', () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+            fireEvent.press(getByTestId('add-wedge-distance-button'));
+
+            const labelWidth = parseFloat(StyleSheet.flatten(getByTestId('wedge-distance-name-cell-0').props.style).width);
+            const clubWidth = parseFloat(StyleSheet.flatten(getByTestId('wedge-club-column-0').props.style).width);
+
+            expect(labelWidth).toBeGreaterThan(clubWidth);
         });
     });
 

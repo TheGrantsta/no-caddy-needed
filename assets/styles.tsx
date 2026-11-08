@@ -940,6 +940,13 @@ export const createStyles = (c: ThemeColours) => ({
             borderRadius: 14,
             overflow: 'hidden',
         },
+        distanceNameCell: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        distanceNameInput: {
+            flex: 1,
+        },
         clubHeaderCell: {
             alignItems: 'center',
         },
@@ -980,7 +987,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: '100%',
         },
         labelCell: {
-            width: '20%',
+            width: '30%',
             paddingVertical: 4,
             paddingHorizontal: 8,
             justifyContent: 'center',
@@ -993,7 +1000,7 @@ export const createStyles = (c: ThemeColours) => ({
             borderColor: c.primary + '33',
         },
         columnCell: {
-            width: '20%',
+            width: '17.5%',
             paddingVertical: 4,
             paddingHorizontal: 4,
             justifyContent: 'center',

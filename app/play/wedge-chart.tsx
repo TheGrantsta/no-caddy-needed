@@ -56,7 +56,7 @@ export default function WedgeChartScreen() {
                         >
                             <Text style={styles.wedgeChart.cancelText}>Cancel</Text>
                         </TouchableOpacity>
-                        <Text style={styles.wedgeChart.title}>Edit Wedge Chart</Text>
+                        <Text style={styles.wedgeChart.title}>Wedge Chart</Text>
                         <TouchableOpacity
                             testID="wedge-done-button"
                             accessibilityRole="button"

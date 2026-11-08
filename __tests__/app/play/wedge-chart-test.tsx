@@ -127,6 +127,13 @@ describe('Wedge Chart screen', () => {
         expect(style.borderRadius).toBe(22);
     });
 
+    it('shows the plain Wedge Chart title while editing', () => {
+        const { getByText, queryByText } = renderInEditMode();
+
+        expect(getByText('Wedge Chart')).toBeTruthy();
+        expect(queryByText('Edit Wedge Chart')).toBeNull();
+    });
+
     it('shows Done in the header while editing', () => {
         const { getByTestId } = renderInEditMode();
         expect(getByTestId('wedge-done-button')).toBeTruthy();

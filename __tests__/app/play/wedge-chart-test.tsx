@@ -135,6 +135,58 @@ describe('Wedge Chart screen', () => {
         expect(StyleSheet.flatten(getByTestId('save-wedge-chart-button').props.style).marginTop).toBeGreaterThanOrEqual(24);
     });
 
+    describe('removing individual clubs', () => {
+        it('shouldNotShowClearAllButtonOnceClubsExist', () => {
+            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+
+            expect(queryByTestId('clear-button')).toBeNull();
+        });
+
+        it('shouldShowARemoveControlAboveEachClub', () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+
+            expect(getByTestId('wedge-remove-club-0')).toBeTruthy();
+            expect(getByTestId('wedge-remove-club-1')).toBeTruthy();
+        });
+
+        it('shouldRemoveOnlyThePressedClub', () => {
+            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+            fireEvent.changeText(getByTestId('wedge-club-input-0'), 'Gap');
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+            fireEvent.changeText(getByTestId('wedge-club-input-1'), 'Sand');
+
+            fireEvent.press(getByTestId('wedge-remove-club-0'));
+
+            expect(getByTestId('wedge-club-input-0').props.value).toBe('Sand');
+            expect(queryByTestId('wedge-club-input-1')).toBeNull();
+        });
+
+        it('shouldSaveTheChartWithoutTheRemovedClub', async () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+            fireEvent.changeText(getByTestId('wedge-club-input-0'), 'Gap');
+            fireEvent.press(getByTestId('add-wedge-club-button'));
+            fireEvent.changeText(getByTestId('wedge-club-input-1'), 'Sand');
+            fireEvent.press(getByTestId('wedge-remove-club-0'));
+
+            fireEvent.press(getByTestId('save-wedge-chart-button'));
+
+            await waitFor(() => {
+                expect(mockSaveWedgeChartService).toHaveBeenLastCalledWith(
+                    expect.objectContaining({ clubs: [expect.objectContaining({ club: 'Sand' })] })
+                );
+            });
+        });
+    });
+
     describe('iOS-style grid', () => {
         const colours = require('../../../assets/colours').default;
         const { StyleSheet } = require('react-native');
@@ -245,96 +297,6 @@ describe('Wedge Chart screen', () => {
             expect(mockSaveSettingsService).toHaveBeenCalledWith(
                 expect.objectContaining({ wedgeChartOnboardingSeen: true })
             );
-        });
-    });
-
-    describe('clear chart', () => {
-        beforeEach(() => {
-            mockGetWedgeChartService.mockReturnValue(nonEmptyChart);
-        });
-
-        it('showsClearButtonWhenChartIsNotEmpty', () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
-            expect(getByTestId('clear-button')).toBeTruthy();
-        });
-
-        it('doesNotShowClearButtonWhenChartIsEmpty', () => {
-            mockGetWedgeChartService.mockReturnValue({ distanceNames: [], clubs: [] });
-            const { queryByTestId } = render(<WedgeChartScreen />);
-            expect(queryByTestId('clear-button')).toBeNull();
-        });
-
-        it('pressingClearButtonShowsConfirmAndCancelButtons', () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
-            fireEvent.press(getByTestId('clear-button'));
-            expect(getByTestId('confirm-clear-button')).toBeTruthy();
-            expect(getByTestId('cancel-clear-button')).toBeTruthy();
-        });
-
-        it('pressingClearButtonHidesClearButton', () => {
-            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
-            fireEvent.press(getByTestId('clear-button'));
-            expect(queryByTestId('clear-button')).toBeNull();
-        });
-
-        it('pressingCancelClearButtonHidesClearConfirm', () => {
-            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
-            fireEvent.press(getByTestId('clear-button'));
-            fireEvent.press(getByTestId('cancel-clear-button'));
-            expect(queryByTestId('cancel-clear-button')).toBeNull();
-            expect(queryByTestId('confirm-clear-button')).toBeNull();
-        });
-
-        it('pressingCancelClearRestoresClearButton', () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
-            fireEvent.press(getByTestId('clear-button'));
-            fireEvent.press(getByTestId('cancel-clear-button'));
-            expect(getByTestId('clear-button')).toBeTruthy();
-        });
-
-        it('pressingConfirmClearCallsSaveWedgeChartServiceWithEmptyData', async () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
-            fireEvent.press(getByTestId('clear-button'));
-
-            await act(async () => {
-                fireEvent.press(getByTestId('confirm-clear-button'));
-            });
-
-            expect(mockSaveWedgeChartService).toHaveBeenCalledWith({ distanceNames: [], clubs: [] });
-        });
-
-        it('pressingConfirmClearHidesClearConfirm', async () => {
-            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
-            fireEvent.press(getByTestId('clear-button'));
-            expect(getByTestId('confirm-clear-button')).toBeTruthy();
-
-            await act(async () => {
-                fireEvent.press(getByTestId('confirm-clear-button'));
-            });
-
-            expect(queryByTestId('confirm-clear-button')).toBeNull();
-        });
-
-        it('pressingConfirmClearUpdatesUIToEmpty', async () => {
-            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
-
-            // Verify chart has data
-            expect(getByTestId('clear-button')).toBeTruthy();
-
-            fireEvent.press(getByTestId('clear-button'));
-
-            await waitFor(() => {
-                expect(getByTestId('confirm-clear-button')).toBeTruthy();
-            });
-
-            await act(async () => {
-                fireEvent.press(getByTestId('confirm-clear-button'));
-            });
-
-            // After clearing, the clear button should not be visible
-            await waitFor(() => {
-                expect(queryByTestId('clear-button')).toBeNull();
-            });
         });
     });
 

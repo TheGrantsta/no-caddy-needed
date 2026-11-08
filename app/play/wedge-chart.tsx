@@ -4,8 +4,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import WedgeChart from '../../components/WedgeChart';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import WedgeChartHeader from '../../components/WedgeChartHeader';
-import ClearWedgeChartButton from '../../components/ClearWedgeChartButton';
-import ClearWedgeChartConfirmation from '../../components/ClearWedgeChartConfirmation';
 import { getWedgeChartService, saveWedgeChartService, WedgeChartData, getSettingsService, saveSettingsService } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
 import { useOrientation } from '../../hooks/useOrientation';
@@ -21,7 +19,6 @@ export default function WedgeChartScreen() {
     const settings = getSettingsService();
     const chartIsEmpty = data.clubs.length === 0;
     const [showOnboarding, , setShowOnboarding] = useToggle(!settings.wedgeChartOnboardingSeen && chartIsEmpty);
-    const [showClearConfirm, , setShowClearConfirm] = useToggle(false);
 
     const handleDismissOnboarding = async () => {
         setShowOnboarding(false);
@@ -41,16 +38,6 @@ export default function WedgeChartScreen() {
         showResult(saved, 'Wedge chart saved', 'Failed to save wedge chart');
     };
 
-    const handleClear = async () => {
-        const emptyData = { distanceNames: [], clubs: [] };
-        const saved = await saveWedgeChartService(emptyData);
-        setShowClearConfirm(false);
-        if (saved) {
-            setData(emptyData);
-        }
-        showResult(saved, 'Wedge chart cleared', 'Failed to clear wedge chart');
-    };
-
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
@@ -58,16 +45,6 @@ export default function WedgeChartScreen() {
 
                 <WedgeChart key={data.clubs.length} data={data} onSave={handleSave} units={settings.units} />
 
-                {!chartIsEmpty && !showClearConfirm && (
-                    <ClearWedgeChartButton onPress={() => setShowClearConfirm(true)} />
-                )}
-
-                {showClearConfirm && (
-                    <ClearWedgeChartConfirmation
-                        onCancel={() => setShowClearConfirm(false)}
-                        onConfirm={handleClear}
-                    />
-                )}
             </ScrollView>
 
             <OnboardingOverlay

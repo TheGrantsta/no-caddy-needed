@@ -940,6 +940,12 @@ export const createStyles = (c: ThemeColours) => ({
             borderRadius: 14,
             overflow: 'hidden',
         },
+        clubHeaderCell: {
+            alignItems: 'center',
+        },
+        removeClubButton: {
+            paddingBottom: 4,
+        },
         cornerLabel: {
             color: c.tertiary,
             fontSize: fontSizes.smallText,
@@ -971,6 +977,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             fontWeight: '600',
             textAlign: 'center',
+            width: '100%',
         },
         labelCell: {
             width: '20%',

@@ -55,6 +55,10 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
         setDistanceNames(newNames);
     };
 
+    const handleRemoveClub = (index: number) => {
+        setRows(rows.filter((_, i) => i !== index));
+    };
+
     const handleAddClub = () => {
         if (rows.length >= MAX_CLUBS) return;
         setRows([...rows, { club: '', distances: distanceNames.map(() => '') }]);
@@ -94,15 +98,25 @@ const WedgeChart = ({ data, onSave, units = 'yards' }: Props) => {
                         </View>
                     )}
                     {rows.map((row, clubIndex) => (
-                        <TextInput
-                            key={`club-${clubIndex}`}
-                            testID={`wedge-club-input-${clubIndex}`}
-                            style={[s.headerInput, s.columnCell]}
-                            value={row.club}
-                            onChangeText={(v) => handleUpdateClub(clubIndex, v)}
-                            placeholder="Club"
-                            placeholderTextColor={colours.tertiary}
-                        />
+                        <View key={`club-${clubIndex}`} style={[s.clubHeaderCell, s.columnCell]}>
+                            <TouchableOpacity
+                                testID={`wedge-remove-club-${clubIndex}`}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Remove ${row.club || 'club'}`}
+                                onPress={() => handleRemoveClub(clubIndex)}
+                                style={s.removeClubButton}
+                            >
+                                <MaterialIcons name="remove-circle" size={22} color={colours.red} />
+                            </TouchableOpacity>
+                            <TextInput
+                                testID={`wedge-club-input-${clubIndex}`}
+                                style={s.headerInput}
+                                value={row.club}
+                                onChangeText={(v) => handleUpdateClub(clubIndex, v)}
+                                placeholder="Club"
+                                placeholderTextColor={colours.tertiary}
+                            />
+                        </View>
                     ))}
                 </View>
 

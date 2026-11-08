@@ -1081,6 +1081,9 @@ export const createStyles = (c: ThemeColours) => ({
             borderRadius: 14,
             overflow: 'hidden',
         },
+        content: {
+            paddingHorizontal: 16,
+        },
         topBar: {
             flexDirection: 'row',
             alignItems: 'center',

@@ -249,4 +249,20 @@ describe('WedgeChart component', () => {
 
         expect(queryByTestId('wedge-club-input-0')).toBeNull();
     });
+
+    describe('row layout', () => {
+        const { StyleSheet } = require('react-native');
+
+        it('shouldGiveWedgeRowsTheirOwnHeightInsteadOfTheDividerHeight', () => {
+            const { getByTestId } = render(<WedgeChart ref={chartRef} data={populatedData} />);
+
+            expect(StyleSheet.flatten(getByTestId('wedge-edit-row-1').props.style).height).toBeUndefined();
+        });
+
+        it('shouldGiveSwingLengthRowsTheirOwnHeightInsteadOfTheDividerHeight', () => {
+            const { getByTestId } = render(<WedgeChart ref={chartRef} data={populatedData} />);
+
+            expect(StyleSheet.flatten(getByTestId('swing-row-1').props.style).height).toBeUndefined();
+        });
+    });
 });

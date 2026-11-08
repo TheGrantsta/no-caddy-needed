@@ -45,6 +45,7 @@ export default function WedgeChartScreen() {
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
+                <View testID="wedge-content" style={styles.wedgeChart.content}>
                 {editing ? (
                     <View style={styles.wedgeChart.topBar}>
                         <TouchableOpacity
@@ -104,6 +105,7 @@ export default function WedgeChartScreen() {
                 )}
 
                 <Text style={styles.wedgeChart.footnote}>Carry distance, not total</Text>
+                </View>
 
             </ScrollView>
 

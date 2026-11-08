@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
@@ -111,41 +111,40 @@ const WedgeChart = forwardRef<WedgeChartHandle, Props>(({ data, onSave, units = 
                 </View>
 
                 {rows.map((row, clubIndex) => (
-                    <View
-                        key={`club-${clubIndex}`}
-                        testID={`wedge-edit-row-${clubIndex}`}
-                        style={[s.row, clubIndex > 0 && s.rowDivider]}
-                    >
-                        <TouchableOpacity
-                            testID={`wedge-remove-club-${clubIndex}`}
-                            accessibilityRole="button"
-                            accessibilityLabel={`Remove ${row.club || 'wedge'}`}
-                            onPress={() => handleRemoveClub(clubIndex)}
-                            style={s.removeButton}
-                        >
-                            <MaterialIcons name="remove-circle" size={24} color={colours.red} />
-                        </TouchableOpacity>
-                        <TextInput
-                            testID={`wedge-club-input-${clubIndex}`}
-                            style={[s.clubInput, s.clubCell]}
-                            value={row.club}
-                            onChangeText={(v) => handleUpdateClub(clubIndex, v)}
-                            placeholder="Wedge"
-                            placeholderTextColor={colours.tertiary}
-                        />
-                        {row.distances.map((value, distIndex) => (
+                    <React.Fragment key={`club-${clubIndex}`}>
+                        {clubIndex > 0 && <View style={s.rowDivider} />}
+                        <View testID={`wedge-edit-row-${clubIndex}`} style={s.row}>
+                            <TouchableOpacity
+                                testID={`wedge-remove-club-${clubIndex}`}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Remove ${row.club || 'wedge'}`}
+                                onPress={() => handleRemoveClub(clubIndex)}
+                                style={s.removeButton}
+                            >
+                                <MaterialIcons name="remove-circle" size={24} color={colours.red} />
+                            </TouchableOpacity>
                             <TextInput
-                                key={`${clubIndex}-${distIndex}`}
-                                testID={`wedge-distance-input-${clubIndex}-${distIndex}`}
-                                style={[s.valueInput, s.valueCell]}
-                                value={value}
-                                onChangeText={(v) => handleUpdateDistance(clubIndex, distIndex, v)}
-                                keyboardType="number-pad"
-                                placeholder="0"
+                                testID={`wedge-club-input-${clubIndex}`}
+                                style={[s.clubInput, s.clubCell]}
+                                value={row.club}
+                                onChangeText={(v) => handleUpdateClub(clubIndex, v)}
+                                placeholder="Wedge"
                                 placeholderTextColor={colours.tertiary}
                             />
-                        ))}
-                    </View>
+                            {row.distances.map((value, distIndex) => (
+                                <TextInput
+                                    key={`${clubIndex}-${distIndex}`}
+                                    testID={`wedge-distance-input-${clubIndex}-${distIndex}`}
+                                    style={[s.valueInput, s.valueCell]}
+                                    value={value}
+                                    onChangeText={(v) => handleUpdateDistance(clubIndex, distIndex, v)}
+                                    keyboardType="number-pad"
+                                    placeholder="0"
+                                    placeholderTextColor={colours.tertiary}
+                                />
+                            ))}
+                        </View>
+                    </React.Fragment>
                 ))}
 
                 {rows.length < MAX_CLUBS && (
@@ -162,30 +161,29 @@ const WedgeChart = forwardRef<WedgeChartHandle, Props>(({ data, onSave, units = 
             <Text style={s.sectionLabel}>Swing lengths</Text>
             <View testID="wedge-swing-card" style={s.card}>
                 {distanceNames.map((name, distIndex) => (
-                    <View
-                        key={`distance-${distIndex}`}
-                        testID={`swing-row-${distIndex}`}
-                        style={[s.row, distIndex > 0 && s.rowDivider]}
-                    >
-                        <TouchableOpacity
-                            testID={`wedge-remove-distance-${distIndex}`}
-                            accessibilityRole="button"
-                            accessibilityLabel={`Remove ${name || `column ${distIndex + 1}`}`}
-                            onPress={() => handleRemoveDistance(distIndex)}
-                            style={s.removeButton}
-                        >
-                            <MaterialIcons name="remove-circle" size={24} color={colours.red} />
-                        </TouchableOpacity>
-                        <Text style={s.swingLabel}>{`Column ${distIndex + 1}`}</Text>
-                        <TextInput
-                            testID={`distance-name-input-${distIndex}`}
-                            style={s.swingInput}
-                            value={name}
-                            onChangeText={(v) => handleUpdateDistanceName(distIndex, v)}
-                            placeholder="Name"
-                            placeholderTextColor={colours.tertiary}
-                        />
-                    </View>
+                    <React.Fragment key={`distance-${distIndex}`}>
+                        {distIndex > 0 && <View style={s.rowDivider} />}
+                        <View testID={`swing-row-${distIndex}`} style={s.row}>
+                            <TouchableOpacity
+                                testID={`wedge-remove-distance-${distIndex}`}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Remove ${name || `column ${distIndex + 1}`}`}
+                                onPress={() => handleRemoveDistance(distIndex)}
+                                style={s.removeButton}
+                            >
+                                <MaterialIcons name="remove-circle" size={24} color={colours.red} />
+                            </TouchableOpacity>
+                            <Text style={s.swingLabel}>{`Column ${distIndex + 1}`}</Text>
+                            <TextInput
+                                testID={`distance-name-input-${distIndex}`}
+                                style={s.swingInput}
+                                value={name}
+                                onChangeText={(v) => handleUpdateDistanceName(distIndex, v)}
+                                placeholder="Name"
+                                placeholderTextColor={colours.tertiary}
+                            />
+                        </View>
+                    </React.Fragment>
                 ))}
                 {distanceNames.length < MAX_DISTANCES && (
                     <>

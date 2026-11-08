@@ -306,6 +306,15 @@ describe('Wedge Chart screen', () => {
         });
     });
 
+    describe('content padding', () => {
+        it('shouldInsetScreenContentFromTheEdgesLikeDistances', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(<WedgeChartScreen />);
+
+            expect(StyleSheet.flatten(getByTestId('wedge-content').props.style).paddingHorizontal).toBeGreaterThanOrEqual(16);
+        });
+    });
+
     describe('back navigation', () => {
         it('shouldShowABackButtonThatReturnsToThePreviousScreen', () => {
             const { getByTestId } = render(<WedgeChartScreen />);

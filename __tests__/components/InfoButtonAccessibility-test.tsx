@@ -2,7 +2,6 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import HomeHeader from '../../components/HomeHeader';
 import SettingsHeader from '../../components/SettingsHeader';
-import WedgeChartHeader from '../../components/WedgeChartHeader';
 
 jest.mock('../../hooks/useStyles', () => ({
     useStyles: () => require('../../assets/styles').default,
@@ -17,7 +16,6 @@ describe('info buttons on screen headers', () => {
     const headers: [string, React.ComponentType<{ onInfoPress: () => void }>][] = [
         ['HomeHeader', HomeHeader],
         ['SettingsHeader', SettingsHeader],
-        ['WedgeChartHeader', WedgeChartHeader],
     ];
 
     it.each(headers)('shouldLabelInfoButtonAsShowHelpInHeader %s', (_name, Header) => {

@@ -456,6 +456,53 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    wedgeChartReadList: StyleSheet.create({
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            overflow: 'hidden',
+        },
+        headerRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+        },
+        headerText: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            fontWeight: '600',
+        },
+        row: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+        },
+        rowDivider: {
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: c.tertiary + '66',
+        },
+        clubCell: {
+            flex: 1.4,
+        },
+        valueCell: {
+            flex: 1,
+            textAlign: 'right',
+        },
+        clubText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            fontWeight: '700',
+        },
+        valueText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            textAlign: 'right',
+            fontVariant: ['tabular-nums'],
+        },
+    }),
+
     clubDistanceReadList: StyleSheet.create({
         card: {
             backgroundColor: c.backgroundLight,
@@ -939,6 +986,63 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.backgroundLight,
             borderRadius: 14,
             overflow: 'hidden',
+        },
+        topBar: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginTop: 8,
+            marginBottom: 16,
+        },
+        backButton: {
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        title: {
+            color: c.text,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+        },
+        footnote: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            textAlign: 'center',
+            marginTop: 12,
+        },
+        editButton: {
+            minWidth: 72,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+        },
+        editText: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
+        },
+        sectionLabel: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+            marginBottom: 8,
+            marginLeft: 4,
+        },
+        emptyText: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+            textAlign: 'center',
+            marginTop: 24,
+        },
+        titleSpacer: {
+            width: 44,
         },
         distanceNameCell: {
             flexDirection: 'row',

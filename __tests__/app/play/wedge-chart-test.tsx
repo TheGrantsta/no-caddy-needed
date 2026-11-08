@@ -8,6 +8,12 @@ import {
     saveWedgeChartService,
 } from '../../../service/DbService';
 
+const mockBack = jest.fn();
+
+jest.mock('expo-router', () => ({
+    useRouter: () => ({ back: mockBack, push: jest.fn() }),
+}));
+
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
     useTheme: () => ({
@@ -79,6 +85,13 @@ const nonEmptyChart = {
 };
 
 describe('Wedge Chart screen', () => {
+    // Most tests exercise the editable grid, so they enter edit mode first
+    const renderInEditMode = () => {
+        const utils = render(<WedgeChartScreen />);
+        fireEvent.press(utils.getByTestId('wedge-edit-button'));
+        return utils;
+    };
+
     beforeEach(() => {
         jest.clearAllMocks();
         mockGetWedgeChartService.mockReturnValue({ distanceNames: [], clubs: [] });
@@ -88,29 +101,46 @@ describe('Wedge Chart screen', () => {
     });
 
     it('renders wedge chart heading', () => {
-        const { getByText } = render(<WedgeChartScreen />);
+        const { getByText } = renderInEditMode();
         expect(getByText('Wedge Chart')).toBeTruthy();
     });
 
-    it('renders wedge distances subtitle', () => {
-        const { getByText } = render(<WedgeChartScreen />);
+    it('renders the carry distance note below the save button', () => {
+        const { getByTestId, getByText } = renderInEditMode();
+
+        expect(getByTestId('save-wedge-chart-button')).toBeTruthy();
         expect(getByText('Carry distance, not total')).toBeTruthy();
     });
 
+    it('does not render an info button in the heading, matching Distances', () => {
+        const { queryByTestId } = renderInEditMode();
+        expect(queryByTestId('info-button')).toBeNull();
+    });
+
+    it('shows the back button as a white circle like the Distances heading', () => {
+        const { StyleSheet } = require('react-native');
+        const colours = require('../../../assets/colours').default;
+        const { getByTestId } = renderInEditMode();
+        const style = StyleSheet.flatten(getByTestId('wedge-back-button').props.style);
+
+        expect(style.backgroundColor).toBe(colours.backgroundLight);
+        expect(style.borderRadius).toBe(22);
+    });
+
     it('shows save button', () => {
-        const { getByTestId } = render(<WedgeChartScreen />);
+        const { getByTestId } = renderInEditMode();
         expect(getByTestId('save-wedge-chart-button')).toBeTruthy();
     });
 
     it('shows add club button', () => {
-        const { getByTestId } = render(<WedgeChartScreen />);
+        const { getByTestId } = renderInEditMode();
         expect(getByTestId('add-wedge-club-button')).toBeTruthy();
     });
 
     it('styles add club like the Distances add club row', () => {
         const { StyleSheet } = require('react-native');
         const colours = require('../../../assets/colours').default;
-        const { getByTestId } = render(<WedgeChartScreen />);
+        const { getByTestId } = renderInEditMode();
 
         const style = StyleSheet.flatten(getByTestId('add-wedge-club-button').props.style);
 
@@ -122,7 +152,7 @@ describe('Wedge Chart screen', () => {
 
     it('aligns the add buttons to the left like the Distances list', () => {
         const { StyleSheet } = require('react-native');
-        const { getByTestId } = render(<WedgeChartScreen />);
+        const { getByTestId } = renderInEditMode();
 
         const row = StyleSheet.flatten(getByTestId('wedge-add-buttons-row').props.style);
         expect(row.justifyContent).toBe('flex-start');
@@ -130,14 +160,14 @@ describe('Wedge Chart screen', () => {
 
     it('leaves space between the add buttons and Save like the Distances list', () => {
         const { StyleSheet } = require('react-native');
-        const { getByTestId } = render(<WedgeChartScreen />);
+        const { getByTestId } = renderInEditMode();
 
         expect(StyleSheet.flatten(getByTestId('save-wedge-chart-button').props.style).marginTop).toBeGreaterThanOrEqual(24);
     });
 
     describe('removing individual clubs', () => {
         it('shouldNotShowClearAllButtonOnceClubsExist', () => {
-            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId, queryByTestId } = renderInEditMode();
 
             fireEvent.press(getByTestId('add-wedge-club-button'));
 
@@ -145,7 +175,7 @@ describe('Wedge Chart screen', () => {
         });
 
         it('shouldShowARemoveControlAboveEachClub', () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId } = renderInEditMode();
 
             fireEvent.press(getByTestId('add-wedge-club-button'));
             fireEvent.press(getByTestId('add-wedge-club-button'));
@@ -155,7 +185,7 @@ describe('Wedge Chart screen', () => {
         });
 
         it('shouldRemoveOnlyThePressedClub', () => {
-            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId, queryByTestId } = renderInEditMode();
 
             fireEvent.press(getByTestId('add-wedge-club-button'));
             fireEvent.changeText(getByTestId('wedge-club-input-0'), 'Gap');
@@ -169,7 +199,7 @@ describe('Wedge Chart screen', () => {
         });
 
         it('shouldShowARemoveControlForEachDistanceRow', () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId } = renderInEditMode();
 
             fireEvent.press(getByTestId('add-wedge-club-button'));
             fireEvent.press(getByTestId('add-wedge-distance-button'));
@@ -180,7 +210,7 @@ describe('Wedge Chart screen', () => {
         });
 
         it('shouldRemoveOnlyThePressedDistanceRow', () => {
-            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId, queryByTestId } = renderInEditMode();
 
             fireEvent.press(getByTestId('add-wedge-club-button'));
             fireEvent.press(getByTestId('add-wedge-distance-button'));
@@ -195,7 +225,7 @@ describe('Wedge Chart screen', () => {
         });
 
         it('shouldSaveTheChartWithoutTheRemovedDistanceRow', async () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId } = renderInEditMode();
 
             fireEvent.press(getByTestId('add-wedge-club-button'));
             fireEvent.changeText(getByTestId('wedge-club-input-0'), 'Gap');
@@ -215,7 +245,7 @@ describe('Wedge Chart screen', () => {
         });
 
         it('shouldSaveTheChartWithoutTheRemovedClub', async () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId } = renderInEditMode();
 
             fireEvent.press(getByTestId('add-wedge-club-button'));
             fireEvent.changeText(getByTestId('wedge-club-input-0'), 'Gap');
@@ -233,11 +263,90 @@ describe('Wedge Chart screen', () => {
         });
     });
 
+    describe('read-only view and edit mode', () => {
+        const savedChart = {
+            distanceNames: ['½', 'Full'],
+            clubs: [{ club: 'PW', distances: [{ name: '½', distance: 75 }, { name: 'Full', distance: 120 }] }],
+        };
+
+        it('shouldShowTheReadOnlyTableByDefaultWhenWedgesExist', () => {
+            mockGetWedgeChartService.mockReturnValue(savedChart);
+            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+
+            expect(getByTestId('wedge-read-row-0')).toBeTruthy();
+            expect(queryByTestId('save-wedge-chart-button')).toBeNull();
+        });
+
+        it('shouldShowTheCarryBySwingLengthSectionLabel', () => {
+            mockGetWedgeChartService.mockReturnValue(savedChart);
+            const { getByText } = render(<WedgeChartScreen />);
+
+            expect(getByText('Carry by swing length')).toBeTruthy();
+        });
+
+        it('shouldShowAnEmptyMessageWhenNoWedgesExist', () => {
+            const { getByTestId } = render(<WedgeChartScreen />);
+
+            expect(getByTestId('wedge-empty')).toBeTruthy();
+        });
+
+        it('shouldShowEditInTheHeaderAndSwitchToTheEditableGridWhenPressed', () => {
+            mockGetWedgeChartService.mockReturnValue(savedChart);
+            const { getByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('wedge-edit-button'));
+
+            expect(getByTestId('save-wedge-chart-button')).toBeTruthy();
+            expect(getByTestId('wedge-edit-button')).toHaveTextContent('Done');
+        });
+
+        it('shouldReturnToTheReadOnlyTableWhenDonePressed', () => {
+            mockGetWedgeChartService.mockReturnValue(savedChart);
+            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('wedge-edit-button'));
+            fireEvent.press(getByTestId('wedge-edit-button'));
+
+            expect(queryByTestId('save-wedge-chart-button')).toBeNull();
+            expect(getByTestId('wedge-read-row-0')).toBeTruthy();
+        });
+
+        it('shouldKeepTheCarryNoteBelowTheCardInViewMode', () => {
+            mockGetWedgeChartService.mockReturnValue(savedChart);
+            const { getByText } = render(<WedgeChartScreen />);
+
+            expect(getByText('Carry distance, not total')).toBeTruthy();
+        });
+
+        it('shouldReturnToTheReadOnlyTableAfterSaving', async () => {
+            mockGetWedgeChartService.mockReturnValue(savedChart);
+            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+
+            fireEvent.press(getByTestId('wedge-edit-button'));
+            fireEvent.press(getByTestId('save-wedge-chart-button'));
+
+            await waitFor(() => {
+                expect(queryByTestId('save-wedge-chart-button')).toBeNull();
+                expect(getByTestId('wedge-read-row-0')).toBeTruthy();
+            });
+        });
+    });
+
+    describe('back navigation', () => {
+        it('shouldShowABackButtonThatReturnsToThePreviousScreen', () => {
+            const { getByTestId } = renderInEditMode();
+
+            fireEvent.press(getByTestId('wedge-back-button'));
+
+            expect(mockBack).toHaveBeenCalled();
+        });
+    });
+
     describe('column widths', () => {
         const { StyleSheet } = require('react-native');
 
         it('shouldMakeTheDistanceNameColumnWiderThanAClubColumn', () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId } = renderInEditMode();
             fireEvent.press(getByTestId('add-wedge-club-button'));
             fireEvent.press(getByTestId('add-wedge-distance-button'));
 
@@ -253,7 +362,7 @@ describe('Wedge Chart screen', () => {
         const { StyleSheet } = require('react-native');
 
         it('shouldShowTheGridInsideAWhiteRoundedCard', () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId } = renderInEditMode();
             const style = StyleSheet.flatten(getByTestId('wedge-grid-card').props.style);
 
             expect(style.backgroundColor).toBe(colours.backgroundLight);
@@ -261,7 +370,7 @@ describe('Wedge Chart screen', () => {
         });
 
         it('shouldShowADashInTheCornerColumnInsteadOfDistanceOrX', () => {
-            const { getByTestId, queryByText } = render(<WedgeChartScreen />);
+            const { getByTestId, queryByText } = renderInEditMode();
 
             fireEvent.press(getByTestId('add-wedge-club-button'));
 
@@ -271,14 +380,14 @@ describe('Wedge Chart screen', () => {
         });
 
         it('shouldUseReadablePlaceholderColourForClubNames', () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId } = renderInEditMode();
             fireEvent.press(getByTestId('add-wedge-club-button'));
 
             expect(getByTestId('wedge-club-input-0').props.placeholderTextColor).toBe(colours.tertiary);
         });
 
         it('shouldShowClubNamesWithoutAFilledBackground', () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId } = renderInEditMode();
             fireEvent.press(getByTestId('add-wedge-club-button'));
 
             expect(StyleSheet.flatten(getByTestId('wedge-club-input-0').props.style).backgroundColor).toBeUndefined();
@@ -287,17 +396,17 @@ describe('Wedge Chart screen', () => {
 
     it('shows add distance button', () => {
         mockGetWedgeChartService.mockReturnValue(nonEmptyChart);
-        const { getByTestId } = render(<WedgeChartScreen />);
+        const { getByTestId } = renderInEditMode();
         expect(getByTestId('add-wedge-distance-button')).toBeTruthy();
     });
 
     it('does not show add distance button when chart is empty', () => {
-        const { queryByTestId } = render(<WedgeChartScreen />);
+        const { queryByTestId } = renderInEditMode();
         expect(queryByTestId('add-wedge-distance-button')).toBeNull();
     });
 
     it('shows add distance button after adding a club', () => {
-        const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+        const { getByTestId, queryByTestId } = renderInEditMode();
 
         // Initially, add distance button should not be visible
         expect(queryByTestId('add-wedge-distance-button')).toBeNull();
@@ -312,32 +421,25 @@ describe('Wedge Chart screen', () => {
     describe('onboarding', () => {
         it('showsOnboardingWhenWedgeChartOnboardingNotSeen', () => {
             mockGetSettingsService.mockReturnValue({ ...defaultSettings, wedgeChartOnboardingSeen: false });
-            const { getByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId } = renderInEditMode();
             expect(getByTestId('onboarding-overlay')).toBeTruthy();
         });
 
         it('hidesOnboardingWhenWedgeChartOnboardingSeen', () => {
-            const { queryByTestId } = render(<WedgeChartScreen />);
+            const { queryByTestId } = renderInEditMode();
             expect(queryByTestId('onboarding-overlay')).toBeNull();
         });
 
         it('hidesOnboardingWhenChartIsNotEmpty', () => {
             mockGetSettingsService.mockReturnValue({ ...defaultSettings, wedgeChartOnboardingSeen: false });
             mockGetWedgeChartService.mockReturnValue(nonEmptyChart);
-            const { queryByTestId } = render(<WedgeChartScreen />);
+            const { queryByTestId } = renderInEditMode();
             expect(queryByTestId('onboarding-overlay')).toBeNull();
-        });
-
-        it('infoButtonShowsOnboarding', () => {
-            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
-            expect(queryByTestId('onboarding-overlay')).toBeNull();
-            fireEvent.press(getByTestId('info-button'));
-            expect(getByTestId('onboarding-overlay')).toBeTruthy();
         });
 
         it('dismissOnboardingHidesOverlay', async () => {
             mockGetSettingsService.mockReturnValue({ ...defaultSettings, wedgeChartOnboardingSeen: false });
-            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId, queryByTestId } = renderInEditMode();
             expect(getByTestId('onboarding-overlay')).toBeTruthy();
 
             await act(async () => {
@@ -349,7 +451,7 @@ describe('Wedge Chart screen', () => {
 
         it('dismissOnboardingCallsSaveSettingsWithWedgeChartOnboardingSeenTrue', async () => {
             mockGetSettingsService.mockReturnValue({ ...defaultSettings, wedgeChartOnboardingSeen: false });
-            const { getByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId } = renderInEditMode();
 
             await act(async () => {
                 fireEvent.press(getByTestId('done-button'));
@@ -363,7 +465,7 @@ describe('Wedge Chart screen', () => {
 
     describe('save chart', () => {
         it('pressSaveButtonCallsSaveWedgeChartService', async () => {
-            const { getByTestId } = render(<WedgeChartScreen />);
+            const { getByTestId } = renderInEditMode();
 
             await act(async () => {
                 fireEvent.press(getByTestId('save-wedge-chart-button'));

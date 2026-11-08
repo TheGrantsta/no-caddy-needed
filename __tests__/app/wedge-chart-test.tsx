@@ -135,34 +135,4 @@ describe('WedgeChartScreen', () => {
         });
     });
 
-    describe('Info icon', () => {
-        it('renders info icon in header', () => {
-            mockGetSettingsService.mockReturnValue({
-                theme: 'dark',
-                notificationsEnabled: true,
-                wedgeChartOnboardingSeen: true,
-            });
-
-            const { getByTestId } = render(<WedgeChartScreen />);
-
-            expect(getByTestId('info-button')).toBeTruthy();
-        });
-
-        it('shows onboarding overlay when info icon is pressed', () => {
-            mockGetSettingsService.mockReturnValue({
-                theme: 'dark',
-                notificationsEnabled: true,
-                wedgeChartOnboardingSeen: true,
-            });
-
-            const { getByTestId, queryByTestId } = render(<WedgeChartScreen />);
-
-            expect(queryByTestId('onboarding-overlay')).toBeNull();
-
-            fireEvent.press(getByTestId('info-button'));
-
-            expect(getByTestId('onboarding-overlay')).toBeTruthy();
-        });
-    });
-
 });

@@ -17,7 +17,7 @@ type ClubDistance = {
 type EditableRow = {
     club: string;
     distance: string;
-    totalDistance: number;
+    total: string;
 };
 
 type Props = {
@@ -31,14 +31,18 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
     const colours = useThemeColours();
     const s = styles.clubDistanceList;
     const [rows, setRows] = useState<EditableRow[]>(
-        distances.map(d => ({ club: d.Club, distance: String(yardsToDisplayUnit(d.CarryDistance, units)), totalDistance: d.TotalDistance }))
+        distances.map(d => ({
+            club: d.Club,
+            distance: String(yardsToDisplayUnit(d.CarryDistance, units)),
+            total: d.TotalDistance ? String(yardsToDisplayUnit(d.TotalDistance, units)) : '',
+        }))
     );
 
     const handleAddRow = () => {
-        setRows([...rows, { club: '', distance: '', totalDistance: 0 }]);
+        setRows([...rows, { club: '', distance: '', total: '' }]);
     };
 
-    const handleUpdateRow = (index: number, field: 'club' | 'distance', value: string) => {
+    const handleUpdateRow = (index: number, field: 'club' | 'distance' | 'total', value: string) => {
         const newRows = [...rows];
         newRows[index] = { ...newRows[index], [field]: value };
         setRows(newRows);
@@ -52,7 +56,7 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
             .map((r, i) => ({
                 Club: r.club.trim(),
                 CarryDistance: displayUnitToYards(parseInt(r.distance) || 0, units),
-                TotalDistance: r.totalDistance,
+                TotalDistance: displayUnitToYards(parseInt(r.total) || 0, units),
                 SortOrder: i + 1,
             }));
 
@@ -61,35 +65,43 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
 
     return (
         <View style={s.container}>
-            <View style={s.headerRow}>
-                <View style={[s.headerCell, s.clubCell]}>
-                    <Text style={s.headerCell}>Club</Text>
+            <View testID="edit-distances-card" style={s.card}>
+                <View style={s.headerRow}>
+                    <Text testID="edit-header-club" style={[s.headerText, s.clubCell]}>Club</Text>
+                    <Text testID="edit-header-carry" style={[s.headerText, s.headerNumeric]}>{`Carry (${distanceUnitLabel(units)})`}</Text>
+                    <Text testID="edit-header-total" style={[s.headerText, s.headerNumeric]}>{`Total (${distanceUnitLabel(units)})`}</Text>
                 </View>
-                <View style={[s.headerCell, s.distanceCell]}>
-                    <Text style={s.headerCell}>{`Distance (${distanceUnitLabel(units)})`}</Text>
-                </View>
+                {rows.map((row, index) => (
+                    <View key={index} testID={`edit-row-${index}`} style={[s.row, index > 0 && s.rowDivider]}>
+                        <TextInput
+                            testID={`club-input-${index}`}
+                            style={[s.input, s.clubCell]}
+                            value={row.club}
+                            onChangeText={(v) => handleUpdateRow(index, 'club', v)}
+                            placeholder="Club"
+                            placeholderTextColor={colours.backgroundAlternate}
+                        />
+                        <TextInput
+                            testID={`distance-input-${index}`}
+                            style={[s.input, s.distanceInput]}
+                            value={row.distance}
+                            onChangeText={(v) => handleUpdateRow(index, 'distance', v)}
+                            keyboardType="number-pad"
+                            placeholder="0"
+                            placeholderTextColor={colours.backgroundAlternate}
+                        />
+                        <TextInput
+                            testID={`total-input-${index}`}
+                            style={[s.input, s.distanceInput]}
+                            value={row.total}
+                            onChangeText={(v) => handleUpdateRow(index, 'total', v)}
+                            keyboardType="number-pad"
+                            placeholder="0"
+                            placeholderTextColor={colours.backgroundAlternate}
+                        />
+                    </View>
+                ))}
             </View>
-            {rows.map((row, index) => (
-                <View key={index} style={[s.row, index === rows.length - 1 && { borderBottomWidth: 0.5 }]}>
-                    <TextInput
-                        testID={`club-input-${index}`}
-                        style={[s.input, s.clubCell]}
-                        value={row.club}
-                        onChangeText={(v) => handleUpdateRow(index, 'club', v)}
-                        placeholder="Club"
-                        placeholderTextColor={colours.backgroundAlternate}
-                    />
-                    <TextInput
-                        testID={`distance-input-${index}`}
-                        style={[s.input, s.distanceCell]}
-                        value={row.distance}
-                        onChangeText={(v) => handleUpdateRow(index, 'distance', v)}
-                        keyboardType="number-pad"
-                        placeholder="0"
-                        placeholderTextColor={colours.backgroundAlternate}
-                    />
-                </View>
-            ))}
 
             <TouchableOpacity
                 testID="add-club-button"

@@ -853,59 +853,54 @@ export const createStyles = (c: ThemeColours) => ({
 
     clubDistanceList: StyleSheet.create({
         container: {
-            paddingVertical: 16,
-            marginLeft: 'auto',
-            marginRight: 'auto',
+            marginTop: 8,
+        },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
             overflow: 'hidden',
-            width: '90%',
         },
         headerRow: {
             flexDirection: 'row',
-            borderWidth: 1,
-            borderColor: c.primary + '33',
-            backgroundColor: c.primary + '22',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+        },
+        headerText: {
+            flex: 1,
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+        },
+        headerNumeric: {
+            flex: 0,
+            width: 84,
+            textAlign: 'right',
         },
         row: {
             flexDirection: 'row',
-            borderWidth: 0.5,
-            borderColor: c.primary + '33',
-        },
-        headerCell: {
-            paddingVertical: 8,
-            paddingHorizontal: 8,
-            justifyContent: 'center',
             alignItems: 'center',
-            color: c.primary,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
+            paddingHorizontal: 16,
+            paddingVertical: 4,
         },
-        cell: {
-            color: c.text,
-            fontSize: fontSizes.smallestText,
+        rowDivider: {
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: c.tertiary + '66',
         },
         clubCell: {
             flex: 1,
-            paddingVertical: 6,
-            paddingHorizontal: 8,
-            borderRightWidth: 0.5,
-            borderRightColor: c.primary + '33',
+            minWidth: 0,
         },
-        distanceCell: {
-            flex: 1,
-            paddingVertical: 6,
-            paddingHorizontal: 8,
-            textAlign: 'center',
-        },
-        emptyText: {
-            color: c.text,
-            fontSize: fontSizes.normal,
-            textAlign: 'center',
+        distanceInput: {
+            flex: 0,
+            width: 84,
+            textAlign: 'right',
         },
         input: {
             color: c.text,
             fontSize: fontSizes.normal,
-            paddingVertical: 2,
-            paddingHorizontal: 2,
+            paddingVertical: 12,
         },
         addButton: {
             padding: 8,

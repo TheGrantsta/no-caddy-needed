@@ -97,6 +97,11 @@ export const initialize = async () => {
             columnsToRemove: [],
         },
         {
+            table: 'ClubDistances',
+            columnsToAdd: ['TotalDistance INTEGER NOT NULL DEFAULT 0'],
+            columnsToRemove: [],
+        },
+        {
             table: 'Settings',
             columnsToAdd: [
                 'WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0',
@@ -638,18 +643,18 @@ export const getClubDistances = () => {
     return getSyncDb().getAllSync('SELECT * FROM ClubDistances ORDER BY CarryDistance DESC;');
 };
 
-export const insertClubDistances = async (distances: { Club: string; CarryDistance: number; }[]): Promise<boolean> => {
+export const insertClubDistances = async (distances: { Club: string; CarryDistance: number; TotalDistance: number; }[]): Promise<boolean> => {
     let success = true;
     try {
         getSyncDb().execSync('DELETE FROM ClubDistances');
 
         for (const item of distances) {
             const statement = getSyncDb().prepareSync(
-                'INSERT INTO ClubDistances (Club, CarryDistance) VALUES ($Club, $CarryDistance)'
+                'INSERT INTO ClubDistances (Club, CarryDistance, TotalDistance) VALUES ($Club, $CarryDistance, $TotalDistance)'
             );
 
             try {
-                await statement.executeAsync({ $Club: item.Club, $CarryDistance: item.CarryDistance });
+                await statement.executeAsync({ $Club: item.Club, $CarryDistance: item.CarryDistance, $TotalDistance: item.TotalDistance });
             } finally {
                 await statement.finalizeAsync();
             }

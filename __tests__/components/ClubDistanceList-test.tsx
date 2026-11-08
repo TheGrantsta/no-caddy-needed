@@ -45,16 +45,16 @@ describe('ClubDistanceList component', () => {
         );
 
         expect(getByText('Club')).toBeTruthy();
-        expect(getByText('Distance (yd)')).toBeTruthy();
+        expect(getByText('Carry (yd)')).toBeTruthy();
     });
 
-    it('shouldShowMetresInDistanceHeadingWhenMetresSelected', () => {
+    it('shouldShowMetresInCarryHeadingWhenMetresSelected', () => {
         const { getByText, queryByText } = render(
             <ClubDistanceList distances={mockDistances} units="metres" />
         );
 
-        expect(getByText('Distance (m)')).toBeTruthy();
-        expect(queryByText('Distance (yd)')).toBeNull();
+        expect(getByText('Carry (m)')).toBeTruthy();
+        expect(queryByText('Carry (yd)')).toBeNull();
     });
 
     it('shows Save button', () => {
@@ -237,5 +237,126 @@ describe('ClubDistanceList component', () => {
 
         const saved = mockOnSave.mock.calls[0][0];
         expect(saved[0].Club).toBe('Driver');
+    });
+
+    describe('edit layout matches the read-only list', () => {
+        const colours = require('../../assets/colours').default;
+
+        it('shouldRenderRowsInsideAWhiteRoundedCard', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { StyleSheet } = require('react-native');
+
+            const cardStyle = StyleSheet.flatten(getByTestId('edit-distances-card').props.style);
+
+            expect(cardStyle.backgroundColor).toBe(colours.backgroundLight);
+            expect(cardStyle.borderRadius).toBeGreaterThanOrEqual(14);
+        });
+
+        it('shouldShowUppercaseClubAndCarryColumnHeaders', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} units="yards" />);
+            const { StyleSheet } = require('react-native');
+
+            expect(getByTestId('edit-header-club')).toHaveTextContent('Club');
+            expect(getByTestId('edit-header-carry')).toHaveTextContent('Carry (yd)');
+            expect(StyleSheet.flatten(getByTestId('edit-header-carry').props.style).textTransform).toBe('uppercase');
+        });
+
+        it('shouldRightAlignDistanceInputsLikeTheReadOnlyList', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { StyleSheet } = require('react-native');
+
+            expect(StyleSheet.flatten(getByTestId('distance-input-0').props.style).textAlign).toBe('right');
+        });
+
+        it('shouldShowHairlineDividerBetweenRows', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { StyleSheet } = require('react-native');
+
+            expect(StyleSheet.flatten(getByTestId('edit-row-1').props.style).borderTopWidth).toBeGreaterThan(0);
+            expect(StyleSheet.flatten(getByTestId('edit-row-0').props.style).borderTopWidth ?? 0).toBe(0);
+        });
+    });
+
+    describe('carry and total distances', () => {
+        it('shouldShowTotalColumnHeaderAlongsideCarry', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} units="yards" />);
+
+            expect(getByTestId('edit-header-carry')).toHaveTextContent('Carry (yd)');
+            expect(getByTestId('edit-header-total')).toHaveTextContent('Total (yd)');
+        });
+
+        it('shouldShowTotalInputPrefilledForEachClub', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+
+            expect(getByTestId('total-input-0').props.value).toBe('270');
+            expect(getByTestId('total-input-1').props.value).toBe('245');
+        });
+
+        it('shouldSaveEditedTotalDistanceForEachClub', () => {
+            const onSave = jest.fn();
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} onSave={onSave} />);
+
+            fireEvent.changeText(getByTestId('total-input-0'), '260');
+            fireEvent.press(getByTestId('save-distances-button'));
+
+            expect(onSave.mock.calls[0][0][0]).toEqual(
+                expect.objectContaining({ Club: 'Driver', CarryDistance: 250, TotalDistance: 260 })
+            );
+        });
+
+        it('shouldSaveZeroTotalDistanceWhenTotalLeftBlank', () => {
+            const onSave = jest.fn();
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} onSave={onSave} />);
+
+            fireEvent.changeText(getByTestId('total-input-1'), '');
+            fireEvent.press(getByTestId('save-distances-button'));
+
+            expect(onSave.mock.calls[0][0][1]).toEqual(
+                expect.objectContaining({ Club: '3 Wood', TotalDistance: 0 })
+            );
+        });
+
+        it('shouldShowBlankTotalInputForNewClubRow', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={[]} />);
+
+            fireEvent.press(getByTestId('add-club-button'));
+
+            expect(getByTestId('total-input-0').props.value).toBe('');
+        });
+    });
+
+    describe('total and carry columns behave the same', () => {
+        const { StyleSheet } = require('react-native');
+
+        it('shouldAcceptMultiDigitTotalEntryLikeCarry', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+
+            fireEvent.changeText(getByTestId('total-input-1'), '2');
+            fireEvent.changeText(getByTestId('total-input-1'), '25');
+            fireEvent.changeText(getByTestId('total-input-1'), '250');
+
+            expect(getByTestId('total-input-1').props.value).toBe('250');
+        });
+
+        it('shouldGiveTotalInputTheSameWidthAsCarryInput', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+
+            const carry = StyleSheet.flatten(getByTestId('distance-input-0').props.style);
+            const total = StyleSheet.flatten(getByTestId('total-input-0').props.style);
+
+            expect(total.width).toBe(carry.width);
+            expect(total.flex ?? 0).toBe(carry.flex ?? 0);
+        });
+
+        it('shouldAlignEachColumnHeaderWithItsValues', () => {
+            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+
+            ['carry', 'total'].forEach(column => {
+                const header = StyleSheet.flatten(getByTestId(`edit-header-${column}`).props.style);
+                const value = StyleSheet.flatten(getByTestId(`${column === 'carry' ? 'distance' : 'total'}-input-0`).props.style);
+                expect(header.width).toBe(value.width);
+                expect(header.flex ?? 0).toBe(value.flex ?? 0);
+            });
+        });
     });
 });

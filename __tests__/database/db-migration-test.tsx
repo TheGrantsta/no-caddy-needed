@@ -194,6 +194,23 @@ describe('Settings table column migration', () => {
         );
     });
 
+    it('should add TotalDistance column to ClubDistances when missing', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(ClubDistances)') return [
+                { name: 'Id' },
+                { name: 'Club' },
+                { name: 'CarryDistance' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            'ALTER TABLE ClubDistances ADD COLUMN TotalDistance INTEGER NOT NULL DEFAULT 0'
+        );
+    });
+
     it('should add TempoBpm column when missing', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [

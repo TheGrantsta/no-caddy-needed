@@ -43,4 +43,13 @@ describe('SimulationAppBar', () => {
         expect(queryByText(/^Hole /)).toBeNull();
         expect(queryByTestId('simulation-progress-fill')).toBeNull();
     });
+
+    it('shouldLabelTheProgressWithTheGivenUnitWhenProvided', () => {
+        const { getByText } = render(
+            <SimulationAppBar title="Short putting" onEnd={jest.fn()} hole={{ current: 2, total: 7 }} unitLabel="Level" />
+        );
+
+        expect(getByText('Level 2')).toBeTruthy();
+        expect(getByText('of 7')).toBeTruthy();
+    });
 });

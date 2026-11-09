@@ -1,19 +1,21 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useRouter, useNavigation } from 'expo-router';
+import { useNavigation } from 'expo-router';
 
-import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useConfirmBeforeLeaving } from '@/hooks/useConfirmBeforeLeaving';
 import { useThemeColours } from '@/context/ThemeContext';
 import { useShortPuttingLadderSimulation } from '@/hooks/useShortPuttingLadderSimulation';
 import { insertDrillResultService } from '@/service/DbService';
 import { useAppToast } from '@/hooks/useAppToast';
-import ChallengeNumberPicker from '@/components/ChallengeNumberPicker';
-import ChallengeNavButtons from '@/components/ChallengeNavButtons';
+import SimulationAppBar from '@/components/SimulationAppBar';
+import SimulationDistanceCard from '@/components/SimulationDistanceCard';
+import SimulationShotTiles from '@/components/SimulationShotTiles';
+import SimulationHoleBar from '@/components/SimulationHoleBar';
+import EndRoundSheet from '@/components/EndRoundSheet';
 import ChallengeCompleteView from '@/components/ChallengeCompleteView';
 import { resolveBand } from '@/utils/performanceBands';
-import { useCallback, useEffect, useRef, useState, useLayoutEffect } from 'react';
+import { useEffect, useRef, useState, useLayoutEffect } from 'react';
 
 type PerformanceBand = 'pro' | 'd1' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
 
@@ -26,44 +28,64 @@ const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; maxAttempts: n
     '15hcp': { label: '15 Handicap', maxAttempts: 100, color: '#ADCFC9' },
 };
 
+// Attempt tiles; the last tile stands for 4 or more attempts
+const ATTEMPT_OPTIONS = [
+    { value: 1, label: '1' },
+    { value: 2, label: '2' },
+    { value: 3, label: '3' },
+    { value: 4, label: '4+' },
+];
+
 export default function ShortPuttingLadder() {
     const styles = useStyles();
     const colours = useThemeColours();
-    const router = useRouter();
     const navigation = useNavigation();
     const sim = useShortPuttingLadderSimulation();
     const { showResult } = useAppToast();
     const hasSaved = useRef(false);
     const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+    const [showEndSheet, setShowEndSheet] = useState(false);
     const { leave } = useConfirmBeforeLeaving(sim.phase === 'in-progress', () => setShowQuitConfirm(true));
 
-    const handleBack = useCallback(() => {
-        if (sim.phase === 'in-progress') {
-            setShowQuitConfirm(true);
-        } else {
-            router.back();
-        }
-    }, [sim.phase, router]);
+    // The screen draws its own app bar, so the stack header is hidden
+    useLayoutEffect(() => {
+        navigation.setOptions({ headerShown: false });
+    }, [navigation]);
 
-    const handleConfirmQuit = useCallback(() => {
+    const handleConfirmQuit = () => {
         setShowQuitConfirm(false);
         leave();
-    }, [leave]);
+    };
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerLeft: () => (
-                <TouchableOpacity onPress={handleBack} testID="header-back-button">
-                    <MaterialIcons name="arrow-back" size={24} color={colours.background} />
-                </TouchableOpacity>
-            ),
-        });
-    }, [navigation, handleBack, colours.background]);
-
-    const handlePlayAgain = useCallback(() => {
+    const handlePlayAgain = () => {
         hasSaved.current = false;
         sim.reset();
-    }, [sim]);
+    };
+
+    const handleEndPress = () => {
+        if (sim.phase === 'complete') {
+            leave();
+            return;
+        }
+        setShowEndSheet(true);
+    };
+
+    // Levels entered so far, including the one on screen (its attempts are already recorded)
+    const levelsEntered = sim.levelIndex + 1;
+    const attemptsEntered = sim.results.slice(0, levelsEntered).reduce((sum, attempts) => sum + attempts, 0);
+
+    // Save records the attempts so far, then leaves
+    const handleSaveProgress = () => {
+        setShowEndSheet(false);
+        insertDrillResultService('Short-Putting Ladder', false, null, attemptsEntered);
+        showResult(true, 'Result saved', '');
+        leave();
+    };
+
+    const handleDiscardProgress = () => {
+        setShowEndSheet(false);
+        leave();
+    };
 
     const bandDefinitions = [
         { key: 'pro' as const, threshold: 11 },
@@ -85,39 +107,28 @@ export default function ShortPuttingLadder() {
         }
     }, [sim.phase, sim.totalAttempts, showResult]);
 
+    const isLastLevel = sim.levelIndex === sim.levelCount - 1;
+
     return (
         <GestureHandlerRootView style={styles.flexOne}>
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
+            <SimulationAppBar
+                title="Short putting"
+                onEnd={handleEndPress}
+                hole={sim.phase === 'in-progress' ? { current: levelsEntered, total: sim.levelCount } : undefined}
+                unitLabel="Level"
+            />
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, { paddingBottom: 140 }]}>
                 <View style={styles.container}>
                     {sim.phase === 'in-progress' && (
                         <>
-                            <Text style={styles.headerText}>Level {sim.levelIndex + 1} of {sim.levelCount}</Text>
-
-                            {/* Main content container with padding */}
-                            <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'baseline', marginBottom: 24, gap: 8 }}>
-                                    <Text style={styles.subHeaderText}>Distance</Text>
-                                    <Text style={styles.subHeaderText}>{sim.currentLevel} ft</Text>
-                                </View>
-
-                                <Text style={[styles.subHeaderText, { marginBottom: 16 }]}>Putts</Text>
-                                <ChallengeNumberPicker
-                                    value={sim.currentResult}
-                                    onChange={sim.setResult}
-                                    min={1}
-                                    max={10}
-                                    decreaseTestID="decrease-result-button"
-                                    increaseTestID="increase-result-button"
-                                    displayTestID="result-display"
-                                />
-
-                                <ChallengeNavButtons
-                                    onPrevious={sim.goToPreviousLevel}
-                                    onNext={sim.levelIndex === sim.levelCount - 1 ? sim.finish : sim.goToNextLevel}
-                                    previousDisabled={sim.levelIndex === 0}
-                                    isLastStep={sim.levelIndex === sim.levelCount - 1}
-                                />
-                            </View>
+                            <SimulationDistanceCard label="PUTT FROM" distance={sim.currentLevel} unit="ft" />
+                            <SimulationShotTiles
+                                sectionLabel="PUTTS TAKEN"
+                                options={ATTEMPT_OPTIONS}
+                                selected={sim.currentResult}
+                                onSelect={sim.setResult}
+                                testIDPrefix="attempts-option"
+                            />
                         </>
                     )}
 
@@ -170,6 +181,28 @@ export default function ShortPuttingLadder() {
                     )}
                 </View>
             </ScrollView>
+
+            {sim.phase === 'in-progress' && (
+                <SimulationHoleBar
+                    holeNumber={levelsEntered}
+                    totalHoles={sim.levelCount}
+                    unitLabel="Level"
+                    onPrevious={sim.goToPreviousLevel}
+                    onNext={isLastLevel ? sim.finish : sim.goToNextLevel}
+                />
+            )}
+            <EndRoundSheet
+                visible={showEndSheet}
+                holeNumber={levelsEntered}
+                holesTotal={sim.levelCount}
+                title={`End simulation after level ${levelsEntered}?`}
+                message={`You’ve entered ${levelsEntered} of ${sim.levelCount} levels. Saved results are added to your drill history.`}
+                saveLabel="Save progress"
+                discardLabel="Discard progress"
+                onSave={handleSaveProgress}
+                onDiscard={handleDiscardProgress}
+                onKeepPlaying={() => setShowEndSheet(false)}
+            />
         </GestureHandlerRootView>
     );
 }

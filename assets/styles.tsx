@@ -1037,6 +1037,7 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
             marginHorizontal: 16,
             columnGap: 10,
+            marginBottom: 10,
         },
         tile: {
             flex: 1,

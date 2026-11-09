@@ -9,10 +9,12 @@ type Props = {
     totalHoles: number;
     onPrevious: () => void;
     onNext: () => void;
+    // Name of the step being counted, e.g. "Hole" or "Level"
+    unitLabel?: string;
 };
 
 // Floating bar at the bottom of a challenge with previous/next hole controls
-const SimulationHoleBar = ({ holeNumber, totalHoles, onPrevious, onNext }: Props) => {
+const SimulationHoleBar = ({ holeNumber, totalHoles, onPrevious, onNext, unitLabel = 'Hole' }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.simulation;
@@ -24,11 +26,11 @@ const SimulationHoleBar = ({ holeNumber, totalHoles, onPrevious, onNext }: Props
             {holeNumber > 1 ? (
                 <TouchableOpacity testID="previous-hole-button" accessibilityRole="button" onPress={onPrevious} style={s.prevButton}>
                     <MaterialIcons name="chevron-left" size={24} color={colours.primary} />
-                    <Text style={s.prevText}>{`Hole ${holeNumber - 1}`}</Text>
+                    <Text style={s.prevText}>{`${unitLabel} ${holeNumber - 1}`}</Text>
                 </TouchableOpacity>
             ) : <View />}
             <TouchableOpacity testID="next-hole-button" accessibilityRole="button" onPress={onNext} style={s.nextButton}>
-                <Text style={s.nextText}>{isLastHole ? 'Finish' : `Hole ${holeNumber + 1}`}</Text>
+                <Text style={s.nextText}>{isLastHole ? 'Finish' : `${unitLabel} ${holeNumber + 1}`}</Text>
                 <MaterialIcons name="chevron-right" size={24} color={colours.black} />
             </TouchableOpacity>
         </View>

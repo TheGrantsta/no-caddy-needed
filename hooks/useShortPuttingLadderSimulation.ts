@@ -77,7 +77,7 @@ export function useShortPuttingLadderSimulation() {
         currentResult: 1,
     });
 
-    const setResult = useCallback((result: 0 | 1) => {
+    const setResult = useCallback((result: number) => {
         dispatch({ type: 'setResult', result });
     }, []);
 

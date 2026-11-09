@@ -6,10 +6,11 @@ type Props = {
     title: string;
     onEnd: () => void;
     hole?: { current: number; total: number };
+    unitLabel?: string;
 };
 
 // Green app bar for the challenge screens: End button, title, and optional hole progress
-const SimulationAppBar = ({ title, onEnd, hole }: Props) => {
+const SimulationAppBar = ({ title, onEnd, hole, unitLabel = 'Hole' }: Props) => {
     const styles = useStyles();
     const s = styles.simulation;
     const { top: topInset } = useSafeAreaInsets();
@@ -26,7 +27,7 @@ const SimulationAppBar = ({ title, onEnd, hole }: Props) => {
             {hole && (
                 <>
                     <View style={s.holeRow}>
-                        <Text testID="simulation-hole" style={s.holeText}>{`Hole ${hole.current}`}</Text>
+                        <Text testID="simulation-hole" style={s.holeText}>{`${unitLabel} ${hole.current}`}</Text>
                         <Text style={s.ofText}>{`of ${hole.total}`}</Text>
                     </View>
                     <View style={s.progressTrack}>

@@ -51,4 +51,11 @@ describe('SimulationHoleBar', () => {
         expect(props.onPrevious).toHaveBeenCalledTimes(1);
         expect(props.onNext).toHaveBeenCalledTimes(1);
     });
+
+    it('shouldLabelNeighboursWithTheGivenUnitWhenProvided', () => {
+        const { getByText } = renderBar({ holeNumber: 2, totalHoles: 7, unitLabel: 'Level' });
+
+        expect(getByText('Level 1')).toBeTruthy();
+        expect(getByText('Level 3')).toBeTruthy();
+    });
 });

@@ -47,4 +47,16 @@ describe('SimulationShotTiles', () => {
 
         expect(onSelect).toHaveBeenCalledWith(4);
     });
+
+    it('shouldWrapTilesIntoRowsOfTheGivenSize', () => {
+        const tenOptions = Array.from({ length: 10 }, (_, i) => ({ value: i + 1, label: String(i + 1) }));
+        const { getByTestId, queryByTestId, getByText } = render(
+            <SimulationShotTiles sectionLabel="PUTTS TAKEN" options={tenOptions} selected={1} onSelect={jest.fn()} testIDPrefix="putts-option" perRow={5} />
+        );
+
+        expect(getByTestId('putts-option-row-0')).toBeTruthy();
+        expect(getByTestId('putts-option-row-1')).toBeTruthy();
+        expect(queryByTestId('putts-option-row-2')).toBeNull();
+        expect(getByText('10')).toBeTruthy();
+    });
 });

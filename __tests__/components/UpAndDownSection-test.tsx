@@ -52,7 +52,7 @@ describe('UpAndDownSection', () => {
 
         const { getByText } = renderSection();
 
-        expect(getByText(/Holed in one putt after missing the green/)).toBeTruthy();
+        expect(getByText('One putt after missing the green')).toBeTruthy();
     });
 
     it('shouldShowZeroPercentWhenMissedGreensNeverHoledOut', () => {
@@ -79,5 +79,20 @@ describe('UpAndDownSection', () => {
         renderSection(roundIds);
 
         expect(mockGetUpAndDownRate).toHaveBeenCalledWith(roundIds);
+    });
+
+    it('shows the Up & down heading on a card, aligned with its content', () => {
+        mockGetUpAndDownRate.mockReturnValueOnce({ rate: '50%', upAndDowns: 1, attempts: 2 });
+        const { getByTestId, getByText } = render(<UpAndDownSection fadeAnim={new Animated.Value(1)} slideAnim={new Animated.Value(0)} />);
+
+        expect(getByTestId('up-and-down-card')).toBeTruthy();
+        expect(getByText('Up & down')).toHaveStyle({ padding: 0 });
+    });
+
+    it('leaves a gap above and below the card so stacked cards do not touch', () => {
+        mockGetUpAndDownRate.mockReturnValueOnce({ rate: '50%', upAndDowns: 1, attempts: 2 });
+        const { getByTestId } = renderSection();
+
+        expect(getByTestId('up-and-down-card')).toHaveStyle({ marginVertical: 8 });
     });
 });

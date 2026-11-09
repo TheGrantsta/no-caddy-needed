@@ -2680,6 +2680,7 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.backgroundLight,
             borderRadius: 20,
             marginHorizontal: 16,
+            marginVertical: 8,
             padding: 16,
         },
         // Sits on the chart's own card with no inset of its own, so it lines up with the rows above

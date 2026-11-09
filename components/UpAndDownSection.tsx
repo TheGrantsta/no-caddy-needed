@@ -22,15 +22,15 @@ export default function UpAndDownSection({
 
     return (
         <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
-            <View style={styles.divider} />
-
-            <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>Up & down</Text>
-            <View style={{ alignItems: 'center', marginTop: 8 }}>
-                <Text testID="up-and-down-rate" style={[styles.normalText, { fontSize: 32, fontWeight: 'bold' }]}>{rate}</Text>
-                <Text testID="up-and-down-detail" style={[styles.normalText, { marginTop: 4 }]}>{`${upAndDowns} of ${attempts} missed greens`}</Text>
-            <Text style={[styles.smallText, { textAlign: 'center', marginTop: 8, paddingHorizontal: 16 }]}>
-                Holed in one putt after missing the green.
-            </Text>
+            <View testID="up-and-down-card" style={styles.deadlySinsChart.card}>
+                <Text style={[styles.subHeaderText, { padding: 0 }]}>Up & down</Text>
+                <View style={{ alignItems: 'center', marginTop: 12 }}>
+                    <Text testID="up-and-down-rate" style={[styles.normalText, { fontSize: 32, fontWeight: 'bold' }]}>{rate}</Text>
+                    <Text testID="up-and-down-detail" style={[styles.normalText, { marginTop: 4 }]}>{`${upAndDowns} of ${attempts} missed greens`}</Text>
+                    <Text style={[styles.smallText, { textAlign: 'center', marginTop: 8 }]}>
+                        One putt after missing the green
+                    </Text>
+                </View>
             </View>
         </Animated.View>
     );

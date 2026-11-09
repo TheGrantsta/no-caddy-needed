@@ -521,7 +521,7 @@ describe('Perform', () => {
 
                 const texts = collectText(toJSON());
                 expect(texts.indexOf('Up & down')).toBeGreaterThanOrEqual(0);
-                expect(texts.indexOf('Up & down')).toBeLessThan(texts.indexOf('Show 3-Putts Only'));
+                expect(texts.indexOf('Up & down')).toBeLessThan(texts.indexOf('Show 3-putts only'));
             });
 
             it('shouldNotShowUpAndDownUnderPuttingSubMenu', () => {
@@ -581,6 +581,23 @@ describe('Perform', () => {
             const { getByTestId, getByText } = render(<Perform />);
             expect(getByTestId('perform-sub-menu-proximity')).toBeTruthy();
             expect(getByText('Proximity')).toBeTruthy();
+        });
+
+        it('shows the Proximity heading on a card with the 3-putts switch inside it', () => {
+            const { getByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+
+            expect(getByTestId('proximity-card')).toBeTruthy();
+            expect(getByTestId('proximity-heading')).toHaveStyle({ padding: 0 });
+            expect(getByTestId('proximity-heading')).toHaveTextContent('Proximity');
+        });
+
+        it('shows the 3-putts switch label at the regular text size', () => {
+            const fontSizes = require('../../../assets/font-sizes').default;
+            const { getByTestId } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
+
+            expect(getByTestId('proximity-filter-label')).toHaveStyle({ fontSize: fontSizes.normal });
         });
 
         it('showsProximitySectionWhenProximitySubMenuPressed', () => {

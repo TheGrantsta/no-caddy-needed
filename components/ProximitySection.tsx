@@ -5,6 +5,7 @@ import StatsEmptyState from './StatsEmptyState';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import { getPuttingProximityService } from '../service/DbService';
+import fontSizes from '../assets/font-sizes';
 
 interface Props {
     fadeAnim: Animated.Value;
@@ -33,39 +34,41 @@ export default function ProximitySection({
 
     return (
         <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, paddingTop: 20, gap: 8 }}>
-                <Text testID="proximity-filter-label" style={{ color: colours.primary, fontSize: 16 }}>
-                    Show 3-Putts Only
-                </Text>
-                <Switch
-                    testID="proximity-filter-toggle"
-                    value={proximityThreePuttOnly}
-                    onValueChange={onProximityFilterChange}
-                    trackColor={{ false: colours.tertiary, true: colours.primary }}
-                />
-            </View>
+            <View testID="proximity-card" style={styles.deadlySinsChart.card}>
+                <Text testID="proximity-heading" style={[styles.subHeaderText, { padding: 0 }]}>Proximity</Text>
 
-            {hasProximityData(proximityThreePuttOnly, filteredRoundIds) ? (
-                <>
-                    <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, filteredRoundIds)} />
-
-                    <Text style={[styles.normalText, styles.marginTop, { alignSelf: 'center' }]}>
-                        Where your missed first putts finish. "3-Putts Only" counts just the holes where you three-putted.
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+                    <Text testID="proximity-filter-label" style={{ color: colours.text, fontSize: fontSizes.normal }}>
+                        Show 3-putts only
                     </Text>
-                </>
-            ) : (
-                <>
-                    <View style={styles.divider} />
+                    <Switch
+                        testID="proximity-filter-toggle"
+                        value={proximityThreePuttOnly}
+                        onValueChange={onProximityFilterChange}
+                        trackColor={{ false: colours.tertiary, true: colours.primary }}
+                    />
+                </View>
 
-                    {filteredRoundIds && filteredRoundIds.size === 0 ? (
+                {hasProximityData(proximityThreePuttOnly, filteredRoundIds) ? (
+                    <>
+                        <View style={{ marginTop: 12 }}>
+                            <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, filteredRoundIds)} />
+                        </View>
+
+                        <Text style={[styles.smallText, { marginTop: 12 }]}>
+                            Where your missed first putts finish. "3-Putts Only" counts just the holes where you three-putted.
+                        </Text>
+                    </>
+                ) : (
+                    filteredRoundIds && filteredRoundIds.size === 0 ? (
                         <StatsEmptyState onStartRound={onStartRound} />
                     ) : (
-                        <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
+                        <Text style={[styles.normalText, { marginTop: 12 }]}>
                             {proximityThreePuttOnly ? 'No 3-putts in selected rounds' : 'No putting data for selected rounds'}
                         </Text>
-                    )}
-                </>
-            )}
+                    )
+                )}
+            </View>
         </Animated.View>
     );
 }

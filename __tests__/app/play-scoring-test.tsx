@@ -439,7 +439,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByTestId('hole-note-text')).toHaveTextContent('aim left of bunker');
+                expect(getByTestId('hole-note-input').props.value).toBe('aim left of bunker');
             });
         });
 
@@ -453,9 +453,8 @@ describe('Play screen', () => {
             fireEvent.changeText(getByTestId('course-name-input'), 'St Andrews');
             fireEvent.press(getByTestId('start-button'));
 
-            await waitFor(() => expect(getByTestId('add-note-button')).toBeTruthy());
+            await waitFor(() => expect(getByTestId('hole-note-input')).toBeTruthy());
 
-            fireEvent.press(getByTestId('add-note-button'));
             fireEvent.changeText(getByTestId('hole-note-input'), 'aim left');
             fireEvent.changeText(getByTestId('first-putt-input'), '20');
 
@@ -949,17 +948,17 @@ describe('Play screen', () => {
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
-            await waitFor(() => expect(getByTestId('hole-note-text')).toHaveTextContent('hole 1 note'));
+            await waitFor(() => expect(getByTestId('hole-note-input').props.value).toBe('hole 1 note'));
 
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));
             });
 
-            await waitFor(() => expect(getByTestId('hole-note-text')).toHaveTextContent('hole 2 note'));
+            await waitFor(() => expect(getByTestId('hole-note-input').props.value).toBe('hole 2 note'));
 
             fireEvent.press(getByTestId('previous-hole-button'));
 
-            await waitFor(() => expect(getByTestId('hole-note-text')).toHaveTextContent('hole 1 note'));
+            await waitFor(() => expect(getByTestId('hole-note-input').props.value).toBe('hole 1 note'));
         });
 
         describe('Par score amendment from pre-selected value', () => {

@@ -564,6 +564,15 @@ export const createStyles = (c: ThemeColours) => ({
             overflow: 'hidden',
             marginBottom: 16,
         },
+        noteInput: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            padding: 16,
+            minHeight: 120,
+            color: c.text,
+            fontSize: fontSizes.normal,
+            marginBottom: 16,
+        },
         bottomBar: {
             backgroundColor: c.backgroundLight,
             borderRadius: 28,

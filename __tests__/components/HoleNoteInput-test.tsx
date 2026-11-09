@@ -1,121 +1,58 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import HoleNoteInput from '../../components/HoleNoteInput';
 
-jest.mock('../../context/ThemeContext', () => ({
+jest.mock('@/context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
-    useTheme: () => ({
-        theme: 'dark',
-        colours: require('../../assets/colours').default,
-        toggleTheme: jest.fn(),
-        setTheme: jest.fn(),
-    }),
 }));
 
-jest.mock('@expo/vector-icons', () => ({
-    MaterialIcons: 'MaterialIcons',
+jest.mock('@/hooks/useStyles', () => ({
+    useStyles: () => require('../../assets/styles').default,
 }));
 
 describe('HoleNoteInput', () => {
-    const mockOnNoteChange = jest.fn();
+    it('shouldShowAMultilineNoteFieldAlwaysVisible', () => {
+        const { getByTestId } = render(<HoleNoteInput note="" onNoteChange={jest.fn()} />);
 
-    beforeEach(() => {
-        jest.clearAllMocks();
+        expect(getByTestId('hole-note-input').props.multiline).toBe(true);
     });
 
-    describe('when note is empty', () => {
-        it('showsAddNoteButtonWhenNoteIsEmpty', () => {
-            const { getByTestId } = render(
-                <HoleNoteInput note="" onNoteChange={mockOnNoteChange} />
-            );
-            expect(getByTestId('add-note-button')).toBeTruthy();
-        });
+    it('shouldShowTheNotesPlaceholderLikeTheMockup', () => {
+        const { getByTestId } = render(<HoleNoteInput note="" onNoteChange={jest.fn()} />);
 
-        it('doesNotShowTextInputInitiallyWhenNoteIsEmpty', () => {
-            const { queryByTestId } = render(
-                <HoleNoteInput note="" onNoteChange={mockOnNoteChange} />
-            );
-            expect(queryByTestId('hole-note-input')).toBeNull();
-        });
-
-        it('showsTextInputAfterAddNoteIsPressed', () => {
-            const { getByTestId } = render(
-                <HoleNoteInput note="" onNoteChange={mockOnNoteChange} />
-            );
-            fireEvent.press(getByTestId('add-note-button'));
-            expect(getByTestId('hole-note-input')).toBeTruthy();
-        });
-
-        it('hidesAddNoteButtonAfterItIsPressed', () => {
-            const { getByTestId, queryByTestId } = render(
-                <HoleNoteInput note="" onNoteChange={mockOnNoteChange} />
-            );
-            fireEvent.press(getByTestId('add-note-button'));
-            expect(queryByTestId('add-note-button')).toBeNull();
-        });
-
-        it('callsOnNoteChangeWhenTypingAfterAddNotePressed', () => {
-            const { getByTestId } = render(
-                <HoleNoteInput note="" onNoteChange={mockOnNoteChange} />
-            );
-            fireEvent.press(getByTestId('add-note-button'));
-            fireEvent.changeText(getByTestId('hole-note-input'), 'new note');
-            expect(mockOnNoteChange).toHaveBeenCalledWith('new note');
-        });
+        expect(getByTestId('hole-note-input').props.placeholder).toBe('e.g. Driver off the tee');
     });
 
-    describe('when note exists', () => {
-        it('showsNoteTextWhenNoteExistsAndNotEditing', () => {
-            const { getByTestId } = render(
-                <HoleNoteInput note="aim left of bunker" onNoteChange={mockOnNoteChange} />
-            );
-            expect(getByTestId('hole-note-text')).toBeTruthy();
-        });
+    it('shouldShowTheSavedNoteInTheField', () => {
+        const { getByTestId } = render(<HoleNoteInput note="aim left" onNoteChange={jest.fn()} />);
 
-        it('displaysNoteContentInNoteText', () => {
-            const { getByTestId } = render(
-                <HoleNoteInput note="aim left of bunker" onNoteChange={mockOnNoteChange} />
-            );
-            expect(getByTestId('hole-note-text')).toHaveTextContent('aim left of bunker');
-        });
+        expect(getByTestId('hole-note-input').props.value).toBe('aim left');
+    });
 
-        it('doesNotShowTextInputWhenNoteExistsAndNotEditing', () => {
-            const { queryByTestId } = render(
-                <HoleNoteInput note="aim left of bunker" onNoteChange={mockOnNoteChange} />
-            );
-            expect(queryByTestId('hole-note-input')).toBeNull();
-        });
+    it('shouldCallOnNoteChangeWhenTyping', () => {
+        const onNoteChange = jest.fn();
+        const { getByTestId } = render(<HoleNoteInput note="" onNoteChange={onNoteChange} />);
 
-        it('showsEditButtonWhenNoteExists', () => {
-            const { getByTestId } = render(
-                <HoleNoteInput note="aim left of bunker" onNoteChange={mockOnNoteChange} />
-            );
-            expect(getByTestId('edit-note-button')).toBeTruthy();
-        });
+        fireEvent.changeText(getByTestId('hole-note-input'), 'driver');
 
-        it('showsTextInputAfterEditNoteIsPressed', () => {
-            const { getByTestId } = render(
-                <HoleNoteInput note="aim left of bunker" onNoteChange={mockOnNoteChange} />
-            );
-            fireEvent.press(getByTestId('edit-note-button'));
-            expect(getByTestId('hole-note-input')).toBeTruthy();
-        });
+        expect(onNoteChange).toHaveBeenCalledWith('driver');
+    });
 
-        it('prePopulatesTextInputWithExistingNoteWhenEditing', () => {
-            const { getByTestId } = render(
-                <HoleNoteInput note="aim left of bunker" onNoteChange={mockOnNoteChange} />
-            );
-            fireEvent.press(getByTestId('edit-note-button'));
-            expect(getByTestId('hole-note-input').props.value).toBe('aim left of bunker');
-        });
+    it('shouldNotShowAddNoteOrEditNoteButtons', () => {
+        const { queryByTestId, queryByText } = render(<HoleNoteInput note="aim left" onNoteChange={jest.fn()} />);
 
-        it('callsOnNoteChangeWhenTypingAfterEditNotePressed', () => {
-            const { getByTestId } = render(
-                <HoleNoteInput note="aim left of bunker" onNoteChange={mockOnNoteChange} />
-            );
-            fireEvent.press(getByTestId('edit-note-button'));
-            fireEvent.changeText(getByTestId('hole-note-input'), 'updated note');
-            expect(mockOnNoteChange).toHaveBeenCalledWith('updated note');
-        });
+        expect(queryByTestId('add-note-button')).toBeNull();
+        expect(queryByTestId('edit-note-button')).toBeNull();
+        expect(queryByText('Add note')).toBeNull();
+    });
+
+    it('shouldGiveTheFieldAWhiteRoundedCardWithRoomForAFewLines', () => {
+        const { getByTestId } = render(<HoleNoteInput note="" onNoteChange={jest.fn()} />);
+        const style = StyleSheet.flatten(getByTestId('hole-note-input').props.style);
+
+        expect(style.backgroundColor).toBe(require('../../assets/colours').default.backgroundLight);
+        expect(style.borderRadius).toBeGreaterThanOrEqual(14);
+        expect(style.minHeight).toBeGreaterThanOrEqual(120);
     });
 });

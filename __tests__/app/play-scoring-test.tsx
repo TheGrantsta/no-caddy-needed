@@ -10,6 +10,7 @@ import {
     getActiveRoundService,
     getAllRoundHistoryService,
     insertHoleDeadlySinsService,
+    getHoleDeadlySinsService,
     insertPuttingStatsService,
     getPuttingStatsService,
     getAllDeadlySinsRoundsService,
@@ -164,6 +165,7 @@ const mockAddMultiplayerHoleScores = addMultiplayerHoleScoresService as jest.Moc
 const mockGetActiveRound = getActiveRoundService as jest.Mock;
 const mockGetAllRoundHistory = getAllRoundHistoryService as jest.Mock;
 const mockInsertHoleDeadlySins = insertHoleDeadlySinsService as jest.Mock;
+const mockGetHoleDeadlySinsForTest = getHoleDeadlySinsService as jest.Mock;
 const mockGetAllDeadlySinsRounds = getAllDeadlySinsRoundsService as jest.Mock;
 const mockGetClubDistances = getClubDistancesService as jest.Mock;
 const mockCancelAllReminders = cancelAllRoundReminders as jest.Mock;
@@ -526,6 +528,71 @@ describe('Play screen', () => {
                 expect(getByTestId('player-score-1')).toBeTruthy();
                 expect(getByTestId('first-putt-input')).toBeTruthy();
                 expect(getByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeTruthy();
+            });
+
+            describe('deadly sins across hole navigation', () => {
+                // Remembers what is saved per hole so navigation can read it back
+                const rememberSins = () => {
+                    const saved: Record<number, unknown> = {};
+                    mockInsertHoleDeadlySins.mockImplementation((_round: number, hole: number, sins: unknown) => {
+                        saved[hole] = sins;
+                        return Promise.resolve(true);
+                    });
+                    mockGetHoleDeadlySinsForTest.mockImplementation((_round: number, hole: number) => saved[hole] ?? null);
+                };
+
+                const enterFirstPuttAndSin = async (getByTestId: (id: string) => any) => {
+                    fireEvent.press(getByTestId('first-putt-input'));
+                    fireEvent.press(getByTestId('first-putt-input-option-5'));
+                    fireEvent.press(getByTestId('second-putt-input'));
+                    fireEvent.press(getByTestId('second-putt-input-option-2'));
+                    fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+                };
+
+                beforeEach(() => {
+                    rememberSins();
+                    mockStartRound.mockResolvedValue(1);
+                    mockAddRoundPlayers.mockResolvedValue([1]);
+                    mockAddMultiplayerHoleScores.mockResolvedValue(true);
+                });
+
+                // Put the shared mocks back so the saved-sins memory does not leak into other tests
+                afterEach(() => {
+                    mockInsertHoleDeadlySins.mockReset().mockResolvedValue(true);
+                    mockGetHoleDeadlySinsForTest.mockReset().mockReturnValue(null);
+                });
+
+                it('shouldResetDeadlySinsWhenNavigatingForwardToTheNextHole', async () => {
+                    const { getByTestId } = render(<Play />);
+                    await startFullRound(getByTestId);
+                    await enterFirstPuttAndSin(getByTestId);
+                    expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(true);
+
+                    await act(async () => {
+                        fireEvent.press(getByTestId('next-hole-button'));
+                    });
+
+                    // The Previous button only appears once the round is past hole 1
+                    await waitFor(() => expect(getByTestId('previous-hole-button')).toBeTruthy());
+                    expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(false);
+                });
+
+                it('shouldKeepTheSavedDeadlySinsWhenNavigatingBackToAHole', async () => {
+                    const { getByTestId, queryByTestId } = render(<Play />);
+                    await startFullRound(getByTestId);
+                    await enterFirstPuttAndSin(getByTestId);
+
+                    await act(async () => {
+                        fireEvent.press(getByTestId('next-hole-button'));
+                    });
+                    await waitFor(() => expect(getByTestId('previous-hole-button')).toBeTruthy());
+
+                    await act(async () => {
+                        fireEvent.press(getByTestId('previous-hole-button'));
+                    });
+                    await waitFor(() => expect(queryByTestId('previous-hole-button')).toBeNull());
+                    expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(true);
+                });
             });
 
             it('shouldNotAdvanceWhenNextPressedWithoutAFirstPutt', async () => {

@@ -13,6 +13,8 @@ type Props = {
     holePar?: number;
     userScore?: number;
     initialValues?: Partial<DeadlySinsValues>;
+    // When this changes (e.g. the hole number), the switches reload from initialValues
+    resetKey?: number;
     // Content shown directly under a sin's row while that sin is marked (e.g. the club used off the tee)
     renderFollowUp?: (slug: string) => ReactNode;
 };
@@ -37,7 +39,7 @@ const sinFields: { slug: string; label: string; key: keyof DeadlySinsValues }[] 
     { slug: 'bogeys-par5', label: 'Bogeys on par 5s', key: 'bogeysPar5' },
 ];
 
-const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues, renderFollowUp }: Props) => {
+const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues, renderFollowUp, resetKey }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.deadlySinsTally;
@@ -51,6 +53,24 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
         troubleOffTee: initialValues?.troubleOffTee ?? false,
         penalties: initialValues?.penalties ?? false,
     });
+    // Reload the switches from the parent's values whenever the hole changes (adjusted during render,
+    // so the switches show the new hole straight away rather than one render later)
+    const [syncedResetKey, setSyncedResetKey] = useState(resetKey);
+    if (resetKey !== syncedResetKey) {
+        setSyncedResetKey(resetKey);
+        if (resetKey !== undefined) {
+            setValues({
+                threePutts: initialValues?.threePutts ?? false,
+                doubleBogeys: initialValues?.doubleBogeys ?? false,
+                bogeysPar5: initialValues?.bogeysPar5 ?? false,
+                bogeysInside9Iron: initialValues?.bogeysInside9Iron ?? false,
+                doubleChips: initialValues?.doubleChips ?? false,
+                troubleOffTee: initialValues?.troubleOffTee ?? false,
+                penalties: initialValues?.penalties ?? false,
+            });
+        }
+    }
+
     const isAutoDoubleBogey = holePar !== undefined && userScore !== undefined && userScore >= holePar + 2;
     const isAutoBogeyPar5 = holePar === 5 && userScore !== undefined && userScore >= 6;
 

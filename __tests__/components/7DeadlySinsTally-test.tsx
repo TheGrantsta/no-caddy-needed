@@ -749,4 +749,19 @@ describe('DeadlySinsTally component', () => {
 
     describe('list readability', () => {
     });
+
+    it('resetsItsSwitchesToTheNewHolesSinsWhenTheHoleChanges', () => {
+        const marked: DeadlySinsValues = { threePutts: true, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false };
+        const clean: DeadlySinsValues = { ...marked, threePutts: false };
+        const { getByTestId, rerender } = render(
+            <DeadlySinsTally onEndRound={jest.fn()} roundControlled initialValues={marked} holePar={4} resetKey={1} />
+        );
+        expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(true);
+
+        rerender(
+            <DeadlySinsTally onEndRound={jest.fn()} roundControlled initialValues={clean} holePar={4} resetKey={2} />
+        );
+
+        expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(false);
+    });
 });

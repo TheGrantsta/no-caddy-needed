@@ -27,6 +27,7 @@ interface Props {
 
 // The deadly sins card, with each marked sin's follow-up (club, penalty, reason) shown directly under its row
 export default function PhaseStats({
+    holeNumber,
     holePar,
     sins,
     onSinsChange,
@@ -77,6 +78,7 @@ export default function PhaseStats({
     return (
         <DeadlySinsTally
             holePar={holePar}
+            resetKey={holeNumber}
             deadlySinsValues={sins}
             onDeadlySinsChange={onSinsChange}
             onEndRound={() => { }}

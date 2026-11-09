@@ -371,9 +371,10 @@ export default function Play() {
     const shouldShowSinDetails = (sins: DeadlySinsValues) =>
         sins.troubleOffTee || sins.penalties || sins.bogeysInside9Iron || sins.doubleChips;
 
-    // Loads everything entered for a hole (sins, sin details, putting) onto the single hole screen
-    const loadHoleEntry = (holeNumber: number, roundId: number | null = activeRoundId) => {
-        setDeadlySinsValues(loadHoleSins(holeNumber, roundId));
+    // Loads everything entered for a hole (sins, sin details, putting) onto the single hole screen.
+    // Moving forward starts the next hole's Deadly Sins clean; moving back restores what was saved.
+    const loadHoleEntry = (holeNumber: number, roundId: number | null = activeRoundId, { resetSins = false } = {}) => {
+        setDeadlySinsValues(resetSins ? INITIAL_SINS : loadHoleSins(holeNumber, roundId));
         setPuttingFirstPuttError(false);
         setPuttingSecondPuttError(false);
         setPuttingSecondPuttRequiredError(false);
@@ -441,7 +442,7 @@ export default function Play() {
             setCurrentHole(nextHole);
             setCurrentHoleData(loadHoleForScore(nextHole));
             resetForNewHole();
-            loadHoleEntry(nextHole);
+            loadHoleEntry(nextHole, activeRoundId, { resetSins: true });
         }
     };
 

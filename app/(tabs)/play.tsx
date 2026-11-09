@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import { Animated, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useNavigation } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { tabBarStyleFor, sceneStyleFor } from '../../assets/tabBarOptions';
 import { MaterialIcons } from '@expo/vector-icons';
 import HoleScoreInput from '../../components/HoleScoreInput';
 import HoleNoteInput from '../../components/HoleNoteInput';
@@ -584,6 +586,16 @@ export default function Play() {
     };
 
     const isRoundActive = activeRoundId !== null;
+
+    // Hide the bottom tab bar while a round is in progress, and bring it back when the round ends
+    const navigation = useNavigation();
+    const { bottom: tabBarBottomInset } = useSafeAreaInsets();
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            tabBarStyle: tabBarStyleFor(colours, tabBarBottomInset, isRoundActive),
+            sceneStyle: sceneStyleFor(colours, tabBarBottomInset, isRoundActive),
+        });
+    }, [navigation, colours, tabBarBottomInset, isRoundActive]);
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>

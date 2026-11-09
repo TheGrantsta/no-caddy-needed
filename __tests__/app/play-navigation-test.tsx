@@ -471,7 +471,7 @@ describe('Play screen', () => {
     });
 
     describe('Tab bar visibility', () => {
-        it('shouldKeepTabBarVisibleWhenRoundIsActive', async () => {
+        it('shouldHideTabBarWhenRoundIsActive', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
@@ -482,7 +482,7 @@ describe('Play screen', () => {
 
             await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
 
-            expect(mockSetOptions).not.toHaveBeenCalledWith({ tabBarStyle: { display: 'none' } });
+            expect(mockSetOptions).toHaveBeenCalledWith(expect.objectContaining({ tabBarStyle: { display: 'none' } }));
         });
 
         it('shouldNeverHideTabBarOnInitialRender', () => {

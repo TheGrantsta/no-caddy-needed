@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColours } from '@/context/ThemeContext';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { getPracticeRemindersService } from '@/service/DbService';
+import { tabBarStyleFor, sceneStyleFor } from '@/assets/tabBarOptions';
 
 const isOverdue = () => {
   const reminders = getPracticeRemindersService();
@@ -47,27 +48,8 @@ export default function TabLayout() {
             fontWeight: '600',
           },
           // Floating rounded bar inset from the screen edges, sitting above the home indicator
-          tabBarStyle: {
-            position: 'absolute',
-            left: 16,
-            right: 16,
-            bottom: bottomInset + 8,
-            height: 76,
-            borderRadius: 32,
-            borderTopWidth: 0,
-            backgroundColor: colours.backgroundLight,
-            shadowColor: colours.black,
-            shadowOpacity: 0.12,
-            shadowRadius: 12,
-            shadowOffset: { width: 0, height: 4 },
-            elevation: 6,
-          },
-          // Leave room under the content so the floating bar never covers the last row of a screen
-          sceneStyle: {
-            // App background, so the navigator's dark-theme black never shows around the floating bar
-            backgroundColor: colours.background,
-            paddingBottom: bottomInset + 76 + 8 + 16,
-          },
+          tabBarStyle: tabBarStyleFor(colours, bottomInset),
+          sceneStyle: sceneStyleFor(colours, bottomInset),
         }}>
         <Tabs.Screen
           name="index"

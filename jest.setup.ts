@@ -25,6 +25,13 @@ jest.mock('firebase/firestore', () => ({
     serverTimestamp: jest.fn(() => 'MOCK_TIMESTAMP'),
 }));
 
+// Screens read the safe-area inset for the floating tab bar; with no provider in tests, report zero insets.
+// Test files that need a specific inset mock the module themselves.
+jest.mock('react-native-safe-area-context', () => ({
+    ...jest.requireActual('react-native-safe-area-context'),
+    useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));
+
 // The swipeable needs the native reanimated runtime, which Jest does not provide. Render its children and
 // right actions inline so swipe-to-delete rows can be tested by pressing their actions.
 jest.mock('react-native-gesture-handler/ReanimatedSwipeable', () => {

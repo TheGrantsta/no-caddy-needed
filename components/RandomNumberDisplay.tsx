@@ -6,19 +6,17 @@ interface Props {
     randomNumber: number;
 }
 
+// Card showing the latest random number, or a dash before the first one
 export default function RandomNumberDisplay({ randomNumber }: Props) {
     const styles = useStyles();
-    const localStyles = styles.randomTool;
-
-    if (randomNumber <= 0) {
-        return null;
-    }
+    const s = styles.randomPage;
 
     return (
-        <View style={localStyles.randomNumberContainer}>
-            <Text style={localStyles.randomNumberText}>
-                {randomNumber}
+        <View testID="random-number-card" style={s.numberCard}>
+            <Text testID="random-number-value" style={s.numberText}>
+                {randomNumber > 0 ? String(randomNumber) : '–'}
             </Text>
+            <Text style={s.numberCaption}>Tap Generate, or turn on the mic and say “next”, to produce a number</Text>
         </View>
     );
 }

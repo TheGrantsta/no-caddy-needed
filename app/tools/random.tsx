@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { ScrollView, View, Text } from 'react-native';
+import { useRouter } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { getRandomNumber } from '../../assets/random-number';
 import * as Speech from 'expo-speech';
 import { getSettingsService } from '../../service/DbService';
-import Chevrons from '@/components/Chevrons';
+import PageHeader from '@/components/PageHeader';
+import { describeSequence } from '@/utils/randomSequence';
 import RandomNumberForm from '@/components/RandomNumberForm';
 import RandomNumberDisplay from '@/components/RandomNumberDisplay';
 import RandomNumberActions from '@/components/RandomNumberActions';
@@ -12,7 +14,7 @@ import { useStyles } from '@/hooks/useStyles';
 import { useOrientation } from '@/hooks/useOrientation';
 import { useForm } from '../../hooks/useForm';
 import { useToggle } from '../../hooks/useToggle';
-import { validateRange, validateNumber } from '../../assets/validation';
+import { validateNumber } from '../../assets/validation';
 interface SpeechRecognitionEvent {
     results: { transcript: string; isFinal: boolean }[];
 }
@@ -51,8 +53,9 @@ const getVoiceOptions = async (voice: string): Promise<Record<string, unknown>> 
 
 export default function Random() {
     const styles = useStyles();
+    const router = useRouter();
     const { landscapePadding } = useOrientation();
-    const [formState] = useForm({ range: '30-100', increment: '10' });
+    const [formState] = useForm({ from: '30', to: '100', increment: '10' });
     const [randomNumber, setRandomNumber] = useState(0);
     const [micActive, , setMicActive] = useToggle(false);
     const [micDenied, setMicDenied] = useState(false);
@@ -60,18 +63,23 @@ export default function Random() {
 
     // Declared before the speech handler below, which calls it
     const handleGenerate = async () => {
-        const rangeError = validateRange(formState.range.value, 'Range');
+        const fromError = validateNumber(formState.from.value, 'From');
+        const toError = validateNumber(formState.to.value, 'To');
         const incrementError = validateNumber(formState.increment.value, 'Increment');
 
-        if (rangeError) {
-            formState.range.setError(rangeError);
+        if (fromError) {
+            formState.from.setError(fromError);
+        }
+        if (toError) {
+            formState.to.setError(toError);
         }
         if (incrementError) {
             formState.increment.setError(incrementError);
         }
 
-        if (!rangeError && !incrementError) {
-            const number = getRandomNumber(formState.range.value, formState.increment.value, randomNumber);
+        if (!fromError && !toError && !incrementError) {
+            const range = `${formState.from.value}-${formState.to.value}`;
+            const number = getRandomNumber(range, formState.increment.value, randomNumber);
             setRandomNumber(number);
             const settings = getSettingsService();
             if (number > 0 && settings.soundsEnabled) {
@@ -116,9 +124,12 @@ export default function Random() {
         }
     };
 
-    const handleRangeInput = (text: string) => {
-        const formattedText = text.replace(/[^0-9-]/g, '');
-        formState.range.onChange(formattedText);
+    const handleFromInput = (text: string) => {
+        formState.from.onChange(text.replace(/[^0-9]/g, ''));
+    }
+
+    const handleToInput = (text: string) => {
+        formState.to.onChange(text.replace(/[^0-9]/g, ''));
     }
 
     const handleIncrementInput = (text: string) => {
@@ -126,43 +137,50 @@ export default function Random() {
         formState.increment.onChange(formattedText);
     }
 
-    const points = ['Realism: mimic play when practising', 'Focus: use your pre-shot routine', 'Evaluation: use your post-shot routine'];
+    const purposePoints: { heading: string; text: string }[] = [
+        { heading: 'Realism', text: 'Practise like play' },
+        { heading: 'Focus', text: 'Use pre-shot routine' },
+        { heading: 'Evaluation', text: 'Access how well you did' },
+    ];
 
-    const localStyles = styles.randomTool;
+    const caption = describeSequence(formState.from.value, formState.to.value, formState.increment.value);
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
-                <View>
-                    <View style={styles.headerContainer}>
-                        <Text style={[styles.headerText, styles.marginTop]}>
-                            Random number generator
-                        </Text>
-                    </View>
-                    <View style={localStyles.container}>
-                        <RandomNumberForm
-                            rangeText={formState.range.value}
-                            rangeError={formState.range.error}
-                            onRangeChange={handleRangeInput}
-                            incrementText={formState.increment.value}
-                            incrementError={formState.increment.error}
-                            onIncrementChange={handleIncrementInput}
-                        />
+                <PageHeader title="Random number generator" onBack={() => router.back()} />
 
-                        <RandomNumberDisplay randomNumber={randomNumber} />
+                <RandomNumberDisplay randomNumber={randomNumber} />
 
-                        <RandomNumberActions
-                            onGenerate={handleGenerate}
-                            speechRecognitionAvailable={speechRecognitionAvailable}
-                            micActive={micActive}
-                            micDenied={micDenied}
-                            onMicToggle={handleMicToggle}
-                        />
+                <RandomNumberActions
+                    onGenerate={handleGenerate}
+                    speechRecognitionAvailable={speechRecognitionAvailable}
+                    micActive={micActive}
+                    micDenied={micDenied}
+                    onMicToggle={handleMicToggle}
+                />
 
-                        <View style={styles.contentSection}>
-                            <Chevrons heading='Purpose' points={points} />
+                <RandomNumberForm
+                    fromText={formState.from.value}
+                    fromError={formState.from.error}
+                    onFromChange={handleFromInput}
+                    toText={formState.to.value}
+                    toError={formState.to.error}
+                    onToChange={handleToInput}
+                    incrementText={formState.increment.value}
+                    incrementError={formState.increment.error}
+                    onIncrementChange={handleIncrementInput}
+                    caption={caption}
+                />
+
+                <Text style={styles.randomPage.sectionLabel}>PURPOSE</Text>
+                <View style={styles.randomPage.purposeCard}>
+                    {purposePoints.map((point, index) => (
+                        <View key={point.heading} testID={`purpose-row-${index}`} style={[styles.randomPage.purposeRow, index > 0 && styles.randomPage.purposeRowDivider]}>
+                            <Text style={styles.randomPage.purposeHeading}>{point.heading}</Text>
+                            <Text style={styles.randomPage.purposeText}>{point.text}</Text>
                         </View>
-                    </View>
+                    ))}
                 </View>
             </ScrollView>
         </GestureHandlerRootView>

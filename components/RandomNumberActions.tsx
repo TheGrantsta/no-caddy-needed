@@ -13,6 +13,7 @@ interface Props {
     onMicToggle: () => void;
 }
 
+// Generate button beside a round microphone button that listens for "next"
 export default function RandomNumberActions({
     onGenerate,
     speechRecognitionAvailable,
@@ -22,35 +23,37 @@ export default function RandomNumberActions({
 }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
-    const localStyles = styles.randomTool;
+    const s = styles.randomPage;
 
     return (
-        <View style={[styles.marginTop, styles.container]}>
-            <CtaButton
-                testID="save-button"
-                label="Generate"
-                icon="shuffle"
-                onPress={onGenerate}
-            />
-
-            {speechRecognitionAvailable && (
-                <TouchableOpacity
-                    testID="mic-button"
-                    style={[localStyles.micButton, micActive && localStyles.micButtonActive]}
-                    onPress={onMicToggle}
-                >
-                    <Text style={[localStyles.actionButtonText, micActive ? { color: colours.background } : { color: colours.text }]}>
-                        Say "next"
-                    </Text>
-                    <MaterialIcons
-                        name={micActive ? 'mic' : 'mic-off'}
-                        size={28}
-                        color={micActive ? colours.background : colours.text}
+        <View>
+            <View style={s.actionRow}>
+                <View style={s.generateSlot}>
+                    <CtaButton
+                        testID="save-button"
+                        label="Generate"
+                        icon="shuffle"
+                        onPress={onGenerate}
                     />
-                </TouchableOpacity>
-            )}
+                </View>
+                {speechRecognitionAvailable && (
+                    <TouchableOpacity
+                        testID="mic-button"
+                        accessibilityRole="button"
+                        accessibilityLabel={micActive ? 'Turn off microphone' : 'Turn on microphone'}
+                        onPress={onMicToggle}
+                        style={[s.micButton, micActive && s.micButtonActive]}
+                    >
+                        <MaterialIcons
+                            name={micActive ? 'mic' : 'mic-none'}
+                            size={28}
+                            color={micActive ? colours.white : colours.primary}
+                        />
+                    </TouchableOpacity>
+                )}
+            </View>
             {speechRecognitionAvailable && micDenied && (
-                <Text testID="mic-denied-message" style={{ color: colours.errorText, textAlign: 'center', marginTop: 8 }}>
+                <Text testID="mic-denied-message" style={s.micDeniedText}>
                     Microphone access is off; turn it on in Settings
                 </Text>
             )}

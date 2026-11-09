@@ -6,6 +6,10 @@ jest.mock('expo-speech-recognition', () => {
     throw new Error('Cannot find native module ExpoSpeechRecognition');
 });
 
+jest.mock('expo-router', () => ({
+    useRouter: () => ({ back: jest.fn() }),
+}));
+
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
     useTheme: () => ({

@@ -1,11 +1,15 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import Random from '../../../app/tools/random';
 import * as Speech from 'expo-speech';
 import { getSettingsService } from '../../../service/DbService';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { getRandomNumber } from '../../../assets/random-number';
+
+jest.mock('expo-router', () => ({
+    useRouter: () => ({ back: jest.fn() }),
+}));
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -83,10 +87,40 @@ describe('Random number generator page', () => {
         expect(getByText('Random number generator')).toBeTruthy();
     });
 
-    it('renders range input with default value', () => {
-        const { getByDisplayValue } = render(<Random />);
+    it('shouldShowFromAndToInputsWithDefaultValues', () => {
+        const { getByDisplayValue, getByText } = render(<Random />);
 
-        expect(getByDisplayValue('30-100')).toBeTruthy();
+        expect(getByText('From')).toBeTruthy();
+        expect(getByText('To')).toBeTruthy();
+        expect(getByDisplayValue('30')).toBeTruthy();
+        expect(getByDisplayValue('100')).toBeTruthy();
+    });
+
+    it('shouldGiveEachPurposeRowFullHeightWithADividerBorderNotAHeight', () => {
+        const { getByTestId } = render(<Random />);
+
+        expect(getByTestId('purpose-row-0')).not.toHaveStyle({ borderTopWidth: StyleSheet.hairlineWidth });
+        expect(getByTestId('purpose-row-1')).toHaveStyle({ borderTopWidth: StyleSheet.hairlineWidth });
+        expect(getByTestId('purpose-row-2')).toHaveStyle({ borderTopWidth: StyleSheet.hairlineWidth });
+        expect(getByTestId('purpose-row-1').props.style.flat()).not.toEqual(expect.arrayContaining([expect.objectContaining({ height: StyleSheet.hairlineWidth })]));
+    });
+
+    it('shouldDescribeTheNumbersTheSettingsProduce', () => {
+        const { getByText } = render(<Random />);
+
+        expect(getByText('Numbers from 30 to 100 inclusive, in steps of 10: 30, 40, 50…')).toBeTruthy();
+    });
+
+    it('shouldShowADashAsTheNumberBeforeTheFirstGenerate', () => {
+        const { getByTestId } = render(<Random />);
+
+        expect(getByTestId('random-number-value')).toHaveTextContent('–');
+    });
+
+    it('shouldShowTheTapGenerateCaptionUnderTheNumber', () => {
+        const { getByText } = render(<Random />);
+
+        expect(getByText('Tap Generate, or turn on the mic and say “next”, to produce a number')).toBeTruthy();
     });
 
     it('renders increment input with default value', () => {
@@ -101,25 +135,34 @@ describe('Random number generator page', () => {
         expect(getByText('Generate')).toBeTruthy();
     });
 
-    it('renders purpose section with chevrons', () => {
+    it('renders purpose section with its three labelled rows', () => {
         const { getByText } = render(<Random />);
 
-        expect(getByText('Purpose')).toBeTruthy();
-        expect(getByText('Realism: mimic play when practising')).toBeTruthy();
-        expect(getByText('Focus: use your pre-shot routine')).toBeTruthy();
-        expect(getByText('Evaluation: use your post-shot routine')).toBeTruthy();
+        expect(getByText('PURPOSE')).toBeTruthy();
+        expect(getByText('Realism')).toBeTruthy();
+        expect(getByText('Practise like play')).toBeTruthy();
+        expect(getByText('Focus')).toBeTruthy();
+        expect(getByText('Use pre-shot routine')).toBeTruthy();
+        expect(getByText('Evaluation')).toBeTruthy();
+        expect(getByText('Access how well you did')).toBeTruthy();
     });
 
-    it('shows error when range is empty and Run is pressed', () => {
+    it('shows error when From is empty and Generate is pressed', () => {
         const { getByDisplayValue, getByTestId, getByText } = render(<Random />);
 
-        const rangeInput = getByDisplayValue('30-100');
-        fireEvent.changeText(rangeInput, '');
+        fireEvent.changeText(getByDisplayValue('30'), '');
+        fireEvent.press(getByTestId('save-button'));
 
-        const runButton = getByTestId('save-button');
-        fireEvent.press(runButton);
+        expect(getByText('From cannot be empty')).toBeTruthy();
+    });
 
-        expect(getByText('Range cannot be empty')).toBeTruthy();
+    it('shows error when To is empty and Generate is pressed', () => {
+        const { getByDisplayValue, getByTestId, getByText } = render(<Random />);
+
+        fireEvent.changeText(getByDisplayValue('100'), '');
+        fireEvent.press(getByTestId('save-button'));
+
+        expect(getByText('To cannot be empty')).toBeTruthy();
     });
 
     it('shows error when increment is empty and Run is pressed', () => {
@@ -141,6 +184,7 @@ describe('Random number generator page', () => {
         fireEvent.press(runButton);
 
         expect(getByText('50')).toBeTruthy();
+        expect(getByTestId('random-number-value')).toHaveTextContent('50');
     });
 
     it('speaks with female voice identifier when Samantha is available', async () => {
@@ -208,13 +252,14 @@ describe('Random number generator page', () => {
         });
     });
 
-    it('filters non-numeric characters from range input except hyphen', () => {
+    it('filters non-numeric characters from From and To inputs', () => {
         const { getByDisplayValue } = render(<Random />);
 
-        const rangeInput = getByDisplayValue('30-100');
-        fireEvent.changeText(rangeInput, '20-abc50');
+        fireEvent.changeText(getByDisplayValue('30'), '2a0');
+        fireEvent.changeText(getByDisplayValue('100'), '5b0');
 
-        expect(getByDisplayValue('20-50')).toBeTruthy();
+        expect(getByDisplayValue('20')).toBeTruthy();
+        expect(getByDisplayValue('50')).toBeTruthy();
     });
 
     it('filters non-numeric characters from increment input', () => {
@@ -339,15 +384,15 @@ describe('Random number generator page', () => {
         expect(mockGetRandomNumber).toHaveBeenCalledTimes(2);
     });
 
-    it('clearsRangeErrorWhenUserTypesAfterError', () => {
+    it('clearsFromErrorWhenUserTypesAfterError', () => {
         const { getByDisplayValue, getByTestId, queryByText } = render(<Random />);
 
-        fireEvent.changeText(getByDisplayValue('30-100'), '');
+        fireEvent.changeText(getByDisplayValue('30'), '');
         fireEvent.press(getByTestId('save-button'));
 
-        fireEvent.changeText(getByDisplayValue(''), '20-80');
+        fireEvent.changeText(getByDisplayValue(''), '20');
 
-        expect(queryByText('Range cannot be empty')).toBeNull();
+        expect(queryByText('From cannot be empty')).toBeNull();
     });
 
     it('clearsIncrementErrorWhenUserTypesAfterError', () => {

@@ -3,65 +3,62 @@ import { Text, TextInput, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 
 interface Props {
-    rangeText: string;
-    rangeError: string;
-    onRangeChange: (text: string) => void;
+    fromText: string;
+    fromError: string;
+    onFromChange: (text: string) => void;
+    toText: string;
+    toError: string;
+    onToChange: (text: string) => void;
     incrementText: string;
     incrementError: string;
     onIncrementChange: (text: string) => void;
+    // Plain-English summary of the numbers the settings produce, or null when they are incomplete
+    caption: string | null;
 }
 
+// Settings card with From, To and Increment values, then a summary of what they produce
 export default function RandomNumberForm({
-    rangeText,
-    rangeError,
-    onRangeChange,
+    fromText,
+    fromError,
+    onFromChange,
+    toText,
+    toError,
+    onToChange,
     incrementText,
     incrementError,
     onIncrementChange,
+    caption,
 }: Props) {
     const styles = useStyles();
+    const s = styles.randomPage;
+
+    const rows = [
+        { label: 'From', value: fromText, error: fromError, onChange: onFromChange },
+        { label: 'To', value: toText, error: toError, onChange: onToChange },
+        { label: 'Increment', value: incrementText, error: incrementError, onChange: onIncrementChange },
+    ];
 
     return (
         <View>
-            <View style={{ flexDirection: 'row' }}>
-                <Text style={[styles.textLabel, { width: 120 }]}>
-                    Range
-                </Text>
-                <TextInput
-                    style={[styles.textInput, rangeError ? styles.textInputError : null, { width: 150 }]}
-                    value={rangeText}
-                    placeholder='Lower and upper limits'
-                    onChangeText={onRangeChange}
-                    keyboardType='numbers-and-punctuation'
-                />
+            <Text style={s.sectionLabel}>SETTINGS</Text>
+            <View style={s.settingsCard}>
+                {rows.map((row, index) => (
+                    <View key={row.label}>
+                        {index > 0 && <View style={s.rowDivider} />}
+                        <View style={s.settingsRow}>
+                            <Text style={s.settingsLabel}>{row.label}</Text>
+                            <TextInput
+                                style={[s.valueBox, row.error ? s.valueBoxError : null]}
+                                value={row.value}
+                                onChangeText={row.onChange}
+                                keyboardType="number-pad"
+                            />
+                        </View>
+                        {row.error ? <Text style={s.rowError}>{row.error}</Text> : null}
+                    </View>
+                ))}
             </View>
-            {rangeError ? <Text style={[styles.errorText, { marginLeft: 100 }]}>{rangeError}</Text> : null}
-
-            <View>
-                <Text style={styles.smallestText}>
-                    The lower and upper bound of numbers (inclusive) between which the random number will be generated
-                </Text>
-            </View>
-
-            <View style={[{ flexDirection: 'row', marginTop: 10 }]}>
-                <Text style={[styles.textLabel, { width: 120 }]}>
-                    Increment
-                </Text>
-                <TextInput
-                    style={[styles.textInput, incrementError ? styles.textInputError : null, { width: 100 }]}
-                    value={incrementText}
-                    placeholder='Increment'
-                    onChangeText={onIncrementChange}
-                    keyboardType='number-pad'
-                />
-            </View>
-            {incrementError ? <Text style={[styles.errorText, { marginLeft: 100 }]}>{incrementError}</Text> : null}
-
-            <View>
-                <Text style={styles.smallestText}>
-                    The "step" between the random numbers; for example, an increment of 5 would mean the random number is divisible by 5
-                </Text>
-            </View>
+            {caption ? <Text style={s.caption}>{caption}</Text> : null}
         </View>
     );
 }

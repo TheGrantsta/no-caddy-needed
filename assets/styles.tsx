@@ -3147,6 +3147,138 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    randomPage: StyleSheet.create({
+        numberCard: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 24,
+            marginHorizontal: 16,
+            paddingVertical: 28,
+            paddingHorizontal: 20,
+            alignItems: 'center',
+        },
+        numberText: {
+            color: c.black,
+            fontSize: 120,
+            fontWeight: '700',
+            lineHeight: 130,
+        },
+        numberCaption: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            textAlign: 'center',
+            marginTop: 4,
+        },
+        actionRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 12,
+            marginHorizontal: 16,
+            marginTop: 16,
+        },
+        generateSlot: {
+            flex: 1,
+        },
+        micButton: {
+            width: 64,
+            height: 64,
+            borderRadius: 32,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        micButtonActive: {
+            backgroundColor: c.primary,
+        },
+        micDeniedText: {
+            color: c.errorText,
+            textAlign: 'center',
+            marginTop: 8,
+        },
+        sectionLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            letterSpacing: 1,
+            marginHorizontal: 20,
+            marginTop: 28,
+            marginBottom: 12,
+        },
+        settingsCard: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            marginHorizontal: 16,
+            overflow: 'hidden',
+        },
+        settingsRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+        },
+        settingsLabel: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+        },
+        valueBox: {
+            minWidth: 90,
+            height: 44,
+            borderRadius: 12,
+            backgroundColor: '#EFEFEF',
+            color: c.black,
+            fontSize: fontSizes.normal,
+            textAlign: 'center',
+            paddingHorizontal: 12,
+        },
+        valueBoxError: {
+            borderWidth: 1,
+            borderColor: c.red,
+        },
+        rowDivider: {
+            height: StyleSheet.hairlineWidth,
+            backgroundColor: '#E0E0E0',
+            marginLeft: 16,
+        },
+        rowError: {
+            color: c.errorText,
+            fontSize: fontSizes.smallText,
+            paddingHorizontal: 16,
+            paddingBottom: 8,
+        },
+        caption: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginHorizontal: 20,
+            marginTop: 8,
+        },
+        purposeCard: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            marginHorizontal: 16,
+            overflow: 'hidden',
+        },
+        purposeRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+        },
+        purposeRowDivider: {
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: '#E0E0E0',
+        },
+        purposeHeading: {
+            width: 120,
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: '700',
+        },
+        purposeText: {
+            flex: 1,
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+    }),
+
     reminderForm: StyleSheet.create({
         card: {
             backgroundColor: c.backgroundLight,

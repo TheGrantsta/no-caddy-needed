@@ -9,33 +9,29 @@ interface Props {
     onTempoChange: (value: number) => void;
 }
 
+const TRACK_INACTIVE = '#E3E3E3';
+
+// Slider between 60 and 120 bpm with Slow and Fast labels either side
 export default function TempoSlider({ tempo, onTempoChange }: Props) {
     const colours = useThemeColours();
     const styles = useStyles();
-    const localStyles = styles.tempoTool;
+    const s = styles.tempoTool;
 
     return (
-        <>
+        <View style={s.sliderRow}>
+            <Text style={s.sliderLabel}>Slow</Text>
             <Slider
-                style={[localStyles.slider]}
+                style={s.slider}
                 minimumValue={60}
                 maximumValue={120}
                 step={6}
                 value={tempo}
                 onValueChange={onTempoChange}
-                minimumTrackTintColor={colours.tertiary}
-                maximumTrackTintColor={colours.primary}
-                thumbTintColor={colours.primary}
+                minimumTrackTintColor={colours.primary}
+                maximumTrackTintColor={TRACK_INACTIVE}
+                thumbTintColor={colours.white}
             />
-
-            {/* Labels */}
-            <View style={localStyles.labelsContainer}>
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
-                    <Text key={num} style={[localStyles.label]}>
-                        {num === 1 ? 'slow' : num === 12 ? 'fast' : ' '}
-                    </Text>
-                ))}
-            </View>
-        </>
+            <Text style={s.sliderLabel}>Fast</Text>
+        </View>
     );
 }

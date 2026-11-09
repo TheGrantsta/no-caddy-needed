@@ -5,6 +5,13 @@ import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import Tempo from '../../../app/tools/tempo';
 import { getSettingsService, saveSettingsService } from '../../../service/DbService';
 
+const mockSetOptions = jest.fn();
+const mockBack = jest.fn();
+jest.mock('expo-router', () => ({
+    useNavigation: () => ({ setOptions: mockSetOptions }),
+    useRouter: () => ({ back: mockBack }),
+}));
+
 jest.mock('../../../service/DbService', () => ({
     getSettingsService: jest.fn(),
     saveSettingsService: jest.fn().mockResolvedValue(true),
@@ -72,37 +79,45 @@ describe('Tempo training page', () => {
         });
     });
 
-    it('renders correctly with the header', () => {
+    it('showsTheTitleAndSubtitleInThePage', () => {
         const { getByText } = render(<Tempo />);
 
         expect(getByText('Tempo training')).toBeTruthy();
-    });
-
-    it('renders the subheading', () => {
-        const { getByText } = render(<Tempo />);
-
         expect(getByText('Swing with tempo to self organise')).toBeTruthy();
     });
 
-    it('renders default beats per minute when none saved', () => {
-        mockGetSettings.mockReturnValue(settingsWith(60));
-        const { getByText } = render(<Tempo />);
+    it('keepsTheStackHeaderSoTheGreenBarAndNativeBackAreShown', () => {
+        render(<Tempo />);
 
-        expect(getByText('Beats per minute: 60')).toBeTruthy();
+        expect(mockSetOptions).not.toHaveBeenCalledWith(expect.objectContaining({ headerShown: false }));
     });
 
-    it('initialises beats per minute from the saved tempo', () => {
-        mockGetSettings.mockReturnValue(settingsWith(84));
-        const { getByText } = render(<Tempo />);
+    it('doesNotDrawItsOwnBackButtonBecauseTheHeaderProvidesOne', () => {
+        const { queryByLabelText } = render(<Tempo />);
 
-        expect(getByText('Beats per minute: 84')).toBeTruthy();
+        expect(queryByLabelText('Back')).toBeNull();
+    });
+
+    it('showsTheSavedTempoAsTheLargeReadoutWithItsUnit', () => {
+        mockGetSettings.mockReturnValue(settingsWith(84));
+        const { getByTestId, getByText } = render(<Tempo />);
+
+        expect(getByTestId('tempo-bpm-value').props.children).toBe(84);
+        expect(getByText('beats per minute')).toBeTruthy();
+    });
+
+    it('defaultsTheReadoutToSixtyWhenNoTempoIsSaved', () => {
+        mockGetSettings.mockReturnValue(settingsWith(60));
+        const { getByTestId } = render(<Tempo />);
+
+        expect(getByTestId('tempo-bpm-value').props.children).toBe(60);
     });
 
     it('saves the current tempo when Play is pressed', () => {
         mockGetSettings.mockReturnValue(settingsWith(96));
-        const { getByText } = render(<Tempo />);
+        const { getByLabelText } = render(<Tempo />);
 
-        fireEvent.press(getByText('Play'));
+        fireEvent.press(getByLabelText('Play'));
 
         expect(mockSaveSettings).toHaveBeenCalledWith(
             expect.objectContaining({ tempoBpm: 96 })
@@ -111,11 +126,11 @@ describe('Tempo training page', () => {
 
     it('does not save the tempo when Stop is pressed', () => {
         mockGetSettings.mockReturnValue(settingsWith(96));
-        const { getByText } = render(<Tempo />);
+        const { getByLabelText } = render(<Tempo />);
 
-        fireEvent.press(getByText('Play'));
+        fireEvent.press(getByLabelText('Play'));
         mockSaveSettings.mockClear();
-        fireEvent.press(getByText('Stop'));
+        fireEvent.press(getByLabelText('Stop'));
 
         expect(mockSaveSettings).not.toHaveBeenCalled();
     });
@@ -135,70 +150,115 @@ describe('Tempo training page', () => {
         expect(slider.props.step).toBe(6);
     });
 
-    it('renders slow and fast labels', () => {
+    it('rendersSlowAndFastLabelsBesideTheSlider', () => {
         const { getByText } = render(<Tempo />);
 
-        expect(getByText('slow')).toBeTruthy();
-        expect(getByText('fast')).toBeTruthy();
+        expect(getByText('Slow')).toBeTruthy();
+        expect(getByText('Fast')).toBeTruthy();
     });
 
-    it('renders the chevrons section with heading', () => {
+    it('decreasesTempoBySixAndStopsAtSixty', () => {
+        mockGetSettings.mockReturnValue(settingsWith(66));
+        const { getByTestId } = render(<Tempo />);
+
+        fireEvent.press(getByTestId('tempo-decrease-button'));
+        expect(getByTestId('tempo-bpm-value').props.children).toBe(60);
+
+        fireEvent.press(getByTestId('tempo-decrease-button'));
+        expect(getByTestId('tempo-bpm-value').props.children).toBe(60);
+    });
+
+    it('increasesTempoBySixAndStopsAtOneTwenty', () => {
+        mockGetSettings.mockReturnValue(settingsWith(114));
+        const { getByTestId } = render(<Tempo />);
+
+        fireEvent.press(getByTestId('tempo-increase-button'));
+        expect(getByTestId('tempo-bpm-value').props.children).toBe(120);
+
+        fireEvent.press(getByTestId('tempo-increase-button'));
+        expect(getByTestId('tempo-bpm-value').props.children).toBe(120);
+    });
+
+    it('showsFourBeatIndicatorDotsWithNoneActiveWhenStopped', () => {
+        const { getByTestId } = render(<Tempo />);
+
+        for (let beat = 0; beat < 4; beat++) {
+            expect(getByTestId(`tempo-beat-${beat}`)).toHaveStyle({ backgroundColor: '#D9D9D9' });
+        }
+    });
+
+    it('highlightsEachBeatInTurnWhileTheMetronomePlays', async () => {
+        const { getByLabelText, getByTestId } = render(<Tempo />);
+
+        fireEvent.press(getByLabelText('Play'));
+
+        await act(async () => {
+            jest.advanceTimersByTime(1000);
+        });
+        expect(getByTestId('tempo-beat-0')).toHaveStyle({ backgroundColor: '#2D5A3D' });
+
+        await act(async () => {
+            jest.advanceTimersByTime(1000);
+        });
+        expect(getByTestId('tempo-beat-1')).toHaveStyle({ backgroundColor: '#2D5A3D' });
+        expect(getByTestId('tempo-beat-0')).toHaveStyle({ backgroundColor: '#D9D9D9' });
+    });
+
+    it('showsWhyTempoIsImportantWithItsThreeLabelledRows', () => {
         const { getByText } = render(<Tempo />);
 
-        expect(getByText('Why tempo is important')).toBeTruthy();
+        expect(getByText('WHY TEMPO IS IMPORTANT')).toBeTruthy();
+        expect(getByText('Focus')).toBeTruthy();
+        expect(getByText('Flow, not mechanics')).toBeTruthy();
+        expect(getByText('Fault')).toBeTruthy();
+        expect(getByText('Misconception')).toBeTruthy();
     });
 
-    it('renders tempo training tips', () => {
-        const { getByText } = render(<Tempo />);
+    it('rendersAPlayButtonInitially', () => {
+        const { getByLabelText } = render(<Tempo />);
 
-        expect(getByText(/Focus: flow, not mechanics/)).toBeTruthy();
+        expect(getByLabelText('Play')).toBeTruthy();
     });
 
-    it('renders a Play button initially', () => {
-        const { getByText } = render(<Tempo />);
+    it('togglesToStopWhenPlayIsPressed', () => {
+        const { getByLabelText } = render(<Tempo />);
 
-        expect(getByText('Play')).toBeTruthy();
+        fireEvent.press(getByLabelText('Play'));
+
+        expect(getByLabelText('Stop')).toBeTruthy();
     });
 
-    it('toggles to Stop when Play button is pressed', () => {
-        const { getByText } = render(<Tempo />);
+    it('togglesBackToPlayWhenStopIsPressed', () => {
+        const { getByLabelText } = render(<Tempo />);
 
-        fireEvent.press(getByText('Play'));
+        fireEvent.press(getByLabelText('Play'));
+        fireEvent.press(getByLabelText('Stop'));
 
-        expect(getByText('Stop')).toBeTruthy();
+        expect(getByLabelText('Play')).toBeTruthy();
     });
 
-    it('toggles back to Play when Stop button is pressed', () => {
-        const { getByText } = render(<Tempo />);
-
-        fireEvent.press(getByText('Play'));
-        fireEvent.press(getByText('Stop'));
-
-        expect(getByText('Play')).toBeTruthy();
-    });
-
-    it('updatesBeatsPerMinuteWhenSliderChanges', () => {
-        const { getByTestId, getByText } = render(<Tempo />);
+    it('updatesTheReadoutWhenSliderChanges', () => {
+        const { getByTestId } = render(<Tempo />);
 
         fireEvent(getByTestId('tempo-slider'), 'valueChange', 120);
 
-        expect(getByText('Beats per minute: 120')).toBeTruthy();
+        expect(getByTestId('tempo-bpm-value').props.children).toBe(120);
     });
 
     it('stopsLoopWhenSliderChangedWhilePlaying', () => {
-        const { getByText, getByTestId } = render(<Tempo />);
+        const { getByLabelText, getByTestId } = render(<Tempo />);
 
-        fireEvent.press(getByText('Play'));
+        fireEvent.press(getByLabelText('Play'));
         fireEvent(getByTestId('tempo-slider'), 'valueChange', 90);
 
-        expect(getByText('Play')).toBeTruthy();
+        expect(getByLabelText('Play')).toBeTruthy();
     });
 
     it('callsSeekAndPlayWhenIntervalFires', async () => {
         const mockPlayer = mockUseAudioPlayer();
-        const { getByText } = render(<Tempo />);
+        const { getByLabelText } = render(<Tempo />);
 
-        fireEvent.press(getByText('Play'));
+        fireEvent.press(getByLabelText('Play'));
 
         await act(async () => {
             jest.advanceTimersByTime(1000);
@@ -224,8 +284,8 @@ describe('Tempo training page', () => {
         mockPlayer.seekTo.mockRejectedValueOnce(new Error('seek error'));
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
 
-        const { getByText } = render(<Tempo />);
-        fireEvent.press(getByText('Play'));
+        const { getByLabelText } = render(<Tempo />);
+        fireEvent.press(getByLabelText('Play'));
 
         await act(async () => {
             jest.advanceTimersByTime(1000);

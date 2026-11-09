@@ -3148,33 +3148,131 @@ export const createStyles = (c: ThemeColours) => ({
     }),
 
     tempoTool: StyleSheet.create({
-        container: {
-            padding: 20,
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 28,
+            marginHorizontal: 16,
+            paddingVertical: 24,
+            paddingHorizontal: 20,
             alignItems: 'center',
         },
-        title: {
-            fontSize: fontSizes.subHeader,
-            color: c.primary,
-            marginBottom: 10,
+        beatRow: {
+            flexDirection: 'row',
+            columnGap: 12,
+            marginBottom: 20,
+        },
+        beatDot: {
+            width: 10,
+            height: 10,
+            borderRadius: 5,
+            backgroundColor: '#D9D9D9',
+        },
+        beatDotActive: {
+            backgroundColor: c.primary,
+        },
+        readoutRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            alignSelf: 'stretch',
+        },
+        stepButton: {
+            width: 52,
+            height: 52,
+            borderRadius: 26,
+            backgroundColor: '#EFEFEF',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        readoutCentre: {
+            alignItems: 'center',
+        },
+        readoutValue: {
+            color: c.black,
+            fontSize: 96,
+            fontWeight: '700',
+            lineHeight: 104,
+        },
+        readoutUnit: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+        },
+        sliderRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            alignSelf: 'stretch',
+            marginTop: 20,
         },
         slider: {
-            width: '90%',
+            flex: 1,
             height: 40,
+            marginHorizontal: 12,
         },
-        labelsContainer: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: '90%',
-            marginTop: 5,
-        },
-        label: {
+        sliderLabel: {
+            color: c.tertiary,
             fontSize: fontSizes.normal,
-            color: c.primary,
         },
-        valueText: {
-            marginTop: 10,
-            fontSize: 18,
-            fontWeight: 'bold',
+        playButton: {
+            width: 144,
+            height: 144,
+            borderRadius: 72,
+            backgroundColor: c.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: 28,
+            shadowColor: c.primary,
+            shadowOpacity: 0.3,
+            shadowRadius: 16,
+            shadowOffset: { width: 0, height: 8 },
+            elevation: 8,
+        },
+        pageHeader: {
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingTop: 12,
+            paddingBottom: 16,
+        },
+        pageTitle: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+            fontWeight: '700',
+        },
+        pageSubtitle: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginTop: 2,
+        },
+        whyLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            letterSpacing: 1,
+            marginHorizontal: 20,
+            marginTop: 28,
+            marginBottom: 12,
+        },
+        whyCard: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            marginHorizontal: 16,
+            overflow: 'hidden',
+        },
+        whyRow: {
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+        },
+        whyRowDivider: {
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: '#E0E0E0',
+        },
+        whyHeading: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: '700',
+        },
+        whyText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            marginTop: 2,
         },
     }),
 

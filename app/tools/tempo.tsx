@@ -2,19 +2,30 @@ import { useState, useEffect, useRef } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
-import Chevrons from '@/components/Chevrons';
 import TempoSlider from '@/components/TempoSlider';
 import TempoDisplay from '@/components/TempoDisplay';
 import TempoControls from '@/components/TempoControls';
+import TempoBeatDots from '@/components/TempoBeatDots';
 import { useStyles } from '@/hooks/useStyles';
 import { useOrientation } from '@/hooks/useOrientation';
 import { getSettingsService, saveSettingsService } from '@/service/DbService';
+
+const MIN_TEMPO = 60;
+const MAX_TEMPO = 120;
+const BEATS_PER_BAR = 4;
+
+const WHY_TEMPO_IS_IMPORTANT: { heading: string; text: string }[] = [
+    { heading: 'Focus', text: 'Flow, not mechanics' },
+    { heading: 'Fault', text: 'Backswing is too slow, leading to a “bounce” at the top of the swing' },
+    { heading: 'Misconception', text: 'Amateurs believe they swing “too fast” even though they swing slower than professionals — sequence over speed' },
+];
 
 export default function Tempo() {
     const styles = useStyles();
     const { landscapePadding } = useOrientation();
     const [isPlaying, setIsPlaying] = useState(false);
     const [tempo, setTempo] = useState(() => getSettingsService().tempoBpm);
+    const [activeBeat, setActiveBeat] = useState(-1);
     const player = useAudioPlayer(require('../../assets/single-beep.wav'));
     const timeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
@@ -55,12 +66,16 @@ export default function Tempo() {
         if (timeoutRef.current) {
             clearInterval(timeoutRef.current);
         }
+        setActiveBeat(-1);
     };
 
     const startLoop = async () => {
         const interval = (60 / tempo) * 1000;
+        let beat = 0;
 
         timeoutRef.current = setInterval(async () => {
+            setActiveBeat(beat);
+            beat = (beat + 1) % BEATS_PER_BAR;
             await playSound();
         }, interval);
     };
@@ -86,40 +101,42 @@ export default function Tempo() {
         }
     }
 
-    const points = ['Focus: flow, not mechanics', 'Fault: backswing is too slow, leading to a "bounce" at the top of the swing', 'Misconception: amateurs believe they swing "too fast" even though they swing slower than professionals — sequence over speed']
-
-    const localStyles = styles.tempoTool;
+    const stepTempo = (delta: number) => {
+        tempoValueChange(Math.min(MAX_TEMPO, Math.max(MIN_TEMPO, tempo + delta)));
+    };
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
-                <View style={styles.container}>
-                    <View style={styles.headerContainer}>
-                        <Text style={[styles.headerText, styles.marginTop]}>
-                            Tempo training
-                        </Text>
-                        <Text style={[styles.normalText, { margin: 5 }]}>
-                            Swing with tempo to self organise
-                        </Text>
-                    </View>
+                <View style={styles.tempoTool.pageHeader}>
+                    <Text style={styles.tempoTool.pageTitle}>Tempo training</Text>
+                    <Text style={styles.tempoTool.pageSubtitle}>Swing with tempo to self organise</Text>
+                </View>
 
-                    <View style={localStyles.container}>
-                        <TempoSlider
-                            tempo={tempo}
-                            onTempoChange={tempoValueChange}
-                        />
+                <View style={styles.tempoTool.card}>
+                    <TempoBeatDots activeBeat={activeBeat} />
 
-                        <TempoDisplay tempo={tempo} />
+                    <TempoDisplay tempo={tempo} onStep={stepTempo} />
 
-                        <TempoControls
-                            isPlaying={isPlaying}
-                            onToggle={toggleStartStop}
-                        />
+                    <TempoSlider
+                        tempo={tempo}
+                        onTempoChange={tempoValueChange}
+                    />
 
-                        <View style={styles.contentSection}>
-                            <Chevrons heading='Why tempo is important' points={points} />
+                    <TempoControls
+                        isPlaying={isPlaying}
+                        onToggle={toggleStartStop}
+                    />
+                </View>
+
+                <Text style={styles.tempoTool.whyLabel}>WHY TEMPO IS IMPORTANT</Text>
+                <View style={styles.tempoTool.whyCard}>
+                    {WHY_TEMPO_IS_IMPORTANT.map((item, index) => (
+                        <View key={item.heading} style={[styles.tempoTool.whyRow, index > 0 && styles.tempoTool.whyRowDivider]}>
+                            <Text style={styles.tempoTool.whyHeading}>{item.heading}</Text>
+                            <Text style={styles.tempoTool.whyText}>{item.text}</Text>
                         </View>
-                    </View>
+                    ))}
                 </View>
             </ScrollView>
         </GestureHandlerRootView>

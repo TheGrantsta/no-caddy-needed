@@ -931,7 +931,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
-    puttingSim: StyleSheet.create({
+    simulation: StyleSheet.create({
         header: {
             backgroundColor: c.primary,
             borderBottomLeftRadius: 28,

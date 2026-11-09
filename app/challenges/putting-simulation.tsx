@@ -1,8 +1,10 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import SimulationAppBar from '@/components/SimulationAppBar';
+import SimulationDistanceCard from '@/components/SimulationDistanceCard';
+import SimulationShotTiles from '@/components/SimulationShotTiles';
+import SimulationHoleBar from '@/components/SimulationHoleBar';
 
 import { useStyles } from '@/hooks/useStyles';
 import { useConfirmBeforeLeaving } from '@/hooks/useConfirmBeforeLeaving';
@@ -44,7 +46,6 @@ export default function PuttingSimulation() {
     const [showQuitConfirm, setShowQuitConfirm] = useState(false);
     const { leave } = useConfirmBeforeLeaving(sim.phase === 'in-progress', () => setShowQuitConfirm(true));
     const [showEndSheet, setShowEndSheet] = useState(false);
-    const { top: topInset, bottom: bottomInset } = useSafeAreaInsets();
 
     const totalPutts = sim.putts.reduce((sum, p) => sum + p, 0);
     // Holes entered so far, including the one on screen (its putt count is already recorded)
@@ -112,69 +113,26 @@ export default function PuttingSimulation() {
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>
-            <View style={[styles.puttingSim.header, { paddingTop: topInset + 12 }]}>
-                <View style={styles.puttingSim.topRow}>
-                    <TouchableOpacity
-                        testID="end-simulation-button"
-                        accessibilityRole="button"
-                        onPress={handleEndPress}
-                        style={styles.puttingSim.endButton}
-                    >
-                        <Text style={styles.puttingSim.endButtonText}>End</Text>
-                    </TouchableOpacity>
-                    <Text numberOfLines={1} style={styles.puttingSim.title}>Putting sim</Text>
-                    <View style={styles.puttingSim.titleSpacer} />
-                </View>
-                {sim.phase === 'in-progress' && (
-                    <>
-                        <View style={styles.puttingSim.holeRow}>
-                            <Text testID="putting-sim-hole" style={styles.puttingSim.holeText}>{`Hole ${sim.holeNumber}`}</Text>
-                            <Text style={styles.puttingSim.ofText}>{`of ${sim.totalHoles}`}</Text>
-                        </View>
-                        <View style={styles.puttingSim.progressTrack}>
-                            <View
-                                testID="putting-sim-progress-fill"
-                                style={[styles.puttingSim.progressFill, { width: `${(sim.holeNumber / sim.totalHoles) * 100}%` }]}
-                            />
-                        </View>
-                    </>
-                )}
-            </View>
+            <SimulationAppBar
+                title="Putting sim"
+                onEnd={handleEndPress}
+                hole={sim.phase === 'in-progress' ? { current: sim.holeNumber, total: sim.totalHoles } : undefined}
+            />
             <ScrollView
                 style={styles.scrollContainer}
-                contentContainerStyle={[styles.scrollContentContainer, { paddingBottom: 140 + bottomInset }]}
+                contentContainerStyle={[styles.scrollContentContainer, { paddingBottom: 140 }]}
             >
                 <View style={styles.container}>
                     {sim.phase === 'in-progress' && (
                         <>
-                            <View testID="putting-sim-distance-card" style={styles.puttingSim.card}>
-                                <Text style={styles.puttingSim.cardLabel}>PUTT FROM</Text>
-                                <View style={styles.puttingSim.distanceRow}>
-                                    <Text testID="putt-distance-value" style={styles.puttingSim.distanceValue}>{String(sim.currentDistance)}</Text>
-                                    <Text style={styles.puttingSim.distanceUnit}>ft</Text>
-                                </View>
-                            </View>
-
-                            <Text style={styles.puttingSim.sectionLabel}>PUTTS TAKEN</Text>
-                            <View style={styles.puttingSim.tileRow}>
-                                {PUTT_OPTIONS.map(option => {
-                                    const selected = sim.currentPutts === option.value;
-                                    return (
-                                        <TouchableOpacity
-                                            key={option.value}
-                                            testID={`putts-option-${option.value}`}
-                                            accessibilityRole="button"
-                                            accessibilityState={{ selected }}
-                                            onPress={() => sim.setPutts(option.value)}
-                                            style={[styles.puttingSim.tile, selected && styles.puttingSim.tileSelected]}
-                                        >
-                                            <Text style={[styles.puttingSim.tileText, selected && styles.puttingSim.tileTextSelected]}>
-                                                {option.label}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    );
-                                })}
-                            </View>
+                            <SimulationDistanceCard label="PUTT FROM" distance={sim.currentDistance} unit="ft" />
+                            <SimulationShotTiles
+                                sectionLabel="PUTTS TAKEN"
+                                options={PUTT_OPTIONS}
+                                selected={sim.currentPutts}
+                                onSelect={sim.setPutts}
+                                testIDPrefix="putts-option"
+                            />
                         </>
                     )}
 
@@ -226,30 +184,12 @@ export default function PuttingSimulation() {
                 </View>
             </ScrollView>
             {sim.phase === 'in-progress' && (
-                <View style={[styles.puttingSim.bottomBar, { bottom: 16 + bottomInset }]}>
-                    {sim.holeNumber > 1 ? (
-                        <TouchableOpacity
-                            testID="previous-hole-button"
-                            accessibilityRole="button"
-                            onPress={sim.goToPreviousHole}
-                            style={styles.puttingSim.prevButton}
-                        >
-                            <MaterialIcons name="chevron-left" size={24} color={colours.primary} />
-                            <Text style={styles.puttingSim.prevText}>{`Hole ${sim.holeNumber - 1}`}</Text>
-                        </TouchableOpacity>
-                    ) : <View />}
-                    <TouchableOpacity
-                        testID="next-hole-button"
-                        accessibilityRole="button"
-                        onPress={sim.goToNextHole}
-                        style={styles.puttingSim.nextButton}
-                    >
-                        <Text style={styles.puttingSim.nextText}>
-                            {sim.holeNumber === sim.totalHoles ? 'Finish' : `Hole ${sim.holeNumber + 1}`}
-                        </Text>
-                        <MaterialIcons name="chevron-right" size={24} color={colours.black} />
-                    </TouchableOpacity>
-                </View>
+                <SimulationHoleBar
+                    holeNumber={sim.holeNumber}
+                    totalHoles={sim.totalHoles}
+                    onPrevious={sim.goToPreviousHole}
+                    onNext={sim.goToNextHole}
+                />
             )}
             <EndRoundSheet
                 visible={showEndSheet}

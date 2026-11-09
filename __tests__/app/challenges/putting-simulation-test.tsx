@@ -43,7 +43,7 @@ describe('PuttingSimulation screen', () => {
         const { getByText, getByTestId } = render(<PuttingSimulation />);
 
         expect(getByText('PUTT FROM')).toBeTruthy();
-        expect(getByTestId('putt-distance-value').props.children).toMatch(/^\d+$/);
+        expect(getByTestId('simulation-distance-value').props.children).toMatch(/^\d+$/);
         expect(getByText('ft')).toBeTruthy();
     });
 
@@ -52,7 +52,7 @@ describe('PuttingSimulation screen', () => {
 
         expect(getByText('Hole 1')).toBeTruthy();
         expect(getByText('of 18')).toBeTruthy();
-        expect(getByTestId('putting-sim-progress-fill')).toHaveStyle({ width: `${(1 / 18) * 100}%` });
+        expect(getByTestId('simulation-progress-fill')).toHaveStyle({ width: `${(1 / 18) * 100}%` });
     });
 
     it('advancesTheProgressFillAsHolesAreCompleted', () => {
@@ -61,7 +61,7 @@ describe('PuttingSimulation screen', () => {
         fireEvent.press(getByTestId('next-hole-button'));
 
         expect(getByText('Hole 2')).toBeTruthy();
-        expect(getByTestId('putting-sim-progress-fill')).toHaveStyle({ width: `${(2 / 18) * 100}%` });
+        expect(getByTestId('simulation-progress-fill')).toHaveStyle({ width: `${(2 / 18) * 100}%` });
     });
 
     it('showsFourPuttCountTilesWithTheLastLabelledFourPlus', () => {
@@ -229,14 +229,14 @@ describe('PuttingSimulation screen', () => {
         it('showsAnEndButtonInPlaceOfTheBackButton', () => {
             const { getByTestId, queryByTestId } = render(<PuttingSimulation />);
 
-            expect(getByTestId('end-simulation-button')).toBeTruthy();
+            expect(getByTestId('simulation-end-button')).toBeTruthy();
             expect(queryByTestId('header-back-button')).toBeNull();
         });
 
         it('opensTheEndOverlayWhenEndIsPressedDuringARun', () => {
             const { getByTestId, getByText } = render(<PuttingSimulation />);
 
-            fireEvent.press(getByTestId('end-simulation-button'));
+            fireEvent.press(getByTestId('simulation-end-button'));
 
             expect(getByTestId('end-round-sheet')).toBeTruthy();
             expect(getByText('End simulation after hole 1?')).toBeTruthy();
@@ -245,7 +245,7 @@ describe('PuttingSimulation screen', () => {
         it('closesTheOverlayAndKeepsPlayingWhenKeepPlayingIsPressed', () => {
             const { getByTestId, queryByTestId } = render(<PuttingSimulation />);
 
-            fireEvent.press(getByTestId('end-simulation-button'));
+            fireEvent.press(getByTestId('simulation-end-button'));
             fireEvent.press(getByTestId('end-round-keep-playing-button'));
 
             expect(queryByTestId('end-round-sheet')).toBeNull();
@@ -257,7 +257,7 @@ describe('PuttingSimulation screen', () => {
             const { getByTestId } = render(<PuttingSimulation />);
 
             fireEvent.press(getByTestId('next-hole-button'));
-            fireEvent.press(getByTestId('end-simulation-button'));
+            fireEvent.press(getByTestId('simulation-end-button'));
             fireEvent.press(getByTestId('end-round-save-button'));
 
             expect(insertDrillResultService).toHaveBeenCalledWith('Putting Simulation', false, null, 2);
@@ -268,7 +268,7 @@ describe('PuttingSimulation screen', () => {
             const { getByTestId } = render(<PuttingSimulation />);
 
             fireEvent.press(getByTestId('next-hole-button'));
-            fireEvent.press(getByTestId('end-simulation-button'));
+            fireEvent.press(getByTestId('simulation-end-button'));
             fireEvent.press(getByTestId('end-round-discard-button'));
 
             expect(insertDrillResultService).not.toHaveBeenCalled();
@@ -281,7 +281,7 @@ describe('PuttingSimulation screen', () => {
             for (let i = 0; i < 18; i++) {
                 fireEvent.press(getByTestId('next-hole-button'));
             }
-            fireEvent.press(getByTestId('end-simulation-button'));
+            fireEvent.press(getByTestId('simulation-end-button'));
 
             expect(mockBack).toHaveBeenCalled();
             expect(queryByTestId('end-round-sheet')).toBeNull();

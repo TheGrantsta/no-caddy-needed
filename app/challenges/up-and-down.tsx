@@ -1,8 +1,7 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useRouter, useNavigation } from 'expo-router';
+import { useNavigation } from 'expo-router';
 
-import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useConfirmBeforeLeaving } from '@/hooks/useConfirmBeforeLeaving';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -10,11 +9,14 @@ import { useUpAndDownSimulation } from '@/hooks/useUpAndDownSimulation';
 import { insertDrillResultService, getSettingsService } from '@/service/DbService';
 import { yardsToDisplayUnit, distanceUnitLabel } from '@/service/UnitsService';
 import { useAppToast } from '@/hooks/useAppToast';
-import ChallengeNumberPicker from '@/components/ChallengeNumberPicker';
-import ChallengeNavButtons from '@/components/ChallengeNavButtons';
+import SimulationAppBar from '@/components/SimulationAppBar';
+import SimulationDistanceCard from '@/components/SimulationDistanceCard';
+import SimulationShotTiles from '@/components/SimulationShotTiles';
+import SimulationHoleBar from '@/components/SimulationHoleBar';
+import EndRoundSheet from '@/components/EndRoundSheet';
 import ChallengeCompleteView from '@/components/ChallengeCompleteView';
 import { resolveBand } from '@/utils/performanceBands';
-import { useCallback, useEffect, useRef, useState, useLayoutEffect } from 'react';
+import { useEffect, useRef, useState, useLayoutEffect } from 'react';
 
 type PerformanceBand = 'pro' | 'd1' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
 
@@ -27,45 +29,70 @@ const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; minPercentage:
     '15hcp': { label: '15 Handicap', minPercentage: 30, color: '#ADCFC9' },
 };
 
+// Shot-count tiles; the last tile stands for 4 or more shots
+const SHOT_OPTIONS = [
+    { value: 1, label: '1' },
+    { value: 2, label: '2' },
+    { value: 3, label: '3' },
+    { value: 4, label: '4+' },
+];
+
+// A hole counts as up-and-down when it was finished in two shots or fewer
+const UP_AND_DOWN_MAX_SHOTS = 2;
+
 export default function UpAndDownChallenge() {
     const styles = useStyles();
     const colours = useThemeColours();
-    const router = useRouter();
     const navigation = useNavigation();
     const sim = useUpAndDownSimulation();
     const { units } = getSettingsService();
     const { showResult } = useAppToast();
     const hasSaved = useRef(false);
     const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+    const [showEndSheet, setShowEndSheet] = useState(false);
     const { leave } = useConfirmBeforeLeaving(sim.phase === 'in-progress', () => setShowQuitConfirm(true));
 
-    const handleBack = useCallback(() => {
-        if (sim.phase === 'in-progress') {
-            setShowQuitConfirm(true);
-        } else {
-            router.back();
-        }
-    }, [sim.phase, router, setShowQuitConfirm]);
+    // The screen draws its own app bar, so the stack header is hidden
+    useLayoutEffect(() => {
+        navigation.setOptions({ headerShown: false });
+    }, [navigation]);
 
-    const handleConfirmQuit = useCallback(() => {
+    const handleConfirmQuit = () => {
         setShowQuitConfirm(false);
         leave();
-    }, [leave, setShowQuitConfirm]);
+    };
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerLeft: () => (
-                <TouchableOpacity onPress={handleBack} testID="header-back-button">
-                    <MaterialIcons name="arrow-back" size={24} color={colours.background} />
-                </TouchableOpacity>
-            ),
-        });
-    }, [navigation, handleBack, colours.background]);
-
-    const handlePlayAgain = useCallback(() => {
+    const handlePlayAgain = () => {
         hasSaved.current = false;
         sim.reset();
-    }, [sim]);
+    };
+
+    const handleEndPress = () => {
+        if (sim.phase === 'complete') {
+            leave();
+            return;
+        }
+        setShowEndSheet(true);
+    };
+
+    // Holes entered so far, including the one on screen (its shot count is already recorded)
+    const holesEntered = sim.holeNumber;
+    const shotsEntered = sim.shots.slice(0, holesEntered);
+    const upAndDownsEntered = shotsEntered.filter(shots => shots <= UP_AND_DOWN_MAX_SHOTS).length;
+    const rateEntered = Math.round((upAndDownsEntered / holesEntered) * 100);
+
+    // Save records the holes entered so far as the up-and-down rate, then leaves
+    const handleSaveProgress = () => {
+        setShowEndSheet(false);
+        insertDrillResultService('Up-and-down Challenge', false, null, rateEntered);
+        showResult(true, 'Result saved', '');
+        leave();
+    };
+
+    const handleDiscardProgress = () => {
+        setShowEndSheet(false);
+        leave();
+    };
 
     const bandDefinitions = [
         { key: 'pro' as const, threshold: 80 },
@@ -89,37 +116,27 @@ export default function UpAndDownChallenge() {
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
+            <SimulationAppBar
+                title="Up-and-down"
+                onEnd={handleEndPress}
+                hole={sim.phase === 'in-progress' ? { current: sim.holeNumber, total: sim.totalHoles } : undefined}
+            />
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, { paddingBottom: 140 }]}>
                 <View style={styles.container}>
                     {sim.phase === 'in-progress' && (
                         <>
-                            <Text style={styles.headerText}>Hole {sim.holeNumber} of {sim.totalHoles}</Text>
-
-                            {/* Main content container with padding */}
-                            <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'baseline', marginBottom: 24, gap: 8 }}>
-                                    <Text style={styles.subHeaderText}>Distance</Text>
-                                    <Text style={styles.subHeaderText}>{`${yardsToDisplayUnit(sim.currentDistance, units)} ${distanceUnitLabel(units)}`}</Text>
-                                </View>
-
-                                <ChallengeNumberPicker
-                                    value={sim.currentShots}
-                                    onChange={sim.setShots}
-                                    min={1}
-                                    max={4}
-                                    decreaseTestID="decrease-shots-button"
-                                    increaseTestID="increase-shots-button"
-                                    displayTestID="shots-count-display"
-                                    formatValue={(v) => `${v} shot${v !== 1 ? 's' : ''}`}
-                                />
-
-                                <ChallengeNavButtons
-                                    onPrevious={sim.goToPreviousHole}
-                                    onNext={sim.goToNextHole}
-                                    previousDisabled={sim.holeNumber === 1}
-                                    isLastStep={sim.holeNumber === sim.totalHoles}
-                                />
-                            </View>
+                            <SimulationDistanceCard
+                                label="DISTANCE"
+                                distance={yardsToDisplayUnit(sim.currentDistance, units)}
+                                unit={distanceUnitLabel(units)}
+                            />
+                            <SimulationShotTiles
+                                sectionLabel="SHOTS TAKEN"
+                                options={SHOT_OPTIONS}
+                                selected={sim.currentShots}
+                                onSelect={sim.setShots}
+                                testIDPrefix="shots-option"
+                            />
                         </>
                     )}
 
@@ -177,6 +194,27 @@ export default function UpAndDownChallenge() {
                     )}
                 </View>
             </ScrollView>
+
+            {sim.phase === 'in-progress' && (
+                <SimulationHoleBar
+                    holeNumber={sim.holeNumber}
+                    totalHoles={sim.totalHoles}
+                    onPrevious={sim.goToPreviousHole}
+                    onNext={sim.goToNextHole}
+                />
+            )}
+            <EndRoundSheet
+                visible={showEndSheet}
+                holeNumber={holesEntered}
+                holesTotal={sim.totalHoles}
+                title={`End simulation after hole ${holesEntered}?`}
+                message={`You’ve entered ${holesEntered} of ${sim.totalHoles} holes. Saved results are added to your drill history.`}
+                saveLabel="Save progress"
+                discardLabel="Discard progress"
+                onSave={handleSaveProgress}
+                onDiscard={handleDiscardProgress}
+                onKeepPlaying={() => setShowEndSheet(false)}
+            />
         </GestureHandlerRootView>
     );
 }

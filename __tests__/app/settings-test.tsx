@@ -22,8 +22,10 @@ jest.mock('../../service/DbService', () => ({
 }));
 
 const mockSetOptions = jest.fn();
+const mockBack = jest.fn();
 jest.mock('expo-router', () => ({
     useNavigation: () => ({ setOptions: mockSetOptions }),
+    useRouter: () => ({ back: mockBack }),
 }));
 
 jest.mock('../../service/ReviewService', () => ({
@@ -89,6 +91,14 @@ describe('Settings page', () => {
         expect(getByText('Settings')).toBeTruthy();
         expect(queryByText('Done')).toBeNull();
         expect(queryByTestId('settings-done-button')).toBeNull();
+    });
+
+    it('showsABackButtonLeftOfTheSettingsTitleThatReturnsToThePreviousScreen', () => {
+        const { getByLabelText } = render(<Settings />);
+
+        fireEvent.press(getByLabelText('Back'));
+
+        expect(mockBack).toHaveBeenCalled();
     });
 
     it('keepsTheStackHeaderWithTheLogoAndBackButton', () => {

@@ -3827,10 +3827,10 @@ export const createStyles = (c: ThemeColours) => ({
         row: {
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingHorizontal: 16,
+            paddingHorizontal: 20,
             paddingTop: 12,
             paddingBottom: 16,
+            columnGap: 12,
         },
         circleButton: {
             width: 44,
@@ -3842,21 +3842,21 @@ export const createStyles = (c: ThemeColours) => ({
         },
         titleBlock: {
             flex: 1,
-            alignItems: 'center',
         },
         title: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-            fontWeight: '700',
+            color: c.text,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            textAlign: 'left',
         },
         subtitle: {
             color: c.tertiary,
-            fontSize: fontSizes.smallText,
-            marginTop: 2,
+            fontSize: fontSizes.normal,
+            marginTop: 4,
         },
         actionSlot: {
-            width: 44,
             alignItems: 'center',
+            justifyContent: 'center',
         },
     }),
 

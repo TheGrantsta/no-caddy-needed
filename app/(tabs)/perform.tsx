@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
-import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { RefreshControl, ScrollView, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import SubMenu from '../../components/SubMenu';
+import PageHeader from '../../components/PageHeader';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import DeadlySinsSection from '../../components/DeadlySinsSection';
 import PuttingStatsSection from '../../components/PuttingStatsSection';
@@ -94,8 +95,9 @@ export default function Perform() {
       }>
 
         <View style={styles.container}>
-          <View style={styles.header}>
-            <View style={styles.titleRow}>
+          <PageHeader
+            title="Stats"
+            rightAction={
               <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"
                 testID="perform-info-button"
                 onPress={handleShowOnboarding}
@@ -103,11 +105,8 @@ export default function Perform() {
               >
                 <MaterialIcons name="info-outline" size={24} color={colours.primary} />
               </TouchableOpacity>
-              <Text style={[styles.headerText, styles.marginTop]}>
-                Stats
-              </Text>
-            </View>
-          </View>
+            }
+          />
         </View>
 
         {/* Filter buttons */}

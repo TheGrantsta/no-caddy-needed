@@ -10,7 +10,11 @@ import { useStyles } from '../hooks/useStyles';
 import { useOrientation } from '../hooks/useOrientation';
 import { useAppToast } from '../hooks/useAppToast';
 import OnboardingOverlay from '../components/OnboardingOverlay';
-import SettingsHeader from '../components/SettingsHeader';
+import PageHeader from '../components/PageHeader';
+import { MaterialIcons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useThemeColours } from '../context/ThemeContext';
 import SystemSettings from '../components/SystemSettings';
 import GolfSettings from '../components/GolfSettings';
 import SettingsFooter from '../components/SettingsFooter';
@@ -18,6 +22,8 @@ import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 export default function Settings() {
   const styles = useStyles();
+  const colours = useThemeColours();
+  const router = useRouter();
   const { landscapePadding } = useOrientation();
   const { showResult, showError } = useAppToast();
   const [exporting, setExporting] = useState(false);
@@ -166,7 +172,21 @@ export default function Settings() {
         overScrollMode="never"
         keyboardShouldPersistTaps="handled"
       >
-        <SettingsHeader onInfoPress={handleShowOnboarding} />
+        <PageHeader
+          title="Settings"
+          onBack={() => router.back()}
+          rightAction={
+            <TouchableOpacity
+              testID="settings-info-button"
+              accessibilityRole="button"
+              accessibilityLabel="Show help"
+              onPress={handleShowOnboarding}
+              style={styles.settingsSheet.circleButton}
+            >
+              <MaterialIcons name="info-outline" size={24} color={colours.black} />
+            </TouchableOpacity>
+          }
+        />
 
         <GolfSettings
           settings={settings}

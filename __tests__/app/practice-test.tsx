@@ -210,14 +210,10 @@ describe('Practice page ', () => {
         expect(getByText('Fake - 10')).toBeTruthy();
     });
 
-    it('aligns the info button on the same row as the Practice title', () => {
-        const { StyleSheet } = require('react-native');
-        const { getByTestId } = render(<View />);
-        const row = StyleSheet.flatten(getByTestId('practice-title-row').props.style);
+    it('shows the Practice title in the standard heading style', () => {
+        const { getByText } = render(<View />);
 
-        expect(row.flexDirection).toBe('row');
-        expect(row.alignItems).toBe('center');
-        expect(row.justifyContent).toBe('space-between');
+        expect(getByText('Practice')).toHaveStyle({ fontSize: 32, fontWeight: 'bold', textAlign: 'left' });
     });
 
     it('shows the info button as a white circle at the top right', () => {

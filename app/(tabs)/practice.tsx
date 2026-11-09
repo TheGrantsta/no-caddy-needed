@@ -15,6 +15,7 @@ import { logEvent } from "@/service/FirebaseService";
 import PracticeChallengesSection from "@/components/PracticeChallengesSection";
 import PracticeToolsSection from "@/components/PracticeToolsSection";
 import DrillHistorySection from "@/components/DrillHistorySection";
+import PageHeader from "@/components/PageHeader";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
@@ -135,17 +136,19 @@ export default function Practice() {
               <Text style={{ color: colours.primary, fontWeight: '600', marginTop: 4 }}>View reminders</Text>
             </TouchableOpacity>
           )}
-          <View testID="practice-title-row" style={styles.practiceHeader.titleRow}>
-            <Text style={styles.practiceHeader.title}>Practice</Text>
-            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"
-              testID="info-button"
-              onPress={handleShowOnboarding}
-              style={styles.practiceHeader.circleButton}
-            >
-              <MaterialIcons name="info-outline" size={22} color={colours.text} />
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.practiceHeader.subtitle}>Making practice time effective</Text>
+          <PageHeader
+            title="Practice"
+            subtitle="Making practice time effective"
+            rightAction={
+              <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"
+                testID="info-button"
+                onPress={handleShowOnboarding}
+                style={styles.practiceHeader.circleButton}
+              >
+                <MaterialIcons name="info-outline" size={22} color={colours.text} />
+              </TouchableOpacity>
+            }
+          />
           <SubMenu showSubMenu='practice' selectedItem={section} handleSubMenu={handleSubMenuWithLogging} variant="pill" />
         </View>
 

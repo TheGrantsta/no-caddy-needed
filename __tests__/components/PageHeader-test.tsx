@@ -51,4 +51,17 @@ describe('PageHeader', () => {
 
         expect(queryByText('Swing with tempo to self organise')).toBeNull();
     });
+
+    it('shouldShowTheTitleLeftAlignedInTheStandardHeadingStyle', () => {
+        const { getByText } = render(<PageHeader title="Practice" onBack={jest.fn()} />);
+
+        expect(getByText('Practice')).toHaveStyle({ fontSize: 32, fontWeight: 'bold', textAlign: 'left' });
+    });
+
+    it('shouldOmitTheBackButtonWhenNoBackHandlerIsGiven', () => {
+        const { queryByLabelText, getByText } = render(<PageHeader title="My Bag" />);
+
+        expect(queryByLabelText('Back')).toBeNull();
+        expect(getByText('My Bag')).toBeTruthy();
+    });
 });

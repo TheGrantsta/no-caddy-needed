@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
+import PageHeader from '../../components/PageHeader';
 
 const WEDGE_TILE = '#B5651D';
 
@@ -48,7 +49,7 @@ export default function MyBag() {
   return (
     <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
       <View style={styles.container}>
-        <Text style={[styles.headerText, styles.marginTop]}>My Bag</Text>
+        <PageHeader title="My Bag" />
 
         <Text style={s.sectionLabel}>Yardages</Text>
         <View style={s.card}>

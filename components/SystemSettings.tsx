@@ -2,17 +2,10 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { AppSettings } from '@/service/DbService';
 import { useStyles } from '@/hooks/useStyles';
-import SettingsToggleRow from './SettingsToggleRow';
-
-const NOTIFICATIONS = [
-    { key: 'on', label: 'On', value: true },
-    { key: 'off', label: 'Off', value: false },
-];
-
-const SOUNDS = [
-    { key: 'on', label: 'On', value: true },
-    { key: 'off', label: 'Off', value: false },
-];
+import Dropdown from './Dropdown';
+import SettingsSection from './SettingsSection';
+import SettingsSegmentedControl from './SettingsSegmentedControl';
+import SettingsSwitchRow from './SettingsSwitchRow';
 
 const VOICES: { key: AppSettings['voice']; label: string }[] = [
     { key: 'female', label: 'Female' },
@@ -20,9 +13,9 @@ const VOICES: { key: AppSettings['voice']; label: string }[] = [
     { key: 'neutral', label: 'Neutral' },
 ];
 
-const UNITS: { key: AppSettings['units']; label: string }[] = [
-    { key: 'yards', label: 'Yards' },
-    { key: 'metres', label: 'Metres' },
+const UNITS: { value: AppSettings['units']; label: string }[] = [
+    { value: 'yards', label: 'Yards' },
+    { value: 'metres', label: 'Metres' },
 ];
 
 interface Props {
@@ -33,6 +26,7 @@ interface Props {
     onUnitsChange: (units: AppSettings['units']) => void;
 }
 
+// Sound and notification settings, then units
 export default function SystemSettings({
     settings,
     onNotificationsChange,
@@ -41,59 +35,57 @@ export default function SystemSettings({
     onUnitsChange,
 }: Props) {
     const styles = useStyles();
+    const s = styles.settingsSheet;
+    const voiceLabel = VOICES.find(voice => voice.key === settings.voice)?.label ?? 'Female';
 
     return (
         <>
-            <View style={styles.contentSection}>
-                <View style={styles.headerContainer}>
-                    <Text style={[styles.subHeaderText, { padding: 0 }]}>Notifications</Text>
-                </View>
-                <SettingsToggleRow
-                    options={NOTIFICATIONS.map(({ key, label }) => ({ label, value: key }))}
-                    value={settings.notificationsEnabled ? 'on' : 'off'}
-                    onChange={(val) => onNotificationsChange(val === 'on')}
-                    testIDPrefix="notifications"
+            <SettingsSection title="SOUND & NOTIFICATIONS">
+                <SettingsSwitchRow
+                    label="Notifications"
+                    value={settings.notificationsEnabled}
+                    onValueChange={onNotificationsChange}
+                    testID="notifications-switch"
                 />
-            </View>
+                <View style={s.rowDivider} />
+                <SettingsSwitchRow
+                    label="Sounds"
+                    value={settings.soundsEnabled}
+                    onValueChange={onSoundsChange}
+                    testID="sounds-switch"
+                />
+                <View style={s.rowDivider} />
+                <View style={s.row}>
+                    <Text style={s.rowLabel}>Voice</Text>
+                    <Dropdown
+                        inline
+                        options={VOICES.map(voice => voice.label)}
+                        selectedOption={voiceLabel}
+                        onSelectOption={(label) => {
+                            const chosen = VOICES.find(voice => voice.label === label);
+                            if (chosen) onVoiceChange(chosen.key);
+                        }}
+                        testIDPrefix="voice"
+                    />
+                </View>
+            </SettingsSection>
 
-            <View style={styles.contentSection}>
-                <View style={styles.headerContainer}>
-                    <Text style={[styles.subHeaderText, { padding: 0 }]}>Sounds</Text>
+            <SettingsSection
+                title="UNITS"
+                footnote="Applies to distances, wedge chart and wind. Putting stays in feet."
+            >
+                <View style={s.row}>
+                    <Text style={s.rowLabel}>Distances</Text>
+                    <View style={{ width: 180 }}>
+                        <SettingsSegmentedControl
+                            options={UNITS}
+                            value={settings.units}
+                            onChange={onUnitsChange}
+                            testIDPrefix="units"
+                        />
+                    </View>
                 </View>
-                <SettingsToggleRow
-                    options={SOUNDS.map(({ key, label }) => ({ label, value: key }))}
-                    value={settings.soundsEnabled ? 'on' : 'off'}
-                    onChange={(val) => onSoundsChange(val === 'on')}
-                    testIDPrefix="sounds"
-                />
-            </View>
-
-            <View style={styles.contentSection}>
-                <View style={styles.headerContainer}>
-                    <Text style={[styles.subHeaderText, { padding: 0 }]}>Voice</Text>
-                </View>
-                <SettingsToggleRow
-                    options={VOICES.map(({ key, label }) => ({ label, value: key }))}
-                    value={settings.voice}
-                    onChange={onVoiceChange}
-                    testIDPrefix="voice"
-                />
-            </View>
-
-            <View style={styles.contentSection}>
-                <View style={styles.headerContainer}>
-                    <Text style={[styles.subHeaderText, { padding: 0 }]}>Units</Text>
-                </View>
-                <SettingsToggleRow
-                    options={UNITS.map(({ key, label }) => ({ label, value: key }))}
-                    value={settings.units}
-                    onChange={onUnitsChange}
-                    testIDPrefix="units"
-                />
-                <Text style={[styles.smallText, { paddingHorizontal: 16, marginTop: 4 }]}>
-                    Applies to distances, wedge chart and wind. Putting stays in feet.
-                </Text>
-            </View>
+            </SettingsSection>
         </>
     );
 }

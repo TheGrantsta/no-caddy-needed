@@ -21,6 +21,11 @@ jest.mock('../../service/DbService', () => ({
     saveSettingsService: jest.fn(() => Promise.resolve(true)),
 }));
 
+const mockSetOptions = jest.fn();
+jest.mock('expo-router', () => ({
+    useNavigation: () => ({ setOptions: mockSetOptions }),
+}));
+
 jest.mock('../../service/ReviewService', () => ({
     openStoreReviewService: jest.fn(),
 }));
@@ -51,69 +56,78 @@ jest.mock('react-native-gesture-handler', () => {
 });
 
 describe('Settings page', () => {
+    const baseSettings = {
+        notificationsEnabled: true,
+        voice: 'female',
+        soundsEnabled: true,
+        wedgeChartOnboardingSeen: false,
+        distancesOnboardingSeen: false,
+        playOnboardingSeen: false,
+        homeOnboardingSeen: false,
+        practiceOnboardingSeen: false,
+        reviewPromptShown: false,
+        preShotReminderEnabled: true,
+        preShotRoutineText: '',
+        whatsNewVersionSeen: '',
+        settingsOnboardingSeen: true,
+        performOnboardingSeen: false,
+        tempoBpm: 60,
+        units: 'yards',
+        skipStatsFlowEnabled: false,
+        badHoleReassuranceEnabled: true,
+    };
+
     beforeEach(() => {
         jest.clearAllMocks();
-        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+        mockGetSettingsService.mockReturnValue(baseSettings);
         mockSaveSettingsService.mockResolvedValue(true);
     });
 
-    // System settings live behind the "System" tab (the page defaults to Golf).
-    const renderSystem = () => {
-        const utils = render(<Settings />);
-        fireEvent.press(utils.getByTestId('settings-tab-system'));
-        return utils;
-    };
+    it('showsTheSettingsTitleAndNoDoneButtonBecauseChangesSaveAsTheyAreMade', () => {
+        const { getByText, queryByTestId, queryByText } = render(<Settings />);
 
-    it('renders page title', () => {
-        const { queryAllByText } = render(<Settings />);
-
-        expect(queryAllByText('Settings').length).toBeGreaterThan(0);
+        expect(getByText('Settings')).toBeTruthy();
+        expect(queryByText('Done')).toBeNull();
+        expect(queryByTestId('settings-done-button')).toBeNull();
     });
 
-    it('renders Rate my app button', () => {
-        const { getByTestId, getByText } = render(<Settings />);
+    it('keepsTheStackHeaderWithTheLogoAndBackButton', () => {
+        render(<Settings />);
 
-        expect(getByTestId('rate-app-button')).toBeTruthy();
-        expect(getByText('Rate my app')).toBeTruthy();
+        expect(mockSetOptions).not.toHaveBeenCalledWith(expect.objectContaining({ headerShown: false }));
     });
 
-    it('renders the Golf and System group tabs', () => {
-        const { getByTestId } = render(<Settings />);
+    it('showsGolfUnitsAndSoundSectionsOnOnePage', () => {
+        const { getByText, queryByTestId } = render(<Settings />);
 
-        expect(getByTestId('settings-tab-golf')).toBeTruthy();
-        expect(getByTestId('settings-tab-system')).toBeTruthy();
+        expect(getByText('GOLF')).toBeTruthy();
+        expect(getByText('UNITS')).toBeTruthy();
+        expect(getByText('SOUND & NOTIFICATIONS')).toBeTruthy();
+        expect(queryByTestId('settings-tab-golf')).toBeNull();
+        expect(queryByTestId('settings-tab-system')).toBeNull();
     });
 
-    it('defaults to the Golf group (Show pre-shot routine visible, System settings hidden)', () => {
-        const { getByText, queryByText } = render(<Settings />);
+    it('showsGolfThenSoundAndNotificationsThenUnits', () => {
+        const { toJSON } = render(<Settings />);
+        const page = JSON.stringify(toJSON());
 
-        expect(getByText('Show pre-shot routine')).toBeTruthy();
-        expect(queryByText('Notifications')).toBeNull();
+        const golf = page.indexOf('GOLF');
+        const sound = page.indexOf('SOUND & NOTIFICATIONS');
+        const units = page.indexOf('UNITS');
+        expect(golf).toBeGreaterThanOrEqual(0);
+        expect(sound).toBeGreaterThan(golf);
+        expect(units).toBeGreaterThan(sound);
     });
 
-    it('switches to the System group when its tab is pressed', () => {
-        const { getByTestId, getByText, queryByText } = render(<Settings />);
+    it('showsTheExportAndRateRowsAndTheVersion', () => {
+        const { getByText } = render(<Settings />);
 
-        fireEvent.press(getByTestId('settings-tab-system'));
-
-        expect(getByText('Notifications')).toBeTruthy();
-        expect(queryByText('Show pre-shot routine')).toBeNull();
-    });
-
-    it('keeps Rate my app and version outside the groups (visible on both tabs)', () => {
-        const { getByTestId, getByText } = render(<Settings />);
-
-        // Golf (default)
-        expect(getByText('Rate my app')).toBeTruthy();
-        expect(getByText('Version 1.2.3')).toBeTruthy();
-
-        // System
-        fireEvent.press(getByTestId('settings-tab-system'));
+        expect(getByText('Export stats for AI coaching')).toBeTruthy();
         expect(getByText('Rate my app')).toBeTruthy();
         expect(getByText('Version 1.2.3')).toBeTruthy();
     });
 
-    it('calls openStoreReviewService when Rate my app pressed', () => {
+    it('callsOpenStoreReviewServiceWhenRateMyAppIsPressed', () => {
         const { getByTestId } = render(<Settings />);
 
         fireEvent.press(getByTestId('rate-app-button'));
@@ -121,471 +135,150 @@ describe('Settings page', () => {
         expect(mockOpenStoreReview).toHaveBeenCalled();
     });
 
-    it('renders notifications heading', () => {
-        const { getByText } = renderSystem();
+    it('savesNotificationsOffWhenItsSwitchIsTurnedOff', async () => {
+        const { getByTestId } = render(<Settings />);
 
-        expect(getByText('Notifications')).toBeTruthy();
-    });
-
-    it('renders notifications On button', () => {
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('notifications-on')).toBeTruthy();
-    });
-
-    it('renders notifications Off button', () => {
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('notifications-off')).toBeTruthy();
-    });
-
-    it('shows On as selected when notifications enabled', () => {
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('notifications-on-selected')).toBeTruthy();
-    });
-
-    it('shows Off as selected when notifications disabled', () => {
-        mockGetSettingsService.mockReturnValue({ notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
-
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('notifications-off-selected')).toBeTruthy();
-    });
-
-    it('calls saveSettingsService with notificationsEnabled false when Off is pressed', async () => {
-        const { getByTestId } = renderSystem();
-
-        fireEvent.press(getByTestId('notifications-off'));
+        fireEvent(getByTestId('notifications-switch'), 'valueChange', false);
 
         await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith({
-                notificationsEnabled: false,
-                voice: 'female',
-                soundsEnabled: true,
-                wedgeChartOnboardingSeen: false,
-                distancesOnboardingSeen: false,
-                playOnboardingSeen: false,
-                homeOnboardingSeen: false,
-                practiceOnboardingSeen: false,
-            });
+            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ notificationsEnabled: false }));
         });
     });
 
-    it('calls saveSettingsService with notificationsEnabled true when On is pressed', async () => {
-        mockGetSettingsService.mockReturnValue({ notificationsEnabled: false, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+    it('savesSoundsOffWhenItsSwitchIsTurnedOff', async () => {
+        const { getByTestId } = render(<Settings />);
 
-        const { getByTestId } = renderSystem();
-
-        fireEvent.press(getByTestId('notifications-on'));
+        fireEvent(getByTestId('sounds-switch'), 'valueChange', false);
 
         await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith({
-                notificationsEnabled: true,
-                voice: 'female',
-                soundsEnabled: true,
-                wedgeChartOnboardingSeen: false,
-                distancesOnboardingSeen: false,
-                playOnboardingSeen: false,
-                homeOnboardingSeen: false,
-                practiceOnboardingSeen: false,
-            });
+            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ soundsEnabled: false }));
         });
     });
 
-    it('renders Sounds heading', () => {
-        const { getByText } = renderSystem();
+    it('savesTheVoiceChosenFromTheDropdown', async () => {
+        const { getByTestId } = render(<Settings />);
 
-        expect(getByText('Sounds')).toBeTruthy();
-    });
-
-    it('renders sounds On button', () => {
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('sounds-on')).toBeTruthy();
-    });
-
-    it('renders sounds Off button', () => {
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('sounds-off')).toBeTruthy();
-    });
-
-    it('shows On as selected by default for sounds', () => {
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('sounds-on-selected')).toBeTruthy();
-    });
-
-    it('shows Off as selected when sounds disabled', () => {
-        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: false, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
-
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('sounds-off-selected')).toBeTruthy();
-    });
-
-    it('calls saveSettingsService with soundsEnabled false when sounds Off is pressed', async () => {
-        const { getByTestId } = renderSystem();
-
-        fireEvent.press(getByTestId('sounds-off'));
+        fireEvent.press(getByTestId('voice-dropdown-toggle'));
+        fireEvent.press(getByTestId('voice-option-Male'));
 
         await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith(
-                expect.objectContaining({ soundsEnabled: false })
-            );
+            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ voice: 'male' }));
         });
     });
 
-    it('calls saveSettingsService with soundsEnabled true when sounds On is pressed', async () => {
-        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: false, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
+    it('savesMetresWhenMetresIsPressed', async () => {
+        const { getByTestId } = render(<Settings />);
 
-        const { getByTestId } = renderSystem();
-
-        fireEvent.press(getByTestId('sounds-on'));
+        fireEvent.press(getByTestId('units-metres'));
 
         await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith(
-                expect.objectContaining({ soundsEnabled: true })
-            );
+            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ units: 'metres' }));
         });
     });
 
-    it('renders Voice heading', () => {
-        const { getByText } = renderSystem();
+    it('showsTheRoutineInputWhilePreShotRoutineIsOn', () => {
+        const { getByTestId } = render(<Settings />);
 
-        expect(getByText('Voice')).toBeTruthy();
+        expect(getByTestId('preshot-routine-input')).toBeTruthy();
     });
 
-    it('renders Female voice option', () => {
-        const { getByTestId } = renderSystem();
+    it('savesPreShotRoutineOffWhenItsSwitchIsTurnedOff', async () => {
+        const { getByTestId } = render(<Settings />);
 
-        expect(getByTestId('voice-female')).toBeTruthy();
-    });
-
-    it('renders Male voice option', () => {
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('voice-male')).toBeTruthy();
-    });
-
-    it('renders Neutral voice option', () => {
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('voice-neutral')).toBeTruthy();
-    });
-
-    it('shows Female as selected by default', () => {
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('voice-female-selected')).toBeTruthy();
-    });
-
-    it('shows Male as selected when settings voice is male', () => {
-        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
-
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('voice-male-selected')).toBeTruthy();
-    });
-
-    it('shows Neutral as selected when settings voice is neutral', () => {
-        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'neutral', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
-
-        const { getByTestId } = renderSystem();
-
-        expect(getByTestId('voice-neutral-selected')).toBeTruthy();
-    });
-
-    it('calls saveSettingsService with voice male when Male is pressed', async () => {
-        const { getByTestId } = renderSystem();
-
-        fireEvent.press(getByTestId('voice-male'));
+        fireEvent(getByTestId('preshot-switch'), 'valueChange', false);
 
         await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith({
-                notificationsEnabled: true,
-                voice: 'male',
-                soundsEnabled: true,
-                wedgeChartOnboardingSeen: false,
-                distancesOnboardingSeen: false,
-                playOnboardingSeen: false,
-                homeOnboardingSeen: false,
-                practiceOnboardingSeen: false,
-            });
+            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ preShotReminderEnabled: false }));
         });
     });
 
-    it('calls saveSettingsService with voice neutral when Neutral is pressed', async () => {
-        const { getByTestId } = renderSystem();
+    it('savesTheEditedRoutineTextWhenEditingEnds', async () => {
+        const { getByTestId } = render(<Settings />);
 
-        fireEvent.press(getByTestId('voice-neutral'));
+        fireEvent.changeText(getByTestId('preshot-routine-input'), 'Breathe and commit');
+        fireEvent(getByTestId('preshot-routine-input'), 'endEditing');
 
         await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith({
-                notificationsEnabled: true,
-                voice: 'neutral',
-                soundsEnabled: true,
-                wedgeChartOnboardingSeen: false,
-                distancesOnboardingSeen: false,
-                playOnboardingSeen: false,
-                homeOnboardingSeen: false,
-                practiceOnboardingSeen: false,
-            });
+            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ preShotRoutineText: 'Breathe and commit' }));
         });
     });
 
-    it('displays the app version number', () => {
-        const { getByText } = render(<Settings />);
-        expect(getByText('Version 1.2.3')).toBeTruthy();
-    });
+    it('savesScoreOnlyModeWhenItsSwitchIsTurnedOn', async () => {
+        const { getByTestId } = render(<Settings />);
 
-    it('calls saveSettingsService with voice female when Female is pressed', async () => {
-        mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'male', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false });
-
-        const { getByTestId } = renderSystem();
-
-        fireEvent.press(getByTestId('voice-female'));
+        fireEvent(getByTestId('score-only-switch'), 'valueChange', true);
 
         await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith({
-                notificationsEnabled: true,
-                voice: 'female',
-                soundsEnabled: true,
-                wedgeChartOnboardingSeen: false,
-                distancesOnboardingSeen: false,
-                playOnboardingSeen: false,
-                homeOnboardingSeen: false,
-                practiceOnboardingSeen: false,
-            });
+            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ skipStatsFlowEnabled: true }));
         });
     });
 
-    describe('Pre-shot routine', () => {
-        const preShotSettings = (overrides: Record<string, unknown> = {}) => ({
-            notificationsEnabled: true, voice: 'female', soundsEnabled: true,
-            wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false,
-            homeOnboardingSeen: false, practiceOnboardingSeen: false,
-            reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: 'Target, breathe, go', skipStatsFlowEnabled: false, ...overrides,
-        });
+    it('savesBadHoleReminderWhenItsSwitchIsTurnedOff', async () => {
+        const { getByTestId } = render(<Settings />);
 
-        it('renders the Pre-shot routine heading and On/Off buttons', () => {
-            mockGetSettingsService.mockReturnValue(preShotSettings());
-            const { getByText, getByTestId } = render(<Settings />);
+        fireEvent(getByTestId('bad-hole-reassurance-switch'), 'valueChange', false);
 
-            expect(getByText('Show pre-shot routine')).toBeTruthy();
-            expect(getByTestId('preshot-on')).toBeTruthy();
-            expect(getByTestId('preshot-off')).toBeTruthy();
-        });
-
-        it('shows On selected and the routine text input when enabled', () => {
-            mockGetSettingsService.mockReturnValue(preShotSettings());
-            const { getByTestId } = render(<Settings />);
-
-            expect(getByTestId('preshot-on-selected')).toBeTruthy();
-            expect(getByTestId('preshot-routine-input').props.value).toBe('Target, breathe, go');
-        });
-
-        it('hides the routine text input when disabled', () => {
-            mockGetSettingsService.mockReturnValue(preShotSettings({ preShotReminderEnabled: false }));
-            const { getByTestId, queryByTestId } = render(<Settings />);
-
-            expect(getByTestId('preshot-off-selected')).toBeTruthy();
-            expect(queryByTestId('preshot-routine-input')).toBeNull();
-        });
-
-        it('saves preShotReminderEnabled false when Off pressed', async () => {
-            mockGetSettingsService.mockReturnValue(preShotSettings());
-            const { getByTestId } = render(<Settings />);
-
-            fireEvent.press(getByTestId('preshot-off'));
-
-            await waitFor(() => {
-                expect(mockSaveSettingsService).toHaveBeenCalledWith(
-                    expect.objectContaining({ preShotReminderEnabled: false })
-                );
-            });
-        });
-
-        it('saves the edited routine text on end editing', async () => {
-            mockGetSettingsService.mockReturnValue(preShotSettings());
-            const { getByTestId } = render(<Settings />);
-
-            fireEvent.changeText(getByTestId('preshot-routine-input'), 'My new routine');
-            fireEvent(getByTestId('preshot-routine-input'), 'endEditing');
-
-            await waitFor(() => {
-                expect(mockSaveSettingsService).toHaveBeenCalledWith(
-                    expect.objectContaining({ preShotRoutineText: 'My new routine' })
-                );
-            });
+        await waitFor(() => {
+            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ badHoleReassuranceEnabled: false }));
         });
     });
 
-    describe('Score-only mode', () => {
-        it('renders the Score-only mode heading and On/Off buttons', () => {
-            const { getByText, getByTestId } = render(<Settings />);
+    it('showsTheOnboardingOverlayWhenNotSeenBefore', () => {
+        mockGetSettingsService.mockReturnValue({ ...baseSettings, settingsOnboardingSeen: false });
 
-            expect(getByText('Score-only mode')).toBeTruthy();
-            expect(getByTestId('score-only-on')).toBeTruthy();
-            expect(getByTestId('score-only-off')).toBeTruthy();
-        });
+        const { getByTestId } = render(<Settings />);
 
-        it('saves skipStatsFlowEnabled true when On pressed', async () => {
-            const { getByTestId } = render(<Settings />);
+        expect(getByTestId('onboarding-overlay')).toBeTruthy();
+    });
 
-            fireEvent.press(getByTestId('score-only-on'));
+    it('hidesTheOnboardingOverlayWhenAlreadySeen', () => {
+        const { queryByTestId } = render(<Settings />);
 
-            await waitFor(() => {
-                expect(mockSaveSettingsService).toHaveBeenCalledWith(
-                    expect.objectContaining({ skipStatsFlowEnabled: true })
-                );
-            });
-        });
+        expect(queryByTestId('onboarding-overlay')).toBeNull();
+    });
 
-        it('saves skipStatsFlowEnabled false when Off pressed', async () => {
-            mockGetSettingsService.mockReturnValue({
-                notificationsEnabled: true,
-                voice: 'female',
-                soundsEnabled: true,
-                wedgeChartOnboardingSeen: false,
-                distancesOnboardingSeen: false,
-                playOnboardingSeen: false,
-                homeOnboardingSeen: false,
-                practiceOnboardingSeen: false,
-                reviewPromptShown: false,
-                preShotReminderEnabled: true,
-                preShotRoutineText: '',
-                whatsNewVersionSeen: '',
-                settingsOnboardingSeen: false,
-                performOnboardingSeen: false,
-                tempoBpm: 60,
-                units: 'yards',
-                skipStatsFlowEnabled: true,
-            });
-            const { getByTestId } = render(<Settings />);
+    it('showsTheOnboardingOverlayWhenTheInfoButtonIsPressed', () => {
+        const { getByTestId, queryByTestId } = render(<Settings />);
 
-            fireEvent.press(getByTestId('score-only-off'));
+        expect(queryByTestId('onboarding-overlay')).toBeNull();
+        fireEvent.press(getByTestId('settings-info-button'));
 
-            await waitFor(() => {
-                expect(mockSaveSettingsService).toHaveBeenCalledWith(
-                    expect.objectContaining({ skipStatsFlowEnabled: false })
-                );
-            });
+        expect(getByTestId('onboarding-overlay')).toBeTruthy();
+    });
+
+    it('savesSettingsOnboardingSeenWhenDismissed', async () => {
+        mockGetSettingsService.mockReturnValue({ ...baseSettings, settingsOnboardingSeen: false });
+        const { getByTestId, queryByTestId } = render(<Settings />);
+
+        fireEvent.press(getByTestId('done-button'));
+
+        expect(queryByTestId('onboarding-overlay')).toBeNull();
+        await waitFor(() => {
+            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ settingsOnboardingSeen: true }));
         });
     });
 
-    describe('Onboarding', () => {
-        it('shows the onboarding overlay when not seen before', () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, settingsOnboardingSeen: false, skipStatsFlowEnabled: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
+    it('shouldDisableBouncingSoPageDoesNotStretchWhenPulledDown', () => {
+        const { UNSAFE_getByType } = render(<Settings />);
 
-            const { getByTestId, queryAllByText } = render(<Settings />);
-
-            expect(getByTestId('onboarding-overlay')).toBeTruthy();
-            expect(queryAllByText('Settings').length).toBeGreaterThan(0);
-        });
-
-        it('hides the onboarding overlay when already seen', () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, settingsOnboardingSeen: true, skipStatsFlowEnabled: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
-
-            const { queryByTestId } = render(<Settings />);
-
-            expect(queryByTestId('onboarding-overlay')).toBeNull();
-        });
-
-        it('shows the onboarding overlay when the info button is pressed', () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, settingsOnboardingSeen: true, skipStatsFlowEnabled: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
-
-            const { getByTestId, queryByTestId } = render(<Settings />);
-            expect(queryByTestId('onboarding-overlay')).toBeNull();
-
-            fireEvent.press(getByTestId('settings-info-button'));
-
-            expect(getByTestId('onboarding-overlay')).toBeTruthy();
-        });
-
-        it('saves settingsOnboardingSeen true when dismissed', async () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, settingsOnboardingSeen: false, skipStatsFlowEnabled: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
-
-            const { getByTestId, queryByTestId } = render(<Settings />);
-
-            fireEvent.press(getByTestId('done-button'));
-
-            expect(queryByTestId('onboarding-overlay')).toBeNull();
-            await waitFor(() => {
-                expect(mockSaveSettingsService).toHaveBeenCalledWith(
-                    expect.objectContaining({ settingsOnboardingSeen: true })
-                );
-            });
-        });
+        expect(UNSAFE_getByType(ScrollView).props.bounces).toBe(false);
     });
 
-    describe('Units', () => {
-        it('renders Units heading in System tab', () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
+    it('shouldDisableAndroidOverscrollSoBehaviourMatchesIos', () => {
+        const { UNSAFE_getByType } = render(<Settings />);
 
-            const { getByText, getByTestId } = render(<Settings />);
-            fireEvent.press(getByTestId('settings-tab-system'));
-
-            expect(getByText('Units')).toBeTruthy();
-        });
-
-        it('shows Yards as selected by default', () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
-
-            const { getByTestId } = render(<Settings />);
-            fireEvent.press(getByTestId('settings-tab-system'));
-
-            expect(getByTestId('units-yards-selected')).toBeTruthy();
-        });
-
-        it('shows Metres as selected when units is metres', () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'metres' });
-
-            const { getByTestId } = render(<Settings />);
-            fireEvent.press(getByTestId('settings-tab-system'));
-
-            expect(getByTestId('units-metres-selected')).toBeTruthy();
-        });
-
-        it('saves settings when Metres is pressed', async () => {
-            mockGetSettingsService.mockReturnValue({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards' });
-
-            const { getByTestId } = render(<Settings />);
-            fireEvent.press(getByTestId('settings-tab-system'));
-            fireEvent.press(getByTestId('units-metres'));
-
-            await waitFor(() => {
-                expect(mockSaveSettingsService).toHaveBeenCalledWith(
-                    expect.objectContaining({ units: 'metres' })
-                );
-            });
-        });
+        expect(UNSAFE_getByType(ScrollView).props.overScrollMode).toBe('never');
     });
 
-    describe('page scrolling', () => {
-        it('shouldDisableBouncingSoPageDoesNotStretchWhenPulledDown', () => {
-            const { UNSAFE_getByType } = render(<Settings />);
+    it('shouldLetTapsPassThroughToButtonsWhileKeyboardIsOpen', () => {
+        const { UNSAFE_getByType } = render(<Settings />);
 
-            expect(UNSAFE_getByType(ScrollView).props.bounces).toBe(false);
-        });
+        expect(UNSAFE_getByType(ScrollView).props.keyboardShouldPersistTaps).toBe('handled');
+    });
 
-        it('shouldDisableAndroidOverscrollSoBehaviourMatchesIos', () => {
-            const { UNSAFE_getByType } = render(<Settings />);
+    it('shouldNotHaveRefreshControlOnSettings', () => {
+        const { UNSAFE_getByType } = render(<Settings />);
 
-            expect(UNSAFE_getByType(ScrollView).props.overScrollMode).toBe('never');
-        });
-
-        it('shouldLetTapsPassThroughToButtonsWhileKeyboardIsOpen', () => {
-            const { UNSAFE_getByType } = render(<Settings />);
-
-            expect(UNSAFE_getByType(ScrollView).props.keyboardShouldPersistTaps).toBe('handled');
-        });
-
-        it('shouldNotHaveRefreshControlOnSettings', () => {
-            const { UNSAFE_getByType } = render(<Settings />);
-
-            expect(UNSAFE_getByType(ScrollView).props.refreshControl).toBeUndefined();
-        });
+        expect(UNSAFE_getByType(ScrollView).props.refreshControl).toBeUndefined();
     });
 });

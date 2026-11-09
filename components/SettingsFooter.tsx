@@ -1,8 +1,10 @@
 import React from 'react';
 import Constants from 'expo-constants';
-import { Text, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
-import CtaButton from './CtaButton';
+import { useThemeColours } from '@/context/ThemeContext';
+import SettingsSection from './SettingsSection';
 
 interface Props {
     onExportStats: () => void;
@@ -10,29 +12,33 @@ interface Props {
     onRateApp: () => void;
 }
 
+// Export and rate actions on one card in the app's green, with the version number below
 export default function SettingsFooter({ onExportStats, onRateApp, exporting = false }: Props) {
     const styles = useStyles();
+    const colours = useThemeColours();
+    const s = styles.settingsSheet;
 
     return (
         <>
-            <View style={styles.contentSection}>
-                <CtaButton
+            <SettingsSection>
+                <TouchableOpacity
                     testID="export-stats-button"
-                    label={exporting ? 'Preparing export…' : 'Export stats for AI coaching'}
-                    icon="ios-share"
+                    accessibilityRole="button"
                     onPress={onExportStats}
                     disabled={exporting}
-                />
-            </View>
-
-            <View style={styles.contentSection}>
-                <CtaButton
-                    testID="rate-app-button"
-                    label="Rate my app"
-                    icon="star"
-                    onPress={onRateApp}
-                />
-            </View>
+                    style={s.row}
+                >
+                    <MaterialIcons name="file-upload" size={22} color={colours.primary} />
+                    <Text style={[s.actionText, { marginLeft: 12 }]}>
+                        {exporting ? 'Preparing export…' : 'Export stats for AI coaching'}
+                    </Text>
+                </TouchableOpacity>
+                <View style={s.rowDivider} />
+                <TouchableOpacity testID="rate-app-button" accessibilityRole="button" onPress={onRateApp} style={s.row}>
+                    <MaterialIcons name="star-outline" size={22} color={colours.primary} />
+                    <Text style={[s.actionText, { marginLeft: 12 }]}>Rate my app</Text>
+                </TouchableOpacity>
+            </SettingsSection>
 
             <View style={{ alignItems: 'center', paddingTop: 20, paddingBottom: 20 }}>
                 <Text style={styles.normalText}>

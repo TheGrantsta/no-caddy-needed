@@ -11,7 +11,6 @@ import { useOrientation } from '../hooks/useOrientation';
 import { useAppToast } from '../hooks/useAppToast';
 import OnboardingOverlay from '../components/OnboardingOverlay';
 import SettingsHeader from '../components/SettingsHeader';
-import SettingsTabBar from '../components/SettingsTabBar';
 import SystemSettings from '../components/SystemSettings';
 import GolfSettings from '../components/GolfSettings';
 import SettingsFooter from '../components/SettingsFooter';
@@ -25,7 +24,6 @@ export default function Settings() {
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
   const [routineText, setRoutineText] = useState(settings.preShotRoutineText);
   const [showOnboarding, , setShowOnboarding] = useToggle(!settings.settingsOnboardingSeen);
-  const [group, setGroup] = useState<'golf' | 'system'>('golf');
   const [showRoutineInput, , setShowRoutineInput] = useToggle(settings.preShotReminderEnabled);
   // Held in state so the Animated.Value is never read from a ref during render
   const [routineFadeAnim] = useState(() => new Animated.Value(settings.preShotReminderEnabled ? 1 : 0));
@@ -45,6 +43,7 @@ export default function Settings() {
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings.preShotReminderEnabled]);
+
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -168,31 +167,26 @@ export default function Settings() {
         keyboardShouldPersistTaps="handled"
       >
         <SettingsHeader onInfoPress={handleShowOnboarding} />
-        <SettingsTabBar group={group} onGroupChange={setGroup} />
 
-        {group === 'system' && (
-          <SystemSettings
-            settings={settings}
-            onNotificationsChange={handleNotificationsChange}
-            onSoundsChange={handleSoundsChange}
-            onVoiceChange={handleVoiceChange}
-            onUnitsChange={handleUnitsChange}
-          />
-        )}
+        <GolfSettings
+          settings={settings}
+          routineText={routineText}
+          onRoutineTextChange={setRoutineText}
+          onRoutineTextSave={handleRoutineTextChange}
+          showRoutineInput={showRoutineInput}
+          routineFadeAnim={routineFadeAnim}
+          onPreShotEnabledChange={handlePreShotEnabledChange}
+          onScoreOnlyModeChange={handleScoreOnlyModeChange}
+          onBadHoleReassuranceChange={handleBadHoleReassuranceChange}
+        />
 
-        {group === 'golf' && (
-          <GolfSettings
-            settings={settings}
-            routineText={routineText}
-            onRoutineTextChange={setRoutineText}
-            onRoutineTextSave={handleRoutineTextChange}
-            showRoutineInput={showRoutineInput}
-            routineFadeAnim={routineFadeAnim}
-            onPreShotEnabledChange={handlePreShotEnabledChange}
-            onScoreOnlyModeChange={handleScoreOnlyModeChange}
-            onBadHoleReassuranceChange={handleBadHoleReassuranceChange}
-          />
-        )}
+        <SystemSettings
+          settings={settings}
+          onNotificationsChange={handleNotificationsChange}
+          onSoundsChange={handleSoundsChange}
+          onVoiceChange={handleVoiceChange}
+          onUnitsChange={handleUnitsChange}
+        />
 
         <SettingsFooter
           onExportStats={handleExportStats}

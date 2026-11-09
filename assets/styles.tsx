@@ -3273,6 +3273,104 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    settingsSheet: StyleSheet.create({
+        headerRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            paddingTop: 12,
+            paddingBottom: 16,
+        },
+        circleButton: {
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: '#E9E9EB',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        headerTitle: {
+            flex: 1,
+            color: c.text,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            textAlign: 'center',
+        },
+        headerSpacer: {
+            width: 44,
+        },
+        sectionLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            letterSpacing: 1,
+            marginHorizontal: 20,
+            marginTop: 24,
+            marginBottom: 10,
+        },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            marginHorizontal: 16,
+            overflow: 'hidden',
+        },
+        row: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            minHeight: 52,
+        },
+        rowLabel: {
+            flex: 1,
+            color: c.black,
+            fontSize: fontSizes.normal,
+            paddingRight: 12,
+        },
+        segmentTrack: {
+            flexDirection: 'row',
+            backgroundColor: '#E9E9EB',
+            borderRadius: 10,
+            padding: 3,
+        },
+        segment: {
+            flex: 1,
+            paddingVertical: 8,
+            borderRadius: 8,
+            alignItems: 'center',
+        },
+        segmentSelected: {
+            backgroundColor: c.backgroundLight,
+        },
+        segmentText: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+            fontWeight: '500',
+        },
+        segmentTextSelected: {
+            color: c.black,
+            fontWeight: '700',
+        },
+        footnote: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginHorizontal: 20,
+            marginTop: 8,
+            marginBottom: 24,
+        },
+        rowDivider: {
+            height: StyleSheet.hairlineWidth,
+            backgroundColor: '#E0E0E0',
+            marginLeft: 16,
+        },
+        actionText: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: '500',
+        },
+    }),
+
     drillHistory: StyleSheet.create({
         groupLabel: {
             color: c.tertiary,

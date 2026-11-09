@@ -1,24 +1,10 @@
 import React from 'react';
-import { Animated, Text, TextInput, View } from 'react-native';
+import { Animated, TextInput, View } from 'react-native';
 import { AppSettings } from '@/service/DbService';
 import { useTheme } from '@/context/ThemeContext';
 import { useStyles } from '@/hooks/useStyles';
-import SettingsToggleRow from './SettingsToggleRow';
-
-const PRESHOT = [
-    { key: 'on', label: 'On', value: true },
-    { key: 'off', label: 'Off', value: false },
-];
-
-const SCORE_ONLY = [
-    { key: 'on', label: 'On', value: true },
-    { key: 'off', label: 'Off', value: false },
-];
-
-const BAD_HOLE_REASSURANCE = [
-    { key: 'on', label: 'On', value: true },
-    { key: 'off', label: 'Off', value: false },
-];
+import SettingsSection from './SettingsSection';
+import SettingsSwitchRow from './SettingsSwitchRow';
 
 interface Props {
     settings: AppSettings;
@@ -32,6 +18,7 @@ interface Props {
     onBadHoleReassuranceChange: (value: boolean) => void;
 }
 
+// Golf-play switches; turning on the pre-shot routine reveals the routine text box under it
 export default function GolfSettings({
     settings,
     routineText,
@@ -45,61 +32,47 @@ export default function GolfSettings({
 }: Props) {
     const { colours } = useTheme();
     const styles = useStyles();
+    const s = styles.settingsSheet;
 
     return (
-        <>
-            <View style={styles.contentSection}>
-                <View style={styles.headerContainer}>
-                    <Text style={[styles.subHeaderText, { padding: 0 }]}>Show pre-shot routine</Text>
-                </View>
-                <SettingsToggleRow
-                    options={PRESHOT.map(({ key, label }) => ({ label, value: key }))}
-                    value={settings.preShotReminderEnabled ? 'on' : 'off'}
-                    onChange={(val) => onPreShotEnabledChange(val === 'on')}
-                    testIDPrefix="preshot"
-                />
+        <SettingsSection title="GOLF">
+            <SettingsSwitchRow
+                label="Show pre-shot routine"
+                value={settings.preShotReminderEnabled}
+                onValueChange={onPreShotEnabledChange}
+                testID="preshot-switch"
+            />
 
-                {showRoutineInput && (
-                    <Animated.View style={{ opacity: routineFadeAnim }}>
-                        <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
-                            <TextInput
-                                testID="preshot-routine-input"
-                                style={[styles.textInput, { height: undefined, minHeight: 110, textAlignVertical: 'top', paddingVertical: 10 }]}
-                                value={routineText}
-                                onChangeText={onRoutineTextChange}
-                                onEndEditing={onRoutineTextSave}
-                                multiline
-                                placeholder="Your pre-shot routine"
-                                placeholderTextColor={colours.tertiary}
-                            />
-                        </View>
-                    </Animated.View>
-                )}
-            </View>
+            {showRoutineInput && (
+                <Animated.View style={{ opacity: routineFadeAnim, paddingHorizontal: 16, paddingBottom: 12 }}>
+                    <TextInput
+                        testID="preshot-routine-input"
+                        style={[styles.textInput, { height: undefined, minHeight: 110, textAlignVertical: 'top', paddingVertical: 10 }]}
+                        value={routineText}
+                        onChangeText={onRoutineTextChange}
+                        onEndEditing={onRoutineTextSave}
+                        multiline
+                        placeholder="Your pre-shot routine"
+                        placeholderTextColor={colours.tertiary}
+                    />
+                </Animated.View>
+            )}
 
-            <View style={styles.contentSection}>
-                <View style={styles.headerContainer}>
-                    <Text style={[styles.subHeaderText, { padding: 0 }]}>Score-only mode</Text>
-                </View>
-                <SettingsToggleRow
-                    options={SCORE_ONLY.map(({ key, label }) => ({ label, value: key }))}
-                    value={settings.skipStatsFlowEnabled ? 'on' : 'off'}
-                    onChange={(val) => onScoreOnlyModeChange(val === 'on')}
-                    testIDPrefix="score-only"
-                />
-            </View>
+            <View style={s.rowDivider} />
+            <SettingsSwitchRow
+                label="Score-only mode"
+                value={settings.skipStatsFlowEnabled}
+                onValueChange={onScoreOnlyModeChange}
+                testID="score-only-switch"
+            />
 
-            <View style={styles.contentSection}>
-                <View style={styles.headerContainer}>
-                    <Text style={[styles.subHeaderText, { padding: 0 }]}>Bad hole reminder</Text>
-                </View>
-                <SettingsToggleRow
-                    options={BAD_HOLE_REASSURANCE.map(({ key, label }) => ({ label, value: key }))}
-                    value={settings.badHoleReassuranceEnabled ? 'on' : 'off'}
-                    onChange={(val) => onBadHoleReassuranceChange(val === 'on')}
-                    testIDPrefix="bad-hole-reassurance"
-                />
-            </View>
-        </>
+            <View style={s.rowDivider} />
+            <SettingsSwitchRow
+                label="Bad hole reminder"
+                value={settings.badHoleReassuranceEnabled}
+                onValueChange={onBadHoleReassuranceChange}
+                testID="bad-hole-reassurance-switch"
+            />
+        </SettingsSection>
     );
 }

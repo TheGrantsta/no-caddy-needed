@@ -46,16 +46,12 @@ jest.mock('../../../hooks/useAppToast', () => ({
 }));
 
 jest.mock('../../../hooks/useStyles', () => ({
-    useStyles: jest.fn(() => ({
-        largeButton: { padding: 10 },
-        buttonText: { fontSize: 16 },
-        divider: { height: 1 },
-        contentSection: { marginVertical: 10 },
-        headerContainer: { paddingHorizontal: 16 },
-        subHeaderText: { fontSize: 18 },
-        normalText: { fontSize: 14 },
-        textInput: { padding: 10 },
-    })),
+    useStyles: jest.fn(() => require('../../../assets/styles').default),
+}));
+
+jest.mock('expo-router', () => ({
+    useRouter: () => ({ back: jest.fn() }),
+    useNavigation: () => ({ setOptions: jest.fn() }),
 }));
 
 jest.mock('../../../context/ThemeContext', () => ({

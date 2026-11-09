@@ -60,4 +60,37 @@ describe('HoleNavigationControls', () => {
 
         expect(queryByTestId('previous-hole-button')).toBeNull();
     });
+
+    describe('hole number labels', () => {
+        it('shouldLabelPreviousWithOnlyThePreviousHoleNumber', () => {
+            const { getByText } = render(<HoleNavigationControls {...baseProps} currentHole={5} />);
+
+            expect(getByText('Hole 4')).toBeTruthy();
+        });
+
+        it('shouldLabelNextWithOnlyTheNextHoleNumber', () => {
+            const { getByText } = render(<HoleNavigationControls {...baseProps} currentHole={5} />);
+
+            expect(getByText('Hole 6')).toBeTruthy();
+        });
+
+        it('shouldShowFinishInsteadOfANextHoleNumberOnTheLastHole', () => {
+            const { getByText, queryByText } = render(<HoleNavigationControls {...baseProps} currentHole={18} isLastHole />);
+
+            expect(getByText('Finish')).toBeTruthy();
+            expect(queryByText(/Hole 6/)).toBeNull();
+        });
+    });
+
+    describe('button alignment in the floating bar', () => {
+        it('shouldCentreTheButtonsVerticallyWithTheBarPadding', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(<HoleNavigationControls {...baseProps} />);
+            const bar = StyleSheet.flatten(getByTestId('hole-nav-bar').props.style);
+            const buttonRow = StyleSheet.flatten(require('../../assets/styles').default.playScreen.navigationButtonsContainer);
+
+            expect(buttonRow.marginTop ?? 0).toBe(0);
+            expect(bar.padding).toBe(8);
+        });
+    });
 });

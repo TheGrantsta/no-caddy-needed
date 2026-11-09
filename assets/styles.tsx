@@ -2323,7 +2323,6 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'center',
             gap: 10,
             marginHorizontal: 8,
-            marginTop: 12,
         },
         nextHoleButton: {
             backgroundColor: c.primary,

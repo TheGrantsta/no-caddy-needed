@@ -316,9 +316,9 @@ describe('Play screen', () => {
         });
 
         describe('Previous button behavior and label', () => {
-            it('shows "Previous" label', async () => {
+            it('shows the previous hole number on the Previous label', async () => {
                 const utils = await resumeAtHole(1); // hole 2
-                expect(utils.getByText('Previous')).toBeTruthy();
+                expect(utils.getByText('Hole 1')).toBeTruthy();
             });
 
             it('shows "Previous" label in all phases', () => {

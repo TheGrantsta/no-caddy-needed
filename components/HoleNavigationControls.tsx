@@ -37,7 +37,7 @@ export default function HoleNavigationControls({
                         style={localStyles.previousHoleButton}
                     >
                         <MaterialIcons name="skip-previous" size={18} color={colours.primary} />
-                        <Text style={localStyles.previousHoleButtonText}>Previous</Text>
+                        <Text style={localStyles.previousHoleButtonText}>{`Hole ${currentHole - 1}`}</Text>
                     </TouchableOpacity>
                 )}
                 <TouchableOpacity
@@ -46,7 +46,7 @@ export default function HoleNavigationControls({
                     style={localStyles.nextHoleButton}
                 >
                     <Text style={localStyles.nextHoleButtonText}>
-                        {isLastHole ? 'Finish' : 'Next'}
+                        {isLastHole ? 'Finish' : `Hole ${currentHole + 1}`}
                     </Text>
                     <MaterialIcons
                         name={isLastHole ? 'sports-score' : 'skip-next'}

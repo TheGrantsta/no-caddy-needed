@@ -92,10 +92,13 @@ describe('Tempo training page', () => {
         expect(mockSetOptions).not.toHaveBeenCalledWith(expect.objectContaining({ headerShown: false }));
     });
 
-    it('doesNotDrawItsOwnBackButtonBecauseTheHeaderProvidesOne', () => {
-        const { queryByLabelText } = render(<Tempo />);
+    it('showsABackButtonLeftOfTheTitleThatReturnsToThePreviousScreen', () => {
+        const { getByLabelText, getByText } = render(<Tempo />);
 
-        expect(queryByLabelText('Back')).toBeNull();
+        expect(getByText('Tempo training')).toBeTruthy();
+        fireEvent.press(getByLabelText('Back'));
+
+        expect(mockBack).toHaveBeenCalled();
     });
 
     it('showsTheSavedTempoAsTheLargeReadoutWithItsUnit', () => {

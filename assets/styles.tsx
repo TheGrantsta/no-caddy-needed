@@ -3227,10 +3227,24 @@ export const createStyles = (c: ThemeColours) => ({
             elevation: 8,
         },
         pageHeader: {
+            flexDirection: 'row',
             alignItems: 'center',
+            justifyContent: 'space-between',
             paddingHorizontal: 16,
             paddingTop: 12,
             paddingBottom: 16,
+        },
+        backButton: {
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        pageTitleBlock: {
+            flex: 1,
+            alignItems: 'center',
         },
         pageTitle: {
             color: c.black,
@@ -3241,6 +3255,9 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.tertiary,
             fontSize: fontSizes.smallText,
             marginTop: 2,
+        },
+        pageSpacer: {
+            width: 44,
         },
         whyLabel: {
             color: c.tertiary,

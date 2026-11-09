@@ -475,6 +475,119 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    roundSummary: StyleSheet.create({
+        screen: {
+            flex: 1,
+            backgroundColor: c.background,
+        },
+        content: {
+            paddingHorizontal: 16,
+            paddingTop: 48,
+            paddingBottom: 16,
+        },
+        hero: {
+            alignItems: 'center',
+            marginBottom: 8,
+        },
+        checkCircle: {
+            width: 88,
+            height: 88,
+            borderRadius: 44,
+            backgroundColor: c.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: 16,
+        },
+        title: {
+            color: c.text,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+        },
+        subtitle: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+            marginTop: 6,
+            textAlign: 'center',
+        },
+        sectionHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 20,
+        },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            overflow: 'hidden',
+        },
+        row: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+        },
+        rowDivider: {
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: c.tertiary + '66',
+        },
+        rowLabel: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        rowValue: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
+        },
+        tiles: {
+            flexDirection: 'row',
+            gap: 20,
+            marginTop: 20,
+        },
+        tile: {
+            flex: 1,
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            padding: 16,
+        },
+        tileLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+        },
+        tileValue: {
+            color: c.text,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            marginTop: 4,
+        },
+        footer: {
+            paddingHorizontal: 16,
+            paddingBottom: 24,
+            paddingTop: 12,
+            gap: 8,
+        },
+        doneButton: {
+            backgroundColor: c.primary,
+            borderRadius: 28,
+            paddingVertical: 16,
+            alignItems: 'center',
+        },
+        doneText: {
+            color: c.white,
+            fontSize: fontSizes.tableHeader,
+            fontWeight: 'bold',
+        },
+        linkButton: {
+            paddingVertical: 12,
+            alignItems: 'center',
+        },
+        linkText: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: '500',
+        },
+    }),
+
     endRoundSheet: StyleSheet.create({
         backdrop: {
             flex: 1,

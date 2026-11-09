@@ -2,28 +2,24 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import * as Haptics from 'expo-haptics';
 import { Animated, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useFocusEffect, useNavigation } from 'expo-router';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { tabBarStyleFor, sceneStyleFor } from '../../assets/tabBarOptions';
 import { MaterialIcons } from '@expo/vector-icons';
 import HoleScoreInput from '../../components/HoleScoreInput';
 import HoleNoteInput from '../../components/HoleNoteInput';
-import DeadlySinsTally from '../../components/DeadlySinsTally';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
-import Scorecard from '../../components/Scorecard';
-import CtaButton from '../../components/CtaButton';
-import ScorecardInlineEditor from '../../components/ScorecardInlineEditor';
 import {
     startRoundService,
     endRoundService,
     deleteRoundService,
+    getDeadlySinsForRoundService,
     addMultiplayerHoleScoresService,
     getActiveRoundService,
     getAllRoundHistoryService,
     insertHoleDeadlySinsService,
     getHoleDeadlySinsService,
     getHoleScoresService,
-    getHolesWithSinsForRoundService,
     insertPuttingStatsService,
     getPuttingStatsService,
     addRoundPlayersService,
@@ -44,7 +40,6 @@ import {
     Round,
     RoundPlayer,
     DeadlySinsValues,
-    MultiplayerRoundScorecard,
     ClubDistance,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
@@ -60,6 +55,8 @@ import { useSectionTransition } from '../../hooks/useSectionTransition';
 import { useToggle } from '../../hooks/useToggle';
 import { useHoleLifecycle } from '../../hooks/useHoleLifecycle';
 import PhaseStats from '../../components/PhaseStats';
+import RoundSummary from '../../components/RoundSummary';
+import { buildRoundSummary, RoundSummary as RoundSummaryData } from '../../utils/roundSummary';
 import EndRoundSheet from '../../components/EndRoundSheet';
 import PhasePutting from '../../components/PhasePutting';
 import RoundEntry from '../../components/RoundEntry';
@@ -81,7 +78,6 @@ export default function Play() {
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
     const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
-    const [scorecardEditMode, setScorecardEditMode] = useState(false);
 
     // Use lifecycle hook for hole state management
     const lifecycle = useHoleLifecycle();
@@ -130,7 +126,7 @@ export default function Play() {
     const [players, setPlayers] = useState<RoundPlayer[]>([]);
     const [currentHoleData, setCurrentHoleData] = useState<{ holeNumber: number; holePar: number; scores: { playerId: number; playerName: string; score: number }[] } | null>(null);
     const [showEndRoundConfirm, , setShowEndRoundConfirm] = useToggle(false);
-    const [scorecardData, setScorecardData] = useState<MultiplayerRoundScorecard | null>(null);
+    const [roundSummary, setRoundSummary] = useState<RoundSummaryData | null>(null);
     const [recentCourseNames, setRecentCourseNames] = useState<string[]>([]);
     const { showError, showResult } = useAppToast();
     const { wind, heading, refreshWind } = useWind();
@@ -154,9 +150,6 @@ export default function Play() {
     const [showEndIncompleteRoundConfirm, setShowEndIncompleteRoundConfirm] = useState(false);
     const [courseHolePars, setCourseHolePars] = useState<Record<number, number>>({});
     const [activeCourseName, setActiveCourseName] = useState<string | null>(null);
-    const [scorecardSinHoles, setScorecardSinHoles] = useState<Set<number>>(new Set());
-    const [selectedScorecardScore, setSelectedScorecardScore] = useState<{ holeNumber: number; playerId: number } | null>(null);
-    const [scorecardDisplaySins, setScorecardDisplaySins] = useState<DeadlySinsValues | null>(null);
     const [courseNotes, setCourseNotes] = useState<Record<number, string>>({});
     const [currentNoteText, setCurrentNoteText] = useState('');
     const showBadHoleReassurance = lifecycle.showBadHoleReassurance;
@@ -168,7 +161,6 @@ export default function Play() {
     const [contentFadeAnim] = useState(() => new Animated.Value(0));
     const [contentSlideAnim] = useState(() => new Animated.Value(0));
     const navDirectionRef = useRef<'next' | 'previous'>('next');
-    const localStyles = styles.playScreen;
     const isLastHole = currentHole >= 18;
 
     useEffect(() => {
@@ -541,15 +533,46 @@ export default function Play() {
         setPlayers([]);
         setCurrentHoleData(null);
         setShowEndRoundConfirm(false);
-        setScorecardData(null);
-        setScorecardSinHoles(new Set());
-        setSelectedScorecardScore(null);
-        setScorecardDisplaySins(null);
         setCourseHolePars({});
         setActiveCourseName(null);
         setCourseNotes({});
         setCurrentNoteText('');
         setRecentCourseNames(getRecentCourseNamesService());
+    };
+
+    // Totals for the "Round saved" summary, read back from what was stored for the round
+    const buildSummaryForRound = (roundId: number, isScoreOnly: boolean) => {
+        const scorecard = getMultiplayerScorecardService(roundId);
+        if (!scorecard) return null;
+        const holeNumbers = [...new Set(scorecard.holeScores.map(h => h.HoleNumber))];
+        const putting = isScoreOnly ? [] : holeNumbers.flatMap(hole => {
+            const saved = getPuttingStatsService(roundId, hole);
+            if (!saved) return [];
+            return [{
+                hole,
+                firstPutt: saved.FirstPuttDistance ?? undefined,
+                secondPutt: saved.SecondPuttDistance ?? undefined,
+                greenInRegulation: Boolean(saved.GreenInRegulation),
+            }];
+        });
+        const totals = isScoreOnly ? null : getDeadlySinsForRoundService(roundId);
+        const sins = totals ? {
+            TroubleOffTee: totals.TroubleOffTee,
+            Penalties: totals.Penalties,
+            ThreePutts: totals.ThreePutts,
+            BogeysInside9Iron: totals.BogeysInside9Iron,
+            DoubleChips: totals.DoubleChips,
+            DoubleBogeys: totals.DoubleBogeys,
+            BogeysPar5: totals.BogeysPar5,
+        } : {};
+        return buildRoundSummary({
+            courseName: scorecard.round.CourseName ?? 'Round',
+            players: scorecard.players,
+            holeScores: scorecard.holeScores,
+            putting,
+            sins,
+            isScoreOnly,
+        });
     };
 
     const handleConfirmEndRound = async () => {
@@ -567,28 +590,17 @@ export default function Play() {
 
         showResult(success, 'Round saved', 'Failed to save round');
 
-        const scorecard = getMultiplayerScorecardService(activeRoundId);
-        if (scorecard) {
-            setScorecardData(scorecard);
-            setScorecardSinHoles(getHolesWithSinsForRoundService(activeRoundId));
+        const summary = buildSummaryForRound(activeRoundId, skipStatsFlow);
+        if (summary) {
             setShowEndRoundConfirm(false);
+            setRoundSummary(summary);
         } else {
             resetToIdle();
         }
     };
 
-    const handleScorecardScoreSelect = (holeNumber: number, playerId: number) => {
-        setSelectedScorecardScore({ holeNumber, playerId });
-        const isUserPlayer = scorecardData?.players.find(p => p.Id === playerId)?.IsUser === 1;
-        if (isUserPlayer && activeRoundId !== null) {
-            const existing = getHoleDeadlySinsService(activeRoundId, holeNumber);
-            setScorecardDisplaySins(existing ?? INITIAL_SINS);
-        } else {
-            setScorecardDisplaySins(null);
-        }
-    };
-
-    const handleScorecardDone = async () => {
+    const handleSummaryDone = async () => {
+        setRoundSummary(null);
         resetToIdle();
         // Ask for a review after the 1st completed round, then every 6th (1, 7, 13, …).
         const roundCount = getAllRoundHistoryService().length;
@@ -598,10 +610,17 @@ export default function Play() {
         }
     };
 
+    const handleViewPerformance = () => {
+        setRoundSummary(null);
+        resetToIdle();
+        router.push('/perform');
+    };
+
     const isRoundActive = activeRoundId !== null;
 
     // Hide the bottom tab bar while a round is in progress, and bring it back when the round ends
     const navigation = useNavigation();
+    const router = useRouter();
     const { bottom: tabBarBottomInset } = useSafeAreaInsets();
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -626,7 +645,7 @@ export default function Play() {
                 }
             >
 
-                {!isRoundActive && !scorecardData && displaySection('play-score') && (
+                {!isRoundActive && !roundSummary && displaySection('play-score') && (
                     <RoundEntry
                         incompleteRound={incompleteRound}
                         onContinueRound={handleContinueRound}
@@ -665,7 +684,7 @@ export default function Play() {
                     </View>
                 )}
 
-                {isRoundActive && !scorecardData && displaySection('play-score') && (
+                {isRoundActive && !roundSummary && displaySection('play-score') && (
                     <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
                         <View>
                             <Animated.View style={{ opacity: contentFadeAnim, transform: [{ translateX: contentSlideAnim }] }}>
@@ -782,69 +801,11 @@ export default function Play() {
                     </Animated.View>
                 )}
 
-                {scorecardData && displaySection('play-score') && !scorecardEditMode && (
-                    <View style={styles.container}>
-                        <Text style={localStyles.scorecardHeader}>Scorecard</Text>
-                        <Scorecard
-                            players={scorecardData.players}
-                            holeScores={scorecardData.holeScores}
-                            editable
-                            selectedScore={selectedScorecardScore}
-                            onScoreSelect={handleScorecardScoreSelect}
-                            sinHoles={scorecardSinHoles}
-                        />
-
-                        {selectedScorecardScore && scorecardDisplaySins && (
-                            <DeadlySinsTally
-                                key={selectedScorecardScore.holeNumber}
-                                onEndRound={() => { }}
-                                roundControlled
-                                initialValues={scorecardDisplaySins}
-                                holePar={scorecardData.holeScores.find(s => s.HoleNumber === selectedScorecardScore.holeNumber)?.HolePar}
-                                userScore={scorecardData.holeScores.find(s => s.HoleNumber === selectedScorecardScore.holeNumber && s.RoundPlayerId === scorecardData.players.find(p => p.IsUser === 1)?.Id)?.Score}
-                            />
-                        )}
-                        <CtaButton
-                            testID="scorecard-done-button"
-                            label="Done"
-                            icon="check-circle"
-                            onPress={handleScorecardDone}
-                        />
-                        <TouchableOpacity
-                            testID="scorecard-edit-button"
-                            style={[styles.tertiaryLink, { marginTop: 12 }]}
-                            onPress={() => setScorecardEditMode(true)}
-                        >
-                            <MaterialIcons name="edit" size={20} color={colours.primary} />
-                            <Text style={styles.tertiaryLinkText}>Edit</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-
-                {scorecardData && displaySection('play-score') && scorecardEditMode && (
-                    <ScorecardInlineEditor
-                        roundId={activeRoundId || 0}
-                        scorecardData={scorecardData}
-                        onDone={() => {
-                            setScorecardEditMode(false);
-                            setSelectedScorecardScore(null);
-                            setScorecardDisplaySins(null);
-                            setScorecardSinHoles(new Set());
-                            // Reload scorecard data to show updated scores
-                            if (activeRoundId) {
-                                const updated = getMultiplayerScorecardService(activeRoundId);
-                                if (updated) {
-                                    setScorecardData(updated);
-                                    setScorecardSinHoles(getHolesWithSinsForRoundService(activeRoundId));
-                                }
-                            }
-                        }}
-                        onCancel={() => {
-                            setScorecardEditMode(false);
-                            setSelectedScorecardScore(null);
-                            setScorecardDisplaySins(null);
-                            setScorecardSinHoles(new Set());
-                        }}
+                {roundSummary && displaySection('play-score') && (
+                    <RoundSummary
+                        summary={roundSummary}
+                        onDone={handleSummaryDone}
+                        onViewPerformance={handleViewPerformance}
                     />
                 )}
 

@@ -24,4 +24,10 @@ describe('hole screen section spacing', () => {
         expect(styles.holeScreen.card.marginBottom).toBe(0);
         expect(styles.holeScreen.noteInput.marginBottom).toBe(0);
     });
+
+    // The summary's white elements use the same gaps as the hole screen sections
+    it('shouldGiveTheSummaryPuttingTilesTheSectionGapAboveAndBetween', () => {
+        expect(styles.roundSummary.tiles.marginTop).toBe(SECTION_GAP);
+        expect(styles.roundSummary.tiles.gap).toBe(SECTION_GAP);
+    });
 });

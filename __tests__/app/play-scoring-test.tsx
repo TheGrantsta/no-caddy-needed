@@ -24,7 +24,6 @@ import {
     getCourseHoleParsService,
     loadCourseNotesService,
     saveHoleNoteService,
-    getHoleDeadlySinsService,
     getHolesWithSinsForRoundService,
     deleteHoleSinDetailsService,
     _PENALTY_TYPES,
@@ -49,6 +48,7 @@ jest.mock('../../hooks/useStyles', () => ({
 jest.mock('../../service/DbService', () => ({
     startRoundService: jest.fn(),
     endRoundService: jest.fn(),
+    getDeadlySinsForRoundService: jest.fn().mockReturnValue(null),
     deleteRoundService: jest.fn().mockResolvedValue(true),
     addMultiplayerHoleScoresService: jest.fn(),
     getActiveRoundService: jest.fn(),
@@ -177,7 +177,6 @@ const mockGetHolesPlayedForRound = getHolesPlayedForRoundService as jest.Mock;
 const mockGetCourseHolePars = getCourseHoleParsService as jest.Mock;
 const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
 const mockSaveHoleNote = saveHoleNoteService as jest.Mock;
-const mockGetHoleDeadlySins = getHoleDeadlySinsService as jest.Mock;
 const mockGetHolesWithSinsForRound = getHolesWithSinsForRoundService as jest.Mock;
 const mockHapticsImpact = Haptics.impactAsync as jest.Mock;
 const mockDeleteHoleSinDetailsService = deleteHoleSinDetailsService as jest.Mock;
@@ -1329,7 +1328,7 @@ describe('Play screen', () => {
         });
     });
 
-    describe('Post-round scorecard', () => {
+    describe('Round saved summary', () => {
         const startAndEndRound = async (getByTestId: any) => {
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
@@ -1345,7 +1344,7 @@ describe('Play screen', () => {
         };
 
         const mockScorecardData = {
-            round: { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
+            round: { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: 'Test Course', HolesPlayed: 1 },
             players: [
                 { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
                 { Id: 2, RoundId: 1, PlayerName: 'Alice', IsUser: 0, SortOrder: 1 },
@@ -1356,7 +1355,7 @@ describe('Play screen', () => {
             ],
         };
 
-        it('shows scorecard after confirming end round', async () => {
+        it('shows the round saved summary after ending a round', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockEndRound.mockResolvedValue(true);
@@ -1367,12 +1366,12 @@ describe('Play screen', () => {
             await startAndEndRound(getByTestId);
 
             await waitFor(() => {
-                expect(getByText('Scorecard')).toBeTruthy();
-                expect(getByTestId('scorecard-done-button')).toBeTruthy();
+                expect(getByText('Round saved')).toBeTruthy();
+                expect(getByTestId('round-summary-done-button')).toBeTruthy();
             });
         });
 
-        it('shows player names and totals on scorecard', async () => {
+        it('shows each player\'s strokes on the summary', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockEndRound.mockResolvedValue(true);
@@ -1383,12 +1382,12 @@ describe('Play screen', () => {
             await startAndEndRound(getByTestId);
 
             await waitFor(() => {
-                expect(getByTestId('player-total-1')).toBeTruthy();
-                expect(getByTestId('player-total-2')).toBeTruthy();
+                expect(getByTestId('summary-strokes-1')).toHaveTextContent('5');
+                expect(getByTestId('summary-strokes-2')).toHaveTextContent('4');
             });
         });
 
-        it('returns to idle when Done pressed on scorecard', async () => {
+        it('returns to the start of a round when Done is pressed on the summary', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockEndRound.mockResolvedValue(true);
@@ -1397,151 +1396,46 @@ describe('Play screen', () => {
             const { getByTestId, queryByText } = render(<Play />);
 
             await startAndEndRound(getByTestId);
+            await waitFor(() => expect(getByTestId('round-summary-done-button')).toBeTruthy());
 
-            await waitFor(() => {
-                expect(getByTestId('scorecard-done-button')).toBeTruthy();
+            await act(async () => {
+                fireEvent.press(getByTestId('round-summary-done-button'));
             });
 
-            fireEvent.press(getByTestId('scorecard-done-button'));
-
             await waitFor(() => {
-                expect(getByTestId('start-button')).toBeTruthy();
-                expect(queryByText('Scorecard')).toBeNull();
-            });
-        });
-
-        it('returns to idle when no scorecard data available', async () => {
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-            mockEndRound.mockResolvedValue(true);
-            mockGetMultiplayerScorecard.mockReturnValue(null);
-
-            const { getByTestId } = render(<Play />);
-
-            await startAndEndRound(getByTestId);
-
-            await waitFor(() => {
+                expect(queryByText('Round saved')).toBeNull();
                 expect(getByTestId('start-button')).toBeTruthy();
             });
         });
 
-        it('fetches scorecard with correct round ID', async () => {
-            mockStartRound.mockResolvedValue(42);
+        it('opens Performance when View in Performance is pressed on the summary', async () => {
+            mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockEndRound.mockResolvedValue(true);
-            mockGetMultiplayerScorecard.mockReturnValue(null);
+            mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
+
+            const { getByTestId } = render(<Play />);
+
+            await startAndEndRound(getByTestId);
+            await waitFor(() => expect(getByTestId('round-summary-performance-button')).toBeTruthy());
+
+            fireEvent.press(getByTestId('round-summary-performance-button'));
+
+            expect(mockPush).toHaveBeenCalledWith('/perform');
+        });
+
+        it('fetches the scorecard for the saved round', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockEndRound.mockResolvedValue(true);
+            mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
 
             const { getByTestId } = render(<Play />);
 
             await startAndEndRound(getByTestId);
 
             await waitFor(() => {
-                expect(mockGetMultiplayerScorecard).toHaveBeenCalledWith(42);
-            });
-        });
-
-        it('shows Edit link alongside Done on scorecard', async () => {
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-            mockEndRound.mockResolvedValue(true);
-            const mockScorecard = {
-                round: { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
-                players: [
-                    { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
-                ],
-                holeScores: [
-                    { Id: 1, RoundId: 1, RoundPlayerId: 1, HoleNumber: 1, HolePar: 4, Score: 5 },
-                ],
-            };
-            mockGetMultiplayerScorecard.mockReturnValue(mockScorecard);
-
-            const { getByTestId } = render(<Play />);
-
-            await startAndEndRound(getByTestId);
-
-            await waitFor(() => {
-                expect(getByTestId('scorecard-done-button')).toBeTruthy();
-                expect(getByTestId('scorecard-edit-button')).toBeTruthy();
-            });
-        });
-
-        it('enters inline edit mode when Edit link pressed', async () => {
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-            mockEndRound.mockResolvedValue(true);
-            const mockScorecard = {
-                round: { Id: 1, TotalScore: 2, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06' },
-                players: [
-                    { Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 },
-                ],
-                holeScores: [
-                    { Id: 1, RoundId: 1, RoundPlayerId: 1, HoleNumber: 1, HolePar: 4, Score: 5 },
-                ],
-            };
-            mockGetMultiplayerScorecard.mockReturnValue(mockScorecard);
-
-            const { getByTestId, queryByTestId } = render(<Play />);
-
-            await startAndEndRound(getByTestId);
-
-            await waitFor(() => {
-                expect(getByTestId('scorecard-edit-button')).toBeTruthy();
-            });
-
-            fireEvent.press(getByTestId('scorecard-edit-button'));
-
-            await waitFor(() => {
-                expect(getByTestId('inline-editor-scorecard')).toBeTruthy();
-                expect(queryByTestId('scorecard-done-button')).toBeNull();
-            });
-        });
-
-        describe('7 Deadly Sins on complete scorecard', () => {
-            it('showsDeadlySinsTallyWhenUserHoleSelectedOnCompleteScorecard', async () => {
-                mockStartRound.mockResolvedValue(1);
-                mockAddRoundPlayers.mockResolvedValue([1]);
-                mockEndRound.mockResolvedValue(true);
-                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
-                mockGetHoleDeadlySins.mockReturnValue({
-                    threePutts: true, doubleBogeys: false, bogeysPar5: false,
-                    bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false,
-                });
-
-                const { getByTestId } = render(<Play />);
-                await startAndEndRound(getByTestId);
-
-                await waitFor(() => getByTestId('scorecard-done-button'));
-                fireEvent.press(getByTestId('score-cell-1-1'));
-
-                await waitFor(() => expect(getByTestId('7deadly-sins-toggle-three-putts')).toBeTruthy());
-            });
-
-            it('doesNotShowDeadlySinsTallyWhenOpponentHoleSelected', async () => {
-                mockStartRound.mockResolvedValue(1);
-                mockAddRoundPlayers.mockResolvedValue([1]);
-                mockEndRound.mockResolvedValue(true);
-                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
-
-                const { getByTestId, queryByTestId } = render(<Play />);
-                await startAndEndRound(getByTestId);
-
-                await waitFor(() => getByTestId('scorecard-done-button'));
-                fireEvent.press(getByTestId('score-cell-1-2'));
-
-                expect(queryByTestId('7deadly-sins-toggle-three-putts')).toBeNull();
-            });
-
-            it('showsSinHoleDotsOnCompleteScorecard', async () => {
-                mockStartRound.mockResolvedValue(1);
-                mockAddRoundPlayers.mockResolvedValue([1]);
-                mockEndRound.mockResolvedValue(true);
-                mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
-                mockGetHolesWithSinsForRound.mockReturnValue(new Set([1]));
-
-                const { getByTestId } = render(<Play />);
-                await startAndEndRound(getByTestId);
-
-                await waitFor(() => expect(getByTestId('sin-indicator-1')).toBeTruthy());
+                expect(mockGetMultiplayerScorecard).toHaveBeenCalledWith(1);
             });
         });
     });

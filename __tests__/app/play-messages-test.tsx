@@ -44,6 +44,7 @@ jest.mock('../../hooks/useStyles', () => ({
 jest.mock('../../service/DbService', () => ({
     startRoundService: jest.fn(),
     endRoundService: jest.fn(),
+    getDeadlySinsForRoundService: jest.fn().mockReturnValue(null),
     addMultiplayerHoleScoresService: jest.fn(),
     getActiveRoundService: jest.fn(),
     getAllRoundHistoryService: jest.fn(),
@@ -378,6 +379,7 @@ describe('Play screen', () => {
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
             mockEndRound.mockResolvedValue(true);
             mockGetMultiplayerScorecard.mockReturnValue({
+                round: { Id: 1, TotalScore: 0, IsCompleted: 1, StartTime: '', EndTime: '', Created_At: '15/06', CourseName: 'Test Course', HolesPlayed: 0 },
                 players: [{ Id: 1, RoundId: 1, PlayerName: 'You', IsUser: 1, SortOrder: 0 }],
                 holeScores: [],
             });
@@ -388,7 +390,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('end-round-button') as never);
             await waitFor(() => expect(getByTestId('end-round-save-button')).toBeTruthy());
             fireEvent.press(getByTestId('end-round-save-button') as never);
-            await waitFor(() => expect(getByTestId('scorecard-done-button')).toBeTruthy());
+            await waitFor(() => expect(getByTestId('round-summary-done-button')).toBeTruthy());
         };
 
         beforeEach(() => {
@@ -405,7 +407,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
             await completeRoundToScorecard(getByTestId);
 
-            await act(async () => { fireEvent.press(getByTestId('scorecard-done-button')); });
+            await act(async () => { fireEvent.press(getByTestId('round-summary-done-button')); });
 
             await waitFor(() => expect(mockMaybeRequestReview).toHaveBeenCalledWith(1));
         });
@@ -416,7 +418,7 @@ describe('Play screen', () => {
             const { getByTestId } = render(<Play />);
             await completeRoundToScorecard(getByTestId);
 
-            await act(async () => { fireEvent.press(getByTestId('scorecard-done-button')); });
+            await act(async () => { fireEvent.press(getByTestId('round-summary-done-button')); });
 
             await waitFor(() => {
                 expect(mockLogEvent).toHaveBeenCalledWith('review_requested', expect.objectContaining({ roundNumber: 1 }));
@@ -430,7 +432,7 @@ describe('Play screen', () => {
             await completeRoundToScorecard(getByTestId);
             mockLogEvent.mockClear();
 
-            await act(async () => { fireEvent.press(getByTestId('scorecard-done-button')); });
+            await act(async () => { fireEvent.press(getByTestId('round-summary-done-button')); });
 
             await waitFor(() => expect(mockMaybeRequestReview).toHaveBeenCalled());
             expect(mockLogEvent).not.toHaveBeenCalledWith('review_requested', expect.anything());

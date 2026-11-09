@@ -6,7 +6,7 @@ export function useLagPuttingSimulation() {
     const [score, setScore] = useState(0);
 
     const setScoreAndComplete = useCallback((value: number) => {
-        setScore(clampValue(value, 0, 15));
+        setScore(clampValue(value, 0, 30));
     }, []);
 
     const submit = useCallback(() => {

@@ -30,7 +30,7 @@ describe('useLagPuttingSimulation', () => {
             expect(result.current.score).toBe(5);
         });
 
-        it('clamps score to 0-15 range', () => {
+        it('clamps score to 0-30 range', () => {
             const { result } = renderHook(() => useLagPuttingSimulation());
 
             act(() => {
@@ -40,10 +40,20 @@ describe('useLagPuttingSimulation', () => {
             expect(result.current.score).toBe(0);
 
             act(() => {
-                result.current.setScore(20);
+                result.current.setScore(31);
             });
 
-            expect(result.current.score).toBe(15);
+            expect(result.current.score).toBe(30);
+        });
+
+        it('acceptsEveryScoreUpToThirty', () => {
+            const { result } = renderHook(() => useLagPuttingSimulation());
+
+            act(() => {
+                result.current.setScore(18);
+            });
+
+            expect(result.current.score).toBe(18);
         });
     });
 

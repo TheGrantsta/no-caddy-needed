@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Animated, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { Animated, Text, View } from 'react-native';
 import { Link } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
+import ExpandableInfoCard from './ExpandableInfoCard';
 
 interface Props {
     fadeAnim: Animated.Value;
@@ -14,7 +15,6 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.practiceCards;
-    const [showPrinciples, setShowPrinciples] = useState(false);
 
     const challenges = [
         { href: '../challenges/putting-simulation', icon: 'adjust', label: 'Putting sim' },
@@ -55,30 +55,12 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
             <View style={s.learnLabelWrap}>
                 <Text style={styles.holeScreen.sectionLabel}>Learn</Text>
             </View>
-            <View testID="practice-principles-card" style={s.learnCard}>
-                <TouchableOpacity
-                    testID="practice-principles-row"
-                    accessibilityRole="button"
-                    onPress={() => setShowPrinciples(!showPrinciples)}
-                    style={s.learnRow}
-                >
-                    <View style={s.learnIcon}>
-                        <MaterialIcons name="menu-book" size={22} color={colours.white} />
-                    </View>
-                    <Text style={s.learnText}>Practice principles</Text>
-                    <MaterialIcons name={showPrinciples ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} size={24} color={colours.tertiary} />
-                </TouchableOpacity>
-                {showPrinciples && (
-                    <View testID="practice-principles-points" style={s.points}>
-                        {points.map(point => (
-                            <View key={point} style={s.pointRow}>
-                                <MaterialIcons name="chevron-right" size={18} color={colours.primary} />
-                                <Text style={s.pointText}>{point}</Text>
-                            </View>
-                        ))}
-                    </View>
-                )}
-            </View>
+            <ExpandableInfoCard
+                icon="menu-book"
+                title="Practice principles"
+                points={points}
+                testIDPrefix="practice-principles"
+            />
         </Animated.View>
     );
 }

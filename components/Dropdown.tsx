@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View, Modal, FlatList } from 'react-native';
+import { Text, TouchableOpacity, View, Modal, ScrollView } from 'react-native';
 import { useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -91,12 +91,10 @@ const Dropdown = ({
                         }}
                         onStartShouldSetResponder={() => true}
                     >
-                        <FlatList
-                            data={options}
-                            keyExtractor={(option, index) => index.toString()}
-                            scrollEnabled={options.length > 6}
-                            renderItem={({ item: option }) => (
+                        <ScrollView scrollEnabled={options.length > 6}>
+                            {options.map(option => (
                                 <TouchableOpacity
+                                    key={option}
                                     testID={`${testIDPrefix}-option-${option}`}
                                     onPress={() => handleSelectOption(option)}
                                     style={{
@@ -117,8 +115,8 @@ const Dropdown = ({
                                         {option}
                                     </Text>
                                 </TouchableOpacity>
-                            )}
-                        />
+                            ))}
+                        </ScrollView>
                     </View>
                 </TouchableOpacity>
             </Modal>

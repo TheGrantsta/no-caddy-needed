@@ -1099,6 +1099,25 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             fontWeight: '600',
         },
+        submitBar: {
+            position: 'absolute',
+            left: 16,
+            right: 16,
+        },
+        submitButton: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            backgroundColor: c.primary,
+            borderRadius: 32,
+            paddingVertical: 16,
+        },
+        submitText: {
+            color: c.white,
+            fontSize: fontSizes.normal,
+            fontWeight: '700',
+        },
     }),
 
     holeScreen: StyleSheet.create({

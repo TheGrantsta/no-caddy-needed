@@ -1,6 +1,8 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useRouter, useNavigation } from 'expo-router';
+import { useNavigation } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useStyles } from '@/hooks/useStyles';
 import { useConfirmBeforeLeaving } from '@/hooks/useConfirmBeforeLeaving';
@@ -8,18 +10,23 @@ import { useThemeColours } from '@/context/ThemeContext';
 import { useLagPuttingSimulation } from '@/hooks/useLagPuttingSimulation';
 import { insertDrillResultService } from '@/service/DbService';
 import { useAppToast } from '@/hooks/useAppToast';
-import ChallengeNumberPicker from '@/components/ChallengeNumberPicker';
+import SimulationAppBar from '@/components/SimulationAppBar';
+import SimulationDistanceCard from '@/components/SimulationDistanceCard';
+import Dropdown from '@/components/Dropdown';
+import EndRoundSheet from '@/components/EndRoundSheet';
 import ChallengeCompleteView from '@/components/ChallengeCompleteView';
 import { resolveBand } from '@/utils/performanceBands';
-import { useCallback, useEffect, useRef, useState, useLayoutEffect } from 'react';
-import Chevrons from '@/components/Chevrons';
-import { MaterialIcons } from '@expo/vector-icons';
+import { useEffect, useRef, useState, useLayoutEffect } from 'react';
+import ExpandableInfoCard from '@/components/ExpandableInfoCard';
 
 const setupPoints: string[] = ['Place tee 1 in the ground', 'Tee 2 21\' away', 'Tee 3 a further 9\' away'];
 
 const howToPlayPoints: string[] = ['First putt must reach tee 2', 'Each following putt must stop past the previous ball & before tee 3', 'Count successful putts in sequence before one fails'];
 
 type PerformanceBand = 'pro' | 'scratch' | 'single' | 'mid' | 'beginner';
+
+// Total putts run 0–30
+const SCORE_OPTIONS = Array.from({ length: 31 }, (_, i) => String(i));
 
 const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; minScore: number; color: string }> = {
     pro: { label: 'Pro', minScore: 6, color: '#00C851' },
@@ -32,41 +39,50 @@ const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; minScore: numb
 export default function LagPutting() {
     const styles = useStyles();
     const colours = useThemeColours();
-    const router = useRouter();
     const navigation = useNavigation();
     const sim = useLagPuttingSimulation();
+    const { bottom: bottomInset } = useSafeAreaInsets();
     const { showResult } = useAppToast();
     const hasSaved = useRef(false);
     const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+    const [showEndSheet, setShowEndSheet] = useState(false);
     const { leave } = useConfirmBeforeLeaving(sim.phase === 'in-progress', () => setShowQuitConfirm(true));
 
-    const handleBack = useCallback(() => {
-        if (sim.phase === 'in-progress') {
-            setShowQuitConfirm(true);
-        } else {
-            router.back();
-        }
-    }, [sim.phase, router]);
+    // The screen draws its own app bar, so the stack header is hidden
+    useLayoutEffect(() => {
+        navigation.setOptions({ headerShown: false });
+    }, [navigation]);
 
-    const handleConfirmQuit = useCallback(() => {
+    const handleConfirmQuit = () => {
         setShowQuitConfirm(false);
         leave();
-    }, [leave]);
+    };
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerLeft: () => (
-                <TouchableOpacity onPress={handleBack} testID="header-back-button">
-                    <MaterialIcons name="arrow-back" size={24} color={colours.background} />
-                </TouchableOpacity>
-            ),
-        });
-    }, [navigation, handleBack, colours.background]);
-
-    const handlePlayAgain = useCallback(() => {
+    const handlePlayAgain = () => {
         hasSaved.current = false;
         sim.reset();
-    }, [sim]);
+    };
+
+    const handleEndPress = () => {
+        if (sim.phase === 'complete') {
+            leave();
+            return;
+        }
+        setShowEndSheet(true);
+    };
+
+    // Save records the score chosen so far, then leaves
+    const handleSaveScore = () => {
+        setShowEndSheet(false);
+        insertDrillResultService('Lag Putting', sim.score >= 6, null, sim.score);
+        showResult(true, 'Result saved', '');
+        leave();
+    };
+
+    const handleDiscardScore = () => {
+        setShowEndSheet(false);
+        leave();
+    };
 
     const bandDefinitions = [
         { key: 'pro' as const, threshold: 6 },
@@ -89,68 +105,51 @@ export default function LagPutting() {
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
+            <SimulationAppBar title="Lag putting" onEnd={handleEndPress} />
+            <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, { paddingBottom: 140 }]}>
                 <View style={styles.container}>
                     {sim.phase === 'in-progress' && (
                         <>
-                            <Text style={styles.headerText}>Lag putting challenge</Text>
-
-                            <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
+                            <SimulationDistanceCard label="TOTAL PUTTS" distance={sim.score} unit="putts" />
+                            <View style={{ marginHorizontal: 20, marginTop: 20 }}>
                                 <Text style={styles.subHeaderText}>Total putts</Text>
-                                <ChallengeNumberPicker
-                                    value={sim.score}
-                                    onChange={sim.setScore}
-                                    min={0}
-                                    max={15}
-                                    decreaseTestID="decrease-score-button"
-                                    increaseTestID="increase-score-button"
-                                    displayTestID="score-display"
+                                <Dropdown
+                                    options={SCORE_OPTIONS}
+                                    selectedOption={String(sim.score)}
+                                    onSelectOption={(value) => sim.setScore(Number(value))}
+                                    testIDPrefix="score"
                                 />
+                            </View>
 
-                                <TouchableOpacity
-                                    testID="submit-button"
-                                    style={[styles.onboardingOverlay.primaryButton, { marginBottom: 32 }]}
-                                    onPress={sim.submit}
-                                >
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                                        <Text style={styles.onboardingOverlay.primaryButtonText}>Submit</Text>
-                                        <MaterialIcons name="check" size={20} color={colours.white} />
+                            {/* Quit confirmation */}
+                            {showQuitConfirm && (
+                                <View style={{ gap: 16, marginTop: 20, marginHorizontal: 20 }}>
+                                    <View style={{ alignItems: 'center', gap: 8 }}>
+                                        <Text style={[styles.headerText]}>Quit challenge?</Text>
+                                        <Text style={[styles.subHeaderText, { color: colours.text }]}>Your progress will not be saved</Text>
                                     </View>
-                                </TouchableOpacity>
-
-                                {/* Quit confirmation */}
-                                {showQuitConfirm && (
-                                    <View style={{ gap: 16, marginTop: 20 }}>
-                                        <View style={{ alignItems: 'center', gap: 8 }}>
-                                            <Text style={[styles.headerText]}>Quit challenge?</Text>
-                                            <Text style={[styles.subHeaderText, { color: colours.text }]}>Your progress will not be saved</Text>
-                                        </View>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 10 }}>
-                                            <TouchableOpacity
-                                                testID="cancel-quit-button"
-                                                onPress={() => setShowQuitConfirm(false)}
-                                                style={styles.mediumButton}
-                                            >
-                                                <Text style={{ color: colours.white, fontWeight: '600' }}>Cancel</Text>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                testID="confirm-quit-button"
-                                                onPress={handleConfirmQuit}
-                                                style={[styles.mediumButton, { backgroundColor: colours.red }]}
-                                            >
-                                                <Text style={{ color: colours.white, fontWeight: '600' }}>Quit</Text>
-                                            </TouchableOpacity>
-                                        </View>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 10 }}>
+                                        <TouchableOpacity
+                                            testID="cancel-quit-button"
+                                            onPress={() => setShowQuitConfirm(false)}
+                                            style={styles.mediumButton}
+                                        >
+                                            <Text style={{ color: colours.white, fontWeight: '600' }}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            testID="confirm-quit-button"
+                                            onPress={handleConfirmQuit}
+                                            style={[styles.mediumButton, { backgroundColor: colours.red }]}
+                                        >
+                                            <Text style={{ color: colours.white, fontWeight: '600' }}>Quit</Text>
+                                        </TouchableOpacity>
                                     </View>
-                                )}
-
-                                <View style={styles.contentSection}>
-                                    <Chevrons heading='Setup' points={setupPoints} />
                                 </View>
+                            )}
 
-                                <View style={styles.contentSection}>
-                                    <Chevrons heading='How to play' points={howToPlayPoints} />
-                                </View>
+                            <View style={{ gap: 12, marginTop: 24 }}>
+                                <ExpandableInfoCard icon="tune" title="Setup" points={setupPoints} testIDPrefix="setup" />
+                                <ExpandableInfoCard icon="sports-golf" title="How to play" points={howToPlayPoints} testIDPrefix="how-to-play" />
                             </View>
                         </>
                     )}
@@ -176,9 +175,29 @@ export default function LagPutting() {
                             onPlayAgain={handlePlayAgain}
                         />
                     )}
-
                 </View>
             </ScrollView>
+
+            {sim.phase === 'in-progress' && (
+                <View style={[styles.simulation.submitBar, { bottom: 16 + bottomInset }]}>
+                    <TouchableOpacity testID="submit-button" accessibilityRole="button" onPress={sim.submit} style={styles.simulation.submitButton}>
+                        <Text style={styles.simulation.submitText}>Submit</Text>
+                        <MaterialIcons name="check" size={20} color={colours.white} />
+                    </TouchableOpacity>
+                </View>
+            )}
+            <EndRoundSheet
+                visible={showEndSheet}
+                holeNumber={0}
+                holesTotal={0}
+                title="End lag putting?"
+                message={`Your score of ${sim.score} putts hasn’t been submitted yet. Saved results are added to your drill history.`}
+                saveLabel="Save score"
+                discardLabel="Discard score"
+                onSave={handleSaveScore}
+                onDiscard={handleDiscardScore}
+                onKeepPlaying={() => setShowEndSheet(false)}
+            />
         </GestureHandlerRootView>
     );
 }

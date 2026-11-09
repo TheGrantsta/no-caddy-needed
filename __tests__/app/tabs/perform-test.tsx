@@ -137,7 +137,7 @@ describe('Perform', () => {
         });
 
         it('onRefreshKeepsCurrentSubMenuSection', async () => {
-            const { UNSAFE_getByType, getByTestId, getByText } = render(<Perform />);
+            const { UNSAFE_getByType, getByTestId, getAllByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
 
             await act(async () => {
@@ -147,7 +147,7 @@ describe('Perform', () => {
                 jest.advanceTimersByTime(750);
             });
 
-            expect(getByText('Your personal putting make rates')).toBeTruthy();
+            expect(getAllByText('Putting').length).toBeGreaterThan(0);
         });
     });
 
@@ -440,11 +440,11 @@ describe('Perform', () => {
         });
 
         it('switchingToDeadlySinsAndBackDoesNotBreakOtherSections', () => {
-            const { getByTestId, getByText } = render(<Perform />);
+            const { getByTestId, getAllByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-sins'));
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            expect(getByText('Your personal putting make rates')).toBeTruthy();
+            expect(getAllByText('Putting').length).toBeGreaterThan(0);
         });
     });
 
@@ -532,34 +532,33 @@ describe('Perform', () => {
         });
 
         it('showsPuttingSectionWhenPuttingSubMenuPressed', () => {
-            const { getByTestId, getByText } = render(<Perform />);
+            const { getByTestId, getAllByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            expect(getByText('Your personal putting make rates')).toBeTruthy();
+            expect(getAllByText('Putting').length).toBeGreaterThan(0);
         });
 
-        it('rendersPuttingTableWithPersonalRateAndProRateInBrackets', () => {
+        it('rendersPuttingRatesWithThePGATourRateInBrackets', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            expect(getByText('Make rate')).toBeTruthy();
+            expect(getByText(/Gold marker/)).toBeTruthy();
         });
 
-        it('rendersPuttingTableWithFeetUnitsByDefault', () => {
-            const { getByTestId, getAllByText, getByText } = render(<Perform />);
+        it('rendersPuttingDistancesInFeetByDefault', () => {
+            const { getByTestId, getAllByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            expect(getByText('Feet')).toBeTruthy();
-            expect(getByText('Make rate')).toBeTruthy();
-            expect(getAllByText('1').length).toBeGreaterThan(0);
-            expect(getAllByText('20').length).toBeGreaterThan(0);
-            expect(getAllByText('50').length).toBeGreaterThan(0);
+            expect(getAllByText(/^4 ft$/).length).toBeGreaterThan(0);
+            expect(getAllByText(/^1 ft$/).length).toBeGreaterThan(0);
+            expect(getAllByText(/^20 ft$/).length).toBeGreaterThan(0);
+            expect(getAllByText(/^50 ft$/).length).toBeGreaterThan(0);
         });
 
         it('alwaysRendersFeetUnitLabelRegardlessOfMetricSetting', () => {
             const { getSettingsService } = require('../../../service/DbService');
             getSettingsService.mockReturnValue({ performOnboardingSeen: true, units: 'metres' });
 
-            const { getByTestId, getByText } = render(<Perform />);
+            const { getByTestId, getAllByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            expect(getByText('Feet')).toBeTruthy();
+            expect(getAllByText(/ ft$/).length).toBeGreaterThan(0);
         });
 
         it('logsViewPuttingAnalyticsEventWhenPuttingSubMenuTabPressed', () => {
@@ -572,30 +571,9 @@ describe('Perform', () => {
         it('showsAsteriskExplanationForEstimatedRates', () => {
             const { getByTestId, getByText } = render(<Perform />);
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            expect(getByText(/Estimated or extrapolated from PGA tour data/)).toBeTruthy();
+            expect(getByText('Gold marker shows the PGA tour rates')).toBeTruthy();
         });
 
-        it('displaysPuttCountInParenthesesNextToMakeRate', () => {
-            const { getByTestId, queryByText } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            expect(queryByText(/98% of 45/)).toBeTruthy();
-            expect(queryByText(/75% of 24/)).toBeTruthy();
-        });
-
-        it('capsDisplayedPuttCountAt99', () => {
-            const { getPuttingMakeRatesService } = require('../../../service/DbService');
-            const original = getPuttingMakeRatesService.getMockImplementation();
-            getPuttingMakeRatesService.mockReturnValue([
-                { distance: 1, makeRate: '85%', putts: 150 },
-                { distance: 2, makeRate: '80%', putts: 0 },
-            ]);
-
-            const { getByTestId, queryByText } = render(<Perform />);
-            fireEvent.press(getByTestId('perform-sub-menu-putting'));
-            expect(queryByText('85% of 99+ (100%*)')).toBeTruthy();
-
-            getPuttingMakeRatesService.mockImplementation(original);
-        });
     });
 
     describe('Proximity section', () => {

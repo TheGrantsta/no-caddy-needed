@@ -3285,6 +3285,15 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    pgaMarker: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        width: 3,
+        borderRadius: 1.5,
+        backgroundColor: '#E0A526',
+    },
+
     statsFilter: StyleSheet.create({
         row: {
             flexDirection: 'row',

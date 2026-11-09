@@ -33,28 +33,31 @@ describe('PuttingStatsSection', () => {
         const fadeAnim = new Animated.Value(1);
         const slideAnim = new Animated.Value(0);
 
-        const { getByText } = render(
+        const { queryByText } = render(
             <PuttingStatsSection fadeAnim={fadeAnim} slideAnim={slideAnim} />
         );
 
-        expect(getByText(/Share of putts holed from each distance/)).toBeTruthy();
+        expect(queryByText(/Share of putts holed/)).toBeNull();
     });
 
-    it('renders with personal putting data', () => {
-        const fadeAnim = new Animated.Value(1);
-        const slideAnim = new Animated.Value(0);
-
-        const { getByText } = render(
-            <PuttingStatsSection fadeAnim={fadeAnim} slideAnim={slideAnim} />
+    it('shows a Putting heading on a card like the other stats sections', () => {
+        const { getByText, queryByText } = render(
+            <PuttingStatsSection fadeAnim={new Animated.Value(1)} slideAnim={new Animated.Value(0)} />
         );
 
-        // Check header is rendered
-        expect(getByText('Your personal putting make rates')).toBeTruthy();
+        expect(getByText('Putting')).toBeTruthy();
+        expect(queryByText('Your personal putting make rates')).toBeNull();
+        expect(queryByText('Feet')).toBeNull();
+        expect(queryByText('Make rate')).toBeNull();
+    });
 
-        // Check that the table rows contain the expected formatted pro rates
-        // The test is checking that these exact strings exist (this pins the current output format)
-        expect(getByText(/75%.*91%/)).toBeTruthy(); // 4ft: 75% personal, 91% PGA
-        expect(getByText(/40%.*41%/)).toBeTruthy(); // 10ft: 40% personal, 41% PGA
+    it('shows each distance with a bar sized to its make rate', () => {
+        const { getByTestId } = render(
+            <PuttingStatsSection fadeAnim={new Animated.Value(1)} slideAnim={new Animated.Value(0)} />
+        );
+
+        expect(getByTestId('putting-bar-4')).toHaveStyle({ width: '75%' });
+        expect(getByTestId('putting-bar-10')).toHaveStyle({ width: '40%' });
     });
 
     it('renders asterisk footnote for estimated distances', () => {
@@ -66,6 +69,34 @@ describe('PuttingStatsSection', () => {
         );
 
         // Verify the asterisk footnote is rendered
-        expect(getByText(/Estimated or extrapolated/)).toBeTruthy();
+        expect(getByText('Gold marker shows the PGA tour rates')).toBeTruthy();
+    });
+
+    it('shows the distance labels at the regular text size in a narrow column', () => {
+        const fontSizes = require('../../assets/font-sizes').default;
+        const { getByText, getByTestId } = render(
+            <PuttingStatsSection fadeAnim={new Animated.Value(1)} slideAnim={new Animated.Value(0)} />
+        );
+
+        expect(getByText('4 ft')).toHaveStyle({ fontSize: fontSizes.normal });
+        expect(getByTestId('putting-label-4')).toHaveStyle({ width: 64 });
+    });
+
+    it('shows no rate values at the end of each row', () => {
+        const { queryByTestId } = render(
+            <PuttingStatsSection fadeAnim={new Animated.Value(1)} slideAnim={new Animated.Value(0)} />
+        );
+
+        expect(queryByTestId('putting-rate-4')).toBeNull();
+        expect(queryByTestId('putting-rate-10')).toBeNull();
+    });
+
+    it('marks the PGA expectation on each bar', () => {
+        const { getByTestId } = render(
+            <PuttingStatsSection fadeAnim={new Animated.Value(1)} slideAnim={new Animated.Value(0)} />
+        );
+
+        expect(getByTestId('putting-pga-marker-4')).toHaveStyle({ left: '91%' });
+        expect(getByTestId('putting-pga-marker-10')).toHaveStyle({ left: '41%' });
     });
 });

@@ -1,9 +1,11 @@
 import React from 'react';
 import { Animated, Text, View } from 'react-native';
 import { useStyles } from '../hooks/useStyles';
-import { getPuttingMakeRatesService, formatPuttCount } from '../service/DbService';
+import { useThemeColours } from '../context/ThemeContext';
+import { getPuttingMakeRatesService } from '../service/DbService';
 import { formatPgaRate } from '../assets/pgaPuttingBenchmarks';
 import StatsEmptyState from './StatsEmptyState';
+import fontSizes from '../assets/font-sizes';
 
 interface Props {
     fadeAnim: Animated.Value;
@@ -12,6 +14,14 @@ interface Props {
     onStartRound?: () => void;
 }
 
+// A percentage such as "75%" or "91%*" as a number; anything without a number (e.g. "-") is 0
+const percentOf = (text: string): number => {
+    const value = parseInt(text, 10);
+    return Number.isFinite(value) ? value : 0;
+};
+
+// Putting make rates on a card like the Deadly sins chart: one row per distance, with a bar for the
+// player's make rate and the PGA Tour rate beside it
 export default function PuttingStatsSection({
     fadeAnim,
     slideAnim,
@@ -19,56 +29,43 @@ export default function PuttingStatsSection({
     onStartRound,
 }: Props) {
     const styles = useStyles();
+    const colours = useThemeColours();
+    const s = styles.deadlySinsChart;
 
-    const getPersonalPuttingStats = (roundIds?: Set<number>): [string, string][] => {
-        const rates = getPuttingMakeRatesService(roundIds);
-        return rates.map((row) => {
-            const puttsSegment = row.putts > 0 ? ` of ${formatPuttCount(row.putts)}` : '';
-            return [
-                String(row.distance),
-                `${row.makeRate}${puttsSegment} (${formatPgaRate(row.distance)})`,
-            ];
-        });
-    };
-
-    const hasPersonalPuttingData = (roundIds?: Set<number>): boolean => {
-        const rates = getPuttingMakeRatesService(roundIds);
-        return rates.some((row) => row.makeRate !== '-');
-    };
+    const rates = getPuttingMakeRatesService(filteredRoundIds);
+    const hasPersonalPuttingData = rates.some((row) => row.makeRate !== '-');
 
     return (
         <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
-            {hasPersonalPuttingData(filteredRoundIds) ? (
-                <>
-                    <View style={styles.clubDistanceList.container}>
-                        <View style={styles.clubDistanceList.headerRow}>
-                            <View style={[styles.clubDistanceList.headerCell, styles.clubDistanceList.clubCell]}>
-                                <Text style={styles.clubDistanceList.headerCell}>Feet</Text>
-                            </View>
-                            <View style={[styles.clubDistanceList.headerCell, styles.clubDistanceList.distanceCell]}>
-                                <Text style={styles.clubDistanceList.headerCell}>Make rate</Text>
-                            </View>
-                        </View>
-                        {getPersonalPuttingStats(filteredRoundIds).map(([distance, rate], index, rows) => (
-                            <View key={distance} style={[styles.clubDistanceList.row, index === rows.length - 1 && { borderBottomWidth: 0.5 }]}>
-                                <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.clubCell, { textAlign: 'center', }]}>{distance}</Text>
-                                <Text style={[styles.clubDistanceList.cell, styles.clubDistanceList.distanceCell]}>{rate}</Text>
+            {hasPersonalPuttingData ? (
+                <View style={s.card}>
+                    <Text style={[styles.subHeaderText, { padding: 0 }]}>Putting</Text>
+
+                    <View style={{ marginTop: 12 }}>
+                        {rates.map((row) => (
+                            <View key={row.distance} testID={`putting-row-${row.distance}`} style={s.barContainer}>
+                                <View testID={`putting-label-${row.distance}`} style={[s.labelContainer, { width: 64 }]}>
+                                    <Text style={[s.label, { fontSize: fontSizes.normal }]}>{`${row.distance} ft`}</Text>
+                                </View>
+                                <View style={s.barWrapper}>
+                                    <View
+                                        testID={`putting-bar-${row.distance}`}
+                                        style={[s.bar, { width: `${percentOf(row.makeRate)}%`, backgroundColor: colours.primary }]}
+                                    />
+                                    <View style={[s.barBackground, { width: `${100 - percentOf(row.makeRate)}%` }]} />
+                                    <View
+                                        testID={`putting-pga-marker-${row.distance}`}
+                                        style={[styles.pgaMarker, { left: `${percentOf(formatPgaRate(row.distance))}%` }]}
+                                    />
+                                </View>
                             </View>
                         ))}
                     </View>
 
-                    <Text style={[styles.normalText, styles.marginTop, { alignSelf: 'center' }]}>
-                        Your personal putting make rates
+                    <Text style={[styles.smallestText, { marginTop: 8 }]}>
+                        Gold marker shows the PGA tour rates
                     </Text>
-
-                    <Text style={[styles.smallText, { alignSelf: 'center', textAlign: 'center', paddingHorizontal: 16 }]}>
-                        Share of putts holed from each distance. Brackets show the PGA Tour average.
-                    </Text>
-
-                    <Text style={[styles.smallestText, styles.marginBottom, { paddingHorizontal: 16, marginTop: 12 }]}>
-                        * Estimated or extrapolated from PGA tour data
-                    </Text>
-                </>
+                </View>
             ) : (
                 <>
                     <View style={styles.divider} />

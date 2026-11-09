@@ -721,6 +721,18 @@ describe('DeadlySinsTally component', () => {
             expect(after.fontWeight).toBe('600');
         });
 
+        it('shouldRunTheInlineFollowUpEdgeToEdgeAndTight', () => {
+            const renderFollowUp = (slug: string) => (slug === 'trouble-off-tee' ? <Text>CLUB-PICKER</Text> : null);
+            const { getByTestId } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled renderFollowUp={renderFollowUp} />
+            );
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
+
+            const wrapper = StyleSheet.flatten(getByTestId('7deadly-sins-follow-up-trouble-off-tee').props.style);
+            expect(wrapper.paddingHorizontal ?? 0).toBe(0);
+            expect(wrapper.paddingBottom ?? 0).toBe(0);
+        });
+
         it('shouldShowAFollowUpUnderASinOnlyWhileItIsMarked', () => {
             const renderFollowUp = (slug: string) => (slug === 'trouble-off-tee' ? <Text>CLUB-PICKER</Text> : null);
             const { getByTestId, queryByText } = render(

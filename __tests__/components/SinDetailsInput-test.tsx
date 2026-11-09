@@ -277,6 +277,28 @@ describe('SinDetailsInput', () => {
         });
     });
 
+    describe('follow-up row density', () => {
+        it('shouldUseATightRowThatSpansTheFullCardWidth', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(
+                <SinDetailsInput
+                    sins={{ ...allFalseSins, troubleOffTee: true }}
+                    clubs={mockClubs}
+                    only="troubleOffTee"
+                    onOffTeeClubChange={jest.fn()}
+                    onPenaltyTypeChange={jest.fn()}
+                    onBogeysClubChange={jest.fn()}
+                    onDoubleChipReasonChange={jest.fn()}
+                />
+            );
+
+            const style = StyleSheet.flatten(getByTestId('follow-up-row-troubleOffTee').props.style);
+            expect(style.paddingVertical).toBeLessThanOrEqual(6);
+            expect(style.paddingRight).toBeLessThanOrEqual(16);
+            expect(style.marginHorizontal ?? 0).toBe(0);
+        });
+    });
+
     describe('follow-up row', () => {
         it('shouldShowTheSinLabelAndPickerInOneRowWhenOnlyIsSet', () => {
             const { getByTestId, getByText } = render(

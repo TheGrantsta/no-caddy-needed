@@ -1887,9 +1887,9 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingLeft: 36,
+            paddingLeft: 16,
             paddingRight: 16,
-            paddingVertical: 8,
+            paddingVertical: 4,
             backgroundColor: c.tertiary + '14',
         },
         followUpLabel: {
@@ -1897,8 +1897,8 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.smallText,
         },
         followUp: {
-            paddingHorizontal: 16,
-            paddingBottom: 12,
+            paddingHorizontal: 0,
+            paddingBottom: 0,
         },
         markedCount: {
             color: c.tertiary,

@@ -3050,9 +3050,6 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.tableHeader,
             fontWeight: 'bold',
         },
-        roundHistoryScroll: {
-            maxHeight: 300,
-        },
         filterContainer: {
             flexDirection: 'row',
             justifyContent: 'center',

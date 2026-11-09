@@ -131,4 +131,31 @@ describe('RoundHistorySection', () => {
             expect(getByText('Round history')).toBeTruthy();
         });
     });
+
+    it('shows the par averages and the round history each on a card', () => {
+        const { getByTestId } = renderSection([makeRound({ Id: 1, StrokeTotal: 80 })]);
+
+        expect(getByTestId('par-averages-card')).toHaveStyle({ borderRadius: 20 });
+        expect(getByTestId('round-history-card')).toHaveStyle({ borderRadius: 20 });
+    });
+
+    it('aligns the Round history heading with the content on its card', () => {
+        const { getByText } = renderSection([makeRound({ Id: 1, StrokeTotal: 80 })]);
+
+        expect(getByText('Round history')).toHaveStyle({ padding: 0 });
+    });
+
+    it('shows each round score in bold so it reads like a list item', () => {
+        const { getByTestId } = renderSection([makeRound({ Id: 1, StrokeTotal: 80 })]);
+
+        expect(getByTestId('round-history-strokes-1')).toHaveStyle({ fontWeight: 'bold' });
+    });
+
+    it('makes the round list tall enough to show the last ten rounds without scrolling', () => {
+        const rounds = Array.from({ length: 12 }, (_, i) => makeRound({ Id: i + 1, StrokeTotal: 80 }));
+        const { getByTestId } = renderSection(rounds);
+
+        expect(getByTestId('round-history-scroll')).toHaveStyle({ maxHeight: 480 });
+        expect(getByTestId('round-history-row-1')).toHaveStyle({ minHeight: 48 });
+    });
 });

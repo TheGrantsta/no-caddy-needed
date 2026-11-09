@@ -110,7 +110,6 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
         <View>
             <View style={s.headerRow}>
                 <Text style={s.sectionLabel}>Deadly Sins</Text>
-                <Text style={s.sectionLabel}>Marked</Text>
             </View>
             <View testID="deadly-sins-card" style={s.card}>
                 {visibleSinFields.map((field, index) => {
@@ -166,10 +165,6 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                     );
                 })}
             </View>
-
-            <Text testID="7deadly-sins-marked-count" style={s.markedCount}>
-                {`${Object.values(values).filter(Boolean).length} marked on this hole.`}
-            </Text>
 
                 {!roundControlled && (
                     <CtaButton

@@ -684,16 +684,6 @@ describe('DeadlySinsTally component', () => {
     });
 
     describe('card and footer layout', () => {
-        const { within } = require('@testing-library/react-native');
-
-        it('shouldShowTheMarkedCountBelowTheCardNotInsideIt', () => {
-            const { getByTestId, queryByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
-            const card = getByTestId('deadly-sins-card');
-
-            expect(within(card).queryByTestId('7deadly-sins-marked-count')).toBeNull();
-            expect(getByTestId('7deadly-sins-marked-count')).toBeTruthy();
-            expect(queryByTestId('7deadly-sins-marked-count')).not.toBeNull();
-        });
 
         it('shouldRenderSinRowsAsUnboxedRowsInsideTheCard', () => {
             const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
@@ -712,20 +702,12 @@ describe('DeadlySinsTally component', () => {
     });
 
     describe('deadly sins card layout', () => {
-        it('shouldShowDeadlySinsTitleWithAMarkedColumnHeading', () => {
-            const { getByText } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+        it('shouldShowDeadlySinsTitleWithoutMarkedWordOrCount', () => {
+            const { getByText, queryByText } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
 
             expect(getByText('Deadly Sins')).toBeTruthy();
-            expect(getByText('Marked')).toBeTruthy();
-        });
-
-        it('shouldShowHowManySinsAreMarkedOnThisHole', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
-
-            expect(getByTestId('7deadly-sins-marked-count')).toHaveTextContent('0 marked on this hole.');
-            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
-            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
-            expect(getByTestId('7deadly-sins-marked-count')).toHaveTextContent('2 marked on this hole.');
+            expect(queryByText('Marked')).toBeNull();
+            expect(queryByText(/marked on this hole/)).toBeNull();
         });
 
         it('shouldBoldTheLabelOfEachSinThatIsMarked', () => {

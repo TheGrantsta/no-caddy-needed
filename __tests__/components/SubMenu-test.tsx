@@ -57,7 +57,7 @@ describe('SubMenu component', () => {
                 <SubMenu showSubMenu="perform" selectedItem="sins" handleSubMenu={mockHandleSubMenu} />
             );
 
-            expect(getByText('Deadly Sins')).toBeTruthy();
+            expect(getByText('Sins')).toBeTruthy();
         });
 
         it('renders putting perform menu item', () => {

@@ -20,7 +20,7 @@ import { logEvent } from '../../service/FirebaseService';
 import { getSettingsService, saveSettingsService, AppSettings, getAllRoundHistoryService, getParAveragesService } from '../../service/DbService';
 import RoundHistorySection from '../../components/RoundHistorySection';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
-import RoundFilterBar from '../../components/RoundFilterBar';
+import StatsFilter from '../../components/StatsFilter';
 import { applyRoundFilter, getAvailableYears, resolveRoundFilter } from '../../utils/roundFilter';
 import { useRoundFilter } from '../../hooks/useRoundFilter';
 
@@ -62,7 +62,6 @@ export default function Perform() {
   const filteredRoundIds = new Set(
     filteredRoundHistory.filter(r => r.IsScoreOnly === 0 && r.IsCompleted === 1).map(r => r.Id)
   );
-  const availableYears = getAvailableYears(roundHistory);
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -85,8 +84,6 @@ export default function Perform() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SubMenu showSubMenu='perform' selectedItem={section} handleSubMenu={handleSubMenuWithLogging} />
-
       <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -107,13 +104,15 @@ export default function Perform() {
               </TouchableOpacity>
             }
           />
+          <SubMenu showSubMenu='perform' selectedItem={section} handleSubMenu={handleSubMenuWithLogging} variant="pill" />
         </View>
 
-        {/* Filter buttons */}
         {roundHistory.length > 0 && (
-          <View style={styles.container}>
-            <RoundFilterBar value={roundsFilter} onChange={setRoundsFilter} years={availableYears} />
-          </View>
+          <StatsFilter
+            value={roundsFilter}
+            onChange={setRoundsFilter}
+            rounds={roundHistory}
+          />
         )}
 
         {displaySection('sins') && (

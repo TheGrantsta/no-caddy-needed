@@ -2676,6 +2676,18 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.primary,
             fontSize: fontSizes.header,
         },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            marginHorizontal: 16,
+            padding: 16,
+        },
+        // Sits on the chart's own card with no inset of its own, so it lines up with the rows above
+        breakdownCard: {
+            padding: 0,
+            marginTop: 24,
+            marginBottom: 0,
+        },
     }),
 
     puttingProximityChart: StyleSheet.create({
@@ -3270,6 +3282,76 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.tertiary,
             fontSize: fontSizes.smallText,
             marginTop: 2,
+        },
+    }),
+
+    statsFilter: StyleSheet.create({
+        row: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginHorizontal: 16,
+            marginTop: 8,
+        },
+        pill: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 6,
+            backgroundColor: c.primary + '1F',
+            borderRadius: 20,
+            paddingHorizontal: 14,
+            paddingVertical: 8,
+        },
+        pillText: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: '700',
+        },
+        backdrop: {
+            flex: 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+        },
+        menu: {
+            position: 'absolute',
+            top: 200,
+            left: 16,
+            right: 16,
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            paddingVertical: 12,
+            shadowColor: c.black,
+            shadowOpacity: 0.15,
+            shadowRadius: 16,
+            shadowOffset: { width: 0, height: 6 },
+            elevation: 8,
+        },
+        sectionLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            paddingHorizontal: 20,
+            paddingBottom: 4,
+        },
+        sectionGap: {
+            marginTop: 8,
+        },
+        option: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 12,
+            paddingHorizontal: 20,
+            paddingVertical: 12,
+        },
+        checkPlaceholder: {
+            width: 20,
+        },
+        optionText: {
+            flex: 1,
+            color: c.black,
+            fontSize: fontSizes.normal,
+        },
+        optionCount: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
         },
     }),
 

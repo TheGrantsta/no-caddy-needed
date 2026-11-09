@@ -151,6 +151,19 @@ describe('Perform', () => {
         });
     });
 
+    describe('Heading and sub-menu order', () => {
+        it('shouldShowTheStatsHeadingAboveTheSubMenu', () => {
+            const { toJSON } = render(<Perform />);
+            // Skip the refresh control prop, which holds a circular React structure
+            const page = JSON.stringify(toJSON(), (key, value) => (key === 'refreshControl' ? undefined : value));
+
+            const heading = page.indexOf('"Stats"');
+            const subMenu = page.indexOf('perform-sub-menu-sins');
+            expect(heading).toBeGreaterThanOrEqual(0);
+            expect(subMenu).toBeGreaterThan(heading);
+        });
+    });
+
     describe('Focus effect refresh', () => {
         it('callsUseFocusEffectOnMount', () => {
             const { getAllRoundHistoryService } = require('../../../service/DbService');
@@ -184,7 +197,7 @@ describe('Perform', () => {
             });
 
             // Filter should now be visible (because getAllRoundHistoryService was called again)
-            expect(queryByTestId('filter-button-1')).toBeTruthy();
+            expect(queryByTestId('stats-filter-button')).toBeTruthy();
         });
     });
 
@@ -228,7 +241,7 @@ describe('Perform', () => {
             ]);
 
             const { getAllByText } = render(<Perform />);
-            const headers = getAllByText('Deadly Sins');
+            const headers = getAllByText('Sins');
             expect(headers.length).toBeGreaterThan(0);
         });
 
@@ -265,9 +278,10 @@ describe('Perform', () => {
             ]);
 
             const { getByTestId } = render(<Perform />);
-            expect(getByTestId('filter-button-1')).toBeTruthy();
-            expect(getByTestId('filter-button-10')).toBeTruthy();
-            expect(getByTestId('filter-button-all')).toBeTruthy();
+            fireEvent.press(getByTestId('stats-filter-button'));
+            expect(getByTestId('stats-filter-option-1')).toBeTruthy();
+            expect(getByTestId('stats-filter-option-10')).toBeTruthy();
+            expect(getByTestId('stats-filter-option-all')).toBeTruthy();
         });
 
         it('showsOneChipPerYearWhenRoundsSpanMoreThanOneYear', () => {
@@ -278,9 +292,9 @@ describe('Perform', () => {
             ]);
 
             const { getByTestId } = render(<Perform />);
-            fireEvent.press(getByTestId('year-menu-button'));
-            expect(getByTestId('filter-button-2026')).toBeTruthy();
-            expect(getByTestId('filter-button-2025')).toBeTruthy();
+            fireEvent.press(getByTestId('stats-filter-button'));
+            expect(getByTestId('stats-filter-option-2026')).toBeTruthy();
+            expect(getByTestId('stats-filter-option-2025')).toBeTruthy();
             getAllRoundHistoryService.mockReturnValue([]);
         });
 
@@ -293,11 +307,10 @@ describe('Perform', () => {
             getAllDeadlySinsRoundsService.mockReturnValue([]);
 
             const { getByTestId } = render(<Perform />);
-            fireEvent.press(getByTestId('year-menu-button'));
-            fireEvent.press(getByTestId('filter-button-2025'));
+            fireEvent.press(getByTestId('stats-filter-button'));
+            fireEvent.press(getByTestId('stats-filter-option-2025'));
 
-            expect(getByTestId('year-menu-button').props.accessibilityState).toEqual({ selected: true, expanded: false });
-            expect(getByTestId('filter-button-all').props.accessibilityState).toEqual({ selected: false });
+            expect(getByTestId('stats-filter-button')).toHaveTextContent('2025');
             getAllRoundHistoryService.mockReturnValue([]);
         });
 
@@ -327,10 +340,10 @@ describe('Perform', () => {
             ]);
 
             const { getByTestId } = render(<Perform />);
-            fireEvent.press(getByTestId('year-menu-button'));
+            fireEvent.press(getByTestId('stats-filter-button'));
 
-            expect(getByTestId('filter-button-2026')).toBeTruthy();
-            expect(getByTestId('filter-button-2024')).toBeTruthy();
+            expect(getByTestId('stats-filter-option-2026')).toBeTruthy();
+            expect(getByTestId('stats-filter-option-2024')).toBeTruthy();
             getAllRoundHistoryService.mockReturnValue([]);
         });
 
@@ -346,7 +359,8 @@ describe('Perform', () => {
             getAllHoleSinDetailsService.mockReturnValue([]);
 
             const { getByTestId, queryByTestId } = render(<Perform />);
-            fireEvent.press(getByTestId('filter-button-1'));
+            fireEvent.press(getByTestId('stats-filter-button'));
+            fireEvent.press(getByTestId('stats-filter-option-1'));
 
             expect(queryByTestId('7deadly-sins-chart-count-0')).toBeNull();
             getAllRoundHistoryService.mockReturnValue([]);
@@ -364,7 +378,7 @@ describe('Perform', () => {
 
             const { getByTestId } = render(<Perform />);
 
-            expect(getByTestId('year-menu-button').props.accessibilityState).toEqual({ selected: true, expanded: false });
+            expect(getByTestId('stats-filter-button')).toHaveTextContent('2025');
             getAllRoundHistoryService.mockReturnValue([]);
         });
 
@@ -441,18 +455,19 @@ describe('Perform', () => {
             expect(getByText('Putting')).toBeTruthy();
         });
 
-        it('shouldLabelRoundFilterAsLastRoundLastTenAndAll', () => {
+        it('shouldLabelRoundFilterAsLastRoundLastTenAndAllRounds', () => {
             const { getAllRoundHistoryService } = require('../../../service/DbService');
             getAllRoundHistoryService.mockReturnValue([
                 { Id: 1, TotalScore: 72, IsCompleted: 1, IsScoreOnly: 0, StartTime: '', EndTime: '', Created_At: '29/10', CourseName: 'Test', HolesPlayed: 18, StrokeTotal: 72 },
             ]);
 
-            const { getByText, getByTestId } = render(<Perform />);
+            const { getByText, getByTestId, getAllByText } = render(<Perform />);
 
-            expect(getByText('Last 1')).toBeTruthy();
-            expect(getByText('Last 10')).toBeTruthy();
-            expect(getByText('All')).toBeTruthy();
-            expect(getByTestId('filter-button-1')).toBeTruthy();
+            fireEvent.press(getByTestId('stats-filter-button'));
+            expect(getByText('Last round')).toBeTruthy();
+            expect(getByText('Last 10 rounds')).toBeTruthy();
+            expect(getAllByText('All rounds').length).toBeGreaterThan(0);
+            expect(getByTestId('stats-filter-option-1')).toBeTruthy();
             getAllRoundHistoryService.mockReturnValue([]);
         });
 

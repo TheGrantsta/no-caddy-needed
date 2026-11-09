@@ -47,7 +47,7 @@ describe('DeadlySinsChart component', () => {
     it('renders the title', () => {
         const { getByText } = render(<DeadlySinsChart rounds={mockRounds} />);
 
-        expect(getByText('Deadly Sins')).toBeTruthy();
+        expect(getByText('Deadly sins')).toBeTruthy();
     });
 
     it('renders all 7 category labels', () => {
@@ -97,20 +97,20 @@ describe('DeadlySinsChart component', () => {
         expect(labels).toHaveLength(7);
     });
 
-    it('colors highest category bar red', () => {
+    it('colors the most common category bar primary green like the rest', () => {
         const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
 
         const bar = getByTestId('7deadly-sins-chart-bar-0');
         const barStyle = Array.isArray(bar.props.style) ? Object.assign({}, ...bar.props.style) : bar.props.style;
-        expect(barStyle.backgroundColor).toBe(colours.errorText);
+        expect(barStyle.backgroundColor).toBe(colours.primary);
     });
 
-    it('colors lowest category bar green', () => {
+    it('colors the least common category bar primary green like the rest', () => {
         const { getByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
 
         const bar = getByTestId('7deadly-sins-chart-bar-6');
         const barStyle = Array.isArray(bar.props.style) ? Object.assign({}, ...bar.props.style) : bar.props.style;
-        expect(barStyle.backgroundColor).toBe(colours.green);
+        expect(barStyle.backgroundColor).toBe(colours.primary);
     });
 
     it('colors middle categories primary', () => {
@@ -223,16 +223,64 @@ describe('DeadlySinsChart component', () => {
     });
 
     describe('header', () => {
-        it('renders Deadly Sins header text', () => {
+        it('renders Deadly sins header text', () => {
             const { getByText } = render(<DeadlySinsChart rounds={mockRounds} />);
 
-            expect(getByText('Deadly Sins')).toBeTruthy();
+            expect(getByText('Deadly sins')).toBeTruthy();
+        });
+
+        it('aligns each breakdown section with the Deadly sins rows above it', () => {
+            const { getAllHoleSinDetailsService } = require('../../service/DbService');
+            const troubleRounds: DeadlySinsRound[] = [
+                { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 2, Penalties: 0, Total: 2, RoundId: 1, Created_At: '15/06' },
+            ];
+            getAllHoleSinDetailsService.mockReturnValue([
+                { Id: 1, RoundId: 1, HoleNumber: 1, TroubleOffTeeClub: 'Driver', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+            ]);
+            const { getByTestId } = render(<DeadlySinsChart rounds={troubleRounds} />);
+
+            expect(getByTestId('7deadly-sins-breakdown-section-0')).toHaveStyle({ padding: 0 });
+        });
+
+        it('aligns the Deadly sins heading with the rows beneath it', () => {
+            const { getByText } = render(<DeadlySinsChart rounds={mockRounds} />);
+
+            expect(getByText('Deadly sins')).toHaveStyle({ padding: 0 });
+        });
+
+        it('does not show a total count of sins in the header', () => {
+            const { queryByTestId, queryByText } = render(<DeadlySinsChart rounds={mockRounds} />);
+
+            expect(queryByTestId('7deadly-sins-total')).toBeNull();
+            expect(queryByText(/in total/)).toBeNull();
+        });
+
+        it('does not show a Most common legend', () => {
+            const { queryByText, queryByTestId } = render(<DeadlySinsChart rounds={mockRounds} />);
+
+            expect(queryByText('Most common')).toBeNull();
+            expect(queryByTestId('7deadly-sins-legend-swatch')).toBeNull();
+        });
+
+        it('does not repeat a subtitle under the breakdown headings', () => {
+            const { getAllHoleSinDetailsService } = require('../../service/DbService');
+            const troubleRounds: DeadlySinsRound[] = [
+                { Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 2, Penalties: 0, Total: 2, RoundId: 1, Created_At: '15/06' },
+            ];
+            getAllHoleSinDetailsService.mockReturnValue([
+                { Id: 1, RoundId: 1, HoleNumber: 1, TroubleOffTeeClub: 'Driver', PenaltyType: undefined, BogeysInside9IronClub: undefined },
+            ]);
+
+            const { queryByTestId, queryByText } = render(<DeadlySinsChart rounds={troubleRounds} />);
+
+            expect(queryByTestId('7deadly-sins-breakdown-subtitle-0')).toBeNull();
+            expect(queryByText('When there was trouble off the tee')).toBeNull();
         });
 
         it('header is always visible and non-interactive', () => {
             const { getByText } = render(<DeadlySinsChart rounds={mockRounds} />);
 
-            const header = getByText('Deadly Sins').parent?.parent;
+            const header = getByText('Deadly sins').parent?.parent;
             expect(header).toBeTruthy();
         });
 

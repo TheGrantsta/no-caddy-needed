@@ -44,3 +44,20 @@ export const resolveRoundFilter = (filter: RoundFilter, years: number[]): RoundF
   if (typeof filter === 'object' && !years.includes(filter.year)) return 'all';
   return filter;
 };
+
+// The name shown on the Stats filter button for a filter.
+export const filterLabel = (filter: RoundFilter): string => {
+  if (filter === 1) return 'Last round';
+  if (filter === 10) return 'Last 10 rounds';
+  if (filter === 'all') return 'All rounds';
+  return String(filter.year);
+};
+
+// How many rounds were played in each year, keyed by year, for the year list in the filter menu.
+export const countRoundsByYear = (rounds: RoundWithYear[]): Record<number, number> => {
+  const counts: Record<number, number> = {};
+  rounds.forEach(r => {
+    if (r.Year !== undefined) counts[r.Year] = (counts[r.Year] ?? 0) + 1;
+  });
+  return counts;
+};

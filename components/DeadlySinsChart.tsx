@@ -29,12 +29,6 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
         return null;
     }
 
-    const getBarColor = (index: number) => {
-        if (index === 0) return colours.red;
-        if (index === 6) return colours.green;
-        return colours.primary;
-    };
-
     const getBarWidth = (count: number): string => {
         if (maxCount === 0) return '0%';
         return `${(count / maxCount) * 100}%`;
@@ -60,9 +54,9 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
     };
 
     return (
-        <View style={s.container}>
+        <View style={[s.container, s.card]}>
             <View style={s.toggleHeader}>
-                <Text style={styles.subHeaderText}>Deadly Sins</Text>
+                <Text style={[styles.subHeaderText, { padding: 0 }]}>Deadly sins</Text>
             </View>
 
             <ScrollView
@@ -93,7 +87,7 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
                                         s.bar,
                                         {
                                             width: getBarWidth(category.count),
-                                            backgroundColor: getBarColor(index),
+                                            backgroundColor: colours.primary,
                                         }
                                     ]}
                                 />
@@ -129,11 +123,11 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
                             <View
                                 key={`breakdown-${categoryIndex}`}
                                 testID={`7deadly-sins-breakdown-section-${categoryIndex}`}
-                                style={{ marginTop: 20, marginBottom: 16 }}
+                                style={s.breakdownCard}
                             >
                                 <Text
                                     testID={`7deadly-sins-breakdown-heading-${categoryIndex}`}
-                                    style={[styles.subHeaderText, { marginBottom: 12 }]}
+                                    style={[styles.subHeaderText, { padding: 0, marginBottom: 4 }]}
                                 >
                                     {detail?.label}
                                 </Text>

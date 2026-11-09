@@ -193,8 +193,7 @@ describe('Perform page ', () => {
 
             const { getByTestId } = render(<View />);
 
-            expect(getByTestId('count-segments')).toBeTruthy();
-            expect(getByTestId('filter-button-1')).toBeTruthy();
+            expect(getByTestId('stats-filter-button')).toBeTruthy();
         });
 
         it('excludes score-only rounds from filter', () => {
@@ -209,7 +208,7 @@ describe('Perform page ', () => {
             const { getByTestId } = render(<View />);
 
             // Filter should show only 2 completed rounds (excluding score-only)
-            expect(getByTestId('filter-button-1')).toBeTruthy();
+            expect(getByTestId('stats-filter-button')).toBeTruthy();
             // When filtering by "1", only the most recent completed round should be included
         });
     });

@@ -29,6 +29,11 @@ jest.mock('expo-router', () => ({
         const { View } = require('react-native');
         return <View testID={testID}>{children}</View>;
     },
+    useRouter: () => ({ push: jest.fn(), back: jest.fn() }),
+    useFocusEffect: (callback: () => void) => {
+        const { useEffect } = require('react');
+        useEffect(callback, [callback]);
+    },
 }));
 
 jest.mock('@expo/vector-icons', () => ({
@@ -43,6 +48,8 @@ jest.mock('expo-constants', () => ({
 jest.mock('../../../service/DbService', () => ({
     getSettingsService: jest.fn(),
     saveSettingsService: jest.fn().mockResolvedValue(true),
+    getAllRoundHistoryService: jest.fn(() => []),
+    getAllDrillHistoryService: jest.fn(() => []),
 }));
 
 const mockGetSettingsService = getSettingsService as jest.Mock;
@@ -82,19 +89,37 @@ describe('HomeScreen', () => {
         expect(getByText('Smarter play & practice')).toBeTruthy();
     });
 
-    it('displaysPlayNavLink', () => {
-        const { getByTestId } = render(<HomeScreen />);
-        expect(getByTestId('home-play-link')).toBeTruthy();
+    it('displaysAStartARoundButton', () => {
+        const { getByTestId, getByText } = render(<HomeScreen />);
+        expect(getByText('Start a round')).toBeTruthy();
+        expect(getByTestId('home-start-round')).toBeTruthy();
     });
 
-    it('displaysPracticeNavLink', () => {
-        const { getByTestId } = render(<HomeScreen />);
-        expect(getByTestId('home-practice-link')).toBeTruthy();
+    it('displaysTheQuickToolTiles', () => {
+        const { getByTestId, getByText } = render(<HomeScreen />);
+        expect(getByText('QUICK TOOLS')).toBeTruthy();
+        expect(getByTestId('home-tool-wind')).toBeTruthy();
+        expect(getByTestId('home-tool-tempo')).toBeTruthy();
+        expect(getByTestId('home-tool-random')).toBeTruthy();
     });
 
-    it('displaysPerformNavLink', () => {
-        const { getByTestId } = render(<HomeScreen />);
-        expect(getByTestId('home-perform-link')).toBeTruthy();
+    it('displaysAnEmptyRecentListWhenThereIsNoHistory', () => {
+        const { getByText } = render(<HomeScreen />);
+        expect(getByText('RECENT')).toBeTruthy();
+        expect(getByText('Nothing recent yet')).toBeTruthy();
+    });
+
+    it('displaysTheLatestRoundAndDrillInRecent', () => {
+        const { getAllRoundHistoryService, getAllDrillHistoryService } = require('../../../service/DbService');
+        const today = new Date().toISOString();
+        getAllRoundHistoryService.mockReturnValueOnce([{ Id: 1, CourseName: 'Stats Flow Test Course', HolesPlayed: 9, StartTime: today }]);
+        getAllDrillHistoryService.mockReturnValueOnce([{ Id: 1, Name: 'Short-Putting Ladder', Score: 15, Timestamp: today, Created_At: '09/11' }]);
+
+        const { getByText } = render(<HomeScreen />);
+
+        expect(getByText('Stats Flow Test Course')).toBeTruthy();
+        expect(getByText('Round · 9 holes · Today')).toBeTruthy();
+        expect(getByText('Practice · Score 15 · Today')).toBeTruthy();
     });
 
     it('displaysGolfSimplifiedChevrons', () => {
@@ -119,17 +144,10 @@ describe('HomeScreen', () => {
         expect(queryByTestId('onboarding-overlay')).toBeNull();
     });
 
-    it('infoButtonShowsOnboarding', () => {
-        mockGetSettingsService.mockReturnValue({ ...defaultSettings, homeOnboardingSeen: true });
-        const { getByTestId, queryByTestId } = render(<HomeScreen />);
-
-        expect(queryByTestId('onboarding-overlay')).toBeNull();
-
-        fireEvent.press(getByTestId('info-button'));
-
-        expect(getByTestId('onboarding-overlay')).toBeTruthy();
+    it('doesNotShowAnInfoButtonOnThePage', () => {
+        const { queryByTestId } = render(<HomeScreen />);
+        expect(queryByTestId('info-button')).toBeNull();
     });
-
     it('dismissOnboardingHidesOverlay', async () => {
         const { getByTestId, queryByTestId } = render(<HomeScreen />);
 

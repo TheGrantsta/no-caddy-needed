@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import TabLayout from '../../app/(tabs)/_layout';
 import Homepage from '../../app/(tabs)/index';
 
@@ -42,6 +42,8 @@ jest.mock('../../service/DbService', () => ({
     }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
     getPracticeRemindersService: jest.fn().mockReturnValue([]),
+    getAllRoundHistoryService: jest.fn(() => []),
+    getAllDrillHistoryService: jest.fn(() => []),
 }));
 
 jest.mock('react-native-gesture-handler', () => {
@@ -98,6 +100,9 @@ jest.mock('expo-router', () => {
             navigate: mockNavigate,
         }),
         useLocalSearchParams: () => ({}),
+        useFocusEffect: (callback: () => void) => {
+            React.useEffect(callback, [callback]);
+        },
     };
 });
 
@@ -153,40 +158,26 @@ describe('Main Navigation', () => {
     });
 
     describe('Homepage Navigation Links', () => {
-        it('renders Play navigation link', () => {
+        it('opens Play from the Start a round button', () => {
             const { getByTestId } = render(<Homepage />);
 
-            expect(getByTestId('link-/play')).toBeTruthy();
+            fireEvent.press(getByTestId('home-start-round'));
+
+            expect(mockPush).toHaveBeenCalledWith('/play');
         });
 
-        it('renders Practice navigation link', () => {
+        it('renders the quick tool tiles', () => {
             const { getByTestId } = render(<Homepage />);
 
-            expect(getByTestId('link-/practice')).toBeTruthy();
+            expect(getByTestId('home-tool-wind')).toBeTruthy();
+            expect(getByTestId('home-tool-tempo')).toBeTruthy();
+            expect(getByTestId('home-tool-random')).toBeTruthy();
         });
 
-        it('renders Perform navigation link', () => {
-            const { getByTestId } = render(<Homepage />);
-
-            expect(getByTestId('link-/perform')).toBeTruthy();
-        });
-
-        it('displays Play link with correct label', () => {
+        it('displays the Start a round label', () => {
             const { getByText } = render(<Homepage />);
 
-            expect(getByText('Play')).toBeTruthy();
-        });
-
-        it('displays Practice link with correct label', () => {
-            const { getByText } = render(<Homepage />);
-
-            expect(getByText('Practice')).toBeTruthy();
-        });
-
-        it('displays Performance link with correct label', () => {
-            const { getByText } = render(<Homepage />);
-
-            expect(getByText('Performance')).toBeTruthy();
+            expect(getByText('Start a round')).toBeTruthy();
         });
     });
 });

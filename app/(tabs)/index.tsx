@@ -1,13 +1,16 @@
-import { useState } from 'react';
-import { ScrollView } from 'react-native';
+import { useCallback, useState } from 'react';
+import { ScrollView, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Constants from 'expo-constants';
+import { useFocusEffect } from 'expo-router';
 import { useStyles } from '@/hooks/useStyles';
 import { useOrientation } from '@/hooks/useOrientation';
-import { getSettingsService, saveSettingsService } from '@/service/DbService';
+import { getAllDrillHistoryService, getAllRoundHistoryService, getSettingsService, saveSettingsService } from '@/service/DbService';
+import { buildRecentItems, RecentItem } from '@/utils/homeRecent';
 import HomeHeader from '@/components/HomeHeader';
-import HomeIntro from '@/components/HomeIntro';
-import HomeNavigation from '@/components/HomeNavigation';
+import HomeHero from '@/components/HomeHero';
+import HomeQuickTools from '@/components/HomeQuickTools';
+import HomeRecent from '@/components/HomeRecent';
 import HomeGolfSimplified from '@/components/HomeGolfSimplified';
 import OnboardingOverlay from '@/components/OnboardingOverlay';
 import AcknowledgeOverlay from '@/components/AcknowledgeOverlay';
@@ -31,6 +34,14 @@ export default function HomeScreen() {
   const [showWhatsNew, setShowWhatsNew] = useState(
     settings.homeOnboardingSeen && settings.whatsNewVersionSeen !== APP_VERSION
   );
+  const [recentItems, setRecentItems] = useState<RecentItem[]>([]);
+
+  // Reloads the Recent list each time the Home tab is shown, so new rounds and drills appear
+  useFocusEffect(
+    useCallback(() => {
+      setRecentItems(buildRecentItems(getAllRoundHistoryService(), getAllDrillHistoryService(), new Date()));
+    }, [])
+  );
 
 
   const handleDismissOnboarding = async () => {
@@ -46,23 +57,23 @@ export default function HomeScreen() {
     await saveSettingsService({ ...currentSettings, whatsNewVersionSeen: APP_VERSION });
   };
 
-  const handleShowOnboarding = () => {
-    setShowOnboarding(true);
-  };
-
   return (
     <GestureHandlerRootView style={[styles.flexOne]}>
       <ScrollView
         style={[styles.scrollContainer]}
         contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}
       >
-        <HomeHeader onInfoPress={handleShowOnboarding} />
+        <HomeHeader />
 
-        <HomeIntro />
+        <HomeHero />
 
-        <HomeNavigation />
+        <HomeQuickTools />
 
-        <HomeGolfSimplified />
+        <HomeRecent items={recentItems} />
+
+        <View style={{ marginTop: 16 }}>
+          <HomeGolfSimplified />
+        </View>
 
       </ScrollView>
 

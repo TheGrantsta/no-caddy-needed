@@ -3147,6 +3147,132 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    homeCards: StyleSheet.create({
+        topActions: {
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            columnGap: 10,
+            marginBottom: 20,
+        },
+        circleButton: {
+            width: 48,
+            height: 48,
+            borderRadius: 24,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        hero: {
+            backgroundColor: c.primary,
+            borderRadius: 28,
+            marginHorizontal: 16,
+            marginTop: 20,
+            padding: 22,
+            shadowColor: c.primary,
+            shadowOpacity: 0.25,
+            shadowRadius: 14,
+            shadowOffset: { width: 0, height: 8 },
+            elevation: 6,
+        },
+        heroTitle: {
+            color: c.white,
+            fontSize: 26,
+            fontWeight: '700',
+        },
+        heroBody: {
+            color: c.white,
+            fontSize: fontSizes.normal,
+            marginTop: 8,
+        },
+        heroButton: {
+            width: '100%',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            columnGap: 8,
+            backgroundColor: c.white,
+            borderRadius: 32,
+            paddingVertical: 16,
+            marginTop: 20,
+        },
+        heroButtonText: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: '700',
+        },
+        sectionLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            letterSpacing: 1,
+            marginHorizontal: 20,
+            marginTop: 24,
+            marginBottom: 12,
+        },
+        toolRow: {
+            flexDirection: 'row',
+            columnGap: 10,
+            marginHorizontal: 16,
+        },
+        toolTile: {
+            flex: 1,
+            height: 110,
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            padding: 16,
+            justifyContent: 'space-between',
+        },
+        toolLabel: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+            fontWeight: '700',
+        },
+        recentCard: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            marginHorizontal: 16,
+            overflow: 'hidden',
+        },
+        recentEmpty: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+            padding: 16,
+        },
+        recentLink: {
+            width: '100%',
+        },
+        recentRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 14,
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+        },
+        recentRowDivider: {
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: '#E0E0E0',
+        },
+        recentIconTile: {
+            width: 44,
+            height: 44,
+            borderRadius: 10,
+            backgroundColor: '#E6EEE9',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        recentText: {
+            flex: 1,
+        },
+        recentTitle: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+        },
+        recentSubtitle: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginTop: 2,
+        },
+    }),
+
     drillHistory: StyleSheet.create({
         groupLabel: {
             color: c.tertiary,

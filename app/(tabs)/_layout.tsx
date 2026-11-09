@@ -7,6 +7,7 @@ import { useThemeColours } from '@/context/ThemeContext';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { getPracticeRemindersService } from '@/service/DbService';
 import { tabBarStyleFor, sceneStyleFor } from '@/assets/tabBarOptions';
+import HeaderSettingsButton from '@/components/HeaderSettingsButton';
 
 const isOverdue = () => {
   const reminders = getPracticeRemindersService();
@@ -55,6 +56,7 @@ export default function TabLayout() {
           name="index"
           options={{
             title: 'Home',
+            headerRight: () => <HeaderSettingsButton />,
             tabBarButtonTestID: 'tab-home',
             tabBarIcon: ({ color }) => (
               <MaterialIcons name='home' color={color} size={28} />

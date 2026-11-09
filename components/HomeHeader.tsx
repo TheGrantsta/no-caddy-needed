@@ -1,25 +1,14 @@
 import React from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { useThemeColours } from '@/context/ThemeContext';
+import { Text, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 
-interface Props {
-    onInfoPress: () => void;
-}
-
-export default function HomeHeader({ onInfoPress }: Props) {
+// Title and tagline for the Home page; the settings button lives in the tab header
+export default function HomeHeader() {
     const styles = useStyles();
-    const colours = useThemeColours();
 
     return (
         <View style={styles.header}>
-            <View style={styles.titleRow}>
-                <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help" testID="info-button" onPress={onInfoPress}>
-                    <MaterialIcons name="info-outline" size={26} color={colours.primary} />
-                </TouchableOpacity>
-                <Text style={styles.titleText}>No caddy needed!</Text>
-            </View>
+            <Text style={styles.titleText}>No caddy needed!</Text>
             <Text style={styles.subtitleText}>Smarter play & practice</Text>
         </View>
     );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import TabLayout from '../../app/(tabs)/_layout';
 import { getPracticeRemindersService } from '../../service/DbService';
 
@@ -16,7 +16,6 @@ jest.mock('../../context/ThemeContext', () => ({
 const mockUseSegments = jest.fn().mockReturnValue(['(tabs)', 'practice']);
 const mockNavigate = jest.fn();
 const mockPush = jest.fn();
-
 jest.mock('expo-router', () => ({
     Tabs: Object.assign(
         jest.fn(({ children }: any) => <>{children}</>),
@@ -295,5 +294,17 @@ describe('Tabs layout — Practice overdue badge', () => {
             expect(testIdFor('practice')).toBe('tab-practice');
             expect(testIdFor('perform')).toBe('tab-perform');
         });
+    });
+
+    it('shouldShowASettingsButtonInTheHomeHeaderThatOpensSettings', () => {
+        render(<TabLayout />);
+        const { Tabs } = require('expo-router');
+        const homeScreen = (Tabs.Screen as jest.Mock).mock.calls.find((call: any) => call[0].name === 'index');
+        const headerRight = homeScreen[0].options.headerRight;
+        const { getByLabelText } = render(headerRight());
+
+        fireEvent.press(getByLabelText('Settings'));
+
+        expect(mockPush).toHaveBeenCalledWith('/settings');
     });
 });

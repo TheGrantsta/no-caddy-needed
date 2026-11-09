@@ -30,6 +30,20 @@ jest.mock('expo-constants', () => ({
     default: { expoConfig: { version: '2.0.17' } },
 }));
 
+jest.mock('expo-router', () => {
+    const React = require('react');
+    const { View } = require('react-native');
+    return {
+        Link: ({ href, children, testID }: { href: string; children: React.ReactNode; testID?: string }) => (
+            <View testID={testID ?? `link-${href}`}>{children}</View>
+        ),
+        useRouter: () => ({ push: jest.fn(), back: jest.fn() }),
+        useFocusEffect: (callback: () => void) => {
+            React.useEffect(callback, [callback]);
+        },
+    };
+});
+
 jest.mock('../../service/DbService', () => ({
     getSettingsService: jest.fn().mockReturnValue({
         theme: 'dark',
@@ -42,6 +56,8 @@ jest.mock('../../service/DbService', () => ({
         whatsNewVersionSeen: '2.0.17',
     }),
     saveSettingsService: jest.fn().mockResolvedValue(true),
+    getAllRoundHistoryService: jest.fn(() => []),
+    getAllDrillHistoryService: jest.fn(() => []),
 }));
 
 jest.mock('react-native-gesture-handler', () => {
@@ -93,35 +109,37 @@ describe('renders homepage', () => {
         expect(getByText('Be your own best caddy')).toBeTruthy();
     });
 
-    it('shows links on homepage', () => {
+    it('shows the start a round button and quick tools on homepage', () => {
         const { getByText } = render(<Homepage />);
 
-        expect(getByText('Play')).toBeTruthy();
-        expect(getByText('Practice')).toBeTruthy();
-        expect(getByText('Performance')).toBeTruthy();
+        expect(getByText('Start a round')).toBeTruthy();
+        expect(getByText('Wind')).toBeTruthy();
+        expect(getByText('Tempo')).toBeTruthy();
+        expect(getByText('Random')).toBeTruthy();
     });
 
-    it('shows points on homepage', () => {
-        const { getByText } = render(<Homepage />);
+    it('shows points on homepage once Golf, simplified is opened', () => {
+        const { getByText, getByTestId } = render(<Homepage />);
 
         expect(getByText('Golf, simplified')).toBeTruthy();
+        fireEvent.press(getByTestId('golf-simplified-row'));
+
         expect(getByText('Method: hit it, find it, hit it again')).toBeTruthy();
         expect(getByText('Objective: get the ball in the hole with the fewest shots')).toBeTruthy();
         expect(getByText('Enjoyment: golf is a game')).toBeTruthy();
     });
 
-    it('shows footer text on homepage', () => {
+    it('shows the tagline in the hero card on homepage', () => {
         const { getByText } = render(<Homepage />);
 
         expect(getByText('Golf is not a game of perfect, or having a perfect swing')).toBeTruthy();
     });
 
-    it('shows info button', () => {
-        const { getByTestId } = render(<Homepage />);
+    it('does not show an info button on the page', () => {
+        const { queryByTestId } = render(<Homepage />);
 
-        expect(getByTestId('info-button')).toBeTruthy();
+        expect(queryByTestId('info-button')).toBeNull();
     });
-
     it('shows onboarding overlay when homeOnboardingSeen is false', () => {
         mockGetSettingsService.mockReturnValue({
             theme: 'dark',
@@ -142,14 +160,6 @@ describe('renders homepage', () => {
         const { queryByTestId } = render(<Homepage />);
 
         expect(queryByTestId('onboarding-overlay')).toBeNull();
-    });
-
-    it('shows onboarding overlay when info button is pressed', () => {
-        const { getByTestId } = render(<Homepage />);
-
-        fireEvent.press(getByTestId('info-button'));
-
-        expect(getByTestId('onboarding-overlay')).toBeTruthy();
     });
 
     it('dismisses onboarding and saves settings when done is pressed', async () => {

@@ -169,6 +169,7 @@ function ThemedApp() {
               backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
+            headerBackVisible: false,
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen
@@ -180,6 +181,7 @@ function ThemedApp() {
               backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
+            headerBackVisible: false,
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen
@@ -191,6 +193,7 @@ function ThemedApp() {
               backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
+            headerBackVisible: false,
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen
@@ -202,6 +205,7 @@ function ThemedApp() {
               backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
+            headerBackVisible: false,
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen
@@ -257,6 +261,7 @@ function ThemedApp() {
               backgroundColor: colours.primary,
             },
             headerTintColor: colours.background,
+            headerBackVisible: false,
             headerBackButtonDisplayMode: 'minimal',
           }} />
         <Stack.Screen

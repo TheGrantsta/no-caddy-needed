@@ -200,6 +200,16 @@ describe('RootLayout', () => {
         expect(UNSAFE_getAllByType(Image).length).toBeGreaterThan(0);
     });
 
+    it('hidesTheStackBackArrowOnTheScreensThatHaveTheirOwnHeading', async () => {
+        const { Stack } = require('expo-router');
+        await renderReady();
+        const screens = ['tools/tempo', 'tools/reminders', 'tools/random', 'tools/wind', 'settings'];
+        for (const name of screens) {
+            const call = Stack.Screen.mock.calls.find((c: any[]) => c[0].name === name);
+            expect(call[0].options.headerBackVisible).toBe(false);
+        }
+    });
+
     it('allRouteHeaderTitleCallbacksReturnElement', async () => {
         const { Stack } = require('expo-router');
         await renderReady();

@@ -1803,17 +1803,25 @@ export const createStyles = (c: ThemeColours) => ({
     deadlySinsTally: StyleSheet.create({
         container: {
             paddingTop: 0,
-            paddingLeft: 20,
-            paddingRight: 20,
-            paddingBottom: 10,
+            paddingLeft: 0,
+            paddingRight: 0,
+            paddingBottom: 0,
         },
         row: {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            paddingVertical: 3,
-            borderBottomWidth: 0.5,
-            borderColor: c.primary,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+        },
+        rowDivider: {
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: c.tertiary + '66',
+        },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            overflow: 'hidden',
         },
         label: {
             color: c.text,
@@ -1855,12 +1863,8 @@ export const createStyles = (c: ThemeColours) => ({
         tappableRow: {
             flexDirection: 'row',
             alignItems: 'center',
-            borderWidth: 1,
-            borderColor: c.tertiary,
-            borderRadius: 8,
-            paddingHorizontal: 12,
-            paddingVertical: 8,
-            marginBottom: 12,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
         },
         headerRow: {
             flexDirection: 'row',
@@ -1879,16 +1883,29 @@ export const createStyles = (c: ThemeColours) => ({
         labelMarked: {
             fontWeight: '600',
         },
+        followUpRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingLeft: 36,
+            paddingRight: 16,
+            paddingVertical: 8,
+            backgroundColor: c.tertiary + '14',
+        },
+        followUpLabel: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+        },
         followUp: {
             paddingHorizontal: 16,
-            paddingVertical: 10,
-            backgroundColor: c.tertiary + '14',
+            paddingBottom: 12,
         },
         markedCount: {
             color: c.tertiary,
             fontSize: fontSizes.smallText,
             paddingHorizontal: 4,
-            paddingVertical: 10,
+            paddingTop: 8,
+            paddingBottom: 4,
         },
         hint: {
             color: c.primary,

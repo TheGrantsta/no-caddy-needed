@@ -123,4 +123,17 @@ describe('Dropdown', () => {
         const styles = toggle.props.style;
         expect(styles.borderColor).toBe('#2D5A3D');
     });
+
+    describe('inline variant', () => {
+        it('shouldRenderTheInlineToggleWithoutABorderOrBackground', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(
+                <Dropdown options={['Driver', '3 Wood']} selectedOption="Driver" onSelectOption={jest.fn()} testIDPrefix="inline-test" inline />
+            );
+
+            const style = StyleSheet.flatten(getByTestId('inline-test-dropdown-toggle').props.style);
+            expect(style.borderWidth ?? 0).toBe(0);
+            expect(style.backgroundColor ?? 'transparent').toBe('transparent');
+        });
+    });
 });

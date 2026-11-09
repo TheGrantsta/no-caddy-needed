@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { ClubDistance, DeadlySinsValues } from '@/service/DbService';
@@ -48,51 +49,61 @@ const SinDetailsInput = ({
     const shortestFirstClubs = [...clubs].sort((a, b) => a.CarryDistance - b.CarryDistance);
     const shows = (sin: FollowUpSin) => sins[sin] && (only === undefined || only === sin);
 
+    // Single-sin follow-ups sit in one row (label on the left, value on the right); the full list stacks them
+    const followUp = (sin: FollowUpSin, label: string, picker: ReactNode) => {
+        if (only === undefined) {
+            return (
+                <View style={{ marginBottom: 16 }}>
+                    <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>{label}</Text>
+                    {picker}
+                </View>
+            );
+        }
+        return (
+            <View testID={`follow-up-row-${sin}`} style={styles.deadlySinsTally.followUpRow}>
+                <Text style={styles.deadlySinsTally.followUpLabel}>{label}</Text>
+                {picker}
+            </View>
+        );
+    };
+
     return (
         <View style={{ paddingVertical: 12, paddingHorizontal: 8 }}>
-            {shows('troubleOffTee') && (
-                <View style={{ marginBottom: 16 }}>
-                    <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Club off the tee</Text>
-                    <ClubPicker
-                        clubs={clubs}
-                        selectedClub={selectedOffTeeClub}
-                        onSelectClub={onOffTeeClubChange}
-                        showError={showOffTeeClubError}
-                    />
-                </View>
-            )}
-            {shows('penalties') && (
-                <View style={{ marginBottom: 16 }}>
-                    <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Penalty type</Text>
-                    <PenaltyTypePicker
-                        selectedPenaltyType={selectedPenaltyType}
-                        onSelectPenaltyType={onPenaltyTypeChange}
-                        showError={showPenaltyTypeError}
-                    />
-                </View>
-            )}
-            {shows('bogeysInside9Iron') && (
-                <View style={{ marginBottom: 16 }}>
-                    <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Approach club</Text>
-                    <ClubPicker
-                        clubs={shortestFirstClubs}
-                        selectedClub={selectedBogeysClub}
-                        onSelectClub={onBogeysClubChange}
-                        showError={showBogeysClubError}
-                        testIDPrefix="bogeys-club-picker"
-                    />
-                </View>
-            )}
-            {shows('doubleChips') && (
-                <View style={{ marginBottom: 16 }}>
-                    <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Double chip reason</Text>
-                    <DoubleChipReasonPicker
-                        selectedReason={selectedDoubleChipReason}
-                        onSelectReason={onDoubleChipReasonChange}
-                        showError={showDoubleChipReasonError}
-                    />
-                </View>
-            )}
+            {shows('troubleOffTee') && followUp('troubleOffTee', 'Club off the tee', (
+                <ClubPicker
+                    clubs={clubs}
+                    selectedClub={selectedOffTeeClub}
+                    onSelectClub={onOffTeeClubChange}
+                    showError={showOffTeeClubError}
+                    inline={only !== undefined}
+                />
+            ))}
+            {shows('penalties') && followUp('penalties', 'Penalty type', (
+                <PenaltyTypePicker
+                    selectedPenaltyType={selectedPenaltyType}
+                    onSelectPenaltyType={onPenaltyTypeChange}
+                    showError={showPenaltyTypeError}
+                    inline={only !== undefined}
+                />
+            ))}
+            {shows('bogeysInside9Iron') && followUp('bogeysInside9Iron', 'Approach club', (
+                <ClubPicker
+                    clubs={shortestFirstClubs}
+                    selectedClub={selectedBogeysClub}
+                    onSelectClub={onBogeysClubChange}
+                    showError={showBogeysClubError}
+                    testIDPrefix="bogeys-club-picker"
+                    inline={only !== undefined}
+                />
+            ))}
+            {shows('doubleChips') && followUp('doubleChips', 'Double chip reason', (
+                <DoubleChipReasonPicker
+                    selectedReason={selectedDoubleChipReason}
+                    onSelectReason={onDoubleChipReasonChange}
+                    showError={showDoubleChipReasonError}
+                    inline={only !== undefined}
+                />
+            ))}
         </View>
     );
 };

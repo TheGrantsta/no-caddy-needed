@@ -68,6 +68,13 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAutoDoubleBogey, isAutoBogeyPar5]);
 
+    // Rows shown on this hole: bogeys on par 5s only on a par 5, double bogeys only when auto-selected
+    const visibleSinFields = sinFields.filter(field => {
+        if (field.slug === 'bogeys-par5') return holePar === 5;
+        if (field.slug === 'double-bogeys') return isAutoDoubleBogey;
+        return true;
+    });
+
     const handleToggle = useCallback((key: keyof DeadlySinsValues) => {
         const next = { ...values, [key]: !values[key] };
         setValues(next);
@@ -105,28 +112,25 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                 <Text style={s.sectionLabel}>Deadly Sins</Text>
                 <Text style={s.sectionLabel}>Marked</Text>
             </View>
-            <View style={s.container}>
-                {sinFields.map((field) => {
-                    if (field.slug === 'bogeys-par5') {
-                        if (holePar !== 5) return null;
-                        if (isAutoBogeyPar5) {
-                            return (
-                                <View key={field.slug} testID="7deadly-sins-auto-row-bogeys-par5" style={s.row}>
-                                    <View style={{ flex: 1 }}>
-                                        <Text style={s.label}>{field.label}</Text>
-                                        <Text style={s.autoCaption}>Auto: 6 or more on a par 5</Text>
-                                    </View>
-                                    <View style={s.controls} pointerEvents="none">
-                                        <Switch testID="7deadly-sins-auto-bogeys-par5" value disabled trackColor={{ false: colours.tertiary, true: colours.red }} />
-                                    </View>
+            <View testID="deadly-sins-card" style={s.card}>
+                {visibleSinFields.map((field, index) => {
+                    const divider = index > 0 ? s.rowDivider : null;
+                    if (field.slug === 'bogeys-par5' && isAutoBogeyPar5) {
+                        return (
+                            <View key={field.slug} testID="7deadly-sins-auto-row-bogeys-par5" style={[s.row, divider]}>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={s.label}>{field.label}</Text>
+                                    <Text style={s.autoCaption}>Auto: 6 or more on a par 5</Text>
                                 </View>
-                            );
-                        }
+                                <View style={s.controls} pointerEvents="none">
+                                    <Switch testID="7deadly-sins-auto-bogeys-par5" value disabled trackColor={{ false: colours.tertiary, true: colours.red }} />
+                                </View>
+                            </View>
+                        );
                     }
                     if (field.slug === 'double-bogeys') {
-                        if (!isAutoDoubleBogey) return null;
                         return (
-                            <View key={field.slug} testID="7deadly-sins-auto-row-double-bogeys" style={s.row}>
+                            <View key={field.slug} testID="7deadly-sins-auto-row-double-bogeys" style={[s.row, divider]}>
                                 <View style={{ flex: 1 }}>
                                     <Text style={s.label}>{field.label}</Text>
                                     <Text style={s.autoCaption}>Auto: 2 or more over par</Text>
@@ -144,7 +148,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                                 testID={`7deadly-sins-toggle-${field.slug}`}
                                 onPress={() => handleToggle(field.key)}
                                 activeOpacity={0.6}
-                                style={s.tappableRow}
+                                style={[s.tappableRow, divider]}
                             >
                                 <Text style={[s.label, values[field.key] && s.labelMarked]}>{field.label}</Text>
                                 <View style={s.controls}>
@@ -161,10 +165,11 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                         </View>
                     );
                 })}
+            </View>
 
-                <Text testID="7deadly-sins-marked-count" style={s.markedCount}>
-                    {`${Object.values(values).filter(Boolean).length} marked on this hole.`}
-                </Text>
+            <Text testID="7deadly-sins-marked-count" style={s.markedCount}>
+                {`${Object.values(values).filter(Boolean).length} marked on this hole.`}
+            </Text>
 
                 {!roundControlled && (
                     <CtaButton
@@ -174,7 +179,6 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                         onPress={handleEndRound}
                     />
                 )}
-            </View>
         </View>
     );
 };

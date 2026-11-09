@@ -4,11 +4,7 @@ import SinDetailsInput from '../../components/SinDetailsInput';
 import { DeadlySinsValues } from '../../service/DbService';
 
 jest.mock('@/hooks/useStyles', () => ({
-    useStyles: () => ({
-        holeScoreInput: {
-            playerName: { fontSize: 16, fontWeight: 'bold' },
-        },
-    }),
+    useStyles: () => require('../../assets/styles').default,
 }));
 
 jest.mock('@/context/ThemeContext', () => ({
@@ -278,6 +274,25 @@ describe('SinDetailsInput', () => {
             );
 
             expect(UNSAFE_queryAllByType('ClubPicker' as any)).toHaveLength(0);
+        });
+    });
+
+    describe('follow-up row', () => {
+        it('shouldShowTheSinLabelAndPickerInOneRowWhenOnlyIsSet', () => {
+            const { getByTestId, getByText } = render(
+                <SinDetailsInput
+                    sins={{ ...allFalseSins, troubleOffTee: true }}
+                    clubs={mockClubs}
+                    only="troubleOffTee"
+                    onOffTeeClubChange={jest.fn()}
+                    onPenaltyTypeChange={jest.fn()}
+                    onBogeysClubChange={jest.fn()}
+                    onDoubleChipReasonChange={jest.fn()}
+                />
+            );
+
+            expect(getByTestId('follow-up-row-troubleOffTee')).toBeTruthy();
+            expect(getByText('Club off the tee')).toBeTruthy();
         });
     });
 });

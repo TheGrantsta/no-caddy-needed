@@ -681,16 +681,34 @@ describe('DeadlySinsTally component', () => {
     });
 
     describe('tappable rows', () => {
-        it('shouldShowEachRowAsBorderedCardWithoutTint', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
-            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+    });
 
-            const style = StyleSheet.flatten(getByTestId('7deadly-sins-toggle-three-putts').props.style);
-            expect(style.borderWidth).toBeGreaterThanOrEqual(1);
-            expect(style.borderRadius).toBeGreaterThanOrEqual(8);
-            expect(style.backgroundColor).toBeUndefined();
+    describe('card and footer layout', () => {
+        const { within } = require('@testing-library/react-native');
+
+        it('shouldShowTheMarkedCountBelowTheCardNotInsideIt', () => {
+            const { getByTestId, queryByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+            const card = getByTestId('deadly-sins-card');
+
+            expect(within(card).queryByTestId('7deadly-sins-marked-count')).toBeNull();
+            expect(getByTestId('7deadly-sins-marked-count')).toBeTruthy();
+            expect(queryByTestId('7deadly-sins-marked-count')).not.toBeNull();
         });
 
+        it('shouldRenderSinRowsAsUnboxedRowsInsideTheCard', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+            const style = StyleSheet.flatten(getByTestId('7deadly-sins-toggle-three-putts').props.style);
+
+            expect(style.borderWidth ?? 0).toBe(0);
+            expect(style.borderRadius ?? 0).toBe(0);
+        });
+
+        it('shouldDrawAHairlineDividerAboveEverySinRowExceptTheFirst', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+
+            expect(StyleSheet.flatten(getByTestId('7deadly-sins-toggle-three-putts').props.style).borderTopWidth).toBeGreaterThan(0);
+            expect(StyleSheet.flatten(getByTestId('7deadly-sins-toggle-trouble-off-tee').props.style).borderTopWidth ?? 0).toBe(0);
+        });
     });
 
     describe('deadly sins card layout', () => {
@@ -736,11 +754,5 @@ describe('DeadlySinsTally component', () => {
     });
 
     describe('list readability', () => {
-        it('shouldGiveEachCardMoreSpaceBelowIt', () => {
-            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
-            const style = StyleSheet.flatten(getByTestId('7deadly-sins-toggle-three-putts').props.style);
-
-            expect(style.marginBottom).toBeGreaterThanOrEqual(12);
-        });
     });
 });

@@ -12,6 +12,8 @@ type Props = {
     showError?: boolean;
     errorText?: string;
     testIDPrefix: string;
+    // Compact value-and-chevron toggle with no border, for use inside a list row
+    inline?: boolean;
 };
 
 const Dropdown = ({
@@ -22,6 +24,7 @@ const Dropdown = ({
     showError = false,
     errorText = 'Required',
     testIDPrefix,
+    inline = false,
 }: Props) => {
     const colours = useThemeColours();
     const [showDropdown, setShowDropdown] = useState(false);
@@ -32,11 +35,17 @@ const Dropdown = ({
     };
 
     return (
-        <View style={{ marginBottom: 12 }}>
+        <View style={{ marginBottom: inline ? 0 : 12 }}>
             <TouchableOpacity
                 testID={`${testIDPrefix}-dropdown-toggle`}
                 onPress={() => setShowDropdown(true)}
-                style={{
+                style={inline ? {
+                    paddingVertical: 6,
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                    alignItems: 'center',
+                    columnGap: 4,
+                } : {
                     paddingVertical: 12,
                     paddingHorizontal: 12,
                     borderRadius: 8,

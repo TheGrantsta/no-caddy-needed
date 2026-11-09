@@ -5,12 +5,14 @@ type Props = {
     selectedReason?: string;
     onSelectReason: (reason: string) => void;
     showError?: boolean;
+    inline?: boolean;
 };
 
 const DoubleChipReasonPicker = ({
     selectedReason,
     onSelectReason,
     showError = false,
+    inline = false,
 }: Props) => {
     return (
         <Dropdown
@@ -21,6 +23,7 @@ const DoubleChipReasonPicker = ({
             showError={showError}
             errorText="Required"
             testIDPrefix="double-chip-reason-picker"
+            inline={inline}
         />
     );
 };

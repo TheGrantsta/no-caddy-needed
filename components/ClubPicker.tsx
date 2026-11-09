@@ -12,6 +12,7 @@ type Props = {
     errorText?: string;
     emptyStateText?: string;
     testIDPrefix?: string;
+    inline?: boolean;
 };
 
 const ClubPicker = ({
@@ -22,6 +23,7 @@ const ClubPicker = ({
     errorText = 'Required',
     emptyStateText = 'Add clubs in Distances to log which club you used',
     testIDPrefix = 'club-picker',
+    inline = false,
 }: Props) => {
     const colours = useThemeColours();
 
@@ -44,6 +46,7 @@ const ClubPicker = ({
             showError={showError && clubs.length > 0}
             errorText={errorText}
             testIDPrefix={testIDPrefix}
+            inline={inline}
         />
     );
 };

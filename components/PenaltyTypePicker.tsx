@@ -5,12 +5,14 @@ type Props = {
     selectedPenaltyType?: string;
     onSelectPenaltyType: (type: string) => void;
     showError?: boolean;
+    inline?: boolean;
 };
 
 const PenaltyTypePicker = ({
     selectedPenaltyType,
     onSelectPenaltyType,
     showError = false,
+    inline = false,
 }: Props) => {
     return (
         <Dropdown
@@ -21,6 +23,7 @@ const PenaltyTypePicker = ({
             showError={showError}
             errorText="Required"
             testIDPrefix="penalty-type-picker"
+            inline={inline}
         />
     );
 };

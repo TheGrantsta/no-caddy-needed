@@ -181,6 +181,12 @@ const mockGetHolesWithSinsForRound = getHolesWithSinsForRoundService as jest.Moc
 const mockHapticsImpact = Haptics.impactAsync as jest.Mock;
 const mockDeleteHoleSinDetailsService = deleteHoleSinDetailsService as jest.Mock;
 
+// Opens a putt distance picker and chooses a value ('' clears it)
+const choosePuttDistance = (getByTestId: (id: string) => any, id: string, value: string) => {
+    fireEvent.press(getByTestId(id));
+    fireEvent.press(getByTestId(value === '' ? `${id}-option-clear` : `${id}-option-${value}`));
+};
+
 describe('Play screen', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -456,7 +462,7 @@ describe('Play screen', () => {
             await waitFor(() => expect(getByTestId('hole-note-input')).toBeTruthy());
 
             fireEvent.changeText(getByTestId('hole-note-input'), 'aim left');
-            fireEvent.changeText(getByTestId('first-putt-input'), '20');
+            choosePuttDistance(getByTestId, 'first-putt-input', '20');
 
             // Next saves the hole, including its note, in one step
             await act(async () => {
@@ -524,7 +530,7 @@ describe('Play screen', () => {
 
                 const { getByTestId } = render(<Play />);
                 await startFullRound(getByTestId);
-                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                choosePuttDistance(getByTestId, 'first-putt-input', '20');
 
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));
@@ -579,7 +585,7 @@ describe('Play screen', () => {
                 await advanceToPuttingPhase(getByTestId);
 
                 fireEvent(getByTestId('gir-switch'), 'valueChange', true);
-                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                choosePuttDistance(getByTestId, 'first-putt-input', '20');
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));
                 });
@@ -615,7 +621,7 @@ describe('Play screen', () => {
                 await startRoundOnHoleOne(getByTestId);
                 await advanceToPuttingPhase(getByTestId);
 
-                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                choosePuttDistance(getByTestId, 'first-putt-input', '20');
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));
                 });
@@ -634,8 +640,8 @@ describe('Play screen', () => {
                 await startRoundOnHoleOne(getByTestId);
                 await advanceToPuttingPhase(getByTestId);
 
-                fireEvent.changeText(getByTestId('first-putt-input'), '20');
-                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+                choosePuttDistance(getByTestId, 'first-putt-input', '20');
+                choosePuttDistance(getByTestId, 'second-putt-input', '3');
                 expect(getByTestId('gir-switch').props.value).toBe(true);
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));
@@ -656,8 +662,8 @@ describe('Play screen', () => {
                 fireEvent.press(getByTestId('increment-1'));
                 await advanceToPuttingPhase(getByTestId);
 
-                fireEvent.changeText(getByTestId('first-putt-input'), '20');
-                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+                choosePuttDistance(getByTestId, 'first-putt-input', '20');
+                choosePuttDistance(getByTestId, 'second-putt-input', '3');
                 expect(getByTestId('gir-switch').props.value).toBe(false);
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));

@@ -9,6 +9,12 @@ jest.mock('@/context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
 }));
 
+// Opens a putt distance picker and chooses a value ('' clears it)
+const choosePuttDistance = (getByTestId: (id: string) => any, id: string, value: string) => {
+    fireEvent.press(getByTestId(id));
+    fireEvent.press(getByTestId(value === '' ? `${id}-option-clear` : `${id}-option-${value}`));
+};
+
 describe('PuttingStatsInput', () => {
     describe('first putt input', () => {
         it('renders first putt input blank when no initial value given', () => {
@@ -20,9 +26,7 @@ describe('PuttingStatsInput', () => {
                     onStatsChange={onStatsChange}
                 />
             );
-
-            const input = getByTestId('first-putt-input');
-            expect(input.props.value).toBe('');
+            expect(getByTestId('first-putt-input')).toHaveTextContent('0');
         });
 
         it('renders first putt input with provided initial value', () => {
@@ -35,9 +39,7 @@ describe('PuttingStatsInput', () => {
                     initialFirstPutt={20}
                 />
             );
-
-            const input = getByTestId('first-putt-input');
-            expect(input.props.value).toBe('20');
+            expect(getByTestId('first-putt-input')).toHaveTextContent('20');
         });
 
         it('calls onStatsChange when first putt value changes', () => {
@@ -52,9 +54,7 @@ describe('PuttingStatsInput', () => {
             );
 
             onStatsChange.mockClear();
-
-            const input = getByTestId('first-putt-input');
-            fireEvent.changeText(input, '25');
+            choosePuttDistance(getByTestId, 'first-putt-input', '25');
 
             expect(onStatsChange).toHaveBeenCalledWith(25, undefined, expect.any(Boolean), expect.any(Boolean));
         });
@@ -71,9 +71,7 @@ describe('PuttingStatsInput', () => {
             );
 
             onStatsChange.mockClear();
-
-            const input = getByTestId('first-putt-input');
-            fireEvent.changeText(input, '');
+            choosePuttDistance(getByTestId, 'first-putt-input', '');
 
             expect(onStatsChange).toHaveBeenCalledWith(undefined, undefined, expect.any(Boolean), expect.any(Boolean));
         });
@@ -94,7 +92,7 @@ describe('PuttingStatsInput', () => {
             // No add button, input is always visible
             expect(queryByTestId('add-second-putt')).toBeFalsy();
             expect(getByTestId('second-putt-input')).toBeTruthy();
-            expect(getByTestId('second-putt-input').props.value).toBe('');
+            expect(getByTestId('second-putt-input')).toHaveTextContent('0');
         });
 
         it('shows second putt with loaded saved data', () => {
@@ -109,7 +107,7 @@ describe('PuttingStatsInput', () => {
                 />
             );
 
-            expect(getByTestId('second-putt-input').props.value).toBe('8');
+            expect(getByTestId('second-putt-input')).toHaveTextContent('8');
         });
 
         it('shows second putt immediately when 3-putt selected', () => {
@@ -125,7 +123,7 @@ describe('PuttingStatsInput', () => {
 
             expect(queryByTestId('add-second-putt')).toBeFalsy();
             expect(getByTestId('second-putt-input')).toBeTruthy();
-            expect(getByTestId('second-putt-input').props.value).toBe('');
+            expect(getByTestId('second-putt-input')).toHaveTextContent('0');
         });
     });
 
@@ -182,8 +180,7 @@ describe('PuttingStatsInput', () => {
             onStatsChange.mockClear();
 
             // Try to enter second putt without first putt
-            const secondPuttInput = getByTestId('second-putt-input');
-            fireEvent.changeText(secondPuttInput, '5');
+            choosePuttDistance(getByTestId, 'second-putt-input', '5');
 
             // onStatsChange should not be called because first putt is empty
             expect(onStatsChange).not.toHaveBeenCalled();
@@ -203,8 +200,7 @@ describe('PuttingStatsInput', () => {
             onStatsChange.mockClear();
 
             // Try to enter second putt > 0 when first putt is 0
-            const secondPuttInput = getByTestId('second-putt-input');
-            fireEvent.changeText(secondPuttInput, '5');
+            choosePuttDistance(getByTestId, 'second-putt-input', '5');
 
             // onStatsChange should not be called because first putt is 0
             expect(onStatsChange).not.toHaveBeenCalled();
@@ -223,8 +219,7 @@ describe('PuttingStatsInput', () => {
             onStatsChange.mockClear();
 
             // Blank second putt means no second putt attempted
-            const secondPuttInput = getByTestId('second-putt-input');
-            fireEvent.changeText(secondPuttInput, '');
+            choosePuttDistance(getByTestId, 'second-putt-input', '');
 
             // Should be called because blank is always allowed (means no second putt)
             expect(onStatsChange).toHaveBeenCalledWith(undefined, undefined, false, false);
@@ -243,8 +238,7 @@ describe('PuttingStatsInput', () => {
             onStatsChange.mockClear();
 
             // Second putt = 0 is allowed with empty first putt (explicit 0 means no second putt)
-            const secondPuttInput = getByTestId('second-putt-input');
-            fireEvent.changeText(secondPuttInput, '0');
+            choosePuttDistance(getByTestId, 'second-putt-input', '0');
 
             // Should be called because 0 is always allowed (means no second putt)
             expect(onStatsChange).toHaveBeenCalledWith(undefined, 0, false, false);
@@ -264,8 +258,7 @@ describe('PuttingStatsInput', () => {
             onStatsChange.mockClear();
 
             // Second putt = 0 is allowed with first putt = 0
-            const secondPuttInput = getByTestId('second-putt-input');
-            fireEvent.changeText(secondPuttInput, '0');
+            choosePuttDistance(getByTestId, 'second-putt-input', '0');
 
             expect(onStatsChange).toHaveBeenCalledWith(0, 0, false, false);
         });
@@ -282,9 +275,7 @@ describe('PuttingStatsInput', () => {
             );
 
             onStatsChange.mockClear();
-
-            const secondPuttInput = getByTestId('second-putt-input');
-            fireEvent.changeText(secondPuttInput, '5');
+            choosePuttDistance(getByTestId, 'second-putt-input', '5');
 
             expect(onStatsChange).toHaveBeenCalledWith(20, 5, false, false);
         });
@@ -304,15 +295,14 @@ describe('PuttingStatsInput', () => {
             onStatsChange.mockClear();
 
             // Try to set short 2nd putt to 15 (bigger than 1st putt of 10)
-            const secondPuttInput = getByTestId('second-putt-input');
-            fireEvent.changeText(secondPuttInput, '15');
+            choosePuttDistance(getByTestId, 'second-putt-input', '15');
             expect(onStatsChange).not.toHaveBeenCalled();
             expect(queryByTestId('second-putt-error')).toBeTruthy();
 
             onStatsChange.mockClear();
 
             // Try to set short 2nd putt to 10 (equal to 1st putt of 10)
-            fireEvent.changeText(secondPuttInput, '10');
+            choosePuttDistance(getByTestId, 'second-putt-input', '10');
             expect(onStatsChange).not.toHaveBeenCalled();
             expect(queryByTestId('second-putt-error')).toBeTruthy();
         });
@@ -330,9 +320,7 @@ describe('PuttingStatsInput', () => {
             );
 
             onStatsChange.mockClear();
-
-            const secondPuttInput = getByTestId('second-putt-input');
-            fireEvent.changeText(secondPuttInput, '10');
+            choosePuttDistance(getByTestId, 'second-putt-input', '10');
 
             expect(onStatsChange).toHaveBeenCalledWith(20, 10, false, false);
         });
@@ -352,8 +340,7 @@ describe('PuttingStatsInput', () => {
             onStatsChange.mockClear();
 
             // Long putt can be bigger than first putt
-            const secondPuttInput = getByTestId('second-putt-input');
-            fireEvent.changeText(secondPuttInput, '25');
+            choosePuttDistance(getByTestId, 'second-putt-input', '25');
 
             expect(onStatsChange).toHaveBeenCalledWith(10, 25, true, false);
         });
@@ -469,9 +456,7 @@ describe('PuttingStatsInput', () => {
             );
 
             onStatsChange.mockClear();
-
-            const secondPuttInput = getByTestId('second-putt-input');
-            fireEvent.changeText(secondPuttInput, '10');
+            choosePuttDistance(getByTestId, 'second-putt-input', '10');
 
             expect(queryByTestId('second-putt-error')).toBeTruthy();
             expect(onStatsChange).not.toHaveBeenCalled();
@@ -514,10 +499,9 @@ describe('PuttingStatsInput', () => {
             );
 
             onSecondPuttErrorChange.mockClear();
-            const secondPuttInput = getByTestId('second-putt-input');
 
             // First trigger the error
-            fireEvent.changeText(secondPuttInput, '20');
+            choosePuttDistance(getByTestId, 'second-putt-input', '20');
             expect(queryByTestId('second-putt-error')).toBeTruthy();
             expect(onSecondPuttErrorChange).toHaveBeenCalledWith(true);
 
@@ -525,7 +509,7 @@ describe('PuttingStatsInput', () => {
             onSecondPuttErrorChange.mockClear();
 
             // Then enter a valid value
-            fireEvent.changeText(secondPuttInput, '10');
+            choosePuttDistance(getByTestId, 'second-putt-input', '10');
             expect(queryByTestId('second-putt-error')).toBeFalsy();
             expect(onSecondPuttErrorChange).toHaveBeenCalledWith(false);
             expect(onStatsChange).toHaveBeenCalledWith(20, 10, false, false);
@@ -552,8 +536,7 @@ describe('PuttingStatsInput', () => {
             onStatsChange.mockClear();
 
             // Increase first putt to 21 to resolve the error
-            const firstPuttInput = getByTestId('first-putt-input');
-            fireEvent.changeText(firstPuttInput, '21');
+            choosePuttDistance(getByTestId, 'first-putt-input', '21');
 
             // Error should be cleared and callbacks fired
             expect(queryByTestId('second-putt-error')).toBeFalsy();
@@ -581,8 +564,7 @@ describe('PuttingStatsInput', () => {
             onStatsChange.mockClear();
 
             // Clear first putt field
-            const firstPuttInput = getByTestId('first-putt-input');
-            fireEvent.changeText(firstPuttInput, '');
+            choosePuttDistance(getByTestId, 'first-putt-input', '');
 
             // Error should be cleared
             expect(queryByTestId('second-putt-error')).toBeFalsy();
@@ -611,8 +593,7 @@ describe('PuttingStatsInput', () => {
             onStatsChange.mockClear();
 
             // Lower first putt to 5, making 10 > 5
-            const firstPuttInput = getByTestId('first-putt-input');
-            fireEvent.changeText(firstPuttInput, '5');
+            choosePuttDistance(getByTestId, 'first-putt-input', '5');
 
             // Error should now be showing
             expect(queryByTestId('second-putt-error')).toBeTruthy();
@@ -711,41 +692,6 @@ describe('PuttingStatsInput', () => {
 
 
     describe('input validation', () => {
-        it('clamps first putt to max 300', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={false}
-                    onStatsChange={onStatsChange}
-                />
-            );
-
-            onStatsChange.mockClear();
-
-            const input = getByTestId('first-putt-input');
-            fireEvent.changeText(input, '500');
-
-            expect(onStatsChange).toHaveBeenCalledWith(300, undefined, expect.any(Boolean), expect.any(Boolean));
-        });
-
-        it('clamps first putt to min 0', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={false}
-                    onStatsChange={onStatsChange}
-                />
-            );
-
-            onStatsChange.mockClear();
-
-            const input = getByTestId('first-putt-input');
-            fireEvent.changeText(input, '-5');
-
-            expect(onStatsChange).toHaveBeenCalledWith(0, undefined, expect.any(Boolean), expect.any(Boolean));
-        });
     });
 
     describe('error display', () => {
@@ -781,6 +727,16 @@ describe('PuttingStatsInput', () => {
     });
 
     describe('error styling', () => {
+    });
+
+    describe('distance list cap', () => {
+        it('shouldCapTheFirstPuttListAt100Feet', () => {
+            const { getByTestId, queryByTestId } = render(<PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />);
+            fireEvent.press(getByTestId('first-putt-input'));
+
+            expect(getByTestId('first-putt-input-option-100')).toBeTruthy();
+            expect(queryByTestId('first-putt-input-option-101')).toBeNull();
+        });
     });
 
     describe('putting card layout matches the hole screen', () => {
@@ -872,7 +828,7 @@ describe('PuttingStatsInput', () => {
                 <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} initialGreenInRegulation={true} />
             );
 
-            fireEvent.changeText(getByTestId('first-putt-input'), '20');
+            choosePuttDistance(getByTestId, 'first-putt-input', '20');
 
             expect(onStatsChange).toHaveBeenLastCalledWith(20, undefined, false, true);
         });
@@ -883,7 +839,7 @@ describe('PuttingStatsInput', () => {
                 <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} initialFirstPutt={20} initialGreenInRegulation={true} />
             );
 
-            fireEvent.changeText(getByTestId('second-putt-input'), '3');
+            choosePuttDistance(getByTestId, 'second-putt-input', '3');
 
             expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, true);
         });
@@ -894,7 +850,7 @@ describe('PuttingStatsInput', () => {
                 <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} initialFirstPutt={20} initialGreenInRegulation={true} />
             );
 
-            fireEvent.changeText(getByTestId('first-putt-input'), '');
+            choosePuttDistance(getByTestId, 'first-putt-input', '');
 
             expect(onStatsChange).toHaveBeenLastCalledWith(undefined, undefined, false, true);
         });
@@ -917,8 +873,8 @@ describe('PuttingStatsInput', () => {
                     <PuttingStatsInput holePar={4} userScore={4} threePuttSelected={false} onStatsChange={onStatsChange} />
                 );
 
-                fireEvent.changeText(getByTestId('first-putt-input'), '20');
-                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+                choosePuttDistance(getByTestId, 'first-putt-input', '20');
+                choosePuttDistance(getByTestId, 'second-putt-input', '3');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, true);
                 expect(getByTestId('gir-switch').props.value).toBe(true);
@@ -930,8 +886,8 @@ describe('PuttingStatsInput', () => {
                     <PuttingStatsInput holePar={3} userScore={3} threePuttSelected={false} onStatsChange={onStatsChange} />
                 );
 
-                fireEvent.changeText(getByTestId('first-putt-input'), '2');
-                fireEvent.changeText(getByTestId('second-putt-input'), '0');
+                choosePuttDistance(getByTestId, 'first-putt-input', '2');
+                choosePuttDistance(getByTestId, 'second-putt-input', '0');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(2, 0, false, true);
             });
@@ -942,8 +898,8 @@ describe('PuttingStatsInput', () => {
                     <PuttingStatsInput holePar={4} userScore={5} threePuttSelected={false} onStatsChange={onStatsChange} />
                 );
 
-                fireEvent.changeText(getByTestId('first-putt-input'), '20');
-                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+                choosePuttDistance(getByTestId, 'first-putt-input', '20');
+                choosePuttDistance(getByTestId, 'second-putt-input', '3');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, false);
                 expect(getByTestId('gir-switch').props.value).toBe(false);
@@ -955,8 +911,8 @@ describe('PuttingStatsInput', () => {
                     <PuttingStatsInput holePar={4} userScore={3} threePuttSelected={false} onStatsChange={onStatsChange} />
                 );
 
-                fireEvent.changeText(getByTestId('first-putt-input'), '20');
-                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+                choosePuttDistance(getByTestId, 'first-putt-input', '20');
+                choosePuttDistance(getByTestId, 'second-putt-input', '3');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, false);
             });
@@ -967,7 +923,7 @@ describe('PuttingStatsInput', () => {
                     <PuttingStatsInput holePar={4} userScore={4} threePuttSelected={false} onStatsChange={onStatsChange} />
                 );
 
-                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                choosePuttDistance(getByTestId, 'first-putt-input', '20');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, undefined, false, false);
             });
@@ -978,9 +934,9 @@ describe('PuttingStatsInput', () => {
                     <PuttingStatsInput holePar={4} userScore={4} threePuttSelected={false} onStatsChange={onStatsChange} />
                 );
 
-                fireEvent.changeText(getByTestId('first-putt-input'), '20');
-                fireEvent.changeText(getByTestId('second-putt-input'), '3');
-                fireEvent.changeText(getByTestId('second-putt-input'), '');
+                choosePuttDistance(getByTestId, 'first-putt-input', '20');
+                choosePuttDistance(getByTestId, 'second-putt-input', '3');
+                choosePuttDistance(getByTestId, 'second-putt-input', '');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, undefined, false, false);
                 expect(getByTestId('gir-switch').props.value).toBe(false);
@@ -992,9 +948,9 @@ describe('PuttingStatsInput', () => {
                     <PuttingStatsInput holePar={4} userScore={4} threePuttSelected={false} onStatsChange={onStatsChange} />
                 );
 
-                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+                choosePuttDistance(getByTestId, 'first-putt-input', '20');
                 fireEvent(getByTestId('gir-switch'), 'valueChange', false);
-                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+                choosePuttDistance(getByTestId, 'second-putt-input', '3');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, false);
                 expect(getByTestId('gir-switch').props.value).toBe(false);
@@ -1007,8 +963,8 @@ describe('PuttingStatsInput', () => {
                 );
 
                 fireEvent(getByTestId('gir-switch'), 'valueChange', true);
-                fireEvent.changeText(getByTestId('first-putt-input'), '20');
-                fireEvent.changeText(getByTestId('second-putt-input'), '3');
+                choosePuttDistance(getByTestId, 'first-putt-input', '20');
+                choosePuttDistance(getByTestId, 'second-putt-input', '3');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, true);
                 expect(getByTestId('gir-switch').props.value).toBe(true);
@@ -1020,7 +976,7 @@ describe('PuttingStatsInput', () => {
                     <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} initialFirstPutt={20} initialSecondPutt={3} initialGreenInRegulation={true} />
                 );
 
-                fireEvent.changeText(getByTestId('second-putt-input'), '2');
+                choosePuttDistance(getByTestId, 'second-putt-input', '2');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, 2, false, true);
             });

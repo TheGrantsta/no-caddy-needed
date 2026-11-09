@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Switch, Text, TouchableOpacity, View, TextInput } from 'react-native';
+import { Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
+import PuttDistancePicker from './PuttDistancePicker';
 
-const MAX_FIRST_PUTT_DISTANCE = 300;
+const MAX_FIRST_PUTT_DISTANCE = 100;
 const MAX_SECOND_PUTT_DISTANCE = 100;
 
 type Props = {
@@ -144,7 +145,6 @@ const PuttingStatsInput = ({
         onStatsChange(first, second, secondIsLong, value);
     };
 
-    const boxColour = (error: boolean) => (error ? colours.red : colours.text);
     const errorText = (text: string, testID: string) => (
         <Text testID={testID} style={{ color: colours.errorText, fontSize: fontSizes.smallText, paddingHorizontal: 16, paddingBottom: 8 }}>
             {text}
@@ -166,15 +166,12 @@ const PuttingStatsInput = ({
             {/* 1st putt */}
             <View style={styles.holeScreen.puttRow}>
                 <Text testID="first-putt-label" style={styles.holeScreen.puttLabel}>1st putt</Text>
-                <TextInput
+                <PuttDistancePicker
                     testID="first-putt-input"
                     value={firstPutt}
-                    onChangeText={handleFirstPuttChange}
-                    keyboardType="number-pad"
-                    maxLength={3}
-                    style={[styles.holeScreen.puttBox, { color: boxColour(showFirstPuttError) }]}
-                    placeholder="0"
-                    placeholderTextColor={colours.tertiary}
+                    maxDistance={MAX_FIRST_PUTT_DISTANCE}
+                    onChange={handleFirstPuttChange}
+                    hasError={showFirstPuttError}
                 />
                 <Text style={styles.holeScreen.puttUnit}>ft</Text>
             </View>
@@ -201,15 +198,12 @@ const PuttingStatsInput = ({
                         <Text style={[styles.holeScreen.segmentText, secondIsLong && styles.holeScreen.segmentTextActive]}>Long</Text>
                     </TouchableOpacity>
                 </View>
-                <TextInput
+                <PuttDistancePicker
                     testID="second-putt-input"
                     value={secondPutt}
-                    onChangeText={handleSecondPuttChange}
-                    keyboardType="number-pad"
-                    maxLength={3}
-                    style={[styles.holeScreen.puttBox, { color: boxColour(secondPuttError || showSecondPuttRequiredError) }]}
-                    placeholder="0"
-                    placeholderTextColor={colours.tertiary}
+                    maxDistance={MAX_SECOND_PUTT_DISTANCE}
+                    onChange={handleSecondPuttChange}
+                    hasError={secondPuttError || showSecondPuttRequiredError}
                 />
                 <Text style={styles.holeScreen.puttUnit}>ft</Text>
             </View>

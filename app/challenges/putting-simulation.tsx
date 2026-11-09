@@ -1,21 +1,29 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useRouter, useNavigation } from 'expo-router';
-
+import { useNavigation } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
+
 import { useStyles } from '@/hooks/useStyles';
 import { useConfirmBeforeLeaving } from '@/hooks/useConfirmBeforeLeaving';
 import { useThemeColours } from '@/context/ThemeContext';
 import { usePuttingSimulation } from '@/hooks/usePuttingSimulation';
 import { insertDrillResultService } from '@/service/DbService';
 import { useAppToast } from '@/hooks/useAppToast';
-import ChallengeNumberPicker from '@/components/ChallengeNumberPicker';
-import ChallengeNavButtons from '@/components/ChallengeNavButtons';
 import ChallengeCompleteView from '@/components/ChallengeCompleteView';
+import EndRoundSheet from '@/components/EndRoundSheet';
 import { resolveBand } from '@/utils/performanceBands';
 import { useCallback, useEffect, useRef, useState, useLayoutEffect } from 'react';
 
 type PerformanceBand = 'pro' | 'd1' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
+
+// Putt-count tiles; the last tile stands for 4 or more putts
+const PUTT_OPTIONS = [
+    { value: 1, label: '1' },
+    { value: 2, label: '2' },
+    { value: 3, label: '3' },
+    { value: 4, label: '4+' },
+];
 
 const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; maxPutts: number; color: string }> = {
     pro: { label: 'PGA Pro', maxPutts: 29, color: '#00C851' },
@@ -29,34 +37,47 @@ const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; maxPutts: numb
 export default function PuttingSimulation() {
     const styles = useStyles();
     const colours = useThemeColours();
-    const router = useRouter();
     const navigation = useNavigation();
     const sim = usePuttingSimulation();
     const { showResult } = useAppToast();
     const hasSaved = useRef(false);
     const [showQuitConfirm, setShowQuitConfirm] = useState(false);
     const { leave } = useConfirmBeforeLeaving(sim.phase === 'in-progress', () => setShowQuitConfirm(true));
+    const [showEndSheet, setShowEndSheet] = useState(false);
+    const { top: topInset, bottom: bottomInset } = useSafeAreaInsets();
 
     const totalPutts = sim.putts.reduce((sum, p) => sum + p, 0);
+    // Holes entered so far, including the one on screen (its putt count is already recorded)
+    const holesEntered = sim.holeNumber;
+    const puttsEntered = sim.putts.slice(0, holesEntered).reduce((sum, p) => sum + p, 0);
 
-    const handleBack = useCallback(() => {
-        if (sim.phase === 'in-progress') {
-            setShowQuitConfirm(true);
-        } else {
-            router.back();
-        }
-    }, [sim.phase, router]);
-
-    // Configure header back button to use custom handleBack logic
+    // The screen draws its own app bar, so the stack header is hidden
     useLayoutEffect(() => {
-        navigation.setOptions({
-            headerLeft: () => (
-                <TouchableOpacity onPress={handleBack} testID="header-back-button">
-                    <MaterialIcons name="arrow-back" size={24} color={colours.background} />
-                </TouchableOpacity>
-            ),
-        });
-    }, [navigation, handleBack, colours.background]);
+        navigation.setOptions({ headerShown: false });
+    }, [navigation]);
+
+    const handleEndPress = useCallback(() => {
+        if (sim.phase === 'complete') {
+            leave();
+            return;
+        }
+        setShowEndSheet(true);
+    }, [sim.phase, leave]);
+
+    // Save records the holes entered so far, then leaves the simulation
+    const handleSaveProgress = useCallback(() => {
+        setShowEndSheet(false);
+        if (puttsEntered > 0) {
+            insertDrillResultService('Putting Simulation', false, null, puttsEntered);
+            showResult(true, 'Result saved', '');
+        }
+        leave();
+    }, [puttsEntered, showResult, leave]);
+
+    const handleDiscardProgress = useCallback(() => {
+        setShowEndSheet(false);
+        leave();
+    }, [leave]);
 
     const handleConfirmQuit = useCallback(() => {
         setShowQuitConfirm(false);
@@ -91,35 +112,68 @@ export default function PuttingSimulation() {
 
     return (
         <GestureHandlerRootView style={styles.flexOne}>
-            <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
+            <View style={[styles.puttingSim.header, { paddingTop: topInset + 12 }]}>
+                <View style={styles.puttingSim.topRow}>
+                    <TouchableOpacity
+                        testID="end-simulation-button"
+                        accessibilityRole="button"
+                        onPress={handleEndPress}
+                        style={styles.puttingSim.endButton}
+                    >
+                        <Text style={styles.puttingSim.endButtonText}>End</Text>
+                    </TouchableOpacity>
+                    <Text numberOfLines={1} style={styles.puttingSim.title}>Putting sim</Text>
+                    <View style={styles.puttingSim.titleSpacer} />
+                </View>
+                {sim.phase === 'in-progress' && (
+                    <>
+                        <View style={styles.puttingSim.holeRow}>
+                            <Text testID="putting-sim-hole" style={styles.puttingSim.holeText}>{`Hole ${sim.holeNumber}`}</Text>
+                            <Text style={styles.puttingSim.ofText}>{`of ${sim.totalHoles}`}</Text>
+                        </View>
+                        <View style={styles.puttingSim.progressTrack}>
+                            <View
+                                testID="putting-sim-progress-fill"
+                                style={[styles.puttingSim.progressFill, { width: `${(sim.holeNumber / sim.totalHoles) * 100}%` }]}
+                            />
+                        </View>
+                    </>
+                )}
+            </View>
+            <ScrollView
+                style={styles.scrollContainer}
+                contentContainerStyle={[styles.scrollContentContainer, { paddingBottom: 140 + bottomInset }]}
+            >
                 <View style={styles.container}>
                     {sim.phase === 'in-progress' && (
                         <>
-                            <Text style={styles.headerText}>Hole {sim.holeNumber} of {sim.totalHoles}</Text>
-
-                            {/* Main content container with padding */}
-                            <View style={{ paddingVertical: 32, paddingHorizontal: 20 }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'baseline', marginBottom: 24, gap: 8 }}>
-                                    <Text style={styles.subHeaderText}>Distance</Text>
-                                    <Text style={styles.subHeaderText}>{sim.currentDistance} ft</Text>
+                            <View testID="putting-sim-distance-card" style={styles.puttingSim.card}>
+                                <Text style={styles.puttingSim.cardLabel}>PUTT FROM</Text>
+                                <View style={styles.puttingSim.distanceRow}>
+                                    <Text testID="putt-distance-value" style={styles.puttingSim.distanceValue}>{String(sim.currentDistance)}</Text>
+                                    <Text style={styles.puttingSim.distanceUnit}>ft</Text>
                                 </View>
+                            </View>
 
-                                <ChallengeNumberPicker
-                                    value={sim.currentPutts}
-                                    onChange={sim.setPutts}
-                                    min={1}
-                                    max={5}
-                                    decreaseTestID="decrease-putts-button"
-                                    increaseTestID="increase-putts-button"
-                                    displayTestID="putt-count-display"
-                                />
-
-                                <ChallengeNavButtons
-                                    onPrevious={sim.goToPreviousHole}
-                                    onNext={sim.goToNextHole}
-                                    previousDisabled={sim.holeNumber === 1}
-                                    isLastStep={sim.holeNumber === sim.totalHoles}
-                                />
+                            <Text style={styles.puttingSim.sectionLabel}>PUTTS TAKEN</Text>
+                            <View style={styles.puttingSim.tileRow}>
+                                {PUTT_OPTIONS.map(option => {
+                                    const selected = sim.currentPutts === option.value;
+                                    return (
+                                        <TouchableOpacity
+                                            key={option.value}
+                                            testID={`putts-option-${option.value}`}
+                                            accessibilityRole="button"
+                                            accessibilityState={{ selected }}
+                                            onPress={() => sim.setPutts(option.value)}
+                                            style={[styles.puttingSim.tile, selected && styles.puttingSim.tileSelected]}
+                                        >
+                                            <Text style={[styles.puttingSim.tileText, selected && styles.puttingSim.tileTextSelected]}>
+                                                {option.label}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    );
+                                })}
                             </View>
                         </>
                     )}
@@ -171,6 +225,44 @@ export default function PuttingSimulation() {
                     )}
                 </View>
             </ScrollView>
+            {sim.phase === 'in-progress' && (
+                <View style={[styles.puttingSim.bottomBar, { bottom: 16 + bottomInset }]}>
+                    {sim.holeNumber > 1 ? (
+                        <TouchableOpacity
+                            testID="previous-hole-button"
+                            accessibilityRole="button"
+                            onPress={sim.goToPreviousHole}
+                            style={styles.puttingSim.prevButton}
+                        >
+                            <MaterialIcons name="chevron-left" size={24} color={colours.primary} />
+                            <Text style={styles.puttingSim.prevText}>{`Hole ${sim.holeNumber - 1}`}</Text>
+                        </TouchableOpacity>
+                    ) : <View />}
+                    <TouchableOpacity
+                        testID="next-hole-button"
+                        accessibilityRole="button"
+                        onPress={sim.goToNextHole}
+                        style={styles.puttingSim.nextButton}
+                    >
+                        <Text style={styles.puttingSim.nextText}>
+                            {sim.holeNumber === sim.totalHoles ? 'Finish' : `Hole ${sim.holeNumber + 1}`}
+                        </Text>
+                        <MaterialIcons name="chevron-right" size={24} color={colours.black} />
+                    </TouchableOpacity>
+                </View>
+            )}
+            <EndRoundSheet
+                visible={showEndSheet}
+                holeNumber={holesEntered}
+                holesTotal={sim.totalHoles}
+                title={`End simulation after hole ${holesEntered}?`}
+                message={`You’ve entered ${holesEntered} of ${sim.totalHoles} holes. Saved results are added to your drill history.`}
+                saveLabel="Save progress"
+                discardLabel="Discard progress"
+                onSave={handleSaveProgress}
+                onDiscard={handleDiscardProgress}
+                onKeepPlaying={() => setShowEndSheet(false)}
+            />
         </GestureHandlerRootView>
     );
 }

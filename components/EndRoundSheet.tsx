@@ -9,10 +9,26 @@ type Props = {
     onSave: () => void;
     onDiscard: () => void;
     onKeepPlaying: () => void;
+    // Optional wording so other screens (e.g. the putting simulation) can reuse the sheet
+    title?: string;
+    message?: string;
+    saveLabel?: string;
+    discardLabel?: string;
 };
 
 // Action sheet shown from the End button: save or discard the round, or keep playing
-const EndRoundSheet = ({ visible, holeNumber, holesTotal, onSave, onDiscard, onKeepPlaying }: Props) => {
+const EndRoundSheet = ({
+    visible,
+    holeNumber,
+    holesTotal,
+    onSave,
+    onDiscard,
+    onKeepPlaying,
+    title,
+    message,
+    saveLabel = 'Save round',
+    discardLabel = 'Discard round',
+}: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.endRoundSheet;
@@ -25,17 +41,17 @@ const EndRoundSheet = ({ visible, holeNumber, holesTotal, onSave, onDiscard, onK
             <View testID="end-round-sheet" style={s.sheetContainer}>
                 <View style={s.group}>
                     <View style={s.header}>
-                        <Text style={s.title}>{`End round after hole ${holeNumber}?`}</Text>
+                        <Text style={s.title}>{title ?? `End round after hole ${holeNumber}?`}</Text>
                         <Text style={s.message}>
-                            {`You’ve entered ${holeNumber} of ${holesTotal} holes. Saved rounds count towards Performance.`}
+                            {message ?? `You’ve entered ${holeNumber} of ${holesTotal} holes. Saved rounds count towards Performance.`}
                         </Text>
                     </View>
                     <TouchableOpacity testID="end-round-save-button" onPress={onSave} style={s.action}>
-                        <Text style={[s.actionText, { color: colours.primary }]}>Save round</Text>
+                        <Text style={[s.actionText, { color: colours.primary }]}>{saveLabel}</Text>
                     </TouchableOpacity>
                     <View style={s.divider} />
                     <TouchableOpacity testID="end-round-discard-button" onPress={onDiscard} style={s.action}>
-                        <Text style={[s.actionText, { color: colours.red }]}>Discard round</Text>
+                        <Text style={[s.actionText, { color: colours.red }]}>{discardLabel}</Text>
                     </TouchableOpacity>
                 </View>
                 <TouchableOpacity testID="end-round-keep-playing-button" onPress={onKeepPlaying} style={s.keepPlaying}>

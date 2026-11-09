@@ -81,4 +81,19 @@ describe('EndRoundSheet', () => {
 
         expect(queryByText('Save round')).toBeNull();
     });
+
+    it('shouldUseCustomTitleMessageAndActionLabelsWhenProvided', () => {
+        const { getByText, queryByText } = renderSheet({
+            title: 'End simulation after hole 3?',
+            message: 'You’ve completed 3 of 18 holes.',
+            saveLabel: 'Save result',
+            discardLabel: 'Discard result',
+        });
+
+        expect(getByText('End simulation after hole 3?')).toBeTruthy();
+        expect(getByText('You’ve completed 3 of 18 holes.')).toBeTruthy();
+        expect(getByText('Save result')).toBeTruthy();
+        expect(getByText('Discard result')).toBeTruthy();
+        expect(queryByText('Save round')).toBeNull();
+    });
 });

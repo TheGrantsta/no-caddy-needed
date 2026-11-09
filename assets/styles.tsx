@@ -475,6 +475,106 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    bagSheet: StyleSheet.create({
+        backdrop: {
+            flex: 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.35)',
+        },
+        sheet: {
+            backgroundColor: c.background,
+            borderTopLeftRadius: 28,
+            borderTopRightRadius: 28,
+            paddingHorizontal: 16,
+            paddingBottom: 32,
+        },
+        handle: {
+            alignSelf: 'center',
+            width: 40,
+            height: 5,
+            borderRadius: 3,
+            backgroundColor: c.tertiary + '66',
+            marginTop: 8,
+            marginBottom: 8,
+        },
+        header: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 16,
+        },
+        title: {
+            color: c.text,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+        },
+        closeButton: {
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            backgroundColor: c.tertiary + '26',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        segment: {
+            flexDirection: 'row',
+            backgroundColor: c.tertiary + '26',
+            borderRadius: 10,
+            padding: 3,
+            marginBottom: 16,
+        },
+        segmentOption: {
+            flex: 1,
+            alignItems: 'center',
+            paddingVertical: 8,
+            borderRadius: 8,
+        },
+        segmentOptionActive: {
+            backgroundColor: c.backgroundLight,
+        },
+        segmentText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
+        },
+        segmentTextActive: {
+            color: c.text,
+        },
+        list: {
+            maxHeight: 380,
+        },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            overflow: 'hidden',
+        },
+        row: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+        },
+        rowDivider: {
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: c.tertiary + '66',
+        },
+        clubText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        valueText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            fontVariant: ['tabular-nums'],
+        },
+        footnote: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginTop: 12,
+            marginLeft: 4,
+        },
+    }),
+
     puttPicker: StyleSheet.create({
         box: {
             width: 84,
@@ -714,6 +814,15 @@ export const createStyles = (c: ThemeColours) => ({
         },
         bandSpacer: {
             width: 64,
+            alignItems: 'flex-end',
+        },
+        bagButton: {
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            backgroundColor: 'rgba(255,255,255,0.16)',
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         endButton: {
             minWidth: 64,

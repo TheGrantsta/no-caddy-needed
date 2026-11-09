@@ -61,6 +61,17 @@ describe('HoleScoreInput', () => {
         expect(onEndRound).toHaveBeenCalled();
     });
 
+    it('shows a bag button in the header that opens the yardages', () => {
+        const onOpenBag = jest.fn();
+        const { getByTestId } = render(
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} onOpenBag={onOpenBag} />
+        );
+
+        fireEvent.press(getByTestId('open-bag-button'));
+
+        expect(onOpenBag).toHaveBeenCalled();
+    });
+
     it('labels the player rows with a Score section heading', () => {
         const { getByText } = render(
             <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />

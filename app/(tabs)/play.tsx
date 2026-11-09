@@ -14,6 +14,7 @@ import {
     endRoundService,
     deleteRoundService,
     getDeadlySinsForRoundService,
+    getWedgeChartService,
     addMultiplayerHoleScoresService,
     getActiveRoundService,
     getAllRoundHistoryService,
@@ -58,6 +59,8 @@ import PhaseStats from '../../components/PhaseStats';
 import RoundSummary from '../../components/RoundSummary';
 import { buildRoundSummary, RoundSummary as RoundSummaryData } from '../../utils/roundSummary';
 import EndRoundSheet from '../../components/EndRoundSheet';
+import BagSheet from '../../components/BagSheet';
+import type { WedgeChartData } from '../../service/DbService';
 import PhasePutting from '../../components/PhasePutting';
 import RoundEntry from '../../components/RoundEntry';
 import HoleNavigationControls from '../../components/HoleNavigationControls';
@@ -127,6 +130,9 @@ export default function Play() {
     const [currentHoleData, setCurrentHoleData] = useState<{ holeNumber: number; holePar: number; scores: { playerId: number; playerName: string; score: number }[] } | null>(null);
     const [showEndRoundConfirm, , setShowEndRoundConfirm] = useToggle(false);
     const [roundSummary, setRoundSummary] = useState<RoundSummaryData | null>(null);
+    const [showBagSheet, setShowBagSheet] = useState(false);
+    const [bagClubs, setBagClubs] = useState<ClubDistance[]>([]);
+    const [bagWedges, setBagWedges] = useState<WedgeChartData>({ distanceNames: [], clubs: [] });
     const [recentCourseNames, setRecentCourseNames] = useState<string[]>([]);
     const { showError, showResult } = useAppToast();
     const { wind, heading, refreshWind } = useWind();
@@ -498,6 +504,13 @@ export default function Play() {
         setDeadlySinsValues(values);
     };
 
+    // Reads the current distances and wedge chart each time the yardages open, so edits show straight away
+    const handleOpenBag = () => {
+        setBagClubs(getClubDistancesService());
+        setBagWedges(getWedgeChartService());
+        setShowBagSheet(true);
+    };
+
     const handleEndRoundPress = () => {
         setShowEndRoundConfirm(true);
     };
@@ -694,6 +707,7 @@ export default function Play() {
                                     initialPar={courseHolePars[currentHole] ?? 4}
                                     courseName={activeCourseName}
                                     onEndRound={handleEndRoundPress}
+                                    onOpenBag={handleOpenBag}
                                     initialScores={currentHoleData?.scores.reduce((acc, s) => ({ ...acc, [s.playerId]: s.score }), {}) ?? undefined}
                                     players={players}
                                     onScoresChange={handleScoresChange}
@@ -789,6 +803,13 @@ export default function Play() {
                                 />
                             )}
 
+                            <BagSheet
+                                visible={showBagSheet}
+                                onClose={() => setShowBagSheet(false)}
+                                clubDistances={bagClubs}
+                                wedgeChart={bagWedges}
+                                units={settings.units}
+                            />
                             <EndRoundSheet
                                 visible={showEndRoundConfirm}
                                 holeNumber={currentHole}

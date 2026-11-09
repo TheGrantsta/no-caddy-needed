@@ -488,6 +488,27 @@ describe('Play screen', () => {
             });
         });
 
+        describe('yardages during a round', () => {
+            it('shouldOpenTheYardagesFromTheHeaderBagButton', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                (getClubDistancesService as jest.Mock).mockReturnValue([
+                    { Id: 1, Club: '6 Iron', CarryDistance: 165, TotalDistance: 175, SortOrder: 1 },
+                ]);
+
+                const { getByTestId, getByText } = render(<Play />);
+                fireEvent.changeText(getByTestId('course-name-input'), 'Augusta');
+                fireEvent.press(getByTestId('start-button'));
+                await waitFor(() => expect(getByTestId('open-bag-button')).toBeTruthy());
+
+                fireEvent.press(getByTestId('open-bag-button'));
+
+                expect(getByText('Yardages')).toBeTruthy();
+                expect(getByText('165 yd')).toBeTruthy();
+                (getClubDistancesService as jest.Mock).mockReturnValue([]);
+            });
+        });
+
         describe('single hole screen', () => {
             const startFullRound = async (getByTestId: (id: string) => any) => {
                 fireEvent.changeText(getByTestId('course-name-input'), 'Augusta');

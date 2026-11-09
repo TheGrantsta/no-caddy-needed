@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { RoundPlayer } from '../service/DbService';
 import { useStyles } from '@/hooks/useStyles';
+import { useThemeColours } from '@/context/ThemeContext';
 
 type Props = {
     holeNumber: number;
@@ -11,6 +13,7 @@ type Props = {
     initialScores?: Record<number, number>;
     courseName?: string | null;
     onEndRound?: () => void;
+    onOpenBag?: () => void;
 };
 
 const parOptions = [3, 4, 5];
@@ -23,8 +26,9 @@ const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>
     }));
 };
 
-const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initialScores, courseName, onEndRound }: Props) => {
+const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initialScores, courseName, onEndRound, onOpenBag }: Props) => {
     const styles = useStyles();
+    const colours = useThemeColours();
     const defaultPar = initialPar ?? 4;
     const [state, setState] = useState<{ par: number; scores: Record<number, number> }>(() => {
         const scores: Record<number, number> = {};
@@ -71,7 +75,17 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initi
                     <Text testID="hole-course-name" numberOfLines={1} style={styles.holeScreen.courseName}>
                         {courseName ?? ''}
                     </Text>
-                    <View style={styles.holeScreen.bandSpacer} />
+                    <View style={styles.holeScreen.bandSpacer}>
+                        <TouchableOpacity
+                            testID="open-bag-button"
+                            accessibilityRole="button"
+                            accessibilityLabel="Yardages"
+                            onPress={() => onOpenBag?.()}
+                            style={styles.holeScreen.bagButton}
+                        >
+                            <MaterialIcons name="backpack" size={20} color={colours.white} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <View style={styles.holeScreen.bandBottomRow}>
                     <Text testID="hole-number-text" style={styles.holeScreen.holeTitle}>Hole {holeNumber}</Text>

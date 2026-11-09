@@ -83,7 +83,7 @@ const RoundSummary = ({ summary, onDone, onViewPerformance }: Props) => {
                     <Text style={s.doneText}>Done</Text>
                 </TouchableOpacity>
                 <TouchableOpacity testID="round-summary-performance-button" accessibilityRole="button" onPress={onViewPerformance} style={s.linkButton}>
-                    <Text style={s.linkText}>View in Performance</Text>
+                    <Text style={s.linkText}>View in Stats</Text>
                 </TouchableOpacity>
             </View>
         </View>

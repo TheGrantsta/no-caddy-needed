@@ -1502,16 +1502,17 @@ describe('Play screen', () => {
             });
         });
 
-        it('opens Performance when View in Performance is pressed on the summary', async () => {
+        it('opens Stats when View in Stats is pressed on the summary', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockEndRound.mockResolvedValue(true);
             mockGetMultiplayerScorecard.mockReturnValue(mockScorecardData);
 
-            const { getByTestId } = render(<Play />);
+            const { getByTestId, getByText } = render(<Play />);
 
             await startAndEndRound(getByTestId);
             await waitFor(() => expect(getByTestId('round-summary-performance-button')).toBeTruthy());
+            expect(getByText('View in Stats')).toBeTruthy();
 
             fireEvent.press(getByTestId('round-summary-performance-button'));
 

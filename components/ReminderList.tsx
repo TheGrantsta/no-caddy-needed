@@ -1,6 +1,6 @@
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Switch, Text, TouchableOpacity, View } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -10,15 +10,22 @@ interface Props {
     reminders: PracticeReminder[];
     refreshKey: number;
     onDeleteReminder: (reminder: PracticeReminder) => void;
+    // Called with the reminder and whether its notification should now be on
+    onToggleReminder: (reminder: PracticeReminder, enabled: boolean) => void;
 }
 
+const pad = (n: number) => String(n).padStart(2, '0');
+
+// Reminders as cards: 24-hour time, label and date, and a switch for the reminder's notification
 export default function ReminderList({
     reminders,
     refreshKey,
     onDeleteReminder,
+    onToggleReminder,
 }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
+    const s = styles.reminderCards;
 
     if (reminders.length === 0) {
         return (
@@ -31,38 +38,45 @@ export default function ReminderList({
 
     return (
         <>
-            <Text style={{ color: colours.text, fontSize: 12, marginTop: 20, marginHorizontal: 8 }}>Swipe left to delete</Text>
+            <Text style={s.sectionLabel}>UPCOMING</Text>
             {reminders.map((reminder) => {
-                const overdue = new Date(reminder.ScheduledFor) < new Date();
+                const scheduled = new Date(reminder.ScheduledFor);
+                const overdue = scheduled < new Date();
+                const time = `${pad(scheduled.getHours())}:${pad(scheduled.getMinutes())}`;
+                const date = scheduled.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
                 return (
-                    <View key={reminder.Id} style={{ marginHorizontal: 8, marginTop: 20, borderRadius: 14, borderWidth: 1, borderColor: overdue ? colours.red : colours.primary + '33', overflow: 'hidden' }}>
+                    <View key={reminder.Id} style={s.cardWrap}>
                         <ReanimatedSwipeable
                             key={refreshKey}
                             renderRightActions={() => (
                                 <TouchableOpacity
                                     testID={`delete-reminder-${reminder.Id}`}
                                     onPress={() => onDeleteReminder(reminder)}
-                                    style={{ backgroundColor: colours.red, justifyContent: 'center', alignItems: 'center', width: 80 }}
+                                    style={s.deleteAction}
                                 >
                                     <MaterialIcons name="delete-outline" size={24} color={colours.white} />
-                                    <Text style={{ color: colours.white, fontSize: 12 }}>Delete</Text>
+                                    <Text style={s.deleteText}>Delete</Text>
                                 </TouchableOpacity>
                             )}
                         >
-                            <View style={{ padding: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <View>
-                                    <Text style={styles.normalText}>{reminder.Label}</Text>
-                                    <Text style={[styles.normalText, { color: overdue ? colours.red : colours.text }]}>
-                                        {`${new Date(reminder.ScheduledFor).toLocaleDateString()} at ${new Date(reminder.ScheduledFor).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`}
-                                    </Text>
-                                    {overdue && <Text style={{ color: colours.red, fontSize: 12, fontWeight: 'bold' }}>Overdue</Text>}
-                                    {!reminder.NotificationId && <Text style={{ color: colours.text, fontSize: 12 }}>Notifications off</Text>}
+                            <View style={s.card}>
+                                <View style={s.cardText}>
+                                    <Text style={s.time}>{time}</Text>
+                                    <Text style={s.detail}>{`${reminder.Label} · ${date}`}</Text>
+                                    {overdue && <Text style={s.overdue}>Overdue</Text>}
                                 </View>
+                                <Switch
+                                    testID={`reminder-toggle-${reminder.Id}`}
+                                    value={reminder.NotificationId !== null}
+                                    onValueChange={(enabled) => onToggleReminder(reminder, enabled)}
+                                    trackColor={{ false: colours.tertiary, true: colours.primary }}
+                                />
                             </View>
                         </ReanimatedSwipeable>
                     </View>
                 );
             })}
+            <Text style={s.hint}>Swipe left on a reminder to delete it.</Text>
         </>
     );
 }

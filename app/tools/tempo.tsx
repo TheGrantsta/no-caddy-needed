@@ -1,15 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { ScrollView, View, Text, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import TempoSlider from '@/components/TempoSlider';
 import TempoDisplay from '@/components/TempoDisplay';
 import TempoControls from '@/components/TempoControls';
 import TempoBeatDots from '@/components/TempoBeatDots';
+import PageHeader from '@/components/PageHeader';
 import { useStyles } from '@/hooks/useStyles';
-import { useThemeColours } from '@/context/ThemeContext';
 import { useOrientation } from '@/hooks/useOrientation';
 import { getSettingsService, saveSettingsService } from '@/service/DbService';
 
@@ -25,7 +24,6 @@ const WHY_TEMPO_IS_IMPORTANT: { heading: string; text: string }[] = [
 
 export default function Tempo() {
     const styles = useStyles();
-    const colours = useThemeColours();
     const router = useRouter();
     const { landscapePadding } = useOrientation();
     const [isPlaying, setIsPlaying] = useState(false);
@@ -113,22 +111,11 @@ export default function Tempo() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
-                <View style={styles.tempoTool.pageHeader}>
-                    <TouchableOpacity
-                        testID="tempo-back-button"
-                        accessibilityRole="button"
-                        accessibilityLabel="Back"
-                        onPress={() => router.back()}
-                        style={styles.tempoTool.backButton}
-                    >
-                        <MaterialIcons name="chevron-left" size={28} color={colours.black} />
-                    </TouchableOpacity>
-                    <View style={styles.tempoTool.pageTitleBlock}>
-                        <Text style={styles.tempoTool.pageTitle}>Tempo training</Text>
-                        <Text style={styles.tempoTool.pageSubtitle}>Swing with tempo to self organise</Text>
-                    </View>
-                    <View style={styles.tempoTool.pageSpacer} />
-                </View>
+                <PageHeader
+                    title="Tempo training"
+                    subtitle="Swing with tempo to self organise"
+                    onBack={() => router.back()}
+                />
 
                 <View style={styles.tempoTool.card}>
                     <TempoBeatDots activeBeat={activeBeat} />

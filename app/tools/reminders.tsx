@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -8,14 +10,16 @@ import { useFakeRefresh } from '@/hooks/useFakeRefresh';
 import { useForm } from '../../hooks/useForm';
 import { useToggle } from '../../hooks/useToggle';
 import { validateNonEmpty } from '../../assets/validation';
-import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, PracticeReminder } from '@/service/DbService';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, updatePracticeReminderNotificationIdService, PracticeReminder } from '@/service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService, ensureNotificationPermission } from '../../service/NotificationService';
 import ReminderList from '@/components/ReminderList';
 import ReminderForm from '@/components/ReminderForm';
+import PageHeader from '@/components/PageHeader';
 
 export default function Reminders() {
     const styles = useStyles();
     const colours = useThemeColours();
+    const router = useRouter();
     const { landscapePadding } = useOrientation();
     const sortBySoonest = (list: PracticeReminder[]) =>
         [...list].sort((a, b) => new Date(a.ScheduledFor).getTime() - new Date(b.ScheduledFor).getTime());
@@ -46,6 +50,19 @@ export default function Reminders() {
     useEffect(() => {
         upgradeOverdueRemindersService().then(loadReminders);
     }, [loadReminders]);
+
+    // Turning a reminder on schedules its notification; turning it off cancels the notification
+    const handleToggleReminder = async (reminder: PracticeReminder, enabled: boolean) => {
+        if (enabled) {
+            const allowed = await ensureNotificationPermission();
+            const notificationId = allowed ? await schedulePracticeReminder(reminder.Label, new Date(reminder.ScheduledFor)) : null;
+            await updatePracticeReminderNotificationIdService(reminder.Id, notificationId);
+        } else {
+            await cancelPracticeReminder(reminder.NotificationId);
+            await updatePracticeReminderNotificationIdService(reminder.Id, null);
+        }
+        loadReminders();
+    };
 
     const handleSaveReminder = async () => {
         if (isSaving) return;
@@ -87,16 +104,27 @@ export default function Reminders() {
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]} refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colours.primary} />
             }>
-                <View style={styles.headerContainer}>
-                    <Text style={[styles.headerText, styles.marginTop]}>
-                        Practice reminders
-                    </Text>
-                </View>
+                <PageHeader
+                    title="Practice reminders"
+                    onBack={() => router.back()}
+                    rightAction={
+                        <TouchableOpacity
+                            testID="add-reminder-button"
+                            accessibilityRole="button"
+                            accessibilityLabel="Add reminder"
+                            onPress={() => toggleAddForm(true)}
+                            style={styles.pageHeader.circleButton}
+                        >
+                            <Ionicons name="add" size={34} color={colours.primary} />
+                        </TouchableOpacity>
+                    }
+                />
 
                 <ReminderList
                     reminders={reminders}
                     refreshKey={refreshKey}
                     onDeleteReminder={handleDeleteReminder}
+                    onToggleReminder={handleToggleReminder}
                 />
 
                 <ReminderForm
@@ -115,7 +143,6 @@ export default function Reminders() {
                         t.setHours(12, 0, 0, 0);
                         setReminderDate(t);
                     }}
-                    onShowForm={() => toggleAddForm(true)}
                     showForm={showAddForm}
                 />
             </ScrollView>

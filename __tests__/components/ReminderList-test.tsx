@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import ReminderList from '../../components/ReminderList';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -16,55 +16,90 @@ jest.mock('react-native-gesture-handler/ReanimatedSwipeable', () => {
     return { __esModule: true, default: MockSwipeable };
 });
 
-const future = '2099-06-15T09:00:00.000Z';
+const future = new Date(2099, 5, 15, 9, 5).toISOString();
+const past = new Date(2001, 0, 1, 9, 0).toISOString();
+const reminder = (overrides: object = {}) => ({
+    Id: 1,
+    Label: 'Chip',
+    ScheduledFor: future,
+    NotificationId: 'n1',
+    Created_At: '2026-10-30T09:00:00.000Z',
+    ...overrides,
+});
+
+const renderList = (reminders: object[], onToggleReminder = jest.fn()) =>
+    render(
+        <ReminderList
+            reminders={reminders as any}
+            refreshKey={0}
+            onDeleteReminder={jest.fn()}
+            onToggleReminder={onToggleReminder}
+        />
+    );
 
 describe('ReminderList', () => {
-    it('shouldShowTimeAlongsideTheDateForEachReminder', () => {
-        const { getByText } = render(
-            <ReminderList
-                reminders={[{ Id: 1, Label: 'Chip', ScheduledFor: future, NotificationId: 'n1', Created_At: '2026-10-30T09:00:00.000Z' }]}
-                refreshKey={0}
-                onDeleteReminder={jest.fn()}
-            />
-        );
+    it('shouldShowTheUpcomingLabelAboveReminders', () => {
+        const { getByText } = renderList([reminder()]);
 
-        const expectedTime = new Date(future).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-        expect(getByText(new RegExp(expectedTime.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))).toBeTruthy();
+        expect(getByText('UPCOMING')).toBeTruthy();
     });
 
-    it('shouldFlagRemindersSavedWithoutNotifications', () => {
-        const { getByText } = render(
-            <ReminderList
-                reminders={[{ Id: 2, Label: 'Chip', ScheduledFor: future, NotificationId: null, Created_At: '2026-10-30T09:00:00.000Z' }]}
-                refreshKey={0}
-                onDeleteReminder={jest.fn()}
-            />
-        );
+    it('shouldShowTheTimeIn24HourFormat', () => {
+        const { getByText } = renderList([reminder()]);
 
-        expect(getByText('Notifications off')).toBeTruthy();
+        expect(getByText('09:05')).toBeTruthy();
     });
 
-    it('shouldNotFlagRemindersThatHaveNotifications', () => {
-        const { queryByText } = render(
-            <ReminderList
-                reminders={[{ Id: 3, Label: 'Chip', ScheduledFor: future, NotificationId: 'n3', Created_At: '2026-10-30T09:00:00.000Z' }]}
-                refreshKey={0}
-                onDeleteReminder={jest.fn()}
-            />
-        );
+    it('shouldShowTheLabelAndDateBelowTheTime', () => {
+        const { getByText } = renderList([reminder()]);
 
-        expect(queryByText('Notifications off')).toBeNull();
+        expect(getByText(/^Chip · /)).toBeTruthy();
+    });
+
+    it('shouldShowASwitchOnForRemindersWithANotification', () => {
+        const { getByTestId } = renderList([reminder()]);
+
+        expect(getByTestId('reminder-toggle-1').props.value).toBe(true);
+    });
+
+    it('shouldShowASwitchOffForRemindersWithoutANotification', () => {
+        const { getByTestId } = renderList([reminder({ Id: 2, NotificationId: null })]);
+
+        expect(getByTestId('reminder-toggle-2').props.value).toBe(false);
+    });
+
+    it('shouldReportTheNewStateWhenTheSwitchIsChanged', () => {
+        const onToggleReminder = jest.fn();
+        const item = reminder();
+        const { getByTestId } = renderList([item], onToggleReminder);
+
+        fireEvent(getByTestId('reminder-toggle-1'), 'valueChange', false);
+
+        expect(onToggleReminder).toHaveBeenCalledWith(item, false);
+    });
+
+    it('shouldMarkRemindersThatAreOverdue', () => {
+        const { getByText } = renderList([reminder({ ScheduledFor: past })]);
+
+        expect(getByText('Overdue')).toBeTruthy();
+    });
+
+    it('shouldNotMarkUpcomingRemindersAsOverdue', () => {
+        const { queryByText } = renderList([reminder()]);
+
+        expect(queryByText('Overdue')).toBeNull();
     });
 
     it('shouldHintThatRemindersCanBeSwipedToDelete', () => {
-        const { getByText } = render(
-            <ReminderList
-                reminders={[{ Id: 4, Label: 'Chip', ScheduledFor: future, NotificationId: 'n4', Created_At: '2026-10-30T09:00:00.000Z' }]}
-                refreshKey={0}
-                onDeleteReminder={jest.fn()}
-            />
-        );
+        const { getByText } = renderList([reminder()]);
 
-        expect(getByText('Swipe left to delete')).toBeTruthy();
+        expect(getByText('Swipe left on a reminder to delete it.')).toBeTruthy();
+    });
+
+    it('shouldShowNoRemindersMessageWhenTheListIsEmpty', () => {
+        const { getByText, queryByText } = renderList([]);
+
+        expect(getByText('No reminders set')).toBeTruthy();
+        expect(queryByText('UPCOMING')).toBeNull();
     });
 });

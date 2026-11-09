@@ -1,8 +1,9 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor, within } from '@testing-library/react-native';
+import { Ionicons } from '@expo/vector-icons';
 import Reminders from '../../../app/tools/reminders';
-import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService } from '../../../service/DbService';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, updatePracticeReminderNotificationIdService } from '../../../service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService, ensureNotificationPermission } from '../../../service/NotificationService';
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -63,6 +64,14 @@ jest.mock('../../../service/DbService', () => ({
     getPracticeRemindersService: jest.fn().mockReturnValue([]),
     addPracticeReminderService: jest.fn().mockResolvedValue(true),
     deletePracticeReminderService: jest.fn().mockResolvedValue(true),
+    updatePracticeReminderNotificationIdService: jest.fn().mockResolvedValue(undefined),
+}));
+
+const mockSetOptions = jest.fn();
+const mockBack = jest.fn();
+jest.mock('expo-router', () => ({
+    useNavigation: () => ({ setOptions: mockSetOptions }),
+    useRouter: () => ({ back: mockBack }),
 }));
 
 const mockGetPracticeRemindersService = getPracticeRemindersService as jest.Mock;
@@ -229,7 +238,7 @@ describe('Reminders screen', () => {
         fireEvent.press(getByTestId('save-reminder-button'));
 
         await waitFor(() => {
-            expect(getByText('Morning putting')).toBeTruthy();
+            expect(getByText(/^Morning putting · /)).toBeTruthy();
         });
     });
 
@@ -254,7 +263,7 @@ describe('Reminders screen', () => {
             { Id: 3, Label: 'Medium future', ScheduledFor: '2050-01-01T08:00:00.000Z', NotificationId: 'n3', Created_At: '2026-01-01T00:00:00.000Z' },
         ]);
         const { getAllByText } = await renderReminders();
-        const labels = getAllByText(/Near future|Medium future|Far future/).map(el => el.props.children);
+        const labels = getAllByText(/ · /).map(el => String(el.props.children).split(' · ')[0]);
         expect(labels).toEqual(['Near future', 'Medium future', 'Far future']);
     });
 
@@ -308,7 +317,7 @@ describe('Reminders screen', () => {
                 jest.advanceTimersByTime(750);
             });
 
-            expect(getByText('Evening chipping')).toBeTruthy();
+            expect(getByText(/^Evening chipping · /)).toBeTruthy();
         });
     });
 
@@ -320,5 +329,114 @@ describe('Reminders screen', () => {
                 expect(mockUpgradeOverdueRemindersService).toHaveBeenCalled();
             });
         });
+    });
+});
+
+describe('Reminders screen layout and notifications', () => {
+    const futureIso = new Date(2099, 5, 15, 9, 0).toISOString();
+    const reminderWith = (notificationId: string | null) => ([{
+        Id: 7,
+        Label: 'Warm up',
+        ScheduledFor: futureIso,
+        NotificationId: notificationId,
+        Created_At: '2026-11-01T09:00:00.000Z',
+    }]);
+
+    const renderScreen = async () => {
+        const utils = render(<Reminders />);
+        await act(async () => { await Promise.resolve(); });
+        return utils;
+    };
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockGetPracticeRemindersService.mockReturnValue([]);
+        mockSchedulePracticeReminder.mockResolvedValue('notif-id-1');
+        (ensureNotificationPermission as jest.Mock).mockResolvedValue(true);
+    });
+
+    it('keepsTheStackHeaderWithTheLogo', async () => {
+        await renderScreen();
+
+        expect(mockSetOptions).not.toHaveBeenCalledWith(expect.objectContaining({ headerShown: false }));
+    });
+
+    it('showsTheAddFormAsAWhiteCardLikeTheReminderCards', async () => {
+        const { getByTestId } = await renderScreen();
+
+        fireEvent.press(getByTestId('add-reminder-button'));
+
+        expect(getByTestId('reminder-form-card')).toHaveStyle({ backgroundColor: '#fff', borderRadius: 20 });
+    });
+
+    it('showsSavePrimaryAndCancelSecondaryInTheAddForm', async () => {
+        const { getByTestId } = await renderScreen();
+
+        fireEvent.press(getByTestId('add-reminder-button'));
+
+        expect(getByTestId('save-reminder-button')).toHaveStyle({ backgroundColor: '#2D5A3D' });
+        expect(getByTestId('cancel-reminder-button')).toHaveStyle({ backgroundColor: '#EFEFEF' });
+    });
+
+    it('showsABoldAddIconInTheHeaderButtonLargeEnoughToRead', async () => {
+        const { getByTestId } = await renderScreen();
+
+        const icon = within(getByTestId('add-reminder-button')).UNSAFE_getByType(Ionicons);
+
+        expect(icon.props.name).toBe('add');
+        expect(icon.props.size).toBeGreaterThanOrEqual(32);
+    });
+
+    it('showsABackButtonThatReturnsToThePreviousScreen', async () => {
+        const { getByLabelText } = await renderScreen();
+
+        fireEvent.press(getByLabelText('Back'));
+
+        expect(mockBack).toHaveBeenCalled();
+    });
+
+    it('showsThePlusButtonInTheHeaderAndNoBottomAddButton', async () => {
+        const { getByTestId, queryByText } = await renderScreen();
+
+        expect(getByTestId('add-reminder-button')).toBeTruthy();
+        expect(queryByText('Add reminder')).toBeNull();
+    });
+
+    it('turningAReminderOffCancelsItsNotificationAndClearsIt', async () => {
+        mockGetPracticeRemindersService.mockReturnValue(reminderWith('notif-old'));
+        const { getByTestId } = await renderScreen();
+
+        await act(async () => {
+            fireEvent(getByTestId('reminder-toggle-7'), 'valueChange', false);
+        });
+
+        expect(mockCancelPracticeReminder).toHaveBeenCalledWith('notif-old');
+        expect(updatePracticeReminderNotificationIdService).toHaveBeenCalledWith(7, null);
+    });
+
+    it('turningAReminderOnSchedulesItsNotificationAndStoresTheId', async () => {
+        mockGetPracticeRemindersService.mockReturnValue(reminderWith(null));
+        const { getByTestId } = await renderScreen();
+
+        await act(async () => {
+            fireEvent(getByTestId('reminder-toggle-7'), 'valueChange', true);
+        });
+
+        expect(ensureNotificationPermission).toHaveBeenCalled();
+        expect(mockSchedulePracticeReminder).toHaveBeenCalledWith('Warm up', expect.any(Date));
+        expect(updatePracticeReminderNotificationIdService).toHaveBeenCalledWith(7, 'notif-id-1');
+    });
+
+    it('leavesTheNotificationOffWhenPermissionIsDeclined', async () => {
+        mockGetPracticeRemindersService.mockReturnValue(reminderWith(null));
+        (ensureNotificationPermission as jest.Mock).mockResolvedValue(false);
+        const { getByTestId } = await renderScreen();
+
+        await act(async () => {
+            fireEvent(getByTestId('reminder-toggle-7'), 'valueChange', true);
+        });
+
+        expect(mockSchedulePracticeReminder).not.toHaveBeenCalled();
+        expect(updatePracticeReminderNotificationIdService).toHaveBeenCalledWith(7, null);
     });
 });

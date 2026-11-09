@@ -3147,6 +3147,172 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    reminderForm: StyleSheet.create({
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            marginHorizontal: 16,
+            marginBottom: 12,
+            padding: 16,
+        },
+        labelInput: {
+            backgroundColor: c.background,
+            borderRadius: 12,
+            paddingHorizontal: 14,
+            paddingVertical: 12,
+            color: c.black,
+            fontSize: fontSizes.normal,
+        },
+        labelInputError: {
+            borderWidth: 1,
+            borderColor: c.red,
+        },
+        errorText: {
+            color: c.errorText,
+            fontSize: fontSizes.smallText,
+            marginTop: 6,
+        },
+        dateRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginTop: 14,
+        },
+        dateLabel: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+        },
+        buttonRow: {
+            flexDirection: 'row',
+            columnGap: 10,
+            marginTop: 16,
+        },
+        cancelButton: {
+            flex: 1,
+            height: 52,
+            borderRadius: 14,
+            backgroundColor: '#EFEFEF',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        cancelText: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
+        },
+        saveButton: {
+            flex: 1,
+            height: 52,
+            borderRadius: 14,
+            backgroundColor: c.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        saveText: {
+            color: c.white,
+            fontSize: fontSizes.normal,
+            fontWeight: '700',
+        },
+    }),
+
+    pageHeader: StyleSheet.create({
+        row: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            paddingTop: 12,
+            paddingBottom: 16,
+        },
+        circleButton: {
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        titleBlock: {
+            flex: 1,
+            alignItems: 'center',
+        },
+        title: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+            fontWeight: '700',
+        },
+        subtitle: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginTop: 2,
+        },
+        actionSlot: {
+            width: 44,
+            alignItems: 'center',
+        },
+    }),
+
+    reminderCards: StyleSheet.create({
+        sectionLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            letterSpacing: 1,
+            marginHorizontal: 20,
+            marginTop: 24,
+            marginBottom: 12,
+        },
+        cardWrap: {
+            marginHorizontal: 16,
+            marginBottom: 12,
+            borderRadius: 20,
+            overflow: 'hidden',
+        },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            paddingVertical: 16,
+            paddingHorizontal: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        },
+        cardText: {
+            flex: 1,
+            paddingRight: 12,
+        },
+        time: {
+            color: c.black,
+            fontSize: 44,
+            fontWeight: '300',
+        },
+        detail: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+        },
+        overdue: {
+            color: c.red,
+            fontSize: fontSizes.smallText,
+            fontWeight: '700',
+            marginTop: 4,
+        },
+        deleteAction: {
+            width: 80,
+            backgroundColor: c.red,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        deleteText: {
+            color: c.white,
+            fontSize: fontSizes.smallText,
+        },
+        hint: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginHorizontal: 20,
+            marginTop: 4,
+        },
+    }),
+
     tempoTool: StyleSheet.create({
         card: {
             backgroundColor: c.backgroundLight,
@@ -3225,39 +3391,6 @@ export const createStyles = (c: ThemeColours) => ({
             shadowRadius: 16,
             shadowOffset: { width: 0, height: 8 },
             elevation: 8,
-        },
-        pageHeader: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingHorizontal: 16,
-            paddingTop: 12,
-            paddingBottom: 16,
-        },
-        backButton: {
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.backgroundLight,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        pageTitleBlock: {
-            flex: 1,
-            alignItems: 'center',
-        },
-        pageTitle: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-            fontWeight: '700',
-        },
-        pageSubtitle: {
-            color: c.tertiary,
-            fontSize: fontSizes.smallText,
-            marginTop: 2,
-        },
-        pageSpacer: {
-            width: 44,
         },
         whyLabel: {
             color: c.tertiary,

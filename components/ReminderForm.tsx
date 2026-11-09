@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import CtaButton from './CtaButton';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 
@@ -14,10 +13,10 @@ interface Props {
     isSaving: boolean;
     onSave: () => void;
     onCancel: () => void;
-    onShowForm: () => void;
     showForm: boolean;
 }
 
+// New-reminder card, opened from the + button in the page header
 export default function ReminderForm({
     reminderLabel,
     onReminderLabelChange,
@@ -27,38 +26,29 @@ export default function ReminderForm({
     isSaving,
     onSave,
     onCancel,
-    onShowForm,
     showForm,
 }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
+    const s = styles.reminderForm;
 
     if (!showForm) {
-        return (
-            <View style={[styles.headerContainer, { marginHorizontal: 8, marginTop: 20 }]}>
-                <CtaButton
-                    testID="add-reminder-button"
-                    label="Add reminder"
-                    icon="add-alarm"
-                    onPress={onShowForm}
-                />
-            </View>
-        );
+        return null;
     }
 
     return (
-        <View style={styles.contentSection}>
+        <View testID="reminder-form-card" style={s.card}>
             <TextInput
                 testID="reminder-label-input"
-                style={[styles.textInput, labelError ? styles.textInputError : null]}
+                style={[s.labelInput, labelError ? s.labelInputError : null]}
                 placeholder="Reminder label"
                 placeholderTextColor={colours.tertiary}
                 value={reminderLabel}
                 onChangeText={onReminderLabelChange}
             />
-            {labelError ? <Text style={styles.errorText}>{labelError}</Text> : null}
-            <View style={[styles.titleRow, styles.marginTop]}>
-                <Text style={styles.textLabel}>Date</Text>
+            {labelError ? <Text testID="reminder-label-error" style={s.errorText}>{labelError}</Text> : null}
+            <View style={s.dateRow}>
+                <Text style={s.dateLabel}>Date</Text>
                 <DateTimePicker
                     testID="reminder-date-picker"
                     value={reminderDate}
@@ -70,21 +60,24 @@ export default function ReminderForm({
                     }}
                 />
             </View>
-            <View style={styles.buttonContainer}>
+            <View style={s.buttonRow}>
                 <TouchableOpacity
+                    testID="cancel-reminder-button"
+                    accessibilityRole="button"
                     onPress={onCancel}
-                    style={[styles.mediumButton, { backgroundColor: colours.red }]}
                     disabled={isSaving}
+                    style={s.cancelButton}
                 >
-                    <Text style={styles.buttonText}>Cancel</Text>
+                    <Text style={s.cancelText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     testID="save-reminder-button"
+                    accessibilityRole="button"
                     onPress={onSave}
-                    style={styles.mediumButton}
                     disabled={isSaving}
+                    style={s.saveButton}
                 >
-                    <Text style={styles.buttonText}>Save</Text>
+                    <Text style={s.saveText}>Save</Text>
                 </TouchableOpacity>
             </View>
         </View>

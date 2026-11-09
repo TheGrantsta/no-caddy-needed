@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, _fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, _fireEvent } from '@testing-library/react-native';
 import Wind from '../../../app/tools/wind';
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -24,10 +24,12 @@ jest.mock('react-native-gesture-handler', () => {
     };
 });
 
+const mockBack = jest.fn();
 jest.mock('expo-router', () => ({
     useFocusEffect: jest.fn((callback) => {
         callback();
     }),
+    useRouter: () => ({ back: mockBack }),
 }));
 
 const mockRefreshWind = jest.fn().mockResolvedValue(undefined);
@@ -54,6 +56,49 @@ describe('Wind tool screen', () => {
     it('renders the screen header', () => {
         const { getByText } = render(<Wind />);
         expect(getByText('Wind')).toBeTruthy();
+    });
+
+    it('shows the instruction subtitle under the title', () => {
+        const { getByText } = render(<Wind />);
+
+        expect(getByText('Point your phone at your target')).toBeTruthy();
+    });
+
+    it('shows a back button that returns to the previous screen', () => {
+        const { getByLabelText } = render(<Wind />);
+
+        fireEvent.press(getByLabelText('Back'));
+
+        expect(mockBack).toHaveBeenCalled();
+    });
+
+    it('shows the TARGET label above the dial', () => {
+        const { getByText, getByTestId } = render(<Wind />);
+
+        expect(getByText('TARGET')).toBeTruthy();
+        expect(getByTestId('wind-dial-target')).toBeTruthy();
+    });
+
+    it('shows the effect card describing the wind on the shot', () => {
+        const { getByTestId, getByText } = render(<Wind />);
+
+        expect(getByTestId('wind-effect-card')).toBeTruthy();
+        expect(getByText('EFFECT ON YOUR SHOT')).toBeTruthy();
+        expect(getByText('Plays shorter')).toBeTruthy();
+        expect(getByText('Helping, right to left')).toBeTruthy();
+    });
+
+    it('does not show the how-to-hold-the-phone caption', () => {
+        const { queryByText } = render(<Wind />);
+
+        expect(queryByText(/Hold your phone flat/)).toBeNull();
+    });
+
+    it('does not show the effect card when there is no wind data', () => {
+        mockWindValue = null;
+        const { queryByTestId } = render(<Wind />);
+
+        expect(queryByTestId('wind-effect-card')).toBeNull();
     });
 
     it('shows the wind display when wind data is available', () => {

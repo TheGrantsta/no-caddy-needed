@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, within } from '@testing-library/react-native';
 import ReminderList from '../../components/ReminderList';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -47,13 +47,32 @@ describe('ReminderList', () => {
     it('shouldShowTheTimeIn24HourFormat', () => {
         const { getByText } = renderList([reminder()]);
 
-        expect(getByText('09:05')).toBeTruthy();
+        expect(getByText(/09:05/)).toBeTruthy();
     });
 
-    it('shouldShowTheLabelAndDateBelowTheTime', () => {
-        const { getByText } = renderList([reminder()]);
+    it('shouldShowTheLabelAsTheMainTextWithTheTimeAndDateBelowIt', () => {
+        const { getByTestId, getByText } = renderList([reminder()]);
+        const fontSizes = require('../../assets/font-sizes').default;
 
-        expect(getByText(/^Chip · /)).toBeTruthy();
+        expect(getByTestId('reminder-label-1')).toHaveStyle({ fontSize: fontSizes.subHeader, fontWeight: 'bold' });
+        expect(getByText(/ · 09:05$/)).toHaveStyle({ fontSize: fontSizes.normal });
+
+        expect(getByTestId('reminder-label-1')).toHaveTextContent('Chip');
+        expect(getByText(/ · 09:05$/)).toBeTruthy();
+    });
+
+    it('stacksTheLabelAboveARowOfDateAndTimeWithTheSwitch', () => {
+        const { getByTestId } = renderList([reminder()]);
+
+        expect(getByTestId('reminder-card-1')).toHaveStyle({ flexDirection: 'column' });
+    });
+
+    it('shouldPutTheSwitchOnTheSameRowAsTheTimeAndDate', () => {
+        const { getByTestId } = renderList([reminder()]);
+
+        const row = getByTestId('reminder-detail-row-1');
+        expect(within(row).getByTestId('reminder-toggle-1')).toBeTruthy();
+        expect(within(row).getByText(/ · 09:05$/)).toBeTruthy();
     });
 
     it('shouldShowASwitchOnForRemindersWithANotification', () => {

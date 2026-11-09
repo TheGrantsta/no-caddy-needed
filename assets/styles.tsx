@@ -3969,22 +3969,23 @@ export const createStyles = (c: ThemeColours) => ({
             borderRadius: 20,
             paddingVertical: 16,
             paddingHorizontal: 20,
+            flexDirection: 'column',
+        },
+        detailRow: {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
+            marginTop: 2,
         },
-        cardText: {
-            flex: 1,
-            paddingRight: 12,
-        },
-        time: {
+        label: {
             color: c.black,
-            fontSize: 44,
-            fontWeight: '300',
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
         },
         detail: {
-            color: c.black,
+            color: c.tertiary,
             fontSize: fontSizes.normal,
+            marginTop: 2,
         },
         overdue: {
             color: c.red,

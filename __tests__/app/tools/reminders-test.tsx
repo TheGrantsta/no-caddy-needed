@@ -99,7 +99,7 @@ describe('Reminders screen', () => {
 
     it('renders the screen heading', async () => {
         const { getByText } = await renderReminders();
-        expect(getByText('Practice reminders')).toBeTruthy();
+        expect(getByText('Reminders')).toBeTruthy();
     });
 
     it('shows no reminders message when list is empty', async () => {
@@ -232,13 +232,13 @@ describe('Reminders screen', () => {
             .mockReturnValueOnce([])
             .mockReturnValue([{ Id: 1, Label: 'Morning putting', ScheduledFor: '2026-03-15T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }]);
 
-        const { getByTestId, getByText } = await renderReminders();
+        const { getByTestId } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
         fireEvent.press(getByTestId('save-reminder-button'));
 
         await waitFor(() => {
-            expect(getByText(/^Morning putting · /)).toBeTruthy();
+            expect(getByTestId('reminder-label-1')).toHaveTextContent('Morning putting');
         });
     });
 
@@ -262,8 +262,8 @@ describe('Reminders screen', () => {
             { Id: 2, Label: 'Near future', ScheduledFor: '2026-04-01T08:00:00.000Z', NotificationId: 'n2', Created_At: '2026-01-01T00:00:00.000Z' },
             { Id: 3, Label: 'Medium future', ScheduledFor: '2050-01-01T08:00:00.000Z', NotificationId: 'n3', Created_At: '2026-01-01T00:00:00.000Z' },
         ]);
-        const { getAllByText } = await renderReminders();
-        const labels = getAllByText(/ · /).map(el => String(el.props.children).split(' · ')[0]);
+        const { getAllByTestId } = await renderReminders();
+        const labels = getAllByTestId(/^reminder-label-/).map(el => String(el.props.children));
         expect(labels).toEqual(['Near future', 'Medium future', 'Far future']);
     });
 
@@ -309,7 +309,7 @@ describe('Reminders screen', () => {
                 .mockReturnValueOnce([])
                 .mockReturnValue(updatedReminders);
 
-            const { UNSAFE_getByType, getByText } = await renderReminders();
+            const { UNSAFE_getByType, getByTestId } = await renderReminders();
             const scrollView = UNSAFE_getByType(ScrollView);
 
             act(() => {
@@ -317,7 +317,7 @@ describe('Reminders screen', () => {
                 jest.advanceTimersByTime(750);
             });
 
-            expect(getByText(/^Evening chipping · /)).toBeTruthy();
+            expect(getByTestId('reminder-label-1')).toHaveTextContent('Evening chipping');
         });
     });
 

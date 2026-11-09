@@ -59,18 +59,18 @@ export default function ReminderList({
                                 </TouchableOpacity>
                             )}
                         >
-                            <View style={s.card}>
-                                <View style={s.cardText}>
-                                    <Text style={s.time}>{time}</Text>
-                                    <Text style={s.detail}>{`${reminder.Label} · ${date}`}</Text>
-                                    {overdue && <Text style={s.overdue}>Overdue</Text>}
+                            <View testID={`reminder-card-${reminder.Id}`} style={s.card}>
+                                <Text testID={`reminder-label-${reminder.Id}`} style={s.label}>{reminder.Label}</Text>
+                                <View testID={`reminder-detail-row-${reminder.Id}`} style={s.detailRow}>
+                                    <Text style={s.detail}>{`${date} · ${time}`}</Text>
+                                    <Switch
+                                        testID={`reminder-toggle-${reminder.Id}`}
+                                        value={reminder.NotificationId !== null}
+                                        onValueChange={(enabled) => onToggleReminder(reminder, enabled)}
+                                        trackColor={{ false: colours.tertiary, true: colours.primary }}
+                                    />
                                 </View>
-                                <Switch
-                                    testID={`reminder-toggle-${reminder.Id}`}
-                                    value={reminder.NotificationId !== null}
-                                    onValueChange={(enabled) => onToggleReminder(reminder, enabled)}
-                                    trackColor={{ false: colours.tertiary, true: colours.primary }}
-                                />
+                                {overdue && <Text style={s.overdue}>Overdue</Text>}
                             </View>
                         </ReanimatedSwipeable>
                     </View>

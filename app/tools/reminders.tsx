@@ -105,7 +105,7 @@ export default function Reminders() {
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colours.primary} />
             }>
                 <PageHeader
-                    title="Practice reminders"
+                    title="Reminders"
                     onBack={() => router.back()}
                     rightAction={
                         <TouchableOpacity

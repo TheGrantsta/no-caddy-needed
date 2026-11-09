@@ -422,6 +422,25 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             paddingHorizontal: 16,
         },
+        cancelText: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            fontWeight: '500',
+        },
+        doneButton: {
+            minWidth: 72,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+        },
+        doneText: {
+            color: c.white,
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
+        },
         editText: {
             color: c.primary,
             fontSize: fontSizes.normal,

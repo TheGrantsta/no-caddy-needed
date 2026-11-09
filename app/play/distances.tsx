@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import ClubDistanceList from '../../components/ClubDistanceList';
+import ClubDistanceList, { ClubDistanceListHandle } from '../../components/ClubDistanceList';
 import ClubDistanceReadList from '../../components/ClubDistanceReadList';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import { getClubDistancesService, saveClubDistancesService, getSettingsService, saveSettingsService } from '../../service/DbService';
@@ -26,6 +26,7 @@ export default function DistancesScreen() {
     const [distances, setDistances] = useState(getClubDistancesService());
     const [editing, setEditing] = useState(false);
     const [metric, setMetric] = useState<Metric>('carry');
+    const listRef = useRef<ClubDistanceListHandle>(null);
     const settings = getSettingsService();
     const distancesIsEmpty = distances.length === 0;
     const [showOnboarding, , setShowOnboarding] = useToggle(!settings.distancesOnboardingSeen && distancesIsEmpty);
@@ -48,31 +49,52 @@ export default function DistancesScreen() {
     return (
         <GestureHandlerRootView style={styles.flexOne}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
-                <View style={s.topBar}>
-                    <TouchableOpacity
-                        testID="distances-back-button"
-                        accessibilityRole="button"
-                        accessibilityLabel="Back"
-                        onPress={() => router.back()}
-                        style={s.circleButton}
-                    >
-                        <MaterialIcons name="chevron-left" size={28} color={colours.text} />
-                    </TouchableOpacity>
-                    <Text style={s.title}>Distances</Text>
-                    <TouchableOpacity
-                        testID="edit-distances-button"
-                        accessibilityRole="button"
-                        onPress={() => setEditing(!editing)}
-                        style={s.editButton}
-                    >
-                        <Text style={s.editText}>{editing ? 'Done' : 'Edit'}</Text>
-                    </TouchableOpacity>
-                </View>
+                {editing ? (
+                    <View style={s.topBar}>
+                        <TouchableOpacity
+                            testID="distances-cancel-button"
+                            accessibilityRole="button"
+                            onPress={() => setEditing(false)}
+                            style={s.editButton}
+                        >
+                            <Text style={s.cancelText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <Text style={s.title}>Distances</Text>
+                        <TouchableOpacity
+                            testID="distances-done-button"
+                            accessibilityRole="button"
+                            onPress={() => listRef.current?.save()}
+                            style={s.doneButton}
+                        >
+                            <Text style={s.doneText}>Done</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <View style={s.topBar}>
+                        <TouchableOpacity
+                            testID="distances-back-button"
+                            accessibilityRole="button"
+                            accessibilityLabel="Back"
+                            onPress={() => router.back()}
+                            style={s.circleButton}
+                        >
+                            <MaterialIcons name="chevron-left" size={28} color={colours.text} />
+                        </TouchableOpacity>
+                        <Text style={s.title}>Distances</Text>
+                        <TouchableOpacity
+                            testID="edit-distances-button"
+                            accessibilityRole="button"
+                            onPress={() => setEditing(true)}
+                            style={s.editButton}
+                        >
+                            <Text style={s.editText}>Edit</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 {editing ? (
                     <>
-                        <ClubDistanceList key={distances.length} distances={distances} onSave={handleSave} units={settings.units} />
-
+                        <ClubDistanceList ref={listRef} key={distances.length} distances={distances} onSave={handleSave} units={settings.units} />
                     </>
                 ) : (
                     <>

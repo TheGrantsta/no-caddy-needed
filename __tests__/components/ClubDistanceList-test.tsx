@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { act } from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import ClubDistanceList from '../../components/ClubDistanceList';
+import ClubDistanceList, { ClubDistanceListHandle } from '../../components/ClubDistanceList';
 
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
@@ -13,6 +13,7 @@ jest.mock('../../context/ThemeContext', () => ({
 }));
 
 describe('ClubDistanceList component', () => {
+    const listRef = React.createRef<ClubDistanceListHandle>();
     const mockDistances = [
         { Id: 1, Club: 'Driver', CarryDistance: 250, TotalDistance: 270, SortOrder: 1 },
         { Id: 2, Club: '3 Wood', CarryDistance: 230, TotalDistance: 245, SortOrder: 2 },
@@ -21,7 +22,7 @@ describe('ClubDistanceList component', () => {
 
     it('displays club names in inputs', () => {
         const { getByTestId } = render(
-            <ClubDistanceList distances={mockDistances} />
+            <ClubDistanceList ref={listRef} distances={mockDistances} />
         );
 
         expect(getByTestId('club-input-0').props.value).toBe('Driver');
@@ -31,7 +32,7 @@ describe('ClubDistanceList component', () => {
 
     it('displays carry distances in inputs', () => {
         const { getByTestId } = render(
-            <ClubDistanceList distances={mockDistances} />
+            <ClubDistanceList ref={listRef} distances={mockDistances} />
         );
 
         expect(getByTestId('distance-input-0').props.value).toBe('250');
@@ -41,7 +42,7 @@ describe('ClubDistanceList component', () => {
 
     it('displays table headers', () => {
         const { getByText } = render(
-            <ClubDistanceList distances={mockDistances} />
+            <ClubDistanceList ref={listRef} distances={mockDistances} />
         );
 
         expect(getByText('Club')).toBeTruthy();
@@ -50,26 +51,26 @@ describe('ClubDistanceList component', () => {
 
     it('shouldShowMetresInCarryHeadingWhenMetresSelected', () => {
         const { getByText, queryByText } = render(
-            <ClubDistanceList distances={mockDistances} units="metres" />
+            <ClubDistanceList ref={listRef} distances={mockDistances} units="metres" />
         );
 
         expect(getByText('Carry (m)')).toBeTruthy();
         expect(queryByText('Carry (yd)')).toBeNull();
     });
 
-    it('shows Save button', () => {
+    it('does not show a Save button because Done in the header saves', () => {
         const mockOnSave = jest.fn();
-        const { getByTestId } = render(
-            <ClubDistanceList distances={mockDistances} onSave={mockOnSave} />
+        const { queryByTestId } = render(
+            <ClubDistanceList ref={listRef} distances={mockDistances} onSave={mockOnSave} />
         );
 
-        expect(getByTestId('save-distances-button')).toBeTruthy();
+        expect(queryByTestId('save-distances-button')).toBeNull();
     });
 
     it('shows Add club button', () => {
         const mockOnSave = jest.fn();
         const { getByTestId } = render(
-            <ClubDistanceList distances={[]} onSave={mockOnSave} />
+            <ClubDistanceList ref={listRef} distances={[]} onSave={mockOnSave} />
         );
 
         expect(getByTestId('add-club-button')).toBeTruthy();
@@ -78,7 +79,7 @@ describe('ClubDistanceList component', () => {
     it('adds a new row when Add club is pressed', () => {
         const mockOnSave = jest.fn();
         const { getByTestId } = render(
-            <ClubDistanceList distances={[]} onSave={mockOnSave} />
+            <ClubDistanceList ref={listRef} distances={[]} onSave={mockOnSave} />
         );
 
         fireEvent.press(getByTestId('add-club-button'));
@@ -89,7 +90,7 @@ describe('ClubDistanceList component', () => {
 
     it('updatesClubNameWhenInputChanges', () => {
         const { getByTestId } = render(
-            <ClubDistanceList distances={mockDistances} />
+            <ClubDistanceList ref={listRef} distances={mockDistances} />
         );
 
         fireEvent.changeText(getByTestId('club-input-0'), '3 Iron');
@@ -99,7 +100,7 @@ describe('ClubDistanceList component', () => {
 
     it('updatesDistanceValueWhenInputChanges', () => {
         const { getByTestId } = render(
-            <ClubDistanceList distances={mockDistances} />
+            <ClubDistanceList ref={listRef} distances={mockDistances} />
         );
 
         fireEvent.changeText(getByTestId('distance-input-0'), '260');
@@ -109,7 +110,7 @@ describe('ClubDistanceList component', () => {
 
     it('distanceInputUsesNumberPadKeyboard', () => {
         const { getByTestId } = render(
-            <ClubDistanceList distances={mockDistances} />
+            <ClubDistanceList ref={listRef} distances={mockDistances} />
         );
 
         expect(getByTestId('distance-input-0').props.keyboardType).toBe('number-pad');
@@ -117,11 +118,11 @@ describe('ClubDistanceList component', () => {
 
     it('callsOnSaveWithFormattedDataWhenSavePressed', () => {
         const mockOnSave = jest.fn();
-        const { getByTestId } = render(
-            <ClubDistanceList distances={mockDistances} onSave={mockOnSave} />
+        render(
+            <ClubDistanceList ref={listRef} distances={mockDistances} onSave={mockOnSave} />
         );
 
-        fireEvent.press(getByTestId('save-distances-button'));
+        act(() => { listRef.current?.save(); });
 
         expect(mockOnSave).toHaveBeenCalledWith([
             { Club: 'Driver', CarryDistance: 250, TotalDistance: 270, SortOrder: 1 },
@@ -131,11 +132,11 @@ describe('ClubDistanceList component', () => {
     });
 
     it('doesNotThrowWhenSavePressedWithoutOnSaveProp', () => {
-        const { getByTestId } = render(
-            <ClubDistanceList distances={mockDistances} />
+        render(
+            <ClubDistanceList ref={listRef} distances={mockDistances} />
         );
 
-        expect(() => fireEvent.press(getByTestId('save-distances-button'))).not.toThrow();
+        expect(() => act(() => { listRef.current?.save(); })).not.toThrow();
     });
 
     it('filtersOutRowsWithEmptyClubOnSave', () => {
@@ -145,10 +146,10 @@ describe('ClubDistanceList component', () => {
             { Id: 2, Club: '', CarryDistance: 200, TotalDistance: 210, SortOrder: 2 },
         ];
 
-        const { getByTestId } = render(
-            <ClubDistanceList distances={distancesWithBlank} onSave={mockOnSave} />
+        render(
+            <ClubDistanceList ref={listRef} distances={distancesWithBlank} onSave={mockOnSave} />
         );
-        fireEvent.press(getByTestId('save-distances-button'));
+        act(() => { listRef.current?.save(); });
 
         const saved = mockOnSave.mock.calls[0][0];
         expect(saved).toHaveLength(1);
@@ -163,11 +164,11 @@ describe('ClubDistanceList component', () => {
         ];
 
         const { getByTestId } = render(
-            <ClubDistanceList distances={distancesWithBlank} onSave={mockOnSave} />
+            <ClubDistanceList ref={listRef} distances={distancesWithBlank} onSave={mockOnSave} />
         );
 
         fireEvent.changeText(getByTestId('distance-input-1'), '');
-        fireEvent.press(getByTestId('save-distances-button'));
+        act(() => { listRef.current?.save(); });
 
         const saved = mockOnSave.mock.calls[0][0];
         expect(saved).toHaveLength(1);
@@ -177,11 +178,11 @@ describe('ClubDistanceList component', () => {
     it('savesNonNumericDistanceAsZero', () => {
         const mockOnSave = jest.fn();
         const { getByTestId } = render(
-            <ClubDistanceList distances={mockDistances} onSave={mockOnSave} />
+            <ClubDistanceList ref={listRef} distances={mockDistances} onSave={mockOnSave} />
         );
 
         fireEvent.changeText(getByTestId('distance-input-0'), 'abc');
-        fireEvent.press(getByTestId('save-distances-button'));
+        act(() => { listRef.current?.save(); });
 
         const saved = mockOnSave.mock.calls[0][0];
         expect(saved[0].CarryDistance).toBe(0);
@@ -189,11 +190,11 @@ describe('ClubDistanceList component', () => {
 
     it('assignsCorrectSortOrderOnSave', () => {
         const mockOnSave = jest.fn();
-        const { getByTestId } = render(
-            <ClubDistanceList distances={mockDistances} onSave={mockOnSave} />
+        render(
+            <ClubDistanceList ref={listRef} distances={mockDistances} onSave={mockOnSave} />
         );
 
-        fireEvent.press(getByTestId('save-distances-button'));
+        act(() => { listRef.current?.save(); });
 
         const saved = mockOnSave.mock.calls[0][0];
         expect(saved[0].SortOrder).toBe(1);
@@ -207,7 +208,7 @@ describe('ClubDistanceList component', () => {
         }));
 
         const { queryByText } = render(
-            <ClubDistanceList distances={fourteenClubs} />
+            <ClubDistanceList ref={listRef} distances={fourteenClubs} />
         );
 
         expect(queryByText('+ Add club')).toBeNull();
@@ -216,11 +217,11 @@ describe('ClubDistanceList component', () => {
     it('savesUpdatedClubNameAfterEditing', () => {
         const mockOnSave = jest.fn();
         const { getByTestId } = render(
-            <ClubDistanceList distances={mockDistances} onSave={mockOnSave} />
+            <ClubDistanceList ref={listRef} distances={mockDistances} onSave={mockOnSave} />
         );
 
         fireEvent.changeText(getByTestId('club-input-0'), 'Big Stick');
-        fireEvent.press(getByTestId('save-distances-button'));
+        act(() => { listRef.current?.save(); });
 
         const saved = mockOnSave.mock.calls[0][0];
         expect(saved[0].Club).toBe('Big Stick');
@@ -229,11 +230,11 @@ describe('ClubDistanceList component', () => {
     it('trimmsWhitespaceFromClubNameOnSave', () => {
         const mockOnSave = jest.fn();
         const { getByTestId } = render(
-            <ClubDistanceList distances={mockDistances} onSave={mockOnSave} />
+            <ClubDistanceList ref={listRef} distances={mockDistances} onSave={mockOnSave} />
         );
 
         fireEvent.changeText(getByTestId('club-input-0'), '  Driver  ');
-        fireEvent.press(getByTestId('save-distances-button'));
+        act(() => { listRef.current?.save(); });
 
         const saved = mockOnSave.mock.calls[0][0];
         expect(saved[0].Club).toBe('Driver');
@@ -243,7 +244,7 @@ describe('ClubDistanceList component', () => {
         const colours = require('../../assets/colours').default;
 
         it('shouldRenderRowsInsideAWhiteRoundedCard', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} />);
             const { StyleSheet } = require('react-native');
 
             const cardStyle = StyleSheet.flatten(getByTestId('edit-distances-card').props.style);
@@ -253,7 +254,7 @@ describe('ClubDistanceList component', () => {
         });
 
         it('shouldShowUppercaseClubAndCarryColumnHeaders', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} units="yards" />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} units="yards" />);
             const { StyleSheet } = require('react-native');
 
             expect(getByTestId('edit-header-club')).toHaveTextContent('Club');
@@ -262,14 +263,14 @@ describe('ClubDistanceList component', () => {
         });
 
         it('shouldRightAlignDistanceInputsLikeTheReadOnlyList', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} />);
             const { StyleSheet } = require('react-native');
 
             expect(StyleSheet.flatten(getByTestId('distance-input-0').props.style).textAlign).toBe('right');
         });
 
         it('shouldShowHairlineDividerBetweenRows', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} />);
             const { StyleSheet } = require('react-native');
 
             expect(StyleSheet.flatten(getByTestId('edit-row-1').props.style).borderTopWidth).toBeGreaterThan(0);
@@ -279,14 +280,14 @@ describe('ClubDistanceList component', () => {
 
     describe('carry and total distances', () => {
         it('shouldShowTotalColumnHeaderAlongsideCarry', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} units="yards" />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} units="yards" />);
 
             expect(getByTestId('edit-header-carry')).toHaveTextContent('Carry (yd)');
             expect(getByTestId('edit-header-total')).toHaveTextContent('Total (yd)');
         });
 
         it('shouldShowTotalInputPrefilledForEachClub', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} />);
 
             expect(getByTestId('total-input-0').props.value).toBe('270');
             expect(getByTestId('total-input-1').props.value).toBe('245');
@@ -294,10 +295,10 @@ describe('ClubDistanceList component', () => {
 
         it('shouldSaveEditedTotalDistanceForEachClub', () => {
             const onSave = jest.fn();
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} onSave={onSave} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} onSave={onSave} />);
 
             fireEvent.changeText(getByTestId('total-input-0'), '260');
-            fireEvent.press(getByTestId('save-distances-button'));
+            act(() => { listRef.current?.save(); });
 
             expect(onSave.mock.calls[0][0][0]).toEqual(
                 expect.objectContaining({ Club: 'Driver', CarryDistance: 250, TotalDistance: 260 })
@@ -306,10 +307,10 @@ describe('ClubDistanceList component', () => {
 
         it('shouldSaveZeroTotalDistanceWhenTotalLeftBlank', () => {
             const onSave = jest.fn();
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} onSave={onSave} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} onSave={onSave} />);
 
             fireEvent.changeText(getByTestId('total-input-1'), '');
-            fireEvent.press(getByTestId('save-distances-button'));
+            act(() => { listRef.current?.save(); });
 
             expect(onSave.mock.calls[0][0][1]).toEqual(
                 expect.objectContaining({ Club: '3 Wood', TotalDistance: 0 })
@@ -317,7 +318,7 @@ describe('ClubDistanceList component', () => {
         });
 
         it('shouldShowBlankTotalInputForNewClubRow', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={[]} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={[]} />);
 
             fireEvent.press(getByTestId('add-club-button'));
 
@@ -329,7 +330,7 @@ describe('ClubDistanceList component', () => {
         const { StyleSheet } = require('react-native');
 
         it('shouldAcceptMultiDigitTotalEntryLikeCarry', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} />);
 
             fireEvent.changeText(getByTestId('total-input-1'), '2');
             fireEvent.changeText(getByTestId('total-input-1'), '25');
@@ -339,7 +340,7 @@ describe('ClubDistanceList component', () => {
         });
 
         it('shouldGiveTotalInputTheSameWidthAsCarryInput', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} />);
 
             const carry = StyleSheet.flatten(getByTestId('distance-input-0').props.style);
             const total = StyleSheet.flatten(getByTestId('total-input-0').props.style);
@@ -349,7 +350,7 @@ describe('ClubDistanceList component', () => {
         });
 
         it('shouldAlignEachColumnHeaderWithItsValues', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} />);
 
             ['carry', 'total'].forEach(column => {
                 const header = StyleSheet.flatten(getByTestId(`edit-header-${column}`).props.style);
@@ -364,7 +365,7 @@ describe('ClubDistanceList component', () => {
         const { StyleSheet } = require('react-native');
 
         it('shouldGiveCarryAndTotalColumnsEnoughWidthForHeadersOnOneLine', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} units="yards" />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} units="yards" />);
 
             expect(StyleSheet.flatten(getByTestId('edit-header-carry').props.style).width).toBeGreaterThanOrEqual(120);
             expect(StyleSheet.flatten(getByTestId('edit-header-total').props.style).width).toBeGreaterThanOrEqual(120);
@@ -376,7 +377,7 @@ describe('ClubDistanceList component', () => {
         const { StyleSheet } = require('react-native');
 
         it('shouldShowAddClubAsARoundedGroupedRowLikeAnIOSListAction', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} />);
             const style = StyleSheet.flatten(getByTestId('add-club-button').props.style);
 
             expect(style.backgroundColor).toBe(colours.backgroundLight);
@@ -386,7 +387,7 @@ describe('ClubDistanceList component', () => {
         });
 
         it('shouldSizeAddClubToItsTextRatherThanFillingTheWidth', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} />);
             const style = StyleSheet.flatten(getByTestId('add-club-button').props.style);
 
             expect(style.alignSelf).toBe('flex-start');
@@ -394,10 +395,9 @@ describe('ClubDistanceList component', () => {
     });
 
     describe('removing individual clubs', () => {
-        const { StyleSheet } = require('react-native');
 
         it('shouldShowARemoveControlForEachClub', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} />);
 
             expect(getByTestId('remove-club-0')).toBeTruthy();
             expect(getByTestId('remove-club-1')).toBeTruthy();
@@ -405,7 +405,7 @@ describe('ClubDistanceList component', () => {
         });
 
         it('shouldRemoveOnlyThePressedClubRow', () => {
-            const { getByTestId, queryByTestId } = render(<ClubDistanceList distances={mockDistances} />);
+            const { getByTestId, queryByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} />);
 
             fireEvent.press(getByTestId('remove-club-1'));
 
@@ -416,18 +416,13 @@ describe('ClubDistanceList component', () => {
 
         it('shouldSaveTheListWithoutTheRemovedClub', () => {
             const onSave = jest.fn();
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} onSave={onSave} />);
+            const { getByTestId } = render(<ClubDistanceList ref={listRef} distances={mockDistances} onSave={onSave} />);
 
             fireEvent.press(getByTestId('remove-club-1'));
-            fireEvent.press(getByTestId('save-distances-button'));
+            act(() => { listRef.current?.save(); });
 
             expect(onSave.mock.calls[0][0].map((d: { Club: string }) => d.Club)).toEqual(['Driver', '5 Iron']);
         });
 
-        it('shouldLeaveSpaceBetweenAddClubAndSaveButtons', () => {
-            const { getByTestId } = render(<ClubDistanceList distances={mockDistances} />);
-
-            expect(StyleSheet.flatten(getByTestId('save-distances-button').props.style).marginTop).toBeGreaterThanOrEqual(24);
-        });
     });
 });

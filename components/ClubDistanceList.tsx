@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import { yardsToDisplayUnit, displayUnitToYards, distanceUnitLabel } from '../service/UnitsService';
-import CtaButton from './CtaButton';
 
 type ClubDistance = {
     Id: number;
@@ -26,7 +25,11 @@ type Props = {
     units?: 'yards' | 'metres';
 };
 
-const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
+export type ClubDistanceListHandle = {
+    save: () => void;
+};
+
+const ClubDistanceList = forwardRef<ClubDistanceListHandle, Props>(({ distances, onSave, units = 'yards' }, ref) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.clubDistanceList;
@@ -66,6 +69,8 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
 
         onSave(data);
     };
+
+    useImperativeHandle(ref, () => ({ save: handleSave }));
 
     return (
         <View style={s.container}>
@@ -129,15 +134,10 @@ const ClubDistanceList = ({ distances, onSave, units = 'yards' }: Props) => {
                 )}
             </TouchableOpacity>
 
-            <CtaButton
-                testID="save-distances-button"
-                label="Save"
-                icon="save"
-                onPress={handleSave}
-                style={s.saveButton}
-            />
         </View>
     );
-};
+});
+
+ClubDistanceList.displayName = 'ClubDistanceList';
 
 export default ClubDistanceList;

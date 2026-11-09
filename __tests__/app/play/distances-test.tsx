@@ -1,7 +1,9 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import React, { act } from 'react';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import DistancesScreen from '../../../app/play/distances';
-import { getClubDistancesService } from '../../../service/DbService';
+import { getClubDistancesService, saveClubDistancesService } from '../../../service/DbService';
+
+const mockSaveClubDistances = saveClubDistancesService as jest.Mock;
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -107,15 +109,6 @@ describe('Distances screen', () => {
         expect(getByTestId('add-club-button')).toBeTruthy();
     });
 
-    it('shows save button', () => {
-        mockGetClubDistances.mockReturnValue([]);
-
-        const { getByTestId } = render(<DistancesScreen />);
-        fireEvent.press(getByTestId('edit-distances-button'));
-
-        expect(getByTestId('save-distances-button')).toBeTruthy();
-    });
-
     describe('My Bag layout', () => {
         const twoClubs = [
             { Id: 1, Club: 'Driver', CarryDistance: 230, TotalDistance: 250, SortOrder: 1 },
@@ -141,6 +134,61 @@ describe('Distances screen', () => {
 
             expect(queryByTestId('clear-button')).toBeNull();
             expect(queryByTestId('confirm-clear-button')).toBeNull();
+        });
+
+        it('shouldEnterEditModeWhenEditPressed', () => {
+            const { getByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('edit-distances-button'));
+
+            expect(getByTestId('club-input-0').props.value).toBe('Driver');
+            expect(getByTestId('distances-done-button')).toBeTruthy();
+        });
+
+        it('shouldShowCancelInPlaceOfBackWhileEditing', () => {
+            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('edit-distances-button'));
+
+            expect(queryByTestId('distances-back-button')).toBeNull();
+            expect(getByTestId('distances-cancel-button')).toBeTruthy();
+        });
+
+        it('shouldNotShowASaveButtonWhileEditing', () => {
+            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('edit-distances-button'));
+
+            expect(queryByTestId('save-distances-button')).toBeNull();
+        });
+
+        it('shouldDiscardChangesAndReturnToReadOnlyWhenCancelPressed', () => {
+            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('edit-distances-button'));
+            fireEvent.changeText(getByTestId('club-input-0'), 'Changed');
+            fireEvent.press(getByTestId('distances-cancel-button'));
+
+            expect(queryByTestId('club-input-0')).toBeNull();
+            expect(getByTestId('read-club-row-0')).toHaveTextContent(/Driver/);
+            expect(mockSaveClubDistances).not.toHaveBeenCalled();
+        });
+
+        it('shouldSaveAndReturnToReadOnlyWhenDonePressed', async () => {
+            mockSaveClubDistances.mockResolvedValue(true);
+            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
+
+            fireEvent.press(getByTestId('edit-distances-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('distances-done-button'));
+            });
+
+            await waitFor(() => {
+                expect(mockSaveClubDistances).toHaveBeenCalledWith(
+                    expect.arrayContaining([expect.objectContaining({ Club: 'Driver', CarryDistance: 230 })])
+                );
+                expect(queryByTestId('club-input-0')).toBeNull();
+            });
         });
 
         it('shouldShowEditButtonInTheHeader', () => {
@@ -192,23 +240,5 @@ describe('Distances screen', () => {
             expect(getByTestId('distances-empty')).toBeTruthy();
         });
 
-        it('shouldEnterEditModeWhenEditPressed', () => {
-            const { getByTestId } = render(<DistancesScreen />);
-
-            fireEvent.press(getByTestId('edit-distances-button'));
-
-            expect(getByTestId('club-input-0').props.value).toBe('Driver');
-            expect(getByTestId('edit-distances-button')).toHaveTextContent('Done');
-        });
-
-        it('shouldReturnToReadOnlyListWhenDonePressed', () => {
-            const { getByTestId, queryByTestId } = render(<DistancesScreen />);
-
-            fireEvent.press(getByTestId('edit-distances-button'));
-            fireEvent.press(getByTestId('edit-distances-button'));
-
-            expect(queryByTestId('club-input-0')).toBeNull();
-            expect(getByTestId('read-club-row-0')).toBeTruthy();
-        });
     });
 });

@@ -101,7 +101,7 @@ describe('Practice page ', () => {
 
         fireEvent.press(subMenuItem);
 
-        expect(getByText('Practice tools')).toBeTruthy();
+        expect(getByText('Tempo')).toBeTruthy();
         expect(getByText('Tempo')).toBeTruthy();
         expect(getByText('Random')).toBeTruthy();
         expect(getByText('Reminders')).toBeTruthy();

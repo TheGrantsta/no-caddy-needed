@@ -132,7 +132,7 @@ describe('Practice', () => {
     it('showsToolsSectionWhenToolsSubMenuPressed', () => {
         const { getByTestId, getByText } = render(<Practice />);
         fireEvent.press(getByTestId('practice-sub-menu-tools'));
-        expect(getByText('Practice tools')).toBeTruthy();
+        expect(getByText('Tempo')).toBeTruthy();
     });
 
     it('displaysTempoInToolsSection', () => {
@@ -337,7 +337,7 @@ describe('Practice', () => {
         it('opensToolsSectionWhenSectionParamIsTools', () => {
             mockUseLocalSearchParams.mockReturnValue({ section: 'tools' });
             const { getByText } = render(<Practice />);
-            expect(getByText('Practice tools')).toBeTruthy();
+            expect(getByText('Tempo')).toBeTruthy();
         });
 
         it('defaultsToChallengesWhenNoSectionParam', () => {
@@ -366,7 +366,7 @@ describe('Practice', () => {
             mockUseLocalSearchParams.mockReturnValue({ section: 'tools', t: String(Date.now()) });
             rerender(<Practice />);
 
-            expect(getByText('Practice tools')).toBeTruthy();
+            expect(getByText('Tempo')).toBeTruthy();
         });
     });
 

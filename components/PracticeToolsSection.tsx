@@ -11,47 +11,39 @@ interface Props {
 }
 
 const TOOLS = [
-    { label: 'Tempo', href: '../tools/tempo', icon: 'music-note' as const },
-    { label: 'Random', href: '../tools/random', icon: 'shuffle-on' as const },
-    { label: 'Reminders', href: '../tools/reminders', icon: 'notifications-none' as const },
-    { label: 'Wind', href: '../tools/wind', icon: 'air' as const },
+    { label: 'Tempo', href: '../tools/tempo', icon: 'music-note' },
+    { label: 'Random', href: '../tools/random', icon: 'casino' },
+    { label: 'Reminders', href: '../tools/reminders', icon: 'notifications-none' },
+    { label: 'Wind', href: '../tools/wind', icon: 'air' },
 ];
 
+// Tool cards share the challenge card layout: a 2×2 grid of tiles with an icon, chevron and label
 export default function PracticeToolsSection({ fadeAnim, slideAnim }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
+    const s = styles.practiceCards;
 
     return (
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideAnim }] }}>
-            <Text style={[styles.subHeaderText, styles.marginTop]}>
-                Practice tools
-            </Text>
-
-            <View style={styles.navGrid}>
-                {TOOLS.map((tool, idx) => (
-                    idx % 2 === 0 && (
-                        <View key={`row-${idx}`} style={styles.navRow}>
-                            <Link href={tool.href} style={styles.navCardLink}>
-                                <View style={styles.navCard}>
-                                    <View style={styles.iconCircle}>
-                                        <MaterialIcons name={tool.icon} size={36} color={colours.white} />
+            <View style={s.grid}>
+                {TOOLS.map(tool => {
+                    const slug = tool.href.split('/').pop() ?? '';
+                    return (
+                        <View key={tool.label} testID={`tool-slot-${slug}`} style={s.cardSlot}>
+                            <Link href={tool.href} testID={`tool-link-${slug}`} style={s.cardLink}>
+                                <View testID={`tool-card-${slug}`} style={s.card}>
+                                    <View style={s.iconTile}>
+                                        <MaterialIcons name={tool.icon as any} size={26} color={colours.primary} />
                                     </View>
-                                    <Text style={styles.navCardLabel}>{tool.label}</Text>
+                                    <View testID={`tool-chevron-${slug}`} style={s.chevron}>
+                                        <MaterialIcons name="chevron-right" size={22} color={colours.tertiary} />
+                                    </View>
+                                    <Text style={s.cardLabel}>{tool.label}</Text>
                                 </View>
                             </Link>
-                            {idx + 1 < TOOLS.length && (
-                                <Link href={TOOLS[idx + 1].href} style={styles.navCardLink}>
-                                    <View style={styles.navCard}>
-                                        <View style={styles.iconCircle}>
-                                            <MaterialIcons name={TOOLS[idx + 1].icon} size={36} color={colours.white} />
-                                        </View>
-                                        <Text style={styles.navCardLabel}>{TOOLS[idx + 1].label}</Text>
-                                    </View>
-                                </Link>
-                            )}
                         </View>
-                    )
-                ))}
+                    );
+                })}
             </View>
         </Animated.View>
     );

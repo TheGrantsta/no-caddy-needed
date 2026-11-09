@@ -120,7 +120,9 @@ export const getAllDrillHistoryService = () => {
             Name: drill.Name,
             Result: drill.Result,
             Score: drill.Score ?? null,
-            Created_At: getTwoDigitDayAndMonth(drill.Created_At)
+            Created_At: getTwoDigitDayAndMonth(drill.Created_At),
+            // Full timestamp for screens that need a real date (the day-month form above cannot be parsed back)
+            Timestamp: drill.Created_At
         });
     })
 

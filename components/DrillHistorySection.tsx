@@ -3,11 +3,14 @@ import { Animated, ActivityIndicator, Text, TouchableOpacity, View } from 'react
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
+import { describeDrill, formatDrillDate, groupDrillsByWeek } from '../utils/drillHistory';
 
 interface DrillItem {
     Name: string;
     Score?: number;
     Created_At: string;
+    // Full timestamp used for grouping and dates; Created_At is a display-only day and month
+    Timestamp?: string;
 }
 
 interface Props {
@@ -33,6 +36,45 @@ export default function DrillHistorySection({
 }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
+    const s = styles.drillHistory;
+    const now = new Date();
+    const dated = (items: DrillItem[]) => items.map(item => ({ ...item, Created_At: item.Timestamp ?? item.Created_At }));
+    const { thisWeek, previously } = groupDrillsByWeek(dated(displayedDrillHistory), now);
+
+    const renderGroup = (label: string, items: DrillItem[]) => {
+        if (items.length === 0) return null;
+        return (
+            <View key={label}>
+                <Text style={s.groupLabel}>{label}</Text>
+                <View style={s.groupCard}>
+                    {items.map((item, index) => {
+                        const { label: challenge, icon } = describeDrill(item.Name);
+                        const isRate = item.Name === 'Up-and-down Challenge';
+                        const formattedScore = item.Score !== undefined
+                            ? isRate ? `${item.Score}%` : String(item.Score)
+                            : '—';
+                        return (
+                            <View key={`${item.Created_At}-${index}`} style={[s.row, index > 0 && s.rowDivider]}>
+                                <View style={s.iconTile}>
+                                    <MaterialIcons name={icon as any} size={24} color={colours.primary} />
+                                </View>
+                                <View style={s.rowText}>
+                                    <Text style={s.rowName}>{challenge}</Text>
+                                    <Text style={s.rowDate}>{formatDrillDate(item.Created_At, now)}</Text>
+                                </View>
+                                <View style={s.scoreBlock}>
+                                    <Text style={s.scoreValue}>{formattedScore}</Text>
+                                    {item.Score !== undefined && (
+                                        <Text style={s.scoreCaption}>{isRate ? 'rate' : 'score'}</Text>
+                                    )}
+                                </View>
+                            </View>
+                        );
+                    })}
+                </View>
+            </View>
+        );
+    };
 
     return (
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideAnim }] }}>
@@ -53,39 +95,8 @@ export default function DrillHistorySection({
 
                     {allDrillHistory.length > 0 && (
                         <View>
-                            <View style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 10, marginTop: 10 }}>
-                                <Text style={[styles.normalText, { flex: 0.6 }]} numberOfLines={1}>
-                                    Challenge
-                                </Text>
-                                <Text style={[styles.normalText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
-                                    Score
-                                </Text>
-                                <Text style={[styles.normalText, { flex: 0.2, textAlign: 'center' }]} numberOfLines={1}>
-                                    Date
-                                </Text>
-                            </View>
-
-                            {displayedDrillHistory.map((item, index) => {
-                                const formattedScore = item.Score !== undefined
-                                    ? item.Name === 'Up-and-down Challenge'
-                                        ? `${item.Score}%`
-                                        : String(item.Score)
-                                    : '—';
-
-                                return (
-                                    <View key={index} style={{ flexDirection: 'row', paddingHorizontal: 10, marginBottom: 8 }}>
-                                        <Text style={[styles.cell, { textAlign: 'left', flex: 0.6, borderWidth: 0, fontWeight: 'normal' }]} numberOfLines={1}>
-                                            {item.Name}
-                                        </Text>
-                                        <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center', fontWeight: 'normal' }]} numberOfLines={1}>
-                                            {formattedScore}
-                                        </Text>
-                                        <Text style={[styles.cell, { flex: 0.2, borderWidth: 0, textAlign: 'center', fontWeight: 'normal' }]} numberOfLines={1}>
-                                            {item.Created_At}
-                                        </Text>
-                                    </View>
-                                );
-                            })}
+                            {renderGroup('THIS WEEK', thisWeek)}
+                            {renderGroup('PREVIOUSLY', previously)}
 
                             {displayedDrillHistory.length < allDrillHistory.length && (
                                 <View style={{ paddingVertical: 15, alignItems: 'center', gap: 10 }}>

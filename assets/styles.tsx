@@ -3147,6 +3147,66 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    drillHistory: StyleSheet.create({
+        groupLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            letterSpacing: 1,
+            marginHorizontal: 20,
+            marginTop: 24,
+            marginBottom: 12,
+        },
+        groupCard: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            marginHorizontal: 16,
+            overflow: 'hidden',
+        },
+        row: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 14,
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+        },
+        rowDivider: {
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: '#E0E0E0',
+        },
+        iconTile: {
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            backgroundColor: '#E6EEE9',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        rowText: {
+            flex: 1,
+        },
+        rowName: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+        },
+        rowDate: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginTop: 2,
+        },
+        scoreBlock: {
+            alignItems: 'flex-end',
+        },
+        scoreValue: {
+            color: c.black,
+            fontSize: 28,
+            fontWeight: '700',
+        },
+        scoreCaption: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+        },
+    }),
+
     windEffect: StyleSheet.create({
         sectionLabel: {
             color: c.tertiary,

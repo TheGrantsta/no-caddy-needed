@@ -135,16 +135,15 @@ describe('Practice page ', () => {
 
         mockedGetAllDrillHistoryService.mockReturnValue(drills);
 
-        const { getAllByText, getByTestId } = render(<View />);
+        const { getAllByText, getByTestId, queryByText } = render(<View />);
 
         const subMenuItem = getByTestId('practice-sub-menu-history');
 
         fireEvent.press(subMenuItem);
 
-        // With infinite scroll, there's one header row with these labels
-        expect(getAllByText('Challenge').length).toBeGreaterThanOrEqual(1);
-        expect(getAllByText('Score').length).toBeGreaterThanOrEqual(1);
-        expect(getAllByText('Date').length).toBeGreaterThanOrEqual(1);
+        // Drills are grouped under week headings; these 2025 drills are all older than this week
+        expect(getAllByText('PREVIOUSLY').length).toBeGreaterThanOrEqual(1);
+        expect(queryByText('Challenge')).toBeNull();
     });
 
     it('renders correctly when drill history is empty', () => {

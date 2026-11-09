@@ -68,6 +68,16 @@ describe('getAllDrillHistoryService', () => {
         expect(result).toEqual([]);
     });
 
+    it('keepsTheFullTimestampSoTheHistoryCanReadTheDate', () => {
+        mockGetAllDrillHistory.mockReturnValue([
+            { Id: 1, Name: 'Putting - Gate', Result: 1, Created_At: '2025-06-15T10:00:00.000Z' },
+        ]);
+
+        const result = getAllDrillHistoryService();
+
+        expect(result[0].Timestamp).toBe('2025-06-15T10:00:00.000Z');
+    });
+
     it('formatsCreatedAtAsDDMM', () => {
         mockGetAllDrillHistory.mockReturnValue([
             { Id: 1, Name: 'Putting - Gate', Result: 1, Created_At: '2025-06-15T10:00:00.000Z' },

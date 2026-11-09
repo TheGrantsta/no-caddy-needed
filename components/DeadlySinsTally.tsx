@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -13,6 +13,8 @@ type Props = {
     holePar?: number;
     userScore?: number;
     initialValues?: Partial<DeadlySinsValues>;
+    // Content shown directly under a sin's row while that sin is marked (e.g. the club used off the tee)
+    renderFollowUp?: (slug: string) => ReactNode;
 };
 
 const INITIAL_SINS: DeadlySinsValues = {
@@ -35,7 +37,7 @@ const sinFields: { slug: string; label: string; key: keyof DeadlySinsValues }[] 
     { slug: 'bogeys-par5', label: 'Bogeys on par 5s', key: 'bogeysPar5' },
 ];
 
-const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues }: Props) => {
+const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues, renderFollowUp }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.deadlySinsTally;
@@ -99,10 +101,10 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
 
     return (
         <View>
-            <View style={{ paddingHorizontal: 8, marginTop: 16, marginBottom: 16 }}>
-                <Text style={styles.holeScoreInput.playerName}>Deadly Sins</Text>
+            <View style={s.headerRow}>
+                <Text style={s.sectionLabel}>Deadly Sins</Text>
+                <Text style={s.sectionLabel}>Marked</Text>
             </View>
-            <Text style={s.hint}>Tap a row to mark it</Text>
             <View style={s.container}>
                 {sinFields.map((field) => {
                     if (field.slug === 'bogeys-par5') {
@@ -135,27 +137,34 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                             </View>
                         );
                     }
+                    const followUp = values[field.key] ? renderFollowUp?.(field.slug) : null;
                     return (
-                        <TouchableOpacity
-                            key={field.slug}
-                            testID={`7deadly-sins-toggle-${field.slug}`}
-                            onPress={() => handleToggle(field.key)}
-                            activeOpacity={0.6}
-                            style={s.tappableRow}
-                        >
-                            <Text style={s.label}>{field.label}</Text>
-                            <View style={s.controls}>
-                                <View style={s.controls} pointerEvents="none">
-                                    <Switch
-                                        testID={`7deadly-sins-indicator-${field.slug}`}
-                                        value={values[field.key]}
-                                        trackColor={{ false: colours.tertiary, true: colours.red }}
-                                    />
+                        <View key={field.slug}>
+                            <TouchableOpacity
+                                testID={`7deadly-sins-toggle-${field.slug}`}
+                                onPress={() => handleToggle(field.key)}
+                                activeOpacity={0.6}
+                                style={s.tappableRow}
+                            >
+                                <Text style={[s.label, values[field.key] && s.labelMarked]}>{field.label}</Text>
+                                <View style={s.controls}>
+                                    <View style={s.controls} pointerEvents="none">
+                                        <Switch
+                                            testID={`7deadly-sins-indicator-${field.slug}`}
+                                            value={values[field.key]}
+                                            trackColor={{ false: colours.tertiary, true: colours.primary }}
+                                        />
+                                    </View>
                                 </View>
-                            </View>
-                        </TouchableOpacity>
+                            </TouchableOpacity>
+                            {followUp ? <View testID={`7deadly-sins-follow-up-${field.slug}`} style={s.followUp}>{followUp}</View> : null}
+                        </View>
                     );
                 })}
+
+                <Text testID="7deadly-sins-marked-count" style={s.markedCount}>
+                    {`${Object.values(values).filter(Boolean).length} marked on this hole.`}
+                </Text>
 
                 {!roundControlled && (
                     <CtaButton

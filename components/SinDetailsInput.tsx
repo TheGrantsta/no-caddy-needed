@@ -5,8 +5,12 @@ import ClubPicker from './ClubPicker';
 import PenaltyTypePicker from './PenaltyTypePicker';
 import DoubleChipReasonPicker from './DoubleChipReasonPicker';
 
+type FollowUpSin = 'troubleOffTee' | 'penalties' | 'bogeysInside9Iron' | 'doubleChips';
+
 type Props = {
     sins: DeadlySinsValues;
+    // When set, only that sin's follow-up is rendered (used under its row in the deadly sins card)
+    only?: FollowUpSin;
     clubs: ClubDistance[];
     selectedOffTeeClub?: string;
     onOffTeeClubChange: (club: string) => void;
@@ -24,6 +28,7 @@ type Props = {
 
 const SinDetailsInput = ({
     sins,
+    only,
     clubs,
     selectedOffTeeClub,
     onOffTeeClubChange,
@@ -41,12 +46,13 @@ const SinDetailsInput = ({
     const styles = useStyles();
 
     const shortestFirstClubs = [...clubs].sort((a, b) => a.CarryDistance - b.CarryDistance);
+    const shows = (sin: FollowUpSin) => sins[sin] && (only === undefined || only === sin);
 
     return (
         <View style={{ paddingVertical: 12, paddingHorizontal: 8 }}>
-            {sins.troubleOffTee && (
+            {shows('troubleOffTee') && (
                 <View style={{ marginBottom: 16 }}>
-                    <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Club used off the tee</Text>
+                    <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Club off the tee</Text>
                     <ClubPicker
                         clubs={clubs}
                         selectedClub={selectedOffTeeClub}
@@ -55,7 +61,7 @@ const SinDetailsInput = ({
                     />
                 </View>
             )}
-            {sins.penalties && (
+            {shows('penalties') && (
                 <View style={{ marginBottom: 16 }}>
                     <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Penalty type</Text>
                     <PenaltyTypePicker
@@ -65,7 +71,7 @@ const SinDetailsInput = ({
                     />
                 </View>
             )}
-            {sins.bogeysInside9Iron && (
+            {shows('bogeysInside9Iron') && (
                 <View style={{ marginBottom: 16 }}>
                     <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Approach club</Text>
                     <ClubPicker
@@ -77,7 +83,7 @@ const SinDetailsInput = ({
                     />
                 </View>
             )}
-            {sins.doubleChips && (
+            {shows('doubleChips') && (
                 <View style={{ marginBottom: 16 }}>
                     <Text style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>Double chip reason</Text>
                     <DoubleChipReasonPicker

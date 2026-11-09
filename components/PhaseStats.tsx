@@ -1,8 +1,7 @@
 import React from 'react';
-import { Text, View } from 'react-native';
 import DeadlySinsTally from './DeadlySinsTally';
-import { useStyles } from '../hooks/useStyles';
-import { DeadlySinsValues, RoundPlayer } from '../service/DbService';
+import SinDetailsInput from './SinDetailsInput';
+import { DeadlySinsValues, RoundPlayer, ClubDistance } from '../service/DbService';
 
 interface Props {
     holeNumber: number;
@@ -11,33 +10,81 @@ interface Props {
     onSinsChange: (sins: DeadlySinsValues) => void;
     players?: RoundPlayer[];
     userScore?: number;
+    clubDistances: ClubDistance[];
+    selectedOffTeeClub?: string;
+    sinDetailsClubError: boolean;
+    onOffTeeClubChange: (club: string) => void;
+    selectedPenaltyType?: string;
+    sinDetailsPenaltyError: boolean;
+    onPenaltyTypeChange: (type: string) => void;
+    selectedBogeysClub?: string;
+    sinDetailsBogeysClubError: boolean;
+    onBogeysClubChange: (club: string) => void;
+    selectedDoubleChipReason?: string;
+    sinDetailsDoubleChipReasonError: boolean;
+    onDoubleChipReasonChange: (reason: string) => void;
 }
 
+// The deadly sins card, with each marked sin's follow-up (club, penalty, reason) shown directly under its row
 export default function PhaseStats({
-    holeNumber,
     holePar,
     sins,
     onSinsChange,
-    _players,
     userScore,
+    clubDistances,
+    selectedOffTeeClub,
+    sinDetailsClubError,
+    onOffTeeClubChange,
+    selectedPenaltyType,
+    sinDetailsPenaltyError,
+    onPenaltyTypeChange,
+    selectedBogeysClub,
+    sinDetailsBogeysClubError,
+    onBogeysClubChange,
+    selectedDoubleChipReason,
+    sinDetailsDoubleChipReasonError,
+    onDoubleChipReasonChange,
 }: Props) {
-    const styles = useStyles();
+    const renderFollowUp = (slug: string) => {
+        const followUpSin = {
+            'trouble-off-tee': 'troubleOffTee',
+            'penalties': 'penalties',
+            'bogeys-inside-9iron': 'bogeysInside9Iron',
+            'double-chips': 'doubleChips',
+        }[slug] as 'troubleOffTee' | 'penalties' | 'bogeysInside9Iron' | 'doubleChips' | undefined;
+        if (!followUpSin) return null;
+        return (
+            <SinDetailsInput
+                sins={sins}
+                only={followUpSin}
+                clubs={clubDistances}
+                selectedOffTeeClub={selectedOffTeeClub}
+                onOffTeeClubChange={onOffTeeClubChange}
+                showOffTeeClubError={sinDetailsClubError}
+                selectedPenaltyType={selectedPenaltyType}
+                onPenaltyTypeChange={onPenaltyTypeChange}
+                showPenaltyTypeError={sinDetailsPenaltyError}
+                selectedBogeysClub={selectedBogeysClub}
+                onBogeysClubChange={onBogeysClubChange}
+                showBogeysClubError={sinDetailsBogeysClubError}
+                selectedDoubleChipReason={selectedDoubleChipReason}
+                onDoubleChipReasonChange={onDoubleChipReasonChange}
+                showDoubleChipReasonError={sinDetailsDoubleChipReasonError}
+            />
+        );
+    };
 
     return (
-        <View>
-            <View style={{ paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                <Text style={styles.normalText}>Hole {holeNumber} — Deadly Sins</Text>
-            </View>
-            <DeadlySinsTally
-                holePar={holePar}
-                deadlySinsValues={sins}
-                onDeadlySinsChange={onSinsChange}
-                onEndRound={() => { }}
-                roundControlled={true}
-                onValuesChange={onSinsChange}
-                initialValues={sins}
-                userScore={userScore}
-            />
-        </View>
+        <DeadlySinsTally
+            holePar={holePar}
+            deadlySinsValues={sins}
+            onDeadlySinsChange={onSinsChange}
+            onEndRound={() => { }}
+            roundControlled={true}
+            onValuesChange={onSinsChange}
+            initialValues={sins}
+            userScore={userScore}
+            renderFollowUp={renderFollowUp}
+        />
     );
 }

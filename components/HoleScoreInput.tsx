@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { RoundPlayer } from '../service/DbService';
 import { useStyles } from '@/hooks/useStyles';
@@ -9,7 +9,8 @@ type Props = {
     onScoresChange: (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => void;
     initialPar?: number;
     initialScores?: Record<number, number>;
-    headerAccessory?: ReactNode;
+    courseName?: string | null;
+    onEndRound?: () => void;
 };
 
 const parOptions = [3, 4, 5];
@@ -22,7 +23,7 @@ const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>
     }));
 };
 
-const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initialScores, headerAccessory }: Props) => {
+const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initialScores, courseName, onEndRound }: Props) => {
     const styles = useStyles();
     const defaultPar = initialPar ?? 4;
     const [state, setState] = useState<{ par: number; scores: Record<number, number> }>(() => {
@@ -56,54 +57,73 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initi
     };
 
     return (
-        <View style={styles.holeScoreInput.container}>
-            <View style={styles.holeScoreInput.parRow}>
-                <Text testID="hole-number-text" style={styles.holeScoreInput.holeText}>#{holeNumber}</Text>
-                {parOptions.map(p => (
+        <View style={styles.holeScreen.container}>
+            <View style={styles.holeScreen.band}>
+                <View style={styles.holeScreen.bandTopRow}>
                     <TouchableOpacity
-                        key={p}
-                        testID={`par-${p}-button`}
-                        onPress={() => handleParChange(p)}
-                        style={[styles.holeScoreInput.parButton, par === p && styles.holeScoreInput.parButtonActive]}
+                        testID="end-round-button"
+                        accessibilityRole="button"
+                        onPress={() => onEndRound?.()}
+                        style={styles.holeScreen.endButton}
                     >
-                        <Text style={[styles.holeScoreInput.parButtonText, par === p && styles.holeScoreInput.parButtonTextActive]}>
-                            Par {p}
-                        </Text>
+                        <Text style={styles.holeScreen.endButtonText}>End</Text>
                     </TouchableOpacity>
-                ))}
-                {headerAccessory}
+                    <Text testID="hole-course-name" numberOfLines={1} style={styles.holeScreen.courseName}>
+                        {courseName ?? ''}
+                    </Text>
+                    <View style={styles.holeScreen.bandSpacer} />
+                </View>
+                <View style={styles.holeScreen.bandBottomRow}>
+                    <Text testID="hole-number-text" style={styles.holeScreen.holeTitle}>Hole {holeNumber}</Text>
+                    <View style={styles.holeScreen.parSegment}>
+                        {parOptions.map(p => (
+                            <TouchableOpacity
+                                key={p}
+                                testID={`par-${p}-button`}
+                                onPress={() => handleParChange(p)}
+                                style={[styles.holeScreen.parOption, par === p && styles.holeScreen.parOptionActive]}
+                            >
+                                <Text style={[styles.holeScreen.parOptionText, par === p && styles.holeScreen.parOptionTextActive]}>
+                                    Par {p}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
             </View>
 
-            <View testID="players-container">
-                {players.map((player) => (
-                    <View key={player.Id}>
-                        <View style={styles.holeScoreInput.playerRow}>
-                            <Text style={styles.holeScoreInput.playerName}>{player.PlayerName}</Text>
-                            <View style={styles.holeScoreInput.stepperRow}>
-                                <TouchableOpacity
-                                    testID={`decrement-${player.Id}`}
-                                    accessibilityRole="button"
-                                    accessibilityLabel={`Decrease score for ${player.PlayerName}`}
-                                    hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                                    onPress={() => handleDecrement(player.Id)}
-                                    style={styles.holeScoreInput.stepperButton}
-                                >
-                                    <Text style={styles.holeScoreInput.stepperButtonText}>-</Text>
-                                </TouchableOpacity>
-                                <Text testID={`player-score-${player.Id}`} style={styles.holeScoreInput.scoreText}>
-                                    {scores[player.Id] || par}
-                                </Text>
-                                <TouchableOpacity
-                                    testID={`increment-${player.Id}`}
-                                    accessibilityRole="button"
-                                    accessibilityLabel={`Increase score for ${player.PlayerName}`}
-                                    hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                                    onPress={() => handleIncrement(player.Id)}
-                                    style={styles.holeScoreInput.stepperButton}
-                                >
-                                    <Text style={styles.holeScoreInput.stepperButtonText}>+</Text>
-                                </TouchableOpacity>
-                            </View>
+            <Text style={styles.holeScreen.sectionLabel}>Score</Text>
+            <View testID="players-container" style={styles.holeScreen.card}>
+                {players.map((player, index) => (
+                    <View
+                        key={player.Id}
+                        style={[styles.holeScreen.playerRow, index > 0 && styles.holeScreen.rowDivider]}
+                    >
+                        <Text style={styles.holeScreen.playerName}>{player.PlayerName}</Text>
+                        <View style={styles.holeScreen.stepperRow}>
+                            <TouchableOpacity
+                                testID={`decrement-${player.Id}`}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Decrease score for ${player.PlayerName}`}
+                                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                                onPress={() => handleDecrement(player.Id)}
+                                style={styles.holeScreen.minusButton}
+                            >
+                                <Text style={styles.holeScreen.minusText}>−</Text>
+                            </TouchableOpacity>
+                            <Text testID={`player-score-${player.Id}`} style={styles.holeScreen.scoreText}>
+                                {scores[player.Id] || par}
+                            </Text>
+                            <TouchableOpacity
+                                testID={`increment-${player.Id}`}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Increase score for ${player.PlayerName}`}
+                                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                                onPress={() => handleIncrement(player.Id)}
+                                style={styles.holeScreen.plusButton}
+                            >
+                                <Text style={styles.holeScreen.plusText}>+</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 ))}

@@ -653,7 +653,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('acknowledge-dismiss'));
 
             // Hole should advance to hole 2
-            await waitFor(() => expect(getByText('#2')).toBeTruthy());
+            await waitFor(() => expect(getByText('Hole 2')).toBeTruthy());
         });
     });
 });

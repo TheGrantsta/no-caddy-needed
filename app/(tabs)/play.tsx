@@ -57,7 +57,6 @@ import { useSectionTransition } from '../../hooks/useSectionTransition';
 import { useToggle } from '../../hooks/useToggle';
 import { useHoleLifecycle } from '../../hooks/useHoleLifecycle';
 import PhaseStats from '../../components/PhaseStats';
-import PhaseSinDetails from '../../components/PhaseSinDetails';
 import PhasePutting from '../../components/PhasePutting';
 import RoundEntry from '../../components/RoundEntry';
 import HoleNavigationControls from '../../components/HoleNavigationControls';
@@ -88,8 +87,6 @@ export default function Play() {
     // Create aliases for backward compatibility with existing code
     const currentHole = lifecycle.currentHole;
     const setCurrentHole = lifecycle.setCurrentHoleValue;
-    const holePhase = lifecycle.holePhase;
-    const setHolePhase = lifecycle.setHolePhase;
     const skipStatsFlow = lifecycle.skipStatsFlow;
     const setSkipStatsFlow = lifecycle.setSkipStatsFlow;
     const deadlySinsValues = lifecycle.deadlySinsValues;
@@ -102,6 +99,9 @@ export default function Play() {
     const setPuttingSecondPuttError = lifecycle.setPuttingSecondPuttError;
     const puttingSecondPuttRequiredError = lifecycle.puttingSecondPuttRequiredError;
     const setPuttingSecondPuttRequiredError = lifecycle.setPuttingSecondPuttRequiredError;
+    const validatePuttingStats = lifecycle.validatePuttingStats;
+    const validateSinDetails = lifecycle.validateSinDetails;
+    const resetForNewHole = lifecycle.resetForNewHole;
 
     const [clubDistances, setClubDistances] = useState<ClubDistance[]>([]);
     const selectedOffTeeClub = lifecycle.selectedOffTeeClub;
@@ -222,7 +222,7 @@ export default function Play() {
             }),
         ]).start();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentHole, holePhase, activeRoundId]);
+    }, [currentHole, activeRoundId]);
 
 
     const handleDismissOnboarding = async () => {
@@ -248,7 +248,6 @@ export default function Play() {
         const holesPlayed = getHolesPlayedForRoundService(incompleteRound.Id);
         const resumeHole = holesPlayed > 0 ? holesPlayed + 1 : 1;
         setCurrentHole(resumeHole);
-        setHolePhase('score');
         setActiveRoundId(incompleteRound.Id);
         const courseName = incompleteRound.CourseName ?? '';
         setActiveCourseName(courseName);
@@ -259,6 +258,7 @@ export default function Play() {
         setCourseHolePars(holePars);
         const holeData = loadHoleForScore(resumeHole, incompleteRound.Id, holePars);
         setCurrentHoleData(holeData);
+        loadHoleEntry(resumeHole, incompleteRound.Id);
         setIncompleteRound(null);
         replaySectionTransition();
     };
@@ -303,7 +303,7 @@ export default function Play() {
             setActiveRoundId(roundId);
             setPlayers(roundPlayers);
             setCurrentHole(1);
-            setHolePhase('score');
+            loadHoleEntry(1, roundId);
             const holePars = getCourseHoleParsService(courseName);
             setCourseHolePars(holePars);
             setActiveCourseName(courseName);
@@ -328,7 +328,7 @@ export default function Play() {
     const handleScoresChange = (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => {
         setCurrentHoleData({ holeNumber, holePar, scores });
         // Autosave so a score survives the app closing before Next is pressed
-        if (activeRoundId !== null && holePhase === 'score') {
+        if (activeRoundId !== null) {
             void addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
         }
     };
@@ -360,24 +360,64 @@ export default function Play() {
         };
     };
 
-    const loadHoleSins = (holeNumber: number): DeadlySinsValues => {
-        if (!activeRoundId) return INITIAL_SINS;
-        const saved = getHoleDeadlySinsService(activeRoundId, holeNumber);
+    const loadHoleSins = (holeNumber: number, roundId: number | null = activeRoundId): DeadlySinsValues => {
+        if (!roundId) return INITIAL_SINS;
+        const saved = getHoleDeadlySinsService(roundId, holeNumber);
         return saved ?? INITIAL_SINS;
     };
 
-    const enterPuttingPhase = (holeNumber: number) => {
-        setHolePhase('putting');
+    const shouldShowSinDetails = (sins: DeadlySinsValues) =>
+        sins.troubleOffTee || sins.penalties || sins.bogeysInside9Iron || sins.doubleChips;
+
+    // Loads everything entered for a hole (sins, sin details, putting) onto the single hole screen
+    const loadHoleEntry = (holeNumber: number, roundId: number | null = activeRoundId) => {
+        setDeadlySinsValues(loadHoleSins(holeNumber, roundId));
         setPuttingFirstPuttError(false);
         setPuttingSecondPuttError(false);
         setPuttingSecondPuttRequiredError(false);
-        const saved = getPuttingStatsService(activeRoundId!, holeNumber);
+        const saved = roundId ? getPuttingStatsService(roundId, holeNumber) : null;
         setPuttingStats(saved ? {
             firstPutt: saved.FirstPuttDistance,
             secondPutt: saved.SecondPuttDistance,
             secondIsLong: saved.SecondPuttIsLong === 1,
             greenInRegulation: saved.GreenInRegulation,
         } : null);
+        const details = roundId ? getHoleSinDetailsService(roundId, holeNumber) : null;
+        setSelectedOffTeeClub(details?.TroubleOffTeeClub ?? undefined);
+        setSelectedPenaltyType(details?.PenaltyType ?? undefined);
+        setSelectedBogeysClub(details?.BogeysInside9IronClub ?? undefined);
+        setSelectedDoubleChipReason(details?.DoubleChipsReason ?? undefined);
+        setSinDetailsClubError(false);
+        setSinDetailsPenaltyError(false);
+        setSinDetailsBogeysClubError(false);
+        setSinDetailsDoubleChipReasonError(false);
+    };
+
+    // Saves everything entered for a hole. Putting and sins are only saved when the full stats flow is on.
+    const saveHoleEntry = async (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]): Promise<boolean> => {
+        const saved = await addMultiplayerHoleScoresService(activeRoundId!, holeNumber, holePar, scores);
+        if (!saved) return false;
+        if (activeCourseName !== null) {
+            await saveHoleNoteService(activeCourseName, holeNumber, currentNoteText);
+            setCourseNotes(prev => ({ ...prev, [holeNumber]: currentNoteText.trim() }));
+        }
+        if (!skipStatsFlow) {
+            await insertHoleDeadlySinsService(activeRoundId!, holeNumber, deadlySinsValues);
+            if (shouldShowSinDetails(deadlySinsValues)) {
+                await insertHoleSinDetailsService(activeRoundId!, holeNumber, {
+                    troubleOffTeeClub: selectedOffTeeClub,
+                    penaltyType: selectedPenaltyType,
+                    bogeysInside9IronClub: selectedBogeysClub,
+                    doubleChipsReason: selectedDoubleChipReason,
+                });
+            } else {
+                await deleteHoleSinDetailsService(activeRoundId!, holeNumber);
+            }
+            if (puttingStats && puttingStats.firstPutt !== undefined) {
+                await insertPuttingStatsService(activeRoundId!, holeNumber, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong, undefined, undefined, puttingStats.greenInRegulation);
+            }
+        }
+        return true;
     };
 
     const isTripleBogeyOrWorse = (holeData: typeof currentHoleData): boolean => {
@@ -397,16 +437,9 @@ export default function Play() {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setCurrentNoteText(courseNotes[nextHole] ?? '');
             setCurrentHole(nextHole);
-            setHolePhase('score');
-            const holeData = loadHoleForScore(nextHole);
-            setCurrentHoleData(holeData);
-            setPuttingStats(null);
-            setSelectedOffTeeClub(undefined);
-            setSinDetailsClubError(false);
-            setSelectedPenaltyType(undefined);
-            setSinDetailsPenaltyError(false);
-            setSelectedBogeysClub(undefined);
-            setSinDetailsBogeysClubError(false);
+            setCurrentHoleData(loadHoleForScore(nextHole));
+            resetForNewHole();
+            loadHoleEntry(nextHole);
         }
     };
 
@@ -419,150 +452,48 @@ export default function Play() {
         navDirectionRef.current = 'previous';
         if (currentHole <= 1) return;
 
-        // From any phase, save current hole data and go to previous hole's score phase
-        if (holePhase !== 'score') {
-            // Save current hole's stats/sins/note before leaving
-            if (holePhase === 'stats' || holePhase === 'sinDetails' || holePhase === 'putting') {
-                await insertHoleDeadlySinsService(activeRoundId!, currentHole, deadlySinsValues);
-                if (activeCourseName !== null) {
-                    await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
-                    setCourseNotes(prev => ({ ...prev, [currentHole]: currentNoteText.trim() }));
-                }
-                // Save putting stats if in putting phase
-                if (holePhase === 'putting' && puttingStats) {
-                    await insertPuttingStatsService(activeRoundId!, currentHole, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong, undefined, undefined, puttingStats.greenInRegulation);
-                }
-            }
-        }
-
-        // Navigate to previous hole in score phase
+        // Keep whatever was entered on this hole, then show the previous hole with its saved entries
         const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
-        await addMultiplayerHoleScoresService(activeRoundId!, holeNumber, holePar, scores);
+        await saveHoleEntry(holeNumber, holePar, scores);
         const prevHole = currentHole - 1;
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         setCurrentNoteText(courseNotes[prevHole] ?? '');
         setCurrentHole(prevHole);
-        const holeData = loadHoleForScore(prevHole);
-        setCurrentHoleData(holeData);
-        lifecycle.resetForNewHole();
+        setCurrentHoleData(loadHoleForScore(prevHole));
+        resetForNewHole();
+        loadHoleEntry(prevHole);
     };
 
     const handleNextHole = async () => {
         navDirectionRef.current = 'next';
         if (!activeRoundId) return;
 
-        if (holePhase === 'score') {
-            const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
-            const success = await addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
-            if (success) {
-                if (activeCourseName !== null) {
-                    await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
-                    setCourseNotes(prev => ({ ...prev, [currentHole]: currentNoteText.trim() }));
-                }
-                if (skipStatsFlow) {
-                    // Skip stats flow: advance directly to next hole or end round
-                    if (isTripleBogeyOrWorse(currentHoleData) && settings.badHoleReassuranceEnabled) {
-                        setReassuranceMessage(BAD_HOLE_MESSAGES[Math.floor(Math.random() * BAD_HOLE_MESSAGES.length)]);
-                        setShowBadHoleReassurance(true);
-                    } else {
-                        advanceHoleOrEndRound();
-                    }
-                } else {
-                    // Normal flow: proceed to stats
-                    const sins = loadHoleSins(holeNumber);
-                    setDeadlySinsValues(sins);
-                    setHolePhase('stats');
-                }
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                scrollRef.current?.scrollTo({ y: 0, animated: true });
-            } else {
-                showError('Could not save hole');
-            }
-        } else if (holePhase === 'stats') {
-            await insertHoleDeadlySinsService(activeRoundId, currentHole, deadlySinsValues);
-            const freshClubDistances = getClubDistancesService();
-            setClubDistances(freshClubDistances);
+        if (!skipStatsFlow) {
+            const puttingValid = validatePuttingStats(puttingStats);
+            const sinDetailsValid = validateSinDetails(
+                clubDistances,
+                deadlySinsValues.troubleOffTee,
+                deadlySinsValues.penalties,
+                deadlySinsValues.bogeysInside9Iron,
+                deadlySinsValues.doubleChips,
+            );
+            if (!puttingValid || !sinDetailsValid || puttingSecondPuttError) return;
+        }
 
-            const shouldShowSinDetails = deadlySinsValues.troubleOffTee || deadlySinsValues.penalties || deadlySinsValues.bogeysInside9Iron || deadlySinsValues.doubleChips;
-            if (shouldShowSinDetails) {
-                const saved = getHoleSinDetailsService(activeRoundId, currentHole);
-                setSelectedOffTeeClub(saved?.TroubleOffTeeClub);
-                setSelectedPenaltyType(saved?.PenaltyType);
-                setSelectedBogeysClub(saved?.BogeysInside9IronClub);
-                setSelectedDoubleChipReason(saved?.DoubleChipsReason);
-                setSinDetailsClubError(false);
-                setSinDetailsPenaltyError(false);
-                setSinDetailsBogeysClubError(false);
-                setSinDetailsDoubleChipReasonError(false);
-                setHolePhase('sinDetails');
-            } else {
-                await deleteHoleSinDetailsService(activeRoundId, currentHole);
-                enterPuttingPhase(currentHole);
-            }
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            scrollRef.current?.scrollTo({ y: 0, animated: true });
-        } else if (holePhase === 'sinDetails') {
-            const needsClub = deadlySinsValues.troubleOffTee && clubDistances.length > 0;
-            const needsPenalty = deadlySinsValues.penalties;
-            const needsBogeysClub = deadlySinsValues.bogeysInside9Iron && clubDistances.length > 0;
-            const needsDoubleChipReason = deadlySinsValues.doubleChips;
-            let blocked = false;
-
-            if (needsClub && !selectedOffTeeClub) {
-                setSinDetailsClubError(true);
-                blocked = true;
-            } else {
-                setSinDetailsClubError(false);
-            }
-
-            if (needsPenalty && !selectedPenaltyType) {
-                setSinDetailsPenaltyError(true);
-                blocked = true;
-            } else {
-                setSinDetailsPenaltyError(false);
-            }
-
-            if (needsBogeysClub && !selectedBogeysClub) {
-                setSinDetailsBogeysClubError(true);
-                blocked = true;
-            } else {
-                setSinDetailsBogeysClubError(false);
-            }
-
-            if (needsDoubleChipReason && !selectedDoubleChipReason) {
-                setSinDetailsDoubleChipReasonError(true);
-                blocked = true;
-            } else {
-                setSinDetailsDoubleChipReasonError(false);
-            }
-
-            if (blocked) return;
-
-            await insertHoleSinDetailsService(activeRoundId, currentHole, { troubleOffTeeClub: selectedOffTeeClub, penaltyType: selectedPenaltyType, bogeysInside9IronClub: selectedBogeysClub, doubleChipsReason: selectedDoubleChipReason });
-            enterPuttingPhase(currentHole);
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            scrollRef.current?.scrollTo({ y: 0, animated: true });
-        } else if (holePhase === 'putting') {
-            if (!puttingStats || puttingStats.firstPutt === undefined) {
-                setPuttingFirstPuttError(true);
-                return;
-            }
-            if (deadlySinsValues.threePutts && puttingStats.secondPutt === undefined) {
-                setPuttingSecondPuttRequiredError(true);
-                return;
-            }
-            if (puttingSecondPuttError) {
-                return;
-            }
-            await insertPuttingStatsService(activeRoundId, currentHole, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong, undefined, undefined, puttingStats.greenInRegulation);
-            if (isTripleBogeyOrWorse(currentHoleData) && settings.badHoleReassuranceEnabled) {
-                setReassuranceMessage(BAD_HOLE_MESSAGES[Math.floor(Math.random() * BAD_HOLE_MESSAGES.length)]);
-                setShowBadHoleReassurance(true);
-            } else {
-                advanceHoleOrEndRound();
-            }
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            scrollRef.current?.scrollTo({ y: 0, animated: true });
+        const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
+        const saved = await saveHoleEntry(holeNumber, holePar, scores);
+        if (!saved) {
+            showError('Could not save hole');
+            return;
+        }
+        setClubDistances(getClubDistancesService());
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        scrollRef.current?.scrollTo({ y: 0, animated: true });
+        if (isTripleBogeyOrWorse(currentHoleData) && settings.badHoleReassuranceEnabled) {
+            setReassuranceMessage(BAD_HOLE_MESSAGES[Math.floor(Math.random() * BAD_HOLE_MESSAGES.length)]);
+            setShowBadHoleReassurance(true);
+        } else {
+            advanceHoleOrEndRound();
         }
     };
 
@@ -582,7 +513,6 @@ export default function Play() {
     const resetToIdle = () => {
         setActiveRoundId(null);
         setCurrentHole(1);
-        setHolePhase('score');
         setDeadlySinsValues(INITIAL_SINS);
         setPuttingStats(null);
         setPuttingFirstPuttError(false);
@@ -714,80 +644,26 @@ export default function Play() {
                     <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
                         <View>
                             <Animated.View style={{ opacity: contentFadeAnim, transform: [{ translateX: contentSlideAnim }] }}>
-                                {holePhase === 'score' && (
+                                <HoleScoreInput
+                                    key={`score-${currentHole}`}
+                                    holeNumber={currentHole}
+                                    initialPar={courseHolePars[currentHole] ?? 4}
+                                    courseName={activeCourseName}
+                                    onEndRound={handleEndRoundPress}
+                                    initialScores={currentHoleData?.scores.reduce((acc, s) => ({ ...acc, [s.playerId]: s.score }), {}) ?? undefined}
+                                    players={players}
+                                    onScoresChange={handleScoresChange}
+                                />
+
+                                {!skipStatsFlow && (
                                     <>
-                                        <HoleScoreInput
-                                            key={`score-${currentHole}`}
-                                            holeNumber={currentHole}
-                                            initialPar={courseHolePars[currentHole] ?? 4}
-                                            initialScores={currentHoleData?.scores.reduce((acc, s) => ({ ...acc, [s.playerId]: s.score }), {}) ?? undefined}
-                                            players={players}
-                                            onScoresChange={handleScoresChange}
-                                        />
-
-                                        {!showEndRoundConfirm && (
-                                            <>
-                                                <HoleNoteInput
-                                                    key={`note-${currentHole}`}
-                                                    note={currentNoteText}
-                                                    onNoteChange={setCurrentNoteText}
-                                                />
-
-                                                {settings.preShotReminderEnabled && (
-                                                    <View style={[styles.holeNoteInput.container, { paddingHorizontal: 16, paddingVertical: 16, marginTop: 4, marginBottom: 12 }]}>
-                                                        <Text style={[styles.normalText, { color: colours.primary, fontWeight: 'bold', marginBottom: 6 }]}>Pre-shot routine</Text>
-                                                        <Text style={{ color: colours.text, fontSize: fontSizes.normal, lineHeight: 22 }}>{settings.preShotRoutineText}</Text>
-                                                    </View>
-                                                )}
-                                            </>
-                                        )}
-                                    </>
-                                )}
-
-                                {holePhase === 'stats' && (
-                                    <PhaseStats
-                                        key={`stats-${currentHole}`}
-                                        holeNumber={currentHole}
-                                        holePar={currentHoleData?.holePar ?? 4}
-                                        sins={deadlySinsValues}
-                                        onSinsChange={handledeadlySinsValuesChange}
-                                        players={players}
-                                        userScore={currentHoleData?.scores.find(s => {
-                                            const player = players.find(p => p.Id === s.playerId);
-                                            return player && player.IsUser === 1;
-                                        })?.score}
-                                    />
-                                )}
-
-                                {holePhase === 'sinDetails' && (
-                                    <PhaseSinDetails
-                                        key={`sinDetails-${currentHole}`}
-                                        holeNumber={currentHole}
-                                        clubDistances={clubDistances}
-                                        deadlySinsValues={deadlySinsValues}
-                                        selectedOffTeeClub={selectedOffTeeClub}
-                                        sinDetailsClubError={sinDetailsClubError}
-                                        selectedPenaltyType={selectedPenaltyType}
-                                        sinDetailsPenaltyError={sinDetailsPenaltyError}
-                                        selectedBogeysClub={selectedBogeysClub}
-                                        sinDetailsBogeysClubError={sinDetailsBogeysClubError}
-                                        selectedDoubleChipReason={selectedDoubleChipReason}
-                                        sinDetailsDoubleChipReasonError={sinDetailsDoubleChipReasonError}
-                                        onOffTeeClubChange={setSelectedOffTeeClub}
-                                        onPenaltyTypeChange={setSelectedPenaltyType}
-                                        onBogeysClubChange={setSelectedBogeysClub}
-                                        onDoubleChipReasonChange={setSelectedDoubleChipReason}
-                                    />
-                                )}
-
-                                {holePhase === 'putting' && (
-                                    <View>
-                                        <View style={{ paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                                        <View style={styles.holeScreen.sectionHeaderRow}>
+                                            <Text style={styles.holeScreen.sectionLabel}>Putting</Text>
                                             <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help" testID="putting-info-button" onPress={() => setShowPuttingInfo(true)} style={{ padding: 4 }}>
-                                                <MaterialIcons name="info-outline" size={24} color={colours.primary} />
+                                                <MaterialIcons name="info-outline" size={20} color={colours.primary} />
                                             </TouchableOpacity>
-                                            <Text style={styles.normalText}>Hole {currentHole} — Putting stats</Text>
                                         </View>
+                                        <View style={styles.holeScreen.card}>
                                         <PhasePutting
                                             key={`putting-${currentHole}`}
                                             holePar={currentHoleData?.holePar ?? 4}
@@ -809,19 +685,61 @@ export default function Play() {
                                             onErrorChange={setPuttingSecondPuttError}
                                             onShowInfo={setShowPuttingInfo}
                                         />
-                                    </View>
+                                        </View>
+
+                                        <PhaseStats
+                                            holeNumber={currentHole}
+                                            holePar={currentHoleData?.holePar ?? 4}
+                                            sins={deadlySinsValues}
+                                            onSinsChange={handledeadlySinsValuesChange}
+                                            players={players}
+                                            userScore={currentHoleData?.scores.find(s => {
+                                                const player = players.find(p => p.Id === s.playerId);
+                                                return player && player.IsUser === 1;
+                                            })?.score}
+                                            clubDistances={clubDistances}
+                                            selectedOffTeeClub={selectedOffTeeClub}
+                                            sinDetailsClubError={sinDetailsClubError}
+                                            onOffTeeClubChange={setSelectedOffTeeClub}
+                                            selectedPenaltyType={selectedPenaltyType}
+                                            sinDetailsPenaltyError={sinDetailsPenaltyError}
+                                            onPenaltyTypeChange={setSelectedPenaltyType}
+                                            selectedBogeysClub={selectedBogeysClub}
+                                            sinDetailsBogeysClubError={sinDetailsBogeysClubError}
+                                            onBogeysClubChange={setSelectedBogeysClub}
+                                            selectedDoubleChipReason={selectedDoubleChipReason}
+                                            sinDetailsDoubleChipReasonError={sinDetailsDoubleChipReasonError}
+                                            onDoubleChipReasonChange={setSelectedDoubleChipReason}
+                                        />
+
+                                    </>
+                                )}
+
+                                {!showEndRoundConfirm && (
+                                    <>
+                                        <Text style={styles.holeScreen.sectionLabel}>Notes</Text>
+                                        <HoleNoteInput
+                                            key={`note-${currentHole}`}
+                                            note={currentNoteText}
+                                            onNoteChange={setCurrentNoteText}
+                                        />
+
+                                        {settings.preShotReminderEnabled && (
+                                            <View style={[styles.holeNoteInput.container, { paddingHorizontal: 16, paddingVertical: 16, marginTop: 4, marginBottom: 12 }]}>
+                                                <Text style={[styles.normalText, { color: colours.primary, fontWeight: 'bold', marginBottom: 6 }]}>Pre-shot routine</Text>
+                                                <Text style={{ color: colours.text, fontSize: fontSizes.normal, lineHeight: 22 }}>{settings.preShotRoutineText}</Text>
+                                            </View>
+                                        )}
+                                    </>
                                 )}
                             </Animated.View>
 
                             {!showEndRoundConfirm && (
                                 <HoleNavigationControls
-                                    holePhase={holePhase}
                                     currentHole={currentHole}
                                     isLastHole={isLastHole}
-                                    skipStatsFlow={skipStatsFlow}
                                     onPreviousHole={handlePreviousHole}
                                     onNextHole={handleNextHole}
-                                    onEndRound={handleEndRoundPress}
                                     wind={wind}
                                     heading={heading}
                                 />

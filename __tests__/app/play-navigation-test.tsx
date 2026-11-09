@@ -199,7 +199,7 @@ describe('Play screen', () => {
             mockAddRoundPlayers.mockResolvedValue([1]);
             fireEvent.changeText(utils.getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(utils.getByTestId('start-button'));
-            await waitFor(() => expect(utils.getByText('#1')).toBeTruthy());
+            await waitFor(() => expect(utils.getByText('Hole 1')).toBeTruthy());
         };
 
         // Resume an in-progress round to land directly on hole (holesPlayed + 1).
@@ -225,7 +225,7 @@ describe('Play screen', () => {
             getCourseHoleParsService.mockReturnValue({ 2: 3 });
             mockGetHoleScores.mockReturnValue(null);
 
-            const utils = await resumeAtHole(1);
+            const utils = await resumeAtHole(1, 1);
             await act(async () => {
                 fireEvent.press(utils.getByTestId('next-hole-button'));
             });
@@ -244,7 +244,7 @@ describe('Play screen', () => {
                 hole === 2 ? { holePar: 5, scores: { 1: 6 } } : null
             );
 
-            const utils = await resumeAtHole(1);
+            const utils = await resumeAtHole(1, 1);
             await act(async () => {
                 fireEvent.press(utils.getByTestId('next-hole-button'));
             });
@@ -283,14 +283,11 @@ describe('Play screen', () => {
             expect(style.borderColor).toBe(colours.primary);
         });
 
-        it('renders End round in red', async () => {
-            const colours = require('../../assets/colours').default;
+        it('shows an End button in the green header', async () => {
             const utils = render(<Play />);
             await startRound(utils);
 
-            const endRoundText = utils.UNSAFE_getByProps({ testID: 'end-round-button' })
-                .findByProps({ children: 'End round' });
-            expect(endRoundText.props.style).toEqual(expect.objectContaining({ color: colours.red }));
+            expect(utils.getByTestId('end-round-button')).toHaveTextContent('End');
         });
 
         it('hides the Previous hole button on the first hole', async () => {
@@ -365,7 +362,7 @@ describe('Play screen', () => {
             mockAddRoundPlayers.mockResolvedValue([1]);
             fireEvent.changeText(utils.getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(utils.getByTestId('start-button'));
-            await waitFor(() => expect(utils.getByText('#1')).toBeTruthy());
+            await waitFor(() => expect(utils.getByText('Hole 1')).toBeTruthy());
 
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
             mockInsertHoleDeadlySins.mockResolvedValue(undefined);
@@ -388,7 +385,7 @@ describe('Play screen', () => {
             mockAddRoundPlayers.mockResolvedValue([1]);
             fireEvent.changeText(utils.getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(utils.getByTestId('start-button'));
-            await waitFor(() => expect(utils.getByText('#1')).toBeTruthy());
+            await waitFor(() => expect(utils.getByText('Hole 1')).toBeTruthy());
 
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
             mockInsertHoleDeadlySins.mockResolvedValue(undefined);
@@ -410,7 +407,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('#1')).toBeTruthy();
+                expect(getByText('Hole 1')).toBeTruthy();
             });
 
             for (let i = 1; i < targetHole; i++) {
@@ -418,7 +415,7 @@ describe('Play screen', () => {
                     fireEvent.press(getByTestId('next-hole-button'));
                 });
                 await waitFor(() => {
-                    expect(getByText(`#${i + 1}`)).toBeTruthy();
+                    expect(getByText(`Hole ${i + 1}`)).toBeTruthy();
                 });
             }
         };
@@ -449,7 +446,7 @@ describe('Play screen', () => {
                 expect(getByTestId('confirm-end-round-button')).toBeTruthy();
             });
 
-            expect(queryByText('#19')).toBeNull();
+            expect(queryByText('Hole 19')).toBeNull();
         });
 
         it('saves Hole 18 scores before showing end round confirmation', async () => {

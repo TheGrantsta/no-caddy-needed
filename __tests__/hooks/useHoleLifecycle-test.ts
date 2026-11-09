@@ -7,45 +7,7 @@ describe('useHoleLifecycle', () => {
             const { result } = renderHook(() => useHoleLifecycle());
 
             expect(result.current.currentHole).toBe(1);
-            expect(result.current.holePhase).toBe('score');
             expect(result.current.skipStatsFlow).toBe(false);
-        });
-    });
-
-    describe('phase transitions', () => {
-        it('transitions from score to stats when advancing', () => {
-            const { result } = renderHook(() => useHoleLifecycle());
-
-            act(() => {
-                result.current.setHolePhase('stats');
-            });
-
-            expect(result.current.holePhase).toBe('stats');
-        });
-
-        it('transitions back to score from stats', () => {
-            const { result } = renderHook(() => useHoleLifecycle());
-
-            act(() => {
-                result.current.setHolePhase('stats');
-            });
-
-            act(() => {
-                result.current.setHolePhase('score');
-            });
-
-            expect(result.current.holePhase).toBe('score');
-        });
-
-        it('transitions from stats to sinDetails when sins exist', () => {
-            const { result } = renderHook(() => useHoleLifecycle());
-
-            act(() => {
-                result.current.setDeadlySinsValues({ threePutts: true, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false });
-                result.current.setHolePhase('sinDetails');
-            });
-
-            expect(result.current.holePhase).toBe('sinDetails');
         });
     });
 
@@ -255,7 +217,6 @@ describe('useHoleLifecycle', () => {
             const { result } = renderHook(() => useHoleLifecycle());
 
             act(() => {
-                result.current.setHolePhase('putting');
                 result.current.advanceHole();
                 result.current.setDeadlySinsValues({
                     threePutts: true,
@@ -270,7 +231,6 @@ describe('useHoleLifecycle', () => {
             });
 
             expect(result.current.currentHole).toBe(1);
-            expect(result.current.holePhase).toBe('score');
             expect(result.current.deadlySinsValues.threePutts).toBe(false);
         });
     });

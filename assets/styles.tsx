@@ -475,6 +475,165 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    holeScreen: StyleSheet.create({
+        container: {
+            width: '100%',
+        },
+        band: {
+            backgroundColor: c.primary,
+            borderBottomLeftRadius: 28,
+            borderBottomRightRadius: 28,
+            paddingHorizontal: 16,
+            paddingTop: 12,
+            paddingBottom: 20,
+            marginBottom: 16,
+        },
+        bandTopRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 14,
+        },
+        bandBottomRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        },
+        bandSpacer: {
+            width: 64,
+        },
+        endButton: {
+            minWidth: 64,
+            height: 36,
+            borderRadius: 18,
+            backgroundColor: 'rgba(255,255,255,0.16)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 14,
+        },
+        endButtonText: {
+            color: c.white,
+            fontSize: fontSizes.normal,
+            fontWeight: '500',
+        },
+        courseName: {
+            flex: 1,
+            color: c.white,
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
+            textAlign: 'center',
+        },
+        holeTitle: {
+            color: c.white,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+        },
+        parSegment: {
+            flexDirection: 'row',
+            backgroundColor: 'rgba(255,255,255,0.16)',
+            borderRadius: 12,
+            padding: 3,
+        },
+        parOption: {
+            paddingHorizontal: 10,
+            paddingVertical: 6,
+            borderRadius: 9,
+        },
+        parOptionActive: {
+            backgroundColor: c.white,
+        },
+        parOptionText: {
+            color: c.white,
+            fontSize: fontSizes.smallText,
+            fontWeight: '600',
+        },
+        parOptionTextActive: {
+            color: c.primary,
+        },
+        sectionLabel: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+            marginBottom: 8,
+            marginLeft: 4,
+        },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            overflow: 'hidden',
+            marginBottom: 16,
+        },
+        bottomBar: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 28,
+            padding: 8,
+            marginTop: 16,
+            marginBottom: 16,
+            shadowColor: c.black,
+            shadowOpacity: 0.08,
+            shadowRadius: 10,
+            shadowOffset: { width: 0, height: 4 },
+            elevation: 3,
+        },
+        sectionHeaderRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        },
+        playerRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+        },
+        rowDivider: {
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: c.tertiary + '66',
+        },
+        playerName: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        stepperRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 16,
+        },
+        minusButton: {
+            width: 48,
+            height: 48,
+            borderRadius: 24,
+            backgroundColor: c.tertiary + '26',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        minusText: {
+            color: c.text,
+            fontSize: fontSizes.header,
+        },
+        plusButton: {
+            width: 48,
+            height: 48,
+            borderRadius: 24,
+            backgroundColor: c.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        plusText: {
+            color: c.white,
+            fontSize: fontSizes.header,
+        },
+        scoreText: {
+            color: c.text,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+            minWidth: 32,
+            textAlign: 'center',
+        },
+    }),
+
     wedgeEdit: StyleSheet.create({
         container: {
             width: '100%',
@@ -1654,6 +1813,34 @@ export const createStyles = (c: ThemeColours) => ({
             paddingHorizontal: 12,
             paddingVertical: 8,
             marginBottom: 12,
+        },
+        headerRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 4,
+            marginTop: 16,
+            marginBottom: 8,
+        },
+        sectionLabel: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+        },
+        labelMarked: {
+            fontWeight: '600',
+        },
+        followUp: {
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            backgroundColor: c.tertiary + '14',
+        },
+        markedCount: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            paddingHorizontal: 4,
+            paddingVertical: 10,
         },
         hint: {
             color: c.primary,

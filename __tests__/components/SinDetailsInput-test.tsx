@@ -51,7 +51,7 @@ describe('SinDetailsInput', () => {
             />
         );
 
-        expect(queryByText('Club used off the tee')).toBeNull();
+        expect(queryByText('Club off the tee')).toBeNull();
     });
 
     it('renders off-tee section when troubleOffTee is true', () => {
@@ -66,7 +66,7 @@ describe('SinDetailsInput', () => {
             />
         );
 
-        expect(getByText('Club used off the tee')).toBeTruthy();
+        expect(getByText('Club off the tee')).toBeTruthy();
     });
 
     it('renders nothing when all sins are false', () => {
@@ -81,7 +81,7 @@ describe('SinDetailsInput', () => {
             />
         );
 
-        expect(queryByText('Club used off the tee')).toBeNull();
+        expect(queryByText('Club off the tee')).toBeNull();
         expect(queryByText('Penalty type')).toBeNull();
     });
 
@@ -129,7 +129,7 @@ describe('SinDetailsInput', () => {
             />
         );
 
-        expect(getByText('Club used off the tee')).toBeTruthy();
+        expect(getByText('Club off the tee')).toBeTruthy();
         expect(getByText('Penalty type')).toBeTruthy();
     });
 
@@ -181,7 +181,7 @@ describe('SinDetailsInput', () => {
             />
         );
 
-        expect(getByText('Club used off the tee')).toBeTruthy();
+        expect(getByText('Club off the tee')).toBeTruthy();
         expect(getByText('Penalty type')).toBeTruthy();
         expect(getByText('Approach club')).toBeTruthy();
     });
@@ -240,9 +240,44 @@ describe('SinDetailsInput', () => {
             />
         );
 
-        expect(getByText('Club used off the tee')).toBeTruthy();
+        expect(getByText('Club off the tee')).toBeTruthy();
         expect(getByText('Penalty type')).toBeTruthy();
         expect(getByText('Approach club')).toBeTruthy();
         expect(getByText('Double chip reason')).toBeTruthy();
+    });
+
+    describe('single sin follow-up', () => {
+        it('shouldRenderOnlyTheTroubleOffTeeClubPickerWhenOnlyIsTroubleOffTee', () => {
+            const { UNSAFE_queryAllByType } = render(
+                <SinDetailsInput
+                    sins={{ ...allFalseSins, troubleOffTee: true, penalties: true }}
+                    clubs={mockClubs}
+                    only="troubleOffTee"
+                    onOffTeeClubChange={jest.fn()}
+                    onPenaltyTypeChange={jest.fn()}
+                    onBogeysClubChange={jest.fn()}
+                    onDoubleChipReasonChange={jest.fn()}
+                />
+            );
+
+            expect(UNSAFE_queryAllByType('ClubPicker' as any)).toHaveLength(1);
+            expect(UNSAFE_queryAllByType('PenaltyTypePicker' as any)).toHaveLength(0);
+        });
+
+        it('shouldRenderNothingWhenTheOnlySinIsNotMarked', () => {
+            const { UNSAFE_queryAllByType } = render(
+                <SinDetailsInput
+                    sins={allFalseSins}
+                    clubs={mockClubs}
+                    only="troubleOffTee"
+                    onOffTeeClubChange={jest.fn()}
+                    onPenaltyTypeChange={jest.fn()}
+                    onBogeysClubChange={jest.fn()}
+                    onDoubleChipReasonChange={jest.fn()}
+                />
+            );
+
+            expect(UNSAFE_queryAllByType('ClubPicker' as any)).toHaveLength(0);
+        });
     });
 });

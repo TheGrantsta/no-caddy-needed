@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
 import { DeadlySinsValues } from '../../service/DbService';
@@ -206,14 +206,14 @@ describe('DeadlySinsTally component', () => {
             expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(false);
         });
 
-        it('toggle indicator is on with a red track when value is true', () => {
+        it('toggle indicator is on with a primary green track when value is true', () => {
             const { getByTestId, UNSAFE_getByProps } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
 
             fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
 
             expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(true);
             const switchElement = UNSAFE_getByProps({ testID: '7deadly-sins-indicator-three-putts' });
-            expect(switchElement.props.trackColor.true).toBe('#fd0303'); // c.red
+            expect(switchElement.props.trackColor.true).toBe('#2D5A3D'); // c.primary
         });
 
         it('shows the switch off when a sin has not happened', () => {
@@ -691,23 +691,51 @@ describe('DeadlySinsTally component', () => {
             expect(style.backgroundColor).toBeUndefined();
         });
 
-        it('shouldShowHintThatAnyRowCanBeTapped', () => {
+    });
+
+    describe('deadly sins card layout', () => {
+        it('shouldShowDeadlySinsTitleWithAMarkedColumnHeading', () => {
             const { getByText } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
 
-            expect(getByText('Tap a row to mark it')).toBeTruthy();
+            expect(getByText('Deadly Sins')).toBeTruthy();
+            expect(getByText('Marked')).toBeTruthy();
+        });
+
+        it('shouldShowHowManySinsAreMarkedOnThisHole', () => {
+            const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+
+            expect(getByTestId('7deadly-sins-marked-count')).toHaveTextContent('0 marked on this hole.');
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+            expect(getByTestId('7deadly-sins-marked-count')).toHaveTextContent('2 marked on this hole.');
+        });
+
+        it('shouldBoldTheLabelOfEachSinThatIsMarked', () => {
+            const { getByText, getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+            const before = StyleSheet.flatten(getByText('3-putts').props.style);
+
+            fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+            const after = StyleSheet.flatten(getByText('3-putts').props.style);
+
+            expect(before.fontWeight).not.toBe('600');
+            expect(after.fontWeight).toBe('600');
+        });
+
+        it('shouldShowAFollowUpUnderASinOnlyWhileItIsMarked', () => {
+            const renderFollowUp = (slug: string) => (slug === 'trouble-off-tee' ? <Text>CLUB-PICKER</Text> : null);
+            const { getByTestId, queryByText } = render(
+                <DeadlySinsTally onEndRound={mockOnEndRound} roundControlled renderFollowUp={renderFollowUp} />
+            );
+
+            expect(queryByText('CLUB-PICKER')).toBeNull();
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
+            expect(queryByText('CLUB-PICKER')).toBeTruthy();
+            fireEvent.press(getByTestId('7deadly-sins-toggle-trouble-off-tee'));
+            expect(queryByText('CLUB-PICKER')).toBeNull();
         });
     });
 
     describe('list readability', () => {
-        it('shouldAlignHintWithCardEdgeAndUseLargerDarkerText', () => {
-            const { getByText } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
-            const style = StyleSheet.flatten(getByText('Tap a row to mark it').props.style);
-
-            expect(style.paddingHorizontal).toBe(20);
-            expect(style.fontSize).toBe(17);
-            expect(style.color).toBe('#2D5A3D'); // c.primary
-        });
-
         it('shouldGiveEachCardMoreSpaceBelowIt', () => {
             const { getByTestId } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
             const style = StyleSheet.flatten(getByTestId('7deadly-sins-toggle-three-putts').props.style);

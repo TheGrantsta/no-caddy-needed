@@ -299,7 +299,7 @@ describe('Play screen', () => {
                 await act(async () => {
                     fireEvent.press(getByTestId('continue-round-button'));
                 });
-                expect(getByText('#6')).toBeTruthy();
+                expect(getByText('Hole 6')).toBeTruthy();
             });
 
             it('shouldResumeAtHole1WhenNoHolesSaved', async () => {
@@ -308,7 +308,7 @@ describe('Play screen', () => {
                 await act(async () => {
                     fireEvent.press(getByTestId('continue-round-button'));
                 });
-                expect(getByText('#1')).toBeTruthy();
+                expect(getByText('Hole 1')).toBeTruthy();
             });
 
             it('shouldCancelRoundReminderWhenContinueRoundPressed', async () => {
@@ -381,7 +381,7 @@ describe('Play screen', () => {
 
             await waitFor(() => {
                 expect(mockStartRound).toHaveBeenCalledWith('St Andrews', false);
-                expect(getByText('#1')).toBeTruthy();
+                expect(getByText('Hole 1')).toBeTruthy();
             });
         });
 
@@ -457,8 +457,9 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('add-note-button'));
             fireEvent.changeText(getByTestId('hole-note-input'), 'aim left');
+            fireEvent.changeText(getByTestId('first-putt-input'), '20');
 
-            // Score phase → Stats phase (note is saved here with Bug B fix)
+            // Next saves the hole, including its note, in one step
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));
             });
@@ -468,14 +469,84 @@ describe('Play screen', () => {
             });
         });
 
+        describe('single hole screen', () => {
+            const startFullRound = async (getByTestId: (id: string) => any) => {
+                fireEvent.changeText(getByTestId('course-name-input'), 'Augusta');
+                fireEvent.press(getByTestId('start-button'));
+                await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
+            };
+
+            it('shouldShowScoreputtingAndDeadlySinsTogetherWithoutPressingNext', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+
+                const { getByTestId } = render(<Play />);
+                await startFullRound(getByTestId);
+
+                expect(getByTestId('player-score-1')).toBeTruthy();
+                expect(getByTestId('first-putt-input')).toBeTruthy();
+                expect(getByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeTruthy();
+            });
+
+            it('shouldNotAdvanceWhenNextPressedWithoutAFirstPutt', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+                const { getByTestId, getByText } = render(<Play />);
+                await startFullRound(getByTestId);
+
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+
+                expect(mockAddMultiplayerHoleScores).not.toHaveBeenCalled();
+                expect(getByText('Hole 1')).toBeTruthy();
+            });
+
+            it('shouldSaveScorePuttingAndDeadlySinsInOneStepWhenNextPressed', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+                const { getByTestId } = render(<Play />);
+                await startFullRound(getByTestId);
+                fireEvent.changeText(getByTestId('first-putt-input'), '20');
+
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+
+                await waitFor(() => {
+                    expect(mockAddMultiplayerHoleScores).toHaveBeenCalled();
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, false);
+                    expect(mockInsertHoleDeadlySins).toHaveBeenCalled();
+                });
+            });
+
+            it('shouldHidePuttingAndDeadlySinsInScoreOnlyMode', async () => {
+                const mockGetSettings = getSettingsService as jest.Mock;
+                const original = mockGetSettings.getMockImplementation();
+                mockGetSettings.mockReturnValue({ ...original?.(), skipStatsFlowEnabled: true });
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+
+                try {
+                    const { getByTestId, queryByTestId } = render(<Play />);
+                    await startFullRound(getByTestId);
+
+                    expect(queryByTestId('first-putt-input')).toBeNull();
+                    expect(queryByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeNull();
+                    expect(getByTestId('player-score-1')).toBeTruthy();
+                } finally {
+                    mockGetSettings.mockImplementation(original);
+                }
+            });
+        });
+
         describe('green in regulation on the putting screen', () => {
+            // Putting is on the same screen as the score, so there is nothing to advance to
             const advanceToPuttingPhase = async (getByTestId: (id: string) => any) => {
-                await act(async () => {
-                    fireEvent.press(getByTestId('next-hole-button'));
-                });
-                await act(async () => {
-                    fireEvent.press(getByTestId('next-hole-button'));
-                });
                 await waitFor(() => expect(getByTestId('first-putt-input')).toBeTruthy());
             };
 
@@ -653,7 +724,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('#1')).toBeTruthy();
+                expect(getByText('Hole 1')).toBeTruthy();
                 expect(getByTestId('end-round-button')).toBeTruthy();
             });
         });
@@ -677,7 +748,7 @@ describe('Play screen', () => {
                 fireEvent.press(getByTestId('continue-round-button'));
             });
 
-            expect(getByText(/#/)).toBeTruthy();
+            expect(getByText('Hole 1')).toBeTruthy();
             expect(getByTestId('end-round-button')).toBeTruthy();
         });
 
@@ -766,7 +837,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('#1')).toBeTruthy();
+                expect(getByText('Hole 1')).toBeTruthy();
             });
 
             await act(async () => {
@@ -806,11 +877,11 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('#1')).toBeTruthy();
+                expect(getByText('Hole 1')).toBeTruthy();
             });
 
             expect(queryByTestId('previous-hole-button')).toBeNull();
-            expect(getByText('#1')).toBeTruthy();
+            expect(getByText('Hole 1')).toBeTruthy();
         });
 
         it('shows previous #button from #2 onwards', async () => {
@@ -848,7 +919,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('#1')).toBeTruthy();
+                expect(getByText('Hole 1')).toBeTruthy();
             });
 
             await act(async () => {
@@ -856,14 +927,14 @@ describe('Play screen', () => {
             });
 
             await waitFor(() => {
-                expect(getByText('#2')).toBeTruthy();
+                expect(getByText('Hole 2')).toBeTruthy();
             });
 
             await act(async () => {
                 fireEvent.press(getByTestId('previous-hole-button'));
             });
 
-            expect(getByText('#1')).toBeTruthy();
+            expect(getByText('Hole 1')).toBeTruthy();
         });
 
         it('showsCorrectNoteWhenNavigatingBackward — To be fixed once flow is agreed', async () => {
@@ -1209,14 +1280,14 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(getByText('#1')).toBeTruthy();
+                expect(getByText('Hole 1')).toBeTruthy();
             });
 
             await act(async () => {
                 fireEvent.press(getByTestId('next-hole-button'));
             });
 
-            expect(getByText('#1')).toBeTruthy();
+            expect(getByText('Hole 1')).toBeTruthy();
         });
     });
 

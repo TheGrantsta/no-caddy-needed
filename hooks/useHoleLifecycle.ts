@@ -1,8 +1,6 @@
 import { useState, useCallback } from 'react';
 import { DeadlySinsValues } from '../service/DbService';
 
-export type HolePhase = 'score' | 'stats' | 'sinDetails' | 'putting';
-
 export interface PuttingStats {
     firstPutt?: number;
     secondPutt?: number;
@@ -22,7 +20,6 @@ const INITIAL_SINS: DeadlySinsValues = {
 
 export function useHoleLifecycle() {
     const [currentHole, setCurrentHole] = useState(1);
-    const [holePhase, setHolePhase] = useState<HolePhase>('score');
     const [skipStatsFlow, setSkipStatsFlow] = useState(false);
     const [deadlySinsValues, setDeadlySinsValues] = useState<DeadlySinsValues>(INITIAL_SINS);
     const [puttingStats, setPuttingStats] = useState<PuttingStats | null>(null);
@@ -53,7 +50,6 @@ export function useHoleLifecycle() {
     }, []);
 
     const resetForNewHole = useCallback(() => {
-        setHolePhase('score');
         setDeadlySinsValues(INITIAL_SINS);
         setPuttingStats(null);
         setPuttingFirstPuttError(false);
@@ -126,7 +122,6 @@ export function useHoleLifecycle() {
 
     const resetAll = useCallback(() => {
         setCurrentHole(1);
-        setHolePhase('score');
         setSkipStatsFlow(false);
         setDeadlySinsValues(INITIAL_SINS);
         setPuttingStats(null);
@@ -148,8 +143,6 @@ export function useHoleLifecycle() {
     return {
         currentHole,
         setCurrentHoleValue,
-        holePhase,
-        setHolePhase,
         skipStatsFlow,
         setSkipStatsFlow,
         deadlySinsValues,

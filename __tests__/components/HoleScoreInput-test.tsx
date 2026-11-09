@@ -1,5 +1,4 @@
 import React from 'react';
-import { Text } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
 import HoleScoreInput from '../../components/HoleScoreInput';
@@ -27,12 +26,12 @@ describe('HoleScoreInput', () => {
         jest.clearAllMocks();
     });
 
-    it('shows hole number header', () => {
+    it('shows the hole number as a Hole N heading', () => {
         const { getByText } = render(
             <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
-        expect(getByText('#1')).toBeTruthy();
+        expect(getByText('Hole 1')).toBeTruthy();
     });
 
     it('shouldExposeHoleNumberViaTestId', () => {
@@ -40,20 +39,34 @@ describe('HoleScoreInput', () => {
             <HoleScoreInput holeNumber={5} players={mockPlayers} onScoresChange={mockOnScoresChange} />
         );
 
-        expect(getByTestId('hole-number-text')).toHaveTextContent('#5');
+        expect(getByTestId('hole-number-text')).toHaveTextContent('Hole 5');
     });
 
-    it('rendersHeaderAccessoryInParRow', () => {
-        const { getByText } = render(
-            <HoleScoreInput
-                holeNumber={1}
-                players={mockPlayers}
-                onScoresChange={mockOnScoresChange}
-                headerAccessory={<Text>WIND-ACCESSORY</Text>}
-            />
+    it('shows the course name in the green header', () => {
+        const { getByTestId } = render(
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} courseName="Augusta" />
         );
 
-        expect(getByText('WIND-ACCESSORY')).toBeTruthy();
+        expect(getByTestId('hole-course-name')).toHaveTextContent('Augusta');
+    });
+
+    it('shows an End button in the header that calls onEndRound', () => {
+        const onEndRound = jest.fn();
+        const { getByTestId } = render(
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} onEndRound={onEndRound} />
+        );
+
+        fireEvent.press(getByTestId('end-round-button'));
+
+        expect(onEndRound).toHaveBeenCalled();
+    });
+
+    it('labels the player rows with a Score section heading', () => {
+        const { getByText } = render(
+            <HoleScoreInput holeNumber={1} players={mockPlayers} onScoresChange={mockOnScoresChange} />
+        );
+
+        expect(getByText('Score')).toBeTruthy();
     });
 
     it('shows par selector with 3, 4, 5 options', () => {

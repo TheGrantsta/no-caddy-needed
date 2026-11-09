@@ -7,8 +7,9 @@ import { getSettingsService } from '../../../service/DbService';
 import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from 'expo-speech-recognition';
 import { getRandomNumber } from '../../../assets/random-number';
 
+const mockBack = jest.fn();
 jest.mock('expo-router', () => ({
-    useRouter: () => ({ back: jest.fn() }),
+    useRouter: () => ({ back: mockBack }),
 }));
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -81,10 +82,18 @@ describe('Random number generator page', () => {
         jest.spyOn(console, 'debug').mockImplementation(() => { });
     });
 
+    it('shows a back button left of the heading that returns to the previous screen', () => {
+        const { getByLabelText } = render(<Random />);
+
+        fireEvent.press(getByLabelText('Back'));
+
+        expect(mockBack).toHaveBeenCalled();
+    });
+
     it('renders correctly with the header', () => {
         const { getByText } = render(<Random />);
 
-        expect(getByText('Random number generator')).toBeTruthy();
+        expect(getByText('Random number')).toBeTruthy();
     });
 
     it('shouldShowFromAndToInputsWithDefaultValues', () => {

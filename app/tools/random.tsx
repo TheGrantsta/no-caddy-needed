@@ -148,7 +148,7 @@ export default function Random() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}>
-                <PageHeader title="Random number generator" onBack={() => router.back()} />
+                <PageHeader title="Random number" onBack={() => router.back()} />
 
                 <RandomNumberDisplay randomNumber={randomNumber} />
 

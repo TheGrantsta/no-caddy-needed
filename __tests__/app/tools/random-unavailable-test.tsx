@@ -58,7 +58,7 @@ jest.mock('../../../service/DbService', () => ({
 describe('Random number generator - speech recognition unavailable', () => {
     it('renders without crashing when speech recognition module is missing', () => {
         const { getByText } = render(<Random />);
-        expect(getByText('Random number generator')).toBeTruthy();
+        expect(getByText('Random number')).toBeTruthy();
     });
 
     it('does not show mic button when speech recognition module is missing', () => {

@@ -224,7 +224,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('end-round-button'));
             await act(async () => {
-                fireEvent.press(getByTestId('confirm-end-round-button'));
+                fireEvent.press(getByTestId('end-round-save-button'));
             });
 
             await waitFor(() => {
@@ -386,8 +386,8 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button') as never);
             await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
             fireEvent.press(getByTestId('end-round-button') as never);
-            await waitFor(() => expect(getByTestId('confirm-end-round-button')).toBeTruthy());
-            fireEvent.press(getByTestId('confirm-end-round-button') as never);
+            await waitFor(() => expect(getByTestId('end-round-save-button')).toBeTruthy());
+            fireEvent.press(getByTestId('end-round-save-button') as never);
             await waitFor(() => expect(getByTestId('scorecard-done-button')).toBeTruthy());
         };
 

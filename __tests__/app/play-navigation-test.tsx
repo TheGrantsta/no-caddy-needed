@@ -443,7 +443,7 @@ describe('Play screen', () => {
             // });
 
             await waitFor(() => {
-                expect(getByTestId('confirm-end-round-button')).toBeTruthy();
+                expect(getByTestId('end-round-save-button')).toBeTruthy();
             });
 
             expect(queryByText('Hole 19')).toBeNull();

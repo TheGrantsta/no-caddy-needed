@@ -49,6 +49,7 @@ jest.mock('../../hooks/useStyles', () => ({
 jest.mock('../../service/DbService', () => ({
     startRoundService: jest.fn(),
     endRoundService: jest.fn(),
+    deleteRoundService: jest.fn().mockResolvedValue(true),
     addMultiplayerHoleScoresService: jest.fn(),
     getActiveRoundService: jest.fn(),
     getAllRoundHistoryService: jest.fn(),
@@ -1107,6 +1108,30 @@ describe('Play screen', () => {
     });
 
     describe('Ending a round', () => {
+        it('shouldDiscardTheRoundWithoutSavingItWhenDiscardRoundPressed', async () => {
+            const { deleteRoundService } = require('../../service/DbService');
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockEndRound.mockResolvedValue(true);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+            fireEvent.changeText(getByTestId('course-name-input'), 'Augusta');
+            fireEvent.press(getByTestId('start-button'));
+            await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
+
+            fireEvent.press(getByTestId('end-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('end-round-discard-button'));
+            });
+
+            await waitFor(() => {
+                expect(deleteRoundService).toHaveBeenCalledWith(1);
+                expect(mockEndRound).not.toHaveBeenCalled();
+                expect(queryByTestId('end-round-discard-button')).toBeNull();
+            });
+        });
+
+
         it('shows confirm button when End Round is pressed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
@@ -1122,7 +1147,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('end-round-button'));
 
-            expect(getByTestId('confirm-end-round-button')).toBeTruthy();
+            expect(getByTestId('end-round-save-button')).toBeTruthy();
         });
 
         it('does not call endRoundService until confirm is pressed', async () => {
@@ -1160,7 +1185,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('end-round-button'));
             await act(async () => {
-                fireEvent.press(getByTestId('confirm-end-round-button'));
+                fireEvent.press(getByTestId('end-round-save-button'));
             });
 
             await waitFor(() => {
@@ -1185,7 +1210,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('end-round-button'));
             await act(async () => {
-                fireEvent.press(getByTestId('confirm-end-round-button'));
+                fireEvent.press(getByTestId('end-round-save-button'));
             });
 
             await waitFor(() => {
@@ -1207,11 +1232,11 @@ describe('Play screen', () => {
             });
 
             fireEvent.press(getByTestId('end-round-button'));
-            expect(getByTestId('confirm-end-round-button')).toBeTruthy();
+            expect(getByTestId('end-round-save-button')).toBeTruthy();
 
-            fireEvent.press(getByTestId('cancel-end-round-button'));
+            fireEvent.press(getByTestId('end-round-keep-playing-button'));
 
-            expect(queryByTestId('confirm-end-round-button')).toBeNull();
+            expect(queryByTestId('end-round-save-button')).toBeNull();
             expect(getByTestId('end-round-button')).toBeTruthy();
         });
     });
@@ -1315,7 +1340,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('end-round-button'));
             await act(async () => {
-                fireEvent.press(getByTestId('confirm-end-round-button'));
+                fireEvent.press(getByTestId('end-round-save-button'));
             });
         };
 
@@ -1643,7 +1668,7 @@ describe('Play screen', () => {
 
             fireEvent.press(getByTestId('end-round-button'));
             await act(async () => {
-                fireEvent.press(getByTestId('confirm-end-round-button'));
+                fireEvent.press(getByTestId('end-round-save-button'));
             });
 
             await waitFor(() => expect(mockLogEvent).toHaveBeenCalledWith('end_round'));

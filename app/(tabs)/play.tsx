@@ -16,6 +16,7 @@ import ScorecardInlineEditor from '../../components/ScorecardInlineEditor';
 import {
     startRoundService,
     endRoundService,
+    deleteRoundService,
     addMultiplayerHoleScoresService,
     getActiveRoundService,
     getAllRoundHistoryService,
@@ -59,6 +60,7 @@ import { useSectionTransition } from '../../hooks/useSectionTransition';
 import { useToggle } from '../../hooks/useToggle';
 import { useHoleLifecycle } from '../../hooks/useHoleLifecycle';
 import PhaseStats from '../../components/PhaseStats';
+import EndRoundSheet from '../../components/EndRoundSheet';
 import PhasePutting from '../../components/PhasePutting';
 import RoundEntry from '../../components/RoundEntry';
 import HoleNavigationControls from '../../components/HoleNavigationControls';
@@ -512,6 +514,17 @@ export default function Play() {
         setShowEndRoundConfirm(false);
     };
 
+    const handleDiscardRound = async () => {
+        if (!activeRoundId) return;
+        const success = await deleteRoundService(activeRoundId);
+        if (notificationId) {
+            await cancelRoundReminder(notificationId);
+            setNotificationId(null);
+        }
+        resetToIdle();
+        showResult(success, 'Round discarded', 'Failed to discard round');
+    };
+
     const resetToIdle = () => {
         setActiveRoundId(null);
         setCurrentHole(1);
@@ -727,7 +740,7 @@ export default function Play() {
                                     </>
                                 )}
 
-                                {!showEndRoundConfirm && (
+                                {(
                                     <>
                                         <Text style={styles.holeScreen.sectionLabel}>Notes</Text>
                                         <HoleNoteInput
@@ -746,7 +759,7 @@ export default function Play() {
                                 )}
                             </Animated.View>
 
-                            {!showEndRoundConfirm && (
+                            {(
                                 <HoleNavigationControls
                                     currentHole={currentHole}
                                     isLastHole={isLastHole}
@@ -757,29 +770,14 @@ export default function Play() {
                                 />
                             )}
 
-                            {showEndRoundConfirm && (
-                                <View style={{ gap: 16, marginTop: 20 }}>
-                                    <View style={{ alignItems: 'center' }}>
-                                        <Text style={[styles.headerText, { marginBottom: 8 }]}>End round?</Text>
-                                    </View>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 10 }}>
-                                        <TouchableOpacity
-                                            testID="cancel-end-round-button"
-                                            onPress={handleCancelEndRound}
-                                            style={[styles.mediumButton, { backgroundColor: colours.red }]}
-                                        >
-                                            <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Cancel</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            testID="confirm-end-round-button"
-                                            onPress={handleConfirmEndRound}
-                                            style={styles.mediumButton}
-                                        >
-                                            <Text style={{ color: colours.white, fontSize: fontSizes.normal }}>Confirm</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            )}
+                            <EndRoundSheet
+                                visible={showEndRoundConfirm}
+                                holeNumber={currentHole}
+                                holesTotal={18}
+                                onSave={handleConfirmEndRound}
+                                onDiscard={handleDiscardRound}
+                                onKeepPlaying={handleCancelEndRound}
+                            />
                         </View>
                     </Animated.View>
                 )}

@@ -475,6 +475,60 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    endRoundSheet: StyleSheet.create({
+        backdrop: {
+            flex: 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.35)',
+        },
+        sheetContainer: {
+            backgroundColor: c.background,
+            paddingHorizontal: 8,
+            paddingTop: 8,
+            paddingBottom: 24,
+            gap: 8,
+        },
+        group: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            overflow: 'hidden',
+        },
+        header: {
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+            alignItems: 'center',
+        },
+        title: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            fontWeight: '600',
+            textAlign: 'center',
+        },
+        message: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            textAlign: 'center',
+            marginTop: 4,
+        },
+        action: {
+            paddingVertical: 16,
+            alignItems: 'center',
+        },
+        actionText: {
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
+        },
+        divider: {
+            height: StyleSheet.hairlineWidth,
+            backgroundColor: c.tertiary + '66',
+        },
+        keepPlaying: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            paddingVertical: 16,
+            alignItems: 'center',
+        },
+    }),
+
     holeScreen: StyleSheet.create({
         container: {
             width: '100%',

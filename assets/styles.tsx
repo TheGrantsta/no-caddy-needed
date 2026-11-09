@@ -373,6 +373,33 @@ export const createStyles = (c: ThemeColours) => ({
             borderBottomWidth: 0.5,
             borderBottomColor: c.primary,
         },
+        pillContainer: {
+            flexDirection: 'row',
+            backgroundColor: c.tertiary + '26',
+            borderRadius: 8,
+            padding: 2,
+            marginHorizontal: 16,
+            marginTop: 12,
+            marginBottom: 12,
+        },
+        pillItemContainer: {
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: 6,
+            borderRadius: 6,
+        },
+        pillItemSelected: {
+            backgroundColor: c.backgroundLight,
+        },
+        pillItemText: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            fontWeight: '500',
+        },
+        pillItemTextSelected: {
+            fontWeight: '700',
+        },
         subMenuItemContainer: {
             flex: 1,
             alignItems: 'center',
@@ -472,6 +499,122 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             textAlign: 'center',
             marginTop: 24,
+        },
+    }),
+
+    practiceHeader: StyleSheet.create({
+        titleRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 20,
+            paddingTop: 8,
+        },
+        circleButton: {
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        title: {
+            color: c.text,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+        },
+        subtitle: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+            paddingHorizontal: 20,
+            marginTop: 4,
+        },
+    }),
+
+    practiceCards: StyleSheet.create({
+        grid: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            rowGap: 16,
+        },
+        cardSlot: {
+            width: '48%',
+        },
+        cardLink: {
+            width: '100%',
+        },
+        card: {
+            width: '100%',
+            backgroundColor: c.backgroundLight,
+            borderRadius: 18,
+            padding: 16,
+            height: 150,
+            justifyContent: 'space-between',
+        },
+        iconTile: {
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            backgroundColor: c.primary + '1F',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        chevron: {
+            position: 'absolute',
+            top: 16,
+            right: 14,
+        },
+        cardLabel: {
+            color: c.text,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        learnLabelWrap: {
+            paddingHorizontal: 20,
+            marginTop: 8,
+        },
+        learnCard: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 14,
+            marginHorizontal: 16,
+            overflow: 'hidden',
+        },
+        learnRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 12,
+            padding: 12,
+        },
+        learnIcon: {
+            width: 40,
+            height: 40,
+            borderRadius: 10,
+            backgroundColor: c.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        learnText: {
+            flex: 1,
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        points: {
+            paddingLeft: 40,
+            paddingRight: 16,
+            paddingBottom: 14,
+            rowGap: 8,
+        },
+        pointRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 4,
+        },
+        pointText: {
+            color: c.primary,
+            fontSize: fontSizes.smallText,
+            flex: 1,
         },
     }),
 

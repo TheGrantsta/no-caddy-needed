@@ -152,4 +152,34 @@ describe('SubMenu component', () => {
             });
         });
     });
+
+    describe('pill variant', () => {
+        const colours = require('../../assets/colours').default;
+        const { StyleSheet } = require('react-native');
+
+        // Walk up from a menu item's touchable to the segment View that carries the segment styles
+        const segmentOf = (node: any) => {
+            let current = node;
+            while (current && StyleSheet.flatten(current.props.style)?.paddingVertical !== 6) {
+                current = current.parent;
+            }
+            return StyleSheet.flatten(current.props.style);
+        };
+
+        it('shouldShowTheSelectedSegmentAsAWhitePill', () => {
+            const { getByTestId } = render(
+                <SubMenu showSubMenu="practice" selectedItem="tools" handleSubMenu={jest.fn()} variant="pill" />
+            );
+
+            expect(segmentOf(getByTestId('practice-sub-menu-tools')).backgroundColor).toBe(colours.backgroundLight);
+        });
+
+        it('shouldShowTheSelectedSegmentTextInTheNormalTextColour', () => {
+            const { getByText } = render(
+                <SubMenu showSubMenu="practice" selectedItem="tools" handleSubMenu={jest.fn()} variant="pill" />
+            );
+
+            expect(StyleSheet.flatten(getByText('Tools').props.style).color).toBe(colours.text);
+        });
+    });
 });

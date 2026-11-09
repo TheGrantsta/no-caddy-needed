@@ -5,6 +5,8 @@ type Props = {
     showSubMenu: 'practice' | 'perform';
     selectedItem: string;
     handleSubMenu: (arg: string) => void;
+    // 'pill' gives the iOS-style grey track with a white selected pill
+    variant?: 'default' | 'pill';
 }
 
 const allSubMenuItems = [
@@ -17,14 +19,17 @@ const allSubMenuItems = [
     { testId: 'perform-sub-menu-rounds', name: 'rounds', title: 'Rounds' },
 ]
 
-const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {
+const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu, variant = 'default' }: Props) => {
     const styles = useStyles();
+    const pill = variant === 'pill';
     const subMenuItems = allSubMenuItems.filter(item => item.testId.startsWith(showSubMenu));
 
     return (
-        <View style={styles.subMenu.subMenuContainer}>
+        <View style={pill ? styles.subMenu.pillContainer : styles.subMenu.subMenuContainer}>
             {subMenuItems.map((item) => (
-                <View key={item.testId} style={[styles.subMenu.subMenuItemContainer, selectedItem === item.name ? styles.subMenu.subMenuItemContainerSelected : null]}>
+                <View key={item.testId} style={pill
+                    ? [styles.subMenu.pillItemContainer, selectedItem === item.name ? styles.subMenu.pillItemSelected : null]
+                    : [styles.subMenu.subMenuItemContainer, selectedItem === item.name ? styles.subMenu.subMenuItemContainerSelected : null]}>
                     <TouchableOpacity
                         testID={item.testId}
                         onPress={() => handleSubMenu(item.name)}
@@ -32,7 +37,9 @@ const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu }: Props) => {
                         accessibilityLabel={item.title}
                         accessibilityState={{ selected: selectedItem === item.name }}
                     >
-                        <Text style={[styles.subMenu.subMenuItem, selectedItem === item.name ? styles.subMenu.subMenuItemSelected : null]}>
+                        <Text style={pill
+                            ? [styles.subMenu.pillItemText, selectedItem === item.name ? styles.subMenu.pillItemTextSelected : null]
+                            : [styles.subMenu.subMenuItem, selectedItem === item.name ? styles.subMenu.subMenuItemSelected : null]}>
                             {item.title}
                         </Text>
                     </TouchableOpacity>

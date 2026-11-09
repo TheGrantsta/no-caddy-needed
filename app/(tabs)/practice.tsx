@@ -113,8 +113,6 @@ export default function Practice() {
 
   return (
     <GestureHandlerRootView style={styles.flexOne}>
-      <SubMenu showSubMenu='practice' selectedItem={section} handleSubMenu={handleSubMenuWithLogging} />
-
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={[styles.scrollContentContainer, landscapePadding]}
@@ -137,22 +135,18 @@ export default function Practice() {
               <Text style={{ color: colours.primary, fontWeight: '600', marginTop: 4 }}>View reminders</Text>
             </TouchableOpacity>
           )}
-          <View style={styles.header}>
-            <View style={styles.titleRow}>
-              <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"
-                testID="info-button"
-                onPress={handleShowOnboarding}
-              >
-                <MaterialIcons name="info-outline" size={24} color={colours.primary} />
-              </TouchableOpacity>
-              <Text style={[styles.headerText, styles.marginTop]}>
-                Practice
-              </Text>
-            </View>
-            <Text style={[styles.normalText, styles.marginBottom]}>
-              Making practice time effective
-            </Text>
+          <View testID="practice-title-row" style={styles.practiceHeader.titleRow}>
+            <Text style={styles.practiceHeader.title}>Practice</Text>
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"
+              testID="info-button"
+              onPress={handleShowOnboarding}
+              style={styles.practiceHeader.circleButton}
+            >
+              <MaterialIcons name="info-outline" size={22} color={colours.text} />
+            </TouchableOpacity>
           </View>
+          <Text style={styles.practiceHeader.subtitle}>Making practice time effective</Text>
+          <SubMenu showSubMenu='practice' selectedItem={section} handleSubMenu={handleSubMenuWithLogging} variant="pill" />
         </View>
 
         {displaySection('challenges') && (

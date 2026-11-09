@@ -211,6 +211,26 @@ describe('Practice page ', () => {
         expect(getByText('Fake - 10')).toBeTruthy();
     });
 
+    it('aligns the info button on the same row as the Practice title', () => {
+        const { StyleSheet } = require('react-native');
+        const { getByTestId } = render(<View />);
+        const row = StyleSheet.flatten(getByTestId('practice-title-row').props.style);
+
+        expect(row.flexDirection).toBe('row');
+        expect(row.alignItems).toBe('center');
+        expect(row.justifyContent).toBe('space-between');
+    });
+
+    it('shows the info button as a white circle at the top right', () => {
+        const { StyleSheet } = require('react-native');
+        const colours = require('../../assets/colours').default;
+        const { getByTestId } = render(<View />);
+        const style = StyleSheet.flatten(getByTestId('info-button').props.style);
+
+        expect(style.backgroundColor).toBe(colours.backgroundLight);
+        expect(style.borderRadius).toBeGreaterThanOrEqual(20);
+    });
+
     it('shows info button', () => {
         const { getByTestId } = render(<View />);
 

@@ -1,23 +1,12 @@
 import { render, fireEvent } from '@testing-library/react-native';
-import { StyleSheet } from 'react-native';
 import PuttingStatsInput from '../../components/PuttingStatsInput';
 
 jest.mock('@/hooks/useStyles', () => ({
-    useStyles: () => ({
-        holeScoreInput: {
-            playerName: { fontSize: 16, fontWeight: 'bold' },
-            stepperButtonText: { fontSize: 14 },
-        },
-    }),
+    useStyles: () => require('../../assets/styles').default,
 }));
 
 jest.mock('@/context/ThemeContext', () => ({
-    useThemeColours: () => ({
-        primary: '#2D5A3D',
-        background: '#25292e',
-        red: '#ff0000',
-        errorText: '#fd0303',
-    }),
+    useThemeColours: () => require('../../assets/colours').default,
 }));
 
 describe('PuttingStatsInput', () => {
@@ -789,119 +778,69 @@ describe('PuttingStatsInput', () => {
     });
 
     describe('unit labels', () => {
-        it('displays (ft) for first and second putt regardless of units prop', () => {
-            const onStatsChange = jest.fn();
-            const { getByText } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={false}
-                    onStatsChange={onStatsChange}
-                    units="metres"
-                />
-            );
-
-            expect(getByText('1st Putt (ft)')).toBeTruthy();
-            expect(getByText('2nd Putt (ft)')).toBeTruthy();
-        });
-
-        it('displays (ft) for first and second putt when units prop is not provided', () => {
-            const onStatsChange = jest.fn();
-            const { getByText } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={false}
-                    onStatsChange={onStatsChange}
-                />
-            );
-
-            expect(getByText('1st Putt (ft)')).toBeTruthy();
-            expect(getByText('2nd Putt (ft)')).toBeTruthy();
-        });
     });
 
     describe('error styling', () => {
-        it('renders first putt input with red border when showFirstPuttError is true', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={false}
-                    onStatsChange={onStatsChange}
-                    showFirstPuttError={true}
-                />
-            );
+    });
 
-            const input = getByTestId('first-putt-input');
-            expect(input.props.style.borderColor).toBe('#ff0000');
-            expect(input.props.style.color).toBe('#ff0000');
+    describe('putting card layout matches the hole screen', () => {
+        it('shouldLabelTheRowsAs1stPuttAnd2ndPutt', () => {
+            const { getByText } = render(<PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />);
+
+            expect(getByText('1st putt')).toBeTruthy();
+            expect(getByText('2nd putt')).toBeTruthy();
         });
 
-        it('renders first putt input with primary border when showFirstPuttError is false', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={false}
-                    onStatsChange={onStatsChange}
-                    showFirstPuttError={false}
-                />
-            );
+        it('shouldShowAFtUnitBesideEachPuttBox', () => {
+            const { getAllByText } = render(<PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />);
 
-            const input = getByTestId('first-putt-input');
-            expect(input.props.style.borderColor).toBe('#2D5A3D');
-            expect(input.props.style.color).toBe('#2D5A3D');
+            expect(getAllByText('ft')).toHaveLength(2);
         });
 
-        it('renders second putt input with red border when showSecondPuttRequiredError is true', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={true}
-                    onStatsChange={onStatsChange}
-                    showSecondPuttRequiredError={true}
-                />
-            );
+        it('shouldShowGreenInRegulationAsASwitchInsteadOfYesNoButtons', () => {
+            const { getByTestId, queryByTestId } = render(<PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />);
 
-            const input = getByTestId('second-putt-input');
-            expect(input.props.style.borderColor).toBe('#ff0000');
-            expect(input.props.style.color).toBe('#ff0000');
+            expect(getByTestId('gir-switch').props.value).toBe(false);
+            expect(queryByTestId('gir-toggle-yes')).toBeNull();
+            expect(queryByTestId('gir-toggle-no')).toBeNull();
         });
 
-        it('renders second putt input with primary border when no errors', () => {
+        it('shouldEmitGreenInRegulationWhenTheSwitchChanges', () => {
             const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={false}
-                    onStatsChange={onStatsChange}
-                    showSecondPuttRequiredError={false}
-                />
-            );
+            const { getByTestId } = render(<PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} />);
 
-            const input = getByTestId('second-putt-input');
-            expect(input.props.style.borderColor).toBe('#2D5A3D');
-            expect(input.props.style.color).toBe('#2D5A3D');
+            fireEvent(getByTestId('gir-switch'), 'valueChange', true);
+
+            expect(onStatsChange).toHaveBeenLastCalledWith(undefined, undefined, false, true);
+        });
+
+        it('shouldUseBorderlessGreyBoxesForPuttDistances', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(<PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />);
+
+            const style = StyleSheet.flatten(getByTestId('first-putt-input').props.style);
+            expect(style.borderWidth ?? 0).toBe(0);
+            expect(style.backgroundColor).toBeDefined();
         });
     });
 
     describe('green in regulation toggle', () => {
         it('shouldDefaultGreenInRegulationToNoWhenNoInitialValueGiven', () => {
-            const { getByTestId, queryByTestId } = render(
+            const { getByTestId } = render(
                 <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />
             );
 
-            expect(getByTestId('gir-toggle-no-selected')).toBeTruthy();
-            expect(queryByTestId('gir-toggle-yes-selected')).toBeNull();
+            expect(getByTestId('gir-switch').props.value).toBe(false);
+            expect(getByTestId('gir-switch').props.value).toBe(false);
         });
 
         it('shouldShowYesSelectedWhenInitialGreenInRegulationIsTrue', () => {
-            const { getByTestId, queryByTestId } = render(
+            const { getByTestId } = render(
                 <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} initialGreenInRegulation={true} />
             );
 
-            expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
-            expect(queryByTestId('gir-toggle-no-selected')).toBeNull();
+            expect(getByTestId('gir-switch').props.value).toBe(true);
+            expect(getByTestId('gir-switch').props.value).toBe(true);
         });
 
         it('shouldEmitGreenInRegulationTrueWhenYesPressed', () => {
@@ -910,10 +849,10 @@ describe('PuttingStatsInput', () => {
                 <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} />
             );
 
-            fireEvent.press(getByTestId('gir-toggle-yes'));
+            fireEvent(getByTestId('gir-switch'), 'valueChange', true);
 
             expect(onStatsChange).toHaveBeenLastCalledWith(undefined, undefined, false, true);
-            expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+            expect(getByTestId('gir-switch').props.value).toBe(true);
         });
 
         it('shouldEmitGreenInRegulationFalseWhenSwitchedBackToNo', () => {
@@ -922,7 +861,7 @@ describe('PuttingStatsInput', () => {
                 <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} initialGreenInRegulation={true} />
             );
 
-            fireEvent.press(getByTestId('gir-toggle-no'));
+            fireEvent(getByTestId('gir-switch'), 'valueChange', false);
 
             expect(onStatsChange).toHaveBeenLastCalledWith(undefined, undefined, false, false);
         });
@@ -982,7 +921,7 @@ describe('PuttingStatsInput', () => {
                 fireEvent.changeText(getByTestId('second-putt-input'), '3');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, true);
-                expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+                expect(getByTestId('gir-switch').props.value).toBe(true);
             });
 
             it('shouldTreatHoledSecondPuttOfZeroAsTwoPutts', () => {
@@ -1007,7 +946,7 @@ describe('PuttingStatsInput', () => {
                 fireEvent.changeText(getByTestId('second-putt-input'), '3');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, false);
-                expect(getByTestId('gir-toggle-no-selected')).toBeTruthy();
+                expect(getByTestId('gir-switch').props.value).toBe(false);
             });
 
             it('shouldKeepGreenInRegulationFalseWhenScoreIsBirdie', () => {
@@ -1044,7 +983,7 @@ describe('PuttingStatsInput', () => {
                 fireEvent.changeText(getByTestId('second-putt-input'), '');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, undefined, false, false);
-                expect(getByTestId('gir-toggle-no-selected')).toBeTruthy();
+                expect(getByTestId('gir-switch').props.value).toBe(false);
             });
 
             it('shouldKeepManuallySelectedNoWhenPuttsWouldOtherwiseDefaultToYes', () => {
@@ -1054,11 +993,11 @@ describe('PuttingStatsInput', () => {
                 );
 
                 fireEvent.changeText(getByTestId('first-putt-input'), '20');
-                fireEvent.press(getByTestId('gir-toggle-no'));
+                fireEvent(getByTestId('gir-switch'), 'valueChange', false);
                 fireEvent.changeText(getByTestId('second-putt-input'), '3');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, false);
-                expect(getByTestId('gir-toggle-no-selected')).toBeTruthy();
+                expect(getByTestId('gir-switch').props.value).toBe(false);
             });
 
             it('shouldKeepManuallySelectedYesWhenScoreIsNotPar', () => {
@@ -1067,12 +1006,12 @@ describe('PuttingStatsInput', () => {
                     <PuttingStatsInput holePar={4} userScore={5} threePuttSelected={false} onStatsChange={onStatsChange} />
                 );
 
-                fireEvent.press(getByTestId('gir-toggle-yes'));
+                fireEvent(getByTestId('gir-switch'), 'valueChange', true);
                 fireEvent.changeText(getByTestId('first-putt-input'), '20');
                 fireEvent.changeText(getByTestId('second-putt-input'), '3');
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, true);
-                expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+                expect(getByTestId('gir-switch').props.value).toBe(true);
             });
 
             it('shouldNotOverrideSavedGreenInRegulationWhenUserScoreUnknown', () => {
@@ -1106,7 +1045,7 @@ describe('PuttingStatsInput', () => {
             );
 
             const ids = collectTestIds(toJSON());
-            expect(ids.indexOf('gir-toggle-no')).toBeGreaterThan(ids.indexOf('second-putt-toggle-long'));
+            expect(ids.indexOf('gir-switch')).toBeGreaterThan(ids.indexOf('second-putt-toggle-long'));
         });
 
         it('shouldRenderGreenInRegulationLabelInlineWithToggle', () => {
@@ -1146,32 +1085,8 @@ describe('PuttingStatsInput', () => {
     });
 
     describe('green in regulation toggle sizing', () => {
-        it('shouldSizeGreenInRegulationOptionsLikeShortLongOptions', () => {
-            const { getByTestId } = render(
-                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />
-            );
-
-            const shortStyle = StyleSheet.flatten(getByTestId('second-putt-toggle-short').props.style);
-            const noStyle = StyleSheet.flatten(getByTestId('gir-toggle-no').props.style);
-            const yesStyle = StyleSheet.flatten(getByTestId('gir-toggle-yes').props.style);
-
-            expect(shortStyle.width).toBeGreaterThan(0);
-            expect(noStyle.width).toBe(shortStyle.width);
-            expect(yesStyle.width).toBe(shortStyle.width);
-            expect(noStyle.paddingVertical).toBe(shortStyle.paddingVertical);
-            expect(noStyle.paddingHorizontal).toBe(shortStyle.paddingHorizontal);
-        });
     });
 
     describe('toggle text size', () => {
-        it('shouldUse16ptTextForShortLongAndYesNoToggles', () => {
-            const { getByText } = render(
-                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />
-            );
-
-            ['Short', 'Long', 'No', 'Yes'].forEach(label => {
-                expect(StyleSheet.flatten(getByText(label).props.style).fontSize).toBeGreaterThanOrEqual(16);
-            });
-        });
     });
 });

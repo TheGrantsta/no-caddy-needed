@@ -335,7 +335,7 @@ describe('ScorecardInlineEditor', () => {
             fireEvent.press(getByTestId('score-cell-1-1'));
 
             await waitFor(() => {
-                expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+                expect(getByTestId('gir-switch').props.value).toBe(true);
             });
         });
 
@@ -350,9 +350,9 @@ describe('ScorecardInlineEditor', () => {
             );
 
             fireEvent.press(getByTestId('score-cell-1-1'));
-            await waitFor(() => expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy());
+            await waitFor(() => expect(getByTestId('gir-switch').props.value).toBe(true));
 
-            fireEvent.press(getByTestId('gir-toggle-no'));
+            fireEvent(getByTestId('gir-switch'), 'valueChange', false);
             fireEvent.press(getByTestId('save-scorecard-button'));
             await waitFor(() => expect(getByTestId('confirm-save-button')).toBeTruthy());
             fireEvent.press(getByTestId('confirm-save-button'));
@@ -373,7 +373,7 @@ describe('ScorecardInlineEditor', () => {
             );
 
             fireEvent.press(getByTestId('score-cell-1-1'));
-            await waitFor(() => expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy());
+            await waitFor(() => expect(getByTestId('gir-switch').props.value).toBe(true));
 
             fireEvent.press(getByTestId('save-scorecard-button'));
             await waitFor(() => expect(getByTestId('confirm-save-button')).toBeTruthy());

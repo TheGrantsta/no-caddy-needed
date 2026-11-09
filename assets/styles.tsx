@@ -576,6 +576,54 @@ export const createStyles = (c: ThemeColours) => ({
             shadowOffset: { width: 0, height: 4 },
             elevation: 3,
         },
+        puttRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            columnGap: 8,
+        },
+        puttLabel: {
+            flex: 1,
+            color: c.text,
+            fontSize: fontSizes.normal,
+        },
+        puttBox: {
+            width: 84,
+            backgroundColor: c.tertiary + '26',
+            borderRadius: 10,
+            paddingVertical: 10,
+            fontSize: fontSizes.normal,
+            textAlign: 'center',
+        },
+        puttUnit: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+            width: 20,
+        },
+        segment: {
+            flexDirection: 'row',
+            backgroundColor: c.tertiary + '26',
+            borderRadius: 9,
+            padding: 2,
+        },
+        segmentOption: {
+            paddingVertical: 6,
+            paddingHorizontal: 10,
+            borderRadius: 7,
+        },
+        segmentOptionActive: {
+            backgroundColor: c.backgroundLight,
+        },
+        segmentText: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            fontWeight: '500',
+        },
+        segmentTextActive: {
+            color: c.text,
+            fontWeight: '600',
+        },
         sectionHeaderRow: {
             flexDirection: 'row',
             alignItems: 'center',

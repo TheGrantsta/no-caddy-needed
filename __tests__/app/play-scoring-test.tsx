@@ -565,7 +565,7 @@ describe('Play screen', () => {
                 await startRoundOnHoleOne(getByTestId);
                 await advanceToPuttingPhase(getByTestId);
 
-                fireEvent.press(getByTestId('gir-toggle-yes'));
+                fireEvent(getByTestId('gir-switch'), 'valueChange', true);
                 fireEvent.changeText(getByTestId('first-putt-input'), '20');
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));
@@ -589,7 +589,7 @@ describe('Play screen', () => {
                 await startRoundOnHoleOne(getByTestId);
                 await advanceToPuttingPhase(getByTestId);
 
-                expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+                expect(getByTestId('gir-switch').props.value).toBe(true);
                 (getPuttingStatsService as jest.Mock).mockReturnValue(null);
             });
 
@@ -623,7 +623,7 @@ describe('Play screen', () => {
 
                 fireEvent.changeText(getByTestId('first-putt-input'), '20');
                 fireEvent.changeText(getByTestId('second-putt-input'), '3');
-                expect(getByTestId('gir-toggle-yes-selected')).toBeTruthy();
+                expect(getByTestId('gir-switch').props.value).toBe(true);
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));
                 });
@@ -645,7 +645,7 @@ describe('Play screen', () => {
 
                 fireEvent.changeText(getByTestId('first-putt-input'), '20');
                 fireEvent.changeText(getByTestId('second-putt-input'), '3');
-                expect(getByTestId('gir-toggle-no-selected')).toBeTruthy();
+                expect(getByTestId('gir-switch').props.value).toBe(false);
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));
                 });

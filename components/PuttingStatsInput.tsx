@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Text, TouchableOpacity, View, TextInput } from 'react-native';
+import { Switch, Text, TouchableOpacity, View, TextInput } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 
 const MAX_FIRST_PUTT_DISTANCE = 300;
 const MAX_SECOND_PUTT_DISTANCE = 100;
-// Shared by the Short/Long and Green in regulation toggles so every option is the same width
-const TOGGLE_OPTION_WIDTH = 68;
 
 type Props = {
     holePar: number;
@@ -146,171 +144,89 @@ const PuttingStatsInput = ({
         onStatsChange(first, second, secondIsLong, value);
     };
 
+    const boxColour = (error: boolean) => (error ? colours.red : colours.text);
+    const errorText = (text: string, testID: string) => (
+        <Text testID={testID} style={{ color: colours.errorText, fontSize: fontSizes.smallText, paddingHorizontal: 16, paddingBottom: 8 }}>
+            {text}
+        </Text>
+    );
+
     return (
-        <View style={{ paddingVertical: 12, paddingHorizontal: 8 }}>
-            {/* 3-putt Indicator */}
+        <View>
             {threePuttSelected && (
-                <View style={{ marginBottom: 16, alignItems: 'flex-start' }}>
-                    <View style={{ backgroundColor: colours.primary, borderRadius: 8, paddingVertical: 6, paddingHorizontal: 12 }}>
-                        <Text testID="three-putt-indicator" style={{ color: colours.background, fontSize: 12, fontWeight: 'bold' }}>
+                <View style={{ paddingHorizontal: 16, paddingTop: 12, alignItems: 'flex-start' }}>
+                    <View style={{ backgroundColor: colours.primary, borderRadius: 8, paddingVertical: 4, paddingHorizontal: 10 }}>
+                        <Text testID="three-putt-indicator" style={{ color: colours.white, fontSize: 12, fontWeight: 'bold' }}>
                             3-putt
                         </Text>
                     </View>
                 </View>
             )}
 
-            {/* First Putt */}
-            <View style={{ marginBottom: 16 }}>
-                <Text testID="first-putt-label" style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>1st Putt (ft)</Text>
+            {/* 1st putt */}
+            <View style={styles.holeScreen.puttRow}>
+                <Text testID="first-putt-label" style={styles.holeScreen.puttLabel}>1st putt</Text>
                 <TextInput
                     testID="first-putt-input"
                     value={firstPutt}
                     onChangeText={handleFirstPuttChange}
                     keyboardType="number-pad"
                     maxLength={3}
-                    style={{
-                        borderWidth: 1,
-                        borderColor: showFirstPuttError ? colours.red : colours.primary,
-                        borderRadius: 8,
-                        padding: 12,
-                        fontSize: 16,
-                        textAlign: 'center',
-                        color: showFirstPuttError ? colours.red : colours.primary,
-                    }}
-                    placeholder="e.g. 20"
-                    placeholderTextColor={colours.primary}
+                    style={[styles.holeScreen.puttBox, { color: boxColour(showFirstPuttError) }]}
+                    placeholder="0"
+                    placeholderTextColor={colours.tertiary}
                 />
-                {showFirstPuttError && (
-                    <Text testID="first-putt-error" style={{ color: colours.errorText, fontSize: fontSizes.smallText, marginTop: 4 }}>
-                        1st putt distance is required
-                    </Text>
-                )}
+                <Text style={styles.holeScreen.puttUnit}>ft</Text>
             </View>
+            {showFirstPuttError && errorText('1st putt distance is required', 'first-putt-error')}
 
-            {/* Second Putt */}
-            <View style={{ marginBottom: 16 }}>
-                <Text testID="second-putt-label" style={[styles.holeScoreInput.playerName, { marginBottom: 8 }]}>2nd Putt (ft)</Text>
-                <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-                    <TextInput
-                        testID="second-putt-input"
-                        value={secondPutt}
-                        onChangeText={handleSecondPuttChange}
-                        keyboardType="number-pad"
-                        maxLength={3}
-                        style={{
-                            flex: 1,
-                            borderWidth: 1,
-                            borderColor: secondPuttError || showSecondPuttRequiredError ? colours.red : colours.primary,
-                            borderRadius: 8,
-                            padding: 12,
-                            fontSize: 16,
-                            textAlign: 'center',
-                            color: secondPuttError || showSecondPuttRequiredError ? colours.red : colours.primary,
-                        }}
-                        placeholder="0"
-                        placeholderTextColor={colours.primary}
-                    />
-                    <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: colours.primary, borderRadius: 8, overflow: 'hidden' }}>
-                        <TouchableOpacity
-                            testID="second-putt-toggle-short"
-                            onPress={() => handleSecondIsLongChange(false)}
-                            style={{
-                                paddingVertical: 10,
-                                paddingHorizontal: 12,
-                                width: TOGGLE_OPTION_WIDTH,
-                                alignItems: 'center',
-                                backgroundColor: !secondIsLong ? colours.primary : colours.background,
-                            }}
-                        >
-                            <Text
-                                style={[
-                                    styles.holeScoreInput.playerName,
-                                    { marginBottom: 0, fontSize: 16, color: !secondIsLong ? colours.background : colours.primary },
-                                ]}
-                            >
-                                Short
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            testID="second-putt-toggle-long"
-                            onPress={() => handleSecondIsLongChange(true)}
-                            style={{
-                                paddingVertical: 10,
-                                paddingHorizontal: 12,
-                                width: TOGGLE_OPTION_WIDTH,
-                                alignItems: 'center',
-                                backgroundColor: secondIsLong ? colours.primary : colours.background,
-                            }}
-                        >
-                            <Text
-                                style={[
-                                    styles.holeScoreInput.playerName,
-                                    { marginBottom: 0, fontSize: 16, color: secondIsLong ? colours.background : colours.primary },
-                                ]}
-                            >
-                                Long
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
+            <View style={styles.holeScreen.rowDivider} />
+
+            {/* 2nd putt */}
+            <View style={styles.holeScreen.puttRow}>
+                <Text testID="second-putt-label" style={styles.holeScreen.puttLabel}>2nd putt</Text>
+                <View style={styles.holeScreen.segment}>
+                    <TouchableOpacity
+                        testID="second-putt-toggle-short"
+                        onPress={() => handleSecondIsLongChange(false)}
+                        style={[styles.holeScreen.segmentOption, !secondIsLong && styles.holeScreen.segmentOptionActive]}
+                    >
+                        <Text style={[styles.holeScreen.segmentText, !secondIsLong && styles.holeScreen.segmentTextActive]}>Short</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        testID="second-putt-toggle-long"
+                        onPress={() => handleSecondIsLongChange(true)}
+                        style={[styles.holeScreen.segmentOption, secondIsLong && styles.holeScreen.segmentOptionActive]}
+                    >
+                        <Text style={[styles.holeScreen.segmentText, secondIsLong && styles.holeScreen.segmentTextActive]}>Long</Text>
+                    </TouchableOpacity>
                 </View>
-                {secondPuttError && (
-                    <Text testID="second-putt-error" style={{ color: colours.errorText, fontSize: fontSizes.smallText, marginTop: 4 }}>
-                        Short second putt must be shorter than first putt
-                    </Text>
-                )}
-                {showSecondPuttRequiredError && (
-                    <Text testID="second-putt-required-error" style={{ color: colours.errorText, fontSize: fontSizes.smallText, marginTop: 4 }}>
-                        2nd putt distance is required for a 3-putt
-                    </Text>
-                )}
+                <TextInput
+                    testID="second-putt-input"
+                    value={secondPutt}
+                    onChangeText={handleSecondPuttChange}
+                    keyboardType="number-pad"
+                    maxLength={3}
+                    style={[styles.holeScreen.puttBox, { color: boxColour(secondPuttError || showSecondPuttRequiredError) }]}
+                    placeholder="0"
+                    placeholderTextColor={colours.tertiary}
+                />
+                <Text style={styles.holeScreen.puttUnit}>ft</Text>
             </View>
-            {/* Green in Regulation */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <Text testID="gir-label" style={styles.holeScoreInput.playerName}>Green in regulation</Text>
-                <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: colours.primary, borderRadius: 8, overflow: 'hidden' }}>
-                    <TouchableOpacity
-                        testID="gir-toggle-no"
-                        onPress={() => handleGreenInRegulationChange(false)}
-                        style={{
-                            paddingVertical: 10,
-                            paddingHorizontal: 12,
-                            width: TOGGLE_OPTION_WIDTH,
-                            alignItems: 'center',
-                            backgroundColor: !greenInRegulation ? colours.primary : colours.background,
-                        }}
-                    >
-                        <Text
-                            testID={!greenInRegulation ? 'gir-toggle-no-selected' : undefined}
-                            style={[
-                                styles.holeScoreInput.playerName,
-                                { marginBottom: 0, fontSize: 16, color: !greenInRegulation ? colours.background : colours.primary },
-                            ]}
-                        >
-                            No
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        testID="gir-toggle-yes"
-                        onPress={() => handleGreenInRegulationChange(true)}
-                        style={{
-                            paddingVertical: 10,
-                            paddingHorizontal: 12,
-                            width: TOGGLE_OPTION_WIDTH,
-                            alignItems: 'center',
-                            backgroundColor: greenInRegulation ? colours.primary : colours.background,
-                        }}
-                    >
-                        <Text
-                            testID={greenInRegulation ? 'gir-toggle-yes-selected' : undefined}
-                            style={[
-                                styles.holeScoreInput.playerName,
-                                { marginBottom: 0, fontSize: 16, color: greenInRegulation ? colours.background : colours.primary },
-                            ]}
-                        >
-                            Yes
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+            {secondPuttError && errorText('Short second putt must be shorter than first putt', 'second-putt-error')}
+            {showSecondPuttRequiredError && errorText('2nd putt distance is required for a 3-putt', 'second-putt-required-error')}
+
+            <View style={styles.holeScreen.rowDivider} />
+
+            {/* Green in regulation */}
+            <View style={styles.holeScreen.puttRow}>
+                <Text testID="gir-label" style={styles.holeScreen.puttLabel}>Green in regulation</Text>
+                <Switch
+                    testID="gir-switch"
+                    value={greenInRegulation}
+                    onValueChange={handleGreenInRegulationChange}
+                    trackColor={{ false: colours.tertiary, true: colours.primary }}
+                />
             </View>
         </View>
     );

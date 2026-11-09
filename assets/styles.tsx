@@ -486,7 +486,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingHorizontal: 16,
             paddingTop: 12,
             paddingBottom: 20,
-            marginBottom: 16,
+            marginBottom: 0,
         },
         bandTopRow: {
             flexDirection: 'row',
@@ -557,12 +557,13 @@ export const createStyles = (c: ThemeColours) => ({
             letterSpacing: 0.5,
             marginBottom: 8,
             marginLeft: 4,
+            marginTop: 20,
         },
         card: {
             backgroundColor: c.backgroundLight,
             borderRadius: 14,
             overflow: 'hidden',
-            marginBottom: 16,
+            marginBottom: 0,
         },
         noteInput: {
             backgroundColor: c.backgroundLight,
@@ -571,7 +572,7 @@ export const createStyles = (c: ThemeColours) => ({
             minHeight: 120,
             color: c.text,
             fontSize: fontSizes.normal,
-            marginBottom: 16,
+            marginBottom: 0,
         },
         bottomBar: {
             backgroundColor: c.backgroundLight,
@@ -633,10 +634,14 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.text,
             fontWeight: '600',
         },
+        sectionLabelInRow: {
+            marginTop: 0,
+        },
         sectionHeaderRow: {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
+            marginTop: 20,
         },
         playerRow: {
             flexDirection: 'row',
@@ -1880,8 +1885,8 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'space-between',
             alignItems: 'center',
             paddingHorizontal: 4,
-            marginTop: 16,
             marginBottom: 8,
+            marginTop: 20,
         },
         sectionLabel: {
             color: c.text,

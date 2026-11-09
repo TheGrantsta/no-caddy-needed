@@ -468,6 +468,20 @@ describe('Play screen', () => {
             });
         });
 
+        describe('section heading spacing', () => {
+            it('shouldNotAddASecondGapToThePuttingHeadingInsideItsRow', async () => {
+                const { StyleSheet } = require('react-native');
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                const { getByTestId, getByText } = render(<Play />);
+                fireEvent.changeText(getByTestId('course-name-input'), 'Augusta');
+                fireEvent.press(getByTestId('start-button'));
+                await waitFor(() => expect(getByTestId('first-putt-input')).toBeTruthy());
+
+                expect(StyleSheet.flatten(getByText('Putting').props.style).marginTop ?? 0).toBe(0);
+            });
+        });
+
         describe('single hole screen', () => {
             const startFullRound = async (getByTestId: (id: string) => any) => {
                 fireEvent.changeText(getByTestId('course-name-input'), 'Augusta');

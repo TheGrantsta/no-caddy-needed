@@ -658,7 +658,7 @@ export default function Play() {
                                 {!skipStatsFlow && (
                                     <>
                                         <View style={styles.holeScreen.sectionHeaderRow}>
-                                            <Text style={styles.holeScreen.sectionLabel}>Putting</Text>
+                                            <Text style={[styles.holeScreen.sectionLabel, styles.holeScreen.sectionLabelInRow]}>Putting</Text>
                                             <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help" testID="putting-info-button" onPress={() => setShowPuttingInfo(true)} style={{ padding: 4 }}>
                                                 <MaterialIcons name="info-outline" size={20} color={colours.primary} />
                                             </TouchableOpacity>

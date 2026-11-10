@@ -1230,7 +1230,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         bottomBar: {
             backgroundColor: c.backgroundLight,
-            borderRadius: 28,
+            borderRadius: 40,
             padding: 8,
             marginTop: 16,
             marginBottom: 16,
@@ -3029,6 +3029,45 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
+        holeBarRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 6,
+        },
+        holeBarRightGroup: {
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            flexShrink: 1,
+        },
+        holeBarPrevious: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: 'transparent',
+            minHeight: 40,
+            paddingHorizontal: 8,
+            flexShrink: 1,
+        },
+        holeBarPreviousText: {
+            color: c.primary,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+        },
+        holeBarNextButton: {
+            flex: 0,
+            backgroundColor: c.primary,
+            borderRadius: 999,
+            minHeight: 40,
+            paddingVertical: 6,
+            paddingHorizontal: 14,
+            flexGrow: 0,
+            flexShrink: 0,
+            flexBasis: 'auto',
+        },
+        holeBarNextText: {
+            color: c.white,
+            fontSize: fontSizes.smallText,
+        },
         endRoundLink: {
             color: c.red,
             fontSize: fontSizes.normal,
@@ -3981,6 +4020,43 @@ export const createStyles = (c: ThemeColours) => ({
         rowValue: {
             color: c.black,
             fontSize: fontSizes.normal,
+        },
+    }),
+
+    windPopover: StyleSheet.create({
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 28,
+            paddingHorizontal: 20,
+            paddingVertical: 20,
+            alignItems: 'center',
+            marginHorizontal: 16,
+            shadowColor: c.black,
+            shadowOpacity: 0.15,
+            shadowRadius: 16,
+            shadowOffset: { width: 0, height: 6 },
+            elevation: 8,
+        },
+        title: {
+            color: c.black,
+            fontSize: fontSizes.subHeader,
+            fontWeight: '700',
+            marginTop: 12,
+            textAlign: 'center',
+        },
+        summary: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginTop: 4,
+            textAlign: 'center',
+        },
+        pointer: {
+            width: 18,
+            height: 18,
+            backgroundColor: c.backgroundLight,
+            transform: [{ rotate: '45deg' }],
+            alignSelf: 'center',
+            marginTop: -9,
         },
     }),
 

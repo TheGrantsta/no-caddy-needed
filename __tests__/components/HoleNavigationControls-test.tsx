@@ -10,8 +10,6 @@ jest.mock('../../hooks/useStyles', () => ({
     useStyles: () => require('../../assets/styles').default,
 }));
 
-jest.mock('../../components/WindDisplay', () => () => null);
-
 const baseProps = {
     currentHole: 5,
     isLastHole: false,
@@ -61,6 +59,15 @@ describe('HoleNavigationControls', () => {
         expect(queryByTestId('previous-hole-button')).toBeNull();
     });
 
+    it('shouldNotShowAWindButtonInTheHoleBar', () => {
+        const { queryByTestId } = render(
+            <HoleNavigationControls {...baseProps} {...({ wind: { directionFrom: 270, speedMph: 10 }, heading: 0 } as object)} />
+        );
+
+        expect(queryByTestId('wind-pill-button')).toBeNull();
+        expect(queryByTestId('next-hole-button')).toBeTruthy();
+    });
+
     describe('hole number labels', () => {
         it('shouldLabelPreviousWithOnlyThePreviousHoleNumber', () => {
             const { getByText } = render(<HoleNavigationControls {...baseProps} currentHole={5} />);
@@ -79,6 +86,89 @@ describe('HoleNavigationControls', () => {
 
             expect(getByText('Finish')).toBeTruthy();
             expect(queryByText(/Hole 6/)).toBeNull();
+        });
+
+        it('shouldKeepTheHoleBarLabelsOnOneLine', () => {
+            const { getByText } = render(<HoleNavigationControls {...baseProps} />);
+
+            expect(getByText('Hole 4').props.numberOfLines).toBe(1);
+            expect(getByText('Hole 6').props.numberOfLines).toBe(1);
+        });
+
+        it('shouldSetTheHoleBarLabelsAtTheSmallTextSize', () => {
+            const fontSizes = require('../../assets/font-sizes').default;
+            const { StyleSheet } = require('react-native');
+            const { getByText } = render(<HoleNavigationControls {...baseProps} />);
+
+            expect(StyleSheet.flatten(getByText('Hole 4').props.style).fontSize).toBe(fontSizes.smallText);
+            expect(StyleSheet.flatten(getByText('Hole 6').props.style).fontSize).toBe(fontSizes.smallText);
+        });
+
+        it('shouldGiveThePreviousHoleButtonNoBackgroundColour', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(<HoleNavigationControls {...baseProps} />);
+
+            expect(StyleSheet.flatten(getByTestId('previous-hole-button').props.style).backgroundColor).toBe('transparent');
+        });
+    });
+
+    describe('next hole button', () => {
+        it('shouldSizeTheNextHoleButtonToItsLabelInsteadOfStretching', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(<HoleNavigationControls {...baseProps} />);
+
+            const next = StyleSheet.flatten(getByTestId('next-hole-button').props.style);
+            expect(next.flexGrow).toBe(0);
+            expect(next.flexBasis).toBe('auto');
+        });
+
+        it('shouldKeepTheNextHoleButtonAtItsLabelWidthWhenSpaceRunsShort', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(<HoleNavigationControls {...baseProps} />);
+
+            expect(StyleSheet.flatten(getByTestId('next-hole-button').props.style).flexShrink).toBe(0);
+        });
+
+        it('shouldGiveTheNextHoleButtonFullyCurvedCorners', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(<HoleNavigationControls {...baseProps} />);
+
+            expect(StyleSheet.flatten(getByTestId('next-hole-button').props.style).borderRadius).toBeGreaterThanOrEqual(100);
+        });
+
+        it('shouldGiveTheNextHoleButtonAGreenBackgroundWithWhiteText', () => {
+            const colours = require('../../assets/colours').default;
+            const { StyleSheet } = require('react-native');
+            const { getByTestId, getByText } = render(<HoleNavigationControls {...baseProps} />);
+
+            const next = StyleSheet.flatten(getByTestId('next-hole-button').props.style);
+            expect(next.backgroundColor).toBe(colours.primary);
+            expect(StyleSheet.flatten(getByText('Hole 6').props.style).color).toBe(colours.white);
+        });
+
+        it('shouldClearTheSharedFlexOneSoTheButtonIsNotSizedToZeroWidth', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(<HoleNavigationControls {...baseProps} />);
+
+            // The shared button style sets flex: 1 (flex-basis 0), which can squeeze the label out of view
+            expect(StyleSheet.flatten(getByTestId('next-hole-button').props.style).flex).toBe(0);
+        });
+
+        it('shouldKeepTheNextHoleButtonSmall', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(<HoleNavigationControls {...baseProps} />);
+
+            expect(StyleSheet.flatten(getByTestId('next-hole-button').props.style).minHeight).toBeLessThanOrEqual(40);
+        });
+    });
+
+    describe('hole bar shape', () => {
+        it('shouldGiveTheHoleBarAFullyRoundedCapsuleShape', () => {
+            const { StyleSheet } = require('react-native');
+            const { getByTestId } = render(<HoleNavigationControls {...baseProps} />);
+
+            const bar = StyleSheet.flatten(getByTestId('hole-nav-bar').props.style);
+            expect(bar.borderRadius).toBeGreaterThanOrEqual(40);
         });
     });
 

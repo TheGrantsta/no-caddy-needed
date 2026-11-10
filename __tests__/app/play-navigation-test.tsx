@@ -256,30 +256,32 @@ describe('Play screen', () => {
             );
         });
 
-        it('shouldGiveNextHoleButtonAtLeast48ptHeight', async () => {
+        it('keepsA48ptTouchTargetAroundASmallNextHoleButton', async () => {
             const utils = render(<Play />);
             await startRound(utils);
 
-            const style = StyleSheet.flatten(utils.getByTestId('next-hole-button').props.style);
-            expect(style.minHeight).toBeGreaterThanOrEqual(48);
+            // The button is drawn small, so the extra touch area comes from hitSlop: 40pt tall plus 4pt either side
+            const button = utils.getByTestId('next-hole-button');
+            const style = StyleSheet.flatten(button.props.style);
+            expect(style.minHeight).toBeLessThanOrEqual(40);
+            expect(button.props.hitSlop.top + button.props.hitSlop.bottom + style.minHeight).toBeGreaterThanOrEqual(48);
         });
 
-        it('shows a strong skip-next icon on the Next hole button', async () => {
+        it('shows a chevron-right on the Next hole button', async () => {
             const utils = render(<Play />);
             await startRound(utils);
 
             const button = utils.UNSAFE_getByProps({ testID: 'next-hole-button' });
-            expect(button.findByProps({ name: 'skip-next' })).toBeTruthy();
+            expect(button.findByProps({ name: 'chevron-right' })).toBeTruthy();
         });
 
-        it('gives the Next hole button a primary-coloured border', async () => {
+        it('shows the Next hole button with a green background', async () => {
             const colours = require('../../assets/colours').default;
             const utils = render(<Play />);
             await startRound(utils);
 
             const style = StyleSheet.flatten(utils.getByTestId('next-hole-button').props.style);
-            expect(style.borderWidth).toBeGreaterThan(0);
-            expect(style.borderColor).toBe(colours.primary);
+            expect(style.backgroundColor).toBe(colours.primary);
         });
 
         it('shows an End button in the green header', async () => {
@@ -304,14 +306,13 @@ describe('Play screen', () => {
             expect(utils.queryByTestId('previous-hole-button')).toBeNull();
         });
 
-        it('renders Previous hole as a green-bordered button with a skip-previous icon after hole 1', async () => {
-            const colours = require('../../assets/colours').default;
+        it('renders Previous hole as a plain label with a chevron-left icon after hole 1', async () => {
             const utils = await resumeAtHole(1); // resumes on hole 2
 
             const button = utils.UNSAFE_getByProps({ testID: 'previous-hole-button' });
             const style = StyleSheet.flatten(button.props.style);
-            expect(style.borderColor).toBe(colours.primary);
-            expect(button.findByProps({ name: 'skip-previous' })).toBeTruthy();
+            expect(style.borderWidth ?? 0).toBe(0);
+            expect(button.findByProps({ name: 'chevron-left' })).toBeTruthy();
         });
 
         describe('Previous button behavior and label', () => {

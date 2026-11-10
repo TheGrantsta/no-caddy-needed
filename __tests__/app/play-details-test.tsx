@@ -181,16 +181,16 @@ describe('Play screen', () => {
             mockWindValue = { directionFrom: 270, speedMph: 12 };
         });
 
-        it('showsWindDisplayCardWithSpeedDuringActiveRoundScorePhase', async () => {
+        it('doesNotShowAWindButtonInTheHoleBarDuringActiveRoundScorePhase', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
-            const { getByTestId } = render(<Play />);
+            const { getByTestId, queryByTestId } = render(<Play />);
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
-            await waitFor(() => expect(getByTestId('wind-display-container')).toBeTruthy());
-            expect(getByTestId('wind-speed-text-large')).toHaveTextContent('12 mph');
+            await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
+            expect(queryByTestId('wind-pill-button')).toBeNull();
         });
 
         it('refreshesWindWhenAdvancingHole', async () => {
@@ -204,19 +204,6 @@ describe('Play screen', () => {
 
             await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
             expect(mockRefreshWind).toHaveBeenCalled();
-        });
-
-        it('hidesWindDisplayCardWhenNoWindData', async () => {
-            mockWindValue = null;
-            mockStartRound.mockResolvedValue(1);
-            mockAddRoundPlayers.mockResolvedValue([1]);
-
-            const { getByTestId, queryByTestId } = render(<Play />);
-            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
-            fireEvent.press(getByTestId('start-button'));
-
-            await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
-            expect(queryByTestId('wind-display-container')).toBeNull();
         });
     });
 

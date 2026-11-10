@@ -710,6 +710,18 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             fontVariant: ['tabular-nums'],
         },
+        wedgeCells: {
+            flexDirection: 'row',
+            gap: 12,
+        },
+        wedgeCell: {
+            width: 64,
+            alignItems: 'flex-end',
+        },
+        wedgeLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallestText,
+        },
         footnote: {
             color: c.tertiary,
             fontSize: fontSizes.smallText,

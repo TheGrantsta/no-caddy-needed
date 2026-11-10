@@ -91,4 +91,25 @@ describe('BagSheet', () => {
 
         expect(queryByText('Yardages')).toBeNull();
     });
+
+    it('shouldAlignEachWedgeMeasurementInAFixedRightAlignedColumn', () => {
+        const { StyleSheet } = require('react-native');
+        const data = {
+            distanceNames: ['Waist', 'Rib'],
+            clubs: [
+                { club: '54', distances: [{ name: 'Waist', distance: 55 }, { name: 'Rib', distance: 0 }] },
+                { club: '58', distances: [{ name: 'Waist', distance: 0 }, { name: 'Rib', distance: 65 }] },
+            ],
+        };
+        const { getByTestId } = renderSheet({ wedgeChart: data as any });
+        fireEvent.press(getByTestId('bag-sheet-tab-wedges'));
+
+        const firstWaist = StyleSheet.flatten(getByTestId('wedge-cell-54-Waist').props.style);
+        const secondWaist = StyleSheet.flatten(getByTestId('wedge-cell-58-Waist').props.style);
+        expect(firstWaist.width).toBeGreaterThan(0);
+        expect(secondWaist.width).toBe(firstWaist.width);
+        expect(firstWaist.alignItems).toBe('flex-end');
+        expect(getByTestId('wedge-value-54-Waist')).toHaveTextContent('55');
+        expect(getByTestId('wedge-value-58-Rib')).toHaveTextContent('65');
+    });
 });

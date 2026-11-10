@@ -75,9 +75,16 @@ const BagSheet = ({ visible, onClose, clubDistances, wedgeChart, units }: Props)
                             {wedgeChart.clubs.map((wedge, index) => (
                                 <View key={`${wedge.club}-${index}`} style={[s.row, index > 0 && s.rowDivider]}>
                                     <Text style={s.clubText}>{wedge.club}</Text>
-                                    <Text style={s.valueText}>
-                                        {wedge.distances.map(d => `${d.name} ${yardsToDisplayUnit(d.distance, units)}`).join('  ·  ')}
-                                    </Text>
+                                    <View style={s.wedgeCells}>
+                                        {wedge.distances.map(d => (
+                                            <View key={d.name} testID={`wedge-cell-${wedge.club}-${d.name}`} style={s.wedgeCell}>
+                                                <Text style={s.wedgeLabel}>{d.name}</Text>
+                                                <Text testID={`wedge-value-${wedge.club}-${d.name}`} style={s.valueText}>
+                                                    {yardsToDisplayUnit(d.distance, units)}
+                                                </Text>
+                                            </View>
+                                        ))}
+                                    </View>
                                 </View>
                             ))}
                         </View>

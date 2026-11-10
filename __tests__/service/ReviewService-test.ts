@@ -26,20 +26,20 @@ describe('maybeRequestRoundReviewService', () => {
         expect(mockRequestReview).not.toHaveBeenCalled();
     });
 
-    it('requestsReviewAfterTheFirstRound', async () => {
+    it('doesNotRequestReviewAfterTheFirstRound', async () => {
         const result = await maybeRequestRoundReviewService(1);
-        expect(mockRequestReview).toHaveBeenCalled();
-        expect(result).toBe(true);
+        expect(mockRequestReview).not.toHaveBeenCalled();
+        expect(result).toBe(false);
     });
 
-    it('requestsReviewEverySixthRoundAfterTheFirst', async () => {
+    it('requestsReviewFromTheSeventhRoundThenEverySixthRound', async () => {
         expect(await maybeRequestRoundReviewService(7)).toBe(true);
         expect(await maybeRequestRoundReviewService(13)).toBe(true);
         expect(await maybeRequestRoundReviewService(19)).toBe(true);
     });
 
     it('doesNotRequestReviewOnInterveningRounds', async () => {
-        for (const count of [2, 3, 4, 5, 6, 8, 12]) {
+        for (const count of [1, 2, 3, 4, 5, 6, 8, 12]) {
             mockRequestReview.mockClear();
             expect(await maybeRequestRoundReviewService(count)).toBe(false);
             expect(mockRequestReview).not.toHaveBeenCalled();

@@ -35,7 +35,7 @@ appId: com.grantsta.golf.nocaddyneeded
 
 # Screenshot 2: Play screen (tap Play link)
 - tapOn:
-    id: "home-play-link"
+    id: "tab-play"
     index: 0
 
 # Complete the onboarding flow - step 1
@@ -54,45 +54,144 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 30000
 - takeScreenshot: .maestro/screenshots/02-play
 
+# Enter the course name before starting the round
+- extendedWaitUntil:
+    visible:
+      id: "course-name-input"
+    timeout: 5000
+- tapOn:
+    id: "course-name-input"
+- inputText: "Screenshot Test Course"
+- hideKeyboard
+
 # Screenshot 3: Start round (use testID tap instead of text)
 - tapOn:
-    id: "start-round-button"
+    id: "start-button"
 - extendedWaitUntil:
     visible: "You"
     timeout: 10000
 - takeScreenshot: .maestro/screenshots/02A-play-start-round
 
-# Screenshot 4: Distances
-- tapOn: 
-    text: "Distances"
-    index: 0
+# Complete one hole with stats so the round has data for Stats.
+# The putting card and the deadly sins sit on the same scrolling page, so fill them in before one scroll to Next.
+
+# Enter the first putt
+- scrollUntilVisible:
+    element:
+      id: "first-putt-input"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "first-putt-input"
+- tapOn:
+    id: "first-putt-input-option-1"
+
+# Select the deadly sin "Trouble off tee"
+- scrollUntilVisible:
+    element:
+      id: "7deadly-sins-toggle-trouble-off-tee"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "7deadly-sins-toggle-trouble-off-tee"
+
+# Select Driver for the club off the tee, if the club picker is on screen (no clubs are saved yet on a fresh install)
+- runFlow:
+    when:
+      visible:
+        id: "club-picker-dropdown-toggle"
+    commands:
+      - tapOn:
+          id: "club-picker-dropdown-toggle"
+      - runFlow:
+          when:
+            visible:
+              id: "club-picker-option-Driver"
+          commands:
+            - tapOn:
+                id: "club-picker-option-Driver"
+      - runFlow:
+          when:
+            notVisible:
+              id: "club-picker-option-Driver"
+          commands:
+            - tapOn:
+                id: "club-picker-dropdown-toggle"
+
+# Save the hole with a single scroll to Next
+- scrollUntilVisible:
+    element:
+      id: "next-hole-button"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "next-hole-button"
+
+# End the round and save it (the tab bar is hidden during a round)
+- extendedWaitUntil:
+    visible:
+      id: "end-round-button"
+    timeout: 5000
+- tapOn:
+    id: "end-round-button"
+- extendedWaitUntil:
+    visible:
+      id: "end-round-save-button"
+    timeout: 5000
+- tapOn:
+    id: "end-round-save-button"
+# The summary scrolls, so bring the Done button into view first
+- scrollUntilVisible:
+    element:
+      id: "round-summary-done-button"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "round-summary-done-button"
+
+# Screenshot 4: Distances (opened from My Bag)
+- tapOn:
+    id: "tab-my-bag"
+- tapOn:
+    id: "bag-row-distances"
 
 # Complete the onboarding flow (single step)
 - tapOn:
     text: ".*Done.*"
     index: 0
 
-# Screenshot 4: Play screen (tap Play link)
 - extendedWaitUntil:
     visible: "Distances"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/02B-play-distances
-
-# Screenshot 5: Wedge Chart
 - tapOn:
-    text: "Wedge chart"
-    index: 0
+    id: "distances-back-button"
+# Confirm the back tap really returned to My Bag before moving on
+- extendedWaitUntil:
+    visible:
+      id: "bag-row-wedge-chart"
+    timeout: 5000
+
+# Screenshot 5: Wedge Chart (opened from My Bag)
+- tapOn:
+    id: "bag-row-wedge-chart"
 
 # Complete the onboarding flow (single step)
 - tapOn:
     text: ".*Done.*"
     index: 0
 
-# Screenshot 5: Wedge Chart
 - extendedWaitUntil:
     visible: "Carry distance, not total"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/02C-play-wedge-chart
+- tapOn:
+    id: "wedge-back-button"
+# Confirm the back tap really returned to My Bag before moving on
+- extendedWaitUntil:
+    visible:
+      id: "bag-row-wedge-chart"
+    timeout: 5000
 
 # Return: Home screen
 - tapOn:
@@ -104,7 +203,7 @@ appId: com.grantsta.golf.nocaddyneeded
 
 # Screenshot 5: Practice
 - tapOn:
-    id: "home-practice-link"
+    id: "tab-practice"
 
 # Complete the onboarding flow (single step)
 - tapOn:
@@ -119,9 +218,10 @@ appId: com.grantsta.golf.nocaddyneeded
 
 # Screenshot 6: Tools
 - tapOn:
-    text: ".*tools.*"
+    id: "practice-sub-menu-tools"
 - extendedWaitUntil:
-    visible: "Practice tools"
+    visible:
+      id: "tool-link-tempo"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/03B-practice-tools
 
@@ -142,7 +242,7 @@ appId: com.grantsta.golf.nocaddyneeded
 
 # Screenshot 8: Perform
 - tapOn:
-    id: "home-perform-link"
+    id: "tab-perform"
 
 # Dismiss the "Perform guide" onboarding overlay
 - extendedWaitUntil:
@@ -155,23 +255,33 @@ appId: com.grantsta.golf.nocaddyneeded
     text: ".*Done.*"
     index: 0
 
-# Wait for Performance tab to render - just skip the text check and screenshot directly
+# Stats opens on Rounds: wait for it, then screenshot
 - extendedWaitUntil:
-    visible: "Deadly Sins"
+    visible:
+      id: "perform-sub-menu-rounds"
     timeout: 15000
+- takeScreenshot: .maestro/screenshots/04-perform-rounds
+
+# Switch to Sins (the Deadly Sins view) and wait for its heading
+- tapOn:
+    id: "perform-sub-menu-sins"
+- extendedWaitUntil:
+    visible: "Deadly sins"
+    timeout: 10000
 - takeScreenshot: .maestro/screenshots/04-perform-options
 
 # Screenshot 9: Pros menu
 - tapOn: "Putting"
 - extendedWaitUntil:
-    visible: "Complete a round to see stats."
+    visible: "1 ft"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/04A-perform-putting
 
 # Screenshot 10: Proximity menu
 - tapOn: "Proximity"
 - extendedWaitUntil:
-    visible: "Complete a round to see stats."
+    visible:
+      id: "proximity-heading"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/04A-perform-proximity
 
@@ -198,10 +308,7 @@ appId: com.grantsta.golf.nocaddyneeded
     text: ".*Done.*"
     index: 0
 
-# Tap the System tab to show Notifications
-- tapOn:
-    id: "settings-tab-system"
-
+# Settings is a single page now (no tabs): wait for the System controls
 - extendedWaitUntil:
     visible: "Notifications"
     timeout: 5000

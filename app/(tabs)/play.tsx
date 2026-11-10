@@ -616,7 +616,7 @@ export default function Play() {
     const handleSummaryDone = async () => {
         setRoundSummary(null);
         resetToIdle();
-        // Ask for a review after the 1st completed round, then every 6th (1, 7, 13, …).
+        // Ask for a review from the 7th completed round, then every 6th (7, 13, 19, …).
         const roundCount = getAllRoundHistoryService().length;
         const prompted = await maybeRequestRoundReviewService(roundCount);
         if (prompted) {

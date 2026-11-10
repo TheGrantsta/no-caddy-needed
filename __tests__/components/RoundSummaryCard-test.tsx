@@ -1,0 +1,49 @@
+import React from 'react';
+import { render } from '@testing-library/react-native';
+import RoundSummaryCard from '../../components/RoundSummaryCard';
+
+jest.mock('../../context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+}));
+
+jest.mock('../../hooks/useStyles', () => ({
+    useStyles: () => require('../../assets/styles').default,
+}));
+
+const base = { holesPlayed: 5, totalScore: 20, totalPar: 20, putts: 7, threePutts: 1, penalties: 1 };
+
+describe('RoundSummaryCard', () => {
+    it('shouldShowHowManyHolesWerePlayed', () => {
+        const { getByText } = render(<RoundSummaryCard {...base} />);
+
+        expect(getByText('You · 5 holes')).toBeTruthy();
+    });
+
+    it('shouldShowTheTotalScoreLargeWithTheDifferenceFromPar', () => {
+        const { getByTestId, getByText } = render(<RoundSummaryCard {...base} />);
+
+        expect(getByTestId('round-summary-score')).toHaveTextContent('20');
+        expect(getByText('Even par')).toBeTruthy();
+    });
+
+    it('shouldShowHowManyOverParTheRoundWas', () => {
+        const { getByText } = render(<RoundSummaryCard {...base} totalScore={23} />);
+
+        expect(getByText('3 over par')).toBeTruthy();
+    });
+
+    it('shouldShowHowManyUnderParTheRoundWas', () => {
+        const { getByText } = render(<RoundSummaryCard {...base} totalScore={18} />);
+
+        expect(getByText('2 under par')).toBeTruthy();
+    });
+
+    it('shouldShowPuttsThreePuttsAndPenaltiesAsStatTiles', () => {
+        const { getByText } = render(<RoundSummaryCard {...base} />);
+
+        expect(getByText('Putts')).toBeTruthy();
+        expect(getByText('7')).toBeTruthy();
+        expect(getByText('3-putts')).toBeTruthy();
+        expect(getByText('Penalties')).toBeTruthy();
+    });
+});

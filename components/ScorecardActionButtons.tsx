@@ -1,36 +1,26 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import CtaButton from './CtaButton';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 
 interface Props {
     isEditing: boolean;
     showSaveConfirm: boolean;
-    showDeleteConfirm: boolean;
-    onEdit: () => void;
     onDelete: () => void;
     onCancelEdit: () => void;
     onSave: () => void;
     onCancelSave: () => void;
     onConfirmSave: () => void;
-    onCancelDelete: () => void;
-    onConfirmDelete: () => void;
 }
 
 export default function ScorecardActionButtons({
     isEditing,
     showSaveConfirm,
-    showDeleteConfirm,
-    onEdit,
     onDelete,
     onCancelEdit,
     onSave,
     onCancelSave,
     onConfirmSave,
-    onCancelDelete,
-    onConfirmDelete,
 }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
@@ -38,58 +28,18 @@ export default function ScorecardActionButtons({
     return (
         <>
             {/* Spacer fills gap when not editing/deleting */}
-            {!isEditing && !showDeleteConfirm && <View style={{ flexGrow: 1 }} />}
-
-            {/* Edit button */}
-            {!isEditing && !showDeleteConfirm && (
-                <View style={[styles.headerContainer, { paddingHorizontal: 16 }]}>
-                    <CtaButton
-                        testID="edit-scorecard-button"
-                        label="Edit"
-                        icon="edit"
-                        onPress={onEdit}
-                    />
-                </View>
-            )}
+            {!isEditing && <View style={{ flexGrow: 1 }} />}
 
             {/* Delete button */}
-            {!isEditing && !showDeleteConfirm && (
-                <View style={styles.headerContainer}>
-                    <TouchableOpacity
-                        testID="delete-round-button"
-                        style={styles.tertiaryLink}
-                        onPress={onDelete}
-                    >
-                        <MaterialIcons name="delete-outline" size={20} color={colours.red} />
-                        <Text style={styles.tertiaryLinkText}>Delete round</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-
-            {/* Delete confirmation */}
-            {!isEditing && showDeleteConfirm && (
-                <View style={{ gap: 16 }}>
-                    <View style={{ alignItems: 'center', gap: 8 }}>
-                        <Text style={[styles.headerText]}>Delete round?</Text>
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity
-                            testID="cancel-delete-button"
-                            onPress={onCancelDelete}
-                            style={[styles.mediumButton, { backgroundColor: colours.red }]}
-                        >
-                            <Text style={styles.buttonText}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            testID="confirm-delete-button"
-                            onPress={onConfirmDelete}
-                            style={styles.mediumButton}
-                        >
-                            <Text style={styles.buttonText}>Confirm</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <Text style={[styles.subHeaderText, { color: colours.text, textAlign: 'center' }]}>This cannot be undone</Text>
-                </View>
+            {!isEditing && (
+                <TouchableOpacity
+                    testID="delete-round-button"
+                    accessibilityRole="button"
+                    onPress={onDelete}
+                    style={styles.roundDetail.deleteCard}
+                >
+                    <Text style={styles.roundDetail.deleteText}>Delete round</Text>
+                </TouchableOpacity>
             )}
 
             {/* Edit mode: cancel/save */}

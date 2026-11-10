@@ -1,4 +1,4 @@
-import { describeDrill, formatDrillDate, groupDrillsByWeek, parseDrillDate } from '../../utils/drillHistory';
+import { describeDrill, formatDrillDate, formatLongDate, groupDrillsByWeek, parseDrillDate } from '../../utils/drillHistory';
 
 // SQLite's CURRENT_TIMESTAMP stores UTC as 'YYYY-MM-DD HH:MM:SS' (no T, no Z)
 const sqliteUtc = (date: Date) => date.toISOString().replace('T', ' ').slice(0, 19);
@@ -97,5 +97,15 @@ describe('groupDrillsByWeek', () => {
 
     it('shouldReturnTwoEmptyGroupsWhenThereAreNoDrills', () => {
         expect(groupDrillsByWeek([], now)).toEqual({ thisWeek: [], previously: [] });
+    });
+});
+
+describe('formatLongDate', () => {
+    it('shouldShowTheWeekdayDayMonthAndYearOfADate', () => {
+        expect(formatLongDate(new Date(2026, 10, 3, 10).toISOString())).toMatch(/^Tue 3 Nov 2026$/);
+    });
+
+    it('shouldReturnNullForAValueThatIsNotADate', () => {
+        expect(formatLongDate('garbage')).toBeNull();
     });
 });

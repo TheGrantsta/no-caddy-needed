@@ -3362,6 +3362,152 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    roundDetail: StyleSheet.create({
+        summaryCard: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 24,
+            marginHorizontal: 16,
+            marginTop: 8,
+            padding: 20,
+        },
+        summaryMeta: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+        },
+        scoreRow: {
+            flexDirection: 'row',
+            alignItems: 'baseline',
+            columnGap: 12,
+            marginTop: 4,
+        },
+        scoreText: {
+            color: c.black,
+            fontSize: 64,
+            fontWeight: '700',
+            lineHeight: 70,
+        },
+        toParText: {
+            color: c.primary,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+        },
+        tileRow: {
+            flexDirection: 'row',
+            columnGap: 10,
+            marginTop: 16,
+        },
+        tile: {
+            flex: 1,
+            backgroundColor: '#F3F3F5',
+            borderRadius: 16,
+            padding: 12,
+        },
+        tileLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+        },
+        tileValue: {
+            color: c.black,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            marginTop: 2,
+        },
+        sectionLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            letterSpacing: 1,
+            marginHorizontal: 20,
+            marginTop: 24,
+            marginBottom: 10,
+        },
+        tableCard: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            marginHorizontal: 16,
+            overflow: 'hidden',
+        },
+        tableRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 12,
+            paddingVertical: 10,
+        },
+        tableHeaderRow: {
+            backgroundColor: '#F7F7F9',
+        },
+        youRow: {
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: '#E0E0E0',
+        },
+        rowLabel: {
+            width: 44,
+            fontSize: fontSizes.smallText,
+        },
+        cell: {
+            flex: 1,
+            textAlign: 'center',
+            fontSize: fontSizes.smallText,
+        },
+        cellStack: {
+            flex: 1,
+            alignItems: 'center',
+        },
+        totalCell: {
+            width: 36,
+            textAlign: 'center',
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+        },
+        headerText: {
+            color: c.black,
+            fontWeight: '600',
+        },
+        parText: {
+            color: c.tertiary,
+        },
+        youText: {
+            color: c.black,
+            fontWeight: 'bold',
+        },
+        youScore: {
+            color: c.black,
+            fontWeight: 'bold',
+        },
+        sinDot: {
+            width: 6,
+            height: 6,
+            borderRadius: 3,
+            marginTop: 4,
+            backgroundColor: '#B5651D',
+        },
+        legendRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 8,
+            marginHorizontal: 20,
+            marginTop: 10,
+        },
+        legendText: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+        },
+        deleteCard: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            marginHorizontal: 16,
+            marginTop: 24,
+            height: 56,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        deleteText: {
+            color: c.red,
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
+            textAlign: 'center',
+        },
+    }),
+
     settingsSheet: StyleSheet.create({
         headerRow: {
             flexDirection: 'row',

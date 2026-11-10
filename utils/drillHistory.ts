@@ -58,3 +58,11 @@ export const groupDrillsByWeek = <T extends DrillRecord>(drills: T[], now: Date)
     }
     return { thisWeek, previously };
 };
+
+// A full date such as "Tue 3 Nov 2026", or null when the stored value is not a date
+export const formatLongDate = (value: string): string | null => {
+    const date = parseDrillDate(value);
+    if (!date) return null;
+    // en-GB puts a comma after the weekday; the app's date style leaves it out
+    return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).replace(',', '');
+};

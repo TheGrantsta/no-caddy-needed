@@ -112,45 +112,36 @@ describe('Scorecard par scoring', () => {
     describe('Par value display', () => {
         it('shouldDisplayParThreeForHoleSeven', async () => {
             const { getByTestId } = await renderScorecard();
-            expect(getByTestId('hole-par-7')).toHaveTextContent('3');
+            expect(getByTestId('round-table-par-7')).toHaveTextContent('3');
         });
 
         it('shouldDisplayParThreeForHoleTen', async () => {
             const { getByTestId } = await renderScorecard();
-            expect(getByTestId('hole-par-10')).toHaveTextContent('3');
+            expect(getByTestId('round-table-par-10')).toHaveTextContent('3');
         });
 
         it('shouldDisplayParThreeForHoleFourteen', async () => {
             const { getByTestId } = await renderScorecard();
-            expect(getByTestId('hole-par-14')).toHaveTextContent('3');
+            expect(getByTestId('round-table-par-14')).toHaveTextContent('3');
         });
 
         it('shouldDisplayParFiveForHoleNine', async () => {
             const { getByTestId } = await renderScorecard();
-            expect(getByTestId('hole-par-9')).toHaveTextContent('5');
+            expect(getByTestId('round-table-par-9')).toHaveTextContent('5');
         });
 
         it('shouldDisplayParFiveForHoleThirteen', async () => {
             const { getByTestId } = await renderScorecard();
-            expect(getByTestId('hole-par-13')).toHaveTextContent('5');
+            expect(getByTestId('round-table-par-13')).toHaveTextContent('5');
         });
 
         it('shouldDisplayParFourForStandardHoles', async () => {
             const { getByTestId } = await renderScorecard();
-            expect(getByTestId('hole-par-1')).toHaveTextContent('4');
-            expect(getByTestId('hole-par-6')).toHaveTextContent('4');
-            expect(getByTestId('hole-par-18')).toHaveTextContent('4');
+            expect(getByTestId('round-table-par-1')).toHaveTextContent('4');
+            expect(getByTestId('round-table-par-6')).toHaveTextContent('4');
+            expect(getByTestId('round-table-par-18')).toHaveTextContent('4');
         });
 
-        it('shouldDisplayCorrectFrontNineParTotal', async () => {
-            const { getByTestId } = await renderScorecard();
-            expect(getByTestId('front9-par-total')).toHaveTextContent('36');
-        });
-
-        it('shouldDisplayCorrectBackNineParTotal', async () => {
-            const { getByTestId } = await renderScorecard();
-            expect(getByTestId('back9-par-total')).toHaveTextContent('35');
-        });
     });
 
     describe('Score input on par 3 holes', () => {

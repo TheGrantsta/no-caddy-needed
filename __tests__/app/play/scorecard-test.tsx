@@ -162,27 +162,27 @@ describe('Scorecard screen', () => {
         expect(getByText('Pebble Beach')).toBeTruthy();
     });
 
-    it('shows date in brackets after course name on multiplayer scorecard', () => {
+    it('shows the course name without brackets on the multiplayer scorecard', () => {
         const data = {
             ...multiplayerData,
             round: { ...multiplayerData.round, CourseName: 'St Andrews', Created_At: '26/02' },
         };
         mockGetMultiplayerScorecard.mockReturnValue(data);
 
-        const { getByText } = render(<ScorecardScreen />);
+        const { getByTestId } = render(<ScorecardScreen />);
 
-        expect(getByText('St Andrews (26/02)')).toBeTruthy();
+        expect(getByTestId('scorecard-course-name')).toHaveTextContent('St Andrews');
     });
 
-    it('shows date in brackets after course name on legacy scorecard', () => {
+    it('shows the course name without brackets on the legacy scorecard', () => {
         mockGetRoundScorecard.mockReturnValue({
             round: { Id: 1, TotalScore: 3, IsCompleted: 1, StartTime: '', EndTime: '', CourseName: 'Pebble Beach', Created_At: '15/06' },
             holes: [{ Id: 1, RoundId: 1, HoleNumber: 1, ScoreRelativeToPar: 3 }],
         });
 
-        const { getByText } = render(<ScorecardScreen />);
+        const { getByTestId } = render(<ScorecardScreen />);
 
-        expect(getByText('Pebble Beach (15/06)')).toBeTruthy();
+        expect(getByTestId('scorecard-course-name')).toHaveTextContent('Pebble Beach');
     });
 
     it('renders RoundScorecard component with correct props', () => {
@@ -211,8 +211,7 @@ describe('Scorecard screen', () => {
 
         const { getByTestId } = render(<ScorecardScreen />);
 
-        expect(getByTestId('player-total-1')).toBeTruthy();
-        expect(getByTestId('player-total-2')).toBeTruthy();
+        expect(getByTestId('round-summary-card')).toBeTruthy();
     });
 
     it('falls back to legacy scorecard when no multiplayer data', () => {
@@ -406,7 +405,7 @@ describe('Scorecard screen', () => {
 
             expect(queryByTestId('save-scorecard-button')).toBeNull();
             expect(getByTestId('edit-scorecard-button')).toBeTruthy();
-            expect(getByTestId('hole-1-player-1-score')).toHaveTextContent('5');
+            expect(getByTestId('round-table-score-1')).toHaveTextContent('5');
         });
 
         it('hides save confirm when cancel save pressed', () => {
@@ -562,7 +561,7 @@ describe('Scorecard screen', () => {
 
             const { getByTestId } = render(<ScorecardScreen />);
 
-            expect(getByTestId('sin-indicator-1')).toBeTruthy();
+            expect(getByTestId('round-table-dot-1')).toBeTruthy();
         });
 
         it('does not show sin indicator dot for holes without sins', () => {
@@ -625,14 +624,15 @@ describe('Scorecard screen', () => {
             expect(getByTestId('cancel-delete-button')).toBeTruthy();
         });
 
-        it('hides delete button when showing confirmation', () => {
+        it('shows the delete sheet over the page when Delete round is pressed', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
             const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+            expect(queryByTestId('delete-round-sheet')).toBeNull();
 
             fireEvent.press(getByTestId('delete-round-button'));
 
-            expect(queryByTestId('delete-round-button')).toBeNull();
+            expect(getByTestId('delete-round-sheet')).toBeTruthy();
         });
 
         it('calls deleteRoundService on confirm delete', async () => {
@@ -715,8 +715,8 @@ describe('Scorecard screen', () => {
 
             fireEvent.press(getByTestId('delete-round-button'));
 
-            expect(getByText('Delete round?')).toBeTruthy();
-            expect(getByText('This cannot be undone')).toBeTruthy();
+            expect(getByText('Delete this round?')).toBeTruthy();
+            expect(getByText('Its scores and stats will be removed from Stats. This can’t be undone.')).toBeTruthy();
         });
     });
 
@@ -781,7 +781,7 @@ describe('Scorecard screen', () => {
 
             const { getByTestId } = render(<ScorecardScreen />);
 
-            fireEvent.press(getByTestId('sin-cell-1-1'));
+            fireEvent.press(getByTestId('round-table-dot-1'));
 
             expect(mockShow).toHaveBeenCalledWith(
                 expect.stringMatching(/3-putt/i),
@@ -793,23 +793,62 @@ describe('Scorecard screen', () => {
     describe('Action button hierarchy', () => {
         const colours = require('../../../assets/colours').default;
 
-        it('renders Edit as the primary (green) action', () => {
+        it('renders Edit as a white pill with green text in the title row', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
-            const { getByTestId } = render(<ScorecardScreen />);
+            const { getByTestId, getByText } = render(<ScorecardScreen />);
             const style = StyleSheet.flatten(getByTestId('edit-scorecard-button').props.style);
 
-            expect(style.backgroundColor).toBe(colours.primary);
+            expect(style.backgroundColor).toBe(colours.backgroundLight);
+            expect(getByText('Edit')).toHaveStyle({ color: colours.primary });
         });
 
-        it('renders Delete as a quiet link, not a filled red block', () => {
+        it('renders Delete as a full-width white card with centred red text', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
-            const { getByTestId } = render(<ScorecardScreen />);
+            const { getByTestId, getByText } = render(<ScorecardScreen />);
             const style = StyleSheet.flatten(getByTestId('delete-round-button').props.style);
 
-            expect(style.backgroundColor).not.toBe(colours.red);
+            expect(style.backgroundColor).toBe(colours.backgroundLight);
+            expect(style.borderRadius).toBe(20);
+            expect(getByText('Delete round')).toHaveStyle({ color: colours.red, textAlign: 'center' });
         });
+    });
+
+    it('centres the course name in the title row', () => {
+        mockGetMultiplayerScorecard.mockReturnValue({ ...multiplayerData, round: { ...multiplayerData.round, CourseName: 'St Andrews' } });
+        const { getByTestId } = render(<ScorecardScreen />);
+
+        expect(getByTestId('scorecard-course-name')).toHaveStyle({ textAlign: 'center' });
+    });
+
+    it('shows an Edit button to the right of the title, not in the buttons below', () => {
+        mockGetMultiplayerScorecard.mockReturnValue({ ...multiplayerData, round: { ...multiplayerData.round, CourseName: 'St Andrews' } });
+        const { getByTestId } = render(<ScorecardScreen />);
+
+        expect(getByTestId('scorecard-title-row')).toContainElement(getByTestId('edit-scorecard-button'));
+    });
+
+    it('shows the round date on its own line beneath the course name', () => {
+        mockGetMultiplayerScorecard.mockReturnValue({
+            ...multiplayerData,
+            round: { ...multiplayerData.round, CourseName: 'St Andrews', StartTime: new Date(2026, 10, 3, 10).toISOString() },
+        });
+        const { getByTestId } = render(<ScorecardScreen />);
+
+        expect(getByTestId('scorecard-course-name')).toHaveTextContent('St Andrews');
+        expect(getByTestId('scorecard-date')).toHaveTextContent(/^Tue 3 Nov 2026$/);
+        expect(getByTestId('scorecard-date')).toHaveStyle({ fontSize: require('../../../assets/font-sizes').default.smallText, textAlign: 'center' });
+    });
+
+    it('shows a back button left of the course name that returns to the previous screen', () => {
+        mockGetMultiplayerScorecard.mockReturnValue({ ...multiplayerData, round: { ...multiplayerData.round, CourseName: 'St Andrews' } });
+        const { getByLabelText, getByTestId } = render(<ScorecardScreen />);
+
+        expect(getByTestId('scorecard-course-name')).toBeTruthy();
+        fireEvent.press(getByLabelText('Back'));
+
+        expect(mockBack).toHaveBeenCalled();
     });
 
     describe('Round pager', () => {
@@ -964,18 +1003,24 @@ describe('Scorecard screen', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
             mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, threePutts: 2, penalties: 1 });
 
-            const { getByTestId } = render(<ScorecardScreen />);
+            const { getByTestId, getByText } = render(<ScorecardScreen />);
 
-            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · 3-Putts: 2 · Penalties: 1');
+            expect(getByTestId('round-summary-card')).toBeTruthy();
+            expect(getByText('Putts')).toBeTruthy();
+            expect(getByText('36')).toBeTruthy();
+            expect(getByText('3-putts')).toBeTruthy();
+            expect(getByText('Penalties')).toBeTruthy();
         });
 
         it('shows score breakdown with zeros when no deadly sins recorded', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
             mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, threePutts: 0, penalties: 0 });
 
-            const { getByTestId } = render(<ScorecardScreen />);
+            const { getByTestId, getByText, getAllByText } = render(<ScorecardScreen />);
 
-            expect(getByTestId('round-score-breakdown')).toHaveTextContent('Putts: 36 · 3-Putts: 0 · Penalties: 0');
+            expect(getByTestId('round-summary-card')).toBeTruthy();
+            expect(getByText('36')).toBeTruthy();
+            expect(getAllByText('0').length).toBeGreaterThanOrEqual(2);
         });
 
         describe('Score-only rounds', () => {

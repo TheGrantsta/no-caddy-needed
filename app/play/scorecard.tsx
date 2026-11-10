@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, View } from 'react-native';
+import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import RoundScorecard from '../../components/RoundScorecard';
@@ -7,6 +8,9 @@ import Scorecard from '../../components/Scorecard';
 import ScoreEditor from '../../components/ScoreEditor';
 import SinEditPanel from '../../components/SinEditPanel';
 import ScorecardActionButtons from '../../components/ScorecardActionButtons';
+import DeleteRoundSheet from '../../components/DeleteRoundSheet';
+import RoundSummaryCard from '../../components/RoundSummaryCard';
+import RoundScoreTable from '../../components/RoundScoreTable';
 import { useAppToast } from '../../hooks/useAppToast';
 import { useScorecardEdit } from '../../hooks/useScorecardEdit';
 import {
@@ -35,6 +39,8 @@ import {
 } from '../../service/DbService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
+import { formatLongDate } from '../../utils/drillHistory';
+import fontSizes from '../../assets/font-sizes';
 import { useOrientation } from '../../hooks/useOrientation';
 
 const INITIAL_SINS: DeadlySinsValues = {
@@ -321,6 +327,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
 
     const round = multiplayerScorecard?.round || scorecard?.round;
     const courseName = round?.CourseName;
+    const roundDate = round ? formatLongDate(round.StartTime || round.Created_At) : null;
 
     if (!multiplayerScorecard && !scorecard) {
         return (
@@ -334,28 +341,74 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
 
     const displayScores = edit.isEditing ? edit.editedScores : multiplayerScorecard?.holeScores || [];
 
+    // The signed-in player's holes, for the summary card and score table
+    const userPlayerId = multiplayerScorecard?.players.find(p => p.IsUser === 1)?.Id;
+    const userHoles = (multiplayerScorecard?.holeScores ?? [])
+        .filter(h => h.RoundPlayerId === userPlayerId)
+        .sort((a, b) => a.HoleNumber - b.HoleNumber)
+        .map(h => ({ holeNumber: h.HoleNumber, par: h.HolePar, score: h.Score }));
+    const showSummary = !edit.isEditing && !round?.IsScoreOnly && !!scoreBreakdown && userHoles.length > 0;
+
     return (
         <View testID={`scorecard-page-${roundId}`} style={{ width }}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding, { flexGrow: 1, paddingBottom: 24 }]}>
-                {courseName && (
-                    <View style={styles.headerContainer}>
-                        <Text testID="scorecard-course-name" style={styles.subHeaderText}>
-                            {round?.Created_At ? `${courseName} (${round.Created_At})` : courseName}
-                        </Text>
+                <View testID="scorecard-title-row" style={[styles.headerContainer, { flexDirection: 'row', alignItems: 'center', columnGap: 12 }]}>
+                    <TouchableOpacity
+                        testID="scorecard-back-button"
+                        accessibilityRole="button"
+                        accessibilityLabel="Back"
+                        onPress={() => router.back()}
+                        style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colours.backgroundLight, justifyContent: 'center', alignItems: 'center' }}
+                    >
+                        <MaterialIcons name="chevron-left" size={28} color={colours.black} />
+                    </TouchableOpacity>
+                    <View style={{ flex: 1 }}>
+                        {courseName ? (
+                            <Text testID="scorecard-course-name" style={[styles.subHeaderText, { padding: 0, textAlign: 'center' }]}>
+                                {courseName}
+                            </Text>
+                        ) : null}
+                        {roundDate ? (
+                            <Text testID="scorecard-date" style={[styles.smallText, { textAlign: 'center' }]}>{roundDate}</Text>
+                        ) : null}
                     </View>
-                )}
+                    {multiplayerScorecard && !edit.isEditing && !edit.showDeleteConfirm ? (
+                        <TouchableOpacity
+                            testID="edit-scorecard-button"
+                            accessibilityRole="button"
+                            onPress={handleEdit}
+                            style={{ height: 44, borderRadius: 22, backgroundColor: colours.backgroundLight, justifyContent: 'center', paddingHorizontal: 18 }}
+                        >
+                            <Text style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: '600' }}>Edit</Text>
+                        </TouchableOpacity>
+                    ) : null}
+                </View>
                 {multiplayerScorecard && (
                     <>
-                        <Scorecard
-                            players={multiplayerScorecard.players}
-                            holeScores={displayScores}
-                            editable={edit.isEditing}
-                            selectedScore={edit.selectedScore}
-                            onScoreSelect={handleScoreSelect}
-                            sinHoles={sinHoles}
-                            onSinPress={handleSinPress}
-                            scoreBreakdown={round?.IsScoreOnly ? undefined : (scoreBreakdown ?? undefined)}
-                        />
+                        {showSummary && scoreBreakdown ? (
+                            <>
+                                <RoundSummaryCard
+                                    holesPlayed={userHoles.length}
+                                    totalScore={userHoles.reduce((sum, h) => sum + h.score, 0)}
+                                    totalPar={userHoles.reduce((sum, h) => sum + h.par, 0)}
+                                    putts={scoreBreakdown.putts}
+                                    threePutts={scoreBreakdown.threePutts}
+                                    penalties={scoreBreakdown.penalties}
+                                />
+                                <RoundScoreTable holes={userHoles} sinHoles={sinHoles} onSinPress={handleSinPress} />
+                            </>
+                        ) : (
+                            <Scorecard
+                                players={multiplayerScorecard.players}
+                                holeScores={displayScores}
+                                editable={edit.isEditing}
+                                selectedScore={edit.selectedScore}
+                                onScoreSelect={handleScoreSelect}
+                                sinHoles={sinHoles}
+                                onSinPress={handleSinPress}
+                                scoreBreakdown={round?.IsScoreOnly ? undefined : (scoreBreakdown ?? undefined)}
+                            />
+                        )}
 
                         {edit.isEditing && !edit.selectedScore && (
                             <View style={[styles.headerContainer, { paddingVertical: 16 }]}>
@@ -407,18 +460,19 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                             />
                         )}
 
+                        <DeleteRoundSheet
+                            visible={edit.showDeleteConfirm}
+                            onConfirm={handleConfirmDelete}
+                            onCancel={handleCancelDelete}
+                        />
                         <ScorecardActionButtons
                             isEditing={edit.isEditing}
                             showSaveConfirm={edit.showSaveConfirm}
-                            showDeleteConfirm={edit.showDeleteConfirm}
-                            onEdit={handleEdit}
                             onDelete={handleDelete}
                             onCancelEdit={handleCancelEdit}
                             onSave={handleSave}
                             onCancelSave={handleCancelSave}
                             onConfirmSave={handleConfirmSave}
-                            onCancelDelete={handleCancelDelete}
-                            onConfirmDelete={handleConfirmDelete}
                         />
                     </>
                 )}

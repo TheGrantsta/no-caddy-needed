@@ -27,13 +27,12 @@ const reminder = (overrides: object = {}) => ({
     ...overrides,
 });
 
-const renderList = (reminders: object[], onToggleReminder = jest.fn()) =>
+const renderList = (reminders: object[]) =>
     render(
         <ReminderList
             reminders={reminders as any}
             refreshKey={0}
             onDeleteReminder={jest.fn()}
-            onToggleReminder={onToggleReminder}
         />
     );
 
@@ -74,16 +73,17 @@ describe('ReminderList', () => {
         expect(queryByTestId('reminder-toggle-1')).toBeNull();
     });
 
-    it('shouldMarkRemindersThatAreOverdue', () => {
-        const { getByText } = renderList([reminder({ ScheduledFor: past })]);
+    it('shouldShowAnOverdueReminderUnderTheOverdueLabel', () => {
+        const { getByText, getByTestId } = renderList([reminder({ ScheduledFor: past })]);
 
-        expect(getByText('Overdue')).toBeTruthy();
+        expect(getByText('OVERDUE')).toBeTruthy();
+        expect(getByTestId('reminder-card-1')).toBeTruthy();
     });
 
-    it('shouldNotMarkUpcomingRemindersAsOverdue', () => {
+    it('shouldNotShowAnOverdueLabelForUpcomingReminders', () => {
         const { queryByText } = renderList([reminder()]);
 
-        expect(queryByText('Overdue')).toBeNull();
+        expect(queryByText('OVERDUE')).toBeNull();
     });
 
     it('shouldHintThatRemindersCanBeSwipedToDelete', () => {
@@ -97,5 +97,30 @@ describe('ReminderList', () => {
 
         expect(getByText('No reminders set')).toBeTruthy();
         expect(queryByText('UPCOMING')).toBeNull();
+    });
+
+    describe('overdue grouping', () => {
+        it('shouldListOverdueRemindersUnderAnOverdueLabelAboveTheUpcomingOnes', () => {
+            const { getAllByText } = renderList([
+                reminder({ Id: 1, Label: 'Old one', ScheduledFor: past }),
+                reminder({ Id: 2, Label: 'New one', ScheduledFor: future }),
+            ]);
+
+            const headings = getAllByText(/^(OVERDUE|UPCOMING|Old one|New one)$/).map(el => el.props.children);
+            expect(headings).toEqual(['OVERDUE', 'Old one', 'UPCOMING', 'New one']);
+        });
+
+        it('shouldNotShowAnOverdueLabelWhenNothingIsOverdue', () => {
+            const { queryByText } = renderList([reminder({ ScheduledFor: future })]);
+
+            expect(queryByText('OVERDUE')).toBeNull();
+        });
+    });
+
+    it('shouldKeepTheSectionLabelCloseToItsReminders', () => {
+        const { StyleSheet } = require('react-native');
+        const { getByText } = renderList([reminder({ ScheduledFor: future })]);
+
+        expect(StyleSheet.flatten(getByText('UPCOMING').props.style).marginBottom).toBeLessThanOrEqual(4);
     });
 });

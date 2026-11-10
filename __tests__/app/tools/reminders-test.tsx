@@ -185,12 +185,13 @@ describe('Reminders screen', () => {
         expect(mockAddPracticeReminderService).not.toHaveBeenCalled();
     });
 
-    it('shouldShowOverdueLabelForPastReminder', async () => {
+    it('shouldListAPastReminderUnderTheOverdueLabel', async () => {
         mockGetPracticeRemindersService.mockReturnValue([
             { Id: 1, Label: 'Morning putting', ScheduledFor: '2020-01-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2019-12-31T09:00:00.000Z' }
         ]);
-        const { getByText } = await renderReminders();
-        expect(getByText('Overdue')).toBeTruthy();
+        const { getByText, queryByText } = await renderReminders();
+        expect(getByText('OVERDUE')).toBeTruthy();
+        expect(queryByText('UPCOMING')).toBeNull();
     });
 
     it('shouldNotShowOverdueLabelForFutureReminder', async () => {
@@ -198,7 +199,7 @@ describe('Reminders screen', () => {
             { Id: 1, Label: 'Morning putting', ScheduledFor: '2099-01-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2026-03-12T09:00:00.000Z' }
         ]);
         const { queryByText } = await renderReminders();
-        expect(queryByText('Overdue')).toBeNull();
+        expect(queryByText('OVERDUE')).toBeNull();
     });
 
     it('shouldSaveReminderAndHideFormOnSave', async () => {

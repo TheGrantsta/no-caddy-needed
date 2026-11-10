@@ -15,7 +15,7 @@ interface Props {
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-// Reminders as cards: 24-hour time, label and date, and a switch for the reminder's notification
+// Reminders as cards in two groups: overdue ones first, then upcoming, each with a 24-hour time, label and date
 export default function ReminderList({
     reminders,
     refreshKey,
@@ -34,40 +34,55 @@ export default function ReminderList({
         );
     }
 
+    const now = new Date();
+    const isOverdue = (reminder: PracticeReminder) => new Date(reminder.ScheduledFor) < now;
+    const overdueReminders = reminders.filter(isOverdue);
+    const upcomingReminders = reminders.filter(reminder => !isOverdue(reminder));
+
+    const renderCard = (reminder: PracticeReminder) => {
+        const scheduled = new Date(reminder.ScheduledFor);
+        const time = `${pad(scheduled.getHours())}:${pad(scheduled.getMinutes())}`;
+        const date = scheduled.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+        return (
+            <View key={reminder.Id} style={s.cardWrap}>
+                <ReanimatedSwipeable
+                    key={refreshKey}
+                    renderRightActions={() => (
+                        <TouchableOpacity
+                            testID={`delete-reminder-${reminder.Id}`}
+                            onPress={() => onDeleteReminder(reminder)}
+                            style={s.deleteAction}
+                        >
+                            <MaterialIcons name="delete-outline" size={24} color={colours.white} />
+                            <Text style={s.deleteText}>Delete</Text>
+                        </TouchableOpacity>
+                    )}
+                >
+                    <View testID={`reminder-card-${reminder.Id}`} style={s.card}>
+                        <Text testID={`reminder-label-${reminder.Id}`} style={s.label}>{reminder.Label}</Text>
+                        <View testID={`reminder-detail-row-${reminder.Id}`} style={s.detailRow}>
+                            <Text style={s.detail}>{`${date} · ${time}`}</Text>
+                        </View>
+                    </View>
+                </ReanimatedSwipeable>
+            </View>
+        );
+    };
+
     return (
         <>
-            <Text style={s.sectionLabel}>UPCOMING</Text>
-            {reminders.map((reminder) => {
-                const scheduled = new Date(reminder.ScheduledFor);
-                const overdue = scheduled < new Date();
-                const time = `${pad(scheduled.getHours())}:${pad(scheduled.getMinutes())}`;
-                const date = scheduled.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
-                return (
-                    <View key={reminder.Id} style={s.cardWrap}>
-                        <ReanimatedSwipeable
-                            key={refreshKey}
-                            renderRightActions={() => (
-                                <TouchableOpacity
-                                    testID={`delete-reminder-${reminder.Id}`}
-                                    onPress={() => onDeleteReminder(reminder)}
-                                    style={s.deleteAction}
-                                >
-                                    <MaterialIcons name="delete-outline" size={24} color={colours.white} />
-                                    <Text style={s.deleteText}>Delete</Text>
-                                </TouchableOpacity>
-                            )}
-                        >
-                            <View testID={`reminder-card-${reminder.Id}`} style={s.card}>
-                                <Text testID={`reminder-label-${reminder.Id}`} style={s.label}>{reminder.Label}</Text>
-                                <View testID={`reminder-detail-row-${reminder.Id}`} style={s.detailRow}>
-                                    <Text style={s.detail}>{`${date} · ${time}`}</Text>
-                                </View>
-                                {overdue && <Text style={s.overdue}>Overdue</Text>}
-                            </View>
-                        </ReanimatedSwipeable>
-                    </View>
-                );
-            })}
+            {overdueReminders.length > 0 && (
+                <>
+                    <Text style={s.sectionLabel}>OVERDUE</Text>
+                    {overdueReminders.map(renderCard)}
+                </>
+            )}
+            {upcomingReminders.length > 0 && (
+                <>
+                    <Text style={s.sectionLabel}>UPCOMING</Text>
+                    {upcomingReminders.map(renderCard)}
+                </>
+            )}
             <Text style={s.hint}>Swipe left on a reminder to delete it.</Text>
         </>
     );

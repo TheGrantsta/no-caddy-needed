@@ -2752,6 +2752,144 @@ export const createStyles = (c: ThemeColours) => ({
     }),
 
     deadlySinTrend: StyleSheet.create({
+        pageHeader: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginHorizontal: 16,
+            marginTop: 8,
+            marginBottom: 16,
+        },
+        backButton: {
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        backButtonSpacer: {
+            width: 44,
+        },
+        pageTitle: {
+            color: c.text,
+            fontSize: fontSizes.subHeader,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            flex: 1,
+            marginHorizontal: 8,
+        },
+        averageLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            letterSpacing: 1,
+            marginHorizontal: 16,
+        },
+        averageRow: {
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+            marginHorizontal: 16,
+            marginTop: 4,
+        },
+        averageValue: {
+            color: c.text,
+            fontSize: fontSizes.header,
+            fontWeight: 'bold',
+        },
+        averageUnit: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+            marginLeft: 8,
+        },
+        captionRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginHorizontal: 16,
+        },
+        averageCaption: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+        },
+        statusPill: {
+            backgroundColor: c.primary + '1A',
+            borderRadius: 20,
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+        },
+        statusPillText: {
+            color: c.primary,
+            fontSize: fontSizes.smallText,
+            fontWeight: '600',
+        },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 24,
+            marginHorizontal: 16,
+            marginTop: 16,
+            padding: 16,
+        },
+        sectionLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            letterSpacing: 1,
+            marginHorizontal: 20,
+            marginTop: 24,
+            marginBottom: 8,
+        },
+        cleanRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: 12,
+        },
+        cleanLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginRight: 12,
+        },
+        cleanTrack: {
+            flex: 1,
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: c.tertiary + '26',
+            overflow: 'hidden',
+        },
+        cleanFill: {
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: c.primary,
+        },
+        cleanCount: {
+            color: c.text,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+            marginLeft: 12,
+        },
+        maxLine: {
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            borderTopWidth: 1,
+            borderStyle: 'dashed',
+        },
+        bar: {
+            position: 'absolute',
+            borderTopLeftRadius: 8,
+            borderTopRightRadius: 8,
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0,
+        },
+        barStub: {
+            position: 'absolute',
+            borderRadius: 2,
+        },
+        barHalo: {
+            position: 'absolute',
+            borderTopLeftRadius: 12,
+            borderTopRightRadius: 12,
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0,
+        },
         heading: {
             color: c.text,
             fontSize: fontSizes.subHeader,
@@ -2763,13 +2901,6 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 20,
             marginHorizontal: 16,
         },
-        chartRow: {
-            flexDirection: 'row',
-        },
-        yAxisLabels: {
-            width: 30,
-            position: 'relative',
-        },
         axisLabel: {
             color: c.text,
             fontSize: fontSizes.smallestText,
@@ -2778,12 +2909,6 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
             position: 'relative',
         },
-        yAxis: {
-            position: 'absolute',
-            left: 0,
-            width: 1,
-            backgroundColor: c.primary,
-        },
         xAxis: {
             position: 'absolute',
             left: 0,
@@ -2791,39 +2916,9 @@ export const createStyles = (c: ThemeColours) => ({
             height: 1,
             backgroundColor: c.primary,
         },
-        stem: {
-            position: 'absolute',
-            width: 2,
-            backgroundColor: c.tertiary,
-        },
-        dot: {
-            position: 'absolute',
-            width: 8,
-            height: 8,
-            borderRadius: 4,
-            backgroundColor: c.primary,
-        },
-        gridline: {
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            height: 1,
-            backgroundColor: c.text,
-            opacity: 0.12,
-        },
-        valueLabel: {
-            position: 'absolute',
-            width: 24,
-            textAlign: 'center',
-            color: c.text,
-            fontSize: fontSizes.smallestText,
-        },
         xAxisRow: {
             flexDirection: 'row',
             marginTop: 4,
-        },
-        yAxisLabelSpacer: {
-            width: 30,
         },
         dateRow: {
             flex: 1,
@@ -4465,7 +4560,7 @@ export const createStyles = (c: ThemeColours) => ({
             letterSpacing: 1,
             marginHorizontal: 20,
             marginTop: 24,
-            marginBottom: 12,
+            marginBottom: 4,
         },
         cardWrap: {
             marginHorizontal: 16,
@@ -4495,12 +4590,6 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.tertiary,
             fontSize: fontSizes.normal,
             marginTop: 2,
-        },
-        overdue: {
-            color: c.red,
-            fontSize: fontSizes.smallText,
-            fontWeight: '700',
-            marginTop: 4,
         },
         deleteAction: {
             width: 80,

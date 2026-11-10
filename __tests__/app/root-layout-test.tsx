@@ -200,6 +200,20 @@ describe('RootLayout', () => {
         expect(UNSAFE_getAllByType(Image).length).toBeGreaterThan(0);
     });
 
+    it('showsTheLogoHeaderOnTheDeadlySinTrendScreen', async () => {
+        const { Stack } = require('expo-router');
+        await renderReady();
+        const call = Stack.Screen.mock.calls.find((c: any[]) => c[0].name === 'play/deadly-sin-trend');
+        expect(call[0].options.headerShown).not.toBe(false);
+    });
+
+    it('hidesTheStackBackArrowOnTheDeadlySinTrendScreenBecauseThePageHasItsOwnBackButton', async () => {
+        const { Stack } = require('expo-router');
+        await renderReady();
+        const call = Stack.Screen.mock.calls.find((c: any[]) => c[0].name === 'play/deadly-sin-trend');
+        expect(call[0].options.headerBackVisible).toBe(false);
+    });
+
     it('hidesTheStackBackArrowOnTheScreensThatHaveTheirOwnHeading', async () => {
         const { Stack } = require('expo-router');
         await renderReady();

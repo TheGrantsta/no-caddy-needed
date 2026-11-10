@@ -92,7 +92,7 @@ describe('DeadlySinTrendScreen', () => {
 
             const { getAllByTestId } = renderPage();
 
-            expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(2);
+            expect(getAllByTestId(/deadly-sin-trend-(bar|stub)-\d+$/)).toHaveLength(2);
         });
 
         it('shouldShowEmptyStateWhenTheSelectedYearHasNoRounds', () => {
@@ -132,7 +132,7 @@ describe('DeadlySinTrendScreen', () => {
         expect(getByTestId('deadly-sin-trend-chart')).toBeTruthy();
     });
 
-    it('renders one dot per data point', () => {
+    it('renders one bar per data point', () => {
         mockGetAllDeadlySinsRoundsService.mockReturnValue([
             makeRound(3, 3, '03/06'),
             makeRound(2, 2, '02/06'),
@@ -141,33 +141,21 @@ describe('DeadlySinTrendScreen', () => {
 
         const { getAllByTestId } = renderPage();
 
-        expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(3);
+        expect(getAllByTestId(/deadly-sin-trend-(bar|stub)-\d+$/)).toHaveLength(3);
     });
 
-    it('renders one stem per data point', () => {
-        mockGetAllDeadlySinsRoundsService.mockReturnValue([
-            makeRound(3, 3, '03/06'),
-            makeRound(2, 2, '02/06'),
-            makeRound(1, 1, '01/06'),
-        ]);
-
-        const { getAllByTestId } = renderPage();
-
-        expect(getAllByTestId(/deadly-sin-trend-stem-/)).toHaveLength(3);
-    });
-
-    it('renders a zero-height stem for a clean round', () => {
+    it('renders a short grey stub for a clean round instead of a bar', () => {
         // Screen reverses to chronological order, so the older zero round is index 0.
         mockGetAllDeadlySinsRoundsService.mockReturnValue([
             makeRound(2, 2, '02/06'),
             makeRound(1, 0, '01/06'),
         ]);
 
-        const { getByTestId } = renderPage();
+        const { getByTestId, queryByTestId } = renderPage();
 
-        expect(getByTestId('deadly-sin-trend-stem-0').props.style).toEqual(
-            expect.arrayContaining([expect.objectContaining({ height: 0 })])
-        );
+        expect(getByTestId('deadly-sin-trend-stub-0')).toBeTruthy();
+        expect(queryByTestId('deadly-sin-trend-bar-0')).toBeNull();
+        expect(getByTestId('deadly-sin-trend-bar-1')).toBeTruthy();
     });
 
     it('caps data at 20 most recent rounds', () => {
@@ -178,7 +166,7 @@ describe('DeadlySinTrendScreen', () => {
 
         const { getAllByTestId } = renderPage();
 
-        expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(20);
+        expect(getAllByTestId(/deadly-sin-trend-(bar|stub)-\d+$/)).toHaveLength(20);
     });
 
     it('renders x-axis date labels', () => {
@@ -192,24 +180,14 @@ describe('DeadlySinTrendScreen', () => {
         expect(getAllByTestId(/deadly-sin-trend-date-/)).toHaveLength(2);
     });
 
-    it('renders a single dot when only 1 round', () => {
+    it('renders a single bar when only 1 round', () => {
         mockGetAllDeadlySinsRoundsService.mockReturnValue([
             makeRound(1, 2, '01/06'),
         ]);
 
         const { getAllByTestId } = renderPage();
 
-        expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(1);
-    });
-
-    it('renders y-axis line', () => {
-        mockGetAllDeadlySinsRoundsService.mockReturnValue([
-            makeRound(1, 2, '01/06'),
-        ]);
-
-        const { getByTestId } = renderPage();
-
-        expect(getByTestId('deadly-sin-trend-y-axis')).toBeTruthy();
+        expect(getAllByTestId(/deadly-sin-trend-(bar|stub)-\d+$/)).toHaveLength(1);
     });
 
     it('renders x-axis line', () => {
@@ -222,44 +200,36 @@ describe('DeadlySinTrendScreen', () => {
         expect(getByTestId('deadly-sin-trend-x-axis')).toBeTruthy();
     });
 
-    describe('y-axis value labels', () => {
-        it('renders an integer tick label for zero and the max value', () => {
+    describe('value labels', () => {
+        it('renders the zero and maximum values on the right, and nothing in between', () => {
             mockGetAllDeadlySinsRoundsService.mockReturnValue([
                 makeRound(3, 3, '03/06'),
                 makeRound(2, 1, '02/06'),
                 makeRound(1, 0, '01/06'),
             ]);
 
-            const { getByTestId } = renderPage();
+            const { getByTestId, queryByTestId } = renderPage();
 
             expect(getByTestId('deadly-sin-trend-y-label-0').props.children).toBe(0);
             expect(getByTestId('deadly-sin-trend-y-label-3').props.children).toBe(3);
-        });
-
-        it('renders one y-label per integer up to the max value', () => {
-            mockGetAllDeadlySinsRoundsService.mockReturnValue([
-                makeRound(2, 2, '02/06'),
-                makeRound(1, 0, '01/06'),
-            ]);
-
-            const { getAllByTestId } = renderPage();
-
-            // values 0, 1, 2
-            expect(getAllByTestId(/deadly-sin-trend-y-label-/)).toHaveLength(3);
+            expect(queryByTestId('deadly-sin-trend-y-label-1')).toBeNull();
+            expect(queryByTestId('deadly-sin-trend-y-label-2')).toBeNull();
         });
     });
 
-    describe('gridlines', () => {
-        it('renders a horizontal gridline per integer tick', () => {
+    describe('maximum line', () => {
+        it('renders one dashed line at the maximum value only', () => {
             mockGetAllDeadlySinsRoundsService.mockReturnValue([
                 makeRound(2, 2, '02/06'),
                 makeRound(1, 0, '01/06'),
             ]);
 
-            const { getAllByTestId } = renderPage();
+            const { getAllByTestId, getByTestId } = renderPage();
 
-            // ticks at 0, 1, 2
-            expect(getAllByTestId(/deadly-sin-trend-gridline-/)).toHaveLength(3);
+            expect(getAllByTestId(/deadly-sin-trend-max-line/)).toHaveLength(1);
+            expect(getByTestId('deadly-sin-trend-max-line').props.style).toEqual(
+                expect.arrayContaining([expect.objectContaining({ borderStyle: 'dashed' })])
+            );
         });
     });
 
@@ -403,7 +373,7 @@ describe('DeadlySinTrendScreen', () => {
 
             const { getAllByTestId } = renderPage();
 
-            expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(1);
+            expect(getAllByTestId(/deadly-sin-trend-(bar|stub)-\d+$/)).toHaveLength(1);
         });
 
         it('respects filter=10 to show only 10 most recent rounds', () => {
@@ -413,7 +383,7 @@ describe('DeadlySinTrendScreen', () => {
 
             const { getAllByTestId } = renderPage();
 
-            expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(10);
+            expect(getAllByTestId(/deadly-sin-trend-(bar|stub)-\d+$/)).toHaveLength(10);
         });
 
         it('shows up to MAX_ROUNDS when filter is all', () => {
@@ -423,7 +393,7 @@ describe('DeadlySinTrendScreen', () => {
 
             const { getAllByTestId } = renderPage();
 
-            expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(20);
+            expect(getAllByTestId(/deadly-sin-trend-(bar|stub)-\d+$/)).toHaveLength(20);
         });
 
         it('shows up to MAX_ROUNDS when no filter param provided', () => {
@@ -432,7 +402,7 @@ describe('DeadlySinTrendScreen', () => {
 
             const { getAllByTestId } = renderPage();
 
-            expect(getAllByTestId(/deadly-sin-trend-dot-/)).toHaveLength(20);
+            expect(getAllByTestId(/deadly-sin-trend-(bar|stub)-\d+$/)).toHaveLength(20);
         });
     });
 
@@ -479,6 +449,135 @@ describe('DeadlySinTrendScreen', () => {
 
             expect(orderedKeys[0]).toBe('Penalties');
             expect(orderedKeys[1]).toBe('ThreePutts');
+        });
+    });
+
+    describe('page layout', () => {
+        it('shows the average per round to one decimal with a Last N rounds caption', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([
+                makeRound(3, 3, '03/06'),
+                makeRound(2, 2, '02/06'),
+                makeRound(1, 1, '01/06'),
+            ]);
+
+            const { getByTestId } = renderPage();
+
+            expect(getByTestId('deadly-sin-trend-average')).toHaveTextContent('2.0');
+            expect(getByTestId('deadly-sin-trend-average-caption')).toHaveTextContent('Last 3 rounds');
+        });
+
+        it('shows a status pill describing the trend', () => {
+            // Chronological values 1, 2, 3: the later rounds are worse, so it is creeping up
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([
+                makeRound(3, 3, '03/06'),
+                makeRound(2, 2, '02/06'),
+                makeRound(1, 1, '01/06'),
+            ]);
+
+            const { getByTestId } = renderPage();
+
+            expect(getByTestId('deadly-sin-trend-status')).toHaveTextContent('Creeping up');
+        });
+
+        it('puts the status pill on the caption row, not beside the large average', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([
+                makeRound(3, 3, '03/06'),
+                makeRound(2, 2, '02/06'),
+                makeRound(1, 1, '01/06'),
+            ]);
+
+            const { getByTestId } = renderPage();
+
+            expect(within(getByTestId('deadly-sin-trend-average-row')).queryByTestId('deadly-sin-trend-status')).toBeNull();
+            expect(within(getByTestId('deadly-sin-trend-caption-row')).getByTestId('deadly-sin-trend-status')).toBeTruthy();
+        });
+
+        it('hides the status pill when only one round is recorded', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([makeRound(1, 2, '01/06')]);
+
+            const { queryByTestId } = renderPage();
+
+            expect(queryByTestId('deadly-sin-trend-status')).toBeNull();
+        });
+
+        it('gives the bars and the halo square bottom corners sitting on the baseline', () => {
+            const { StyleSheet } = require('react-native');
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([
+                makeRound(2, 2, '02/06'),
+                makeRound(1, 1, '01/06'),
+            ]);
+
+            const { getByTestId } = renderPage();
+            const bar = StyleSheet.flatten(getByTestId('deadly-sin-trend-bar-1').props.style);
+            const halo = StyleSheet.flatten(getByTestId('deadly-sin-trend-halo').props.style);
+
+            [bar, halo].forEach(style => {
+                expect(style.borderBottomLeftRadius ?? 0).toBe(0);
+                expect(style.borderBottomRightRadius ?? 0).toBe(0);
+            });
+        });
+
+        it('draws the latest-round halo in a solid colour with whole-pixel edges so it does not look fuzzy', () => {
+            const { StyleSheet } = require('react-native');
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([
+                makeRound(2, 2, '02/06'),
+                makeRound(1, 1, '01/06'),
+            ]);
+
+            const { getByTestId } = renderPage();
+            const halo = StyleSheet.flatten(getByTestId('deadly-sin-trend-halo').props.style);
+            const bar = StyleSheet.flatten(getByTestId('deadly-sin-trend-bar-1').props.style);
+
+            expect(halo.backgroundColor).toMatch(/^#[0-9A-Fa-f]{6}$/);
+            [halo.left, halo.top, halo.width, halo.height, bar.left, bar.top, bar.width, bar.height].forEach(v => {
+                expect(Number.isInteger(v)).toBe(true);
+            });
+        });
+
+        it('does not show a title or caption above the chart', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([
+                makeRound(3, 3, '03/06'),
+                makeRound(2, 2, '02/06'),
+                makeRound(1, 1, '01/06'),
+            ]);
+
+            const { queryByTestId } = renderPage();
+
+            expect(queryByTestId('deadly-sin-trend-caption')).toBeNull();
+        });
+
+        it('shows how many rounds were clean, with a fill in proportion', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([
+                makeRound(3, 0, '03/06'),
+                makeRound(2, 2, '02/06'),
+                makeRound(1, 1, '01/06'),
+            ]);
+            const { StyleSheet } = require('react-native');
+
+            const { getByTestId } = renderPage();
+
+            expect(getByTestId('deadly-sin-trend-clean-count')).toHaveTextContent('1 of 3');
+            expect(StyleSheet.flatten(getByTestId('deadly-sin-trend-clean-fill').props.style).width).toMatch(/^33\.3/);
+        });
+
+        it('shows the average at the header size rather than the display size', () => {
+            const fontSizes = require('../../../assets/font-sizes').default;
+            const { StyleSheet } = require('react-native');
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([makeRound(1, 2, '01/06')]);
+
+            const { getByTestId } = renderPage();
+
+            expect(StyleSheet.flatten(getByTestId('deadly-sin-trend-average').props.style).fontSize).toBe(fontSizes.header);
+        });
+
+        it('shows a back button to the left of the title in the title row', () => {
+            mockGetAllDeadlySinsRoundsService.mockReturnValue([makeRound(1, 2, '01/06')]);
+
+            const { getByTestId } = renderPage();
+            const row = within(getByTestId('deadly-sin-trend-title-row'));
+
+            expect(row.getByTestId('deadly-sin-trend-back')).toBeTruthy();
+            expect(row.getByTestId('deadly-sin-trend-heading')).toBeTruthy();
         });
     });
 });

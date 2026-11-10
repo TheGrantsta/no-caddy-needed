@@ -247,6 +247,7 @@ function ThemedApp() {
         <Stack.Screen
           name="play/deadly-sin-trend"
           options={{
+            headerBackVisible: false,
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {

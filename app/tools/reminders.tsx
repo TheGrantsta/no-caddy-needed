@@ -10,7 +10,7 @@ import { useFakeRefresh } from '@/hooks/useFakeRefresh';
 import { useForm } from '../../hooks/useForm';
 import { useToggle } from '../../hooks/useToggle';
 import { validateNonEmpty } from '../../assets/validation';
-import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, updatePracticeReminderNotificationIdService, PracticeReminder } from '@/service/DbService';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, PracticeReminder } from '@/service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService, ensureNotificationPermission } from '../../service/NotificationService';
 import ReminderList from '@/components/ReminderList';
 import ReminderForm from '@/components/ReminderForm';
@@ -52,18 +52,6 @@ export default function Reminders() {
     }, [loadReminders]);
 
     // Turning a reminder on schedules its notification; turning it off cancels the notification
-    const handleToggleReminder = async (reminder: PracticeReminder, enabled: boolean) => {
-        if (enabled) {
-            const allowed = await ensureNotificationPermission();
-            const notificationId = allowed ? await schedulePracticeReminder(reminder.Label, new Date(reminder.ScheduledFor)) : null;
-            await updatePracticeReminderNotificationIdService(reminder.Id, notificationId);
-        } else {
-            await cancelPracticeReminder(reminder.NotificationId);
-            await updatePracticeReminderNotificationIdService(reminder.Id, null);
-        }
-        loadReminders();
-    };
-
     const handleSaveReminder = async () => {
         if (isSaving) return;
 
@@ -124,7 +112,6 @@ export default function Reminders() {
                     reminders={reminders}
                     refreshKey={refreshKey}
                     onDeleteReminder={handleDeleteReminder}
-                    onToggleReminder={handleToggleReminder}
                 />
 
                 <ReminderForm

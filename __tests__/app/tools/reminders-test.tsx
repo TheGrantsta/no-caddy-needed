@@ -3,7 +3,7 @@ import { ScrollView } from 'react-native';
 import { act, fireEvent, render, waitFor, within } from '@testing-library/react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Reminders from '../../../app/tools/reminders';
-import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService, updatePracticeReminderNotificationIdService } from '../../../service/DbService';
+import { getPracticeRemindersService, addPracticeReminderService, deletePracticeReminderService } from '../../../service/DbService';
 import { schedulePracticeReminder, cancelPracticeReminder, upgradeOverdueRemindersService, ensureNotificationPermission } from '../../../service/NotificationService';
 
 jest.mock('../../../context/ThemeContext', () => ({
@@ -402,41 +402,11 @@ describe('Reminders screen layout and notifications', () => {
         expect(queryByText('Add reminder')).toBeNull();
     });
 
-    it('turningAReminderOffCancelsItsNotificationAndClearsIt', async () => {
+    it('doesNotShowANotificationToggleOnReminders', async () => {
         mockGetPracticeRemindersService.mockReturnValue(reminderWith('notif-old'));
-        const { getByTestId } = await renderScreen();
+        const { queryByTestId, getByText } = await renderScreen();
 
-        await act(async () => {
-            fireEvent(getByTestId('reminder-toggle-7'), 'valueChange', false);
-        });
-
-        expect(mockCancelPracticeReminder).toHaveBeenCalledWith('notif-old');
-        expect(updatePracticeReminderNotificationIdService).toHaveBeenCalledWith(7, null);
-    });
-
-    it('turningAReminderOnSchedulesItsNotificationAndStoresTheId', async () => {
-        mockGetPracticeRemindersService.mockReturnValue(reminderWith(null));
-        const { getByTestId } = await renderScreen();
-
-        await act(async () => {
-            fireEvent(getByTestId('reminder-toggle-7'), 'valueChange', true);
-        });
-
-        expect(ensureNotificationPermission).toHaveBeenCalled();
-        expect(mockSchedulePracticeReminder).toHaveBeenCalledWith('Warm up', expect.any(Date));
-        expect(updatePracticeReminderNotificationIdService).toHaveBeenCalledWith(7, 'notif-id-1');
-    });
-
-    it('leavesTheNotificationOffWhenPermissionIsDeclined', async () => {
-        mockGetPracticeRemindersService.mockReturnValue(reminderWith(null));
-        (ensureNotificationPermission as jest.Mock).mockResolvedValue(false);
-        const { getByTestId } = await renderScreen();
-
-        await act(async () => {
-            fireEvent(getByTestId('reminder-toggle-7'), 'valueChange', true);
-        });
-
-        expect(mockSchedulePracticeReminder).not.toHaveBeenCalled();
-        expect(updatePracticeReminderNotificationIdService).toHaveBeenCalledWith(7, null);
+        expect(getByText('Warm up')).toBeTruthy();
+        expect(queryByTestId('reminder-toggle-7')).toBeNull();
     });
 });

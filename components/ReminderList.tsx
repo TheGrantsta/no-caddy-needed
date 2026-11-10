@@ -1,6 +1,6 @@
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -11,7 +11,6 @@ interface Props {
     refreshKey: number;
     onDeleteReminder: (reminder: PracticeReminder) => void;
     // Called with the reminder and whether its notification should now be on
-    onToggleReminder: (reminder: PracticeReminder, enabled: boolean) => void;
 }
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -21,7 +20,6 @@ export default function ReminderList({
     reminders,
     refreshKey,
     onDeleteReminder,
-    onToggleReminder,
 }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
@@ -63,12 +61,6 @@ export default function ReminderList({
                                 <Text testID={`reminder-label-${reminder.Id}`} style={s.label}>{reminder.Label}</Text>
                                 <View testID={`reminder-detail-row-${reminder.Id}`} style={s.detailRow}>
                                     <Text style={s.detail}>{`${date} · ${time}`}</Text>
-                                    <Switch
-                                        testID={`reminder-toggle-${reminder.Id}`}
-                                        value={reminder.NotificationId !== null}
-                                        onValueChange={(enabled) => onToggleReminder(reminder, enabled)}
-                                        trackColor={{ false: colours.tertiary, true: colours.primary }}
-                                    />
                                 </View>
                                 {overdue && <Text style={s.overdue}>Overdue</Text>}
                             </View>

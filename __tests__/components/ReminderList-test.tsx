@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, within } from '@testing-library/react-native';
+import { render, within } from '@testing-library/react-native';
 import ReminderList from '../../components/ReminderList';
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -67,34 +67,11 @@ describe('ReminderList', () => {
         expect(getByTestId('reminder-card-1')).toHaveStyle({ flexDirection: 'column' });
     });
 
-    it('shouldPutTheSwitchOnTheSameRowAsTheTimeAndDate', () => {
-        const { getByTestId } = renderList([reminder()]);
+    it('shouldShowTheDateAndTimeWithoutANotificationToggle', () => {
+        const { getByTestId, queryByTestId } = renderList([reminder()]);
 
-        const row = getByTestId('reminder-detail-row-1');
-        expect(within(row).getByTestId('reminder-toggle-1')).toBeTruthy();
-        expect(within(row).getByText(/ · 09:05$/)).toBeTruthy();
-    });
-
-    it('shouldShowASwitchOnForRemindersWithANotification', () => {
-        const { getByTestId } = renderList([reminder()]);
-
-        expect(getByTestId('reminder-toggle-1').props.value).toBe(true);
-    });
-
-    it('shouldShowASwitchOffForRemindersWithoutANotification', () => {
-        const { getByTestId } = renderList([reminder({ Id: 2, NotificationId: null })]);
-
-        expect(getByTestId('reminder-toggle-2').props.value).toBe(false);
-    });
-
-    it('shouldReportTheNewStateWhenTheSwitchIsChanged', () => {
-        const onToggleReminder = jest.fn();
-        const item = reminder();
-        const { getByTestId } = renderList([item], onToggleReminder);
-
-        fireEvent(getByTestId('reminder-toggle-1'), 'valueChange', false);
-
-        expect(onToggleReminder).toHaveBeenCalledWith(item, false);
+        expect(within(getByTestId('reminder-detail-row-1')).getByText(/ · 09:05$/)).toBeTruthy();
+        expect(queryByTestId('reminder-toggle-1')).toBeNull();
     });
 
     it('shouldMarkRemindersThatAreOverdue', () => {

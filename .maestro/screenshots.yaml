@@ -18,6 +18,11 @@ appId: com.grantsta.golf.nocaddyneeded
 # Complete the onboarding flow (single step)
 - tapOn:
     id: "done-button"
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 # Wait for app to load (splash screen then home)
 - extendedWaitUntil:
@@ -47,6 +52,11 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     text: ".*Done.*"
     index: 0
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 # Wait for Play screen to render, then tap the Start Round button
 - extendedWaitUntil:
@@ -159,6 +169,11 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     text: ".*Done.*"
     index: 0
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 - extendedWaitUntil:
     visible: "Distances"
@@ -180,6 +195,11 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     text: ".*Done.*"
     index: 0
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 - extendedWaitUntil:
     visible: "Carry distance, not total"
@@ -209,6 +229,11 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     text: ".*Done.*"
     index: 0
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 # Screenshot 5: Practice
 - extendedWaitUntil:
@@ -254,6 +279,11 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     text: ".*Done.*"
     index: 0
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 # Stats opens on Rounds: wait for it, then screenshot
 - extendedWaitUntil:
@@ -307,6 +337,11 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     text: ".*Done.*"
     index: 0
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 # Settings is a single page now (no tabs): wait for the System controls
 - extendedWaitUntil:

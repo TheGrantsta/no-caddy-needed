@@ -18,6 +18,11 @@ appId: com.grantsta.golf.nocaddyneeded
 # Complete home onboarding (single step)
 - tapOn:
     id: "done-button"
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 # Wait for home screen
 - extendedWaitUntil:
@@ -34,6 +39,11 @@ appId: com.grantsta.golf.nocaddyneeded
     id: "next-button"
 - tapOn:
     id: "done-button"
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 # Wait for Play screen to be ready
 # Play onboarding overlay may appear; wait for start-button to ensure it's behind/dismissed
@@ -55,6 +65,11 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 5000
 - tapOn:
     id: "done-button"
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 # Distances opens read-only: switch to editing before adding clubs
 - extendedWaitUntil:
@@ -469,6 +484,11 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 15000
 - tapOn:
     id: "done-button"
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 - tapOn: "Proximity"
 - extendedWaitUntil:
@@ -495,6 +515,11 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 15000
 - tapOn:
     id: "done-button"
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 - extendedWaitUntil:
     visible:

@@ -15,6 +15,11 @@ appId: com.grantsta.golf.nocaddyneeded
 # Complete home onboarding (single step)
 - tapOn:
     id: "done-button"
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 # Wait for home screen
 - extendedWaitUntil:
@@ -36,6 +41,11 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     text: ".*Done.*"
     index: 0
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 # Wait for Settings to load (defaults to Golf tab)
 - extendedWaitUntil:
@@ -71,6 +81,11 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     text: ".*Done.*"
     index: 0
+# Wait for the onboarding overlay to finish closing before the next tap
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
 
 # Wait for Start Round button
 - extendedWaitUntil:

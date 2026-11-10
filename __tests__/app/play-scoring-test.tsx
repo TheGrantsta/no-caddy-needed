@@ -821,6 +821,20 @@ describe('Play screen', () => {
     });
 
     describe('Starting a round', () => {
+        it('keepsTheHoleHeaderPinnedOutsideTheScrollingPage', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId, queryByTestId } = render(<Play />);
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => expect(getByTestId('hole-header-pinned')).toBeTruthy());
+            expect(queryByTestId('play-page-scroll')).toBeTruthy();
+            const scroll = getByTestId('play-page-scroll');
+            expect(scroll.findAllByProps({ testID: 'hole-header-pinned' }).length).toBe(0);
+        });
+
         it('shows #score input after player setup completed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);

@@ -6,7 +6,7 @@ import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { tabBarStyleFor, sceneStyleFor } from '../../assets/tabBarOptions';
 import { MaterialIcons } from '@expo/vector-icons';
-import HoleScoreInput from '../../components/HoleScoreInput';
+import { HoleScoreBody, HoleScoreHeader, useHoleScores } from '../../components/HoleScoreInput';
 import HoleNoteInput from '../../components/HoleNoteInput';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 import {
@@ -643,9 +643,31 @@ export default function Play() {
         });
     }, [navigation, colours, tabBarBottomInset, isRoundActive]);
 
+    // The par and scores for the hole on screen; the header is pinned above the page and the body scrolls
+    const holeScores = useHoleScores({
+        holeNumber: currentHole,
+        players,
+        onScoresChange: handleScoresChange,
+        initialPar: courseHolePars[currentHole] ?? 4,
+        initialScores: currentHoleData?.scores.reduce((acc, s) => ({ ...acc, [s.playerId]: s.score }), {}) ?? undefined,
+    });
+
     return (
         <GestureHandlerRootView style={styles.flexOne}>
+            {isRoundActive && !roundSummary && displaySection('play-score') && (
+                <Animated.View style={{ opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }}>
+                    <HoleScoreHeader
+                        holeNumber={currentHole}
+                        courseName={activeCourseName}
+                        par={holeScores.par}
+                        onParChange={holeScores.handleParChange}
+                        onEndRound={handleEndRoundPress}
+                        onOpenBag={handleOpenBag}
+                    />
+                </Animated.View>
+            )}
             <ScrollView
+                testID="play-page-scroll"
                 ref={scrollRef}
                 keyboardShouldPersistTaps="handled"
                 style={styles.scrollContainer}
@@ -684,16 +706,12 @@ export default function Play() {
                     <Animated.View style={[styles.container, { opacity: sectionFadeAnim, transform: [{ translateX: sectionSlideAnim }] }]}>
                         <View>
                             <Animated.View style={{ opacity: contentFadeAnim, transform: [{ translateX: contentSlideAnim }] }}>
-                                <HoleScoreInput
-                                    key={`score-${currentHole}`}
-                                    holeNumber={currentHole}
-                                    initialPar={courseHolePars[currentHole] ?? 4}
-                                    courseName={activeCourseName}
-                                    onEndRound={handleEndRoundPress}
-                                    onOpenBag={handleOpenBag}
-                                    initialScores={currentHoleData?.scores.reduce((acc, s) => ({ ...acc, [s.playerId]: s.score }), {}) ?? undefined}
+                                <HoleScoreBody
                                     players={players}
-                                    onScoresChange={handleScoresChange}
+                                    par={holeScores.par}
+                                    scores={holeScores.scores}
+                                    onIncrement={holeScores.handleIncrement}
+                                    onDecrement={holeScores.handleDecrement}
                                 />
 
                                 {!skipStatsFlow && (

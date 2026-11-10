@@ -5,10 +5,12 @@ import { RoundPlayer } from '../service/DbService';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 
+type ScoreChange = { playerId: number; playerName: string; score: number }[];
+
 type Props = {
     holeNumber: number;
     players: RoundPlayer[];
-    onScoresChange: (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => void;
+    onScoresChange: (holeNumber: number, holePar: number, scores: ScoreChange) => void;
     initialPar?: number;
     initialScores?: Record<number, number>;
     courseName?: string | null;
@@ -18,7 +20,7 @@ type Props = {
 
 const parOptions = [3, 4, 5];
 
-const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>, par: number) => {
+const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>, par: number): ScoreChange => {
     return players.map(p => ({
         playerId: p.Id,
         playerName: p.PlayerName,
@@ -26,42 +28,68 @@ const buildScoresArray = (players: RoundPlayer[], scores: Record<number, number>
     }));
 };
 
-const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initialScores, courseName, onEndRound, onOpenBag }: Props) => {
-    const styles = useStyles();
-    const colours = useThemeColours();
-    const defaultPar = initialPar ?? 4;
-    const [state, setState] = useState<{ par: number; scores: Record<number, number> }>(() => {
-        const scores: Record<number, number> = {};
-        players.forEach(p => {
-            scores[p.Id] = initialScores?.[p.Id] ?? defaultPar;
-        });
-        return { par: defaultPar, scores };
-    });
+type HoleScoresOptions = {
+    holeNumber: number;
+    players: RoundPlayer[];
+    onScoresChange: Props['onScoresChange'];
+    initialPar?: number;
+    initialScores?: Record<number, number>;
+};
 
-    const { par, scores } = state;
+// The par and scores for the hole on screen. The state is tagged with its hole number, so moving to
+// another hole starts from that hole's saved values without needing a remount.
+export const useHoleScores = ({ holeNumber, players, onScoresChange, initialPar, initialScores }: HoleScoresOptions) => {
+    const defaultPar = initialPar ?? 4;
+    const [saved, setSaved] = useState<{ hole: number; par: number; scores: Record<number, number> } | null>(null);
+
+    const current = saved && saved.hole === holeNumber
+        ? saved
+        : {
+            hole: holeNumber,
+            par: defaultPar,
+            scores: Object.fromEntries(players.map(p => [p.Id, initialScores?.[p.Id] ?? defaultPar])) as Record<number, number>,
+        };
+    const { par, scores } = current;
 
     // Only scores still sitting at the old par follow the new par; scores the golfer changed are kept
     const handleParChange = (newPar: number) => {
         const updated: Record<number, number> = {};
         players.forEach(p => { updated[p.Id] = scores[p.Id] === par ? newPar : scores[p.Id]; });
-        setState({ par: newPar, scores: updated });
+        setSaved({ hole: holeNumber, par: newPar, scores: updated });
         onScoresChange(holeNumber, newPar, buildScoresArray(players, updated, newPar));
     };
 
     const handleIncrement = (playerId: number) => {
         const updated = { ...scores, [playerId]: (scores[playerId] || par) + 1 };
-        setState({ par, scores: updated });
+        setSaved({ hole: holeNumber, par, scores: updated });
         onScoresChange(holeNumber, par, buildScoresArray(players, updated, par));
     };
 
     const handleDecrement = (playerId: number) => {
         const updated = { ...scores, [playerId]: Math.max(1, (scores[playerId] || par) - 1) };
-        setState({ par, scores: updated });
+        setSaved({ hole: holeNumber, par, scores: updated });
         onScoresChange(holeNumber, par, buildScoresArray(players, updated, par));
     };
 
+    return { par, scores, handleParChange, handleIncrement, handleDecrement };
+};
+
+type HeaderProps = {
+    holeNumber: number;
+    courseName?: string | null;
+    par: number;
+    onParChange: (par: number) => void;
+    onEndRound?: () => void;
+    onOpenBag?: () => void;
+};
+
+// The green band at the top of the hole: End, course, yardages, hole number and par
+export const HoleScoreHeader = ({ holeNumber, courseName, par, onParChange, onEndRound, onOpenBag }: HeaderProps) => {
+    const styles = useStyles();
+    const colours = useThemeColours();
+
     return (
-        <View style={styles.holeScreen.container}>
+        <View testID="hole-header-pinned" style={styles.holeScreen.container}>
             <View style={styles.holeScreen.band}>
                 <View style={styles.holeScreen.bandTopRow}>
                     <TouchableOpacity
@@ -94,7 +122,7 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initi
                             <TouchableOpacity
                                 key={p}
                                 testID={`par-${p}-button`}
-                                onPress={() => handleParChange(p)}
+                                onPress={() => onParChange(p)}
                                 style={[styles.holeScreen.parOption, par === p && styles.holeScreen.parOptionActive]}
                             >
                                 <Text style={[styles.holeScreen.parOptionText, par === p && styles.holeScreen.parOptionTextActive]}>
@@ -105,7 +133,24 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initi
                     </View>
                 </View>
             </View>
+        </View>
+    );
+};
 
+type BodyProps = {
+    players: RoundPlayer[];
+    par: number;
+    scores: Record<number, number>;
+    onIncrement: (playerId: number) => void;
+    onDecrement: (playerId: number) => void;
+};
+
+// The score steppers for each player on the hole
+export const HoleScoreBody = ({ players, par, scores, onIncrement, onDecrement }: BodyProps) => {
+    const styles = useStyles();
+
+    return (
+        <View style={styles.holeScreen.container}>
             <Text style={styles.holeScreen.sectionLabel}>Score</Text>
             <View testID="players-container" style={styles.holeScreen.card}>
                 {players.map((player, index) => (
@@ -120,7 +165,7 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initi
                                 accessibilityRole="button"
                                 accessibilityLabel={`Decrease score for ${player.PlayerName}`}
                                 hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                                onPress={() => handleDecrement(player.Id)}
+                                onPress={() => onDecrement(player.Id)}
                                 style={styles.holeScreen.minusButton}
                             >
                                 <Text style={styles.holeScreen.minusText}>−</Text>
@@ -133,7 +178,7 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initi
                                 accessibilityRole="button"
                                 accessibilityLabel={`Increase score for ${player.PlayerName}`}
                                 hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                                onPress={() => handleIncrement(player.Id)}
+                                onPress={() => onIncrement(player.Id)}
                                 style={styles.holeScreen.plusButton}
                             >
                                 <Text style={styles.holeScreen.plusText}>+</Text>
@@ -142,6 +187,33 @@ const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initi
                     </View>
                 ))}
             </View>
+        </View>
+    );
+};
+
+// Header and score body together, for places that do not pin the header
+const HoleScoreInput = ({ holeNumber, players, onScoresChange, initialPar, initialScores, courseName, onEndRound, onOpenBag }: Props) => {
+    const { par, scores, handleParChange, handleIncrement, handleDecrement } = useHoleScores({
+        holeNumber, players, onScoresChange, initialPar, initialScores,
+    });
+
+    return (
+        <View>
+            <HoleScoreHeader
+                holeNumber={holeNumber}
+                courseName={courseName}
+                par={par}
+                onParChange={handleParChange}
+                onEndRound={onEndRound}
+                onOpenBag={onOpenBag}
+            />
+            <HoleScoreBody
+                players={players}
+                par={par}
+                scores={scores}
+                onIncrement={handleIncrement}
+                onDecrement={handleDecrement}
+            />
         </View>
     );
 };

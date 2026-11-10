@@ -13,10 +13,10 @@ const allSubMenuItems = [
     { testId: 'practice-sub-menu-challenges', name: 'challenges', title: 'Challenges' },
     { testId: 'practice-sub-menu-tools', name: 'tools', title: 'Tools' },
     { testId: 'practice-sub-menu-history', name: 'history', title: 'History' },
+    { testId: 'perform-sub-menu-rounds', name: 'rounds', title: 'Rounds' },
     { testId: 'perform-sub-menu-sins', name: 'sins', title: 'Sins' },
     { testId: 'perform-sub-menu-putting', name: 'putting', title: 'Putting' },
     { testId: 'perform-sub-menu-proximity', name: 'proximity', title: 'Proximity' },
-    { testId: 'perform-sub-menu-rounds', name: 'rounds', title: 'Rounds' },
 ]
 
 const SubMenu = ({ showSubMenu, selectedItem, handleSubMenu, variant = 'default' }: Props) => {

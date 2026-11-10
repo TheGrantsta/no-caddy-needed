@@ -1,6 +1,6 @@
 import React, { act } from 'react';
 import { Animated, _FlatList, ScrollView } from 'react-native';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import Perform from '../../../app/(tabs)/perform';
 
 let capturedFocusEffect: (() => void) | null = null;
@@ -44,6 +44,7 @@ jest.mock('../../../service/DbService', () => ({
     saveSettingsService: jest.fn().mockResolvedValue(true),
     getAllDeadlySinsRoundsService: jest.fn().mockReturnValue([]),
     getAllRoundHistoryService: jest.fn().mockReturnValue([]),
+    getParAveragesService: jest.fn().mockReturnValue({ par3: null, par4: null, par5: null }),
     formatPuttCount: (count: number) => count > 99 ? '99+' : String(count),
     getUpAndDownRateService: jest.fn().mockReturnValue({ rate: '-', upAndDowns: 0, attempts: 0 }),
     getPuttingMakeRatesService: jest.fn().mockReturnValue([
@@ -164,6 +165,17 @@ describe('Perform', () => {
         });
     });
 
+    describe('Stats sub menu default', () => {
+        it('shouldListRoundsBeforeSinsAndOpenOnRoundsByDefault', () => {
+            const { getByTestId, getAllByRole } = render(<Perform />);
+
+            const titles = getAllByRole('tab').map(tab => tab.props.accessibilityLabel);
+            expect(titles.indexOf('Rounds')).toBeLessThan(titles.indexOf('Sins'));
+            expect(getByTestId('perform-sub-menu-rounds')).toBeSelected();
+            expect(getByTestId('perform-sub-menu-sins')).not.toBeSelected();
+        });
+    });
+
     describe('Focus effect refresh', () => {
         it('callsUseFocusEffectOnMount', () => {
             const { getAllRoundHistoryService } = require('../../../service/DbService');
@@ -204,6 +216,7 @@ describe('Perform', () => {
     describe('Deadly Sins section', () => {
         it('displaysDeadlySinsSubMenuTab', () => {
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-sins'));
             expect(getByTestId('perform-sub-menu-sins')).toBeTruthy();
         });
 
@@ -241,6 +254,7 @@ describe('Perform', () => {
             ]);
 
             const { getAllByText } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-sins'));
             const headers = getAllByText('Sins');
             expect(headers.length).toBeGreaterThan(0);
         });
@@ -278,6 +292,7 @@ describe('Perform', () => {
             ]);
 
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-sins'));
             fireEvent.press(getByTestId('stats-filter-button'));
             expect(getByTestId('stats-filter-option-1')).toBeTruthy();
             expect(getByTestId('stats-filter-option-10')).toBeTruthy();
@@ -292,6 +307,7 @@ describe('Perform', () => {
             ]);
 
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-sins'));
             fireEvent.press(getByTestId('stats-filter-button'));
             expect(getByTestId('stats-filter-option-2026')).toBeTruthy();
             expect(getByTestId('stats-filter-option-2025')).toBeTruthy();
@@ -307,6 +323,7 @@ describe('Perform', () => {
             getAllDeadlySinsRoundsService.mockReturnValue([]);
 
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-sins'));
             fireEvent.press(getByTestId('stats-filter-button'));
             fireEvent.press(getByTestId('stats-filter-option-2025'));
 
@@ -328,6 +345,7 @@ describe('Perform', () => {
             getAllHoleSinDetailsService.mockReturnValue([]);
 
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-sins'));
 
             expect(Number(getByTestId('7deadly-sins-chart-count-0').props.children)).toBe(10);
         });
@@ -340,6 +358,7 @@ describe('Perform', () => {
             ]);
 
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-sins'));
             fireEvent.press(getByTestId('stats-filter-button'));
 
             expect(getByTestId('stats-filter-option-2026')).toBeTruthy();
@@ -359,6 +378,7 @@ describe('Perform', () => {
             getAllHoleSinDetailsService.mockReturnValue([]);
 
             const { getByTestId, queryByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-sins'));
             fireEvent.press(getByTestId('stats-filter-button'));
             fireEvent.press(getByTestId('stats-filter-option-1'));
 
@@ -377,6 +397,7 @@ describe('Perform', () => {
             setRoundFilter({ year: 2025 });
 
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-sins'));
 
             expect(getByTestId('stats-filter-button')).toHaveTextContent('2025');
             getAllRoundHistoryService.mockReturnValue([]);
@@ -421,6 +442,7 @@ describe('Perform', () => {
             getAllHoleSinDetailsService.mockReturnValue([]);
 
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-sins'));
 
             // With default filter (all): ThreePutts = 10+2 = 12, DoubleBogeys = 5+0 = 5, etc.
             // ThreePutts is first (12)
@@ -435,12 +457,14 @@ describe('Perform', () => {
         it('logsViewDeadlySinsAnalyticsEventWhenTabPressed', () => {
             const { logEvent } = require('../../../service/FirebaseService');
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-sins'));
             fireEvent.press(getByTestId('perform-sub-menu-sins'));
             expect(logEvent).toHaveBeenCalledWith('view_deadly_sins');
         });
 
         it('switchingToDeadlySinsAndBackDoesNotBreakOtherSections', () => {
             const { getByTestId, getAllByText } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-sins'));
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-sins'));
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
@@ -450,9 +474,10 @@ describe('Perform', () => {
 
     describe('Putting section', () => {
         it('displaysPuttingSubMenuTab', () => {
-            const { getByTestId, getByText } = render(<Perform />);
+            const { getByTestId, getAllByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByTestId('perform-sub-menu-putting')).toBeTruthy();
-            expect(getByText('Putting')).toBeTruthy();
+            expect(getAllByText('Putting').length).toBeGreaterThan(0);
         });
 
         it('shouldLabelRoundFilterAsLastRoundLastTenAndAllRounds', () => {
@@ -462,6 +487,7 @@ describe('Perform', () => {
             ]);
 
             const { getByText, getByTestId, getAllByText } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-putting'));
 
             fireEvent.press(getByTestId('stats-filter-button'));
             expect(getByText('Last round')).toBeTruthy();
@@ -476,6 +502,7 @@ describe('Perform', () => {
             getAllDeadlySinsRoundsService.mockReturnValue([]);
             mockRouterPush.mockClear();
             const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-sins'));
 
             fireEvent.press(getByText('Start a round'));
@@ -485,6 +512,7 @@ describe('Perform', () => {
 
         it('shouldExplainProximityChartAndThreePuttFilter', () => {
             const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-proximity'));
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
 
             expect(getByText(/Where your missed first putts finish/)).toBeTruthy();
@@ -504,6 +532,7 @@ describe('Perform', () => {
 
             it('shouldShowUpAndDownUnderProximitySubMenu', () => {
                 const { getByTestId, getByText } = render(<Perform />);
+                fireEvent.press(screen.getByTestId('perform-sub-menu-proximity'));
                 fireEvent.press(getByTestId('perform-sub-menu-proximity'));
                 expect(getByText('Up & down')).toBeTruthy();
             });
@@ -517,6 +546,7 @@ describe('Perform', () => {
                     return acc;
                 };
                 const { getByTestId, toJSON } = render(<Perform />);
+                fireEvent.press(screen.getByTestId('perform-sub-menu-proximity'));
                 fireEvent.press(getByTestId('perform-sub-menu-proximity'));
 
                 const texts = collectText(toJSON());
@@ -526,6 +556,7 @@ describe('Perform', () => {
 
             it('shouldNotShowUpAndDownUnderPuttingSubMenu', () => {
                 const { getByTestId, queryByTestId } = render(<Perform />);
+                fireEvent.press(screen.getByTestId('perform-sub-menu-putting'));
                 fireEvent.press(getByTestId('perform-sub-menu-putting'));
                 expect(queryByTestId('up-and-down-rate')).toBeNull();
             });
@@ -533,18 +564,21 @@ describe('Perform', () => {
 
         it('showsPuttingSectionWhenPuttingSubMenuPressed', () => {
             const { getByTestId, getAllByText } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getAllByText('Putting').length).toBeGreaterThan(0);
         });
 
         it('rendersPuttingRatesWithThePGATourRateInBrackets', () => {
             const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText(/Gold marker/)).toBeTruthy();
         });
 
         it('rendersPuttingDistancesInFeetByDefault', () => {
             const { getByTestId, getAllByText } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getAllByText(/^4 ft$/).length).toBeGreaterThan(0);
             expect(getAllByText(/^1 ft$/).length).toBeGreaterThan(0);
@@ -557,6 +591,7 @@ describe('Perform', () => {
             getSettingsService.mockReturnValue({ performOnboardingSeen: true, units: 'metres' });
 
             const { getByTestId, getAllByText } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getAllByText(/ ft$/).length).toBeGreaterThan(0);
         });
@@ -564,12 +599,14 @@ describe('Perform', () => {
         it('logsViewPuttingAnalyticsEventWhenPuttingSubMenuTabPressed', () => {
             const { logEvent } = require('../../../service/FirebaseService');
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(logEvent).toHaveBeenCalledWith('view_putting');
         });
 
         it('showsAsteriskExplanationForEstimatedRates', () => {
             const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-putting'));
             fireEvent.press(getByTestId('perform-sub-menu-putting'));
             expect(getByText('Gold marker shows the PGA tour rates')).toBeTruthy();
         });
@@ -578,13 +615,15 @@ describe('Perform', () => {
 
     describe('Proximity section', () => {
         it('displaysProximitySubMenuTab', () => {
-            const { getByTestId, getByText } = render(<Perform />);
+            const { getByTestId, getAllByText } = render(<Perform />);
+            fireEvent.press(getByTestId('perform-sub-menu-proximity'));
             expect(getByTestId('perform-sub-menu-proximity')).toBeTruthy();
-            expect(getByText('Proximity')).toBeTruthy();
+            expect(getAllByText('Proximity').length).toBeGreaterThan(0);
         });
 
         it('shows the Proximity heading on a card with the 3-putts switch inside it', () => {
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-proximity'));
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
 
             expect(getByTestId('proximity-card')).toBeTruthy();
@@ -595,6 +634,7 @@ describe('Perform', () => {
         it('shows the 3-putts switch label at the regular text size', () => {
             const fontSizes = require('../../../assets/font-sizes').default;
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-proximity'));
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
 
             expect(getByTestId('proximity-filter-label')).toHaveStyle({ fontSize: fontSizes.normal });
@@ -602,6 +642,7 @@ describe('Perform', () => {
 
         it('showsProximitySectionWhenProximitySubMenuPressed', () => {
             const { getByTestId, getByText } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-proximity'));
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
             expect(getByText(/Where your missed first putts finish/)).toBeTruthy();
         });
@@ -609,18 +650,21 @@ describe('Perform', () => {
         it('logsViewProximityAnalyticsEventWhenProximitySubMenuTabPressed', () => {
             const { logEvent } = require('../../../service/FirebaseService');
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-proximity'));
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
             expect(logEvent).toHaveBeenCalledWith('view_proximity');
         });
 
         it('renders proximity filter toggle switch', () => {
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-proximity'));
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
             expect(getByTestId('proximity-filter-toggle')).toBeTruthy();
         });
 
         it('toggle is off by default (All)', () => {
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-proximity'));
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
             const toggle = getByTestId('proximity-filter-toggle');
             expect(toggle.props.value).toBe(false);
@@ -629,6 +673,7 @@ describe('Perform', () => {
         it('toggling switch on calls getPuttingProximityService(true)', () => {
             const { getPuttingProximityService } = require('../../../service/DbService');
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-proximity'));
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
             getPuttingProximityService.mockClear();
             fireEvent(getByTestId('proximity-filter-toggle'), 'valueChange', true);
@@ -638,6 +683,7 @@ describe('Perform', () => {
         it('toggling switch off calls getPuttingProximityService(false)', () => {
             const { getPuttingProximityService } = require('../../../service/DbService');
             const { getByTestId } = render(<Perform />);
+            fireEvent.press(screen.getByTestId('perform-sub-menu-proximity'));
             fireEvent.press(getByTestId('perform-sub-menu-proximity'));
             fireEvent(getByTestId('proximity-filter-toggle'), 'valueChange', true);
             getPuttingProximityService.mockClear();

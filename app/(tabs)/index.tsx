@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 import { useFocusEffect } from 'expo-router';
 import { useStyles } from '@/hooks/useStyles';
 import { useOrientation } from '@/hooks/useOrientation';
-import { getAllDrillHistoryService, getAllRoundHistoryService, getSettingsService, saveSettingsService } from '@/service/DbService';
+import { getAllRoundHistoryService, getSettingsService, saveSettingsService } from '@/service/DbService';
 import { buildRecentItems, RecentItem } from '@/utils/homeRecent';
 import HomeHeader from '@/components/HomeHeader';
 import HomeHero from '@/components/HomeHero';
@@ -39,7 +39,7 @@ export default function HomeScreen() {
   // Reloads the Recent list each time the Home tab is shown, so new rounds and drills appear
   useFocusEffect(
     useCallback(() => {
-      setRecentItems(buildRecentItems(getAllRoundHistoryService(), getAllDrillHistoryService(), new Date()));
+      setRecentItems(buildRecentItems(getAllRoundHistoryService(), new Date()));
     }, [])
   );
 

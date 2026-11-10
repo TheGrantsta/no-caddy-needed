@@ -36,7 +36,7 @@ export default function Perform() {
   const [roundHistory, setRoundHistory] = useState(() => getAllRoundHistoryService());
   const roundsFilter = resolveRoundFilter(storedRoundsFilter, getAvailableYears(roundHistory));
 
-  const SECTION_ORDER = ['sins', 'putting', 'proximity', 'rounds'];
+  const SECTION_ORDER = ['rounds', 'sins', 'putting', 'proximity'];
   const {
     section,
     displaySection,

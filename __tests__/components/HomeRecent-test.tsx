@@ -1,13 +1,12 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import HomeRecent from '../../components/HomeRecent';
 
+const mockNavigate = jest.fn();
+const mockPush = jest.fn();
+
 jest.mock('expo-router', () => ({
-    Link: ({ children, testID }: any) => {
-        const { View } = require('react-native');
-        return <View testID={testID}>{children}</View>;
-    },
-    useRouter: () => ({ push: jest.fn(), back: jest.fn() }),
+    useRouter: () => ({ navigate: mockNavigate, push: mockPush, back: jest.fn() }),
 }));
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -24,11 +23,15 @@ jest.mock('@expo/vector-icons', () => {
 });
 
 const items = [
-    { title: 'Stats Flow Test Course', subtitle: 'Round · 9 holes · Today', icon: 'flag', href: '/perform', sortTime: 2 },
+    { title: 'Stats Flow Test Course', subtitle: 'Round · 9 holes · Today', icon: 'flag', href: '/perform', roundId: 7, sortTime: 2 },
     { title: 'Short-putting ladder', subtitle: 'Practice · Score 15 · Today', icon: 'stairs', href: '/practice', sortTime: 1 },
 ];
 
 describe('HomeRecent', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
     it('shouldShowEachRecentItemsTitleAndSubtitle', () => {
         const { getByText } = render(<HomeRecent items={items} />);
 
@@ -57,5 +60,14 @@ describe('HomeRecent', () => {
 
         expect(getByText('Nothing recent yet')).toBeTruthy();
         expect(queryByTestId('home-recent-row-0')).toBeNull();
+    });
+
+    it('shouldOpenARoundOnTheRoundListWithItsScorecardOnTop', () => {
+        const { getByTestId } = render(<HomeRecent items={items} />);
+
+        fireEvent.press(getByTestId('home-recent-row-0'));
+
+        expect(mockNavigate).toHaveBeenCalledWith('/perform');
+        expect(mockPush).toHaveBeenCalledWith({ pathname: '/play/scorecard', params: { roundId: '7' } });
     });
 });

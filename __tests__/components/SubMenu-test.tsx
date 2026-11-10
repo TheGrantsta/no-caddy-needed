@@ -52,6 +52,15 @@ describe('SubMenu component', () => {
     });
 
     describe('Perform sub menu', () => {
+        it('shouldListRoundsBeforeSinsInTheStatsMenu', () => {
+            const { getAllByRole } = render(
+                <SubMenu showSubMenu="perform" selectedItem="rounds" handleSubMenu={mockHandleSubMenu} variant="pill" />
+            );
+
+            const titles = getAllByRole('tab').map(tab => tab.props.accessibilityLabel);
+            expect(titles).toEqual(['Rounds', 'Sins', 'Putting', 'Proximity']);
+        });
+
         it('renders perform menu items', () => {
             const { getByText } = render(
                 <SubMenu showSubMenu="perform" selectedItem="sins" handleSubMenu={mockHandleSubMenu} />

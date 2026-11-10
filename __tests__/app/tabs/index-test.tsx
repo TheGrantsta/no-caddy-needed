@@ -109,17 +109,17 @@ describe('HomeScreen', () => {
         expect(getByText('Nothing recent yet')).toBeTruthy();
     });
 
-    it('displaysTheLatestRoundAndDrillInRecent', () => {
+    it('displaysTheLatestRoundButNoPracticeActivityInRecent', () => {
         const { getAllRoundHistoryService, getAllDrillHistoryService } = require('../../../service/DbService');
         const today = new Date().toISOString();
         getAllRoundHistoryService.mockReturnValueOnce([{ Id: 1, CourseName: 'Stats Flow Test Course', HolesPlayed: 9, StartTime: today }]);
         getAllDrillHistoryService.mockReturnValueOnce([{ Id: 1, Name: 'Short-Putting Ladder', Score: 15, Timestamp: today, Created_At: '09/11' }]);
 
-        const { getByText } = render(<HomeScreen />);
+        const { getByText, queryByText } = render(<HomeScreen />);
 
         expect(getByText('Stats Flow Test Course')).toBeTruthy();
         expect(getByText('Round · 9 holes · Today')).toBeTruthy();
-        expect(getByText('Practice · Score 15 · Today')).toBeTruthy();
+        expect(queryByText('Practice · Score 15 · Today')).toBeNull();
     });
 
     it('displaysGolfSimplifiedChevrons', () => {

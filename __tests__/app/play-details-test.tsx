@@ -181,16 +181,17 @@ describe('Play screen', () => {
             mockWindValue = { directionFrom: 270, speedMph: 12 };
         });
 
-        it('doesNotShowAWindButtonInTheHoleBarDuringActiveRoundScorePhase', async () => {
+        it('showsTheWindButtonInTheHoleBarAndOpensTheWindOverlayFromIt', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
 
-            const { getByTestId, queryByTestId } = render(<Play />);
+            const { getByTestId } = render(<Play />);
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             fireEvent.press(getByTestId('start-button'));
 
-            await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
-            expect(queryByTestId('wind-pill-button')).toBeNull();
+            await waitFor(() => expect(getByTestId('wind-overlay-button')).toBeTruthy());
+            fireEvent.press(getByTestId('wind-overlay-button'));
+            expect(getByTestId('wind-popover')).toBeTruthy();
         });
 
         it('refreshesWindWhenAdvancingHole', async () => {

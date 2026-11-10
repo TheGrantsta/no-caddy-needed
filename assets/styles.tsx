@@ -3035,10 +3035,22 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'space-between',
             gap: 6,
         },
-        holeBarRightGroup: {
+        holeBarLeft: {
+            flex: 1,
             flexDirection: 'row',
-            alignItems: 'stretch',
-            flexShrink: 1,
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+        },
+        holeBarCentre: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        holeBarRight: {
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
         },
         holeBarPrevious: {
             flexDirection: 'row',
@@ -3052,6 +3064,12 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.primary,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
+        },
+        holeBarWindButton: {
+            minHeight: 40,
+            paddingHorizontal: 8,
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         holeBarNextButton: {
             flex: 0,

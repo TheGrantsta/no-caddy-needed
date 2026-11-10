@@ -135,7 +135,7 @@ export default function Play() {
     const [bagWedges, setBagWedges] = useState<WedgeChartData>({ distanceNames: [], clubs: [] });
     const [recentCourseNames, setRecentCourseNames] = useState<string[]>([]);
     const { showError, showResult } = useAppToast();
-    const { refreshWind } = useWind();
+    const { wind, heading, refreshWind } = useWind();
 
     const SECTION_ORDER = ['play-score'];
     const {
@@ -775,6 +775,8 @@ export default function Play() {
                                     isLastHole={isLastHole}
                                     onPreviousHole={handlePreviousHole}
                                     onNextHole={handleNextHole}
+                                    wind={wind}
+                                    heading={heading}
                                 />
                             )}
 

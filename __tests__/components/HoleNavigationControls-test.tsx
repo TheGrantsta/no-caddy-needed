@@ -59,13 +59,70 @@ describe('HoleNavigationControls', () => {
         expect(queryByTestId('previous-hole-button')).toBeNull();
     });
 
-    it('shouldNotShowAWindButtonInTheHoleBar', () => {
-        const { queryByTestId } = render(
-            <HoleNavigationControls {...baseProps} {...({ wind: { directionFrom: 270, speedMph: 10 }, heading: 0 } as object)} />
-        );
+    describe('wind overlay button', () => {
+        const windProps = { wind: { directionFrom: 270, speedMph: 10 }, heading: 0 } as object;
 
-        expect(queryByTestId('wind-pill-button')).toBeNull();
-        expect(queryByTestId('next-hole-button')).toBeTruthy();
+        it('shouldShowAWindButtonInTheHoleBarWhenWindIsKnown', () => {
+            const { getByTestId } = render(<HoleNavigationControls {...baseProps} {...windProps} />);
+
+            expect(getByTestId('wind-overlay-button')).toBeTruthy();
+            expect(getByTestId('next-hole-button')).toBeTruthy();
+        });
+
+        it('shouldPlaceTheWindButtonInTheCentreSlotBetweenPreviousAndNext', () => {
+            const { getByTestId, queryByTestId } = render(<HoleNavigationControls {...baseProps} {...windProps} />);
+
+            expect(getByTestId('hole-nav-centre')).toBeTruthy();
+            expect(getByTestId('hole-nav-centre').findByProps({ testID: 'wind-overlay-button' })).toBeTruthy();
+            expect(getByTestId('hole-nav-left').findByProps({ testID: 'previous-hole-button' })).toBeTruthy();
+            expect(getByTestId('hole-nav-right').findByProps({ testID: 'next-hole-button' })).toBeTruthy();
+            expect(queryByTestId('hole-nav-right')?.findAllByProps({ testID: 'wind-overlay-button' }).length ?? 0).toBe(0);
+        });
+
+        it('shouldHideTheWindButtonWhenThereIsNoWind', () => {
+            const { queryByTestId, getByTestId } = render(<HoleNavigationControls {...baseProps} />);
+
+            expect(queryByTestId('wind-overlay-button')).toBeNull();
+            expect(getByTestId('next-hole-button')).toBeTruthy();
+        });
+
+        it('shouldOpenTheWindOverlayAboveTheBarWhenTheButtonIsPressed', () => {
+            const { getByTestId, queryByTestId } = render(<HoleNavigationControls {...baseProps} {...windProps} />);
+            expect(queryByTestId('wind-popover')).toBeNull();
+
+            fireEvent.press(getByTestId('wind-overlay-button'));
+
+            expect(getByTestId('wind-popover')).toBeTruthy();
+            expect(getByTestId('wind-popover-title')).toBeTruthy();
+        });
+
+        it('shouldCloseTheWindOverlayWhenTheButtonIsPressedAgain', () => {
+            const { getByTestId, queryByTestId } = render(<HoleNavigationControls {...baseProps} {...windProps} />);
+
+            fireEvent.press(getByTestId('wind-overlay-button'));
+            fireEvent.press(getByTestId('wind-overlay-button'));
+
+            expect(queryByTestId('wind-popover')).toBeNull();
+        });
+
+        it('shouldCloseTheWindOverlayWhenTheBackdropIsPressed', () => {
+            const { getByTestId, queryByTestId } = render(<HoleNavigationControls {...baseProps} {...windProps} />);
+
+            fireEvent.press(getByTestId('wind-overlay-button'));
+            fireEvent.press(getByTestId('wind-overlay-backdrop'));
+
+            expect(queryByTestId('wind-popover')).toBeNull();
+        });
+
+        it('shouldKeepTheNextHoleButtonWorkingWhileTheOverlayIsOpen', () => {
+            const onNextHole = jest.fn(() => Promise.resolve());
+            const { getByTestId } = render(<HoleNavigationControls {...baseProps} {...windProps} onNextHole={onNextHole} />);
+
+            fireEvent.press(getByTestId('wind-overlay-button'));
+            fireEvent.press(getByTestId('next-hole-button'));
+
+            expect(onNextHole).toHaveBeenCalledTimes(1);
+        });
     });
 
     describe('hole number labels', () => {

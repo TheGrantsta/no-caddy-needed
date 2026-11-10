@@ -742,18 +742,19 @@ export const createStyles = (c: ThemeColours) => ({
             borderWidth: 1,
             borderColor: c.red,
         },
+        column: {
+            width: 84,
+        },
         boxText: {
             fontSize: fontSizes.normal,
         },
-        backdrop: {
-            flex: 1,
-            backgroundColor: 'rgba(0, 0, 0, 0.35)',
-        },
-        sheet: {
-            maxHeight: '50%',
+        inlineList: {
+            width: 84,
+            maxHeight: 220,
+            marginTop: 6,
             backgroundColor: c.backgroundLight,
-            borderTopLeftRadius: 14,
-            borderTopRightRadius: 14,
+            borderRadius: 10,
+            overflow: 'hidden',
         },
         option: {
             paddingVertical: 14,

@@ -17,6 +17,17 @@ const choosePuttDistance = (getByTestId: (id: string) => any, id: string, value:
 
 describe('PuttingStatsInput', () => {
     describe('first putt input', () => {
+        it('does not offer 0 ft for the second putt', () => {
+            const { getByTestId, queryByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />
+            );
+
+            fireEvent.press(getByTestId('second-putt-input'));
+
+            expect(queryByTestId('second-putt-input-option-0')).toBeNull();
+            expect(getByTestId('second-putt-input-option-1')).toBeTruthy();
+        });
+
         it('renders first putt input blank when no initial value given', () => {
             const onStatsChange = jest.fn();
             const { getByTestId } = render(
@@ -223,44 +234,6 @@ describe('PuttingStatsInput', () => {
 
             // Should be called because blank is always allowed (means no second putt)
             expect(onStatsChange).toHaveBeenCalledWith(undefined, undefined, false, false);
-        });
-
-        it('allows second putt = 0 even with empty first putt', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={false}
-                    onStatsChange={onStatsChange}
-                />
-            );
-
-            onStatsChange.mockClear();
-
-            // Second putt = 0 is allowed with empty first putt (explicit 0 means no second putt)
-            choosePuttDistance(getByTestId, 'second-putt-input', '0');
-
-            // Should be called because 0 is always allowed (means no second putt)
-            expect(onStatsChange).toHaveBeenCalledWith(undefined, 0, false, false);
-        });
-
-        it('allows second putt = 0 even with first putt = 0', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
-                <PuttingStatsInput
-                    holePar={4}
-                    threePuttSelected={false}
-                    onStatsChange={onStatsChange}
-                    initialFirstPutt={0}
-                />
-            );
-
-            onStatsChange.mockClear();
-
-            // Second putt = 0 is allowed with first putt = 0
-            choosePuttDistance(getByTestId, 'second-putt-input', '0');
-
-            expect(onStatsChange).toHaveBeenCalledWith(0, 0, false, false);
         });
 
         it('allows second putt > 0 when first putt is filled in', () => {
@@ -878,18 +851,6 @@ describe('PuttingStatsInput', () => {
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, 3, false, true);
                 expect(getByTestId('gir-switch').props.value).toBe(true);
-            });
-
-            it('shouldTreatHoledSecondPuttOfZeroAsTwoPutts', () => {
-                const onStatsChange = jest.fn();
-                const { getByTestId } = render(
-                    <PuttingStatsInput holePar={3} userScore={3} threePuttSelected={false} onStatsChange={onStatsChange} />
-                );
-
-                choosePuttDistance(getByTestId, 'first-putt-input', '2');
-                choosePuttDistance(getByTestId, 'second-putt-input', '0');
-
-                expect(onStatsChange).toHaveBeenLastCalledWith(2, 0, false, true);
             });
 
             it('shouldKeepGreenInRegulationFalseWhenScoreIsBogeyOnPar4', () => {

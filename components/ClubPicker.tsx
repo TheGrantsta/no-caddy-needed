@@ -39,6 +39,7 @@ const ClubPicker = ({
 
     return (
         <Dropdown
+            listPresentation="inline"
             options={clubs.map(c => c.Club)}
             selectedOption={selectedClub}
             onSelectOption={onSelectClub}

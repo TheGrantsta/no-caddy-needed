@@ -136,4 +136,22 @@ describe('Dropdown', () => {
             expect(style.backgroundColor ?? 'transparent').toBe('transparent');
         });
     });
+
+    it('shouldListTheOptionsInlineWhenInlineListPresentationIsChosen', () => {
+        const { Modal } = require('react-native');
+        const { getByTestId, UNSAFE_queryAllByType, queryByTestId } = render(
+            <Dropdown
+                options={mockOptions}
+                onSelectOption={jest.fn()}
+                testIDPrefix="test-dropdown"
+                listPresentation="inline"
+            />
+        );
+
+        fireEvent.press(getByTestId('test-dropdown-dropdown-toggle'));
+
+        expect(getByTestId('test-dropdown-option-Option B')).toBeTruthy();
+        expect(UNSAFE_queryAllByType(Modal)).toHaveLength(0);
+        expect(queryByTestId('test-dropdown-modal')).toBeNull();
+    });
 });

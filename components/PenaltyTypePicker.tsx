@@ -16,6 +16,7 @@ const PenaltyTypePicker = ({
 }: Props) => {
     return (
         <Dropdown
+            listPresentation="inline"
             options={Array.from(PENALTY_TYPES)}
             selectedOption={selectedPenaltyType}
             onSelectOption={onSelectPenaltyType}

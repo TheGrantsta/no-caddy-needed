@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 
@@ -11,7 +11,8 @@ type Props = {
     hasError?: boolean;
 };
 
-// Choose a putt distance (in feet) from a list instead of typing it
+// Choose a putt distance (in feet) from a list shown inline under the box instead of typing it.
+// To go back to a modal sheet, restore the Modal wrapper that this replaced.
 const PuttDistancePicker = ({ testID, value, maxDistance, onChange, hasError = false }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
@@ -24,10 +25,11 @@ const PuttDistancePicker = ({ testID, value, maxDistance, onChange, hasError = f
         setOpen(false);
     };
 
-    const distances = Array.from({ length: maxDistance + 1 }, (_, n) => n);
+    // Distances start at 1 ft: 0 ft is not offered in the list
+    const distances = Array.from({ length: maxDistance }, (_, i) => i + 1);
 
     return (
-        <>
+        <View style={s.column}>
             <TouchableOpacity
                 testID={testID}
                 accessibilityRole="button"
@@ -37,10 +39,9 @@ const PuttDistancePicker = ({ testID, value, maxDistance, onChange, hasError = f
                 <Text style={[s.boxText, { color: textColour }]}>{value || '0'}</Text>
             </TouchableOpacity>
 
-            <Modal transparent visible={open} animationType="fade" onRequestClose={() => setOpen(false)}>
-                <TouchableOpacity activeOpacity={1} onPress={() => setOpen(false)} style={s.backdrop} />
-                <View style={s.sheet}>
-                    <ScrollView>
+            {open && (
+                <View style={s.inlineList}>
+                    <ScrollView nestedScrollEnabled>
                         <TouchableOpacity testID={`${testID}-option-clear`} onPress={() => choose('')} style={s.option}>
                             <Text style={s.clearText}>Clear</Text>
                         </TouchableOpacity>
@@ -56,8 +57,8 @@ const PuttDistancePicker = ({ testID, value, maxDistance, onChange, hasError = f
                         ))}
                     </ScrollView>
                 </View>
-            </Modal>
-        </>
+            )}
+        </View>
     );
 };
 

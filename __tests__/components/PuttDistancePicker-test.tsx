@@ -37,13 +37,25 @@ describe('PuttDistancePicker', () => {
         expect(getByTestId('first-putt-input-option-20')).toBeTruthy();
     });
 
+    it('shouldShowTheDistancesInlineInsteadOfInAModal', () => {
+        const { Modal } = require('react-native');
+        const { getByTestId, UNSAFE_queryAllByType } = render(
+            <PuttDistancePicker testID="first-putt-input" value="" maxDistance={300} onChange={jest.fn()} />
+        );
+        fireEvent.press(getByTestId('first-putt-input'));
+
+        expect(getByTestId('first-putt-input-option-1')).toBeTruthy();
+        expect(UNSAFE_queryAllByType(Modal)).toHaveLength(0);
+    });
+
     it('shouldOfferEveryDistanceUpToTheMaximum', () => {
         const { getByTestId, queryByTestId } = render(
             <PuttDistancePicker testID="first-putt-input" value="" maxDistance={300} onChange={jest.fn()} />
         );
         fireEvent.press(getByTestId('first-putt-input'));
 
-        expect(getByTestId('first-putt-input-option-0')).toBeTruthy();
+        expect(getByTestId('first-putt-input-option-1')).toBeTruthy();
+        expect(queryByTestId('first-putt-input-option-0')).toBeNull();
         expect(getByTestId('first-putt-input-option-300')).toBeTruthy();
         expect(queryByTestId('first-putt-input-option-301')).toBeNull();
     });

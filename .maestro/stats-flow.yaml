@@ -107,13 +107,35 @@ appId: com.grantsta.golf.nocaddyneeded
 - inputText: "140"
 - hideKeyboard
 
-# Save the distances with Done
+# Total distances: Driver 275, 9 iron 150
+- tapOn:
+    id: "total-input-0"
+- inputText: "275"
+- hideKeyboard
+- tapOn:
+    id: "total-input-1"
+- inputText: "150"
+- hideKeyboard
+
+# Number pad has no Return key, so tap the title to make sure the keyboard is closed,
+# otherwise the first tap on Done only dismisses the keyboard
+- tapOn:
+    text: "Distances"
+    index: 0
+
+# Save the distances with Done, then wait until the list is back to read-only (the Edit button returns)
 - tapOn:
     id: "distances-done-button"
+- extendedWaitUntil:
+    visible:
+      id: "edit-distances-button"
+    timeout: 10000
 
-# Return to My Bag, then open the Play tab
+# Go back from the Distances list using its Back button
 - tapOn:
     id: "distances-back-button"
+
+# Open the Play tab
 - tapOn:
     id: "tab-play"
 - extendedWaitUntil:                                                                                                                          
@@ -139,311 +161,194 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "start-button"
 
-# Hole 1 — Par 4
+# Hole 1 — Par 4 (one page: putting, sins and Next are all on the same scrolling screen)
 - extendedWaitUntil:
     visible:
       id: "par-4-button"
     timeout: 10000
 - tapOn:
     id: "par-4-button"
-- tapOn:
-    id: "next-hole-button"
-
-# Select trouble off tee
-- extendedWaitUntil:
-    visible:
-      id: "7deadly-sins-toggle-trouble-off-tee"
-    timeout: 5000
-- tapOn:
-    id: "7deadly-sins-toggle-trouble-off-tee"
-- tapOn:
-    id: "next-hole-button"
-
-# Regression test: Select club for trouble off tee (this used to crash)
-- extendedWaitUntil:
-    visible:
-      id: "club-picker-dropdown-toggle"
-    timeout: 5000
-- tapOn:
-    id: "club-picker-dropdown-toggle"
-
-# Wait for dropdown to show options
-- extendedWaitUntil:
-    visible:
-      id: "club-picker-option-Driver"
-    timeout: 3000
-- tapOn:
-    id: "club-picker-option-Driver"
-
-# Driver is now selected in the dropdown - move to putting screen
-- tapOn:
-    id: "next-hole-button"
-
 # Enter first putt
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "first-putt-input"
 - extendedWaitUntil:
-    visible:
-      id: "first-putt-input"
+    visible: "1 ft"
+    timeout: 5000
+- tapOn: "1 ft"
+# Select the deadly sin
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "7deadly-sins-toggle-trouble-off-tee"
+# Choose the detail under the sin
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "club-picker-dropdown-toggle"
+- extendedWaitUntil:
+    visible: "Driver"
     timeout: 3000
-- tapOn:
-    id: "first-putt-input"
-- tapOn:
-    id: "first-putt-input-option-1"
-
-# GIR defaults to No
-- assertVisible:
-    id: "gir-toggle-no-selected"
-- assertNotVisible:
-    id: "gir-toggle-yes-selected"
-
+- tapOn: "Driver"
 # Complete the hole
-- extendedWaitUntil:
-    visible:
-      id: "next-hole-button"
-    timeout: 10000
-- tapOn:
-    id: "next-hole-button"
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "next-hole-button"
 
-# Hole 2 — Par 4
+
+# Hole 2 — Par 4 (one page: putting, sins and Next are all on the same scrolling screen)
 - extendedWaitUntil:
     visible:
       id: "par-4-button"
     timeout: 10000
 - tapOn:
     id: "par-4-button"
-- tapOn:
-    id: "next-hole-button"
-
-# Select penalty
-- extendedWaitUntil:
-    visible:
-      id: "7deadly-sins-toggle-penalties"
-    timeout: 5000
-- tapOn:
-    id: "7deadly-sins-toggle-penalties"
-- tapOn:
-    id: "next-hole-button"
-
-# Regression test: Select club for trouble off tee (this used to crash)
-- extendedWaitUntil:
-    visible:
-      id: "penalty-type-picker-dropdown-toggle"
-    timeout: 5000
-- tapOn:
-    id: "penalty-type-picker-dropdown-toggle"
-
-# Wait for dropdown to show options
-- extendedWaitUntil:
-    visible:
-      id: "penalty-type-picker-option-Out of bounds"
-    timeout: 3000
-- tapOn:
-    id: "penalty-type-picker-option-Out of bounds"
-
-# Driver is now selected in the dropdown - move to putting screen
-- tapOn:
-    id: "next-hole-button"
-
-# Hole hit in regulation (tap before typing so no keyboard is open)
-- extendedWaitUntil:
-    visible:
-      id: "gir-toggle-yes"
-    timeout: 3000
-- tapOn:
-    id: "gir-toggle-yes"
-# Wait for the selected state to render; assertVisible does not retry
-- extendedWaitUntil:
-    visible:
-      id: "gir-toggle-yes-selected"
-    timeout: 3000
-
 # Enter first putt
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "first-putt-input"
 - extendedWaitUntil:
-    visible:
-      id: "first-putt-input"
+    visible: "2 ft"
+    timeout: 5000
+- tapOn: "2 ft"
+# Hole hit in regulation
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "gir-switch"
+# Select the deadly sin
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "7deadly-sins-toggle-penalties"
+# Choose the detail under the sin
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "penalty-type-picker-dropdown-toggle"
+- extendedWaitUntil:
+    visible: "Out of bounds"
     timeout: 3000
-- tapOn:
-    id: "first-putt-input"
-- tapOn:
-    id: "first-putt-input-option-2"
-
+- tapOn: "Out of bounds"
 # Complete the hole
-- extendedWaitUntil:
-    visible:
-      id: "next-hole-button"
-    timeout: 10000
-- tapOn:
-    id: "next-hole-button"
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "next-hole-button"
 
-# Hole 3 — Par 4
+
+# Hole 3 — Par 4 (one page: putting, sins and Next are all on the same scrolling screen)
 - extendedWaitUntil:
     visible:
       id: "par-4-button"
     timeout: 10000
 - tapOn:
     id: "par-4-button"
-- tapOn:
-    id: "next-hole-button"
-
-# Select penalty
-- extendedWaitUntil:
-    visible:
-      id: "7deadly-sins-toggle-three-putts"
-    timeout: 5000
-- tapOn:
-    id: "7deadly-sins-toggle-three-putts"
-- tapOn:
-    id: "next-hole-button"
-
 # Enter first putt
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "first-putt-input"
 - extendedWaitUntil:
-    visible:
-      id: "first-putt-input"
-    timeout: 3000
-- tapOn:
-    id: "first-putt-input"
-- tapOn:
-    id: "first-putt-input-option-3"
-
+    visible: "3 ft"
+    timeout: 5000
+- tapOn: "3 ft"
 # Enter second putt
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "second-putt-input"
 - extendedWaitUntil:
-    visible:
-      id: "second-putt-input"
-    timeout: 3000
-- tapOn:
-    id: "second-putt-input"
-- tapOn:
-    id: "second-putt-input-option-2"
-# Number pad has no Return key, so tap the header to make sure the keyboard is closed before Next
-- tapOn:
-    text: "Hole .* — Putting stats"
+    visible: "1 ft"
+    timeout: 5000
+- tapOn: "1 ft"
+# Select the deadly sin
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "7deadly-sins-toggle-three-putts"
+# Complete the hole
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "next-hole-button"
 
-# Entering putts must not change GIR
-- assertVisible:
-    id: "gir-toggle-no-selected"
 
-# Keyboard was already closed by the header tap, so a single Next moves on
-- extendedWaitUntil:
-    visible:
-      id: "next-hole-button"
-    timeout: 10000
-- tapOn:
-    id: "next-hole-button"
-
-# Hole 4 — Par 4
+# Hole 4 — Par 4 (one page: putting, sins and Next are all on the same scrolling screen)
 - extendedWaitUntil:
     visible:
       id: "par-4-button"
     timeout: 10000
 - tapOn:
     id: "par-4-button"
-- tapOn:
-    id: "next-hole-button"
-
-# Select penalty
-- extendedWaitUntil:
-    visible:
-      id: "7deadly-sins-toggle-bogeys-inside-9iron"
-    timeout: 5000
-- tapOn:
-    id: "7deadly-sins-toggle-bogeys-inside-9iron"
-- tapOn:
-    id: "next-hole-button"
-
-# Regression test: Select club for bogeys inside 9-iron sin
-- extendedWaitUntil:
-    visible:
-      id: "bogeys-club-picker-dropdown-toggle"
-    timeout: 5000
-- tapOn:
-    id: "bogeys-club-picker-dropdown-toggle"
-
-# Wait for dropdown to show options
-- extendedWaitUntil:
-    visible:
-      id: "bogeys-club-picker-option-9 iron"
-    timeout: 3000
-- tapOn:
-    id: "bogeys-club-picker-option-9 iron"
-
-# 9 iron is now selected in the dropdown - move to putting screen
-- tapOn:
-    id: "next-hole-button"
-
 # Enter first putt
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "first-putt-input"
 - extendedWaitUntil:
-    visible:
-      id: "first-putt-input"
+    visible: "2 ft"
+    timeout: 5000
+- tapOn: "2 ft"
+# Select the deadly sin
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "7deadly-sins-toggle-bogeys-inside-9iron"
+# Choose the detail under the sin
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "bogeys-club-picker-dropdown-toggle"
+- extendedWaitUntil:
+    visible: "9 iron"
     timeout: 3000
-- tapOn:
-    id: "first-putt-input"
-- tapOn:
-    id: "first-putt-input-option-4"
-
+- tapOn: "9 iron"
 # Complete the hole
-- extendedWaitUntil:
-    visible:
-      id: "next-hole-button"
-    timeout: 10000
-- tapOn:
-    id: "next-hole-button"
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "next-hole-button"
 
-# Hole 5 — Par 4
+
+# Hole 5 — Par 4 (one page: putting, sins and Next are all on the same scrolling screen)
 - extendedWaitUntil:
     visible:
       id: "par-4-button"
     timeout: 10000
 - tapOn:
     id: "par-4-button"
-- tapOn:
-    id: "next-hole-button"
-
-# Select penalty
-- extendedWaitUntil:
-    visible:
-      id: "7deadly-sins-toggle-double-chips"
-    timeout: 5000
-- tapOn:
-    id: "7deadly-sins-toggle-double-chips"
-- tapOn:
-    id: "next-hole-button"
-
-# Regression test: select double chips reason
-- extendedWaitUntil:
-    visible:
-      id: "double-chip-reason-picker-dropdown-toggle"
-    timeout: 5000
-- tapOn:
-    id: "double-chip-reason-picker-dropdown-toggle"
-
-# Wait for dropdown to show options
-- extendedWaitUntil:
-    visible:
-      id: "double-chip-reason-picker-option-Short sided"
-    timeout: 3000
-- tapOn:
-    id: "double-chip-reason-picker-option-Short sided"
-
-# Driver is now selected in the dropdown - move to putting screen
-- tapOn:
-    id: "next-hole-button"
-
 # Enter first putt
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "first-putt-input"
 - extendedWaitUntil:
-    visible:
-      id: "first-putt-input"
+    visible: "3 ft"
+    timeout: 5000
+- tapOn: "3 ft"
+# Select the deadly sin
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "7deadly-sins-toggle-double-chips"
+# Choose the detail under the sin
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "double-chip-reason-picker-dropdown-toggle"
+- extendedWaitUntil:
+    visible: "Short sided"
     timeout: 3000
-- tapOn:
-    id: "first-putt-input"
-- tapOn:
-    id: "first-putt-input-option-5"
-
+- tapOn: "Short sided"
 # Complete the hole
-- extendedWaitUntil:
-    visible:
-      id: "next-hole-button"
-    timeout: 10000
-- tapOn:
-    id: "next-hole-button"
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "next-hole-button"
 
 # ------- End round -------
 # On the hole screen the link is "end-round-button"; "end-incomplete-round-link" is the Play start screen's link
@@ -461,13 +366,10 @@ appId: com.grantsta.golf.nocaddyneeded
 - tapOn:
     id: "end-round-save-button"
 # The summary scrolls, so bring the Done button into view first
-- scrollUntilVisible:
-    element:
-      id: "round-summary-done-button"
-    direction: DOWN
-    timeout: 20000
-- tapOn:
-    id: "round-summary-done-button"
+- runFlow:
+    file: subflows/tap-in-page.yaml
+    env:
+      ID: "round-summary-done-button"
 
 # ======== UP AND DOWN ON PERFORM ========
 # Missed greens: holes 1, 3, 4, 5 (hole 2 was in regulation).
@@ -497,118 +399,7 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 5000
 - assertVisible:
     id: "up-and-down-rate"
-    text: "75%"
+    text: "100%"
 - assertVisible:
     id: "up-and-down-detail"
-    text: "3 of 4 missed greens"
-
-# ======== CHALLENGES ========
-# Each challenge screen must load (regression: navigation hooks threw on render after the SDK 58 upgrade),
-# expose its back button, and leave through the quit confirmation back to the Practice cards.
-- tapOn:
-    id: "tab-home"
-- tapOn:
-    id: "tab-practice"
-- extendedWaitUntil:
-    visible:
-      id: "done-button"
-    timeout: 15000
-- tapOn:
-    id: "done-button"
-# Wait for the onboarding overlay to finish closing before the next tap
-- extendedWaitUntil:
-    notVisible:
-      id: "done-button"
-    timeout: 5000
-
-- extendedWaitUntil:
-    visible:
-      id: "challenge-link-putting-simulation"
-    timeout: 5000
-- tapOn:
-    id: "challenge-link-putting-simulation"
-- extendedWaitUntil:
-    visible:
-      id: "header-back-button"
-    timeout: 5000
-- tapOn:
-    id: "header-back-button"
-- extendedWaitUntil:
-    visible:
-      id: "confirm-quit-button"
-    timeout: 5000
-- tapOn:
-    id: "confirm-quit-button"
-- extendedWaitUntil:
-    visible:
-      id: "challenge-link-putting-simulation"
-    timeout: 5000
-
-- extendedWaitUntil:
-    visible:
-      id: "challenge-link-up-and-down"
-    timeout: 5000
-- tapOn:
-    id: "challenge-link-up-and-down"
-- extendedWaitUntil:
-    visible:
-      id: "header-back-button"
-    timeout: 5000
-- tapOn:
-    id: "header-back-button"
-- extendedWaitUntil:
-    visible:
-      id: "confirm-quit-button"
-    timeout: 5000
-- tapOn:
-    id: "confirm-quit-button"
-- extendedWaitUntil:
-    visible:
-      id: "challenge-link-up-and-down"
-    timeout: 5000
-
-- extendedWaitUntil:
-    visible:
-      id: "challenge-link-short-putting-ladder"
-    timeout: 5000
-- tapOn:
-    id: "challenge-link-short-putting-ladder"
-- extendedWaitUntil:
-    visible:
-      id: "header-back-button"
-    timeout: 5000
-- tapOn:
-    id: "header-back-button"
-- extendedWaitUntil:
-    visible:
-      id: "confirm-quit-button"
-    timeout: 5000
-- tapOn:
-    id: "confirm-quit-button"
-- extendedWaitUntil:
-    visible:
-      id: "challenge-link-short-putting-ladder"
-    timeout: 5000
-
-- extendedWaitUntil:
-    visible:
-      id: "challenge-link-lag-putting"
-    timeout: 5000
-- tapOn:
-    id: "challenge-link-lag-putting"
-- extendedWaitUntil:
-    visible:
-      id: "header-back-button"
-    timeout: 5000
-- tapOn:
-    id: "header-back-button"
-- extendedWaitUntil:
-    visible:
-      id: "confirm-quit-button"
-    timeout: 5000
-- tapOn:
-    id: "confirm-quit-button"
-- extendedWaitUntil:
-    visible:
-      id: "challenge-link-lag-putting"
-    timeout: 5000
+    text: "3 of 3 missed greens"

@@ -93,8 +93,10 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 20000
 - tapOn:
     id: "first-putt-input"
-- tapOn:
-    id: "first-putt-input-option-1"
+- extendedWaitUntil:
+    visible: "1 ft"
+    timeout: 5000
+- tapOn: "1 ft"
 
 # Select the deadly sin "Trouble off tee"
 - scrollUntilVisible:

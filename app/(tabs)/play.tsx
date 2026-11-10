@@ -106,7 +106,8 @@ export default function Play() {
     const validateSinDetails = lifecycle.validateSinDetails;
     const resetForNewHole = lifecycle.resetForNewHole;
 
-    const [clubDistances, setClubDistances] = useState<ClubDistance[]>([]);
+    // Read from the database on each render, so the club picker always shows the saved clubs
+    const clubDistances: ClubDistance[] = getClubDistancesService();
     const selectedOffTeeClub = lifecycle.selectedOffTeeClub;
     const setSelectedOffTeeClub = lifecycle.setSelectedOffTeeClub;
     const sinDetailsClubError = lifecycle.sinDetailsClubError;
@@ -182,7 +183,6 @@ export default function Play() {
         }
         const history = getAllRoundHistoryService();
         setRecentCourseNames(getRecentCourseNamesService());
-        setClubDistances(getClubDistancesService());
 
         const currentSettings = getSettingsService();
         setSettings(currentSettings);
@@ -489,7 +489,6 @@ export default function Play() {
             showError('Could not save hole');
             return;
         }
-        setClubDistances(getClubDistancesService());
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         scrollRef.current?.scrollTo({ y: 0, animated: true });
         if (isTripleBogeyOrWorse(currentHoleData) && settings.badHoleReassuranceEnabled) {

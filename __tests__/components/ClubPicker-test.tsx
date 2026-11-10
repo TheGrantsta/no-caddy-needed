@@ -43,7 +43,7 @@ describe('ClubPicker', () => {
         expect(getByText('Select a club')).toBeTruthy();
     });
 
-    it('opens dropdown modal when toggle pressed', async () => {
+    it('lists the clubs inline under the toggle when pressed', async () => {
         const onSelectClub = jest.fn();
         const { getByTestId } = render(
             <ClubPicker clubs={mockClubs} onSelectClub={onSelectClub} />
@@ -52,7 +52,7 @@ describe('ClubPicker', () => {
         fireEvent.press(getByTestId('club-picker-dropdown-toggle'));
 
         await waitFor(() => {
-            expect(getByTestId('club-picker-modal')).toBeTruthy();
+            expect(getByTestId('club-picker-option-Driver')).toBeTruthy();
         });
     });
 

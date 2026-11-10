@@ -1,0 +1,11 @@
+appId: com.grantsta.golf.nocaddyneeded
+---
+# Scroll the one-page hole screen until the element is on screen, then tap it.
+# Pass the element's test ID as the ID env value, e.g. env: { ID: "next-hole-button" }
+- scrollUntilVisible:
+    element:
+      id: "${ID}"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "${ID}"

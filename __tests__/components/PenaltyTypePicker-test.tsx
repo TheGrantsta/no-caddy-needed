@@ -29,7 +29,7 @@ describe('PenaltyTypePicker', () => {
         expect(getByText('Select penalty type')).toBeTruthy();
     });
 
-    it('opens dropdown modal when toggle pressed', async () => {
+    it('lists the penalty types inline under the toggle when pressed', async () => {
         const onSelectPenaltyType = jest.fn();
         const { getByTestId } = render(
             <PenaltyTypePicker selectedPenaltyType={undefined} onSelectPenaltyType={onSelectPenaltyType} />
@@ -38,7 +38,7 @@ describe('PenaltyTypePicker', () => {
         fireEvent.press(getByTestId('penalty-type-picker-dropdown-toggle'));
 
         await waitFor(() => {
-            expect(getByTestId('penalty-type-picker-modal')).toBeTruthy();
+            expect(getByTestId('penalty-type-picker-option-Out of bounds')).toBeTruthy();
         });
     });
 

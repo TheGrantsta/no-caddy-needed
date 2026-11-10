@@ -20,7 +20,7 @@ describe('RoundScoreTable', () => {
     it('shouldShowTheScorecardLabelAndHoleNumbersWithATotal', () => {
         const { getByText } = render(<RoundScoreTable holes={holes} sinHoles={new Set()} />);
 
-        expect(getByText('SCORECARD')).toBeTruthy();
+        expect(getByText('SCORECARD · OUT')).toBeTruthy();
         expect(getByText('Hole')).toBeTruthy();
         expect(getByText('Tot')).toBeTruthy();
     });
@@ -60,5 +60,30 @@ describe('RoundScoreTable', () => {
         const { queryByText } = render(<RoundScoreTable holes={holes} sinHoles={new Set()} />);
 
         expect(queryByText('Dot marks a hole with a deadly sin')).toBeNull();
+    });
+
+    describe('Out and In tables', () => {
+        const holesFrom = (from: number, to: number) =>
+            Array.from({ length: to - from + 1 }, (_, i) => ({ holeNumber: from + i, par: 4, score: 4 }));
+
+        it('shouldLabelAFiveHoleRoundAsOutWithOneTable', () => {
+            const { getByText, queryByText, getByTestId } = render(
+                <RoundScoreTable holes={holesFrom(1, 5)} sinHoles={new Set()} />
+            );
+
+            expect(getByText('SCORECARD · OUT')).toBeTruthy();
+            expect(queryByText('SCORECARD · IN')).toBeNull();
+            expect(getByTestId('round-table-card-out')).toBeTruthy();
+        });
+
+        it('shouldSplitAnEighteenHoleRoundIntoOutAndInTables', () => {
+            const { getByText, getByTestId } = render(
+                <RoundScoreTable holes={holesFrom(1, 18)} sinHoles={new Set()} />
+            );
+
+            expect(getByText('SCORECARD · OUT')).toBeTruthy();
+            expect(getByText('SCORECARD · IN')).toBeTruthy();
+            expect(getByTestId('round-table-card-in')).toBeTruthy();
+        });
     });
 });

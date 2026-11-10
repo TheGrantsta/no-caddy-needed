@@ -206,6 +206,29 @@ describe('Scorecard screen', () => {
         expect(getByText('Round not found')).toBeTruthy();
     });
 
+    it('shows the summary card and score table even when a round has no score breakdown', () => {
+        mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+        mockGetRoundScoreBreakdown.mockReturnValue(null);
+
+        const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+        expect(getByTestId('round-summary-card')).toBeTruthy();
+        expect(getByTestId('round-table-card-out')).toBeTruthy();
+        expect(queryByTestId('scorecard-total')).toBeNull();
+    });
+
+    it('shows the summary card and score table for a score-only round too', () => {
+        mockGetMultiplayerScorecard.mockReturnValue({
+            ...multiplayerData,
+            round: { ...multiplayerData.round, IsScoreOnly: 1 },
+        });
+
+        const { getByTestId } = render(<ScorecardScreen />);
+
+        expect(getByTestId('round-summary-card')).toBeTruthy();
+        expect(getByTestId('round-table-card-out')).toBeTruthy();
+    });
+
     it('renders multiplayer scorecard when multiplayer data exists', () => {
         mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 

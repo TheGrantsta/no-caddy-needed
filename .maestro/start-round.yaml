@@ -52,15 +52,12 @@ appId: com.grantsta.golf.nocaddyneeded
     visible: "Score-only mode"
     timeout: 5000
 
-# Enable Score-only mode
+# Turn on Score-only mode (a switch)
 - tapOn:
-    id: "score-only-on"
+    id: "score-only-switch"
 
-# Wait for toggle to take effect
-- extendedWaitUntil:
-    visible:
-      id: "score-only-on-selected"
-    timeout: 5000
+# Wait for the switch to take effect
+- waitForAnimationToEnd
 
 # Return to Home screen (Settings is a stacked screen, not a tab — swipe from left edge to pop)
 - swipe:

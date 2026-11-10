@@ -46,4 +46,12 @@ describe('RoundSummaryCard', () => {
         expect(getByText('3-putts')).toBeTruthy();
         expect(getByText('Penalties')).toBeTruthy();
     });
+
+    it('shouldShowADashForPuttsWhenTheRoundDidNotRecordThem', () => {
+        const { getByText } = render(
+            <RoundSummaryCard holesPlayed={5} totalScore={20} totalPar={20} putts={null} threePutts={0} penalties={0} />
+        );
+
+        expect(getByText('–')).toBeTruthy();
+    });
 });

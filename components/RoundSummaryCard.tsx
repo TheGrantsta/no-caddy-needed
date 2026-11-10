@@ -6,7 +6,8 @@ type Props = {
     holesPlayed: number;
     totalScore: number;
     totalPar: number;
-    putts: number;
+    // Null when the round did not record putting (for example a score-only round)
+    putts: number | null;
     threePutts: number;
     penalties: number;
 };
@@ -19,7 +20,7 @@ export default function RoundSummaryCard({ holesPlayed, totalScore, totalPar, pu
     const toPar = difference === 0 ? 'Even par' : difference > 0 ? `${difference} over par` : `${Math.abs(difference)} under par`;
 
     const tiles = [
-        { label: 'Putts', value: putts },
+        { label: 'Putts', value: putts ?? '–' },
         { label: '3-putts', value: threePutts },
         { label: 'Penalties', value: penalties },
     ];

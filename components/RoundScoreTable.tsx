@@ -14,18 +14,17 @@ type Props = {
 
 const SIN_DOT_COLOUR = '#B5651D';
 
-// The round as a table: hole numbers, par and the player's score per hole, with totals
-export default function RoundScoreTable({ holes, sinHoles, onSinPress }: Props) {
+// One nine: hole numbers, par and the player's score per hole, with the nine's total
+const NineTable = ({ label, holes, sinHoles, onSinPress }: Props & { label: 'OUT' | 'IN' }) => {
     const styles = useStyles();
     const s = styles.roundDetail;
     const totalPar = holes.reduce((sum, h) => sum + h.par, 0);
     const totalScore = holes.reduce((sum, h) => sum + h.score, 0);
-    const anySin = holes.some(h => sinHoles.has(h.holeNumber));
 
     return (
         <View>
-            <Text style={s.sectionLabel}>SCORECARD</Text>
-            <View testID="round-table-card" style={s.tableCard}>
+            <Text style={s.sectionLabel}>{`SCORECARD · ${label}`}</Text>
+            <View testID={`round-table-card-${label.toLowerCase()}`} style={s.tableCard}>
                 <View style={[s.tableRow, s.tableHeaderRow]}>
                     <Text style={[s.rowLabel, s.headerText]}>Hole</Text>
                     {holes.map(h => (
@@ -60,10 +59,25 @@ export default function RoundScoreTable({ holes, sinHoles, onSinPress }: Props) 
                     <Text style={[s.totalCell, s.youScore]}>{String(totalScore)}</Text>
                 </View>
             </View>
+        </View>
+    );
+};
+
+// The round as tables: an Out table for holes 1 to 9 and an In table for holes 10 to 18
+export default function RoundScoreTable({ holes, sinHoles, onSinPress }: Props) {
+    const styles = useStyles();
+    const out = holes.filter(h => h.holeNumber <= 9);
+    const inward = holes.filter(h => h.holeNumber >= 10);
+    const anySin = holes.some(h => sinHoles.has(h.holeNumber));
+
+    return (
+        <View>
+            {out.length > 0 && <NineTable label="OUT" holes={out} sinHoles={sinHoles} onSinPress={onSinPress} />}
+            {inward.length > 0 && <NineTable label="IN" holes={inward} sinHoles={sinHoles} onSinPress={onSinPress} />}
             {anySin ? (
-                <View style={s.legendRow}>
-                    <View style={[s.sinDot, { backgroundColor: SIN_DOT_COLOUR }]} />
-                    <Text style={s.legendText}>Dot marks a hole with a deadly sin</Text>
+                <View style={styles.roundDetail.legendRow}>
+                    <View style={[styles.roundDetail.sinDot, { backgroundColor: SIN_DOT_COLOUR }]} />
+                    <Text style={styles.roundDetail.legendText}>Dot marks a hole with a deadly sin</Text>
                 </View>
             ) : null}
         </View>

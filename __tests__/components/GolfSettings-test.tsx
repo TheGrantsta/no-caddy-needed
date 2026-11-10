@@ -1,5 +1,4 @@
 import React from 'react';
-import { Animated } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import GolfSettings from '../../components/GolfSettings';
 
@@ -13,58 +12,43 @@ jest.mock('../../hooks/useStyles', () => ({
 }));
 
 const settings = {
-    preShotReminderEnabled: false,
     skipStatsFlowEnabled: false,
     badHoleReassuranceEnabled: true,
 } as any;
 
-const renderGolf = (overrides: object = {}, showRoutineInput = false) => {
+const renderGolf = (overrides: object = {}) => {
     const handlers = {
-        onRoutineTextChange: jest.fn(),
-        onRoutineTextSave: jest.fn(),
-        onPreShotEnabledChange: jest.fn(),
         onScoreOnlyModeChange: jest.fn(),
         onBadHoleReassuranceChange: jest.fn(),
     };
-    const utils = render(
-        <GolfSettings
-            settings={{ ...settings, ...overrides }}
-            routineText="Breathe"
-            showRoutineInput={showRoutineInput}
-            routineFadeAnim={new Animated.Value(1)}
-            {...handlers}
-        />
-    );
+    const utils = render(<GolfSettings settings={{ ...settings, ...overrides }} {...handlers} />);
     return { ...utils, ...handlers };
 };
 
 describe('GolfSettings', () => {
-    it('shouldShowTheGolfSectionWithItsThreeSwitches', () => {
+    it('shouldShowTheGolfSectionWithItsTwoSwitches', () => {
         const { getByText, getByTestId } = renderGolf();
 
         expect(getByText('GOLF')).toBeTruthy();
-        expect(getByText('Show pre-shot routine')).toBeTruthy();
         expect(getByText('Score-only mode')).toBeTruthy();
         expect(getByText('Bad hole reminder')).toBeTruthy();
-        expect(getByTestId('preshot-switch')).toBeTruthy();
         expect(getByTestId('score-only-switch')).toBeTruthy();
         expect(getByTestId('bad-hole-reassurance-switch')).toBeTruthy();
     });
 
-    it('shouldReflectEachSettingInItsSwitch', () => {
-        const { getByTestId } = renderGolf({ preShotReminderEnabled: true, skipStatsFlowEnabled: false, badHoleReassuranceEnabled: true });
+    it('shouldNotShowAPreShotRoutineSwitchOrTextBox', () => {
+        const { queryByText, queryByTestId } = renderGolf();
 
-        expect(getByTestId('preshot-switch').props.value).toBe(true);
-        expect(getByTestId('score-only-switch').props.value).toBe(false);
-        expect(getByTestId('bad-hole-reassurance-switch').props.value).toBe(true);
+        expect(queryByText('Show pre-shot routine')).toBeNull();
+        expect(queryByTestId('preshot-switch')).toBeNull();
+        expect(queryByTestId('preshot-routine-input')).toBeNull();
     });
 
-    it('shouldReportPreShotChangeFromItsSwitch', () => {
-        const { getByTestId, onPreShotEnabledChange } = renderGolf();
+    it('shouldReflectEachSettingInItsSwitch', () => {
+        const { getByTestId } = renderGolf({ skipStatsFlowEnabled: false, badHoleReassuranceEnabled: true });
 
-        fireEvent(getByTestId('preshot-switch'), 'valueChange', true);
-
-        expect(onPreShotEnabledChange).toHaveBeenCalledWith(true);
+        expect(getByTestId('score-only-switch').props.value).toBe(false);
+        expect(getByTestId('bad-hole-reassurance-switch').props.value).toBe(true);
     });
 
     it('shouldReportScoreOnlyChangeFromItsSwitch', () => {
@@ -81,25 +65,5 @@ describe('GolfSettings', () => {
         fireEvent(getByTestId('bad-hole-reassurance-switch'), 'valueChange', false);
 
         expect(onBadHoleReassuranceChange).toHaveBeenCalledWith(false);
-    });
-
-    it('shouldShowTheRoutineInputOnlyWhenPreShotIsOn', () => {
-        const { queryByTestId, rerender } = renderGolf({}, false);
-        expect(queryByTestId('preshot-routine-input')).toBeNull();
-
-        rerender(
-            <GolfSettings
-                settings={settings}
-                routineText="Breathe"
-                onRoutineTextChange={jest.fn()}
-                onRoutineTextSave={jest.fn()}
-                showRoutineInput={true}
-                routineFadeAnim={new Animated.Value(1)}
-                onPreShotEnabledChange={jest.fn()}
-                onScoreOnlyModeChange={jest.fn()}
-                onBadHoleReassuranceChange={jest.fn()}
-            />
-        );
-        expect(queryByTestId('preshot-routine-input')).toBeTruthy();
     });
 });

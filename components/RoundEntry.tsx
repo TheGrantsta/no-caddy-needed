@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import CtaButton from './CtaButton';
+import PageHeader from './PageHeader';
 import PlayerSetup from './PlayerSetup';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
@@ -33,20 +34,18 @@ export default function RoundEntry({
     return (
         <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
             <View style={styles.container}>
-                <View style={styles.header}>
-                    <View style={[styles.titleRow, { justifyContent: 'space-between' }]}>
-                        <Text style={[styles.headerText, styles.marginTop]}>Play</Text>
-                        <View style={{ flexDirection: 'row', columnGap: 4 }}>
-                            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"
-                                testID="play-onboarding-info-button"
-                                onPress={onShowOnboarding}
-                                style={{ padding: 4 }}
-                            >
-                                <MaterialIcons name="info-outline" size={24} color={colours.primary} />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
+                <PageHeader
+                    title="Play"
+                    rightAction={
+                        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"
+                            testID="play-onboarding-info-button"
+                            onPress={onShowOnboarding}
+                            style={styles.practiceHeader.circleButton}
+                        >
+                            <MaterialIcons name="info-outline" size={22} color={colours.text} />
+                        </TouchableOpacity>
+                    }
+                />
 
                 {incompleteRound ? (
                     <>

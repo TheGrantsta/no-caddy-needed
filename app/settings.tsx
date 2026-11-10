@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useToggle } from '../hooks/useToggle';
-import { Animated, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Sharing from 'expo-sharing';
 import { getSettingsService, saveSettingsService, AppSettings } from '../service/DbService';
@@ -28,27 +28,7 @@ export default function Settings() {
   const { showResult, showError } = useAppToast();
   const [exporting, setExporting] = useState(false);
   const [settings, setSettings] = useState<AppSettings>(getSettingsService());
-  const [routineText, setRoutineText] = useState(settings.preShotRoutineText);
   const [showOnboarding, , setShowOnboarding] = useToggle(!settings.settingsOnboardingSeen);
-  const [showRoutineInput, , setShowRoutineInput] = useToggle(settings.preShotReminderEnabled);
-  // Held in state so the Animated.Value is never read from a ref during render
-  const [routineFadeAnim] = useState(() => new Animated.Value(settings.preShotReminderEnabled ? 1 : 0));
-
-  useEffect(() => {
-    if (settings.preShotReminderEnabled) {
-      setShowRoutineInput(true);
-    }
-    Animated.timing(routineFadeAnim, {
-      toValue: settings.preShotReminderEnabled ? 1 : 0,
-      duration: 350,
-      useNativeDriver: true,
-    }).start(() => {
-      if (!settings.preShotReminderEnabled) {
-        setShowRoutineInput(false);
-      }
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settings.preShotReminderEnabled]);
 
 
   const handleDismissOnboarding = async () => {
@@ -98,15 +78,6 @@ export default function Settings() {
     showResult(success, 'Settings saved', 'Failed to save settings');
   };
 
-  const handlePreShotEnabledChange = async (value: boolean) => {
-    const updated: AppSettings = { ...settings, preShotReminderEnabled: value };
-    setSettings(updated);
-
-    const success = await saveSettingsService(updated);
-
-    showResult(success, 'Settings saved', 'Failed to save settings');
-  };
-
   const handleScoreOnlyModeChange = async (value: boolean) => {
     const updated: AppSettings = { ...settings, skipStatsFlowEnabled: value };
     setSettings(updated);
@@ -118,15 +89,6 @@ export default function Settings() {
 
   const handleBadHoleReassuranceChange = async (value: boolean) => {
     const updated: AppSettings = { ...settings, badHoleReassuranceEnabled: value };
-    setSettings(updated);
-
-    const success = await saveSettingsService(updated);
-
-    showResult(success, 'Settings saved', 'Failed to save settings');
-  };
-
-  const handleRoutineTextChange = async () => {
-    const updated: AppSettings = { ...settings, preShotRoutineText: routineText };
     setSettings(updated);
 
     const success = await saveSettingsService(updated);
@@ -190,12 +152,6 @@ export default function Settings() {
 
         <GolfSettings
           settings={settings}
-          routineText={routineText}
-          onRoutineTextChange={setRoutineText}
-          onRoutineTextSave={handleRoutineTextChange}
-          showRoutineInput={showRoutineInput}
-          routineFadeAnim={routineFadeAnim}
-          onPreShotEnabledChange={handlePreShotEnabledChange}
           onScoreOnlyModeChange={handleScoreOnlyModeChange}
           onBadHoleReassuranceChange={handleBadHoleReassuranceChange}
         />

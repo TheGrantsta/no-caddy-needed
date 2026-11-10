@@ -186,31 +186,12 @@ describe('Settings page', () => {
         });
     });
 
-    it('showsTheRoutineInputWhilePreShotRoutineIsOn', () => {
-        const { getByTestId } = render(<Settings />);
+    it('doesNotShowThePreShotRoutineSwitchOrTextBox', () => {
+        const { queryByText, queryByTestId } = render(<Settings />);
 
-        expect(getByTestId('preshot-routine-input')).toBeTruthy();
-    });
-
-    it('savesPreShotRoutineOffWhenItsSwitchIsTurnedOff', async () => {
-        const { getByTestId } = render(<Settings />);
-
-        fireEvent(getByTestId('preshot-switch'), 'valueChange', false);
-
-        await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ preShotReminderEnabled: false }));
-        });
-    });
-
-    it('savesTheEditedRoutineTextWhenEditingEnds', async () => {
-        const { getByTestId } = render(<Settings />);
-
-        fireEvent.changeText(getByTestId('preshot-routine-input'), 'Breathe and commit');
-        fireEvent(getByTestId('preshot-routine-input'), 'endEditing');
-
-        await waitFor(() => {
-            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ preShotRoutineText: 'Breathe and commit' }));
-        });
+        expect(queryByText('Show pre-shot routine')).toBeNull();
+        expect(queryByTestId('preshot-switch')).toBeNull();
+        expect(queryByTestId('preshot-routine-input')).toBeNull();
     });
 
     it('savesScoreOnlyModeWhenItsSwitchIsTurnedOn', async () => {

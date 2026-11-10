@@ -271,6 +271,7 @@ describe('Play screen', () => {
                     fireEvent.press(getByTestId('end-incomplete-round-link'));
                 });
                 expect(getByText(/End round\?/)).toBeTruthy();
+                expect(getByTestId('end-incomplete-round-sheet')).toBeTruthy();
                 expect(getByTestId('confirm-end-round-button')).toBeTruthy();
             });
 

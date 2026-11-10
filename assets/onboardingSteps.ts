@@ -22,6 +22,6 @@ export const ONBOARDING_STEPS: Record<'home' | 'play' | 'practice' | 'perform' |
     { text: 'Enter the carry distance for each club and swing length to build a reference for the course.' },
   ],
   settings: [
-    { text: 'Set your units, notifications, sounds, voice and pre-shot routine here.' },
+    { text: 'Set your units, notifications, sounds and voice here.' },
   ],
 };

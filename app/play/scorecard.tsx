@@ -430,26 +430,29 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                             onGreenInRegulationChange={handleGreenInRegulationEdit}
                                             onSinChange={handleSinToggle}
                                             showStats={showStats}
+                                             renderFollowUp={(key) => {
+                                                 if (key === 'threePutts') return null;
+                                                 return (
+                                                     <SinDetailsInput
+                                                         sins={edit.editedSins ?? INITIAL_SINS}
+                                                         only={key}
+                                                         clubs={clubDistances}
+                                                         selectedOffTeeClub={edit.selectedOffTeeClub}
+                                                         onOffTeeClubChange={edit.setSelectedOffTeeClub}
+                                                         showOffTeeClubError={edit.sinDetailsClubError}
+                                                         selectedPenaltyType={edit.selectedPenaltyType}
+                                                         onPenaltyTypeChange={edit.setSelectedPenaltyType}
+                                                         showPenaltyTypeError={edit.sinDetailsPenaltyError}
+                                                         selectedBogeysClub={edit.selectedBogeysClub}
+                                                         onBogeysClubChange={edit.setSelectedBogeysClub}
+                                                         showBogeysClubError={edit.sinDetailsBogeysClubError}
+                                                         selectedDoubleChipReason={edit.selectedDoubleChipReason}
+                                                         onDoubleChipReasonChange={edit.setSelectedDoubleChipReason}
+                                                         showDoubleChipReasonError={edit.sinDetailsDoubleChipReasonError}
+                                                     />
+                                                 );
+                                             }}
                                         />
-                                        {showStats && edit.editedSins && (edit.editedSins.troubleOffTee || edit.editedSins.penalties || edit.editedSins.bogeysInside9Iron || edit.editedSins.doubleChips) && (
-                                            <SinDetailsInput
-                                                key={`sin-details-${selectedEditHole.HoleNumber}`}
-                                                sins={edit.editedSins}
-                                                clubs={clubDistances}
-                                                selectedOffTeeClub={edit.selectedOffTeeClub}
-                                                onOffTeeClubChange={edit.setSelectedOffTeeClub}
-                                                showOffTeeClubError={edit.sinDetailsClubError}
-                                                selectedPenaltyType={edit.selectedPenaltyType}
-                                                onPenaltyTypeChange={edit.setSelectedPenaltyType}
-                                                showPenaltyTypeError={edit.sinDetailsPenaltyError}
-                                                selectedBogeysClub={edit.selectedBogeysClub}
-                                                onBogeysClubChange={edit.setSelectedBogeysClub}
-                                                showBogeysClubError={edit.sinDetailsBogeysClubError}
-                                                selectedDoubleChipReason={edit.selectedDoubleChipReason}
-                                                onDoubleChipReasonChange={edit.setSelectedDoubleChipReason}
-                                                showDoubleChipReasonError={edit.sinDetailsDoubleChipReasonError}
-                                            />
-                                        )}
                                     </>
                                 ) : (
                                     <EditRoundSheet

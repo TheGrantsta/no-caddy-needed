@@ -1,4 +1,5 @@
 import React from 'react';
+import { Text } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import EditHoleSheet from '../../components/EditHoleSheet';
 
@@ -126,5 +127,18 @@ describe('EditHoleSheet', () => {
         expect(getByText('PUTTING')).toBeTruthy();
         expect(getByText('DEADLY SINS')).toBeTruthy();
         expect(getByTestId('edit-hole-gir-switch')).toBeTruthy();
+    });
+
+    it('shouldShowTheFollowUpUnderASinOnlyWhileItIsTicked', () => {
+        const renderFollowUp = jest.fn((key: string) => <Text>{`follow-up for ${key}`}</Text>);
+        const { getByText, queryByText, getByTestId } = renderSheet({
+            sins: { ...sins, threePutts: false, troubleOffTee: true },
+            renderFollowUp,
+        });
+
+        expect(getByText('follow-up for troubleOffTee')).toBeTruthy();
+        expect(getByTestId('edit-hole-follow-up-troubleOffTee')).toBeTruthy();
+        expect(queryByText('follow-up for penalties')).toBeNull();
+        expect(renderFollowUp).not.toHaveBeenCalledWith('penalties');
     });
 });

@@ -280,6 +280,22 @@ describe('Scorecard screen', () => {
             expect(getByTestId('cancel-edit-button')).toBeTruthy();
         });
 
+        it('shows the club picker inside the trouble off tee row when a hole is edited', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetClubDistances.mockReturnValue([
+                { Id: 1, Club: 'Driver', CarryDistance: 220, TotalDistance: 230, SortOrder: 0 },
+            ]);
+
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('edit-round-hole-1'));
+            fireEvent(getByTestId('edit-hole-sin-troubleOffTee'), 'valueChange', true);
+
+            expect(within(getByTestId('edit-hole-follow-up-troubleOffTee')).getByTestId('club-picker-dropdown-toggle')).toBeTruthy();
+            expect(queryByTestId('edit-hole-follow-up-penalties')).toBeNull();
+        });
+
         it('shows the edit round sheet with each hole and the total when editing', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 

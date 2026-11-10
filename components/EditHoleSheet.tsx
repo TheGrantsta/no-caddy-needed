@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
@@ -30,6 +30,8 @@ type Props = {
     onSinChange: (key: keyof Sins, value: boolean) => void;
     // Score-only rounds record just the strokes, so putting and sins are hidden
     showStats?: boolean;
+    // Follow-up pickers (club, penalty type, chip reason) shown under their sin while it is ticked
+    renderFollowUp?: (key: keyof Sins) => ReactNode;
 };
 
 const PAR_OPTIONS = [3, 4, 5];
@@ -59,6 +61,7 @@ export default function EditHoleSheet({
     onGreenInRegulationChange,
     onSinChange,
     showStats = true,
+    renderFollowUp,
 }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
@@ -159,6 +162,11 @@ export default function EditHoleSheet({
                                     thumbColor={colours.white}
                                 />
                             </View>
+                            {sins[row.key] && renderFollowUp ? (
+                                <View testID={`edit-hole-follow-up-${row.key}`} style={styles.deadlySinsTally.followUp}>
+                                    {renderFollowUp(row.key)}
+                                </View>
+                            ) : null}
                         </View>
                     ))}
                 </View>

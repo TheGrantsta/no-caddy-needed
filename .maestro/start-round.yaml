@@ -301,62 +301,80 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 5000
 - tapOn:
     id: "end-round-save-button"
-# The summary scrolls, so bring the Done button into view first
+# The summary scrolls: bring "View in Stats" into view and open it
 - scrollUntilVisible:
     element:
-      id: "round-summary-done-button"
+      id: "round-summary-performance-button"
     direction: DOWN
     timeout: 20000
 - tapOn:
-    id: "round-summary-done-button"
+    id: "round-summary-performance-button"
 
-# Assert scorecard is displayed
+# "View in Stats" opens the Stats guide straight away: dismiss it
 - extendedWaitUntil:
-    visible: "Scorecard"
+    visible:
+      id: "done-button"
+    timeout: 15000
+- tapOn:
+    id: "done-button"
+- extendedWaitUntil:
+    notVisible:
+      id: "done-button"
+    timeout: 5000
+
+# Open the newest round from Round history to see its scorecard
+- scrollUntilVisible:
+    element:
+      id: "round-history-row-.*"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "round-history-row-.*"
+    index: 0
+
+# Assert the round summary is displayed
+- extendedWaitUntil:
+    visible:
+      id: "round-summary-card"
     timeout: 10000
 
-# Assert par-3 holes are recorded correctly
+# Assert par for the out holes (par 3: 3, 6; par 5: 5, 8; par 4: 1)
 - assertVisible:
-    id: "hole-par-3"
+    id: "round-table-par-3"
     text: "3"
 - assertVisible:
-    id: "hole-par-6"
+    id: "round-table-par-6"
     text: "3"
 - assertVisible:
-    id: "hole-par-12"
-    text: "3"
-- assertVisible:
-    id: "hole-par-15"
-    text: "3"
-
-# Assert par-5 holes are recorded correctly
-- assertVisible:
-    id: "hole-par-5"
+    id: "round-table-par-5"
     text: "5"
 - assertVisible:
-    id: "hole-par-8"
+    id: "round-table-par-8"
     text: "5"
 - assertVisible:
-    id: "hole-par-13"
-    text: "5"
-- assertVisible:
-    id: "hole-par-16"
-    text: "5"
-
-# Assert a sample par-4 hole
-- assertVisible:
-    id: "hole-par-1"
+    id: "round-table-par-1"
     text: "4"
 
-# Assert nine-hole par totals (front 36 + back 36 = 72)
+# Scroll to the in holes (par 3: 12, 15; par 5: 13, 16)
+- scrollUntilVisible:
+    element:
+      id: "round-table-par-12"
+    direction: DOWN
+    timeout: 20000
 - assertVisible:
-    id: "front9-par-total"
-    text: "36"
+    id: "round-table-par-12"
+    text: "3"
 - assertVisible:
-    id: "back9-par-total"
-    text: "36"
+    id: "round-table-par-15"
+    text: "3"
+- assertVisible:
+    id: "round-table-par-13"
+    text: "5"
+- assertVisible:
+    id: "round-table-par-16"
+    text: "5"
 
-# Assert player stroke total = 72 (scores reset to par on each hole)
+# Assert the round total is 72 (scores reset to par on each hole)
 - assertVisible:
-    id: "round-player-1-total"
+    id: "round-summary-score"
     text: "72"

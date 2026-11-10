@@ -211,6 +211,7 @@ function ThemedApp() {
         <Stack.Screen
           name="play/distances"
           options={{
+            headerBackVisible: false,
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {

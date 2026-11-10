@@ -1,4 +1,4 @@
-import { getSettingsService, saveSettingsService, AppSettings, DEFAULT_PRESHOT_ROUTINE } from '../../service/DbService';
+import { getSettingsService, saveSettingsService, AppSettings } from '../../service/DbService';
 import { getSettings, saveSettings } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
@@ -29,8 +29,6 @@ describe('getSettingsService', () => {
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
             reviewPromptShown: false,
-            preShotReminderEnabled: true,
-            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
             whatsNewVersionSeen: '',
             settingsOnboardingSeen: false,
             performOnboardingSeen: false,
@@ -67,8 +65,6 @@ describe('getSettingsService', () => {
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
             reviewPromptShown: false,
-            preShotReminderEnabled: true,
-            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
             whatsNewVersionSeen: '',
             settingsOnboardingSeen: false,
             performOnboardingSeen: false,
@@ -105,8 +101,6 @@ describe('getSettingsService', () => {
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
             reviewPromptShown: false,
-            preShotReminderEnabled: true,
-            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
             whatsNewVersionSeen: '',
             settingsOnboardingSeen: false,
             performOnboardingSeen: false,
@@ -143,8 +137,6 @@ describe('getSettingsService', () => {
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
             reviewPromptShown: false,
-            preShotReminderEnabled: true,
-            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
             whatsNewVersionSeen: '',
             settingsOnboardingSeen: false,
             performOnboardingSeen: false,
@@ -181,8 +173,6 @@ describe('getSettingsService', () => {
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
             reviewPromptShown: false,
-            preShotReminderEnabled: true,
-            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
             whatsNewVersionSeen: '',
             settingsOnboardingSeen: false,
             performOnboardingSeen: false,
@@ -212,8 +202,6 @@ describe('saveSettingsService', () => {
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
             reviewPromptShown: false,
-            preShotReminderEnabled: true,
-            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
             whatsNewVersionSeen: '',
             settingsOnboardingSeen: false,
             performOnboardingSeen: false,
@@ -226,7 +214,7 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1);
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
@@ -242,8 +230,6 @@ describe('saveSettingsService', () => {
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
             reviewPromptShown: false,
-            preShotReminderEnabled: true,
-            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
             whatsNewVersionSeen: '',
             settingsOnboardingSeen: false,
             performOnboardingSeen: false,
@@ -256,7 +242,7 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1);
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
@@ -272,8 +258,6 @@ describe('saveSettingsService', () => {
             homeOnboardingSeen: false,
             practiceOnboardingSeen: false,
             reviewPromptShown: false,
-            preShotReminderEnabled: true,
-            preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
             whatsNewVersionSeen: '',
             settingsOnboardingSeen: false,
             performOnboardingSeen: false,
@@ -286,6 +270,6 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1);
     });
 });

@@ -101,9 +101,6 @@ appId: com.grantsta.golf.nocaddyneeded
 # Par 3: 3,6,12,15
 # Par 5: 5,8,13,16
 
-# The pre-shot routine reminder ("Got it" overlay) appears before each hole,
-# so every hole block dismisses it before scoring.
-
 # Hole 1 — Par 4
 - extendedWaitUntil:
     visible:

@@ -10,8 +10,6 @@ jest.mock('../../../service/DbService', () => ({
         soundsEnabled: true,
         voice: 'male',
         units: 'yards',
-        preShotReminderEnabled: false,
-        preShotRoutineText: '',
         settingsOnboardingSeen: true,
         skipStatsFlowEnabled: false,
     })),

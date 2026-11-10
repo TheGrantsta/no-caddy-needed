@@ -34,8 +34,6 @@ const baseSettings = {
     homeOnboardingSeen: false,
     practiceOnboardingSeen: false,
     reviewPromptShown: false,
-    preShotReminderEnabled: true,
-    preShotRoutineText: '',
     whatsNewVersionSeen: '',
     settingsOnboardingSeen: true,
     performOnboardingSeen: true,

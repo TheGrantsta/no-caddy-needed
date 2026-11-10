@@ -17,7 +17,7 @@ jest.mock('../../hooks/useStyles', () => ({
 }));
 
 jest.mock('../../service/DbService', () => ({
-    getSettingsService: jest.fn(() => ({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: '', whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false })),
+    getSettingsService: jest.fn(() => ({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false })),
     saveSettingsService: jest.fn(() => Promise.resolve(true)),
 }));
 
@@ -68,8 +68,6 @@ describe('Settings page', () => {
         homeOnboardingSeen: false,
         practiceOnboardingSeen: false,
         reviewPromptShown: false,
-        preShotReminderEnabled: true,
-        preShotRoutineText: '',
         whatsNewVersionSeen: '',
         settingsOnboardingSeen: true,
         performOnboardingSeen: false,

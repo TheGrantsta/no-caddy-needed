@@ -73,7 +73,6 @@ jest.mock('../../service/DbService', () => ({
         practiceOnboardingSeen: true,
         reviewPromptShown: false,
         skipStatsFlowEnabled: false,
-        preShotReminderEnabled: true,
         badHoleReassuranceEnabled: true,
     } as any),
     saveSettingsService: jest.fn().mockResolvedValue(true),

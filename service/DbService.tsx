@@ -690,8 +690,6 @@ export const getRoundScoreBreakdownService = (roundId: number): RoundScoreBreakd
 };
 
 // Settings services
-export const DEFAULT_PRESHOT_ROUTINE = 'Pick a specific target\nSee the shot\nOne smooth practice swing\nCommit, breathe, go';
-
 export type AppSettings = {
     notificationsEnabled: boolean;
     voice: 'female' | 'male' | 'neutral';
@@ -702,8 +700,6 @@ export type AppSettings = {
     homeOnboardingSeen: boolean;
     practiceOnboardingSeen: boolean;
     reviewPromptShown: boolean;
-    preShotReminderEnabled: boolean;
-    preShotRoutineText: string;
     whatsNewVersionSeen: string;
     settingsOnboardingSeen: boolean;
     performOnboardingSeen: boolean;
@@ -714,10 +710,10 @@ export type AppSettings = {
 };
 
 export const getSettingsService = (): AppSettings => {
-    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; ReviewPromptShown: number; PreShotReminderEnabled: number; PreShotRoutineText: string; WhatsNewVersionSeen: string; SettingsOnboardingSeen: number; PerformOnboardingSeen: number; TempoBpm: number; Units: string; SkipStatsFlowEnabled: number; BadHoleReassuranceEnabled: number } | null;
+    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; ReviewPromptShown: number; WhatsNewVersionSeen: string; SettingsOnboardingSeen: number; PerformOnboardingSeen: number; TempoBpm: number; Units: string; SkipStatsFlowEnabled: number; BadHoleReassuranceEnabled: number } | null;
 
     if (!row) {
-        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: DEFAULT_PRESHOT_ROUTINE, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false, badHoleReassuranceEnabled: true };
+        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false, badHoleReassuranceEnabled: true };
     }
 
     return {
@@ -730,8 +726,6 @@ export const getSettingsService = (): AppSettings => {
         homeOnboardingSeen: row.HomeOnboardingSeen === 1,
         practiceOnboardingSeen: row.PracticeOnboardingSeen === 1,
         reviewPromptShown: row.ReviewPromptShown === 1,
-        preShotReminderEnabled: (row.PreShotReminderEnabled ?? 1) === 1,
-        preShotRoutineText: row.PreShotRoutineText || DEFAULT_PRESHOT_ROUTINE,
         whatsNewVersionSeen: row.WhatsNewVersionSeen ?? '',
         settingsOnboardingSeen: row.SettingsOnboardingSeen === 1,
         performOnboardingSeen: row.PerformOnboardingSeen === 1,
@@ -743,7 +737,7 @@ export const getSettingsService = (): AppSettings => {
 };
 
 export const saveSettingsService = async (settings: AppSettings): Promise<boolean> => {
-    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0, settings.reviewPromptShown ? 1 : 0, settings.preShotReminderEnabled ? 1 : 0, settings.preShotRoutineText, settings.whatsNewVersionSeen, settings.settingsOnboardingSeen ? 1 : 0, settings.performOnboardingSeen ? 1 : 0, settings.tempoBpm, settings.units, settings.skipStatsFlowEnabled ? 1 : 0, settings.badHoleReassuranceEnabled ? 1 : 0);
+    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0, settings.reviewPromptShown ? 1 : 0, settings.whatsNewVersionSeen, settings.settingsOnboardingSeen ? 1 : 0, settings.performOnboardingSeen ? 1 : 0, settings.tempoBpm, settings.units, settings.skipStatsFlowEnabled ? 1 : 0, settings.badHoleReassuranceEnabled ? 1 : 0);
 };
 
 export type PracticeReminder = {

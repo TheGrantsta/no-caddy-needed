@@ -30,13 +30,13 @@ beforeAll(async () => {
 
 // saveSettings signature:
 // notificationsEnabled, voice, soundsEnabled, wedgeChartOnboardingSeen, distancesOnboardingSeen,
-// playOnboardingSeen, homeOnboardingSeen, practiceOnboardingSeen,
-// reviewPromptShown, preShotReminderEnabled, preShotRoutineText, whatsNewVersionSeen,
-// settingsOnboardingSeen, performOnboardingSeen, tempoBpm, units, skipStatsFlowEnabled
-const callSaveWithRoutine = (routine: string) =>
-    saveSettings(1, 'female', 1, 0, 0, 0, 0, 0, 0, 1, routine, '', 0, 0, 60, 'yards', 0);
+// playOnboardingSeen, homeOnboardingSeen, practiceOnboardingSeen, reviewPromptShown,
+// whatsNewVersionSeen, settingsOnboardingSeen, performOnboardingSeen, tempoBpm, units,
+// skipStatsFlowEnabled, badHoleReassuranceEnabled
+const saveDefault = (tempoBpm = 60) =>
+    saveSettings(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, tempoBpm, 'yards', 0, 1);
 
-describe('saveSettings pre-shot routine guard', () => {
+describe('saveSettings', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockPrepareSync.mockReturnValue({
@@ -46,65 +46,21 @@ describe('saveSettings pre-shot routine guard', () => {
         mockStatementExecuteAsync.mockResolvedValue(undefined);
     });
 
-    it('persistsProvidedRoutineWhenNonEmpty', async () => {
-        mockGetAllSync.mockReturnValue([{ PreShotRoutineText: 'old custom routine' }]);
+    it('writesNoPreShotRoutineColumns', async () => {
+        await saveDefault();
 
-        await callSaveWithRoutine('new custom routine');
-
-        const [params] = mockStatementExecuteAsync.mock.calls[0];
-        expect(params.$PreShotRoutineText).toBe('new custom routine');
-    });
-
-    it('keepsExistingCustomRoutineWhenProvidedRoutineIsEmpty', async () => {
-        mockGetAllSync.mockReturnValue([{ PreShotRoutineText: 'my custom routine' }]);
-
-        await callSaveWithRoutine('');
-
-        const [params] = mockStatementExecuteAsync.mock.calls[0];
-        expect(params.$PreShotRoutineText).toBe('my custom routine');
-    });
-
-    it('keepsExistingCustomRoutineWhenProvidedRoutineIsWhitespace', async () => {
-        mockGetAllSync.mockReturnValue([{ PreShotRoutineText: 'my custom routine' }]);
-
-        await callSaveWithRoutine('   \n  ');
-
-        const [params] = mockStatementExecuteAsync.mock.calls[0];
-        expect(params.$PreShotRoutineText).toBe('my custom routine');
-    });
-
-    it('storesEmptyWhenProvidedRoutineEmptyAndNoExistingSettings', async () => {
-        mockGetAllSync.mockReturnValue([]);
-
-        await callSaveWithRoutine('');
-
-        const [params] = mockStatementExecuteAsync.mock.calls[0];
-        expect(params.$PreShotRoutineText).toBe('');
-    });
-
-    it('readsExistingRoutineBeforeOverwriting', async () => {
-        mockGetAllSync.mockReturnValue([{ PreShotRoutineText: 'existing routine' }]);
-
-        await callSaveWithRoutine('');
-
-        const selectCall = mockGetAllSync.mock.calls.find(
-            (call: string[]) => /SELECT[\s\S]*PreShotRoutineText[\s\S]*FROM Settings/i.test(call[0])
-        );
-        expect(selectCall).toBeTruthy();
+        const [sql] = mockPrepareSync.mock.calls[0];
+        expect(sql).not.toMatch(/PreShot/i);
     });
 
     it('returnsTrueOnSuccess', async () => {
-        mockGetAllSync.mockReturnValue([]);
-
-        const result = await callSaveWithRoutine('a routine');
+        const result = await saveDefault();
 
         expect(result).toBe(true);
     });
 
     it('persistsTempoBpm', async () => {
-        mockGetAllSync.mockReturnValue([]);
-
-        await saveSettings(1, 'female', 1, 0, 0, 0, 0, 0, 0, 1, '', '', 0, 0, 84, 'yards', 0);
+        await saveDefault(84);
 
         const [params] = mockStatementExecuteAsync.mock.calls[0];
         expect(params.$TempoBpm).toBe(84);
@@ -117,7 +73,7 @@ describe('getSettings', () => {
     });
 
     it('returnsFirstRowWhenSettingsExist', () => {
-        const row = { Id: 1, PreShotRoutineText: 'stored' };
+        const row = { Id: 1, TempoBpm: 60 };
         mockGetAllSync.mockReturnValue([row]);
 
         expect(getSettings()).toEqual(row);

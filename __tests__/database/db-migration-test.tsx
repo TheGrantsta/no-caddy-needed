@@ -358,8 +358,6 @@ describe('Settings table column migration', () => {
                 { name: 'PracticeOnboardingSeen' },
                 
                 { name: 'ReviewPromptShown' },
-                { name: 'PreShotReminderEnabled' },
-                { name: 'PreShotRoutineText' },
                 { name: 'WhatsNewVersionSeen' },
                 { name: 'SettingsOnboardingSeen' },
                 { name: 'PerformOnboardingSeen' },
@@ -391,8 +389,6 @@ describe('Settings table column migration', () => {
                 { name: 'HomeOnboardingSeen' },
                 { name: 'PracticeOnboardingSeen' },
                 { name: 'ReviewPromptShown' },
-                { name: 'PreShotReminderEnabled' },
-                { name: 'PreShotRoutineText' },
                 { name: 'WhatsNewVersionSeen' },
                 { name: 'SettingsOnboardingSeen' },
                 { name: 'PerformOnboardingSeen' },
@@ -411,6 +407,40 @@ describe('Settings table column migration', () => {
         );
     });
 
+    it('should drop the retired pre-shot routine columns from Settings when they are still present', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Settings)') return [
+                { name: 'Id' },
+                { name: 'Theme' },
+                { name: 'NotificationsEnabled' },
+                { name: 'Voice' },
+                { name: 'SoundsEnabled' },
+                { name: 'WedgeChartOnboardingSeen' },
+                { name: 'DistancesOnboardingSeen' },
+                { name: 'PlayOnboardingSeen' },
+                { name: 'HomeOnboardingSeen' },
+                { name: 'PracticeOnboardingSeen' },
+
+                { name: 'ReviewPromptShown' },
+                { name: 'WhatsNewVersionSeen' },
+                { name: 'SettingsOnboardingSeen' },
+                { name: 'PerformOnboardingSeen' },
+                { name: 'TempoBpm' },
+                { name: 'Units' },
+                { name: 'SkipStatsFlowEnabled' },
+                { name: 'BadHoleReassuranceEnabled' },
+                            { name: 'PreShotReminderEnabled' },
+                { name: 'PreShotRoutineText' },
+            ];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE Settings DROP COLUMN PreShotReminderEnabled');
+        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE Settings DROP COLUMN PreShotRoutineText');
+    });
+
     it('should not alter Settings table when all columns already exist', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
@@ -426,8 +456,6 @@ describe('Settings table column migration', () => {
                 { name: 'PracticeOnboardingSeen' },
 
                 { name: 'ReviewPromptShown' },
-                { name: 'PreShotReminderEnabled' },
-                { name: 'PreShotRoutineText' },
                 { name: 'WhatsNewVersionSeen' },
                 { name: 'SettingsOnboardingSeen' },
                 { name: 'PerformOnboardingSeen' },

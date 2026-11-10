@@ -110,7 +110,6 @@ describe('Random number generator page', () => {
 
         expect(getByTestId('purpose-row-0')).not.toHaveStyle({ borderTopWidth: StyleSheet.hairlineWidth });
         expect(getByTestId('purpose-row-1')).toHaveStyle({ borderTopWidth: StyleSheet.hairlineWidth });
-        expect(getByTestId('purpose-row-2')).toHaveStyle({ borderTopWidth: StyleSheet.hairlineWidth });
         expect(getByTestId('purpose-row-1').props.style.flat()).not.toEqual(expect.arrayContaining([expect.objectContaining({ height: StyleSheet.hairlineWidth })]));
     });
 
@@ -144,14 +143,14 @@ describe('Random number generator page', () => {
         expect(getByText('Generate')).toBeTruthy();
     });
 
-    it('renders purpose section with its three labelled rows', () => {
-        const { getByText } = render(<Random />);
+    it('renders purpose section with its two labelled rows', () => {
+        const { getByText, queryByText } = render(<Random />);
 
         expect(getByText('PURPOSE')).toBeTruthy();
         expect(getByText('Realism')).toBeTruthy();
         expect(getByText('Practise like play')).toBeTruthy();
-        expect(getByText('Focus')).toBeTruthy();
-        expect(getByText('Use pre-shot routine')).toBeTruthy();
+        expect(queryByText('Focus')).toBeNull();
+        expect(queryByText('Use pre-shot routine')).toBeNull();
         expect(getByText('Evaluation')).toBeTruthy();
         expect(getByText('Access how well you did')).toBeTruthy();
     });

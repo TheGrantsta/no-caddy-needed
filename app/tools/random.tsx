@@ -139,7 +139,6 @@ export default function Random() {
 
     const purposePoints: { heading: string; text: string }[] = [
         { heading: 'Realism', text: 'Practise like play' },
-        { heading: 'Focus', text: 'Use pre-shot routine' },
         { heading: 'Evaluation', text: 'Access how well you did' },
     ];
 

@@ -2,7 +2,6 @@ import {
     getSettingsService,
     saveSettingsService,
     AppSettings,
-    DEFAULT_PRESHOT_ROUTINE,
 } from '../../service/DbService';
 import {
     getSettings,
@@ -21,14 +20,14 @@ const fullRow = (overrides: Record<string, unknown> = {}) => ({
     Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', SoundsEnabled: 1,
     WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0,
     HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0,
-    ReviewPromptShown: 0, PreShotReminderEnabled: 1, PreShotRoutineText: '', WhatsNewVersionSeen: '', SettingsOnboardingSeen: 0, PerformOnboardingSeen: 0, TempoBpm: 60, Units: 'yards', SkipStatsFlowEnabled: 0, ...overrides,
+    ReviewPromptShown: 0, WhatsNewVersionSeen: '', SettingsOnboardingSeen: 0, PerformOnboardingSeen: 0, TempoBpm: 60, Units: 'yards', SkipStatsFlowEnabled: 0, ...overrides,
 });
 
 const defaultExpected: AppSettings = {
     notificationsEnabled: true, voice: 'female', soundsEnabled: true,
     wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false,
     homeOnboardingSeen: false, practiceOnboardingSeen: false,
-    reviewPromptShown: false, preShotReminderEnabled: true, preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
+    reviewPromptShown: false,
     whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false, badHoleReassuranceEnabled: true,
 };
 
@@ -87,30 +86,6 @@ describe('getSettingsService', () => {
         mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', PracticeOnboardingSeen: 0 });
 
         expect(getSettingsService().reviewPromptShown).toBe(false);
-    });
-
-    it('maps PreShotReminderEnabled 0 to false', () => {
-        mockGetSettings.mockReturnValue(fullRow({ PreShotReminderEnabled: 0 }));
-
-        expect(getSettingsService().preShotReminderEnabled).toBe(false);
-    });
-
-    it('defaults preShotReminderEnabled to true when column missing', () => {
-        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', PracticeOnboardingSeen: 0 });
-
-        expect(getSettingsService().preShotReminderEnabled).toBe(true);
-    });
-
-    it('returns the stored pre-shot routine text', () => {
-        mockGetSettings.mockReturnValue(fullRow({ PreShotRoutineText: 'My own routine' }));
-
-        expect(getSettingsService().preShotRoutineText).toBe('My own routine');
-    });
-
-    it('falls back to the default routine when text is empty', () => {
-        mockGetSettings.mockReturnValue(fullRow({ PreShotRoutineText: '' }));
-
-        expect(getSettingsService().preShotRoutineText).toBe(DEFAULT_PRESHOT_ROUTINE);
     });
 
     it('returns the stored whats-new version seen', () => {
@@ -179,8 +154,6 @@ describe('saveSettingsService', () => {
         homeOnboardingSeen: false,
         practiceOnboardingSeen: false,
         reviewPromptShown: false,
-        preShotReminderEnabled: true,
-        preShotRoutineText: DEFAULT_PRESHOT_ROUTINE,
         whatsNewVersionSeen: '',
         settingsOnboardingSeen: false,
         performOnboardingSeen: false,
@@ -200,7 +173,7 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService({ ...baseSettings, notificationsEnabled: false });
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1);
     });
 
     it('maps notificationsEnabled true to 1', async () => {
@@ -208,7 +181,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService(baseSettings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1);
     });
 
     it('maps reviewPromptShown true to 1', async () => {
@@ -216,23 +189,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, reviewPromptShown: true });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 1, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0, 1);
-    });
-
-    it('maps preShotReminderEnabled false to 0', async () => {
-        mockSaveSettings.mockResolvedValue(true);
-
-        await saveSettingsService({ ...baseSettings, preShotReminderEnabled: false });
-
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, 0, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0, 1);
-    });
-
-    it('passes the edited pre-shot routine text', async () => {
-        mockSaveSettings.mockResolvedValue(true);
-
-        await saveSettingsService({ ...baseSettings, preShotRoutineText: 'Target, breathe, go' });
-
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, 1, 'Target, breathe, go', '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 1, '', 0, 0, 60, 'yards', 0, 1);
     });
 
     it('passes voice neutral to saveSettings', async () => {
@@ -240,7 +197,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, voice: 'neutral' });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'neutral', 1, 0, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'neutral', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1);
     });
 
     it('returns false when save fails', async () => {
@@ -254,6 +211,6 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, tempoBpm: 108 });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, 1, DEFAULT_PRESHOT_ROUTINE, '', 0, 0, 108, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 108, 'yards', 0, 1);
     });
 });

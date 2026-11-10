@@ -81,7 +81,7 @@ export const initialize = async () => {
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
-        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0, ReviewPromptShown INTEGER NOT NULL DEFAULT 0, PreShotReminderEnabled INTEGER NOT NULL DEFAULT 1, PreShotRoutineText TEXT NOT NULL DEFAULT '', WhatsNewVersionSeen TEXT NOT NULL DEFAULT '', SettingsOnboardingSeen INTEGER NOT NULL DEFAULT 0, PerformOnboardingSeen INTEGER NOT NULL DEFAULT 0, TempoBpm INTEGER NOT NULL DEFAULT 60, Units TEXT NOT NULL DEFAULT 'yards', SkipStatsFlowEnabled INTEGER NOT NULL DEFAULT 0, BadHoleReassuranceEnabled INTEGER NOT NULL DEFAULT 1);
+        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0, ReviewPromptShown INTEGER NOT NULL DEFAULT 0, WhatsNewVersionSeen TEXT NOT NULL DEFAULT '', SettingsOnboardingSeen INTEGER NOT NULL DEFAULT 0, PerformOnboardingSeen INTEGER NOT NULL DEFAULT 0, TempoBpm INTEGER NOT NULL DEFAULT 60, Units TEXT NOT NULL DEFAULT 'yards', SkipStatsFlowEnabled INTEGER NOT NULL DEFAULT 0, BadHoleReassuranceEnabled INTEGER NOT NULL DEFAULT 1);
         CREATE TABLE IF NOT EXISTS PracticeReminders (Id INTEGER PRIMARY KEY AUTOINCREMENT, Label TEXT NOT NULL, ScheduledFor TEXT NOT NULL, NotificationId TEXT, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS HiddenRecents (Id INTEGER PRIMARY KEY AUTOINCREMENT, Type TEXT NOT NULL, Name TEXT NOT NULL, UNIQUE(Type, Name));
         CREATE TABLE IF NOT EXISTS UiPreferences (Id INTEGER PRIMARY KEY, RoundFilter TEXT NOT NULL DEFAULT 'all');
@@ -112,8 +112,6 @@ export const initialize = async () => {
                 "Voice TEXT NOT NULL DEFAULT 'female'",
                 'SoundsEnabled INTEGER NOT NULL DEFAULT 1',
                 'ReviewPromptShown INTEGER NOT NULL DEFAULT 0',
-                'PreShotReminderEnabled INTEGER NOT NULL DEFAULT 1',
-                "PreShotRoutineText TEXT NOT NULL DEFAULT ''",
                 "WhatsNewVersionSeen TEXT NOT NULL DEFAULT ''",
                 'SettingsOnboardingSeen INTEGER NOT NULL DEFAULT 0',
                 'PerformOnboardingSeen INTEGER NOT NULL DEFAULT 0',
@@ -122,7 +120,7 @@ export const initialize = async () => {
                 'SkipStatsFlowEnabled INTEGER NOT NULL DEFAULT 0',
                 'BadHoleReassuranceEnabled INTEGER NOT NULL DEFAULT 1',
             ],
-            columnsToRemove: ['PracticeFrequencyDays'],
+            columnsToRemove: ['PracticeFrequencyDays', 'PreShotReminderEnabled', 'PreShotRoutineText'],
         },
         {
             table: 'Rounds',
@@ -826,24 +824,17 @@ export const getSettings = () => {
     return rows.length > 0 ? rows[0] : null;
 };
 
-export const saveSettings = async (notificationsEnabled: number, voice: string, soundsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number, homeOnboardingSeen: number, practiceOnboardingSeen: number, reviewPromptShown: number, preShotReminderEnabled: number, preShotRoutineText: string, whatsNewVersionSeen: string, settingsOnboardingSeen: number, performOnboardingSeen: number, tempoBpm: number, units: string, skipStatsFlowEnabled: number, badHoleReassuranceEnabled: number): Promise<boolean> => {
+export const saveSettings = async (notificationsEnabled: number, voice: string, soundsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number, homeOnboardingSeen: number, practiceOnboardingSeen: number, reviewPromptShown: number, whatsNewVersionSeen: string, settingsOnboardingSeen: number, performOnboardingSeen: number, tempoBpm: number, units: string, skipStatsFlowEnabled: number, badHoleReassuranceEnabled: number): Promise<boolean> => {
     let success = true;
     try {
-        // Guard: the Settings row is rewritten via DELETE + INSERT on every save, so a
-        // blank incoming routine would wipe a routine the user previously customised.
-        // Preserve the stored routine unless a non-blank replacement is supplied.
-        const existingRows = getSyncDb().getAllSync('SELECT PreShotRoutineText FROM Settings LIMIT 1;') as { PreShotRoutineText: string }[];
-        const existingRoutine = existingRows.length > 0 ? existingRows[0].PreShotRoutineText : '';
-        const routineToStore = preShotRoutineText.trim().length > 0 ? preShotRoutineText : existingRoutine;
-
         getSyncDb().execSync('DELETE FROM Settings');
 
         const statement = getSyncDb().prepareSync(
-            'INSERT INTO Settings (NotificationsEnabled, Voice, SoundsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen, HomeOnboardingSeen, PracticeOnboardingSeen, ReviewPromptShown, PreShotReminderEnabled, PreShotRoutineText, WhatsNewVersionSeen, SettingsOnboardingSeen, PerformOnboardingSeen, TempoBpm, Units, SkipStatsFlowEnabled, BadHoleReassuranceEnabled) VALUES ($NotificationsEnabled, $Voice, $SoundsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen, $HomeOnboardingSeen, $PracticeOnboardingSeen, $ReviewPromptShown, $PreShotReminderEnabled, $PreShotRoutineText, $WhatsNewVersionSeen, $SettingsOnboardingSeen, $PerformOnboardingSeen, $TempoBpm, $Units, $SkipStatsFlowEnabled, $BadHoleReassuranceEnabled)'
+            'INSERT INTO Settings (NotificationsEnabled, Voice, SoundsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen, HomeOnboardingSeen, PracticeOnboardingSeen, ReviewPromptShown, WhatsNewVersionSeen, SettingsOnboardingSeen, PerformOnboardingSeen, TempoBpm, Units, SkipStatsFlowEnabled, BadHoleReassuranceEnabled) VALUES ($NotificationsEnabled, $Voice, $SoundsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen, $HomeOnboardingSeen, $PracticeOnboardingSeen, $ReviewPromptShown, $WhatsNewVersionSeen, $SettingsOnboardingSeen, $PerformOnboardingSeen, $TempoBpm, $Units, $SkipStatsFlowEnabled, $BadHoleReassuranceEnabled)'
         );
 
         try {
-            await statement.executeAsync({ $NotificationsEnabled: notificationsEnabled, $Voice: voice, $SoundsEnabled: soundsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen, $ReviewPromptShown: reviewPromptShown, $PreShotReminderEnabled: preShotReminderEnabled, $PreShotRoutineText: routineToStore, $WhatsNewVersionSeen: whatsNewVersionSeen, $SettingsOnboardingSeen: settingsOnboardingSeen, $PerformOnboardingSeen: performOnboardingSeen, $TempoBpm: tempoBpm, $Units: units, $SkipStatsFlowEnabled: skipStatsFlowEnabled, $BadHoleReassuranceEnabled: badHoleReassuranceEnabled });
+            await statement.executeAsync({ $NotificationsEnabled: notificationsEnabled, $Voice: voice, $SoundsEnabled: soundsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen, $ReviewPromptShown: reviewPromptShown, $WhatsNewVersionSeen: whatsNewVersionSeen, $SettingsOnboardingSeen: settingsOnboardingSeen, $PerformOnboardingSeen: performOnboardingSeen, $TempoBpm: tempoBpm, $Units: units, $SkipStatsFlowEnabled: skipStatsFlowEnabled, $BadHoleReassuranceEnabled: badHoleReassuranceEnabled });
         } finally {
             await statement.finalizeAsync();
         }

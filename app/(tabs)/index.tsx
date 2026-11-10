@@ -18,7 +18,6 @@ import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 // What's new for the current version — shown once per version to existing users.
 const WHATS_NEW = [
-  'Track your pre-shot routine when entering scores for faster scoring',
   'Challenges help you focus on short-game skills that matter most',
   'Smoother transitions between play tracking, practice, and performance review',
 ];

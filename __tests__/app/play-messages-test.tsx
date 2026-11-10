@@ -81,7 +81,6 @@ jest.mock('../../service/DbService', () => ({
         practiceOnboardingSeen: true,
         reviewPromptShown: false,
         skipStatsFlowEnabled: false,
-        preShotReminderEnabled: true,
         badHoleReassuranceEnabled: true,
     } as any),
     saveSettingsService: jest.fn().mockResolvedValue(true),
@@ -439,50 +438,23 @@ describe('Play screen', () => {
         });
     });
 
-    describe('Pre-shot routine reminder', () => {
-        const settingsWith = (overrides: Record<string, unknown>) => ({
-            theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: true,
-            distancesOnboardingSeen: true, playOnboardingSeen: true, homeOnboardingSeen: true,
-            practiceOnboardingSeen: true, reviewPromptShown: false, ...overrides,
-        });
-
-        const startRound = (getByTestId: (id: string) => unknown) => {
+    describe('Pre-shot routine removed', () => {
+        it('doesNotShowAPreShotRoutineWhenARoundStarts', async () => {
+            mockGetSettingsService.mockReturnValue({
+                theme: 'dark', notificationsEnabled: true, wedgeChartOnboardingSeen: true,
+                distancesOnboardingSeen: true, playOnboardingSeen: true, homeOnboardingSeen: true,
+                practiceOnboardingSeen: true, reviewPromptShown: false,
+            });
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
-            fireEvent.changeText(getByTestId('course-name-input') as never, 'Test Course');
-            fireEvent.press(getByTestId('start-button') as never);
-        };
-
-        it('showsRoutineTextInlineWhenRoundStarts', async () => {
-            mockGetSettingsService.mockReturnValue(settingsWith({ preShotReminderEnabled: true, preShotRoutineText: 'Target, breathe, go' }));
-
-            const { getByTestId, getByText, queryByTestId } = render(<Play />);
-            startRound(getByTestId);
-
-            await waitFor(() => expect(getByText('Target, breathe, go')).toBeTruthy());
-            expect(queryByTestId('acknowledge-overlay')).toBeNull();
-        });
-
-        it('routineTextPersistsAfterAdvancingToNextHole', async () => {
-            mockGetSettingsService.mockReturnValue(settingsWith({ preShotReminderEnabled: true, preShotRoutineText: 'Routine text' }));
-
-            const { getByTestId, getByText } = render(<Play />);
-            startRound(getByTestId);
-
-            await waitFor(() => expect(getByText('Routine text')).toBeTruthy());
-            fireEvent.press(getByTestId('next-hole-button'));
-
-            await waitFor(() => expect(getByText('Routine text')).toBeTruthy());
-        });
-
-        it('doesNotShowReminderWhenDisabled', async () => {
-            mockGetSettingsService.mockReturnValue(settingsWith({ preShotReminderEnabled: false, preShotRoutineText: 'Routine' }));
 
             const { getByTestId, queryByText } = render(<Play />);
-            startRound(getByTestId);
+            fireEvent.changeText(getByTestId('course-name-input') as never, 'Test Course');
+            fireEvent.press(getByTestId('start-button') as never);
 
             await waitFor(() => expect(getByTestId('end-round-button')).toBeTruthy());
-            expect(queryByText('Routine')).toBeNull();
+            expect(queryByText('Pre-shot routine')).toBeNull();
+            expect(queryByText('Target, breathe, go')).toBeNull();
         });
     });
 

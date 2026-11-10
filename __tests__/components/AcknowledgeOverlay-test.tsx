@@ -14,7 +14,7 @@ jest.mock('../../context/ThemeContext', () => ({
 describe('AcknowledgeOverlay', () => {
     it('rendersNothingWhenNotVisible', () => {
         const { queryByTestId } = render(
-            <AcknowledgeOverlay visible={false} title="Pre-shot routine" text="Target, breathe, go" onDismiss={jest.fn()} />
+            <AcknowledgeOverlay visible={false} title="Reminder" text="Keep it simple" onDismiss={jest.fn()} />
         );
 
         expect(queryByTestId('acknowledge-overlay')).toBeNull();

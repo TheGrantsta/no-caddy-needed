@@ -66,7 +66,6 @@ import PhasePutting from '../../components/PhasePutting';
 import RoundEntry from '../../components/RoundEntry';
 import HoleNavigationControls from '../../components/HoleNavigationControls';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
-import fontSizes from '../../assets/font-sizes';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 const BAD_HOLE_MESSAGES = [
@@ -766,12 +765,6 @@ export default function Play() {
                                             onNoteChange={setCurrentNoteText}
                                         />
 
-                                        {settings.preShotReminderEnabled && (
-                                            <View style={[styles.holeNoteInput.container, { paddingHorizontal: 16, paddingVertical: 16, marginTop: 4, marginBottom: 12 }]}>
-                                                <Text style={[styles.normalText, { color: colours.primary, fontWeight: 'bold', marginBottom: 6 }]}>Pre-shot routine</Text>
-                                                <Text style={{ color: colours.text, fontSize: fontSizes.normal, lineHeight: 22 }}>{settings.preShotRoutineText}</Text>
-                                            </View>
-                                        )}
                                     </>
                                 )}
                             </Animated.View>

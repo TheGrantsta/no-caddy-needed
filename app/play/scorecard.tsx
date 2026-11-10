@@ -5,10 +5,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import RoundScorecard from '../../components/RoundScorecard';
 import Scorecard from '../../components/Scorecard';
-import ScoreEditor from '../../components/ScoreEditor';
-import SinEditPanel from '../../components/SinEditPanel';
 import ScorecardActionButtons from '../../components/ScorecardActionButtons';
 import DeleteRoundSheet from '../../components/DeleteRoundSheet';
+import EditRoundSheet from '../../components/EditRoundSheet';
+import EditHoleSheet from '../../components/EditHoleSheet';
+import SinDetailsInput from '../../components/SinDetailsInput';
 import RoundSummaryCard from '../../components/RoundSummaryCard';
 import RoundScoreTable from '../../components/RoundScoreTable';
 import { useAppToast } from '../../hooks/useAppToast';
@@ -122,7 +123,6 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             edit.setEditedScores([...multiplayerScorecard.holeScores.map(s => ({ ...s }))]);
             setEditing(true);
             edit.setSelectedScore(null);
-            edit.setShowSaveConfirm(false);
         }
     };
 
@@ -174,7 +174,6 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         }
     };
 
-    const handleSinsChange = (values: DeadlySinsValues) => edit.setEditedSins(values);
 
     // Reveal which deadly sin(s) were logged on a hole when its dot is tapped.
     const handleSinPress = (holeNumber: number) => {
@@ -185,40 +184,22 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             : `Hole ${holeNumber}: deadly sin logged`);
     };
 
-    const getSelectedScoreValue = (): number => {
-        if (!edit.selectedScore) return 0;
-        const score = edit.editedScores.find(
-            s => s.HoleNumber === edit.selectedScore.holeNumber && s.RoundPlayerId === edit.selectedScore.playerId
-        );
-        return score ? score.Score : 0;
-    };
-
-    const getSelectedPlayerName = (): string => {
-        if (!edit.selectedScore || !multiplayerScorecard) return '';
-        const player = multiplayerScorecard.players.find(p => p.Id === edit.selectedScore.playerId);
-        return player ? player.PlayerName : '';
-    };
-
-    const getSelectedHolePar = (): number => {
-        if (!edit.selectedScore) return 4;
-        const score = edit.editedScores.find(s => s.HoleNumber === edit.selectedScore.holeNumber);
-        return score ? score.HolePar : 4;
-    };
-
     const handleParChange = (holePar: number) => {
-        if (!edit.selectedScore) return;
+        const selected = edit.selectedScore;
+        if (!selected) return;
         edit.setEditedScores(prev =>
             prev.map(s =>
-                s.HoleNumber === edit.selectedScore.holeNumber ? { ...s, HolePar: holePar } : s
+                s.HoleNumber === selected.holeNumber ? { ...s, HolePar: holePar } : s
             )
         );
     };
 
     const handleIncrement = () => {
-        if (!edit.selectedScore) return;
+        const selected = edit.selectedScore;
+        if (!selected) return;
         edit.setEditedScores(prev =>
             prev.map(s =>
-                s.HoleNumber === edit.selectedScore.holeNumber && s.RoundPlayerId === edit.selectedScore.playerId
+                s.HoleNumber === selected.holeNumber && s.RoundPlayerId === selected.playerId
                     ? { ...s, Score: s.Score + 1 }
                     : s
             )
@@ -226,17 +207,18 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     };
 
     const handleDecrement = () => {
-        if (!edit.selectedScore) return;
+        const selected = edit.selectedScore;
+        if (!selected) return;
         edit.setEditedScores(prev =>
             prev.map(s =>
-                s.HoleNumber === edit.selectedScore.holeNumber && s.RoundPlayerId === edit.selectedScore.playerId
+                s.HoleNumber === selected.holeNumber && s.RoundPlayerId === selected.playerId
                     ? { ...s, Score: Math.max(1, s.Score - 1) }
                     : s
             )
         );
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (edit.sinsHoleNumber !== null && edit.editedSins !== null) {
             const needsClub = edit.editedSins.troubleOffTee && clubDistances.length > 0;
             const needsPenalty = edit.editedSins.penalties;
@@ -246,10 +228,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             const isValid = edit.validateSinDetails(clubDistances, needsClub, needsPenalty, needsBogeysClub, needsDoubleChipReason);
             if (!isValid) return;
         }
-        edit.setShowSaveConfirm(true);
-    };
 
-    const handleConfirmSave = async () => {
         if (!multiplayerScorecard) return;
 
         const changes: { id: number; score: number }[] = [];
@@ -299,12 +278,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             setEditing(false);
         } else {
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
-            edit.setShowSaveConfirm(false);
         }
-    };
-
-    const handleCancelSave = () => {
-        edit.setShowSaveConfirm(false);
     };
 
     const handleDelete = () => {
@@ -341,8 +315,57 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
 
     const displayScores = edit.isEditing ? edit.editedScores : multiplayerScorecard?.holeScores || [];
 
-    // The signed-in player's holes, for the summary card and score table
     const userPlayerId = multiplayerScorecard?.players.find(p => p.IsUser === 1)?.Id;
+
+    // Two-step editing: the round sheet lists the user's holes; a hole opens its own sheet
+    const editUserHoles = edit.editedScores
+        .filter(h => h.RoundPlayerId === userPlayerId)
+        .sort((a, b) => a.HoleNumber - b.HoleNumber);
+    const showStats = !round?.IsScoreOnly;
+    const editRoundHoles = editUserHoles.map(h => {
+        if (!showStats) return { holeNumber: h.HoleNumber, par: h.HolePar, score: h.Score, putts: 0, sins: 0 };
+        const sinsForHole = getHoleDeadlySinsService(Number(roundId), h.HoleNumber);
+        const puttingForHole = getPuttingStatsService(Number(roundId), h.HoleNumber);
+        const sinCount = sinsForHole ? SIN_LABELS.filter(({ key }) => sinsForHole[key]).length : 0;
+        const puttCount = puttingForHole ? (puttingForHole.SecondPuttDistance != null ? 2 : 1) + (sinsForHole?.threePutts ? 1 : 0) : 0;
+        return { holeNumber: h.HoleNumber, par: h.HolePar, score: h.Score, putts: puttCount, sins: sinCount };
+    });
+    const editRoundTotal = editUserHoles.reduce((sum, h) => sum + h.Score, 0);
+    const selectedEditHole = edit.selectedScore ? editUserHoles.find(h => h.HoleNumber === edit.selectedScore?.holeNumber) : undefined;
+
+    const handleSelectEditHole = (holeNumber: number) => {
+        if (userPlayerId !== undefined) handleScoreSelect(holeNumber, userPlayerId);
+    };
+
+    const handleStrokesStep = (delta: number) => {
+        if (delta > 0) handleIncrement(); else handleDecrement();
+    };
+
+    const handlePuttText = (field: 'firstPutt' | 'secondPutt', text: string) => {
+        const value = text === '' ? undefined : Number(text);
+        edit.setPuttingStats(prev => ({
+            firstPutt: prev?.firstPutt,
+            secondPutt: prev?.secondPutt,
+            secondIsLong: prev?.secondIsLong ?? false,
+            greenInRegulation: prev?.greenInRegulation ?? false,
+            [field]: value,
+        }));
+    };
+
+    const handleGreenInRegulationEdit = (value: boolean) => {
+        edit.setPuttingStats(prev => ({
+            firstPutt: prev?.firstPutt,
+            secondPutt: prev?.secondPutt,
+            secondIsLong: prev?.secondIsLong ?? false,
+            greenInRegulation: value,
+        }));
+    };
+
+    const handleSinToggle = (key: keyof DeadlySinsValues, value: boolean) => {
+        edit.setEditedSins({ ...(edit.editedSins ?? INITIAL_SINS), [key]: value });
+    };
+
+    // The signed-in player's holes, for the summary card and score table
     const userHoles = (multiplayerScorecard?.holeScores ?? [])
         .filter(h => h.RoundPlayerId === userPlayerId)
         .sort((a, b) => a.HoleNumber - b.HoleNumber)
@@ -352,40 +375,95 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     return (
         <View testID={`scorecard-page-${roundId}`} style={{ width }}>
             <ScrollView style={styles.scrollContainer} contentContainerStyle={[styles.scrollContentContainer, landscapePadding, { flexGrow: 1, paddingBottom: 24 }]}>
-                <View testID="scorecard-title-row" style={[styles.headerContainer, { flexDirection: 'row', alignItems: 'center', columnGap: 12 }]}>
-                    <TouchableOpacity
-                        testID="scorecard-back-button"
-                        accessibilityRole="button"
-                        accessibilityLabel="Back"
-                        onPress={() => router.back()}
-                        style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colours.backgroundLight, justifyContent: 'center', alignItems: 'center' }}
-                    >
-                        <MaterialIcons name="chevron-left" size={28} color={colours.black} />
-                    </TouchableOpacity>
-                    <View style={{ flex: 1 }}>
-                        {courseName ? (
-                            <Text testID="scorecard-course-name" style={[styles.subHeaderText, { padding: 0, textAlign: 'center' }]}>
-                                {courseName}
-                            </Text>
-                        ) : null}
-                        {roundDate ? (
-                            <Text testID="scorecard-date" style={[styles.smallText, { textAlign: 'center' }]}>{roundDate}</Text>
+                {!edit.isEditing && (
+                    <View testID="scorecard-title-row" style={[styles.headerContainer, { flexDirection: 'row', alignItems: 'center', columnGap: 12 }]}>
+                        <TouchableOpacity
+                            testID="scorecard-back-button"
+                            accessibilityRole="button"
+                            accessibilityLabel="Back"
+                            onPress={() => router.back()}
+                            style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colours.backgroundLight, justifyContent: 'center', alignItems: 'center' }}
+                        >
+                            <MaterialIcons name="chevron-left" size={28} color={colours.black} />
+                        </TouchableOpacity>
+                        <View style={{ flex: 1 }}>
+                            {courseName ? (
+                                <Text testID="scorecard-course-name" style={[styles.subHeaderText, { padding: 0, textAlign: 'center' }]}>
+                                    {courseName}
+                                </Text>
+                            ) : null}
+                            {roundDate ? (
+                                <Text testID="scorecard-date" style={[styles.smallText, { textAlign: 'center' }]}>{roundDate}</Text>
+                            ) : null}
+                        </View>
+                        {multiplayerScorecard && !edit.isEditing && !edit.showDeleteConfirm ? (
+                            <TouchableOpacity
+                                testID="edit-scorecard-button"
+                                accessibilityRole="button"
+                                onPress={handleEdit}
+                                style={{ height: 44, borderRadius: 22, backgroundColor: colours.backgroundLight, justifyContent: 'center', paddingHorizontal: 18 }}
+                            >
+                                <Text style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: '600' }}>Edit</Text>
+                            </TouchableOpacity>
                         ) : null}
                     </View>
-                    {multiplayerScorecard && !edit.isEditing && !edit.showDeleteConfirm ? (
-                        <TouchableOpacity
-                            testID="edit-scorecard-button"
-                            accessibilityRole="button"
-                            onPress={handleEdit}
-                            style={{ height: 44, borderRadius: 22, backgroundColor: colours.backgroundLight, justifyContent: 'center', paddingHorizontal: 18 }}
-                        >
-                            <Text style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: '600' }}>Edit</Text>
-                        </TouchableOpacity>
-                    ) : null}
-                </View>
+                )}
                 {multiplayerScorecard && (
                     <>
-                        {showSummary && scoreBreakdown ? (
+                        {edit.isEditing ? (
+                            <>
+                                {selectedEditHole ? (
+                                    <>
+                                        <EditHoleSheet
+                                            holeNumber={selectedEditHole.HoleNumber}
+                                            par={selectedEditHole.HolePar}
+                                            strokes={selectedEditHole.Score}
+                                            firstPutt={edit.puttingStats?.firstPutt?.toString() ?? ''}
+                                            secondPutt={edit.puttingStats?.secondPutt?.toString() ?? ''}
+                                            greenInRegulation={edit.puttingStats?.greenInRegulation ?? false}
+                                            sins={edit.editedSins ?? INITIAL_SINS}
+                                            onBack={() => edit.setSelectedScore(null)}
+                                            onParChange={handleParChange}
+                                            onStrokesChange={handleStrokesStep}
+                                            onFirstPuttChange={(text) => handlePuttText('firstPutt', text)}
+                                            onSecondPuttChange={(text) => handlePuttText('secondPutt', text)}
+                                            onGreenInRegulationChange={handleGreenInRegulationEdit}
+                                            onSinChange={handleSinToggle}
+                                            showStats={showStats}
+                                        />
+                                        {showStats && edit.editedSins && (edit.editedSins.troubleOffTee || edit.editedSins.penalties || edit.editedSins.bogeysInside9Iron || edit.editedSins.doubleChips) && (
+                                            <SinDetailsInput
+                                                key={`sin-details-${selectedEditHole.HoleNumber}`}
+                                                sins={edit.editedSins}
+                                                clubs={clubDistances}
+                                                selectedOffTeeClub={edit.selectedOffTeeClub}
+                                                onOffTeeClubChange={edit.setSelectedOffTeeClub}
+                                                showOffTeeClubError={edit.sinDetailsClubError}
+                                                selectedPenaltyType={edit.selectedPenaltyType}
+                                                onPenaltyTypeChange={edit.setSelectedPenaltyType}
+                                                showPenaltyTypeError={edit.sinDetailsPenaltyError}
+                                                selectedBogeysClub={edit.selectedBogeysClub}
+                                                onBogeysClubChange={edit.setSelectedBogeysClub}
+                                                showBogeysClubError={edit.sinDetailsBogeysClubError}
+                                                selectedDoubleChipReason={edit.selectedDoubleChipReason}
+                                                onDoubleChipReasonChange={edit.setSelectedDoubleChipReason}
+                                                showDoubleChipReasonError={edit.sinDetailsDoubleChipReasonError}
+                                            />
+                                        )}
+                                    </>
+                                ) : (
+                                    <EditRoundSheet
+                                        courseName={courseName ?? 'Round'}
+                                        dateLabel={roundDate ?? ''}
+                                        holes={editRoundHoles}
+                                        total={editRoundTotal}
+                                        onHolePress={handleSelectEditHole}
+                                        onCancel={handleCancelEdit}
+                                        onSave={handleSave}
+                                    />
+                                )}
+                            </>
+                        ) : showSummary && scoreBreakdown ? (
                             <>
                                 <RoundSummaryCard
                                     holesPlayed={userHoles.length}
@@ -401,62 +479,12 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                             <Scorecard
                                 players={multiplayerScorecard.players}
                                 holeScores={displayScores}
-                                editable={edit.isEditing}
-                                selectedScore={edit.selectedScore}
+                                editable={false}
+                                selectedScore={null}
                                 onScoreSelect={handleScoreSelect}
                                 sinHoles={sinHoles}
                                 onSinPress={handleSinPress}
                                 scoreBreakdown={round?.IsScoreOnly ? undefined : (scoreBreakdown ?? undefined)}
-                            />
-                        )}
-
-                        {edit.isEditing && !edit.selectedScore && (
-                            <View style={[styles.headerContainer, { paddingVertical: 16 }]}>
-                                <Text style={{ color: colours.text, fontSize: 16, fontWeight: '600' }}>Select a score to edit</Text>
-                            </View>
-                        )}
-
-                        {edit.isEditing && edit.selectedScore && (
-                            <ScoreEditor
-                                holeNumber={edit.selectedScore.holeNumber}
-                                playerName={getSelectedPlayerName()}
-                                score={getSelectedScoreValue()}
-                                holePar={getSelectedHolePar()}
-                                onIncrement={handleIncrement}
-                                onDecrement={handleDecrement}
-                                onParChange={handleParChange}
-                            />
-                        )}
-
-                        {edit.isEditing && edit.selectedScore && edit.editedSins && (
-                            <SinEditPanel
-                                selectedHoleNumber={edit.selectedScore.holeNumber}
-                                holePar={edit.editedScores.find(s => s.HoleNumber === edit.selectedScore.holeNumber)?.HolePar ?? 4}
-                                editedSins={edit.editedSins}
-                                onSinsChange={handleSinsChange}
-                                clubDistances={clubDistances}
-                                selectedOffTeeClub={edit.selectedOffTeeClub}
-                                onOffTeeClubChange={edit.setSelectedOffTeeClub}
-                                showOffTeeClubError={edit.sinDetailsClubError}
-                                selectedPenaltyType={edit.selectedPenaltyType}
-                                onPenaltyTypeChange={edit.setSelectedPenaltyType}
-                                showPenaltyTypeError={edit.sinDetailsPenaltyError}
-                                selectedBogeysClub={edit.selectedBogeysClub}
-                                onBogeysClubChange={edit.setSelectedBogeysClub}
-                                showBogeysClubError={edit.sinDetailsBogeysClubError}
-                                selectedDoubleChipReason={edit.selectedDoubleChipReason}
-                                onDoubleChipReasonChange={edit.setSelectedDoubleChipReason}
-                                showDoubleChipReasonError={edit.sinDetailsDoubleChipReasonError}
-                                puttingStats={edit.puttingStats}
-                                onPuttingStatsChange={(firstPutt, secondPutt, secondIsLong, greenInRegulation) => {
-                                    edit.setPuttingStats(firstPutt !== undefined ? { firstPutt, secondPutt, secondIsLong: secondIsLong ?? false, greenInRegulation: greenInRegulation ?? false } : null);
-                                }}
-                                initialFirstPutt={edit.puttingStats?.firstPutt}
-                                initialSecondPutt={edit.puttingStats?.secondPutt}
-                                initialSecondIsLong={edit.puttingStats?.secondIsLong ?? false}
-                                    initialGreenInRegulation={edit.puttingStats?.greenInRegulation ?? false}
-                                editedScores={edit.editedScores}
-                                playerId={multiplayerScorecard?.players.find(p => p.Id === edit.selectedScore.playerId)?.Id}
                             />
                         )}
 
@@ -467,12 +495,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                         />
                         <ScorecardActionButtons
                             isEditing={edit.isEditing}
-                            showSaveConfirm={edit.showSaveConfirm}
                             onDelete={handleDelete}
-                            onCancelEdit={handleCancelEdit}
-                            onSave={handleSave}
-                            onCancelSave={handleCancelSave}
-                            onConfirmSave={handleConfirmSave}
                         />
                     </>
                 )}

@@ -8,7 +8,6 @@ describe('useScorecardEdit', () => {
         expect(result.current.isEditing).toBe(false);
         expect(result.current.editedScores).toEqual([]);
         expect(result.current.selectedScore).toBeNull();
-        expect(result.current.showSaveConfirm).toBe(false);
         expect(result.current.showDeleteConfirm).toBe(false);
         expect(result.current.editedSins).toBeNull();
         expect(result.current.sinsHoleNumber).toBeNull();
@@ -118,7 +117,6 @@ describe('useScorecardEdit', () => {
 
         act(() => {
             result.current.setIsEditing(true);
-            result.current.setShowSaveConfirm(true);
             result.current.setSelectedScore({ holeNumber: 1, playerId: 1 });
             result.current.setEditedSins({ threePutts: true, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false });
         });
@@ -128,7 +126,6 @@ describe('useScorecardEdit', () => {
         });
 
         expect(result.current.isEditing).toBe(false);
-        expect(result.current.showSaveConfirm).toBe(false);
         expect(result.current.selectedScore).toBeNull();
         expect(result.current.editedSins).toBeNull();
     });
@@ -201,15 +198,13 @@ describe('useScorecardEdit', () => {
         expect(result.current.sinDetailsDoubleChipReasonError).toBe(true);
     });
 
-    it('allows confirming save/delete', () => {
+    it('allowsConfirmingDelete', () => {
         const { result } = renderHook(() => useScorecardEdit());
 
         act(() => {
-            result.current.setShowSaveConfirm(true);
             result.current.setShowDeleteConfirm(true);
         });
 
-        expect(result.current.showSaveConfirm).toBe(true);
         expect(result.current.showDeleteConfirm).toBe(true);
     });
 

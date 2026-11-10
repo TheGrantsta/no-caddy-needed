@@ -5,7 +5,6 @@ export function useScorecardEdit() {
     const [isEditing, setIsEditing] = useState(false);
     const [editedScores, setEditedScores] = useState<RoundHoleScore[]>([]);
     const [selectedScore, setSelectedScore] = useState<{ holeNumber: number; playerId: number } | null>(null);
-    const [showSaveConfirm, setShowSaveConfirm] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [editedSins, setEditedSins] = useState<DeadlySinsValues | null>(null);
     const [sinsHoleNumber, setSinsHoleNumber] = useState<number | null>(null);
@@ -25,7 +24,6 @@ export function useScorecardEdit() {
         setIsEditing(false);
         setEditedScores([]);
         setSelectedScore(null);
-        setShowSaveConfirm(false);
         setEditedSins(null);
         setSinsHoleNumber(null);
         setSelectedOffTeeClub(undefined);
@@ -44,7 +42,6 @@ export function useScorecardEdit() {
     const resetScorecardAfterSave = useCallback(() => {
         setEditedScores([]);
         setSelectedScore(null);
-        setShowSaveConfirm(false);
         setEditedSins(null);
         setSinsHoleNumber(null);
         setSelectedOffTeeClub(undefined);
@@ -102,8 +99,6 @@ export function useScorecardEdit() {
         setEditedScores,
         selectedScore,
         setSelectedScore,
-        showSaveConfirm,
-        setShowSaveConfirm,
         showDeleteConfirm,
         setShowDeleteConfirm,
         editedSins,

@@ -3362,6 +3362,263 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    editRound: StyleSheet.create({
+        headerRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            paddingTop: 12,
+            paddingBottom: 8,
+        },
+        cancelPill: {
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: '#E9E9EB',
+            justifyContent: 'center',
+            paddingHorizontal: 18,
+        },
+        cancelText: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+        },
+        savePill: {
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.primary,
+            justifyContent: 'center',
+            paddingHorizontal: 18,
+        },
+        saveText: {
+            color: c.white,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        title: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        sectionLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            letterSpacing: 1,
+            marginHorizontal: 20,
+            marginTop: 24,
+            marginBottom: 10,
+        },
+        holesHeader: {
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+            justifyContent: 'space-between',
+            paddingRight: 20,
+        },
+        totalText: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginBottom: 10,
+        },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            marginHorizontal: 16,
+            overflow: 'hidden',
+        },
+        row: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            minHeight: 56,
+        },
+        rowLabel: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+        },
+        rowValue: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+            flexShrink: 1,
+            textAlign: 'right',
+        },
+        divider: {
+            height: StyleSheet.hairlineWidth,
+            backgroundColor: '#E0E0E0',
+            marginLeft: 16,
+        },
+        holeRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 12,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+        },
+        holeBadge: {
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            backgroundColor: '#E6EEE9',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        holeBadgeText: {
+            color: c.primary,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+        },
+        holeText: {
+            flex: 1,
+        },
+        holePar: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+        },
+        holeSummary: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+        },
+        holeScore: {
+            color: c.black,
+            fontSize: 22,
+            fontWeight: 'bold',
+        },
+        footnote: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            marginHorizontal: 20,
+            marginTop: 8,
+        },
+    }),
+
+    editHole: StyleSheet.create({
+        headerRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            paddingTop: 12,
+            paddingBottom: 8,
+        },
+        backPill: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: '#E9E9EB',
+            paddingRight: 16,
+        },
+        backText: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+        },
+        title: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
+        },
+        spacer: {
+            width: 80,
+        },
+        sectionLabel: {
+            color: c.tertiary,
+            fontSize: fontSizes.smallText,
+            letterSpacing: 1,
+            marginHorizontal: 20,
+            marginTop: 24,
+            marginBottom: 10,
+        },
+        card: {
+            backgroundColor: c.backgroundLight,
+            borderRadius: 20,
+            marginHorizontal: 16,
+            overflow: 'hidden',
+        },
+        row: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            minHeight: 56,
+        },
+        rowLabel: {
+            color: c.black,
+            fontSize: fontSizes.normal,
+            flexShrink: 1,
+        },
+        divider: {
+            height: StyleSheet.hairlineWidth,
+            backgroundColor: '#E0E0E0',
+            marginLeft: 16,
+        },
+        segmentTrack: {
+            flexDirection: 'row',
+            backgroundColor: '#E9E9EB',
+            borderRadius: 10,
+            padding: 3,
+            width: 150,
+        },
+        segment: {
+            flex: 1,
+            paddingVertical: 6,
+            borderRadius: 8,
+            alignItems: 'center',
+        },
+        segmentSelected: {
+            backgroundColor: c.backgroundLight,
+        },
+        segmentText: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+            fontWeight: '500',
+        },
+        segmentTextSelected: {
+            color: c.black,
+            fontWeight: '700',
+        },
+        stepper: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 14,
+        },
+        stepButton: {
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.primary,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        stepButtonMuted: {
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: '#E9E9EB',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        stepText: {
+            color: c.black,
+            fontSize: 24,
+            fontWeight: '600',
+        },
+        strokesValue: {
+            color: c.black,
+            fontSize: 28,
+            fontWeight: '700',
+            minWidth: 28,
+            textAlign: 'center',
+        },
+        puttValue: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            columnGap: 6,
+        },
+        unit: {
+            color: c.tertiary,
+            fontSize: fontSizes.normal,
+        },
+    }),
+
     roundDetail: StyleSheet.create({
         summaryCard: {
             backgroundColor: c.backgroundLight,

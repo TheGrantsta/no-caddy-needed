@@ -1,6 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import MyBag from '../../app/(tabs)/my-bag';
+import { ONBOARDING_STEPS } from '../../assets/onboardingSteps';
 
 const mockPush = jest.fn();
 
@@ -94,5 +95,38 @@ describe('My Bag screen', () => {
 
         expect(queryByTestId('bag-sub-menu-distances')).toBeNull();
         expect(queryByTestId('bag-sub-menu-wedge-chart')).toBeNull();
+    });
+
+    describe('info overlay', () => {
+        it('shouldShowAnInfoButtonInAWhiteCircleLikeTheOtherHeaders', () => {
+            const colours = require('../../assets/colours').default;
+            const { getByTestId } = render(<MyBag />);
+
+            expect(getByTestId('bag-info-button')).toHaveStyle({
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                backgroundColor: colours.backgroundLight,
+            });
+        });
+
+        it('shouldOpenTheBagOverlayWhenTheInfoButtonIsPressed', () => {
+            const { getByTestId, queryByTestId, getByText } = render(<MyBag />);
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+
+            fireEvent.press(getByTestId('bag-info-button'));
+
+            expect(getByTestId('onboarding-overlay')).toBeTruthy();
+            expect(getByText(ONBOARDING_STEPS.bag[0].text)).toBeTruthy();
+        });
+
+        it('shouldCloseTheBagOverlayWhenItIsDismissed', () => {
+            const { getByTestId, queryByTestId } = render(<MyBag />);
+            fireEvent.press(getByTestId('bag-info-button'));
+
+            fireEvent.press(getByTestId('done-button'));
+
+            expect(queryByTestId('onboarding-overlay')).toBeNull();
+        });
     });
 });

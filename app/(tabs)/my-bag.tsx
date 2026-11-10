@@ -5,6 +5,9 @@ import { useRouter } from 'expo-router';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import PageHeader from '../../components/PageHeader';
+import OnboardingOverlay from '../../components/OnboardingOverlay';
+import { ONBOARDING_STEPS } from '../../assets/onboardingSteps';
+import { useToggle } from '../../hooks/useToggle';
 
 const WEDGE_TILE = '#B5651D';
 
@@ -45,11 +48,23 @@ export default function MyBag() {
   const colours = useThemeColours();
   const router = useRouter();
   const s = styles.myBag;
+  const [showOnboarding, , setShowOnboarding] = useToggle(false);
 
   return (
     <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContentContainer}>
       <View style={styles.container}>
-        <PageHeader title="My Bag" />
+        <PageHeader
+          title="My Bag"
+          rightAction={
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"
+              testID="bag-info-button"
+              onPress={() => setShowOnboarding(true)}
+              style={styles.practiceHeader.circleButton}
+            >
+              <MaterialIcons name="info-outline" size={22} color={colours.text} />
+            </TouchableOpacity>
+          }
+        />
 
         <Text style={s.sectionLabel}>Yardages</Text>
         <View style={s.card}>
@@ -72,6 +87,12 @@ export default function MyBag() {
           />
         </View>
       </View>
+      <OnboardingOverlay
+        visible={showOnboarding}
+        onDismiss={() => setShowOnboarding(false)}
+        title="My Bag"
+        steps={ONBOARDING_STEPS.bag}
+      />
     </ScrollView>
   );
 }

@@ -1,7 +1,7 @@
 // One short overlay per main screen. Keep each overlay to one or two steps.
 export type OnboardingStep = { text: string };
 
-export const ONBOARDING_STEPS: Record<'home' | 'play' | 'practice' | 'perform' | 'distances' | 'wedgeChart' | 'settings', OnboardingStep[]> = {
+export const ONBOARDING_STEPS: Record<'home' | 'play' | 'practice' | 'perform' | 'bag' | 'distances' | 'wedgeChart' | 'settings', OnboardingStep[]> = {
   home: [
     { text: 'Play tracks your rounds, Practice sharpens your game and Performance shows your stats. Tap the info icon to see this again.' },
   ],
@@ -14,6 +14,9 @@ export const ONBOARDING_STEPS: Record<'home' | 'play' | 'practice' | 'perform' |
   ],
   perform: [
     { text: 'Performance shows how your rounds and putting are trending. Pick a tab to see that statistic.' },
+  ],
+  bag: [
+    { text: 'Keep your club carry distances and wedge yardages here, ready to check on the course.' },
   ],
   distances: [
     { text: 'Add your clubs and typical carry distances to use as a quick reference during a round.' },

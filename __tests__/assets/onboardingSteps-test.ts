@@ -5,7 +5,7 @@ describe('onboarding steps', () => {
 
     it('shouldDefineAnOverlayForEachMainScreen', () => {
         expect(Object.keys(ONBOARDING_STEPS).sort()).toEqual(
-            ['distances', 'home', 'perform', 'play', 'practice', 'settings', 'wedgeChart']
+            ['bag', 'distances', 'home', 'perform', 'play', 'practice', 'settings', 'wedgeChart']
         );
     });
 

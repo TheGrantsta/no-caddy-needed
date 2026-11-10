@@ -223,6 +223,7 @@ function ThemedApp() {
         <Stack.Screen
           name="play/wedge-chart"
           options={{
+            headerBackVisible: false,
             headerTitle: () => <LogoTitle />,
             headerTitleAlign: "center",
             headerStyle: {

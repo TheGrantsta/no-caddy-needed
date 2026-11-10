@@ -98,9 +98,9 @@ export default function Perform() {
               <TouchableOpacity accessibilityRole="button" accessibilityLabel="Show help"
                 testID="perform-info-button"
                 onPress={handleShowOnboarding}
-                style={{ padding: 4 }}
+                style={styles.practiceHeader.circleButton}
               >
-                <MaterialIcons name="info-outline" size={24} color={colours.primary} />
+                <MaterialIcons name="info-outline" size={22} color={colours.text} />
               </TouchableOpacity>
             }
           />

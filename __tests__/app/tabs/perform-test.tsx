@@ -153,6 +153,18 @@ describe('Perform', () => {
     });
 
     describe('Heading and sub-menu order', () => {
+        it('shouldShowTheInfoIconInAWhiteCircleLikeThePracticeHeader', () => {
+            const colours = require('../../../assets/colours').default;
+            const { getByTestId } = render(<Perform />);
+
+            expect(getByTestId('perform-info-button')).toHaveStyle({
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                backgroundColor: colours.backgroundLight,
+            });
+        });
+
         it('shouldShowTheStatsHeadingAboveTheSubMenu', () => {
             const { toJSON } = render(<Perform />);
             // Skip the refresh control prop, which holds a circular React structure

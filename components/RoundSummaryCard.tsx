@@ -10,10 +10,12 @@ type Props = {
     putts: number | null;
     threePutts: number;
     penalties: number;
+    // Score-only rounds record no stats, so the tiles are hidden
+    showStats?: boolean;
 };
 
 // Saved round headline: the score against par, then putts, three-putts and penalties as tiles
-export default function RoundSummaryCard({ holesPlayed, totalScore, totalPar, putts, threePutts, penalties }: Props) {
+export default function RoundSummaryCard({ holesPlayed, totalScore, totalPar, putts, threePutts, penalties, showStats = true }: Props) {
     const styles = useStyles();
     const s = styles.roundDetail;
     const difference = totalScore - totalPar;
@@ -32,14 +34,16 @@ export default function RoundSummaryCard({ holesPlayed, totalScore, totalPar, pu
                 <Text testID="round-summary-score" style={s.scoreText}>{String(totalScore)}</Text>
                 <Text style={s.toParText}>{toPar}</Text>
             </View>
-            <View style={s.tileRow}>
-                {tiles.map(tile => (
-                    <View key={tile.label} style={s.tile}>
-                        <Text style={s.tileLabel}>{tile.label}</Text>
-                        <Text style={s.tileValue}>{String(tile.value)}</Text>
-                    </View>
-                ))}
-            </View>
+            {showStats && (
+                <View style={s.tileRow}>
+                    {tiles.map(tile => (
+                        <View key={tile.label} style={s.tile}>
+                            <Text style={s.tileLabel}>{tile.label}</Text>
+                            <Text style={s.tileValue}>{String(tile.value)}</Text>
+                        </View>
+                    ))}
+                </View>
+            )}
         </View>
     );
 }

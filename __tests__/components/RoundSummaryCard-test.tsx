@@ -54,4 +54,15 @@ describe('RoundSummaryCard', () => {
 
         expect(getByText('–')).toBeTruthy();
     });
+
+    it('shouldHideThePutts3PuttsAndPenaltiesTilesWhenStatsAreOff', () => {
+        const { queryByText, getByTestId } = render(
+            <RoundSummaryCard holesPlayed={5} totalScore={20} totalPar={20} putts={null} threePutts={0} penalties={0} showStats={false} />
+        );
+
+        expect(getByTestId('round-summary-score')).toHaveTextContent('20');
+        expect(queryByText('Putts')).toBeNull();
+        expect(queryByText('3-putts')).toBeNull();
+        expect(queryByText('Penalties')).toBeNull();
+    });
 });

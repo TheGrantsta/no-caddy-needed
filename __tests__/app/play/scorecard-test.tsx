@@ -223,10 +223,13 @@ describe('Scorecard screen', () => {
             round: { ...multiplayerData.round, IsScoreOnly: 1 },
         });
 
-        const { getByTestId } = render(<ScorecardScreen />);
+        const { getByTestId, queryByText } = render(<ScorecardScreen />);
 
         expect(getByTestId('round-summary-card')).toBeTruthy();
         expect(getByTestId('round-table-card-out')).toBeTruthy();
+        expect(queryByText('Putts')).toBeNull();
+        expect(queryByText('3-putts')).toBeNull();
+        expect(queryByText('Penalties')).toBeNull();
     });
 
     it('renders multiplayer scorecard when multiplayer data exists', () => {

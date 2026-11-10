@@ -371,10 +371,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         .sort((a, b) => a.HoleNumber - b.HoleNumber)
         .map(h => ({ holeNumber: h.HoleNumber, par: h.HolePar, score: h.Score }));
     const showSummary = !edit.isEditing && userHoles.length > 0;
-    // Score-only rounds have no putting or penalty stats: their summary shows a dash for putts and zeros for the rest
-    const summaryStats = round?.IsScoreOnly
-        ? { putts: null, threePutts: 0, penalties: 0 }
-        : (scoreBreakdown ?? { putts: 0, threePutts: 0, penalties: 0 });
+    const summaryStats = scoreBreakdown ?? { putts: 0, threePutts: 0, penalties: 0 };
 
     return (
         <View testID={`scorecard-page-${roundId}`} style={{ width }}>
@@ -479,6 +476,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                     putts={summaryStats.putts}
                                     threePutts={summaryStats.threePutts}
                                     penalties={summaryStats.penalties}
+                                    showStats={!round?.IsScoreOnly}
                                 />
                                 <RoundScoreTable holes={userHoles} sinHoles={sinHoles} onSinPress={handleSinPress} />
                             </>

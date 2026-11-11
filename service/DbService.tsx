@@ -430,6 +430,8 @@ export type Round = {
     Created_At: string;
     HolesPlayed: number;
     IsScoreOnly: number;
+    // The hole the round started on (1 to 18); rounds saved before shotgun starts began on hole 1
+    StartHole?: number;
     // Calendar year the round was played; undefined when the stored date is unreadable
     Year?: number;
 };
@@ -506,8 +508,9 @@ export type RoundScoreBreakdown = {
 };
 
 // Round services
-export const startRoundService = async (courseName: string, isScoreOnly: boolean): Promise<number | null> => {
-    return insertRound(courseName, isScoreOnly);
+// startHole is the hole the round starts on; a shotgun start can begin anywhere from 1 to 18
+export const startRoundService = async (courseName: string, isScoreOnly: boolean, startHole: number = 1): Promise<number | null> => {
+    return insertRound(courseName, isScoreOnly, startHole);
 };
 
 // Changes the date a round was played on; the time of day is kept as the caller supplies it

@@ -4,9 +4,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
+import { HOLES_PER_ROUND } from '@/utils/holeOrder';
+import Dropdown from './Dropdown';
 
 type Props = {
-    onStartRound: (playerNames: string[], courseName: string) => void;
+    // startHole is 1 to 18; a shotgun start begins on any hole
+    onStartRound: (playerNames: string[], courseName: string, startHole: number) => void;
     recentCourseNames?: string[];
     onRemoveCourse?: (name: string) => void;
 };
@@ -23,6 +26,9 @@ const PlayerSetup = ({ onStartRound, recentCourseNames, onRemoveCourse }: Props)
     const [courseName, setCourseName] = useState('');
     const [courseNameError, setCourseNameError] = useState('');
     const [hiddenCourses, setHiddenCourses] = useState<Set<string>>(new Set());
+    const [startHole, setStartHole] = useState(1);
+
+    const startingHoleOptions = Array.from({ length: HOLES_PER_ROUND }, (_, i) => `Hole ${i + 1}`);
 
     const handleAddPlayer = () => {
         if (additionalPlayers.length < MAX_ADDITIONAL_PLAYERS) {
@@ -61,7 +67,7 @@ const PlayerSetup = ({ onStartRound, recentCourseNames, onRemoveCourse }: Props)
         const existingMatch = recentCourseNames?.find(name => sameCourse(name, trimmedCourseName));
         const finalCourseName = existingMatch ?? trimmedCourseName;
         const names = additionalPlayers.filter(name => name.trim().length > 0);
-        onStartRound(names, finalCourseName);
+        onStartRound(names, finalCourseName, startHole);
     };
 
     // The search field filters the recent list; an empty field shows every recent course
@@ -131,6 +137,20 @@ const PlayerSetup = ({ onStartRound, recentCourseNames, onRemoveCourse }: Props)
                     <Text style={s.hintText}>Swipe left on a course to remove it.</Text>
                 </View>
             )}
+
+            <Text style={s.sectionLabel}>Starting hole</Text>
+            <View style={s.card}>
+                <View style={s.cardRow}>
+                    <Text style={s.courseRowText}>First tee</Text>
+                    <Dropdown
+                        options={startingHoleOptions}
+                        selectedOption={`Hole ${startHole}`}
+                        onSelectOption={label => setStartHole(Number(label.replace('Hole ', '')))}
+                        testIDPrefix="starting-hole"
+                        inline
+                    />
+                </View>
+            </View>
 
             <Text style={s.sectionLabel}>Players</Text>
             <View style={s.card}>

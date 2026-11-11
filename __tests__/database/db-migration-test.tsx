@@ -514,6 +514,7 @@ describe('Rounds table IsScoreOnly column migration', () => {
                 { name: 'Id' },
                 { name: 'TotalScore' },
                 { name: 'IsScoreOnly' },
+                { name: 'StartHole' },
                 { name: 'CourseName' },
             ];
             if (sql === 'PRAGMA table_info(Settings)') return [

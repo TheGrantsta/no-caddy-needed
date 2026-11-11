@@ -254,6 +254,18 @@ describe('Play screen', () => {
                 expect(queryByTestId('start-button')).toBeNull();
             });
 
+            it('shouldResumeAShotgunRoundOnTheNextHoleInPlayOrder', async () => {
+                mockGetActiveRound.mockReturnValue({ ...incompleteRound, HolesPlayed: 2, StartHole: 10 });
+                mockGetHolesPlayedForRound.mockReturnValue(2);
+                const { getByTestId, getByText } = render(<Play />);
+                await act(async () => {
+                    fireEvent.press(getByTestId('continue-round-button'));
+                });
+                // Holes 10 and 11 are done, so the round resumes on hole 12
+                expect(getByText('Hole 11')).toBeTruthy();
+                expect(getByText('Hole 13')).toBeTruthy();
+            });
+
             it('shouldResumeRoundWhenContinuePressed', async () => {
                 const { getByTestId, queryByTestId } = render(<Play />);
                 await act(async () => {
@@ -363,6 +375,24 @@ describe('Play screen', () => {
             expect(getByText('Pebble Beach')).toBeTruthy();
         });
 
+        it('shouldStartAShotgunRoundOnTheChosenHoleAndPlayOnFromIt', async () => {
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+
+            const { getByTestId, queryByTestId, getByText } = render(<Play />);
+
+            fireEvent.press(getByTestId('starting-hole-dropdown-toggle'));
+            fireEvent.press(getByTestId('starting-hole-option-Hole 10'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+
+            await waitFor(() => {
+                expect(mockStartRound).toHaveBeenCalledWith('Test Course', false, 10);
+                expect(getByText('Hole 11')).toBeTruthy();
+            });
+            expect(queryByTestId('previous-hole-button')).toBeNull();
+        });
+
         it('starts round after player setup is completed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
@@ -373,7 +403,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(mockStartRound).toHaveBeenCalledWith('Test Course', false);
+                expect(mockStartRound).toHaveBeenCalledWith('Test Course', false, 1);
                 expect(mockAddRoundPlayers).toHaveBeenCalledWith(1, []);
             });
         });
@@ -388,7 +418,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(mockStartRound).toHaveBeenCalledWith('St Andrews', false);
+                expect(mockStartRound).toHaveBeenCalledWith('St Andrews', false, 1);
                 expect(getByText('Hole 1')).toBeTruthy();
             });
         });
@@ -795,7 +825,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(mockStartRound).toHaveBeenCalledWith('St Andrews', false);
+                expect(mockStartRound).toHaveBeenCalledWith('St Andrews', false, 1);
             });
         });
 
@@ -815,7 +845,7 @@ describe('Play screen', () => {
             fireEvent.press(getByTestId('start-button'));
 
             await waitFor(() => {
-                expect(mockStartRound).toHaveBeenCalledWith('St Andrews', true);
+                expect(mockStartRound).toHaveBeenCalledWith('St Andrews', true, 1);
             });
         });
     });

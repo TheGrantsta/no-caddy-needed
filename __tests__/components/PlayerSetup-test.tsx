@@ -127,7 +127,7 @@ describe('PlayerSetup', () => {
 
         fireEvent.press(getByTestId('start-button'));
 
-        expect(mockOnStartRound).toHaveBeenCalledWith(['Alice', 'Bob'], 'St Andrews');
+        expect(mockOnStartRound).toHaveBeenCalledWith(['Alice', 'Bob'], 'St Andrews', 1);
     });
 
     it('filters out empty player names on start', () => {
@@ -143,7 +143,7 @@ describe('PlayerSetup', () => {
 
         fireEvent.press(getByTestId('start-button'));
 
-        expect(mockOnStartRound).toHaveBeenCalledWith(['Alice'], 'St Andrews');
+        expect(mockOnStartRound).toHaveBeenCalledWith(['Alice'], 'St Andrews', 1);
     });
 
     describe('Course search field', () => {
@@ -165,7 +165,7 @@ describe('PlayerSetup', () => {
             fireEvent.changeText(getByTestId('course-name-input'), 'Pebble Beach');
             fireEvent.press(getByTestId('start-button'));
 
-            expect(mockOnStartRound).toHaveBeenCalledWith([], 'Pebble Beach');
+            expect(mockOnStartRound).toHaveBeenCalledWith([], 'Pebble Beach', 1);
         });
 
         it('shows error message when course name is empty', () => {
@@ -203,7 +203,7 @@ describe('PlayerSetup', () => {
             fireEvent.changeText(getByTestId('course-name-input'), ' Pebble Beach ');
             fireEvent.press(getByTestId('start-button'));
 
-            expect(mockOnStartRound).toHaveBeenCalledWith([], 'Pebble Beach');
+            expect(mockOnStartRound).toHaveBeenCalledWith([], 'Pebble Beach', 1);
         });
 
         it('normalizes course name to existing recent course when case/whitespace differs', () => {
@@ -214,7 +214,7 @@ describe('PlayerSetup', () => {
             fireEvent.changeText(getByTestId('course-name-input'), 'st andrews');
             fireEvent.press(getByTestId('start-button'));
 
-            expect(mockOnStartRound).toHaveBeenCalledWith([], 'St Andrews');
+            expect(mockOnStartRound).toHaveBeenCalledWith([], 'St Andrews', 1);
         });
 
         it('normalizes with whitespace variance when finding existing course', () => {
@@ -225,7 +225,7 @@ describe('PlayerSetup', () => {
             fireEvent.changeText(getByTestId('course-name-input'), ' PEBBLE BEACH ');
             fireEvent.press(getByTestId('start-button'));
 
-            expect(mockOnStartRound).toHaveBeenCalledWith([], 'Pebble Beach');
+            expect(mockOnStartRound).toHaveBeenCalledWith([], 'Pebble Beach', 1);
         });
 
         it('filters recent courses to those containing the typed text, ignoring case', () => {
@@ -301,7 +301,7 @@ describe('PlayerSetup', () => {
             fireEvent.press(getByText('St Andrews'));
             fireEvent.press(getByTestId('start-button'));
 
-            expect(mockOnStartRound).toHaveBeenCalledWith([], 'St Andrews');
+            expect(mockOnStartRound).toHaveBeenCalledWith([], 'St Andrews', 1);
         });
 
         it('clears error when recent course name is tapped', () => {
@@ -405,6 +405,51 @@ describe('PlayerSetup', () => {
             fireEvent.press(getByTestId('add-player-button'));
 
             expect(getByTestId('player-name-input-0').props.returnKeyType).toBe('done');
+        });
+    });
+    describe('starting hole', () => {
+        const startWithCourse = (getByTestId: (id: string) => any, course = 'St Andrews') => {
+            fireEvent.changeText(getByTestId('course-name-input'), course);
+            fireEvent.press(getByTestId('start-button'));
+        };
+
+        it('shouldLabelTheStartingHoleRowAsFirstTee', () => {
+            const { getByText } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            expect(getByText('First tee')).toBeTruthy();
+        });
+
+        it('shouldShowHoleOneAsTheStartingHoleByDefault', () => {
+            const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            expect(getByTestId('starting-hole-dropdown-toggle')).toHaveTextContent(/Hole 1/);
+        });
+
+        it('shouldOfferEveryHoleFromOneToEighteen', () => {
+            const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            fireEvent.press(getByTestId('starting-hole-dropdown-toggle'));
+
+            expect(getByTestId('starting-hole-option-Hole 1')).toBeTruthy();
+            expect(getByTestId('starting-hole-option-Hole 18')).toBeTruthy();
+        });
+
+        it('shouldStartTheRoundOnTheChosenHoleForAShotgunStart', () => {
+            const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            fireEvent.press(getByTestId('starting-hole-dropdown-toggle'));
+            fireEvent.press(getByTestId('starting-hole-option-Hole 10'));
+            startWithCourse(getByTestId);
+
+            expect(mockOnStartRound).toHaveBeenCalledWith([], 'St Andrews', 10);
+        });
+
+        it('shouldStartOnHoleOneWhenNoOtherHoleIsChosen', () => {
+            const { getByTestId } = render(<PlayerSetup onStartRound={mockOnStartRound} />);
+
+            startWithCourse(getByTestId);
+
+            expect(mockOnStartRound).toHaveBeenCalledWith([], 'St Andrews', 1);
         });
     });
 });

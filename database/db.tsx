@@ -125,7 +125,7 @@ export const initialize = async () => {
         },
         {
             table: 'Rounds',
-            columnsToAdd: ['IsScoreOnly INTEGER NOT NULL DEFAULT 0'],
+            columnsToAdd: ['IsScoreOnly INTEGER NOT NULL DEFAULT 0', 'StartHole INTEGER NOT NULL DEFAULT 1'],
             columnsToRemove: [
                 'CoursePar'
             ],
@@ -455,17 +455,17 @@ export const getAllDrillHistory = () => {
 }
 
 
-export const insertRound = async (courseName: string, isScoreOnly: boolean): Promise<number | null> => {
+export const insertRound = async (courseName: string, isScoreOnly: boolean, startHole: number = 1): Promise<number | null> => {
     try {
         const db = await SQLite.openDatabaseAsync(dbName);
         const now = new Date().toISOString();
 
         const statement = await db.prepareAsync(
-            'INSERT INTO Rounds (TotalScore, StartTime, IsCompleted, CourseName, Created_At, IsScoreOnly) VALUES (0, $StartTime, 0, $CourseName, $Created_At, $IsScoreOnly);'
+            'INSERT INTO Rounds (TotalScore, StartTime, IsCompleted, CourseName, Created_At, IsScoreOnly, StartHole) VALUES (0, $StartTime, 0, $CourseName, $Created_At, $IsScoreOnly, $StartHole);'
         );
 
         try {
-            const result = await statement.executeAsync({ $StartTime: now, $CourseName: courseName || null, $Created_At: now, $IsScoreOnly: isScoreOnly ? 1 : 0 });
+            const result = await statement.executeAsync({ $StartTime: now, $CourseName: courseName || null, $Created_At: now, $IsScoreOnly: isScoreOnly ? 1 : 0, $StartHole: startHole });
             return result.lastInsertRowId;
         } finally {
             await statement.finalizeAsync();

@@ -12,7 +12,7 @@ interface Props {
     onContinueRound: () => Promise<void>;
     onEndIncompleteRound: () => void;
     recentCourseNames: string[];
-    onStartRound: (playerNames: string[], courseName: string) => Promise<void>;
+    onStartRound: (playerNames: string[], courseName: string, startHole: number) => Promise<void>;
     onRemoveCourse: (name: string) => void;
     onShowOnboarding: () => void;
 }

@@ -72,8 +72,16 @@ describe('startRoundService', () => {
 
         const result = await startRoundService('St Andrews', false);
 
-        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', false);
+        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', false, 1);
         expect(result).toBe(42);
+    });
+
+    it('starts the round on the chosen hole for a shotgun start', async () => {
+        mockInsertRound.mockResolvedValue(42);
+
+        await startRoundService('St Andrews', false, 10);
+
+        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', false, 10);
     });
 
     it('returns null when insert fails', async () => {
@@ -89,7 +97,7 @@ describe('startRoundService', () => {
 
         const result = await startRoundService('', false);
 
-        expect(mockInsertRound).toHaveBeenCalledWith('', false);
+        expect(mockInsertRound).toHaveBeenCalledWith('', false, 1);
         expect(result).toBe(1);
     });
 
@@ -98,7 +106,7 @@ describe('startRoundService', () => {
 
         await startRoundService('St Andrews', true);
 
-        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', true);
+        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', true, 1);
     });
 
     it('passes false for isScoreOnly when not in score-only mode', async () => {
@@ -106,7 +114,7 @@ describe('startRoundService', () => {
 
         await startRoundService('St Andrews', false);
 
-        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', false);
+        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', false, 1);
     });
 });
 

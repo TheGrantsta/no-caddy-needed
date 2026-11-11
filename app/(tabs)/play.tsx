@@ -58,6 +58,7 @@ import { useHoleLifecycle } from '../../hooks/useHoleLifecycle';
 import PhaseStats from '../../components/PhaseStats';
 import RoundSummary from '../../components/RoundSummary';
 import { buildRoundSummary, RoundSummary as RoundSummaryData, SummarySins } from '../../utils/roundSummary';
+import { holeAtPlayPosition, isFirstHoleOfRound, isLastHoleOfRound, nextHoleInRound, previousHoleInRound, sanitiseStartHole } from '../../utils/holeOrder';
 import EndRoundSheet from '../../components/EndRoundSheet';
 import EndIncompleteRoundSheet from '../../components/EndIncompleteRoundSheet';
 import BagSheet from '../../components/BagSheet';
@@ -154,6 +155,8 @@ export default function Play() {
     const [showOnboarding, , setShowOnboarding] = useToggle(false);
     // Shared with Performance; a stored year with no rounds falls back to All
     const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
+    // The hole this round started on: 1 for a normal round, or any hole for a shotgun start
+    const [roundStartHole, setRoundStartHole] = useState(1);
     const [showEndIncompleteRoundConfirm, setShowEndIncompleteRoundConfirm] = useState(false);
     const [courseHolePars, setCourseHolePars] = useState<Record<number, number>>({});
     const [activeCourseName, setActiveCourseName] = useState<string | null>(null);
@@ -168,7 +171,7 @@ export default function Play() {
     const [contentFadeAnim] = useState(() => new Animated.Value(0));
     const [contentSlideAnim] = useState(() => new Animated.Value(0));
     const navDirectionRef = useRef<'next' | 'previous'>('next');
-    const isLastHole = currentHole >= 18;
+    const isLastHole = isLastHoleOfRound(currentHole, roundStartHole);
 
     useEffect(() => {
         const activeRound = getActiveRoundService();
@@ -248,7 +251,10 @@ export default function Play() {
         }
         setSkipStatsFlow(incompleteRound.IsScoreOnly === 1);
         const holesPlayed = getHolesPlayedForRoundService(incompleteRound.Id);
-        const resumeHole = holesPlayed > 0 ? holesPlayed + 1 : 1;
+        const startHole = sanitiseStartHole(incompleteRound.StartHole);
+        setRoundStartHole(startHole);
+        // Resume on the next hole in play order, which wraps for a shotgun start
+        const resumeHole = holeAtPlayPosition(startHole, holesPlayed);
         setCurrentHole(resumeHole);
         setActiveRoundId(incompleteRound.Id);
         const courseName = incompleteRound.CourseName ?? '';
@@ -287,8 +293,8 @@ export default function Play() {
         setShowEndIncompleteRoundConfirm(false);
     };
 
-    const handleStartRound = async (playerNames: string[], courseName: string) => {
-        const roundId = await startRoundService(courseName, settings.skipStatsFlowEnabled);
+    const handleStartRound = async (playerNames: string[], courseName: string, startHole: number) => {
+        const roundId = await startRoundService(courseName, settings.skipStatsFlowEnabled, startHole);
 
         if (roundId) {
             logEvent('start_round');
@@ -304,8 +310,9 @@ export default function Play() {
 
             setActiveRoundId(roundId);
             setPlayers(roundPlayers);
-            setCurrentHole(1);
-            loadHoleEntry(1, roundId);
+            setRoundStartHole(startHole);
+            setCurrentHole(startHole);
+            loadHoleEntry(startHole, roundId);
             const holePars = getCourseHoleParsService(courseName);
             setCourseHolePars(holePars);
             setActiveCourseName(courseName);
@@ -433,10 +440,10 @@ export default function Play() {
     };
 
     const advanceHoleOrEndRound = () => {
-        if (currentHole >= 18) {
+        if (isLastHole) {
             setShowEndRoundConfirm(true);
         } else {
-            const nextHole = currentHole + 1;
+            const nextHole = nextHoleInRound(currentHole, roundStartHole);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setCurrentNoteText(courseNotes[nextHole] ?? '');
             setCurrentHole(nextHole);
@@ -453,12 +460,12 @@ export default function Play() {
 
     const handlePreviousHole = async () => {
         navDirectionRef.current = 'previous';
-        if (currentHole <= 1) return;
+        if (isFirstHoleOfRound(currentHole, roundStartHole)) return;
 
         // Keep whatever was entered on this hole, then show the previous hole with its saved entries
         const { holeNumber, holePar, scores } = currentHoleData || buildDefaultHoleData();
         await saveHoleEntry(holeNumber, holePar, scores);
-        const prevHole = currentHole - 1;
+        const prevHole = previousHoleInRound(currentHole, roundStartHole);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         setCurrentNoteText(courseNotes[prevHole] ?? '');
         setCurrentHole(prevHole);
@@ -532,6 +539,7 @@ export default function Play() {
 
     const resetToIdle = () => {
         setActiveRoundId(null);
+        setRoundStartHole(1);
         setCurrentHole(1);
         setDeadlySinsValues(INITIAL_SINS);
         setPuttingStats(null);
@@ -789,6 +797,7 @@ export default function Play() {
                             {(
                                 <HoleNavigationControls
                                     currentHole={currentHole}
+                                    startHole={roundStartHole}
                                     isLastHole={isLastHole}
                                     onPreviousHole={handlePreviousHole}
                                     onNextHole={handleNextHole}

@@ -4,9 +4,12 @@ import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import WindPopover from './WindPopover';
+import { isFirstHoleOfRound, nextHoleInRound, previousHoleInRound } from '@/utils/holeOrder';
 
 interface Props {
     currentHole: number;
+    // The hole the round started on; Previous and Next follow the play order from it
+    startHole?: number;
     isLastHole: boolean;
     onPreviousHole: () => Promise<void>;
     onNextHole: () => Promise<void>;
@@ -18,6 +21,7 @@ interface Props {
 // and the next hole. The wind button opens the wind pop-up above the bar.
 export default function HoleNavigationControls({
     currentHole,
+    startHole = 1,
     isLastHole,
     onPreviousHole,
     onNextHole,
@@ -35,10 +39,10 @@ export default function HoleNavigationControls({
         <View testID="hole-nav-bar" style={styles.holeScreen.bottomBar}>
             <View style={localStyles.holeBarRow}>
                 <View testID="hole-nav-left" style={localStyles.holeBarLeft}>
-                    {currentHole > 1 ? (
+                    {!isFirstHoleOfRound(currentHole, startHole) ? (
                         <TouchableOpacity testID="previous-hole-button" onPress={onPreviousHole} style={localStyles.holeBarPrevious}>
                             <MaterialIcons name="chevron-left" size={18} color={colours.primary} />
-                            <Text numberOfLines={1} style={localStyles.holeBarPreviousText}>{`Hole ${currentHole - 1}`}</Text>
+                            <Text numberOfLines={1} style={localStyles.holeBarPreviousText}>{`Hole ${previousHoleInRound(currentHole, startHole)}`}</Text>
                         </TouchableOpacity>
                     ) : null}
                 </View>
@@ -63,7 +67,7 @@ export default function HoleNavigationControls({
                         style={[localStyles.nextHoleButton, localStyles.holeBarNextButton]}
                     >
                         <Text numberOfLines={1} style={[localStyles.nextHoleButtonText, localStyles.holeBarNextText]}>
-                            {isLastHole ? 'Finish' : `Hole ${currentHole + 1}`}
+                            {isLastHole ? 'Finish' : `Hole ${nextHoleInRound(currentHole, startHole)}`}
                         </Text>
                         <MaterialIcons
                             name={isLastHole ? 'sports-score' : 'chevron-right'}

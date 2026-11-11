@@ -241,3 +241,36 @@ describe('HoleNavigationControls', () => {
         });
     });
 });
+
+describe('HoleNavigationControls on a shotgun start', () => {
+    const shotgunProps = {
+        isLastHole: false,
+        onPreviousHole: jest.fn(),
+        onNextHole: jest.fn(),
+        holePhase: 'putting' as const,
+    };
+
+    it('shouldHideThePreviousButtonOnTheStartingHole', () => {
+        const { queryByTestId } = render(<HoleNavigationControls {...shotgunProps} currentHole={10} startHole={10} />);
+
+        expect(queryByTestId('previous-hole-button')).toBeNull();
+    });
+
+    it('shouldShowHoleEighteenAsPreviousFromHoleOneOnAShotgunStart', () => {
+        const { getByText } = render(<HoleNavigationControls {...shotgunProps} currentHole={1} startHole={10} />);
+
+        expect(getByText('Hole 18')).toBeTruthy();
+    });
+
+    it('shouldShowHoleElevenAsNextFromHoleTenOnAShotgunStart', () => {
+        const { getByText } = render(<HoleNavigationControls {...shotgunProps} currentHole={10} startHole={10} />);
+
+        expect(getByText('Hole 11')).toBeTruthy();
+    });
+
+    it('shouldShowFinishOnTheLastHoleOfAShotgunStart', () => {
+        const { getByText } = render(<HoleNavigationControls {...shotgunProps} currentHole={9} startHole={10} isLastHole />);
+
+        expect(getByText('Finish')).toBeTruthy();
+    });
+});

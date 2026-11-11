@@ -78,6 +78,12 @@ describe('HomeQuickTools', () => {
         expect(mockPush).toHaveBeenCalledWith('/challenges/lag-putting');
     });
 
+    it('shouldShowEachTileLabelAtTheSmallTextSize', () => {
+        const { getByText } = render(<HomeQuickTools />);
+
+        expect(getByText('Wind')).toHaveStyle({ fontSize: require('../../assets/font-sizes').default.smallText });
+    });
+
     it('shouldGiveEveryToolTileTheSameSize', () => {
         const { getAllByTestId } = render(<HomeQuickTools />);
 

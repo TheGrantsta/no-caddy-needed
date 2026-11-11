@@ -3431,7 +3431,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         toolLabel: {
             color: c.black,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.smallText,
             fontWeight: '700',
         },
         recentCard: {

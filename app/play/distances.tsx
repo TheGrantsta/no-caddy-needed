@@ -78,7 +78,7 @@ export default function DistancesScreen() {
                             onPress={() => router.back()}
                             style={s.circleButton}
                         >
-                            <MaterialIcons name="chevron-left" size={28} color={colours.text} />
+                            <MaterialIcons name="chevron-left" size={28} color={colours.black} />
                         </TouchableOpacity>
                         <Text style={s.title}>Distances</Text>
                         <TouchableOpacity

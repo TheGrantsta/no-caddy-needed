@@ -135,4 +135,10 @@ describe('WedgeChartScreen', () => {
         });
     });
 
+    it('shouldShowTheBackChevronInTheBlackColourLikeTheOtherScreens', () => {
+        const { UNSAFE_getByProps } = render(<WedgeChartScreen />);
+
+        expect(UNSAFE_getByProps({ name: 'chevron-left' }).props.color).toBe(require('../../assets/colours').default.black);
+    });
+
 });

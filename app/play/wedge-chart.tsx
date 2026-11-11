@@ -75,7 +75,7 @@ export default function WedgeChartScreen() {
                             onPress={() => router.back()}
                             style={styles.wedgeChart.backButton}
                         >
-                            <MaterialIcons name="chevron-left" size={28} color={colours.text} />
+                            <MaterialIcons name="chevron-left" size={28} color={colours.black} />
                         </TouchableOpacity>
                         <Text style={styles.wedgeChart.title}>Wedge Chart</Text>
                         <TouchableOpacity

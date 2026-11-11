@@ -131,4 +131,10 @@ describe('DistancesScreen', () => {
         });
     });
 
+    it('shouldShowTheBackChevronInTheBlackColourLikeTheOtherScreens', () => {
+        const { UNSAFE_getByProps } = render(<DistancesScreen />);
+
+        expect(UNSAFE_getByProps({ name: 'chevron-left' }).props.color).toBe(require('../../assets/colours').default.black);
+    });
+
 });

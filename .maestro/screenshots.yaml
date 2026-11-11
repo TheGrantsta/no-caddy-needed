@@ -38,10 +38,17 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/01-home
 
-# Screenshot 2: Play screen (tap Play link)
+# Wait until the Home screen is ready (its Start a round button is on screen) and animations settle,
+# otherwise the tab tap is lost. Matched by id: the text is not matched because the button also holds an icon.
+- extendedWaitUntil:
+    visible:
+      id: "home-start-round"
+    timeout: 10000
+- waitForAnimationToEnd
+
+# Screenshot 2: Play screen (tap the Play tab)
 - tapOn:
     id: "tab-play"
-    index: 0
 
 # Complete the onboarding flow - step 1 (wait for the overlay to appear first)
 - extendedWaitUntil:

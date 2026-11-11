@@ -25,13 +25,13 @@ const SimulationHoleBar = ({ holeNumber, totalHoles, onPrevious, onNext, unitLab
         <View style={[s.bottomBar, { bottom: 16 + bottomInset }]}>
             {holeNumber > 1 ? (
                 <TouchableOpacity testID="previous-hole-button" accessibilityRole="button" onPress={onPrevious} style={s.prevButton}>
-                    <MaterialIcons name="chevron-left" size={24} color={colours.primary} />
+                    <MaterialIcons name="chevron-left" size={18} color={colours.primary} />
                     <Text style={s.prevText}>{`${unitLabel} ${holeNumber - 1}`}</Text>
                 </TouchableOpacity>
             ) : <View />}
             <TouchableOpacity testID="next-hole-button" accessibilityRole="button" onPress={onNext} style={s.nextButton}>
                 <Text style={s.nextText}>{isLastHole ? 'Finish' : `${unitLabel} ${holeNumber + 1}`}</Text>
-                <MaterialIcons name="chevron-right" size={24} color={colours.black} />
+                <MaterialIcons name={isLastHole ? 'sports-score' : 'chevron-right'} size={16} color={colours.white} />
             </TouchableOpacity>
         </View>
     );

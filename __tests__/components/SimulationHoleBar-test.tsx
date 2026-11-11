@@ -59,3 +59,21 @@ describe('SimulationHoleBar', () => {
         expect(getByText('Level 3')).toBeTruthy();
     });
 });
+
+describe('SimulationHoleBar buttons match the hole entry buttons', () => {
+    const colours = require('../../assets/colours').default;
+
+    it('shouldShowTheNextButtonAsAGreenPillWithWhiteText', () => {
+        const { getByTestId, getByText } = renderBar({ holeNumber: 2, unitLabel: 'Level' });
+
+        expect(getByTestId('next-hole-button')).toHaveStyle({ backgroundColor: colours.primary, borderRadius: 999 });
+        expect(getByText('Level 3')).toHaveStyle({ color: colours.white });
+    });
+
+    it('shouldShowThePreviousButtonAsAPlainPrimaryLabelWithNoFill', () => {
+        const { getByTestId, getByText } = renderBar({ holeNumber: 2, unitLabel: 'Level' });
+
+        expect(getByTestId('previous-hole-button')).toHaveStyle({ backgroundColor: 'transparent' });
+        expect(getByText('Level 1')).toHaveStyle({ color: colours.primary, fontWeight: 'bold' });
+    });
+});

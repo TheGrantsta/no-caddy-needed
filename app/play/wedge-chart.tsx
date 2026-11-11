@@ -63,7 +63,7 @@ export default function WedgeChartScreen() {
                             onPress={() => chartRef.current?.save()}
                             style={styles.wedgeChart.doneButton}
                         >
-                            <Text style={styles.wedgeChart.doneText}>Done</Text>
+                            <Text style={styles.wedgeChart.doneText}>Save</Text>
                         </TouchableOpacity>
                     </View>
                 ) : (

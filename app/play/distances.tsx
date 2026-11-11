@@ -66,7 +66,7 @@ export default function DistancesScreen() {
                             onPress={() => listRef.current?.save()}
                             style={s.doneButton}
                         >
-                            <Text style={s.doneText}>Done</Text>
+                            <Text style={s.doneText}>Save</Text>
                         </TouchableOpacity>
                     </View>
                 ) : (

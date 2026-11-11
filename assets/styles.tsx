@@ -473,7 +473,7 @@ export const createStyles = (c: ThemeColours) => ({
         doneText: {
             color: c.white,
             fontSize: fontSizes.normal,
-            fontWeight: '600',
+            fontWeight: 'bold',
         },
         editText: {
             color: c.primary,
@@ -2092,7 +2092,7 @@ export const createStyles = (c: ThemeColours) => ({
         doneText: {
             color: c.white,
             fontSize: fontSizes.normal,
-            fontWeight: '600',
+            fontWeight: 'bold',
         },
         titleSpacer: {
             width: 44,

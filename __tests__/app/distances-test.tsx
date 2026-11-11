@@ -137,6 +137,16 @@ describe('DistancesScreen', () => {
         expect(UNSAFE_getByProps({ name: 'chevron-left' }).props.color).toBe(require('../../assets/colours').default.black);
     });
 
+    it('shouldLabelTheEditModeCommitButtonSaveAndStyleItAsTheSharedSavePill', () => {
+        const colours = require('../../assets/colours').default;
+        const { getByTestId, getByText } = render(<DistancesScreen />);
+
+        fireEvent.press(getByTestId('edit-distances-button'));
+
+        expect(getByTestId('distances-done-button')).toHaveStyle({ backgroundColor: colours.primary, borderRadius: 22 });
+        expect(getByText('Save')).toHaveStyle({ color: colours.white, fontWeight: 'bold' });
+    });
+
     it('shouldShowTheCancelButtonInEditModeAsTheSharedCancelPill', () => {
         const { getByTestId, getByText } = render(<DistancesScreen />);
 

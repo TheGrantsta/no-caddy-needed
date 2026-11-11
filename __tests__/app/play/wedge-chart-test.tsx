@@ -134,7 +134,7 @@ describe('Wedge Chart screen', () => {
         expect(queryByText('Edit Wedge Chart')).toBeNull();
     });
 
-    it('shows Done in the header while editing', () => {
+    it('shows Save in the header while editing', () => {
         const { getByTestId } = renderInEditMode();
         expect(getByTestId('wedge-done-button')).toBeTruthy();
     });
@@ -276,7 +276,7 @@ describe('Wedge Chart screen', () => {
             fireEvent.press(getByTestId('wedge-edit-button'));
 
             expect(getByTestId('wedge-done-button')).toBeTruthy();
-            expect(getByTestId('wedge-done-button')).toHaveTextContent('Done');
+            expect(getByTestId('wedge-done-button')).toHaveTextContent('Save');
         });
 
         it('shouldReturnToTheReadOnlyTableWhenDonePressed', () => {

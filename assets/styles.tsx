@@ -3658,25 +3658,23 @@ export const createStyles = (c: ThemeColours) => ({
             paddingTop: 12,
             paddingBottom: 8,
         },
+        // Circle back button, matching the one in PageHeader
         backPill: {
-            flexDirection: 'row',
-            alignItems: 'center',
+            width: 44,
             height: 44,
             borderRadius: 22,
-            backgroundColor: '#E9E9EB',
-            paddingRight: 16,
-        },
-        backText: {
-            color: c.black,
-            fontSize: fontSizes.normal,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         title: {
             color: c.text,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
+        // Same width as the back button, so the title stays centred
         spacer: {
-            width: 80,
+            width: 44,
         },
         sectionLabel: {
             color: c.tertiary,

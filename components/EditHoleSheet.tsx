@@ -70,9 +70,8 @@ export default function EditHoleSheet({
     return (
         <View>
             <View style={s.headerRow}>
-                <TouchableOpacity testID="edit-hole-back-button" accessibilityRole="button" onPress={onBack} style={s.backPill}>
-                    <MaterialIcons name="chevron-left" size={24} color={colours.black} />
-                    <Text style={s.backText}>Round</Text>
+                <TouchableOpacity testID="edit-hole-back-button" accessibilityRole="button" accessibilityLabel="Back" onPress={onBack} style={s.backPill}>
+                    <MaterialIcons name="chevron-left" size={28} color={colours.black} />
                 </TouchableOpacity>
                 <Text style={s.title} numberOfLines={1}>{`Hole ${holeNumber}`}</Text>
                 <View style={s.spacer} />

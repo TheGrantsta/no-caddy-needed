@@ -49,11 +49,18 @@ describe('EditHoleSheet', () => {
     });
 
     it('shouldShowTheRoundBackButtonAndTheHoleTitle', () => {
-        const { getByText, getByTestId } = renderSheet();
+        const { getByText, getByTestId, getByLabelText } = renderSheet();
 
         expect(getByText('Hole 3')).toBeTruthy();
         expect(getByTestId('edit-hole-back-button')).toBeTruthy();
-        expect(getByText('Round')).toBeTruthy();
+        expect(getByLabelText('Back')).toBeTruthy();
+    });
+
+    it('shouldShowTheBackButtonAsACircleChevronWithNoRoundLabel', () => {
+        const { getByTestId, queryByText } = renderSheet();
+
+        expect(getByTestId('edit-hole-back-button')).toHaveStyle({ width: 44, height: 44, borderRadius: 22 });
+        expect(queryByText('Round')).toBeNull();
     });
 
     it('shouldReturnToTheRoundWhenBackIsPressed', () => {

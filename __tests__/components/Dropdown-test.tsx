@@ -32,17 +32,17 @@ describe('Dropdown', () => {
         expect(getByText('Pick one')).toBeTruthy();
     });
 
-    it('opens dropdown modal when toggle pressed', async () => {
+    it('shouldListTheOptionsInlineBelowTheToggleWithoutOpeningAModalByDefault', () => {
+        const { Modal } = require('react-native');
         const onSelectOption = jest.fn();
-        const { getByTestId } = render(
+        const { getByTestId, getByText, UNSAFE_queryAllByType } = render(
             <Dropdown options={mockOptions} testIDPrefix="test" onSelectOption={onSelectOption} />
         );
 
         fireEvent.press(getByTestId('test-dropdown-toggle'));
 
-        await waitFor(() => {
-            expect(getByTestId('test-modal')).toBeTruthy();
-        });
+        expect(getByText('Option A')).toBeTruthy();
+        expect(UNSAFE_queryAllByType(Modal)).toHaveLength(0);
     });
 
     it('displays all options in dropdown', async () => {
@@ -137,21 +137,16 @@ describe('Dropdown', () => {
         });
     });
 
-    it('shouldListTheOptionsInlineWhenInlineListPresentationIsChosen', () => {
-        const { Modal } = require('react-native');
-        const { getByTestId, UNSAFE_queryAllByType, queryByTestId } = render(
-            <Dropdown
-                options={mockOptions}
-                onSelectOption={jest.fn()}
-                testIDPrefix="test-dropdown"
-                listPresentation="inline"
-            />
+    it('shouldCloseTheInlineListWhenAnOptionIsChosen', () => {
+        const onSelectOption = jest.fn();
+        const { getByTestId, queryByTestId } = render(
+            <Dropdown options={mockOptions} testIDPrefix="test" onSelectOption={onSelectOption} />
         );
 
-        fireEvent.press(getByTestId('test-dropdown-dropdown-toggle'));
+        fireEvent.press(getByTestId('test-dropdown-toggle'));
+        fireEvent.press(getByTestId('test-option-Option B'));
 
-        expect(getByTestId('test-dropdown-option-Option B')).toBeTruthy();
-        expect(UNSAFE_queryAllByType(Modal)).toHaveLength(0);
-        expect(queryByTestId('test-dropdown-modal')).toBeNull();
+        expect(onSelectOption).toHaveBeenCalledWith('Option B');
+        expect(queryByTestId('test-option-Option B')).toBeNull();
     });
 });

@@ -16,7 +16,6 @@ const DoubleChipReasonPicker = ({
 }: Props) => {
     return (
         <Dropdown
-            listPresentation="inline"
             options={Array.from(DOUBLE_CHIP_REASONS)}
             selectedOption={selectedReason}
             onSelectOption={onSelectReason}

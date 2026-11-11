@@ -1,3 +1,4 @@
+import fontSizes from '@/assets/font-sizes';
 import { StyleSheet, Text, View } from 'react-native';
 import { Link, Stack } from 'expo-router';
 
@@ -23,7 +24,7 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     title: {
-        fontSize: 20,
+        fontSize: fontSizes.normal,
         fontWeight: 'bold',
     },
     link: {

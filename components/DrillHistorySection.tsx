@@ -1,3 +1,4 @@
+import fontSizes from '@/assets/font-sizes';
 import React from 'react';
 import { Animated, ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -124,7 +125,7 @@ export default function DrillHistorySection({
                                         disabled={isLoadingMore}
                                     >
                                         <MaterialIcons name="expand-more" size={20} color={colours.primary} />
-                                        <Text style={{ color: colours.primary, fontSize: 14, fontWeight: '500' }}>
+                                        <Text style={{ color: colours.primary, fontSize: fontSizes.smallestText, fontWeight: '500' }}>
                                             {isLoadingMore ? 'Loading...' : 'Load more'}
                                         </Text>
                                     </TouchableOpacity>

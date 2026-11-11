@@ -1,3 +1,4 @@
+import fontSizes from '@/assets/font-sizes';
 import React, { useEffect } from 'react';
 import { useToggle } from '../hooks/useToggle';
 import { Image, LogBox, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -335,7 +336,7 @@ const toastStyles = StyleSheet.create({
   },
   message: {
     flex: 1,
-    fontSize: 14,
+    fontSize: fontSizes.smallestText,
   },
   closeButton: {
     marginLeft: 12,

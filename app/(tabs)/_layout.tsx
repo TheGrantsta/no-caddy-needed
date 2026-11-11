@@ -1,3 +1,4 @@
+import fontSizes from '@/assets/font-sizes';
 import { Tabs, useSegments } from 'expo-router';
 import React from 'react';
 import { View } from 'react-native';
@@ -45,7 +46,7 @@ export default function TabLayout() {
             overflow: 'hidden',
           },
           tabBarLabelStyle: {
-            fontSize: 11,
+            fontSize: fontSizes.tabLabel,
             fontWeight: '600',
           },
           // Floating rounded bar inset from the screen edges, sitting above the home indicator

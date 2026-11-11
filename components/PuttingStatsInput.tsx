@@ -156,7 +156,7 @@ const PuttingStatsInput = ({
             {threePuttSelected && (
                 <View style={{ paddingHorizontal: 16, paddingTop: 12, alignItems: 'flex-start' }}>
                     <View style={{ backgroundColor: colours.primary, borderRadius: 8, paddingVertical: 4, paddingHorizontal: 10 }}>
-                        <Text testID="three-putt-indicator" style={{ color: colours.white, fontSize: 12, fontWeight: 'bold' }}>
+                        <Text testID="three-putt-indicator" style={{ color: colours.white, fontSize: fontSizes.smallestText, fontWeight: 'bold' }}>
                             3-putt
                         </Text>
                     </View>

@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet } from 'react-native';
 import colours, { ThemeColours } from './colours';
-import fontSizes from './font-sizes';
+import fontSizes, { displaySizes } from './font-sizes';
 
 export const createStyles = (c: ThemeColours) => ({
     // Global flat styles — backward-compatible
@@ -1012,7 +1012,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         holeText: {
             color: c.white,
-            fontSize: 40,
+            fontSize: displaySizes.hole,
             fontWeight: '700',
         },
         ofText: {
@@ -1052,12 +1052,12 @@ export const createStyles = (c: ThemeColours) => ({
         },
         distanceValue: {
             color: c.black,
-            fontSize: 72,
+            fontSize: displaySizes.distance,
             fontWeight: '700',
         },
         distanceUnit: {
             color: c.tertiary,
-            fontSize: 28,
+            fontSize: fontSizes.header,
             fontWeight: '600',
             marginLeft: 6,
         },
@@ -1088,7 +1088,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         tileText: {
             color: c.black,
-            fontSize: 28,
+            fontSize: fontSizes.header,
             fontWeight: '700',
         },
         tileTextSelected: {
@@ -1916,7 +1916,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         scoreBreakdownText: {
             color: c.black,
-            fontSize: fontSizes.small,
+            fontSize: fontSizes.smallText,
             textAlign: 'center',
             marginTop: 8,
         },
@@ -3094,13 +3094,13 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 20,
         },
         title: {
-            fontSize: 24,
+            fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             color: c.black,
             marginBottom: 16,
         },
         message: {
-            fontSize: 16,
+            fontSize: fontSizes.smallText,
             color: c.text,
             textAlign: 'center',
             marginBottom: 24,
@@ -3112,7 +3112,7 @@ export const createStyles = (c: ThemeColours) => ({
             borderRadius: 8,
         },
         buttonText: {
-            fontSize: 16,
+            fontSize: fontSizes.smallText,
             fontWeight: 'bold',
             color: c.background,
         },
@@ -3380,7 +3380,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         heroTitle: {
             color: c.white,
-            fontSize: 26,
+            fontSize: fontSizes.subHeader,
             fontWeight: '700',
         },
         heroBody: {
@@ -3667,7 +3667,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         holeScore: {
             color: c.black,
-            fontSize: 22,
+            fontSize: fontSizes.tableHeader,
             fontWeight: 'bold',
         },
         footnote: {
@@ -3784,12 +3784,12 @@ export const createStyles = (c: ThemeColours) => ({
         },
         stepText: {
             color: c.black,
-            fontSize: 24,
+            fontSize: fontSizes.subHeader,
             fontWeight: '600',
         },
         strokesValue: {
             color: c.black,
-            fontSize: 28,
+            fontSize: fontSizes.header,
             fontWeight: '700',
             minWidth: 28,
             textAlign: 'center',
@@ -3825,7 +3825,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         scoreText: {
             color: c.black,
-            fontSize: 64,
+            fontSize: displaySizes.roundScore,
             fontWeight: '700',
             lineHeight: 70,
         },
@@ -4100,7 +4100,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         scoreValue: {
             color: c.black,
-            fontSize: 28,
+            fontSize: fontSizes.header,
             fontWeight: '700',
         },
         scoreCaption: {
@@ -4144,7 +4144,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         title: {
             color: c.black,
-            fontSize: 26,
+            fontSize: fontSizes.subHeader,
             fontWeight: '700',
         },
         subtitle: {
@@ -4327,7 +4327,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         speedValue: {
             color: c.black,
-            fontSize: 56,
+            fontSize: displaySizes.windSpeed,
             fontWeight: '700',
             lineHeight: 60,
         },
@@ -4349,7 +4349,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         numberText: {
             color: c.black,
-            fontSize: 120,
+            fontSize: displaySizes.random,
             fontWeight: '700',
             lineHeight: 130,
         },
@@ -4679,7 +4679,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         readoutValue: {
             color: c.black,
-            fontSize: 96,
+            fontSize: displaySizes.tempo,
             fontWeight: '700',
             lineHeight: 104,
         },
@@ -4819,7 +4819,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         labelText: {
             color: c.primary,
-            fontSize: 15,
+            fontSize: fontSizes.smallestText,
             fontWeight: 'bold',
         },
         clubHeaderCell: {
@@ -4834,7 +4834,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         clubHeaderText: {
             color: c.primary,
-            fontSize: 15,
+            fontSize: fontSizes.smallestText,
             fontWeight: 'bold',
         },
         swingTypeCell: {
@@ -4850,7 +4850,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         swingTypeText: {
             color: c.primary,
-            fontSize: 15,
+            fontSize: fontSizes.smallestText,
             fontWeight: 'bold',
             textAlign: 'center',
         },
@@ -4867,7 +4867,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         distanceNameText: {
             color: c.primary,
-            fontSize: 15,
+            fontSize: fontSizes.smallestText,
             fontWeight: 'bold',
             textAlign: 'center',
         },
@@ -4887,7 +4887,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         dataText: {
             color: c.black,
-            fontSize: 15,
+            fontSize: fontSizes.smallestText,
             fontWeight: '600',
         },
         highlightedText: {

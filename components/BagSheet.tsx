@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
-import { useThemeColours } from '@/context/ThemeContext';
 import type { WedgeChartData } from '../service/DbService';
 import { yardsToDisplayUnit, DistanceUnit } from '../service/UnitsService';
 
@@ -21,7 +19,6 @@ type Tab = 'distances' | 'wedges';
 // In-round yardages: carry distances for each club, plus the wedge chart
 const BagSheet = ({ visible, onClose, clubDistances, wedgeChart, units }: Props) => {
     const styles = useStyles();
-    const colours = useThemeColours();
     const s = styles.bagSheet;
     const [tab, setTab] = useState<Tab>('distances');
     const unitLabel = units === 'metres' ? 'm' : 'yd';
@@ -36,8 +33,8 @@ const BagSheet = ({ visible, onClose, clubDistances, wedgeChart, units }: Props)
                 <View style={s.handle} />
                 <View style={s.header}>
                     <Text style={s.title}>Yardages</Text>
-                    <TouchableOpacity testID="bag-sheet-close-button" accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} style={s.closeButton}>
-                        <MaterialIcons name="close" size={20} color={colours.text} />
+                    <TouchableOpacity testID="bag-sheet-close-button" accessibilityRole="button" onPress={onClose} style={s.cancelPill}>
+                        <Text style={s.cancelText}>Cancel</Text>
                     </TouchableOpacity>
                 </View>
 

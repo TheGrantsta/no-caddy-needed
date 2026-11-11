@@ -650,13 +650,17 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
-        closeButton: {
-            width: 36,
-            height: 36,
-            borderRadius: 18,
-            backgroundColor: c.tertiary + '26',
+        // Same Cancel pill as the Edit round sheet
+        cancelPill: {
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: '#E9E9EB',
             justifyContent: 'center',
-            alignItems: 'center',
+            paddingHorizontal: 18,
+        },
+        cancelText: {
+            color: c.black,
+            fontSize: fontSizes.normal,
         },
         segment: {
             flexDirection: 'row',
@@ -4991,6 +4995,10 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.background,
             fontWeight: 'bold',
             fontSize: fontSizes.smallText,
+        },
+        manualEntryCancelText: {
+            color: c.black,
+            fontSize: fontSizes.normal,
         },
         effectText: {
             color: c.primary,

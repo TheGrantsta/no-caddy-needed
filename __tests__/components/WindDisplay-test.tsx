@@ -390,6 +390,24 @@ describe('WindDisplay', () => {
             expect(getByTestId('wind-manual-entry-toggle')).toBeTruthy();
         });
 
+        it('shouldCloseManualEntryWithACancelButtonWithTextRatherThanAnXIcon', () => {
+            mockUseWindVoice.mockReturnValue({
+                isAvailable: true,
+                isListening: false,
+                adjustedYards: null,
+                adjustedDisplayValue: null,
+                distanceUnit: 'yards',
+                toggleListening: jest.fn(),
+                submitManualDistance: jest.fn(),
+            });
+
+            const { getByTestId, UNSAFE_queryByProps } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
+            fireEvent.press(getByTestId('wind-manual-entry-toggle'));
+
+            expect(getByTestId('wind-manual-entry-cancel')).toHaveTextContent('Cancel');
+            expect(UNSAFE_queryByProps({ name: 'close' })).toBeNull();
+        });
+
         it('does not render manual entry toggle when disableVoice is true', () => {
             mockUseWindVoice.mockReturnValue({
                 isAvailable: true,

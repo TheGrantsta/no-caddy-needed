@@ -200,11 +200,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                                 onPress={handleToggleManualEntry}
                                 style={{ padding: 8 }}
                             >
-                                <MaterialIcons
-                                    name="close"
-                                    size={20}
-                                    color={colours.primary}
-                                />
+                                <Text style={styles.windDisplay.manualEntryCancelText}>Cancel</Text>
                             </TouchableOpacity>
                         </Animated.View>
                     )}

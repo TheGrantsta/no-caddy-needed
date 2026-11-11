@@ -86,6 +86,13 @@ describe('BagSheet', () => {
         expect(props.onClose).toHaveBeenCalled();
     });
 
+    it('shouldShowACancelButtonWithTextRatherThanAnXIcon', () => {
+        const { getByTestId, UNSAFE_queryByProps } = renderSheet();
+
+        expect(getByTestId('bag-sheet-close-button')).toHaveTextContent('Cancel');
+        expect(UNSAFE_queryByProps({ name: 'close' })).toBeNull();
+    });
+
     it('shouldNotShowWhenNotVisible', () => {
         const { queryByText } = renderSheet({ visible: false });
 

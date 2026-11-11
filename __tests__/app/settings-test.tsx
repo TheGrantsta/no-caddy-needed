@@ -104,6 +104,12 @@ describe('Settings page', () => {
         });
     });
 
+    it('shouldShowTheInfoButtonWithAWhiteBackgroundLikeTheBackButton', () => {
+        const { getByTestId } = render(<Settings />);
+
+        expect(getByTestId('settings-info-button')).toHaveStyle({ backgroundColor: require('../../assets/colours').default.backgroundLight });
+    });
+
     it('showsTheSettingsTitleLeftAligned', () => {
         const { getByText } = render(<Settings />);
 

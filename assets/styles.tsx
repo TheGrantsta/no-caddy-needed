@@ -3968,7 +3968,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 44,
             height: 44,
             borderRadius: 22,
-            backgroundColor: c.neutralFill,
+            backgroundColor: c.backgroundLight,
             justifyContent: 'center',
             alignItems: 'center',
         },

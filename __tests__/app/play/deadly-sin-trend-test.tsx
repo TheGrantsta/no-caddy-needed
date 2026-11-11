@@ -576,7 +576,7 @@ describe('DeadlySinTrendScreen', () => {
             const { getByTestId } = renderPage();
             const row = within(getByTestId('deadly-sin-trend-title-row'));
 
-            expect(row.getByTestId('deadly-sin-trend-back')).toBeTruthy();
+            expect(row.getByTestId('deadly-sin-trend-back-button')).toBeTruthy();
             expect(row.getByTestId('deadly-sin-trend-heading')).toBeTruthy();
         });
     });

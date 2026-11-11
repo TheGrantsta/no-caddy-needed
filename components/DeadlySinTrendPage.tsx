@@ -92,7 +92,7 @@ export default function DeadlySinTrendPage({ category, rounds, width }: SinTrend
             <ScrollView contentContainerStyle={styles.scrollContentContainer}>
                 <View testID="deadly-sin-trend-title-row" style={s.pageHeader}>
                     <TouchableOpacity
-                        testID="deadly-sin-trend-back"
+                        testID="deadly-sin-trend-back-button"
                         accessibilityRole="button"
                         accessibilityLabel="Back"
                         onPress={() => router.back()}

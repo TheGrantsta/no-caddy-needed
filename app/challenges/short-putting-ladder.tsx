@@ -163,7 +163,7 @@ export default function ShortPuttingLadder() {
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 10 }}>
                                 <TouchableOpacity
-                                    testID="cancel-quit-button"
+                                    testID="quit-challenge-cancel-button"
                                     onPress={() => setShowQuitConfirm(false)}
                                     style={styles.mediumButton}
                                 >

@@ -295,7 +295,7 @@ describe('Play screen', () => {
                     fireEvent.press(getByTestId('end-incomplete-round-link'));
                 });
                 await act(async () => {
-                    fireEvent.press(getByTestId('cancel-end-round-button'));
+                    fireEvent.press(getByTestId('end-round-cancel-button'));
                 });
                 expect(mockEndRound).not.toHaveBeenCalled();
                 expect(queryByTestId('confirm-end-round-button')).toBeNull();

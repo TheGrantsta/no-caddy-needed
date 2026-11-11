@@ -404,7 +404,7 @@ describe('WindDisplay', () => {
             const { getByTestId, UNSAFE_queryByProps } = render(<WindDisplay directionFrom={100} speedMph={10} heading={0} />);
             fireEvent.press(getByTestId('wind-manual-entry-toggle'));
 
-            expect(getByTestId('wind-manual-entry-cancel')).toHaveTextContent('Cancel');
+            expect(getByTestId('wind-manual-entry-cancel-button')).toHaveTextContent('Cancel');
             expect(UNSAFE_queryByProps({ name: 'close' })).toBeNull();
         });
 
@@ -462,7 +462,7 @@ describe('WindDisplay', () => {
             fireEvent.press(getByTestId('wind-manual-entry-toggle'));
             expect(getByTestId('wind-manual-entry-input')).toBeTruthy();
 
-            fireEvent.press(getByTestId('wind-manual-entry-cancel'));
+            fireEvent.press(getByTestId('wind-manual-entry-cancel-button'));
             expect(queryByTestId('wind-manual-entry-input')).toBeNull();
             expect(getByTestId('wind-voice-button')).toBeTruthy();
         });

@@ -139,8 +139,8 @@ describe('Reminders screen', () => {
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Test reminder');
 
         // Tap Save twice before first resolves
-        fireEvent.press(getByTestId('save-reminder-button'));
-        fireEvent.press(getByTestId('save-reminder-button'));
+        fireEvent.press(getByTestId('reminder-save-button'));
+        fireEvent.press(getByTestId('reminder-save-button'));
 
         // Wait for the first save to reach scheduling (it awaits permission first), then resolve it
         await waitFor(() => expect(resolvers.length).toBeGreaterThan(0));
@@ -154,7 +154,7 @@ describe('Reminders screen', () => {
         const { getByTestId } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Chip');
-        await act(async () => { fireEvent.press(getByTestId('save-reminder-button')); });
+        await act(async () => { fireEvent.press(getByTestId('reminder-save-button')); });
 
         expect(ensureNotificationPermission).toHaveBeenCalledTimes(1);
     });
@@ -164,7 +164,7 @@ describe('Reminders screen', () => {
         const { getByTestId } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Chip');
-        await act(async () => { fireEvent.press(getByTestId('save-reminder-button')); });
+        await act(async () => { fireEvent.press(getByTestId('reminder-save-button')); });
 
         expect(mockSchedulePracticeReminder).not.toHaveBeenCalled();
         expect(mockAddPracticeReminderService).toHaveBeenCalledWith('Chip', expect.any(String), null);
@@ -173,14 +173,14 @@ describe('Reminders screen', () => {
     it('shouldShowErrorWhenSavingWithEmptyLabel', async () => {
         const { getByTestId, getByText } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
-        fireEvent.press(getByTestId('save-reminder-button'));
+        fireEvent.press(getByTestId('reminder-save-button'));
         expect(getByText('Reminder label is required')).toBeTruthy();
     });
 
     it('shouldNotSaveWhenLabelIsEmpty', async () => {
         const { getByTestId } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
-        fireEvent.press(getByTestId('save-reminder-button'));
+        fireEvent.press(getByTestId('reminder-save-button'));
         expect(mockSchedulePracticeReminder).not.toHaveBeenCalled();
         expect(mockAddPracticeReminderService).not.toHaveBeenCalled();
     });
@@ -206,7 +206,7 @@ describe('Reminders screen', () => {
         const { getByTestId, queryByTestId } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
-        fireEvent.press(getByTestId('save-reminder-button'));
+        fireEvent.press(getByTestId('reminder-save-button'));
         await waitFor(() => {
             expect(mockSchedulePracticeReminder).toHaveBeenCalledWith('Morning putting', expect.any(Date));
             expect(mockAddPracticeReminderService).toHaveBeenCalled();
@@ -219,7 +219,7 @@ describe('Reminders screen', () => {
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
         fireEvent(getByTestId('reminder-date-picker'), 'onChange', {}, new Date('2099-06-15T14:30:00.000Z'));
-        fireEvent.press(getByTestId('save-reminder-button'));
+        fireEvent.press(getByTestId('reminder-save-button'));
         await waitFor(() => {
             const scheduledDate: Date = mockSchedulePracticeReminder.mock.calls[0][1];
             expect(scheduledDate.getHours()).toBe(9);
@@ -236,7 +236,7 @@ describe('Reminders screen', () => {
         const { getByTestId } = await renderReminders();
         fireEvent.press(getByTestId('add-reminder-button'));
         fireEvent.changeText(getByTestId('reminder-label-input'), 'Morning putting');
-        fireEvent.press(getByTestId('save-reminder-button'));
+        fireEvent.press(getByTestId('reminder-save-button'));
 
         await waitFor(() => {
             expect(getByTestId('reminder-label-1')).toHaveTextContent('Morning putting');
@@ -375,8 +375,8 @@ describe('Reminders screen layout and notifications', () => {
 
         fireEvent.press(getByTestId('add-reminder-button'));
 
-        expect(getByTestId('save-reminder-button')).toHaveStyle({ backgroundColor: '#2D5A3D' });
-        expect(getByTestId('cancel-reminder-button')).toHaveStyle({ backgroundColor: '#E9E9EB' });
+        expect(getByTestId('reminder-save-button')).toHaveStyle({ backgroundColor: '#2D5A3D' });
+        expect(getByTestId('reminder-cancel-button')).toHaveStyle({ backgroundColor: '#E9E9EB' });
     });
 
     it('showsABoldAddIconInTheHeaderButtonLargeEnoughToRead', async () => {

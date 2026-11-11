@@ -157,7 +157,7 @@ describe('Scorecard par scoring', () => {
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             adjustHole(getByTestId, 7, 'edit-hole-strokes-increment');
-            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('edit-round-save-button'));
 
             await waitFor(() => {
                 expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [{ id: 106, score: 4 }], []);
@@ -169,7 +169,7 @@ describe('Scorecard par scoring', () => {
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             adjustHole(getByTestId, 7, 'edit-hole-strokes-decrement');
-            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('edit-round-save-button'));
 
             await waitFor(() => {
                 expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [{ id: 106, score: 2 }], []);
@@ -201,7 +201,7 @@ describe('Scorecard par scoring', () => {
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             adjustHole(getByTestId, 9, 'edit-hole-strokes-increment');
-            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('edit-round-save-button'));
 
             await waitFor(() => {
                 expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [{ id: 108, score: 6 }], []);
@@ -213,7 +213,7 @@ describe('Scorecard par scoring', () => {
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             adjustHole(getByTestId, 9, 'edit-hole-strokes-decrement');
-            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('edit-round-save-button'));
 
             await waitFor(() => {
                 expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [{ id: 108, score: 4 }], []);
@@ -247,7 +247,7 @@ describe('Scorecard par scoring', () => {
         it('shouldSaveAllBogeyChangesWhenBogeyOnAllPar3AndPar5Holes', async () => {
             const { getByTestId } = await renderScorecard();
             enterBogeyOnAllSpecialHoles(getByTestId);
-            fireEvent.press(getByTestId('save-scorecard-button'));
+            fireEvent.press(getByTestId('edit-round-save-button'));
 
             await waitFor(() => {
                 expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [

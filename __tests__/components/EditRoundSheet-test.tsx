@@ -49,15 +49,15 @@ describe('EditRoundSheet', () => {
         const { getByText, getByTestId } = renderSheet();
 
         expect(getByText('Edit round')).toBeTruthy();
-        expect(getByTestId('cancel-edit-button')).toBeTruthy();
-        expect(getByTestId('save-scorecard-button')).toBeTruthy();
+        expect(getByTestId('edit-round-cancel-button')).toBeTruthy();
+        expect(getByTestId('edit-round-save-button')).toBeTruthy();
     });
 
     it('shouldReportCancelAndSave', () => {
         const { getByTestId, onCancel, onSave } = renderSheet();
 
-        fireEvent.press(getByTestId('cancel-edit-button'));
-        fireEvent.press(getByTestId('save-scorecard-button'));
+        fireEvent.press(getByTestId('edit-round-cancel-button'));
+        fireEvent.press(getByTestId('edit-round-save-button'));
 
         expect(onCancel).toHaveBeenCalledTimes(1);
         expect(onSave).toHaveBeenCalledTimes(1);

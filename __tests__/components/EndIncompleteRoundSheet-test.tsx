@@ -45,7 +45,7 @@ describe('EndIncompleteRoundSheet', () => {
             <EndIncompleteRoundSheet visible onConfirm={jest.fn()} onCancel={onCancel} />
         );
 
-        fireEvent.press(getByTestId('cancel-end-round-button'));
+        fireEvent.press(getByTestId('end-round-cancel-button'));
 
         expect(onCancel).toHaveBeenCalledTimes(1);
     });

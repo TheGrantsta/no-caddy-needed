@@ -37,11 +37,11 @@ export default function EditRoundSheet({ courseName, dateLabel, dateValue, onDat
     return (
         <View>
             <View style={s.headerRow}>
-                <TouchableOpacity testID="cancel-edit-button" accessibilityRole="button" onPress={onCancel} style={s.cancelPill}>
+                <TouchableOpacity testID="edit-round-cancel-button" accessibilityRole="button" onPress={onCancel} style={s.cancelPill}>
                     <Text style={s.cancelText}>Cancel</Text>
                 </TouchableOpacity>
                 <Text style={s.title} numberOfLines={1}>Edit round</Text>
-                <TouchableOpacity testID="save-scorecard-button" accessibilityRole="button" onPress={onSave} style={s.savePill}>
+                <TouchableOpacity testID="edit-round-save-button" accessibilityRole="button" onPress={onSave} style={s.savePill}>
                     <Text style={s.saveText}>Save</Text>
                 </TouchableOpacity>
             </View>

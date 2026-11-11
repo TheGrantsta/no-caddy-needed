@@ -181,13 +181,19 @@ appId: com.grantsta.golf.nocaddyneeded
     visible: "Distances"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/02B-play-distances
+# Wait for the Distances back button and any overlay animation to finish, otherwise the tap is lost
+- extendedWaitUntil:
+    visible:
+      id: "distances-back-button"
+    timeout: 5000
+- waitForAnimationToEnd
 - tapOn:
     id: "distances-back-button"
 # Confirm the back tap really returned to My Bag before moving on
 - extendedWaitUntil:
     visible:
       id: "bag-row-wedge-chart"
-    timeout: 5000
+    timeout: 10000
 
 # Screenshot 5: Wedge Chart (opened from My Bag)
 - tapOn:

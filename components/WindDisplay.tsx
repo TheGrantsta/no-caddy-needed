@@ -196,7 +196,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                testID="wind-manual-entry-cancel"
+                                testID="wind-manual-entry-cancel-button"
                                 onPress={handleToggleManualEntry}
                                 style={{ padding: 8 }}
                             >

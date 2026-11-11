@@ -30,7 +30,7 @@ const EndIncompleteRoundSheet = ({ visible, onConfirm, onCancel }: Props) => {
                         <Text style={[s.actionText, { color: colours.primary }]}>Confirm</Text>
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity testID="cancel-end-round-button" onPress={onCancel} style={s.keepPlaying}>
+                <TouchableOpacity testID="end-round-cancel-button" onPress={onCancel} style={s.keepPlaying}>
                     <Text style={[s.actionText, { color: colours.primary, fontWeight: '700' }]}>Cancel</Text>
                 </TouchableOpacity>
             </View>

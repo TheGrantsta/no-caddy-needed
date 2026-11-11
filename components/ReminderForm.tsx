@@ -62,7 +62,7 @@ export default function ReminderForm({
             </View>
             <View style={s.buttonRow}>
                 <TouchableOpacity
-                    testID="cancel-reminder-button"
+                    testID="reminder-cancel-button"
                     accessibilityRole="button"
                     onPress={onCancel}
                     disabled={isSaving}
@@ -71,7 +71,7 @@ export default function ReminderForm({
                     <Text style={s.cancelText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    testID="save-reminder-button"
+                    testID="reminder-save-button"
                     accessibilityRole="button"
                     onPress={onSave}
                     disabled={isSaving}

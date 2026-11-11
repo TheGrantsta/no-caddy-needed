@@ -89,6 +89,15 @@ describe('LagPutting screen', () => {
         expect(queryByTestId('score-option-31')).toBeNull();
     });
 
+    it('shouldListTheScoresInlineUnderTheDropdownWithoutOpeningAModal', () => {
+        const { getByTestId, queryByTestId } = render(<LagPutting />);
+
+        fireEvent.press(getByTestId('score-dropdown-toggle'));
+
+        expect(getByTestId('score-option-15')).toBeTruthy();
+        expect(queryByTestId('score-modal')).toBeNull();
+    });
+
     it('showsTheChosenScoreInTheDropdownAndTheCard', () => {
         const { getByTestId } = render(<LagPutting />);
 

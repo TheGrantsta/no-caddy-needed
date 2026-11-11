@@ -114,6 +114,7 @@ export default function LagPutting() {
                             <View style={{ marginHorizontal: 20, marginTop: 20 }}>
                                 <Text style={styles.subHeaderText}>Total putts</Text>
                                 <Dropdown
+                                    listPresentation="inline"
                                     options={SCORE_OPTIONS}
                                     selectedOption={String(sim.score)}
                                     onSelectOption={(value) => sim.setScore(Number(value))}

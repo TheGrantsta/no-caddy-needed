@@ -43,15 +43,21 @@ appId: com.grantsta.golf.nocaddyneeded
     id: "tab-play"
     index: 0
 
-# Complete the onboarding flow - step 1
+# Complete the onboarding flow - step 1 (wait for the overlay to appear first)
+- extendedWaitUntil:
+    visible:
+      id: "next-button"
+    timeout: 10000
 - tapOn:
-    text: ".*Next.*"
-    index: 0
+    id: "next-button"
 
 # Complete the onboarding flow - step 2
+- extendedWaitUntil:
+    visible:
+      id: "done-button"
+    timeout: 5000
 - tapOn:
-    text: ".*Done.*"
-    index: 0
+    id: "done-button"
 # Wait for the onboarding overlay to finish closing before the next tap
 - extendedWaitUntil:
     notVisible:
@@ -71,14 +77,19 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 5000
 - tapOn:
     id: "course-name-input"
+- waitForAnimationToEnd
 - inputText: "Screenshot Test Course"
 - hideKeyboard
+# Confirm the name is in the field, otherwise Start is tapped with an empty name
+- assertVisible: "Screenshot Test Course"
 
 # Screenshot 3: Start round (use testID tap instead of text)
 - tapOn:
     id: "start-button"
+# "You" is also on the setup screen, so wait for the hole screen to show the round has started
 - extendedWaitUntil:
-    visible: "You"
+    visible:
+      id: "par-4-button"
     timeout: 10000
 - takeScreenshot: .maestro/screenshots/02A-play-start-round
 

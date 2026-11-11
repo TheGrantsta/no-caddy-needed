@@ -1241,7 +1241,7 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.primary,
         },
         sectionLabel: {
-            color: c.text,
+            color: c.tertiary,
             fontSize: fontSizes.smallText,
             textTransform: 'uppercase',
             letterSpacing: 0.5,
@@ -1458,7 +1458,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: '500',
         },
         sectionLabel: {
-            color: c.text,
+            color: c.tertiary,
             fontSize: fontSizes.smallText,
             textTransform: 'uppercase',
             letterSpacing: 0.5,
@@ -1569,7 +1569,7 @@ export const createStyles = (c: ThemeColours) => ({
 
     myBag: StyleSheet.create({
         sectionLabel: {
-            color: c.text,
+            color: c.tertiary,
             fontSize: fontSizes.smallText,
             textTransform: 'uppercase',
             letterSpacing: 0.5,
@@ -2055,7 +2055,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: '600',
         },
         sectionLabel: {
-            color: c.text,
+            color: c.tertiary,
             fontSize: fontSizes.smallText,
             textTransform: 'uppercase',
             letterSpacing: 0.5,
@@ -2343,7 +2343,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginLeft: 8,
         },
         sectionLabel: {
-            color: c.text,
+            color: c.tertiary,
             fontSize: fontSizes.smallText,
             textTransform: 'uppercase',
             letterSpacing: 0.5,
@@ -2586,7 +2586,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 20,
         },
         sectionLabel: {
-            color: c.text,
+            color: c.tertiary,
             fontSize: fontSizes.smallText,
             textTransform: 'uppercase',
             letterSpacing: 0.5,

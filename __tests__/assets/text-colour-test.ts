@@ -11,7 +11,6 @@ const SECONDARY_TEXT_KEYS = new Set([
     'autoCaption',
     'axisLabel',
     'dateLabel',
-    'sectionLabel',
     'purposeText',
     'whyText',
     'narrative',
@@ -27,7 +26,7 @@ const entries = () =>
 
 describe('dark text colour', () => {
     it('shouldFindStylesUsingTheTextColour', () => {
-        expect(entries().filter(e => (e.style as Record<string, unknown>).color === colours.text).length).toBeGreaterThan(10);
+        expect(entries().filter(e => (e.style as Record<string, unknown>).color === colours.text).length).toBeGreaterThan(5);
     });
 
     it.each(entries().filter(e => (e.style as Record<string, unknown>).color === colours.text).map(e => [e.name, e.key]))(
@@ -36,4 +35,16 @@ describe('dark text colour', () => {
             expect(SECONDARY_TEXT_KEYS.has(String(key))).toBe(true);
         }
     );
+});
+
+describe('section label colour', () => {
+    const sectionLabels = () => entries().filter(e => e.key === 'sectionLabel');
+
+    it('shouldFindSectionLabelStyles', () => {
+        expect(sectionLabels().length).toBeGreaterThan(5);
+    });
+
+    it.each(sectionLabels().map(e => [e.name, e.style]))('shouldUseTheTertiaryColourForSectionLabel%s', (_name, style) => {
+        expect((style as Record<string, unknown>).color).toBe(colours.tertiary);
+    });
 });

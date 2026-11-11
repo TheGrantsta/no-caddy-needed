@@ -91,6 +91,12 @@ describe('Settings page', () => {
         expect(queryByTestId('settings-done-button')).toBeNull();
     });
 
+    it('showsTheSettingsTitleLeftAligned', () => {
+        const { getByText } = render(<Settings />);
+
+        expect(getByText('Settings')).toHaveStyle({ textAlign: 'left' });
+    });
+
     it('showsABackButtonLeftOfTheSettingsTitleThatReturnsToThePreviousScreen', () => {
         const { getByLabelText } = render(<Settings />);
 

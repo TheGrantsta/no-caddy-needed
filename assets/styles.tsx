@@ -3335,7 +3335,6 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.massive,
             fontWeight: 'bold',
             textAlign: 'center',
-            fontFamily: 'Arial',
         },
         micButton: {
             marginTop: 12,

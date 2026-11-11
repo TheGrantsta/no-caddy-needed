@@ -18,6 +18,7 @@ import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 // What's new for the current version — shown once per version to existing users.
 const WHATS_NEW = [
+  'Supports "shotgun" start rounds',
   'Challenges help you focus on short-game skills that matter most',
   'Smoother transitions between play tracking, practice, and performance review',
 ];

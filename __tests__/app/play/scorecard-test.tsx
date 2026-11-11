@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { act, render, fireEvent, waitFor, within } from '@testing-library/react-native';
 import ScorecardScreen from '../../../app/play/scorecard';
-import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService, getAllRoundHistoryService, getRoundScoreBreakdownService, getClubDistancesService, getHoleSinDetailsService, replaceHoleSinDetailsService, deleteHoleSinDetailsService, getPuttingStatsService, insertPuttingStatsService, _PENALTY_TYPES, _DOUBLE_CHIP_REASONS } from '../../../service/DbService';
+import { getRoundScorecardService, getMultiplayerScorecardService, updateScorecardService, updateRoundStartTimeService, deleteRoundService, getHoleDeadlySinsService, replaceHoleDeadlySinsService, getHolesWithSinsForRoundService, loadCourseNotesService, getAllRoundHistoryService, getRoundScoreBreakdownService, getClubDistancesService, getHoleSinDetailsService, replaceHoleSinDetailsService, deleteHoleSinDetailsService, getPuttingStatsService, insertPuttingStatsService, _PENALTY_TYPES, _DOUBLE_CHIP_REASONS } from '../../../service/DbService';
 
 jest.mock('../../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../../assets/colours').default,
@@ -22,10 +22,13 @@ const mockShow = jest.fn();
 const mockBack = jest.fn();
 const mockPush = jest.fn();
 
+jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
+
 jest.mock('../../../service/DbService', () => ({
     getRoundScorecardService: jest.fn(),
     getMultiplayerScorecardService: jest.fn(),
     updateScorecardService: jest.fn(),
+    updateRoundStartTimeService: jest.fn().mockResolvedValue(true),
     deleteRoundService: jest.fn(),
     getHoleDeadlySinsService: jest.fn(),
     replaceHoleDeadlySinsService: jest.fn().mockResolvedValue(true),
@@ -71,6 +74,7 @@ jest.mock('react-native-toast-notifications', () => ({
 const mockGetRoundScorecard = getRoundScorecardService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
 const mockUpdateScorecard = updateScorecardService as jest.Mock;
+const mockUpdateRoundStartTime = updateRoundStartTimeService as jest.Mock;
 const mockDeleteRound = deleteRoundService as jest.Mock;
 const mockGetHoleDeadlySinsService = getHoleDeadlySinsService as jest.Mock;
 const mockReplaceHoleDeadlySinsService = replaceHoleDeadlySinsService as jest.Mock;
@@ -1479,6 +1483,88 @@ describe('Scorecard screen', () => {
             expect(getByText('Edit round')).toBeTruthy();
             expect(getByTestId('cancel-edit-button')).toBeTruthy();
             expect(getByTestId('save-scorecard-button')).toBeTruthy();
+        });
+    });
+
+    describe('editing the round date', () => {
+        const playedOn = new Date(2026, 10, 3, 10);
+        const dateRoundData = {
+            ...multiplayerData,
+            round: { ...multiplayerData.round, CourseName: 'Stats Flow Test Course', StartTime: playedOn.toISOString() },
+        };
+
+        it('shouldOpenTheDatePickerOnTheRoundDateWhenTheDateRowIsPressed', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(dateRoundData);
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('edit-round-date'));
+
+            expect(getByTestId('edit-round-date-picker')).toHaveProp('value', playedOn);
+        });
+
+        it('shouldNotAllowADateAfterTodayInThePicker', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(dateRoundData);
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('edit-round-date'));
+            const maximumDate: Date = getByTestId('edit-round-date-picker').props.maximumDate;
+
+            expect(maximumDate.toDateString()).toBe(new Date().toDateString());
+            expect(maximumDate.getHours()).toBe(23);
+        });
+
+        it('shouldShowThePickedDateInTheDateRowBeforeSaving', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(dateRoundData);
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('edit-round-date'));
+            fireEvent(getByTestId('edit-round-date-picker'), 'change', {}, new Date(2026, 10, 5, 10));
+
+            expect(getByTestId('edit-round-date')).toHaveTextContent(/Thu 5 Nov 2026$/);
+        });
+
+        it('shouldSaveTheChangedRoundDateWhenSaveIsPressed', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(dateRoundData);
+            mockUpdateScorecard.mockResolvedValue(true);
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('edit-round-date'));
+            fireEvent(getByTestId('edit-round-date-picker'), 'change', {}, new Date(2026, 10, 5, 10));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+
+            await waitFor(() => {
+                expect(mockUpdateRoundStartTime).toHaveBeenCalledWith(1, new Date(2026, 10, 5, 10));
+            });
+        });
+
+        it('shouldNotChangeTheRoundDateWhenTheDateIsNotPicked', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(dateRoundData);
+            mockUpdateScorecard.mockResolvedValue(true);
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('save-scorecard-button'));
+
+            await waitFor(() => expect(mockUpdateScorecard).toHaveBeenCalled());
+            expect(mockUpdateRoundStartTime).not.toHaveBeenCalled();
+        });
+
+        it('shouldDiscardAPickedDateWhenEditIsCancelled', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(dateRoundData);
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('edit-round-date'));
+            fireEvent(getByTestId('edit-round-date-picker'), 'change', {}, new Date(2026, 10, 5, 10));
+            fireEvent.press(getByTestId('cancel-edit-button'));
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+
+            expect(getByTestId('edit-round-date')).toHaveTextContent(/Tue 3 Nov 2026$/);
+            expect(mockUpdateRoundStartTime).not.toHaveBeenCalled();
         });
     });
 });

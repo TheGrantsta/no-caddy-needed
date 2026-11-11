@@ -18,6 +18,7 @@ import {
     getRoundScorecardService,
     getMultiplayerScorecardService,
     updateScorecardService,
+    updateRoundStartTimeService,
     deleteRoundService,
     getHoleDeadlySinsService,
     replaceHoleDeadlySinsService,
@@ -87,6 +88,8 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const [sinHoles, setSinHoles] = useState<Set<number>>(new Set());
     const [scoreBreakdown, setScoreBreakdown] = useState<RoundScoreBreakdown | null>(null);
     const [clubDistances, setClubDistances] = useState<ClubDistance[]>([]);
+    // The date picked in the edit round sheet; null until the user picks one, so an untouched date is never saved
+    const [editedDate, setEditedDate] = useState<Date | null>(null);
 
     const edit = useScorecardEdit();
 
@@ -128,6 +131,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
 
     const handleCancelEdit = () => {
         edit.resetEditState();
+        setEditedDate(null);
         setEditing(false);
     };
 
@@ -273,6 +277,10 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                 // No-op here; just document the behavior
             }
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
+            if (editedDate) {
+                await updateRoundStartTimeService(Number(roundId), editedDate);
+            }
+            setEditedDate(null);
             loadData();
             edit.resetScorecardAfterSave();
             setEditing(false);
@@ -302,6 +310,13 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const round = multiplayerScorecard?.round || scorecard?.round;
     const courseName = round?.CourseName;
     const roundDate = round ? formatLongDate(round.StartTime || round.Created_At) : null;
+    // The picker starts on the round's own date; once the user picks one, that date is what the row shows
+    const roundStartDate = round?.StartTime ? new Date(round.StartTime) : new Date();
+    const shownRoundDate = editedDate ?? roundStartDate;
+    const editRoundDateLabel = editedDate ? (formatLongDate(editedDate.toISOString()) ?? '') : (roundDate ?? '');
+    // Rounds cannot be dated after today, so the picker stops at the end of today
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
 
     if (!multiplayerScorecard && !scorecard) {
         return (
@@ -458,7 +473,10 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                 ) : (
                                     <EditRoundSheet
                                         courseName={courseName ?? 'Round'}
-                                        dateLabel={roundDate ?? ''}
+                                        dateLabel={editRoundDateLabel}
+                                        dateValue={shownRoundDate}
+                                        onDateChange={setEditedDate}
+                                        maximumDate={endOfToday}
                                         holes={editRoundHoles}
                                         total={editRoundTotal}
                                         onHolePress={handleSelectEditHole}

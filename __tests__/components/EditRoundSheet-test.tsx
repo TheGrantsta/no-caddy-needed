@@ -2,6 +2,8 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import EditRoundSheet from '../../components/EditRoundSheet';
 
+jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
+
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => require('../../assets/colours').default,
 }));
@@ -19,7 +21,17 @@ const holes = [
 const renderSheet = (overrides: object = {}) => {
     const handlers = { onHolePress: jest.fn(), onCancel: jest.fn(), onSave: jest.fn() };
     const utils = render(
-        <EditRoundSheet courseName="Stats Flow Test Course" dateLabel="Tue 3 Nov 2026" holes={holes} total={12} {...handlers} {...overrides} />
+        <EditRoundSheet
+            courseName="Stats Flow Test Course"
+            dateLabel="Tue 3 Nov 2026"
+            dateValue={new Date(2026, 10, 3, 10, 0)}
+            onDateChange={jest.fn()}
+            maximumDate={new Date(2026, 10, 11, 23, 59, 59)}
+            holes={holes}
+            total={12}
+            {...handlers}
+            {...overrides}
+        />
     );
     return { ...utils, ...handlers };
 };
@@ -71,5 +83,33 @@ describe('EditRoundSheet', () => {
         fireEvent.press(getByTestId('edit-round-hole-2'));
 
         expect(onHolePress).toHaveBeenCalledWith(2);
+    });
+
+    it('shouldOpenADatePickerWithTheRoundDateWhenTheDateRowIsPressed', () => {
+        const { getByTestId, queryByTestId } = renderSheet();
+        expect(queryByTestId('edit-round-date-picker')).toBeNull();
+
+        fireEvent.press(getByTestId('edit-round-date'));
+
+        expect(getByTestId('edit-round-date-picker').props.value).toEqual(new Date(2026, 10, 3, 10, 0));
+    });
+
+    it('shouldReportTheDateChosenInThePicker', () => {
+        const onDateChange = jest.fn();
+        const { getByTestId } = renderSheet({ onDateChange });
+        fireEvent.press(getByTestId('edit-round-date'));
+        const chosen = new Date(2026, 10, 9, 10, 0);
+
+        fireEvent(getByTestId('edit-round-date-picker'), 'change', {}, chosen);
+
+        expect(onDateChange).toHaveBeenCalledWith(chosen);
+    });
+
+    it('shouldStopThePickerAtTheMaximumDateSoFutureDatesCannotBeChosen', () => {
+        const maximumDate = new Date(2026, 10, 11, 23, 59, 59);
+        const { getByTestId } = renderSheet({ maximumDate });
+        fireEvent.press(getByTestId('edit-round-date'));
+
+        expect(getByTestId('edit-round-date-picker')).toHaveProp('maximumDate', maximumDate);
     });
 });

@@ -11,6 +11,7 @@ import {
     getRecentCourseNamesService,
     getRecentPlayerNamesService,
     getHolesPlayedForRoundService,
+    updateRoundStartTimeService,
 } from '../../service/DbService';
 import {
     insertRound,
@@ -26,6 +27,7 @@ import {
     getDistinctPlayerNames,
     getHolesPlayedForRound,
     deleteRoundHoleScoresByHole,
+    updateRoundStartTime,
 } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
@@ -42,6 +44,7 @@ jest.mock('../../database/db', () => ({
     getDistinctPlayerNames: jest.fn(),
     getHolesPlayedForRound: jest.fn(),
     deleteRoundHoleScoresByHole: jest.fn(),
+    updateRoundStartTime: jest.fn(),
 }));
 
 const mockInsertRound = insertRound as jest.Mock;
@@ -57,6 +60,7 @@ const mockGetDistinctCourseNames = getDistinctCourseNames as jest.Mock;
 const mockGetDistinctPlayerNames = getDistinctPlayerNames as jest.Mock;
 const mockGetHolesPlayedForRound = getHolesPlayedForRound as jest.Mock;
 const mockDeleteRoundHoleScoresByHole = deleteRoundHoleScoresByHole as jest.Mock;
+const mockUpdateRoundStartTime = updateRoundStartTime as jest.Mock;
 
 describe('startRoundService', () => {
     beforeEach(() => {
@@ -687,5 +691,23 @@ describe('getHolesPlayedForRoundService', () => {
         const result = getHolesPlayedForRoundService(1);
 
         expect(result).toBe(0);
+    });
+
+    describe('updateRoundStartTimeService', () => {
+        it('savesTheRoundStartTimeAsAnIsoStringForTheRound', async () => {
+            mockUpdateRoundStartTime.mockResolvedValue(true);
+            const date = new Date(2026, 10, 9, 10, 30);
+
+            const result = await updateRoundStartTimeService(7, date);
+
+            expect(mockUpdateRoundStartTime).toHaveBeenCalledWith(7, date.toISOString());
+            expect(result).toBe(true);
+        });
+
+        it('reportsFailureWhenTheSaveFails', async () => {
+            mockUpdateRoundStartTime.mockResolvedValue(false);
+
+            expect(await updateRoundStartTimeService(7, new Date())).toBe(false);
+        });
     });
 });

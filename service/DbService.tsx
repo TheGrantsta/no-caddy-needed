@@ -23,6 +23,7 @@ import {
     deleteHoleSinDetailsByHole,
     insertRound,
     updateRound,
+    updateRoundStartTime,
     getRoundById,
     getActiveRound,
     getAllRounds,
@@ -506,6 +507,11 @@ export type RoundScoreBreakdown = {
 // Round services
 export const startRoundService = async (courseName: string, isScoreOnly: boolean): Promise<number | null> => {
     return insertRound(courseName, isScoreOnly);
+};
+
+// Changes the date a round was played on; the time of day is kept as the caller supplies it
+export const updateRoundStartTimeService = async (roundId: number, startTime: Date): Promise<boolean> => {
+    return updateRoundStartTime(roundId, startTime.toISOString());
 };
 
 export const endRoundService = async (roundId: number): Promise<boolean> => {

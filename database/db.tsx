@@ -475,6 +475,25 @@ export const insertRound = async (courseName: string, isScoreOnly: boolean): Pro
     }
 };
 
+export const updateRoundStartTime = async (roundId: number, startTime: string): Promise<boolean> => {
+    let success = true;
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync('UPDATE Rounds SET StartTime = $StartTime WHERE Id = $Id;');
+
+        try {
+            await statement.executeAsync({ $StartTime: startTime, $Id: roundId });
+        } finally {
+            await statement.finalizeAsync();
+        }
+    } catch (e) {
+        void logError('db.updateRoundStartTime', e);
+        success = false;
+    }
+
+    return success;
+};
+
 export const updateRound = async (roundId: number, totalScore: number): Promise<boolean> => {
     let success = true;
     try {

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -9,6 +10,11 @@ type HoleSummary = { holeNumber: number; par: number; score: number; putts: numb
 type Props = {
     courseName: string;
     dateLabel: string;
+    // The round's date, shown in the picker when the Date row is pressed
+    dateValue: Date;
+    onDateChange: (date: Date) => void;
+    // The latest date the picker allows; a round cannot be dated in the future
+    maximumDate: Date;
     holes: HoleSummary[];
     total: number;
     onHolePress: (holeNumber: number) => void;
@@ -17,10 +23,11 @@ type Props = {
 };
 
 // Step one of editing a round: its details and the list of holes, each opening its own sheet
-export default function EditRoundSheet({ courseName, dateLabel, holes, total, onHolePress, onCancel, onSave }: Props) {
+export default function EditRoundSheet({ courseName, dateLabel, dateValue, onDateChange, maximumDate, holes, total, onHolePress, onCancel, onSave }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.editRound;
+    const [pickingDate, setPickingDate] = useState(false);
 
     const summary = (hole: HoleSummary) => {
         const putts = `${hole.putts} ${hole.putts === 1 ? 'putt' : 'putts'}`;
@@ -46,10 +53,22 @@ export default function EditRoundSheet({ courseName, dateLabel, holes, total, on
                     <Text style={s.rowValue}>{courseName}</Text>
                 </View>
                 <View style={s.divider} />
-                <View style={s.row}>
+                <TouchableOpacity testID="edit-round-date" accessibilityRole="button" onPress={() => setPickingDate(open => !open)} style={s.row}>
                     <Text style={s.rowLabel}>Date</Text>
                     <Text style={s.rowValue}>{dateLabel}</Text>
-                </View>
+                </TouchableOpacity>
+                {pickingDate && (
+                    <DateTimePicker
+                        testID="edit-round-date-picker"
+                        value={dateValue}
+                        mode="date"
+                        display="spinner"
+                        maximumDate={maximumDate}
+                        onChange={(_: any, date?: Date) => {
+                            if (date) onDateChange(date);
+                        }}
+                    />
+                )}
             </View>
 
             <View style={s.holesHeader}>

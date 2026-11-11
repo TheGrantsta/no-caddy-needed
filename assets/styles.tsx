@@ -3479,15 +3479,9 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             fontWeight: '700',
         },
-        backdrop: {
-            flex: 1,
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-        },
         menu: {
-            position: 'absolute',
-            top: 200,
-            left: 16,
-            right: 16,
+            marginHorizontal: 16,
+            marginTop: 8,
             backgroundColor: c.backgroundLight,
             borderRadius: 20,
             paddingVertical: 12,

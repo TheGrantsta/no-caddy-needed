@@ -1,4 +1,5 @@
 import React from 'react';
+import { Modal } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import StatsFilter from '../../components/StatsFilter';
 
@@ -107,5 +108,23 @@ describe('StatsFilter', () => {
         fireEvent.press(getByTestId('stats-filter-option-all-years'));
 
         expect(onChange).toHaveBeenCalledWith('all');
+    });
+
+    it('shouldListTheOptionsInlineBelowThePillWithoutOpeningAModal', () => {
+        const { getByTestId, UNSAFE_queryAllByType } = renderFilter();
+
+        fireEvent.press(getByTestId('stats-filter-button'));
+
+        expect(getByTestId('stats-filter-menu')).toBeTruthy();
+        expect(UNSAFE_queryAllByType(Modal)).toHaveLength(0);
+    });
+
+    it('shouldCloseTheInlineMenuWhenThePillIsPressedAgain', () => {
+        const { getByTestId, queryByTestId } = renderFilter();
+
+        fireEvent.press(getByTestId('stats-filter-button'));
+        fireEvent.press(getByTestId('stats-filter-button'));
+
+        expect(queryByTestId('stats-filter-menu')).toBeNull();
     });
 });

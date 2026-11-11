@@ -18,6 +18,7 @@
     "test:e2e:stats": "maestro test .maestro/stats-flow.yaml",
     "ui:check": "node scripts/ui-diff.js",
     "ui:update": "node scripts/ui-update.js",
+    "ui:verify": "npm run ui:check && npm run test:e2e && npm run test:e2e:stats",
     "metrics": "node scripts/metrics.js",
     "prepare": "husky"
   },

@@ -4,12 +4,9 @@ const os = require('os');
 const path = require('path');
 
 const HOOK = path.join(__dirname, '../../.husky/pre-push');
-const ALL_CHECKS = [
-  'run test:coverage',
-  'run ui:check',
-  'run test:e2e',
-  'run test:e2e:stats',
-];
+// The UI checks run with `npm run ui:verify`, not in the hook, because they outlast git's
+// connection to the remote and would make the push fail.
+const UNIT_TESTS_ONLY = ['run test:coverage'];
 
 describe('pre-push hook', () => {
   let stubDir;
@@ -36,19 +33,19 @@ describe('pre-push hook', () => {
       : [];
   };
 
-  it('runs unit tests, UI check and both Maestro flows by default', () => {
-    expect(runHook()).toEqual(ALL_CHECKS);
+  it('shouldRunOnlyTheUnitTestsByDefault', () => {
+    expect(runHook()).toEqual(UNIT_TESTS_ONLY);
   });
 
-  it('runs only unit tests when SKIP_ALL_CHECKS=1', () => {
-    expect(runHook({ SKIP_ALL_CHECKS: '1' })).toEqual(['run test:coverage']);
+  it('shouldRunOnlyTheUnitTestsWhenSkipAllChecksIsSet', () => {
+    expect(runHook({ SKIP_ALL_CHECKS: '1' })).toEqual(UNIT_TESTS_ONLY);
   });
 
-  it('runs only unit tests when SKIP_UI_CHECK=1, skipping the visual check and both Maestro flows', () => {
-    expect(runHook({ SKIP_UI_CHECK: '1' })).toEqual(['run test:coverage']);
+  it('shouldRunOnlyTheUnitTestsWhenSkipUiCheckIsSet', () => {
+    expect(runHook({ SKIP_UI_CHECK: '1' })).toEqual(UNIT_TESTS_ONLY);
   });
 
-  it('runs every check when SKIP_UI_CHECK is set to anything other than 1', () => {
-    expect(runHook({ SKIP_UI_CHECK: '0' })).toEqual(ALL_CHECKS);
+  it('shouldNeverRunTheUiChecksFromTheHook', () => {
+    expect(runHook({ SKIP_UI_CHECK: '0' })).toEqual(UNIT_TESTS_ONLY);
   });
 });

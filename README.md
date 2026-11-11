@@ -111,37 +111,48 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    maestro test .maestro/screenshots.yaml
    ```
    
-4. Workflow
+## Testing and pushing
 
-  The pre-push hook (`npm run test:e2e` and `npm run test:e2e:stats`) runs two end-to-end flows:
-  - **start-round.yaml**: score-only mode, full 18-hole round with default par scores
-  - **stats-flow.yaml**: multi-step stats flow with deadly sins (Trouble off tee, Bogeys inside 9-iron) selected, with club picker interaction
+### Unit tests
 
-  Then ui:check diffs current Maestro screenshots against .maestro/baselines/. Fails with exit 1 if any screenshot exceeds the 0.5% pixel diff threshold.
+- `npm test` runs the unit tests. `npm run test:coverage` adds the coverage report, which must stay above 50% for statements and branches.
+- The pre-push hook runs `npm run test:coverage` on every `git push`. A failing test stops the push.
+- GitHub Actions (`.github/workflows/unit-tests.yml`) runs the same suite on every push and pull request.
 
-### Normal push
+### UI checks
 
-   ```
-      git push
-   ```
+The UI checks need a booted iOS simulator and Maestro, and they are not run by `git push`. Git keeps its connection to GitHub open while the hook runs, and the UI checks take longer than that connection stays idle, so a push that ran them would fail.
 
-### Update screenshots
+Run them yourself before pushing a change that affects the UI:
 
-   ```
-      npm run ui:update
-      git add .maestro/baselines/
-      git commit -m "Update UI baselines: <reason>"
-   ```
+```bash
+npm run ui:verify
+```
 
-### Skip UI check
+This runs three steps in order:
+1. `ui:check` captures screenshots with `.maestro/screenshots.yaml` and compares each one with `.maestro/baselines/`. It fails if any screenshot differs by more than 0.5% of its pixels. Diff images go to `.maestro/diff-output/`.
+2. `test:e2e` runs `.maestro/start-round.yaml`: score-only mode, a full 18-hole round.
+3. `test:e2e:stats` runs `.maestro/stats-flow.yaml`: a multi-step round with deadly sins and the club picker.
 
-   ```
-      SKIP_UI_CHECK=1 git push
-   ```
+Install Maestro first (`npm install -g maestro-cli`) and check that your simulator is listed with `maestro devices`.
 
-   This skips every UI test: the visual regression check and both Maestro flows. Unit tests and coverage still run.
+### Approving visual changes
 
-   `SKIP_ALL_CHECKS=1 git push` is kept as an alias for the same behaviour.
+When a screenshot change is intended, update the baselines and commit them:
+
+```bash
+npm run ui:update
+git add .maestro/baselines/
+git commit -m "Update UI baselines: <reason>"
+```
+
+### Pushing
+
+```bash
+git push
+```
+
+This runs the unit tests and nothing else. Run `npm run ui:verify` first when the change affects the UI.
 
 ## App Store submission
 

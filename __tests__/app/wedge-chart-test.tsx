@@ -141,4 +141,13 @@ describe('WedgeChartScreen', () => {
         expect(UNSAFE_getByProps({ name: 'chevron-left' }).props.color).toBe(require('../../assets/colours').default.black);
     });
 
+    it('shouldShowTheCancelButtonInEditModeAsTheSharedCancelPill', () => {
+        const { getByTestId, getByText } = render(<WedgeChartScreen />);
+
+        fireEvent.press(getByTestId('wedge-edit-button'));
+
+        expect(getByTestId('wedge-cancel-button')).toHaveStyle({ backgroundColor: '#E9E9EB', borderRadius: 22 });
+        expect(getByText('Cancel')).toHaveStyle({ color: require('../../assets/colours').default.black });
+    });
+
 });

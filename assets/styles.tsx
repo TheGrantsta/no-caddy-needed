@@ -449,10 +449,17 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             paddingHorizontal: 16,
         },
+        // Same Cancel pill as the Edit round sheet
+        cancelPill: {
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: '#E9E9EB',
+            justifyContent: 'center',
+            paddingHorizontal: 18,
+        },
         cancelText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
-            fontWeight: '500',
         },
         doneButton: {
             minWidth: 72,
@@ -915,6 +922,18 @@ export const createStyles = (c: ThemeColours) => ({
             paddingHorizontal: 16,
             paddingVertical: 14,
             alignItems: 'center',
+        },
+        // Same Cancel pill as the Edit round sheet
+        cancelPill: {
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: '#E9E9EB',
+            justifyContent: 'center',
+            paddingHorizontal: 18,
+        },
+        cancelText: {
+            color: c.black,
+            fontSize: fontSizes.normal,
         },
         title: {
             color: c.tertiary,
@@ -2049,10 +2068,17 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'center',
             marginTop: 24,
         },
+        // Same Cancel pill as the Edit round sheet
+        cancelPill: {
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: '#E9E9EB',
+            justifyContent: 'center',
+            paddingHorizontal: 18,
+        },
         cancelText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
-            fontWeight: '500',
         },
         doneButton: {
             minWidth: 72,
@@ -4489,14 +4515,13 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
             height: 52,
             borderRadius: 14,
-            backgroundColor: '#EFEFEF',
+            backgroundColor: '#E9E9EB',
             justifyContent: 'center',
             alignItems: 'center',
         },
         cancelText: {
             color: c.black,
             fontSize: fontSizes.normal,
-            fontWeight: '600',
         },
         saveButton: {
             flex: 1,

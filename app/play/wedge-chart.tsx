@@ -52,7 +52,7 @@ export default function WedgeChartScreen() {
                             testID="wedge-cancel-button"
                             accessibilityRole="button"
                             onPress={() => setEditing(false)}
-                            style={styles.wedgeChart.editButton}
+                            style={styles.wedgeChart.cancelPill}
                         >
                             <Text style={styles.wedgeChart.cancelText}>Cancel</Text>
                         </TouchableOpacity>

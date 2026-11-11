@@ -55,7 +55,7 @@ export default function DistancesScreen() {
                             testID="distances-cancel-button"
                             accessibilityRole="button"
                             onPress={() => setEditing(false)}
-                            style={s.editButton}
+                            style={s.cancelPill}
                         >
                             <Text style={s.cancelText}>Cancel</Text>
                         </TouchableOpacity>

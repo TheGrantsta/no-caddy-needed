@@ -48,4 +48,11 @@ describe('DeleteRoundSheet', () => {
 
         expect(queryByTestId('delete-round-sheet')).toBeNull();
     });
+
+    it('shouldShowTheCancelButtonAsTheSharedCancelPill', () => {
+        const { getByTestId, getByText } = render(<DeleteRoundSheet visible onConfirm={jest.fn()} onCancel={jest.fn()} />);
+
+        expect(getByTestId('cancel-delete-button')).toHaveStyle({ backgroundColor: '#E9E9EB', borderRadius: 22 });
+        expect(getByText('Cancel')).toHaveStyle({ color: require('../../assets/colours').default.black });
+    });
 });

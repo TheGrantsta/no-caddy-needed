@@ -376,7 +376,7 @@ describe('Reminders screen layout and notifications', () => {
         fireEvent.press(getByTestId('add-reminder-button'));
 
         expect(getByTestId('save-reminder-button')).toHaveStyle({ backgroundColor: '#2D5A3D' });
-        expect(getByTestId('cancel-reminder-button')).toHaveStyle({ backgroundColor: '#EFEFEF' });
+        expect(getByTestId('cancel-reminder-button')).toHaveStyle({ backgroundColor: '#E9E9EB' });
     });
 
     it('showsABoldAddIconInTheHeaderButtonLargeEnoughToRead', async () => {

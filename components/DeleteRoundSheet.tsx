@@ -31,8 +31,8 @@ const DeleteRoundSheet = ({ visible, onConfirm, onCancel }: Props) => {
                         <Text style={[s.actionText, { color: colours.red }]}>Delete round</Text>
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity testID="cancel-delete-button" onPress={onCancel} style={s.keepPlaying}>
-                    <Text style={[s.actionText, { color: colours.primary, fontWeight: '700' }]}>Cancel</Text>
+                <TouchableOpacity testID="cancel-delete-button" onPress={onCancel} style={s.cancelPill}>
+                    <Text style={s.cancelText}>Cancel</Text>
                 </TouchableOpacity>
             </View>
         </Modal>

@@ -23,7 +23,7 @@ jest.mock('@expo/vector-icons', () => {
 });
 
 const items = [
-    { title: 'Stats Flow Test Course', subtitle: 'Round · 9 holes · Today', icon: 'flag', href: '/perform', roundId: 7, sortTime: 2 },
+    { title: 'Stats Flow Test Course', subtitle: '9 holes · Today', icon: 'flag', href: '/perform', roundId: 7, sortTime: 2 },
     { title: 'Short-putting ladder', subtitle: 'Practice · Score 15 · Today', icon: 'stairs', href: '/practice', sortTime: 1 },
 ];
 
@@ -36,7 +36,7 @@ describe('HomeRecent', () => {
         const { getByText } = render(<HomeRecent items={items} />);
 
         expect(getByText('Stats Flow Test Course')).toBeTruthy();
-        expect(getByText('Round · 9 holes · Today')).toBeTruthy();
+        expect(getByText('9 holes · Today')).toBeTruthy();
         expect(getByText('Short-putting ladder')).toBeTruthy();
         expect(getByText('Practice · Score 15 · Today')).toBeTruthy();
     });

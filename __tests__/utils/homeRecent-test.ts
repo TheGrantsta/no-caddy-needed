@@ -18,7 +18,7 @@ describe('buildRecentItems', () => {
 
         expect(item).toEqual(expect.objectContaining({
             title: 'Stats Flow Test Course',
-            subtitle: 'Round · 9 holes · Today',
+            subtitle: '9 holes · Today',
             icon: 'flag',
             href: '/perform',
             roundId: 1,
@@ -28,7 +28,7 @@ describe('buildRecentItems', () => {
     it('shouldUseSingularHoleForARoundOfOne', () => {
         const [item] = buildRecentItems([round({ HolesPlayed: 1 })], now);
 
-        expect(item.subtitle).toBe('Round · 1 hole · Today');
+        expect(item.subtitle).toBe('1 hole · Today');
     });
 
     it('shouldUseAGenericCourseNameWhenTheRoundHasNone', () => {

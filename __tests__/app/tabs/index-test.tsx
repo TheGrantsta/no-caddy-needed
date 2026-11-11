@@ -105,7 +105,7 @@ describe('HomeScreen', () => {
 
     it('displaysAnEmptyRecentListWhenThereIsNoHistory', () => {
         const { getByText } = render(<HomeScreen />);
-        expect(getByText('RECENT')).toBeTruthy();
+        expect(getByText('RECENT ROUNDS')).toBeTruthy();
         expect(getByText('Nothing recent yet')).toBeTruthy();
     });
 
@@ -118,7 +118,7 @@ describe('HomeScreen', () => {
         const { getByText, queryByText } = render(<HomeScreen />);
 
         expect(getByText('Stats Flow Test Course')).toBeTruthy();
-        expect(getByText('Round · 9 holes · Today')).toBeTruthy();
+        expect(getByText('9 holes · Today')).toBeTruthy();
         expect(queryByText('Practice · Score 15 · Today')).toBeNull();
     });
 

@@ -25,7 +25,7 @@ export default function HomeRecent({ items }: Props) {
 
     return (
         <View>
-            <Text style={s.sectionLabel}>RECENT</Text>
+            <Text style={s.sectionLabel}>RECENT ROUNDS</Text>
             <View style={s.recentCard}>
                 {items.length === 0 && <Text style={s.recentEmpty}>Nothing recent yet</Text>}
                 {items.map((item, index) => (

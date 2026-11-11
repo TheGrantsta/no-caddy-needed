@@ -126,7 +126,7 @@ export default function LagPutting() {
                                 <View style={{ gap: 16, marginTop: 20, marginHorizontal: 20 }}>
                                     <View style={{ alignItems: 'center', gap: 8 }}>
                                         <Text style={[styles.headerText]}>Quit challenge?</Text>
-                                        <Text style={[styles.subHeaderText, { color: colours.text }]}>Your progress will not be saved</Text>
+                                        <Text style={[styles.subHeaderText, { color: colours.black }]}>Your progress will not be saved</Text>
                                     </View>
                                     <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 10 }}>
                                         <TouchableOpacity

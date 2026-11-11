@@ -84,23 +84,23 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 6,
         },
         normalText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             alignItems: 'center',
         },
         smallText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
             alignItems: 'center',
             padding: 5,
         },
         smallTextNoPadding: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
             alignItems: 'center',
         },
         smallestText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallestText,
             alignItems: 'center',
             padding: 5,
@@ -393,7 +393,7 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.backgroundLight,
         },
         pillItemText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
             fontWeight: '500',
         },
@@ -436,7 +436,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         title: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
@@ -497,7 +497,7 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.backgroundLight,
         },
         segmentText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             fontWeight: '600',
         },
@@ -526,7 +526,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         title: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
         },
@@ -574,7 +574,7 @@ export const createStyles = (c: ThemeColours) => ({
             right: 14,
         },
         cardLabel: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
@@ -604,7 +604,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         learnText: {
             flex: 1,
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
         },
         points: {
@@ -653,7 +653,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 16,
         },
         title: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
@@ -686,12 +686,12 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.backgroundLight,
         },
         segmentText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             fontWeight: '600',
         },
         segmentTextActive: {
-            color: c.text,
+            color: c.black,
         },
         list: {
             maxHeight: 380,
@@ -713,11 +713,11 @@ export const createStyles = (c: ThemeColours) => ({
             borderTopColor: c.tertiary + '66',
         },
         clubText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
         },
         valueText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             fontVariant: ['tabular-nums'],
         },
@@ -777,7 +777,7 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.primary + '1F',
         },
         optionText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             textAlign: 'center',
         },
@@ -812,7 +812,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 16,
         },
         title: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
         },
@@ -844,11 +844,11 @@ export const createStyles = (c: ThemeColours) => ({
             borderTopColor: c.tertiary + '66',
         },
         rowLabel: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
         },
         rowValue: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             fontWeight: '600',
         },
@@ -868,7 +868,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.smallText,
         },
         tileValue: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             marginTop: 4,
@@ -1260,7 +1260,7 @@ export const createStyles = (c: ThemeColours) => ({
             borderRadius: 14,
             padding: 16,
             minHeight: 120,
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             marginBottom: 0,
         },
@@ -1285,7 +1285,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         puttLabel: {
             flex: 1,
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
         },
         puttBox: {
@@ -1321,7 +1321,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: '500',
         },
         segmentTextActive: {
-            color: c.text,
+            color: c.black,
             fontWeight: '600',
         },
         sectionLabelInRow: {
@@ -1345,7 +1345,7 @@ export const createStyles = (c: ThemeColours) => ({
             borderTopColor: c.tertiary + '66',
         },
         playerName: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
         },
         stepperRow: {
@@ -1362,7 +1362,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         minusText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.header,
         },
         plusButton: {
@@ -1378,7 +1378,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.header,
         },
         scoreText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             minWidth: 32,
@@ -1431,13 +1431,13 @@ export const createStyles = (c: ThemeColours) => ({
             marginRight: 10,
         },
         clubInput: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             fontWeight: '700',
             paddingVertical: 6,
         },
         valueInput: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             textAlign: 'center',
             backgroundColor: c.tertiary + '1A',
@@ -1468,11 +1468,11 @@ export const createStyles = (c: ThemeColours) => ({
         },
         swingLabel: {
             flex: 1,
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
         },
         swingInput: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             textAlign: 'right',
             minWidth: 80,
@@ -1515,12 +1515,12 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'right',
         },
         clubText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             fontWeight: '700',
         },
         valueText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             textAlign: 'right',
             fontVariant: ['tabular-nums'],
@@ -1557,11 +1557,11 @@ export const createStyles = (c: ThemeColours) => ({
             borderTopColor: c.tertiary + '66',
         },
         clubText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
         },
         distanceText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             fontVariant: ['tabular-nums'],
         },
@@ -1605,7 +1605,7 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
         },
         rowTitle: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
         },
         rowSubtitle: {
@@ -1681,7 +1681,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         scoreText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             marginHorizontal: 12,
@@ -1707,7 +1707,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 10,
         },
         input: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             borderWidth: 0,
             padding: 0,
@@ -1722,7 +1722,7 @@ export const createStyles = (c: ThemeColours) => ({
             gap: 8,
         },
         noteText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             flex: 1,
         },
@@ -1749,7 +1749,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         totalPlayerName: {
             flex: 1,
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
         },
         totalScore: {
@@ -1789,7 +1789,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingVertical: 4,
         },
         holeNumberText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
         },
         nineLabel: {
@@ -1798,19 +1798,19 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         parText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
         },
         labelText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
         },
         playerNameText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
         },
         scoreText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -1891,11 +1891,11 @@ export const createStyles = (c: ThemeColours) => ({
             paddingVertical: 5,
         },
         holeNumber: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallestText,
         },
         holeScore: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
@@ -1906,7 +1906,7 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.errorText,
         },
         nineTotal: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             textAlign: 'right',
             marginTop: 5,
@@ -1915,7 +1915,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingTop: 5,
         },
         scoreBreakdownText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.small,
             textAlign: 'center',
             marginTop: 8,
@@ -1975,7 +1975,7 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'right',
         },
         input: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             paddingVertical: 12,
         },
@@ -2030,7 +2030,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         title: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
@@ -2137,7 +2137,7 @@ export const createStyles = (c: ThemeColours) => ({
         headerInput: {
             paddingVertical: 10,
             paddingHorizontal: 4,
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             fontWeight: '600',
             textAlign: 'center',
@@ -2167,7 +2167,7 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'center',
         },
         input: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
             paddingVertical: 2,
             paddingHorizontal: 2,
@@ -2229,7 +2229,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         scoreText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             marginHorizontal: 15,
@@ -2277,14 +2277,14 @@ export const createStyles = (c: ThemeColours) => ({
         },
         input: {
             flex: 1,
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             borderBottomWidth: 1,
             borderBottomColor: c.primary,
             paddingVertical: 5,
         },
         courseNameInput: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             borderBottomWidth: 1,
             borderBottomColor: c.primary,
@@ -2337,7 +2337,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         searchInput: {
             flex: 1,
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             paddingVertical: 12,
             marginLeft: 8,
@@ -2369,7 +2369,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         courseRowText: {
             flex: 1,
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
         },
         hintText: {
@@ -2393,7 +2393,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         hostText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
             marginLeft: 'auto',
         },
@@ -2412,7 +2412,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 24,
         },
         recentLabel: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
             marginBottom: 5,
         },
@@ -2459,7 +2459,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 20,
         },
         stepText: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             textAlign: 'center',
             marginBottom: 24,
@@ -2535,7 +2535,7 @@ export const createStyles = (c: ThemeColours) => ({
             overflow: 'hidden',
         },
         label: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
             flex: 1,
         },
@@ -2566,7 +2566,7 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'center',
         },
         buttonTextInactive: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -2604,7 +2604,7 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.tertiary + '14',
         },
         followUpLabel: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
         },
         followUp: {
@@ -2629,7 +2629,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 2,
         },
         count: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.subHeader,
             minWidth: 40,
             textAlign: 'center',
@@ -2643,7 +2643,7 @@ export const createStyles = (c: ThemeColours) => ({
             borderColor: c.primary,
         },
         toggleLabel: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
@@ -2803,7 +2803,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 44,
         },
         pageTitle: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -2823,7 +2823,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 4,
         },
         averageValue: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
         },
@@ -2891,7 +2891,7 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.primary,
         },
         cleanCount: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
             marginLeft: 12,
@@ -2922,7 +2922,7 @@ export const createStyles = (c: ThemeColours) => ({
             borderBottomRightRadius: 0,
         },
         heading: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -3096,7 +3096,7 @@ export const createStyles = (c: ThemeColours) => ({
         title: {
             fontSize: 24,
             fontWeight: 'bold',
-            color: c.text,
+            color: c.black,
             marginBottom: 16,
         },
         message: {
@@ -3292,7 +3292,7 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'center',
         },
         scorecardHeader: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -3584,7 +3584,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         title: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
@@ -3698,7 +3698,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         title: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
@@ -3971,7 +3971,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         headerTitle: {
             flex: 1,
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -4559,7 +4559,7 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
         },
         title: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'left',
@@ -4761,7 +4761,7 @@ export const createStyles = (c: ThemeColours) => ({
             borderRadius: 8,
         },
         heading: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
             marginBottom: 8,
@@ -4776,12 +4776,12 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
         },
         parLabel: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallestText,
             opacity: 0.7,
         },
         value: {
-            color: c.text,
+            color: c.black,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
             marginTop: 2,
@@ -4887,7 +4887,7 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.primary + '33',
         },
         dataText: {
-            color: c.text,
+            color: c.black,
             fontSize: 15,
             fontWeight: '600',
         },

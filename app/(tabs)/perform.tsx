@@ -100,7 +100,7 @@ export default function Perform() {
                 onPress={handleShowOnboarding}
                 style={styles.practiceHeader.circleButton}
               >
-                <MaterialIcons name="info-outline" size={22} color={colours.text} />
+                <MaterialIcons name="info-outline" size={22} color={colours.black} />
               </TouchableOpacity>
             }
           />

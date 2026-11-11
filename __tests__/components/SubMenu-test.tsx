@@ -183,12 +183,12 @@ describe('SubMenu component', () => {
             expect(segmentOf(getByTestId('practice-sub-menu-tools')).backgroundColor).toBe(colours.backgroundLight);
         });
 
-        it('shouldShowTheSelectedSegmentTextInTheNormalTextColour', () => {
+        it('shouldShowTheSelectedSegmentTextInTheBlackPrimaryTextColour', () => {
             const { getByText } = render(
                 <SubMenu showSubMenu="practice" selectedItem="tools" handleSubMenu={jest.fn()} variant="pill" />
             );
 
-            expect(StyleSheet.flatten(getByText('Tools').props.style).color).toBe(colours.text);
+            expect(StyleSheet.flatten(getByText('Tools').props.style).color).toBe(colours.black);
         });
     });
 });

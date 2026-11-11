@@ -132,7 +132,7 @@ export default function Practice() {
               onPress={() => router.push('/tools/reminders')}
               style={{ marginHorizontal: 16, marginTop: 12, padding: 12, borderRadius: 8, borderWidth: 1, borderColor: colours.red }}
             >
-              <Text style={{ color: colours.text, fontWeight: '600' }}>You have an overdue practice reminder</Text>
+              <Text style={{ color: colours.black, fontWeight: '600' }}>You have an overdue practice reminder</Text>
               <Text style={{ color: colours.primary, fontWeight: '600', marginTop: 4 }}>View reminders</Text>
             </TouchableOpacity>
           )}
@@ -145,7 +145,7 @@ export default function Practice() {
                 onPress={handleShowOnboarding}
                 style={styles.practiceHeader.circleButton}
               >
-                <MaterialIcons name="info-outline" size={22} color={colours.text} />
+                <MaterialIcons name="info-outline" size={22} color={colours.black} />
               </TouchableOpacity>
             }
           />

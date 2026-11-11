@@ -38,7 +38,7 @@ export default function ProximitySection({
                 <Text testID="proximity-heading" style={[styles.subHeaderText, { padding: 0 }]}>Proximity</Text>
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
-                    <Text testID="proximity-filter-label" style={{ color: colours.text, fontSize: fontSizes.normal }}>
+                    <Text testID="proximity-filter-label" style={{ color: colours.black, fontSize: fontSizes.normal }}>
                         Show 3-putts only
                     </Text>
                     <Switch

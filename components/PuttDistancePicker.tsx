@@ -18,7 +18,7 @@ const PuttDistancePicker = ({ testID, value, maxDistance, onChange, hasError = f
     const colours = useThemeColours();
     const s = styles.puttPicker;
     const [open, setOpen] = useState(false);
-    const textColour = hasError ? colours.red : colours.text;
+    const textColour = hasError ? colours.red : colours.black;
 
     const choose = (next: string) => {
         onChange(next);

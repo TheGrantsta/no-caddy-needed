@@ -42,7 +42,7 @@ export default function RoundEntry({
                             onPress={onShowOnboarding}
                             style={styles.practiceHeader.circleButton}
                         >
-                            <MaterialIcons name="info-outline" size={22} color={colours.text} />
+                            <MaterialIcons name="info-outline" size={22} color={colours.black} />
                         </TouchableOpacity>
                     }
                 />

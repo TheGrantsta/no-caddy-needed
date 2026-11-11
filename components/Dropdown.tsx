@@ -39,7 +39,7 @@ const Dropdown = ({
         <View style={{ marginBottom: inline ? 0 : 12 }}>
             <TouchableOpacity
                 testID={`${testIDPrefix}-dropdown-toggle`}
-                onPress={() => setShowDropdown(true)}
+                onPress={() => setShowDropdown(open => !open)}
                 style={inline ? {
                     paddingVertical: 6,
                     flexDirection: 'row',

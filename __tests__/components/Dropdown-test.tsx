@@ -137,6 +137,19 @@ describe('Dropdown', () => {
         });
     });
 
+    it('shouldCloseTheListWhenTheToggleIsPressedAgainWithoutChoosingAnOption', () => {
+        const onSelectOption = jest.fn();
+        const { getByTestId, queryByTestId } = render(
+            <Dropdown options={mockOptions} selectedOption="Option A" testIDPrefix="test" onSelectOption={onSelectOption} />
+        );
+
+        fireEvent.press(getByTestId('test-dropdown-toggle'));
+        fireEvent.press(getByTestId('test-dropdown-toggle'));
+
+        expect(queryByTestId('test-option-Option B')).toBeNull();
+        expect(onSelectOption).not.toHaveBeenCalled();
+    });
+
     it('shouldCloseTheInlineListWhenAnOptionIsChosen', () => {
         const onSelectOption = jest.fn();
         const { getByTestId, queryByTestId } = render(

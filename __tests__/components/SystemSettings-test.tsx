@@ -96,4 +96,13 @@ describe('SystemSettings', () => {
 
         expect(onVoiceChange).toHaveBeenCalledWith('male');
     });
+
+    it('shouldListTheVoicesInlineUnderTheVoiceRowWithoutOpeningAModal', () => {
+        const { getByTestId, queryByTestId } = renderSystem({ voice: 'female' });
+
+        fireEvent.press(getByTestId('voice-dropdown-toggle'));
+
+        expect(getByTestId('voice-option-Male')).toBeTruthy();
+        expect(queryByTestId('voice-modal')).toBeNull();
+    });
 });

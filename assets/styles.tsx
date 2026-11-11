@@ -4543,6 +4543,9 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
             textAlign: 'left',
         },
+        titleCentered: {
+            textAlign: 'center',
+        },
         subtitle: {
             color: c.tertiary,
             fontSize: fontSizes.normal,
@@ -4551,6 +4554,10 @@ export const createStyles = (c: ThemeColours) => ({
         actionSlot: {
             alignItems: 'center',
             justifyContent: 'center',
+        },
+        // Same width as a circle button, so a centred title balances against a control on the other side
+        spacer: {
+            width: 44,
         },
     }),
 

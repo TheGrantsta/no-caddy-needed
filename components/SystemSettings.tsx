@@ -58,7 +58,7 @@ export default function SystemSettings({
                 <View style={s.row}>
                     <Text style={s.rowLabel}>Voice</Text>
                     <Dropdown
-                        inline
+                        listPresentation="inline"
                         options={VOICES.map(voice => voice.label)}
                         selectedOption={voiceLabel}
                         onSelectOption={(label) => {

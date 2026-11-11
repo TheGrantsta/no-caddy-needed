@@ -136,6 +136,7 @@ export default function Settings() {
       >
         <PageHeader
           title="Settings"
+          centered
           onBack={() => router.back()}
           rightAction={
             <TouchableOpacity

@@ -58,6 +58,20 @@ describe('PageHeader', () => {
         expect(getByText('Practice')).toHaveStyle({ fontSize: 32, fontWeight: 'bold', textAlign: 'left' });
     });
 
+    it('shouldCentreTheTitleWhenCentredIsRequestedAndBalanceASideWithNoControl', () => {
+        const { getByText, getByTestId } = render(<PageHeader title="Settings" centered rightAction={<Text>Info</Text>} />);
+
+        expect(getByText('Settings')).toHaveStyle({ textAlign: 'center' });
+        expect(getByTestId('page-header-spacer')).toBeTruthy();
+    });
+
+    it('shouldKeepTheTitleLeftAlignedWithNoSpacerWhenCentredIsNotRequested', () => {
+        const { getByText, queryByTestId } = render(<PageHeader title="Practice" rightAction={<Text>Info</Text>} />);
+
+        expect(getByText('Practice')).toHaveStyle({ textAlign: 'left' });
+        expect(queryByTestId('page-header-spacer')).toBeNull();
+    });
+
     it('shouldOmitTheBackButtonWhenNoBackHandlerIsGiven', () => {
         const { queryByLabelText, getByText } = render(<PageHeader title="My Bag" />);
 

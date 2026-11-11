@@ -11,17 +11,20 @@ type Props = {
     onBack?: () => void;
     // Optional control on the right, such as the help button
     rightAction?: ReactNode;
+    // Centres the title; an empty side gets a spacer the same width as a control so the title stays in the middle
+    centered?: boolean;
 };
 
 // The standard screen heading: a large left-aligned title, an optional back button to its left,
 // a subtitle underneath, and an optional control on the right
-const PageHeader = ({ title, subtitle, onBack, rightAction }: Props) => {
+const PageHeader = ({ title, subtitle, onBack, rightAction, centered = false }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.pageHeader;
 
     return (
         <View style={s.row}>
+            {centered && !onBack ? <View testID="page-header-spacer" style={s.spacer} /> : null}
             {onBack ? (
                 <TouchableOpacity
                     testID="page-back-button"
@@ -34,10 +37,11 @@ const PageHeader = ({ title, subtitle, onBack, rightAction }: Props) => {
                 </TouchableOpacity>
             ) : null}
             <View style={s.titleBlock}>
-                <Text style={s.title}>{title}</Text>
-                {subtitle ? <Text style={s.subtitle}>{subtitle}</Text> : null}
+                <Text style={[s.title, centered && s.titleCentered]}>{title}</Text>
+                {subtitle ? <Text style={[s.subtitle, centered && s.titleCentered]}>{subtitle}</Text> : null}
             </View>
             {rightAction ? <View style={s.actionSlot}>{rightAction}</View> : null}
+            {centered && !rightAction ? <View testID="page-header-spacer" style={s.spacer} /> : null}
         </View>
     );
 };

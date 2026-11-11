@@ -32,9 +32,9 @@ beforeAll(async () => {
 // notificationsEnabled, voice, soundsEnabled, wedgeChartOnboardingSeen, distancesOnboardingSeen,
 // playOnboardingSeen, homeOnboardingSeen, practiceOnboardingSeen, reviewPromptShown,
 // whatsNewVersionSeen, settingsOnboardingSeen, performOnboardingSeen, tempoBpm, units,
-// skipStatsFlowEnabled, badHoleReassuranceEnabled
-const saveDefault = (tempoBpm = 60) =>
-    saveSettings(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, tempoBpm, 'yards', 0, 1);
+// skipStatsFlowEnabled, badHoleReassuranceEnabled, quickTools
+const saveDefault = (tempoBpm = 60, quickTools = 'wind,tempo,random') =>
+    saveSettings(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, tempoBpm, 'yards', 0, 1, quickTools);
 
 describe('saveSettings', () => {
     beforeEach(() => {
@@ -64,6 +64,20 @@ describe('saveSettings', () => {
 
         const [params] = mockStatementExecuteAsync.mock.calls[0];
         expect(params.$TempoBpm).toBe(84);
+    });
+
+    it('persistsTheQuickToolsChoice', async () => {
+        await saveDefault(60, 'lag-putting,reminders,wind');
+
+        const [params] = mockStatementExecuteAsync.mock.calls[0];
+        expect(params.$QuickTools).toBe('lag-putting,reminders,wind');
+    });
+
+    it('writesTheQuickToolsColumn', async () => {
+        await saveDefault();
+
+        const [sql] = mockPrepareSync.mock.calls[0];
+        expect(sql).toMatch(/QuickTools/);
     });
 });
 

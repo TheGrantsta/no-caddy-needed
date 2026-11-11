@@ -1,4 +1,5 @@
 import { getTwoDigitDayAndMonth } from '@/utils/DateFormatter';
+import { DEFAULT_QUICK_TOOLS, parseQuickTools, serializeQuickTools } from '@/utils/quickTools';
 import type { DistanceUnit } from './UnitsService';
 import {
     getWedgeChartDistanceNames,
@@ -713,13 +714,15 @@ export type AppSettings = {
     units: DistanceUnit;
     skipStatsFlowEnabled: boolean;
     badHoleReassuranceEnabled: boolean;
+    // The three Quick tools shown on Home, as option slugs in display order
+    quickTools: string[];
 };
 
 export const getSettingsService = (): AppSettings => {
-    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; ReviewPromptShown: number; WhatsNewVersionSeen: string; SettingsOnboardingSeen: number; PerformOnboardingSeen: number; TempoBpm: number; Units: string; SkipStatsFlowEnabled: number; BadHoleReassuranceEnabled: number } | null;
+    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; ReviewPromptShown: number; WhatsNewVersionSeen: string; SettingsOnboardingSeen: number; PerformOnboardingSeen: number; TempoBpm: number; Units: string; SkipStatsFlowEnabled: number; BadHoleReassuranceEnabled: number; QuickTools?: string } | null;
 
     if (!row) {
-        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false, badHoleReassuranceEnabled: true };
+        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false, badHoleReassuranceEnabled: true, quickTools: [...DEFAULT_QUICK_TOOLS] };
     }
 
     return {
@@ -739,11 +742,12 @@ export const getSettingsService = (): AppSettings => {
         units: (row.Units ?? 'yards') as DistanceUnit,
         skipStatsFlowEnabled: (row.SkipStatsFlowEnabled ?? 0) === 1,
         badHoleReassuranceEnabled: (row.BadHoleReassuranceEnabled ?? 1) === 1,
+        quickTools: parseQuickTools(row.QuickTools ?? ''),
     };
 };
 
 export const saveSettingsService = async (settings: AppSettings): Promise<boolean> => {
-    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0, settings.reviewPromptShown ? 1 : 0, settings.whatsNewVersionSeen, settings.settingsOnboardingSeen ? 1 : 0, settings.performOnboardingSeen ? 1 : 0, settings.tempoBpm, settings.units, settings.skipStatsFlowEnabled ? 1 : 0, settings.badHoleReassuranceEnabled ? 1 : 0);
+    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0, settings.reviewPromptShown ? 1 : 0, settings.whatsNewVersionSeen, settings.settingsOnboardingSeen ? 1 : 0, settings.performOnboardingSeen ? 1 : 0, settings.tempoBpm, settings.units, settings.skipStatsFlowEnabled ? 1 : 0, settings.badHoleReassuranceEnabled ? 1 : 0, serializeQuickTools(settings.quickTools));
 };
 
 export type PracticeReminder = {

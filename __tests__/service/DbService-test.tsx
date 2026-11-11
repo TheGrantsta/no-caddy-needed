@@ -36,6 +36,7 @@ describe('getSettingsService', () => {
             units: 'yards',
             skipStatsFlowEnabled: false,
             badHoleReassuranceEnabled: true,
+            quickTools: ['wind', 'tempo', 'random'],
         });
     });
 
@@ -72,6 +73,7 @@ describe('getSettingsService', () => {
             units: 'yards',
             skipStatsFlowEnabled: false,
             badHoleReassuranceEnabled: true,
+            quickTools: ['wind', 'tempo', 'random'],
         });
     });
 
@@ -108,6 +110,7 @@ describe('getSettingsService', () => {
             units: 'yards',
             skipStatsFlowEnabled: false,
             badHoleReassuranceEnabled: true,
+            quickTools: ['wind', 'tempo', 'random'],
         });
     });
 
@@ -144,6 +147,7 @@ describe('getSettingsService', () => {
             units: 'yards',
             skipStatsFlowEnabled: false,
             badHoleReassuranceEnabled: true,
+            quickTools: ['wind', 'tempo', 'random'],
         });
     });
 
@@ -180,6 +184,7 @@ describe('getSettingsService', () => {
             units: 'yards',
             skipStatsFlowEnabled: false,
             badHoleReassuranceEnabled: true,
+            quickTools: ['wind', 'tempo', 'random'],
         });
     });
 });
@@ -209,12 +214,13 @@ describe('saveSettingsService', () => {
             units: 'yards',
             skipStatsFlowEnabled: false,
             badHoleReassuranceEnabled: true,
+            quickTools: ['wind', 'tempo', 'random'],
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
@@ -237,12 +243,13 @@ describe('saveSettingsService', () => {
             units: 'yards',
             skipStatsFlowEnabled: false,
             badHoleReassuranceEnabled: true,
+            quickTools: ['wind', 'tempo', 'random'],
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
@@ -265,11 +272,12 @@ describe('saveSettingsService', () => {
             units: 'yards',
             skipStatsFlowEnabled: false,
             badHoleReassuranceEnabled: true,
+            quickTools: ['wind', 'tempo', 'random'],
         };
 
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
     });
 });

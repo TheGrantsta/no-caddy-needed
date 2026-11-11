@@ -1,10 +1,15 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import HomeQuickTools from '../../components/HomeQuickTools';
+import { getSettingsService } from '../../service/DbService';
 
 const mockPush = jest.fn();
 jest.mock('expo-router', () => ({
     useRouter: () => ({ push: mockPush, back: jest.fn() }),
+}));
+
+jest.mock('../../service/DbService', () => ({
+    getSettingsService: jest.fn(),
 }));
 
 jest.mock('../../context/ThemeContext', () => ({
@@ -20,8 +25,15 @@ jest.mock('@expo/vector-icons', () => {
     return { MaterialIcons: ({ name }: { name: string }) => <Text>{name}</Text> };
 });
 
+const mockGetSettings = getSettingsService as jest.Mock;
+
 describe('HomeQuickTools', () => {
-    it('shouldShowWindTempoAndRandomTiles', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockGetSettings.mockReturnValue({ quickTools: ['wind', 'tempo', 'random'] });
+    });
+
+    it('shouldShowTheDefaultWindTempoAndRandomTiles', () => {
         const { getByText } = render(<HomeQuickTools />);
 
         expect(getByText('Wind')).toBeTruthy();
@@ -29,15 +41,23 @@ describe('HomeQuickTools', () => {
         expect(getByText('Random')).toBeTruthy();
     });
 
-    it('shouldLinkEachTileToItsTool', () => {
-        const { getByTestId } = render(<HomeQuickTools />);
+    it('shouldShowTheSavedQuickToolsInTheSavedOrder', () => {
+        mockGetSettings.mockReturnValue({ quickTools: ['tempo', 'lag-putting', 'reminders'] });
+        const { getAllByTestId } = render(<HomeQuickTools />);
 
-        expect(getByTestId('home-tool-wind')).toBeTruthy();
-        expect(getByTestId('home-tool-tempo')).toBeTruthy();
-        expect(getByTestId('home-tool-random')).toBeTruthy();
+        const tileIds = getAllByTestId(/^home-tool-/).map(tile => tile.props.testID);
+        expect(tileIds).toEqual(['home-tool-tempo', 'home-tool-lag-putting', 'home-tool-reminders']);
     });
 
-    it('shouldOpenEachToolWhenItsTileIsPressed', () => {
+    it('shouldShowAChallengeTileWhenAChallengeIsSaved', () => {
+        mockGetSettings.mockReturnValue({ quickTools: ['tempo', 'lag-putting', 'reminders'] });
+        const { getByText, queryByText } = render(<HomeQuickTools />);
+
+        expect(getByText('Lag putting')).toBeTruthy();
+        expect(queryByText('Wind')).toBeNull();
+    });
+
+    it('shouldOpenEachToolAtItsRouteWhenItsTileIsPressed', () => {
         const { getByTestId } = render(<HomeQuickTools />);
 
         fireEvent.press(getByTestId('home-tool-wind'));
@@ -49,11 +69,20 @@ describe('HomeQuickTools', () => {
         expect(mockPush).toHaveBeenNthCalledWith(3, '/tools/random');
     });
 
-    it('shouldGiveEveryToolTileTheSameSize', () => {
+    it('shouldOpenAChallengeAtItsRouteWhenItsTileIsPressed', () => {
+        mockGetSettings.mockReturnValue({ quickTools: ['tempo', 'lag-putting', 'reminders'] });
         const { getByTestId } = render(<HomeQuickTools />);
 
-        for (const slug of ['wind', 'tempo', 'random']) {
-            expect(getByTestId(`home-tool-${slug}`)).toHaveStyle({ flex: 1, height: 110 });
+        fireEvent.press(getByTestId('home-tool-lag-putting'));
+
+        expect(mockPush).toHaveBeenCalledWith('/challenges/lag-putting');
+    });
+
+    it('shouldGiveEveryToolTileTheSameSize', () => {
+        const { getAllByTestId } = render(<HomeQuickTools />);
+
+        for (const tile of getAllByTestId(/^home-tool-/)) {
+            expect(tile).toHaveStyle({ flex: 1, height: 110 });
         }
     });
 });

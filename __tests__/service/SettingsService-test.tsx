@@ -20,7 +20,7 @@ const fullRow = (overrides: Record<string, unknown> = {}) => ({
     Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', SoundsEnabled: 1,
     WedgeChartOnboardingSeen: 0, DistancesOnboardingSeen: 0, PlayOnboardingSeen: 0,
     HomeOnboardingSeen: 0, PracticeOnboardingSeen: 0,
-    ReviewPromptShown: 0, WhatsNewVersionSeen: '', SettingsOnboardingSeen: 0, PerformOnboardingSeen: 0, TempoBpm: 60, Units: 'yards', SkipStatsFlowEnabled: 0, ...overrides,
+    ReviewPromptShown: 0, WhatsNewVersionSeen: '', SettingsOnboardingSeen: 0, PerformOnboardingSeen: 0, TempoBpm: 60, Units: 'yards', SkipStatsFlowEnabled: 0, QuickTools: 'wind,tempo,random', ...overrides,
 });
 
 const defaultExpected: AppSettings = {
@@ -29,6 +29,7 @@ const defaultExpected: AppSettings = {
     homeOnboardingSeen: false, practiceOnboardingSeen: false,
     reviewPromptShown: false,
     whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false, badHoleReassuranceEnabled: true,
+    quickTools: ['wind', 'tempo', 'random'],
 };
 
 describe('getSettingsService', () => {
@@ -136,6 +137,18 @@ describe('getSettingsService', () => {
         expect(getSettingsService().tempoBpm).toBe(60);
     });
 
+    it('returns the saved quick tools in their saved order', () => {
+        mockGetSettings.mockReturnValue(fullRow({ QuickTools: 'tempo,lag-putting,reminders' }));
+
+        expect(getSettingsService().quickTools).toEqual(['tempo', 'lag-putting', 'reminders']);
+    });
+
+    it('defaults quickTools to wind, tempo and random when the column is missing', () => {
+        mockGetSettings.mockReturnValue({ Id: 1, Theme: 'dark', NotificationsEnabled: 1, Voice: 'female', PracticeOnboardingSeen: 0 });
+
+        expect(getSettingsService().quickTools).toEqual(['wind', 'tempo', 'random']);
+    });
+
     it('defaults tempoBpm to 60 when no settings exist', () => {
         mockGetSettings.mockReturnValue(null);
 
@@ -161,6 +174,7 @@ describe('saveSettingsService', () => {
         units: 'yards',
         skipStatsFlowEnabled: false,
         badHoleReassuranceEnabled: true,
+        quickTools: ['wind', 'tempo', 'random'],
     };
 
     beforeEach(() => {
@@ -173,7 +187,15 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService({ ...baseSettings, notificationsEnabled: false });
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
+    });
+
+    it('saves the quick tools as a comma-separated list', async () => {
+        mockSaveSettings.mockResolvedValue(true);
+
+        await saveSettingsService({ ...baseSettings, quickTools: ['lag-putting', 'reminders', 'wind'] });
+
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'lag-putting,reminders,wind');
     });
 
     it('maps notificationsEnabled true to 1', async () => {
@@ -181,7 +203,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService(baseSettings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
     });
 
     it('maps reviewPromptShown true to 1', async () => {
@@ -189,7 +211,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, reviewPromptShown: true });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 1, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 1, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
     });
 
     it('passes voice neutral to saveSettings', async () => {
@@ -197,7 +219,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, voice: 'neutral' });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'neutral', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'neutral', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
     });
 
     it('returns false when save fails', async () => {
@@ -211,6 +233,6 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, tempoBpm: 108 });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 108, 'yards', 0, 1);
+        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 108, 'yards', 0, 1, 'wind,tempo,random');
     });
 });

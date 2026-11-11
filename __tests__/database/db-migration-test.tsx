@@ -463,6 +463,7 @@ describe('Settings table column migration', () => {
                 { name: 'Units' },
                 { name: 'SkipStatsFlowEnabled' },
                 { name: 'BadHoleReassuranceEnabled' },
+                { name: 'QuickTools' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
                 { name: 'Id' },

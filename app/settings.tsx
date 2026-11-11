@@ -16,6 +16,7 @@ import { TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColours } from '../context/ThemeContext';
 import SystemSettings from '../components/SystemSettings';
+import QuickToolsSettings from '../components/QuickToolsSettings';
 import GolfSettings from '../components/GolfSettings';
 import SettingsFooter from '../components/SettingsFooter';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
@@ -53,6 +54,15 @@ export default function Settings() {
 
   const handleSoundsChange = async (value: boolean) => {
     const updated: AppSettings = { ...settings, soundsEnabled: value };
+    setSettings(updated);
+
+    const success = await saveSettingsService(updated);
+
+    showResult(success, 'Settings saved', 'Failed to save settings');
+  };
+
+  const handleQuickToolsChange = async (quickTools: string[]) => {
+    const updated: AppSettings = { ...settings, quickTools };
     setSettings(updated);
 
     const success = await saveSettingsService(updated);
@@ -163,6 +173,8 @@ export default function Settings() {
           onVoiceChange={handleVoiceChange}
           onUnitsChange={handleUnitsChange}
         />
+
+        <QuickToolsSettings quickTools={settings.quickTools} onQuickToolsChange={handleQuickToolsChange} />
 
         <SettingsFooter
           onExportStats={handleExportStats}

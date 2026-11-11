@@ -17,7 +17,7 @@ jest.mock('../../hooks/useStyles', () => ({
 }));
 
 jest.mock('../../service/DbService', () => ({
-    getSettingsService: jest.fn(() => ({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false })),
+    getSettingsService: jest.fn(() => ({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false, quickTools: ['wind', 'tempo', 'random'] })),
     saveSettingsService: jest.fn(() => Promise.resolve(true)),
 }));
 
@@ -74,6 +74,7 @@ describe('Settings page', () => {
         tempoBpm: 60,
         units: 'yards',
         skipStatsFlowEnabled: false,
+        quickTools: ['wind', 'tempo', 'random'],
         badHoleReassuranceEnabled: true,
     };
 
@@ -89,6 +90,18 @@ describe('Settings page', () => {
         expect(getByText('Settings')).toBeTruthy();
         expect(queryByText('Done')).toBeNull();
         expect(queryByTestId('settings-done-button')).toBeNull();
+    });
+
+    it('shouldSaveAChangedQuickToolWhenAShortcutIsChosen', async () => {
+        mockSaveSettingsService.mockResolvedValue(true);
+        const { getByTestId } = render(<Settings />);
+
+        fireEvent.press(getByTestId('quick-tool-0-dropdown-toggle'));
+        fireEvent.press(getByTestId('quick-tool-0-option-Lag putting'));
+
+        await waitFor(() => {
+            expect(mockSaveSettingsService).toHaveBeenCalledWith(expect.objectContaining({ quickTools: ['lag-putting', 'tempo', 'random'] }));
+        });
     });
 
     it('showsTheSettingsTitleLeftAligned', () => {

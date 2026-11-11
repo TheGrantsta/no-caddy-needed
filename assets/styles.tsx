@@ -437,7 +437,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         title: {
             color: c.black,
-            fontSize: fontSizes.subHeader,
+            fontSize: fontSizes.header,
             fontWeight: 'bold',
         },
         editButton: {
@@ -936,8 +936,8 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
         },
         title: {
-            color: c.tertiary,
-            fontSize: fontSizes.smallText,
+            color: c.black,
+            fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             textAlign: 'center',
         },
@@ -997,7 +997,7 @@ export const createStyles = (c: ThemeColours) => ({
         title: {
             flex: 1,
             color: c.white,
-            fontSize: fontSizes.normal,
+            fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             textAlign: 'center',
         },
@@ -2031,7 +2031,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         title: {
             color: c.black,
-            fontSize: fontSizes.subHeader,
+            fontSize: fontSizes.header,
             fontWeight: 'bold',
         },
         footnote: {
@@ -2452,7 +2452,7 @@ export const createStyles = (c: ThemeColours) => ({
             borderColor: c.primary,
         },
         title: {
-            color: c.primary,
+            color: c.black,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -2659,7 +2659,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingBottom: 0,
         },
         title: {
-            color: c.primary,
+            color: c.black,
             fontSize: fontSizes.subHeader,
             textAlign: 'center',
             fontWeight: 'bold',
@@ -2805,7 +2805,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         pageTitle: {
             color: c.black,
-            fontSize: fontSizes.subHeader,
+            fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'center',
             flex: 1,
@@ -2983,7 +2983,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 10,
         },
         title: {
-            color: c.primary,
+            color: c.black,
             fontSize: fontSizes.subHeader,
             marginBottom: 15,
             fontWeight: 'bold',
@@ -3096,7 +3096,7 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 20,
         },
         title: {
-            fontSize: fontSizes.subHeader,
+            fontSize: fontSizes.header,
             fontWeight: 'bold',
             color: c.black,
             marginBottom: 16,

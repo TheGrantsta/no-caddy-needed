@@ -1,3 +1,4 @@
+import colours from '@/assets/colours';
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
@@ -21,7 +22,7 @@ const WindEffectCard = ({ effect }: Props) => {
             <View testID="wind-effect-card" style={s.card}>
                 <View style={s.headerRow}>
                     <View testID="wind-effect-icon" style={s.iconTile}>
-                        <MaterialIcons name="air" size={24} color="#FFFFFF" />
+                        <MaterialIcons name="air" size={24} color={colours.white} />
                     </View>
                     <View style={s.headerText}>
                         <Text style={s.title}>{description.title}</Text>

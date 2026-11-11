@@ -1,3 +1,4 @@
+import { challengeTierColours } from '@/assets/colours';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from 'expo-router';
@@ -29,11 +30,11 @@ type PerformanceBand = 'pro' | 'scratch' | 'single' | 'mid' | 'beginner';
 const SCORE_OPTIONS = Array.from({ length: 31 }, (_, i) => String(i));
 
 const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; minScore: number; color: string }> = {
-    pro: { label: 'Pro', minScore: 6, color: '#00C851' },
-    scratch: { label: 'Scratch', minScore: 4, color: '#4A7C59' },
-    single: { label: 'Single-digit', minScore: 3, color: '#6B9B7F' },
-    mid: { label: 'Mid Handicap', minScore: 2, color: '#8CBBA4' },
-    beginner: { label: 'Beginner', minScore: 0, color: '#ADCFC9' },
+    pro: { label: 'Pro', minScore: 6, color: challengeTierColours.pro },
+    scratch: { label: 'Scratch', minScore: 4, color: challengeTierColours.scratch },
+    single: { label: 'Single-digit', minScore: 3, color: challengeTierColours.handicap5 },
+    mid: { label: 'Mid Handicap', minScore: 2, color: challengeTierColours.handicap10 },
+    beginner: { label: 'Beginner', minScore: 0, color: challengeTierColours.handicap15 },
 };
 
 export default function LagPutting() {

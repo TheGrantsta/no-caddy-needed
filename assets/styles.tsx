@@ -453,7 +453,7 @@ export const createStyles = (c: ThemeColours) => ({
         cancelPill: {
             height: 44,
             borderRadius: 22,
-            backgroundColor: '#E9E9EB',
+            backgroundColor: c.neutralFill,
             justifyContent: 'center',
             paddingHorizontal: 18,
         },
@@ -661,7 +661,7 @@ export const createStyles = (c: ThemeColours) => ({
         cancelPill: {
             height: 44,
             borderRadius: 22,
-            backgroundColor: '#E9E9EB',
+            backgroundColor: c.neutralFill,
             justifyContent: 'center',
             paddingHorizontal: 18,
         },
@@ -927,7 +927,7 @@ export const createStyles = (c: ThemeColours) => ({
         cancelPill: {
             height: 44,
             borderRadius: 22,
-            backgroundColor: '#E9E9EB',
+            backgroundColor: c.neutralFill,
             justifyContent: 'center',
             paddingHorizontal: 18,
         },
@@ -1125,7 +1125,7 @@ export const createStyles = (c: ThemeColours) => ({
         nextButton: {
             flexDirection: 'row',
             alignItems: 'center',
-            backgroundColor: '#E4E6E8',
+            backgroundColor: c.nextButtonFill,
             borderRadius: 32,
             paddingHorizontal: 18,
             paddingVertical: 14,
@@ -2072,7 +2072,7 @@ export const createStyles = (c: ThemeColours) => ({
         cancelPill: {
             height: 44,
             borderRadius: 22,
-            backgroundColor: '#E9E9EB',
+            backgroundColor: c.neutralFill,
             justifyContent: 'center',
             paddingHorizontal: 18,
         },
@@ -3454,13 +3454,13 @@ export const createStyles = (c: ThemeColours) => ({
         },
         recentRowDivider: {
             borderTopWidth: StyleSheet.hairlineWidth,
-            borderTopColor: '#E0E0E0',
+            borderTopColor: c.divider,
         },
         recentIconTile: {
             width: 44,
             height: 44,
             borderRadius: 10,
-            backgroundColor: '#E6EEE9',
+            backgroundColor: c.iconTileGreen,
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -3484,7 +3484,7 @@ export const createStyles = (c: ThemeColours) => ({
         bottom: 0,
         width: 3,
         borderRadius: 1.5,
-        backgroundColor: '#E0A526',
+        backgroundColor: c.amber,
     },
 
     statsFilter: StyleSheet.create({
@@ -3563,7 +3563,7 @@ export const createStyles = (c: ThemeColours) => ({
         cancelPill: {
             height: 44,
             borderRadius: 22,
-            backgroundColor: '#E9E9EB',
+            backgroundColor: c.neutralFill,
             justifyContent: 'center',
             paddingHorizontal: 18,
         },
@@ -3632,7 +3632,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         divider: {
             height: StyleSheet.hairlineWidth,
-            backgroundColor: '#E0E0E0',
+            backgroundColor: c.divider,
             marginLeft: 16,
         },
         holeRow: {
@@ -3646,7 +3646,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 36,
             height: 36,
             borderRadius: 18,
-            backgroundColor: '#E6EEE9',
+            backgroundColor: c.iconTileGreen,
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -3734,12 +3734,12 @@ export const createStyles = (c: ThemeColours) => ({
         },
         divider: {
             height: StyleSheet.hairlineWidth,
-            backgroundColor: '#E0E0E0',
+            backgroundColor: c.divider,
             marginLeft: 16,
         },
         segmentTrack: {
             flexDirection: 'row',
-            backgroundColor: '#E9E9EB',
+            backgroundColor: c.neutralFill,
             borderRadius: 10,
             padding: 3,
             width: 150,
@@ -3779,7 +3779,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 44,
             height: 44,
             borderRadius: 22,
-            backgroundColor: '#E9E9EB',
+            backgroundColor: c.neutralFill,
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -3842,7 +3842,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         tile: {
             flex: 1,
-            backgroundColor: '#F3F3F5',
+            backgroundColor: c.tileFill,
             borderRadius: 16,
             padding: 12,
         },
@@ -3877,11 +3877,11 @@ export const createStyles = (c: ThemeColours) => ({
             paddingVertical: 10,
         },
         tableHeaderRow: {
-            backgroundColor: '#F7F7F9',
+            backgroundColor: c.tableHeaderFill,
         },
         youRow: {
             borderTopWidth: StyleSheet.hairlineWidth,
-            borderTopColor: '#E0E0E0',
+            borderTopColor: c.divider,
         },
         rowLabel: {
             width: 44,
@@ -3922,7 +3922,7 @@ export const createStyles = (c: ThemeColours) => ({
             height: 6,
             borderRadius: 3,
             marginTop: 4,
-            backgroundColor: '#B5651D',
+            backgroundColor: c.wedgeTile,
         },
         legendRow: {
             flexDirection: 'row',
@@ -3965,7 +3965,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 44,
             height: 44,
             borderRadius: 22,
-            backgroundColor: '#E9E9EB',
+            backgroundColor: c.neutralFill,
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -4009,7 +4009,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         segmentTrack: {
             flexDirection: 'row',
-            backgroundColor: '#E9E9EB',
+            backgroundColor: c.neutralFill,
             borderRadius: 10,
             padding: 3,
         },
@@ -4040,7 +4040,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         rowDivider: {
             height: StyleSheet.hairlineWidth,
-            backgroundColor: '#E0E0E0',
+            backgroundColor: c.divider,
             marginLeft: 16,
         },
         actionText: {
@@ -4074,13 +4074,13 @@ export const createStyles = (c: ThemeColours) => ({
         },
         rowDivider: {
             borderTopWidth: StyleSheet.hairlineWidth,
-            borderTopColor: '#E0E0E0',
+            borderTopColor: c.divider,
         },
         iconTile: {
             width: 48,
             height: 48,
             borderRadius: 12,
-            backgroundColor: '#E6EEE9',
+            backgroundColor: c.iconTileGreen,
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -4136,7 +4136,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 48,
             height: 48,
             borderRadius: 12,
-            backgroundColor: '#1F6FB2',
+            backgroundColor: c.iconTileBlue,
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -4159,7 +4159,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingHorizontal: 16,
             paddingVertical: 14,
             borderTopWidth: StyleSheet.hairlineWidth,
-            borderTopColor: '#E0E0E0',
+            borderTopColor: c.divider,
         },
         rowLabel: {
             color: c.black,
@@ -4236,9 +4236,9 @@ export const createStyles = (c: ThemeColours) => ({
             width: 280,
             height: 280,
             borderRadius: 140,
-            backgroundColor: '#F6F6F8',
+            backgroundColor: c.dialFill,
             borderWidth: 1,
-            borderColor: '#E0E0E0',
+            borderColor: c.divider,
         },
         rotor: {
             position: 'absolute',
@@ -4254,7 +4254,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 2,
             height: 12,
             borderRadius: 1,
-            backgroundColor: '#C9C9CE',
+            backgroundColor: c.tickGrey,
         },
         targetMarker: {
             position: 'absolute',
@@ -4277,7 +4277,7 @@ export const createStyles = (c: ThemeColours) => ({
         targetStem: {
             width: 2,
             height: 14,
-            backgroundColor: '#C9C9CE',
+            backgroundColor: c.tickGrey,
         },
         needleHead: {
             position: 'absolute',
@@ -4415,7 +4415,7 @@ export const createStyles = (c: ThemeColours) => ({
             minWidth: 90,
             height: 44,
             borderRadius: 12,
-            backgroundColor: '#EFEFEF',
+            backgroundColor: c.mutedSurface,
             color: c.black,
             fontSize: fontSizes.normal,
             textAlign: 'center',
@@ -4427,7 +4427,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         rowDivider: {
             height: StyleSheet.hairlineWidth,
-            backgroundColor: '#E0E0E0',
+            backgroundColor: c.divider,
             marginLeft: 16,
         },
         rowError: {
@@ -4456,7 +4456,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         purposeRowDivider: {
             borderTopWidth: StyleSheet.hairlineWidth,
-            borderTopColor: '#E0E0E0',
+            borderTopColor: c.divider,
         },
         purposeHeading: {
             width: 120,
@@ -4515,7 +4515,7 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
             height: 52,
             borderRadius: 14,
-            backgroundColor: '#E9E9EB',
+            backgroundColor: c.neutralFill,
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -4656,7 +4656,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 10,
             height: 10,
             borderRadius: 5,
-            backgroundColor: '#D9D9D9',
+            backgroundColor: c.inactiveDot,
         },
         beatDotActive: {
             backgroundColor: c.primary,
@@ -4671,7 +4671,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 52,
             height: 52,
             borderRadius: 26,
-            backgroundColor: '#EFEFEF',
+            backgroundColor: c.mutedSurface,
             justifyContent: 'center',
             alignItems: 'center',
         },
@@ -4737,7 +4737,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         whyRowDivider: {
             borderTopWidth: StyleSheet.hairlineWidth,
-            borderTopColor: '#E0E0E0',
+            borderTopColor: c.divider,
         },
         whyHeading: {
             color: c.primary,

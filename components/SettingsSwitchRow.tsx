@@ -23,7 +23,7 @@ const SettingsSwitchRow = ({ label, value, onValueChange, testID }: Props) => {
                 testID={testID}
                 value={value}
                 onValueChange={onValueChange}
-                trackColor={{ false: '#E9E9EB', true: colours.primary }}
+                trackColor={{ false: colours.neutralFill, true: colours.primary }}
                 thumbColor={colours.white}
             />
         </View>

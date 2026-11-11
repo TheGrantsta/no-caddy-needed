@@ -1,3 +1,4 @@
+import colours from '@/assets/colours';
 import React from 'react';
 import { Text, View } from 'react-native';
 import Slider from '@react-native-community/slider';
@@ -9,7 +10,7 @@ interface Props {
     onTempoChange: (value: number) => void;
 }
 
-const TRACK_INACTIVE = '#E3E3E3';
+const TRACK_INACTIVE = colours.trackInactive;
 
 // Slider between 60 and 120 bpm with Slow and Fast labels either side
 export default function TempoSlider({ tempo, onTempoChange }: Props) {

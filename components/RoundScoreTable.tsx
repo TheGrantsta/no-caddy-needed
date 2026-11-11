@@ -1,3 +1,4 @@
+import colours from '@/assets/colours';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
@@ -12,7 +13,7 @@ type Props = {
     onSinPress?: (holeNumber: number) => void;
 };
 
-const SIN_DOT_COLOUR = '#B5651D';
+const SIN_DOT_COLOUR = colours.wedgeTile;
 
 // One nine: hole numbers, par and the player's score per hole, with the nine's total
 const NineTable = ({ label, holes, sinHoles, onSinPress }: Props & { label: 'OUT' | 'IN' }) => {

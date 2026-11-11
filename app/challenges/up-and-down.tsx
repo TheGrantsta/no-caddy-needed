@@ -1,3 +1,4 @@
+import { challengeTierColours } from '@/assets/colours';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from 'expo-router';
@@ -21,12 +22,12 @@ import { useEffect, useRef, useState, useLayoutEffect } from 'react';
 type PerformanceBand = 'pro' | 'd1' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
 
 const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; minPercentage: number; color: string }> = {
-    pro: { label: 'PGA Pro', minPercentage: 80, color: '#00C851' },
-    d1: { label: 'D1 College', minPercentage: 70, color: '#2D5A3D' },
-    scratch: { label: 'Scratch', minPercentage: 60, color: '#4A7C59' },
-    '5hcp': { label: '5 Handicap', minPercentage: 50, color: '#6B9B7F' },
-    '10hcp': { label: '10 Handicap', minPercentage: 40, color: '#8CBBA4' },
-    '15hcp': { label: '15 Handicap', minPercentage: 30, color: '#ADCFC9' },
+    pro: { label: 'PGA Pro', minPercentage: 80, color: challengeTierColours.pro },
+    d1: { label: 'D1 College', minPercentage: 70, color: challengeTierColours.d1 },
+    scratch: { label: 'Scratch', minPercentage: 60, color: challengeTierColours.scratch },
+    '5hcp': { label: '5 Handicap', minPercentage: 50, color: challengeTierColours.handicap5 },
+    '10hcp': { label: '10 Handicap', minPercentage: 40, color: challengeTierColours.handicap10 },
+    '15hcp': { label: '15 Handicap', minPercentage: 30, color: challengeTierColours.handicap15 },
 };
 
 // Shot-count tiles; the last tile stands for 4 or more shots

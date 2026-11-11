@@ -1,3 +1,4 @@
+import { challengeTierColours } from '@/assets/colours';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from 'expo-router';
@@ -20,12 +21,12 @@ import { useEffect, useRef, useState, useLayoutEffect } from 'react';
 type PerformanceBand = 'pro' | 'd1' | 'scratch' | '5hcp' | '10hcp' | '15hcp';
 
 const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; maxAttempts: number; color: string }> = {
-    pro: { label: 'Pro', maxAttempts: 11, color: '#00C851' },
-    d1: { label: 'D1 College', maxAttempts: 13, color: '#2D5A3D' },
-    scratch: { label: 'Scratch', maxAttempts: 15, color: '#4A7C59' },
-    '5hcp': { label: '5 Handicap', maxAttempts: 17, color: '#6B9B7F' },
-    '10hcp': { label: '10 Handicap', maxAttempts: 19, color: '#8CBBA4' },
-    '15hcp': { label: '15 Handicap', maxAttempts: 100, color: '#ADCFC9' },
+    pro: { label: 'Pro', maxAttempts: 11, color: challengeTierColours.pro },
+    d1: { label: 'D1 College', maxAttempts: 13, color: challengeTierColours.d1 },
+    scratch: { label: 'Scratch', maxAttempts: 15, color: challengeTierColours.scratch },
+    '5hcp': { label: '5 Handicap', maxAttempts: 17, color: challengeTierColours.handicap5 },
+    '10hcp': { label: '10 Handicap', maxAttempts: 19, color: challengeTierColours.handicap10 },
+    '15hcp': { label: '15 Handicap', maxAttempts: 100, color: challengeTierColours.handicap15 },
 };
 
 // Attempt tiles; the last tile stands for 4 or more attempts

@@ -35,7 +35,7 @@ const AcknowledgeOverlay = ({ visible, title, text, onDismiss, textAlign = 'cent
             <TouchableWithoutFeedback onPress={onDismiss}>
                 <View style={s.overlay}>
                     <TouchableWithoutFeedback>
-                        <View style={[s.container, variant === 'reassurance' && { backgroundColor: '#f5f5f5' }]}>
+                        <View style={[s.container, variant === 'reassurance' && { backgroundColor: colours.reassuranceFill }]}>
                             <Text style={s.title}>{title}</Text>
                             <Text style={[s.stepText, { textAlign }]}>{text}</Text>
                             <TouchableOpacity

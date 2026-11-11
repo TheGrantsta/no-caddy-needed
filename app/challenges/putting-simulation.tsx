@@ -1,3 +1,4 @@
+import { challengeTierColours } from '@/assets/colours';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from 'expo-router';
@@ -28,12 +29,12 @@ const PUTT_OPTIONS = [
 ];
 
 const PERFORMANCE_BANDS: Record<PerformanceBand, { label: string; maxPutts: number; color: string }> = {
-    pro: { label: 'PGA Pro', maxPutts: 29, color: '#00C851' },
-    d1: { label: 'D1 College', maxPutts: 30, color: '#2D5A3D' },
-    scratch: { label: 'Scratch', maxPutts: 31, color: '#4A7C59' },
-    '5hcp': { label: '5 Handicap', maxPutts: 32, color: '#6B9B7F' },
-    '10hcp': { label: '10 Handicap', maxPutts: 34, color: '#8CBBA4' },
-    '15hcp': { label: '15 Handicap', maxPutts: 36, color: '#ADCFC9' },
+    pro: { label: 'PGA Pro', maxPutts: 29, color: challengeTierColours.pro },
+    d1: { label: 'D1 College', maxPutts: 30, color: challengeTierColours.d1 },
+    scratch: { label: 'Scratch', maxPutts: 31, color: challengeTierColours.scratch },
+    '5hcp': { label: '5 Handicap', maxPutts: 32, color: challengeTierColours.handicap5 },
+    '10hcp': { label: '10 Handicap', maxPutts: 34, color: challengeTierColours.handicap10 },
+    '15hcp': { label: '15 Handicap', maxPutts: 36, color: challengeTierColours.handicap15 },
 };
 
 export default function PuttingSimulation() {

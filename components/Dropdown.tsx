@@ -82,7 +82,7 @@ const Dropdown = ({
                                     paddingVertical: 12,
                                     paddingHorizontal: 16,
                                     borderBottomWidth: 1,
-                                    borderBottomColor: colours.divider || '#333',
+                                    borderBottomColor: colours.divider,
                                     backgroundColor: selectedOption === option ? colours.primary : 'transparent',
                                 }}
                             >

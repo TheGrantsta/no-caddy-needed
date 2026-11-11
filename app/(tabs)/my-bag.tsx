@@ -9,7 +9,6 @@ import OnboardingOverlay from '../../components/OnboardingOverlay';
 import { ONBOARDING_STEPS } from '../../assets/onboardingSteps';
 import { useToggle } from '../../hooks/useToggle';
 
-const WEDGE_TILE = '#B5651D';
 
 type BagRowProps = {
   testID: string;
@@ -79,7 +78,7 @@ export default function MyBag() {
           <BagRow
             testID="bag-row-wedge-chart"
             icon="grid-on"
-            tileColour={WEDGE_TILE}
+            tileColour={colours.wedgeTile}
             title="Wedge Chart"
             subtitle="Partial-swing yardages"
             onPress={() => router.push('/play/wedge-chart')}

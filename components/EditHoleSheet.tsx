@@ -74,7 +74,7 @@ export default function EditHoleSheet({
                     <MaterialIcons name="chevron-left" size={24} color={colours.black} />
                     <Text style={s.backText}>Round</Text>
                 </TouchableOpacity>
-                <Text style={s.title}>{`Hole ${holeNumber}`}</Text>
+                <Text style={s.title} numberOfLines={1}>{`Hole ${holeNumber}`}</Text>
                 <View style={s.spacer} />
             </View>
 

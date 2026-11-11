@@ -3560,8 +3560,8 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         title: {
-            color: c.black,
-            fontSize: fontSizes.normal,
+            color: c.text,
+            fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
         sectionLabel: {
@@ -3677,8 +3677,8 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
         },
         title: {
-            color: c.black,
-            fontSize: fontSizes.normal,
+            color: c.text,
+            fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
         spacer: {

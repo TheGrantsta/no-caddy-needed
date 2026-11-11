@@ -40,7 +40,7 @@ export default function EditRoundSheet({ courseName, dateLabel, dateValue, onDat
                 <TouchableOpacity testID="cancel-edit-button" accessibilityRole="button" onPress={onCancel} style={s.cancelPill}>
                     <Text style={s.cancelText}>Cancel</Text>
                 </TouchableOpacity>
-                <Text style={s.title}>Edit round</Text>
+                <Text style={s.title} numberOfLines={1}>Edit round</Text>
                 <TouchableOpacity testID="save-scorecard-button" accessibilityRole="button" onPress={onSave} style={s.savePill}>
                     <Text style={s.saveText}>Save</Text>
                 </TouchableOpacity>

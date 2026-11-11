@@ -40,6 +40,14 @@ const renderSheet = (overrides: object = {}) => {
 };
 
 describe('EditHoleSheet', () => {
+    it('shouldShowTheHoleHeadingLargerOnASingleLineInTheThemeTextColour', () => {
+        const { getByText } = renderSheet();
+        const heading = getByText('Hole 3');
+
+        expect(heading.props.numberOfLines).toBe(1);
+        expect(heading).toHaveStyle({ fontSize: require('../../assets/font-sizes').default.subHeader, color: require('../../assets/colours').default.text });
+    });
+
     it('shouldShowTheRoundBackButtonAndTheHoleTitle', () => {
         const { getByText, getByTestId } = renderSheet();
 

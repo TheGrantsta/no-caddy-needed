@@ -224,7 +224,7 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                     </Text>
                                 </View>
                                 {isUserPlayer && scoreBreakdown && (
-                                    <Text testID="round-score-breakdown" style={s.scoreBreakdownText}>
+                                    <Text testID="round-score-breakdown" style={styles.roundScorecard.scoreBreakdownText}>
                                         Putts: {scoreBreakdown.putts} · 3-Putts: {scoreBreakdown.threePutts} · Penalties: {scoreBreakdown.penalties}
                                     </Text>
                                 )}

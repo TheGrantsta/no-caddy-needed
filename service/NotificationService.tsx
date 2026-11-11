@@ -23,7 +23,7 @@ export const scheduleRoundReminder = async (): Promise<string | null> => {
                 body: 'You started a round over 6 hours ago. Did you forget to end it?',
             },
             trigger: {
-                type: 'timeInterval',
+                type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
                 seconds: 6 * 60 * 60,
             },
         });
@@ -63,7 +63,7 @@ export const schedulePracticeReminder = async (label: string, date: Date): Promi
     try {
         const id = await Notifications.scheduleNotificationAsync({
             content: { title: 'Practice reminder', body: label, data: { type: 'practice-reminder' } },
-            trigger: { type: 'date', date },
+            trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
         });
         return id;
     } catch (e) {
@@ -78,7 +78,7 @@ export const scheduleDailyOverdueReminder = async (label: string): Promise<strin
     try {
         const id = await Notifications.scheduleNotificationAsync({
             content: { title: 'Practice reminder', body: label, data: { type: 'practice-reminder' } },
-            trigger: { type: 'calendar', repeats: true, hour: 7, minute: 0 },
+            trigger: { type: Notifications.SchedulableTriggerInputTypes.CALENDAR, repeats: true, hour: 7, minute: 0 },
         });
         return id;
     } catch (e) {

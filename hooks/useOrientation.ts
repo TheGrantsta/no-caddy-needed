@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Dimensions, ViewStyle } from 'react-native';
+import { Dimensions, ScaledSize, ViewStyle } from 'react-native';
 
 type OrientationResult = {
     isLandscape: boolean;
@@ -11,7 +11,7 @@ export const useOrientation = (): OrientationResult => {
     const [dimensions, setDimensions] = useState(Dimensions.get('window'));
 
     useEffect(() => {
-        const subscription = Dimensions.addEventListener('change', ({ window }) => {
+        const subscription = Dimensions.addEventListener('change', ({ window }: { window: ScaledSize }) => {
             setDimensions(window);
         });
 

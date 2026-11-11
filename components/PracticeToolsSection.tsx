@@ -1,6 +1,6 @@
 import React from 'react';
 import { Animated, Text, View } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, RelativePathString } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
@@ -10,7 +10,7 @@ interface Props {
     slideAnim: Animated.Value;
 }
 
-const TOOLS = [
+const TOOLS: { label: string; href: RelativePathString; icon: string }[] = [
     { label: 'Tempo', href: '../tools/tempo', icon: 'music-note' },
     { label: 'Random', href: '../tools/random', icon: 'casino' },
     { label: 'Reminders', href: '../tools/reminders', icon: 'notifications-none' },

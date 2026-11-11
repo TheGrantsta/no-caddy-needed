@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import * as Haptics from 'expo-haptics';
-import { Animated, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, RefreshControl, ScrollView, type ScrollViewInstance, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -57,7 +57,7 @@ import { useToggle } from '../../hooks/useToggle';
 import { useHoleLifecycle } from '../../hooks/useHoleLifecycle';
 import PhaseStats from '../../components/PhaseStats';
 import RoundSummary from '../../components/RoundSummary';
-import { buildRoundSummary, RoundSummary as RoundSummaryData } from '../../utils/roundSummary';
+import { buildRoundSummary, RoundSummary as RoundSummaryData, SummarySins } from '../../utils/roundSummary';
 import EndRoundSheet from '../../components/EndRoundSheet';
 import EndIncompleteRoundSheet from '../../components/EndIncompleteRoundSheet';
 import BagSheet from '../../components/BagSheet';
@@ -163,7 +163,7 @@ export default function Play() {
     const setShowBadHoleReassurance = lifecycle.setShowBadHoleReassurance;
     const reassuranceMessage = lifecycle.reassuranceMessage;
     const setReassuranceMessage = lifecycle.setReassuranceMessage;
-    const scrollRef = useRef<ScrollView>(null);
+    const scrollRef = useRef<ScrollViewInstance>(null);
     // Stable Animated.Value instances; held in state so they are not read from a ref during render.
     const [contentFadeAnim] = useState(() => new Animated.Value(0));
     const [contentSlideAnim] = useState(() => new Animated.Value(0));
@@ -352,7 +352,7 @@ export default function Play() {
             return {
                 holeNumber,
                 holePar: par,
-                scores: players.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: p.Id in (saved?.scores ?? {}) ? saved!.scores[p.Id] : par })),
+                scores: players.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: par })),
             };
         }
         return {
@@ -569,7 +569,7 @@ export default function Play() {
             }];
         });
         const totals = isScoreOnly ? null : getDeadlySinsForRoundService(roundId);
-        const sins = totals ? {
+        const sins: SummarySins = totals ? {
             TroubleOffTee: totals.TroubleOffTee,
             Penalties: totals.Penalties,
             ThreePutts: totals.ThreePutts,

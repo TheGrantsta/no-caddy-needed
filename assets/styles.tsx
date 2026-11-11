@@ -3480,7 +3480,7 @@ export const createStyles = (c: ThemeColours) => ({
     }),
 
     pgaMarker: {
-        position: 'absolute',
+        position: 'absolute' as const,
         top: 0,
         bottom: 0,
         width: 3,

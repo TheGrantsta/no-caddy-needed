@@ -60,7 +60,7 @@ export default function TabLayout() {
             headerRight: () => <HeaderSettingsButton />,
             tabBarButtonTestID: 'tab-home',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='home' color={color} size={28} />
+              <MaterialIcons name='home' color={color as string} size={28} />
             )
           }}
         />
@@ -70,7 +70,7 @@ export default function TabLayout() {
             title: 'Play',
             tabBarButtonTestID: 'tab-play',
             tabBarIcon: ({ color }) => (
-              <Ionicons name='golf-outline' color={color} size={30} />
+              <Ionicons name='golf-outline' color={color as string} size={30} />
             )
           }}
         />
@@ -80,7 +80,7 @@ export default function TabLayout() {
             title: 'My Bag',
             tabBarButtonTestID: 'tab-my-bag',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='backpack' color={color} size={28} />
+              <MaterialIcons name='backpack' color={color as string} size={28} />
             )
           }}
         />
@@ -91,7 +91,7 @@ export default function TabLayout() {
             tabBarButtonTestID: 'tab-practice',
             tabBarIcon: ({ color }) => (
               <View>
-                <MaterialIcons name='loop' color={color} size={28} />
+                <MaterialIcons name='loop' color={color as string} size={28} />
                 {hasOverdue && (
                   <View
                     testID="practice-overdue-badge"
@@ -116,7 +116,7 @@ export default function TabLayout() {
             title: 'Stats',
             tabBarButtonTestID: 'tab-perform',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name='bar-chart' color={color} size={28} />
+              <MaterialIcons name='bar-chart' color={color as string} size={28} />
             )
           }}
         />

@@ -23,12 +23,9 @@ export default function PhasePutting({
     deadlySinsValues,
     puttingStats,
     puttingFirstPuttError,
-    _puttingSecondPuttError,
     puttingSecondPuttRequiredError,
-    _showPuttingInfo,
     onStatsChange,
     onErrorChange,
-    _onShowInfo,
 }: Props) {
     return (
         <View>

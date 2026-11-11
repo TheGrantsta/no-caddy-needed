@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { RoundHoleScore } from '../service/DbService';
+import { DeadlySinsValues, RoundHoleScore } from '../service/DbService';
 
 export function useScorecardEdit() {
     const [isEditing, setIsEditing] = useState(false);

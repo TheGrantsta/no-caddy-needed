@@ -25,7 +25,7 @@ export default function Reminders() {
         [...list].sort((a, b) => new Date(a.ScheduledFor).getTime() - new Date(b.ScheduledFor).getTime());
 
     const [reminders, setReminders] = useState<PracticeReminder[]>(() => sortBySoonest(getPracticeRemindersService()));
-    const [showAddForm, toggleAddForm] = useToggle(false);
+    const [showAddForm, , setAddForm] = useToggle(false);
     const [formState, resetForm] = useForm({ label: '' });
     const [reminderDate, setReminderDate] = useState(() => {
         const d = new Date();
@@ -70,7 +70,7 @@ export default function Reminders() {
             const notificationId = allowed ? await schedulePracticeReminder(formState.label.value, scheduledDate) : null;
             await addPracticeReminderService(formState.label.value, scheduledDate.toISOString(), notificationId);
             loadReminders();
-            toggleAddForm(false);
+            setAddForm(false);
             resetForm();
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
@@ -100,7 +100,7 @@ export default function Reminders() {
                             testID="add-reminder-button"
                             accessibilityRole="button"
                             accessibilityLabel="Add reminder"
-                            onPress={() => toggleAddForm(true)}
+                            onPress={() => setAddForm(true)}
                             style={styles.pageHeader.circleButton}
                         >
                             <Ionicons name="add" size={34} color={colours.primary} />
@@ -123,7 +123,7 @@ export default function Reminders() {
                     isSaving={isSaving}
                     onSave={handleSaveReminder}
                     onCancel={() => {
-                        toggleAddForm(false);
+                        setAddForm(false);
                         resetForm();
                         const t = new Date();
                         t.setDate(t.getDate() + 1);

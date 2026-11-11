@@ -186,6 +186,8 @@ describe('RootLayout', () => {
         const result = await notificationHandlerConfig.handleNotification();
         expect(result).toEqual({
             shouldShowAlert: true,
+            shouldShowBanner: true,
+            shouldShowList: true,
             shouldPlaySound: false,
             shouldSetBadge: false,
         });

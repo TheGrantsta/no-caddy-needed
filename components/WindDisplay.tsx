@@ -97,7 +97,7 @@ const WindDisplay = ({ directionFrom, speedMph, heading, compact = false, disabl
     };
 
     const wedgeChartData = voiceEnabled && adjustedYards !== null ? getWedgeChartService() : null;
-    const suggestedClubs = wedgeChartData
+    const suggestedClubs = wedgeChartData && adjustedYards !== null
         ? findClubSuggestions(adjustedYards, wedgeChartData)
         : [];
 

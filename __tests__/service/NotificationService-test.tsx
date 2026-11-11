@@ -23,6 +23,7 @@ const mockGetPracticeReminders = getPracticeRemindersService as jest.Mock;
 const mockUpdateNotificationId = updatePracticeReminderNotificationIdService as jest.Mock;
 
 jest.mock('expo-notifications', () => ({
+    SchedulableTriggerInputTypes: { TIME_INTERVAL: 'timeInterval', DATE: 'date', CALENDAR: 'calendar' },
     scheduleNotificationAsync: jest.fn(),
     cancelScheduledNotificationAsync: jest.fn(),
     getAllScheduledNotificationsAsync: jest.fn(),

@@ -1,4 +1,5 @@
-import { View, Text, TouchableOpacity, ReactNode } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import type { ReactNode } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';

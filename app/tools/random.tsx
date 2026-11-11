@@ -109,6 +109,8 @@ export default function Random() {
     }, []);
 
     const handleMicToggle = async () => {
+        // The speech module is unavailable on some builds, so there is nothing to toggle
+        if (!ExpoSpeechRecognitionModule) return;
         if (!micActive) {
             isStoppingRef.current = false;
             const { granted } = await ExpoSpeechRecognitionModule.requestPermissionsAsync();

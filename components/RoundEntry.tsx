@@ -8,9 +8,9 @@ import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 
 interface Props {
-    incompleteRound: { Id: number; CourseName?: string } | null;
+    incompleteRound: { Id: number; CourseName?: string | null } | null;
     onContinueRound: () => Promise<void>;
-    onEndIncompleteRound: () => Promise<void>;
+    onEndIncompleteRound: () => void;
     recentCourseNames: string[];
     onStartRound: (playerNames: string[], courseName: string) => Promise<void>;
     onRemoveCourse: (name: string) => void;

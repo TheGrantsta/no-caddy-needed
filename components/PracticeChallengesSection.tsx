@@ -1,6 +1,6 @@
 import React from 'react';
 import { Animated, Text, View } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, RelativePathString } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
@@ -16,7 +16,7 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
     const colours = useThemeColours();
     const s = styles.practiceCards;
 
-    const challenges = [
+    const challenges: { href: RelativePathString; icon: string; label: string }[] = [
         { href: '../challenges/putting-simulation', icon: 'adjust', label: 'Putting sim' },
         { href: '../challenges/up-and-down', icon: 'flag', label: 'Up-and-down' },
         { href: '../challenges/short-putting-ladder', icon: 'stairs', label: 'Short putting' },

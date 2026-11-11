@@ -938,7 +938,7 @@ export const createStyles = (c: ThemeColours) => ({
         title: {
             color: c.tertiary,
             fontSize: fontSizes.smallText,
-            fontWeight: '600',
+            fontWeight: 'bold',
             textAlign: 'center',
         },
         message: {
@@ -998,7 +998,7 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
             color: c.white,
             fontSize: fontSizes.normal,
-            fontWeight: '700',
+            fontWeight: 'bold',
             textAlign: 'center',
         },
         titleSpacer: {
@@ -2662,6 +2662,7 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.primary,
             fontSize: fontSizes.subHeader,
             textAlign: 'center',
+            fontWeight: 'bold',
         },
         barContainer: {
             flexDirection: 'row',
@@ -2985,6 +2986,7 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.primary,
             fontSize: fontSizes.subHeader,
             marginBottom: 15,
+            fontWeight: 'bold',
         },
         barContainer: {
             flexDirection: 'row',
@@ -4145,7 +4147,7 @@ export const createStyles = (c: ThemeColours) => ({
         title: {
             color: c.black,
             fontSize: fontSizes.subHeader,
-            fontWeight: '700',
+            fontWeight: 'bold',
         },
         subtitle: {
             color: c.tertiary,
@@ -4187,7 +4189,7 @@ export const createStyles = (c: ThemeColours) => ({
         title: {
             color: c.black,
             fontSize: fontSizes.subHeader,
-            fontWeight: '700',
+            fontWeight: 'bold',
             marginTop: 12,
             textAlign: 'center',
         },

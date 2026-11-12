@@ -84,6 +84,13 @@ describe('HomeQuickTools', () => {
         expect(getByText('Wind')).toHaveStyle({ fontSize: require('../../assets/font-sizes').default.smallText });
     });
 
+    it('shouldShowEachToolIconOnTheSameTintedTileAsThePracticeCards', () => {
+        const colours = require('../../assets/colours').default;
+        const { getByTestId } = render(<HomeQuickTools />);
+
+        expect(getByTestId('quick-tool-icon-wind')).toHaveStyle({ width: 48, height: 48, borderRadius: 12, backgroundColor: colours.primary + '1F' });
+    });
+
     it('shouldGiveEveryToolTileTheSameSize', () => {
         const { getAllByTestId } = render(<HomeQuickTools />);
 

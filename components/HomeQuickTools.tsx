@@ -31,7 +31,9 @@ export default function HomeQuickTools() {
                         onPress={() => router.push(tool.href as any)}
                         style={s.toolTile}
                     >
-                        <MaterialIcons name={tool.icon as any} size={26} color={colours.primary} />
+                        <View testID={`quick-tool-icon-${tool.slug}`} style={s.toolIconTile}>
+                            <MaterialIcons name={tool.icon as any} size={26} color={colours.primary} />
+                        </View>
                         <Text style={s.toolLabel}>{tool.label}</Text>
                     </TouchableOpacity>
                 ))}

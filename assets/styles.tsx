@@ -3429,6 +3429,15 @@ export const createStyles = (c: ThemeColours) => ({
             padding: 16,
             justifyContent: 'space-between',
         },
+        // Same tinted icon tile as the practice cards
+        toolIconTile: {
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            backgroundColor: c.primary + '1F',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
         toolLabel: {
             color: c.black,
             fontSize: fontSizes.smallText,

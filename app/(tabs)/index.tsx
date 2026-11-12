@@ -18,9 +18,10 @@ import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 
 // What's new for the current version — shown once per version to existing users.
 const WHATS_NEW = [
-  'Supports "shotgun" start rounds',
-  'Challenges help you focus on short-game skills that matter most',
-  'Smoother transitions between play tracking, practice, and performance review',
+  'Start a round on any hole, so a shotgun start can begin on hole 10 without changing the scorecard',
+  'Put the tools you use most one tap away on Home',
+  'Challenges help you focus on the short-game skills that lower your scores',
+  'Tracking GIRs to track your up-and-down success rate',
 ];
 
 const APP_VERSION = Constants.expoConfig?.version ?? '';

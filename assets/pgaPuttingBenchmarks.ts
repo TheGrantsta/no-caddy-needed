@@ -40,35 +40,3 @@ export const formatPgaRate = (distance: number): string => {
 
 export const getExpectedMakes = (distances: number[]): number =>
     distances.reduce((sum, d) => sum + (PGA_PUTTING_BENCHMARKS[d]?.rate ?? 0) / 100, 0);
-
-// Weighted distance sampling biased toward realistic putting distances (5-20ft most common)
-const DISTANCE_WEIGHTS: Record<number, number> = {
-    1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 8, 7: 9, 8: 10, 9: 10, 10: 10,
-    11: 9, 12: 8, 13: 7, 14: 6, 15: 6, 16: 5, 17: 4, 18: 4, 19: 3, 20: 3,
-    25: 2, 30: 1.5, 35: 1, 40: 0.7, 45: 0.5, 50: 0.3,
-};
-
-const WEIGHTED_DISTANCES = Object.keys(DISTANCE_WEIGHTS)
-    .map(Number)
-    .sort((a, b) => a - b);
-const TOTAL_WEIGHT = WEIGHTED_DISTANCES.reduce((sum, d) => sum + DISTANCE_WEIGHTS[d], 0);
-
-export const pickWeightedDistances = (
-    count: number,
-    rng: () => number = Math.random
-): number[] => {
-    const results: number[] = [];
-    for (let i = 0; i < count; i++) {
-        let target = rng() * TOTAL_WEIGHT;
-        let chosen = WEIGHTED_DISTANCES[WEIGHTED_DISTANCES.length - 1];
-        for (const d of WEIGHTED_DISTANCES) {
-            target -= DISTANCE_WEIGHTS[d];
-            if (target <= 0) {
-                chosen = d;
-                break;
-            }
-        }
-        results.push(chosen);
-    }
-    return results;
-};

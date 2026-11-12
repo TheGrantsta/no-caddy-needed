@@ -4,7 +4,6 @@ import {
     isFirstHoleOfRound,
     isLastHoleOfRound,
     nextHoleInRound,
-    playPositionOf,
     previousHoleInRound,
     sanitiseStartHole,
 } from '../../utils/holeOrder';
@@ -56,10 +55,6 @@ describe('hole order', () => {
             expect(holeAtPlayPosition(10, 17)).toBe(9);
         });
 
-        it('shouldGiveThePlayPositionOfEachHole', () => {
-            expect(playPositionOf(10, 10)).toBe(0);
-            expect(playPositionOf(1, 10)).toBe(9);
-        });
     });
 
     describe('sanitiseStartHole', () => {

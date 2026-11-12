@@ -17,10 +17,6 @@ export const isFirstHoleOfRound = (hole: number, startHole: number): boolean => 
 export const isLastHoleOfRound = (hole: number, startHole: number): boolean =>
     nextHoleInRound(hole, startHole) === startHole;
 
-// Where a hole falls in the round: 0 for the starting hole, 17 for the last
-export const playPositionOf = (hole: number, startHole: number): number =>
-    (hole - startHole + HOLES_PER_ROUND) % HOLES_PER_ROUND;
-
 // The hole at a play position (0 to 17) for a round starting on `startHole`
 export const holeAtPlayPosition = (startHole: number, position: number): number =>
     ((startHole - 1 + position) % HOLES_PER_ROUND) + 1;

@@ -1,7 +1,6 @@
 import {
   applyRoundFilter,
   getAvailableYears,
-  isAllFilter,
   parseRoundFilter,
   resolveRoundFilter,
   serializeRoundFilter,
@@ -62,15 +61,6 @@ describe('roundFilter', () => {
 
     it('shouldReturnEmptyArrayWhenNoRoundsProvided', () => {
       expect(applyRoundFilter([], { year: 2025 })).toEqual([]);
-    });
-  });
-
-  describe('isAllFilter', () => {
-    it('shouldBeTrueOnlyForAll', () => {
-      expect(isAllFilter('all')).toBe(true);
-      expect(isAllFilter(1)).toBe(false);
-      expect(isAllFilter(10)).toBe(false);
-      expect(isAllFilter({ year: 2025 })).toBe(false);
     });
   });
 

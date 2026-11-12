@@ -22,8 +22,6 @@ export const applyRoundFilter = <T extends RoundWithYear>(rounds: T[], filter: R
   return rounds.filter(r => r.Year === filter.year);
 };
 
-export const isAllFilter = (filter: RoundFilter): boolean => filter === 'all';
-
 export const serializeRoundFilter = (filter: RoundFilter): string =>
   typeof filter === 'number' ? String(filter) : filter === 'all' ? 'all' : String(filter.year);
 

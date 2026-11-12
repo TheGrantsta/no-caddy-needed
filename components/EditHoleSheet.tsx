@@ -140,7 +140,7 @@ export default function EditHoleSheet({
                             testID="edit-hole-gir-switch"
                             value={greenInRegulation}
                             onValueChange={onGreenInRegulationChange}
-                            trackColor={{ false: colours.neutralFill, true: colours.primary }}
+                            trackColor={{ false: colours.tertiary, true: colours.primary }}
                             thumbColor={colours.white}
                         />
                     </View>
@@ -157,7 +157,7 @@ export default function EditHoleSheet({
                                     testID={`edit-hole-sin-${row.key}`}
                                     value={sins[row.key]}
                                     onValueChange={value => onSinChange(row.key, value)}
-                                    trackColor={{ false: colours.neutralFill, true: colours.primary }}
+                                    trackColor={{ false: colours.tertiary, true: colours.primary }}
                                     thumbColor={colours.white}
                                 />
                             </View>

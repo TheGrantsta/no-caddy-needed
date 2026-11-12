@@ -1,4 +1,5 @@
 import React from 'react';
+import { Switch } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import SettingsSwitchRow from '../../components/SettingsSwitchRow';
 
@@ -45,5 +46,12 @@ describe('SettingsSwitchRow', () => {
         fireEvent(getByTestId('sounds-switch'), 'valueChange', false);
 
         expect(onValueChange).toHaveBeenCalledWith(false);
+    });
+
+    it('shouldShowTheOffTrackInTheTertiaryColourSoItContrastsWithTheCard', () => {
+        const colours = require('../../assets/colours').default;
+        const { UNSAFE_getByType } = render(<SettingsSwitchRow label="Sounds" value={false} onValueChange={jest.fn()} testID="sounds-switch" />);
+
+        expect(UNSAFE_getByType(Switch).props.trackColor.false).toBe(colours.tertiary);
     });
 });

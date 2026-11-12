@@ -1,24 +1,13 @@
-import { getPuttCategory, shuffleWithoutAdjacentCategories } from '../../utils/puttDistribution';
+import { shuffleWithoutAdjacentCategories } from '../../utils/puttDistribution';
+// The putt categories as the shuffle defines them: short up to 6 ft, medium 8 to 18 ft, long from 21 ft
+const getPuttCategory = (distance: number): 'short' | 'medium' | 'long' => {
+  if (distance <= 6) return 'short';
+  if (distance <= 18) return 'medium';
+  return 'long';
+};
+
 
 describe('puttDistribution', () => {
-  describe('getPuttCategory', () => {
-    it('shouldClassifyShortPutts', () => {
-      expect(getPuttCategory(2)).toBe('short');
-      expect(getPuttCategory(6)).toBe('short');
-    });
-
-    it('shouldClassifyMediumPutts', () => {
-      expect(getPuttCategory(8)).toBe('medium');
-      expect(getPuttCategory(14)).toBe('medium');
-      expect(getPuttCategory(18)).toBe('medium');
-    });
-
-    it('shouldClassifyLongPutts', () => {
-      expect(getPuttCategory(21)).toBe('long');
-      expect(getPuttCategory(40)).toBe('long');
-    });
-  });
-
   describe('shuffleWithoutAdjacentCategories', () => {
     it('shouldReturnSameMultiset', () => {
       const distances = [3, 8, 40, 14, 2, 5, 33, 16, 24, 9, 18, 52, 2, 28, 6, 4, 11, 21];

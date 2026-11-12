@@ -2,7 +2,7 @@ import * as TaskManager from 'expo-task-manager';
 import * as BackgroundTask from 'expo-background-task';
 import { upgradeOverdueRemindersService } from './NotificationService';
 
-export const OVERDUE_REMINDER_TASK = 'OVERDUE_REMINDER_UPGRADE';
+const OVERDUE_REMINDER_TASK = 'OVERDUE_REMINDER_UPGRADE';
 
 TaskManager.defineTask(OVERDUE_REMINDER_TASK, async () => {
     try {

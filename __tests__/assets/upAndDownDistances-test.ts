@@ -1,22 +1,23 @@
-import { UP_AND_DOWN_DISTANCES, shuffleDistances } from '../../assets/upAndDownDistances';
+import { shuffleDistances } from '../../assets/upAndDownDistances';
+
 
 describe('upAndDownDistances', () => {
-    describe('UP_AND_DOWN_DISTANCES', () => {
+    describe('shuffleDistances', () => {
         it('has exactly 9 distances', () => {
-            expect(UP_AND_DOWN_DISTANCES).toHaveLength(9);
+            expect(shuffleDistances()).toHaveLength(9);
         });
 
         it('all distances are positive numbers', () => {
-            expect(UP_AND_DOWN_DISTANCES.every((d: number) => d > 0)).toBe(true);
+            expect(shuffleDistances().every((d: number) => d > 0)).toBe(true);
         });
 
         it('distances are in realistic short-game range (5-20 yards)', () => {
-            const allInRange = UP_AND_DOWN_DISTANCES.every((d: number) => d >= 5 && d <= 20);
+            const allInRange = shuffleDistances().every((d: number) => d >= 5 && d <= 20);
             expect(allInRange).toBe(true);
         });
 
         it('contains the expected distances', () => {
-            expect(UP_AND_DOWN_DISTANCES.sort((a, b) => a - b)).toEqual(
+            expect(shuffleDistances().sort((a, b) => a - b)).toEqual(
                 [5, 6, 7, 9, 10, 12, 15, 18, 20]
             );
         });
@@ -31,7 +32,7 @@ describe('upAndDownDistances', () => {
         it('returns same distances, just reordered', () => {
             const shuffled = shuffleDistances();
             const sorted1 = shuffled.sort((a, b) => a - b);
-            const sorted2 = UP_AND_DOWN_DISTANCES.sort((a, b) => a - b);
+            const sorted2 = shuffleDistances().sort((a, b) => a - b);
             expect(sorted1).toEqual(sorted2);
         });
 

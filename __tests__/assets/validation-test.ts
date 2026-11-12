@@ -1,8 +1,13 @@
 import {
     validateNonEmpty,
     validateNumber,
-    VALIDATION_ERRORS,
 } from '../../assets/validation';
+
+const VALIDATION_ERRORS = {
+    REQUIRED: 'is required',
+    CANNOT_BE_EMPTY: 'cannot be empty',
+    INVALID_FORMAT: 'has invalid format',
+} as const;
 
 describe('Validation utilities', () => {
     describe('validateNonEmpty', () => {

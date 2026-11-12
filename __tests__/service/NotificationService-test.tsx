@@ -4,7 +4,6 @@ import {
     cancelAllRoundReminders,
     schedulePracticeReminder,
     cancelPracticeReminder,
-    scheduleDailyOverdueReminder,
     upgradeOverdueRemindersService,
     ensureNotificationPermission,
 } from '../../service/NotificationService';
@@ -141,39 +140,6 @@ describe('NotificationService', () => {
         });
     });
 
-    describe('scheduleDailyOverdueReminder', () => {
-        it('schedulesRepeatingCalendarNotificationAt7am', async () => {
-            mockSchedule.mockResolvedValue('daily-notif-id-1');
-
-            const result = await scheduleDailyOverdueReminder('Putting practice — reduce 3-putts');
-
-            expect(mockSchedule).toHaveBeenCalledWith({
-                content: {
-                    title: 'Practice reminder',
-                    body: 'Putting practice — reduce 3-putts',
-                    data: { type: 'practice-reminder' },
-                },
-                trigger: {
-                    type: 'calendar',
-                    repeats: true,
-                    hour: 7,
-                    minute: 0,
-                },
-            });
-            expect(result).toBe('daily-notif-id-1');
-        });
-
-        it('returnsNullWhenSchedulingFails', async () => {
-            const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-            mockSchedule.mockRejectedValue(new Error('failed'));
-
-            const result = await scheduleDailyOverdueReminder('Test reminder');
-
-            expect(result).toBeNull();
-            consoleSpy.mockRestore();
-        });
-    });
-
     describe('upgradeOverdueRemindersService', () => {
         const overdueReminder = {
             Id: 1, Label: 'Putting practice', NotificationId: 'old-id',
@@ -268,11 +234,13 @@ describe('NotificationService', () => {
             expect(mockSchedule).not.toHaveBeenCalled();
         });
 
-        it('shouldNotScheduleDailyOverdueReminderWhenNotificationsOff', async () => {
-            const id = await scheduleDailyOverdueReminder('Chip 10 balls');
+        it('shouldNotScheduleTheUpgradedReminderWhenNotificationsOff', async () => {
+            getPracticeRemindersService.mockReturnValue([{ Id: 1, Label: 'Chip 10 balls', ScheduledFor: '2020-01-01T00:00:00.000Z', NotificationId: null }]);
 
-            expect(id).toBeNull();
+            await upgradeOverdueRemindersService();
+
             expect(mockSchedule).not.toHaveBeenCalled();
+            expect(updatePracticeReminderNotificationIdService).toHaveBeenCalledWith(1, null);
         });
     });
 

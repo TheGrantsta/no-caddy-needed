@@ -3,7 +3,7 @@ export interface PgaBenchmark {
     estimated: boolean; // true if extrapolated from PGA tour data
 }
 
-export const PGA_PUTTING_BENCHMARKS: Record<number, PgaBenchmark> = {
+const PGA_PUTTING_BENCHMARKS: Record<number, PgaBenchmark> = {
     1: { rate: 100, estimated: true },
     2: { rate: 99, estimated: true },
     3: { rate: 99, estimated: false },

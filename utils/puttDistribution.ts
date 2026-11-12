@@ -6,7 +6,7 @@ export type PuttCategory = 'short' | 'medium' | 'long';
  * - medium: 8-18 ft
  * - long: ≥ 21 ft
  */
-export const getPuttCategory = (distance: number): PuttCategory => {
+const getPuttCategory = (distance: number): PuttCategory => {
   if (distance <= 6) return 'short';
   if (distance <= 18) return 'medium';
   return 'long';

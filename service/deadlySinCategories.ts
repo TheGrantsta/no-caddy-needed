@@ -11,7 +11,7 @@ export type DeadlySinCategoryTotal = DeadlySinCategory & {
 
 // Canonical order of the seven Deadly Sins. Shared so the bar chart and the
 // swipeable trend pager present (and tie-break) the sins identically.
-export const DEADLY_SIN_CATEGORIES: DeadlySinCategory[] = [
+const DEADLY_SIN_CATEGORIES: DeadlySinCategory[] = [
     { key: 'TroubleOffTee', label: 'Trouble off tee' },
     { key: 'Penalties', label: 'Penalties' },
     { key: 'ThreePutts', label: '3-putts' },

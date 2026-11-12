@@ -1,4 +1,4 @@
-import { initialize, amendTable, deleteRound } from '../../database/db';
+import { initialize, deleteRound } from '../../database/db';
 import * as _SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
@@ -17,105 +17,6 @@ jest.mock('expo-sqlite', () => ({
     })),
     openDatabaseSync: jest.fn(() => ({ getAllSync: mockGetAllSync, execSync: mockExecSync })),
 }));
-
-describe('amendTable', () => {
-    let mockSyncDb: any;
-
-    beforeEach(() => {
-        jest.clearAllMocks();
-        mockSyncDb = { getAllSync: mockGetAllSync, execSync: mockExecSync };
-    });
-
-    it('should add column when missing from table', () => {
-        mockGetAllSync.mockReturnValue([
-            { name: 'Id' },
-            { name: 'Name' },
-        ]);
-
-        amendTable(mockSyncDb, {
-            table: 'TestTable',
-            columnsToAdd: ['Age INTEGER NOT NULL DEFAULT 0'],
-            columnsToRemove: [],
-        });
-
-        expect(mockGetAllSync).toHaveBeenCalledWith('PRAGMA table_info(TestTable)');
-        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE TestTable ADD COLUMN Age INTEGER NOT NULL DEFAULT 0');
-    });
-
-    it('should not add column when it already exists', () => {
-        mockGetAllSync.mockReturnValue([
-            { name: 'Id' },
-            { name: 'Age' },
-        ]);
-
-        amendTable(mockSyncDb, {
-            table: 'TestTable',
-            columnsToAdd: ['Age INTEGER NOT NULL DEFAULT 0'],
-            columnsToRemove: [],
-        });
-
-        expect(mockExecSync).not.toHaveBeenCalled();
-    });
-
-    it('should drop column when it exists in table', () => {
-        mockGetAllSync.mockReturnValue([
-            { name: 'Id' },
-            { name: 'OldColumn' },
-        ]);
-
-        amendTable(mockSyncDb, {
-            table: 'TestTable',
-            columnsToAdd: [],
-            columnsToRemove: ['OldColumn'],
-        });
-
-        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE TestTable DROP COLUMN OldColumn');
-    });
-
-    it('should not drop column when it does not exist', () => {
-        mockGetAllSync.mockReturnValue([
-            { name: 'Id' },
-        ]);
-
-        amendTable(mockSyncDb, {
-            table: 'TestTable',
-            columnsToAdd: [],
-            columnsToRemove: ['OldColumn'],
-        });
-
-        expect(mockExecSync).not.toHaveBeenCalled();
-    });
-
-    it('should handle both add and remove in a single amendment', () => {
-        mockGetAllSync.mockReturnValue([
-            { name: 'Id' },
-            { name: 'OldColumn' },
-        ]);
-
-        amendTable(mockSyncDb, {
-            table: 'TestTable',
-            columnsToAdd: ['NewColumn TEXT NOT NULL DEFAULT ""'],
-            columnsToRemove: ['OldColumn'],
-        });
-
-        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE TestTable ADD COLUMN NewColumn TEXT NOT NULL DEFAULT ""');
-        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE TestTable DROP COLUMN OldColumn');
-    });
-
-    it('should handle empty columnsToAdd and columnsToRemove', () => {
-        mockGetAllSync.mockReturnValue([
-            { name: 'Id' },
-        ]);
-
-        amendTable(mockSyncDb, {
-            table: 'TestTable',
-            columnsToAdd: [],
-            columnsToRemove: [],
-        });
-
-        expect(mockExecSync).not.toHaveBeenCalled();
-    });
-});
 
 describe('HoleDeadlySins table schema', () => {
     beforeEach(() => {

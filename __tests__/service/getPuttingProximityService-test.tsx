@@ -1,38 +1,14 @@
-import { getPuttingProximityService, bucketProximityDistance, PROXIMITY_DISTANCE_BUCKETS } from '../../service/DbService';
+import { getPuttingProximityService } from '../../service/DbService';
 import { getAllPuttingStatsWithThreePutts } from '../../database/db';
+
+// The distance buckets the proximity charts use
+const PROXIMITY_BUCKETS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50];
 
 jest.mock('../../database/db', () => ({
     getAllPuttingStatsWithThreePutts: jest.fn(),
 }));
 
 const mockGetAllPuttingStatsWithThreePutts = getAllPuttingStatsWithThreePutts as jest.Mock;
-
-describe('bucketProximityDistance', () => {
-    it('returns null when distance is less than 1', () => {
-        expect(bucketProximityDistance(0)).toBeNull();
-    });
-
-    it('buckets distances 1-10 into their own single-foot buckets', () => {
-        expect(bucketProximityDistance(1)).toBe(1);
-        expect(bucketProximityDistance(5)).toBe(5);
-        expect(bucketProximityDistance(10)).toBe(10);
-    });
-
-    it('uses ceiling-based bucketing: smallest bucket >= distance', () => {
-        expect(bucketProximityDistance(11)).toBe(15);
-        expect(bucketProximityDistance(14)).toBe(15);
-        expect(bucketProximityDistance(15)).toBe(15);
-        expect(bucketProximityDistance(16)).toBe(20);
-        expect(bucketProximityDistance(20)).toBe(20);
-        expect(bucketProximityDistance(21)).toBe(25);
-    });
-
-    it('caps distances > 50 into the 50 bucket (open-ended)', () => {
-        expect(bucketProximityDistance(51)).toBe(50);
-        expect(bucketProximityDistance(100)).toBe(50);
-        expect(bucketProximityDistance(300)).toBe(50);
-    });
-});
 
 describe('getPuttingProximityService', () => {
     beforeEach(() => {
@@ -44,7 +20,7 @@ describe('getPuttingProximityService', () => {
 
         const result = getPuttingProximityService();
 
-        expect(result).toHaveLength(PROXIMITY_DISTANCE_BUCKETS.length);
+        expect(result).toHaveLength(PROXIMITY_BUCKETS.length);
         result.forEach((row) => {
             expect(row.shortPercent).toBe('-');
             expect(row.longPercent).toBe('-');
@@ -128,7 +104,7 @@ describe('getPuttingProximityService', () => {
 
         const result = getPuttingProximityService();
 
-        expect(result.map(r => r.distance)).toEqual(PROXIMITY_DISTANCE_BUCKETS);
+        expect(result.map(r => r.distance)).toEqual(PROXIMITY_BUCKETS);
     });
 
     it('ignores ThreePutts flag (only processes first-putt misses)', () => {

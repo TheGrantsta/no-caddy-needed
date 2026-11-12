@@ -72,7 +72,7 @@ export const schedulePracticeReminder = async (label: string, date: Date): Promi
     }
 };
 
-export const scheduleDailyOverdueReminder = async (label: string): Promise<string | null> => {
+const scheduleDailyOverdueReminder = async (label: string): Promise<string | null> => {
     if (!remindersAllowed()) return null;
     if (!Notifications) return null;
     try {

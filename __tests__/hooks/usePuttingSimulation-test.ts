@@ -1,6 +1,11 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { usePuttingSimulation } from '../../hooks/usePuttingSimulation';
-import { getPuttCategory } from '../../utils/puttDistribution';
+// The putt categories as the shuffle defines them: short up to 6 ft, medium 8 to 18 ft, long from 21 ft
+const getPuttCategory = (distance: number): 'short' | 'medium' | 'long' => {
+  if (distance <= 6) return 'short';
+  if (distance <= 18) return 'medium';
+  return 'long';
+};
 
 describe('usePuttingSimulation', () => {
     describe('initialization', () => {

@@ -1,4 +1,4 @@
-export const VALIDATION_ERRORS = {
+const VALIDATION_ERRORS = {
     REQUIRED: 'is required',
     CANNOT_BE_EMPTY: 'cannot be empty',
     INVALID_FORMAT: 'has invalid format',

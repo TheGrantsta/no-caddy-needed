@@ -1,4 +1,4 @@
-export const UP_AND_DOWN_DISTANCES = [7, 12, 5, 18, 10, 15, 6, 20, 9];
+const UP_AND_DOWN_DISTANCES = [7, 12, 5, 18, 10, 15, 6, 20, 9];
 
 export function shuffleDistances(rng?: () => number): number[] {
     const distances = [...UP_AND_DOWN_DISTANCES];

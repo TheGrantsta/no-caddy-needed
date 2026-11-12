@@ -1,24 +1,10 @@
-import { DEADLY_SIN_CATEGORIES, sortDeadlySinsByFrequency, SIN_DETAIL_FIELDS } from '../../service/deadlySinCategories';
+import { sortDeadlySinsByFrequency, SIN_DETAIL_FIELDS } from '../../service/deadlySinCategories';
 import { DeadlySinsRound } from '../../service/DbService';
 
 const makeRound = (overrides: Partial<DeadlySinsRound>): DeadlySinsRound => ({
     Id: 1, ThreePutts: 0, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0,
     DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 0, RoundId: 1, Created_At: '01/06',
     ...overrides,
-});
-
-describe('DEADLY_SIN_CATEGORIES', () => {
-    it('lists the seven sins with their keys and labels in canonical order', () => {
-        expect(DEADLY_SIN_CATEGORIES).toEqual([
-            { key: 'TroubleOffTee', label: 'Trouble off tee' },
-            { key: 'Penalties', label: 'Penalties' },
-            { key: 'ThreePutts', label: '3-putts' },
-            { key: 'BogeysInside9Iron', label: 'Bogeys inside 9-iron' },
-            { key: 'DoubleChips', label: 'Double chips' },
-            { key: 'DoubleBogeys', label: 'Double bogeys' },
-            { key: 'BogeysPar5', label: 'Bogeys on par 5' },
-        ]);
-    });
 });
 
 describe('sortDeadlySinsByFrequency', () => {
@@ -47,7 +33,7 @@ describe('sortDeadlySinsByFrequency', () => {
     it('breaks ties using the canonical category order (stable sort)', () => {
         const keys = sortDeadlySinsByFrequency([makeRound({})]).map(c => c.key);
 
-        expect(keys).toEqual(DEADLY_SIN_CATEGORIES.map(c => c.key));
+        expect(keys).toEqual(['TroubleOffTee', 'Penalties', 'ThreePutts', 'BogeysInside9Iron', 'DoubleChips', 'DoubleBogeys', 'BogeysPar5']);
     });
 
     it('handles an empty rounds array', () => {

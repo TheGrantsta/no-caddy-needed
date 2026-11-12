@@ -27,7 +27,7 @@ export type TableAmendment = {
     columnsToRemove: string[];
 };
 
-export const amendTable = (syncDb: SQLite.SQLiteDatabase, amendment: TableAmendment): void => {
+const amendTable = (syncDb: SQLite.SQLiteDatabase, amendment: TableAmendment): void => {
     const tableInfo: { name: string }[] = syncDb.getAllSync(`PRAGMA table_info(${amendment.table})`);
     const existingColumns = new Set(tableInfo.map(col => col.name));
 

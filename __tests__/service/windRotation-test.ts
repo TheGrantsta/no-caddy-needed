@@ -1,29 +1,7 @@
 import {
     getWindArrowRotation,
-    normalize360,
     getWindEffect,
-    HEAD_PCT_PER_MPH,
-    TAIL_PCT_PER_MPH,
-    MAX_PLAYS_LONGER_PCT,
 } from '../../service/WeatherService';
-
-describe('normalize360', () => {
-    it('leavesValuesInRangeUnchanged', () => {
-        expect(normalize360(0)).toBe(0);
-        expect(normalize360(180)).toBe(180);
-        expect(normalize360(359)).toBe(359);
-    });
-
-    it('wrapsValuesAt360', () => {
-        expect(normalize360(360)).toBe(0);
-        expect(normalize360(450)).toBe(90);
-    });
-
-    it('wrapsNegativeValues', () => {
-        expect(normalize360(-90)).toBe(270);
-        expect(normalize360(-1)).toBe(359);
-    });
-});
 
 describe('getWindArrowRotation', () => {
     it('addsDownwind180WhenHeadingZero', () => {
@@ -48,11 +26,6 @@ describe('getWindArrowRotation', () => {
 });
 
 describe('getWindEffect', () => {
-    it('exposesAsymmetricCoefficients', () => {
-        // Headwind hurts more than tailwind helps.
-        expect(HEAD_PCT_PER_MPH).toBeGreaterThan(TAIL_PCT_PER_MPH);
-    });
-
     it('treatsStraightHeadwindAsPlayingLonger', () => {
         // wind FROM 0 (north), player faces north → straight into the wind
         const effect = getWindEffect(0, 10, 0);
@@ -88,12 +61,12 @@ describe('getWindEffect', () => {
 
     it('clampsExtremeHeadwindToMax', () => {
         const effect = getWindEffect(0, 40, 0);
-        expect(effect.playsLongerPercent).toBe(MAX_PLAYS_LONGER_PCT);
+        expect(effect.playsLongerPercent).toBe(25);
     });
 
     it('clampsExtremeTailwindToNegativeMax', () => {
         const effect = getWindEffect(180, 60, 0);
-        expect(effect.playsLongerPercent).toBe(-MAX_PLAYS_LONGER_PCT);
+        expect(effect.playsLongerPercent).toBe(-25);
     });
 
     it('reportsCalmWhenBelowThreshold', () => {

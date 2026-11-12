@@ -2,7 +2,9 @@ import * as TaskManager from 'expo-task-manager';
 import * as BackgroundTask from 'expo-background-task';
 import { upgradeOverdueRemindersService } from '../../service/NotificationService';
 
-import { registerOverdueReminderTask, OVERDUE_REMINDER_TASK } from '../../service/BackgroundTaskService';
+import { registerOverdueReminderTask } from '../../service/BackgroundTaskService';
+
+const OVERDUE_REMINDER_TASK = 'OVERDUE_REMINDER_UPGRADE';
 
 jest.mock('expo-task-manager', () => ({
     defineTask: jest.fn(),

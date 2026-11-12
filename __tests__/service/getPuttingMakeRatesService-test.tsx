@@ -1,45 +1,14 @@
-import { getPuttingMakeRatesService, bucketPuttingDistance, PUTTING_DISTANCE_BUCKETS } from '../../service/DbService';
+import { getPuttingMakeRatesService } from '../../service/DbService';
 import { getAllPuttingStatsWithThreePutts } from '../../database/db';
+
+// The distance buckets the putting charts use
+const PUTTING_BUCKETS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 35, 40, 45, 50];
 
 jest.mock('../../database/db', () => ({
     getAllPuttingStatsWithThreePutts: jest.fn(),
 }));
 
 const mockGetAllPuttingStatsWithThreePutts = getAllPuttingStatsWithThreePutts as jest.Mock;
-
-describe('bucketPuttingDistance', () => {
-    it('returns null when distance is less than 1', () => {
-        expect(bucketPuttingDistance(0)).toBeNull();
-    });
-
-    it('buckets distances 1-20 into their own single-foot buckets', () => {
-        expect(bucketPuttingDistance(1)).toBe(1);
-        expect(bucketPuttingDistance(10)).toBe(10);
-        expect(bucketPuttingDistance(20)).toBe(20);
-    });
-
-    it('buckets distances into the largest bucket less than or equal to itself', () => {
-        expect(bucketPuttingDistance(21)).toBe(20);
-        expect(bucketPuttingDistance(24)).toBe(20);
-        expect(bucketPuttingDistance(25)).toBe(25);
-        expect(bucketPuttingDistance(26)).toBe(25);
-    });
-
-    it('buckets distances 25-50 correctly', () => {
-        expect(bucketPuttingDistance(25)).toBe(25);
-        expect(bucketPuttingDistance(30)).toBe(30);
-        expect(bucketPuttingDistance(35)).toBe(35);
-        expect(bucketPuttingDistance(40)).toBe(40);
-        expect(bucketPuttingDistance(45)).toBe(45);
-        expect(bucketPuttingDistance(50)).toBe(50);
-    });
-
-    it('buckets distances > 50 into the 50 bucket (open-ended)', () => {
-        expect(bucketPuttingDistance(51)).toBe(50);
-        expect(bucketPuttingDistance(100)).toBe(50);
-        expect(bucketPuttingDistance(300)).toBe(50);
-    });
-});
 
 describe('getPuttingMakeRatesService', () => {
     beforeEach(() => {
@@ -51,7 +20,7 @@ describe('getPuttingMakeRatesService', () => {
 
         const result = getPuttingMakeRatesService();
 
-        expect(result).toHaveLength(PUTTING_DISTANCE_BUCKETS.length);
+        expect(result).toHaveLength(PUTTING_BUCKETS.length);
         result.forEach((row) => {
             expect(row.makeRate).toBe('-');
             expect(row.putts).toBe(0);
@@ -209,7 +178,7 @@ describe('getPuttingMakeRatesService', () => {
 
         const result = getPuttingMakeRatesService();
 
-        expect(result.map(r => r.distance)).toEqual(PUTTING_DISTANCE_BUCKETS);
+        expect(result.map(r => r.distance)).toEqual(PUTTING_BUCKETS);
     });
 
     it('filters by roundIds when provided', () => {

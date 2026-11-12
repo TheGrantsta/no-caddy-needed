@@ -27,7 +27,7 @@ export const fetchWind = async (latitude: number, longitude: number): Promise<Wi
 };
 
 /** Normalises an angle in degrees into the [0, 360) range. */
-export const normalize360 = (deg: number): number => ((deg % 360) + 360) % 360;
+const normalize360 = (deg: number): number => ((deg % 360) + 360) % 360;
 
 /**
  * Rotation (degrees) for an arrow that points the way the wind blows TOward,
@@ -39,12 +39,12 @@ export const getWindArrowRotation = (directionFrom: number, heading: number): nu
     normalize360(directionFrom + 180 - heading);
 
 // Rule-of-thumb coefficients: a headwind hurts more than a tailwind helps.
-export const HEAD_PCT_PER_MPH = 1.0;
-export const TAIL_PCT_PER_MPH = 0.5;
+const HEAD_PCT_PER_MPH = 1.0;
+const TAIL_PCT_PER_MPH = 0.5;
 // Cap the adjustment so high winds don't produce absurd figures.
-export const MAX_PLAYS_LONGER_PCT = 25;
+const MAX_PLAYS_LONGER_PCT = 25;
 // Below this speed the effect is treated as negligible.
-export const CALM_MPH = 3;
+const CALM_MPH = 3;
 // Distance adjustments smaller than this (%) are within the model's noise, so
 // they're reported as "about the same" rather than a precise figure.
 // Lateral component below this (mph) isn't worth flagging as a crosswind.

@@ -2,6 +2,29 @@ import { Dimensions, StyleSheet } from 'react-native';
 import colours, { ThemeColours } from './colours';
 import fontSizes, { displaySizes } from './font-sizes';
 
+// Controls that appear in several places: defined once here so every copy stays the same
+const cancelPillStyle = (c: ThemeColours) => ({
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: c.neutralFill,
+    justifyContent: 'center' as const,
+    paddingHorizontal: 18,
+});
+
+const cancelTextStyle = (c: ThemeColours) => ({
+    color: c.black,
+    fontSize: fontSizes.normal,
+});
+
+const circleButtonStyle = (c: ThemeColours) => ({
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: c.backgroundLight,
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
+});
+
 export const createStyles = (c: ThemeColours) => ({
     // Global flat styles — backward-compatible
     ...StyleSheet.create({
@@ -427,14 +450,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 8,
             marginBottom: 16,
         },
-        circleButton: {
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.backgroundLight,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
+        circleButton: circleButtonStyle(c),
         title: {
             color: c.primary,
             fontSize: fontSizes.header,
@@ -450,17 +466,8 @@ export const createStyles = (c: ThemeColours) => ({
             paddingHorizontal: 16,
         },
         // Same Cancel pill as the Edit round sheet
-        cancelPill: {
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.neutralFill,
-            justifyContent: 'center',
-            paddingHorizontal: 18,
-        },
-        cancelText: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-        },
+        cancelPill: cancelPillStyle(c),
+        cancelText: cancelTextStyle(c),
         doneButton: {
             minWidth: 72,
             height: 44,
@@ -517,14 +524,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingHorizontal: 20,
             paddingTop: 8,
         },
-        circleButton: {
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.backgroundLight,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
+        circleButton: circleButtonStyle(c),
         title: {
             color: c.primary,
             fontSize: fontSizes.header,
@@ -658,17 +658,8 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         // Same Cancel pill as the Edit round sheet
-        cancelPill: {
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.neutralFill,
-            justifyContent: 'center',
-            paddingHorizontal: 18,
-        },
-        cancelText: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-        },
+        cancelPill: cancelPillStyle(c),
+        cancelText: cancelTextStyle(c),
         segment: {
             flexDirection: 'row',
             backgroundColor: c.tertiary + '26',
@@ -924,17 +915,8 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         // Same Cancel pill as the Edit round sheet
-        cancelPill: {
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.neutralFill,
-            justifyContent: 'center',
-            paddingHorizontal: 18,
-        },
-        cancelText: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-        },
+        cancelPill: cancelPillStyle(c),
+        cancelText: cancelTextStyle(c),
         title: {
             color: c.primary,
             fontSize: fontSizes.subHeader,
@@ -2023,14 +2005,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 8,
             marginBottom: 16,
         },
-        backButton: {
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.backgroundLight,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
+        backButton: circleButtonStyle(c),
         title: {
             color: c.primary,
             fontSize: fontSizes.header,
@@ -2071,17 +2046,8 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 24,
         },
         // Same Cancel pill as the Edit round sheet
-        cancelPill: {
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.neutralFill,
-            justifyContent: 'center',
-            paddingHorizontal: 18,
-        },
-        cancelText: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-        },
+        cancelPill: cancelPillStyle(c),
+        cancelText: cancelTextStyle(c),
         doneButton: {
             minWidth: 72,
             height: 44,
@@ -2794,14 +2760,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginTop: 8,
             marginBottom: 16,
         },
-        backButton: {
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.backgroundLight,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
+        backButton: circleButtonStyle(c),
         backButtonSpacer: {
             width: 44,
         },
@@ -3572,17 +3531,8 @@ export const createStyles = (c: ThemeColours) => ({
             paddingTop: 12,
             paddingBottom: 8,
         },
-        cancelPill: {
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.neutralFill,
-            justifyContent: 'center',
-            paddingHorizontal: 18,
-        },
-        cancelText: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-        },
+        cancelPill: cancelPillStyle(c),
+        cancelText: cancelTextStyle(c),
         savePill: {
             height: 44,
             borderRadius: 22,
@@ -3701,14 +3651,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingBottom: 8,
         },
         // Circle back button, matching the one in PageHeader
-        backPill: {
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.backgroundLight,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
+        backPill: circleButtonStyle(c),
         title: {
             color: c.primary,
             fontSize: fontSizes.subHeader,
@@ -3973,14 +3916,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingTop: 12,
             paddingBottom: 16,
         },
-        circleButton: {
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.backgroundLight,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
+        circleButton: circleButtonStyle(c),
         headerTitle: {
             flex: 1,
             color: c.primary,
@@ -4531,10 +4467,7 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'center',
             alignItems: 'center',
         },
-        cancelText: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-        },
+        cancelText: cancelTextStyle(c),
         saveButton: {
             flex: 1,
             height: 52,
@@ -4559,14 +4492,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingBottom: 16,
             columnGap: 12,
         },
-        circleButton: {
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.backgroundLight,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
+        circleButton: circleButtonStyle(c),
         titleBlock: {
             flex: 1,
         },

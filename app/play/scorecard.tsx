@@ -398,7 +398,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                             accessibilityRole="button"
                             accessibilityLabel="Back"
                             onPress={() => router.back()}
-                            style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colours.backgroundLight, justifyContent: 'center', alignItems: 'center' }}
+                            style={styles.pageHeader.circleButton}
                         >
                             <MaterialIcons name="chevron-left" size={28} color={colours.black} />
                         </TouchableOpacity>

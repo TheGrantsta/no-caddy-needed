@@ -7,7 +7,7 @@ import CtaButton from './CtaButton';
 import AppSwitch from './AppSwitch';
 
 type Props = {
-    onEndRound: (values: DeadlySinsValues) => void;
+    onEndRound?: (values: DeadlySinsValues) => void;
     onRoundStateChange?: (active: boolean) => void;
     roundControlled?: boolean;
     onValuesChange?: (values: DeadlySinsValues) => void;
@@ -108,7 +108,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
     };
 
     const handleEndRound = () => {
-        onEndRound(values);
+        onEndRound?.(values);
         setValues(INITIAL_SINS);
         setRoundActive(false);
         onRoundStateChange?.(false);

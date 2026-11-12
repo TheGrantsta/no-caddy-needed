@@ -79,7 +79,6 @@ export default function PhaseStats({
         <DeadlySinsTally
             holePar={holePar}
             resetKey={holeNumber}
-            onEndRound={() => { }}
             roundControlled={true}
             onValuesChange={onSinsChange}
             initialValues={sins}

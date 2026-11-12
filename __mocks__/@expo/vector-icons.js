@@ -7,10 +7,8 @@ const MockIcon = ({ name, size }) => (
 
 export const MaterialIcons = MockIcon;
 export const Ionicons = MockIcon;
-export const FontAwesome = MockIcon;
 
 export default {
     MaterialIcons,
     Ionicons,
-    FontAwesome,
 };

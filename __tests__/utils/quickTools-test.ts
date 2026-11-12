@@ -1,4 +1,6 @@
 import {
+    CHALLENGE_OPTIONS,
+    TOOL_OPTIONS,
     DEFAULT_QUICK_TOOLS,
     QUICK_TOOL_COUNT,
     QUICK_TOOL_OPTIONS,
@@ -42,6 +44,21 @@ describe('quick tool catalogue', () => {
 
     it('shouldDefaultToWindTempoAndRandom', () => {
         expect(DEFAULT_QUICK_TOOLS).toEqual(['wind', 'tempo', 'random']);
+    });
+});
+
+describe('practice card lists', () => {
+    it('shouldListTheFourChallengesInPracticeOrder', () => {
+        expect(CHALLENGE_OPTIONS.map(option => option.slug)).toEqual([
+            'putting-simulation',
+            'up-and-down',
+            'short-putting-ladder',
+            'lag-putting',
+        ]);
+    });
+
+    it('shouldListTheFourToolsInTheirSharedOrder', () => {
+        expect(TOOL_OPTIONS.map(option => option.slug)).toEqual(['tempo', 'random', 'reminders', 'wind']);
     });
 });
 

@@ -272,9 +272,6 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             }
             if (edit.sinsHoleNumber !== null && edit.puttingStats) {
                 await insertPuttingStatsService(Number(roundId), edit.sinsHoleNumber, edit.puttingStats.firstPutt ?? 0, edit.puttingStats.secondPutt ?? 0, edit.puttingStats.secondIsLong, undefined, undefined, edit.puttingStats.greenInRegulation);
-            } else if (edit.sinsHoleNumber !== null && edit.hadPriorPuttingStats && !edit.puttingStats) {
-                // Putting stats were cleared - they're already deleted by insertPuttingStatsService when stats exist
-                // No-op here; just document the behavior
             }
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');
             if (editedDate) {

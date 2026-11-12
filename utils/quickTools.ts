@@ -1,10 +1,12 @@
 // The challenges and tools that can be shown as Quick tools on the Home screen.
 // Each option is named once here, so the Settings picker, the Home tiles and the saved setting agree.
+import type { Href } from 'expo-router';
+
 export type QuickToolOption = {
     slug: string;
     label: string;
     icon: string;
-    href: string;
+    href: Href;
     group: 'Challenges' | 'Tools';
 };
 
@@ -18,6 +20,10 @@ export const QUICK_TOOL_OPTIONS: QuickToolOption[] = [
     { slug: 'reminders', label: 'Reminders', icon: 'notifications-none', href: '/tools/reminders', group: 'Tools' },
     { slug: 'wind', label: 'Wind', icon: 'air', href: '/tools/wind', group: 'Tools' },
 ];
+
+// The practice cards show these two lists, in this order
+export const CHALLENGE_OPTIONS = QUICK_TOOL_OPTIONS.filter(option => option.group === 'Challenges');
+export const TOOL_OPTIONS = QUICK_TOOL_OPTIONS.filter(option => option.group === 'Tools');
 
 // Exactly three Quick tools are shown on Home
 export const QUICK_TOOL_COUNT = 3;

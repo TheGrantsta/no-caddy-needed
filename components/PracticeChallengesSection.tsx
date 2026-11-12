@@ -1,10 +1,11 @@
 import React from 'react';
 import { Animated, Text, View } from 'react-native';
-import { Link, RelativePathString } from 'expo-router';
+import { Link } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import ExpandableInfoCard from './ExpandableInfoCard';
+import { CHALLENGE_OPTIONS } from '@/utils/quickTools';
 
 interface Props {
     fadeAnim: Animated.Value;
@@ -16,22 +17,15 @@ export default function PracticeChallengesSection({ fadeAnim, slideAnim }: Props
     const colours = useThemeColours();
     const s = styles.practiceCards;
 
-    const challenges: { href: RelativePathString; icon: string; label: string }[] = [
-        { href: '../challenges/putting-simulation', icon: 'adjust', label: 'Putting sim' },
-        { href: '../challenges/up-and-down', icon: 'flag', label: 'Up-and-down' },
-        { href: '../challenges/short-putting-ladder', icon: 'stairs', label: 'Short putting' },
-        { href: '../challenges/lag-putting', icon: 'trending-up', label: 'Lag putting' },
-    ];
-
     const points: string[] = ['Purpose: practise with intent', 'Variety: keep it interesting & challenging', 'Accountability: track progress & measure your performance', 'Pressure: practise under stress'];
 
     return (
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideAnim }] }}>
             <View style={s.grid}>
-                {challenges.map((challenge) => {
-                    const slug = challenge.href.split('/').pop() ?? '';
+                {CHALLENGE_OPTIONS.map((challenge) => {
+                    const slug = challenge.slug;
                     return (
-                        <View key={challenge.label} testID={`challenge-slot-${slug}`} style={s.cardSlot}>
+                        <View key={challenge.slug} testID={`challenge-slot-${slug}`} style={s.cardSlot}>
                         <Link
                             href={challenge.href}
                             testID={`challenge-link-${slug}`}

@@ -436,7 +436,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
         },
@@ -526,7 +526,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
         },
@@ -653,7 +653,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 16,
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
@@ -812,7 +812,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 16,
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
         },
@@ -936,7 +936,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -2032,7 +2032,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
         },
@@ -2454,7 +2454,7 @@ export const createStyles = (c: ThemeColours) => ({
             borderColor: c.primary,
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -2661,7 +2661,7 @@ export const createStyles = (c: ThemeColours) => ({
             paddingBottom: 0,
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             textAlign: 'center',
             fontWeight: 'bold',
@@ -2806,7 +2806,7 @@ export const createStyles = (c: ThemeColours) => ({
             width: 44,
         },
         pageTitle: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -2985,7 +2985,7 @@ export const createStyles = (c: ThemeColours) => ({
             marginBottom: 10,
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             marginBottom: 15,
             fontWeight: 'bold',
@@ -3100,7 +3100,7 @@ export const createStyles = (c: ThemeColours) => ({
         title: {
             fontSize: fontSizes.header,
             fontWeight: 'bold',
-            color: c.black,
+            color: c.primary,
             marginBottom: 16,
         },
         message: {
@@ -3587,7 +3587,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
@@ -3701,7 +3701,7 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
@@ -3974,7 +3974,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
         headerTitle: {
             flex: 1,
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -4147,7 +4147,7 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
@@ -4189,7 +4189,7 @@ export const createStyles = (c: ThemeColours) => ({
             elevation: 8,
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
             marginTop: 12,
@@ -4562,7 +4562,7 @@ export const createStyles = (c: ThemeColours) => ({
             flex: 1,
         },
         title: {
-            color: c.black,
+            color: c.primary,
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'left',

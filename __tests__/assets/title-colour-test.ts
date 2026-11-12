@@ -1,7 +1,7 @@
 import styles from '../../assets/styles';
 import colours from '../../assets/colours';
 
-// Titles, headers and page titles use the black primary-text colour.
+// Titles, headers and page titles use the primary brand colour.
 // The simulation title is the exception: it sits on the dark green bar, so it stays white.
 const TITLE_KEYS = new Set(['title', 'headerTitle', 'pageTitle']);
 const ON_DARK_BAR = new Set(['simulation.title']);
@@ -16,10 +16,10 @@ describe('title colour', () => {
                 .map(([key, style]) => ({ name: `${block}.${key}`, style }))
         );
 
-    it('shouldUseTheBlackPrimaryTextColourForEveryTitleOffTheDarkBar', () => {
+    it('shouldUseThePrimaryColourForEveryTitleOffTheDarkBar', () => {
         const offenders = titles()
             .filter(({ name }) => !ON_DARK_BAR.has(name))
-            .filter(({ style }) => style.color !== colours.black)
+            .filter(({ style }) => style.color !== colours.primary)
             .map(({ name, style }) => `${name} (${String(style.color)})`);
 
         expect(offenders).toEqual([]);

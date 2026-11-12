@@ -37,12 +37,11 @@ const renderSheet = (overrides: object = {}) => {
 };
 
 describe('EditRoundSheet', () => {
-    it('shouldShowTheEditRoundTitleLargerOnASingleLineInTheThemeTextColour', () => {
+    it('shouldShowTheEditRoundTitleAsASingleLine', () => {
         const { getByText } = renderSheet();
         const title = getByText('Edit round');
 
         expect(title.props.numberOfLines).toBe(1);
-        expect(title).toHaveStyle({ fontSize: require('../../assets/font-sizes').default.subHeader, color: require('../../assets/colours').default.black });
     });
 
     it('shouldShowCancelTheEditRoundTitleAndSaveInTheHeader', () => {

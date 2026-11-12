@@ -129,4 +129,16 @@ describe('My Bag screen', () => {
             expect(queryByTestId('onboarding-overlay')).toBeNull();
         });
     });
+
+    it('shouldUseARulerIconForDistances', () => {
+        const { UNSAFE_getByProps } = render(<MyBag />);
+
+        expect(UNSAFE_getByProps({ name: 'straighten' })).toBeTruthy();
+    });
+
+    it('shouldUseATableIconForTheWedgeChart', () => {
+        const { UNSAFE_getByProps } = render(<MyBag />);
+
+        expect(UNSAFE_getByProps({ name: 'table-rows' })).toBeTruthy();
+    });
 });

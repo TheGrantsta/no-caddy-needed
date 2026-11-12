@@ -69,7 +69,7 @@ export default function MyBag() {
         <View style={s.card}>
           <BagRow
             testID="bag-row-distances"
-            icon="bar-chart"
+            icon="straighten"
             tileColour={colours.primary}
             title="Distances"
             subtitle="Carry and total for every club"
@@ -77,7 +77,7 @@ export default function MyBag() {
           />
           <BagRow
             testID="bag-row-wedge-chart"
-            icon="grid-on"
+            icon="table-rows"
             tileColour={colours.wedgeTile}
             title="Wedge Chart"
             subtitle="Partial-swing yardages"

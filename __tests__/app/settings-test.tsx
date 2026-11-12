@@ -12,10 +12,6 @@ jest.mock('../../context/ThemeContext', () => ({
     }),
 }));
 
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 jest.mock('../../service/DbService', () => ({
     getSettingsService: jest.fn(() => ({ notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false, quickTools: ['wind', 'tempo', 'random'] })),
     saveSettingsService: jest.fn(() => Promise.resolve(true)),

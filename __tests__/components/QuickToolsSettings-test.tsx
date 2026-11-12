@@ -2,14 +2,6 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import QuickToolsSettings from '../../components/QuickToolsSettings';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const renderSettings = (quickTools = ['wind', 'tempo', 'random']) => {
     const onQuickToolsChange = jest.fn();
     const utils = render(<QuickToolsSettings quickTools={quickTools} onQuickToolsChange={onQuickToolsChange} />);

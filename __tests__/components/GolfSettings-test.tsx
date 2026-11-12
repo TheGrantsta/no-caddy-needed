@@ -7,10 +7,6 @@ jest.mock('../../context/ThemeContext', () => ({
     useTheme: () => ({ theme: 'dark', colours: require('../../assets/colours').default }),
 }));
 
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const settings = {
     skipStatsFlowEnabled: false,
     badHoleReassuranceEnabled: true,

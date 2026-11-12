@@ -4,14 +4,6 @@ import { fireEvent, render } from '@testing-library/react-native';
 import HomeScreen from '../../../app/(tabs)/index';
 import { getSettingsService, saveSettingsService } from '../../../service/DbService';
 
-jest.mock('../../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../../assets/colours').default,
-}));
-
-jest.mock('../../../hooks/useStyles', () => ({
-    useStyles: () => require('../../../assets/styles').default,
-}));
-
 jest.mock('../../../hooks/useOrientation', () => ({
     useOrientation: () => ({ landscapePadding: {} }),
 }));

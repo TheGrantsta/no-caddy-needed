@@ -2,14 +2,6 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import SettingsSegmentedControl from '../../components/SettingsSegmentedControl';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const options = [
     { value: 'yards', label: 'Yards' },
     { value: 'metres', label: 'Metres' },

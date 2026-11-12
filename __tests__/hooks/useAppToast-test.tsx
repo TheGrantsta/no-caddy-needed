@@ -6,10 +6,6 @@ jest.mock('react-native-toast-notifications', () => ({
     useToast: jest.fn(),
 }));
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
 const mockUseToast = useToast as jest.Mock;
 
 describe('useAppToast', () => {

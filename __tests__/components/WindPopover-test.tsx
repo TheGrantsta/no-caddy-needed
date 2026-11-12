@@ -4,14 +4,6 @@ import WindPopover from '../../components/WindPopover';
 import { getWindEffect } from '../../service/WeatherService';
 import { describeWindEffect } from '../../utils/windEffectDescription';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const description = describeWindEffect(getWindEffect(270, 6, 0));
 
 describe('WindPopover', () => {

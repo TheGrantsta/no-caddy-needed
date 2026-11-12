@@ -3,6 +3,9 @@ import { Text } from 'react-native';
 import { render } from '@testing-library/react-native';
 import ScreenWrapper from '../../components/ScreenWrapper';
 
+// This test needs the real styles hook, reading the theme mocked below
+jest.unmock('../../hooks/useStyles');
+
 jest.mock('../../context/ThemeContext', () => ({
     useThemeColours: () => ({ background: '#25292e' }),
 }));

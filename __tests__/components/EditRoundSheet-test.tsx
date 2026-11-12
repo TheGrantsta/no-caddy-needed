@@ -4,14 +4,6 @@ import EditRoundSheet from '../../components/EditRoundSheet';
 
 jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const holes = [
     { holeNumber: 1, par: 4, score: 4, putts: 1, sins: 1 },
     { holeNumber: 2, par: 4, score: 4, putts: 2, sins: 0 },

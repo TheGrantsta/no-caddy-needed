@@ -2,14 +2,6 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { NextStepButton, PreviousStepButton } from '../../components/StepButtons';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const colours = require('../../assets/colours').default;
 
 describe('PreviousStepButton', () => {

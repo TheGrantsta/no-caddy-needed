@@ -2,14 +2,6 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import BagSheet from '../../components/BagSheet';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const clubs = [
     { Id: 1, Club: '6 Iron', CarryDistance: 165, TotalDistance: 175, SortOrder: 1 },
     { Id: 2, Club: 'Pitching Wedge', CarryDistance: 120, TotalDistance: 128, SortOrder: 2 },

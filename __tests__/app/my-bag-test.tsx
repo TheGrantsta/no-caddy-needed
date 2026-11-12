@@ -5,14 +5,6 @@ import { ONBOARDING_STEPS } from '../../assets/onboardingSteps';
 
 const mockPush = jest.fn();
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
     return {

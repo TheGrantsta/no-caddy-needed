@@ -2,14 +2,6 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import RoundScoreTable from '../../components/RoundScoreTable';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const holes = [
     { holeNumber: 1, par: 4, score: 4 },
     { holeNumber: 2, par: 3, score: 5 },

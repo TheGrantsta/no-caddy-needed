@@ -2,14 +2,6 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { HoleScoreHeader } from '../../components/HoleScoreInput';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const renderHeader = (overrides: object = {}) => {
     const handlers = { onParChange: jest.fn(), onEndRound: jest.fn(), onOpenBag: jest.fn() };
     const utils = render(

@@ -2,10 +2,6 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import StatsEmptyState from '../../components/StatsEmptyState';
 
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 describe('StatsEmptyState', () => {
     it('shouldExplainHowToSeeStatsAndThatScoreOnlyRoundsAreExcluded', () => {
         const { getByText } = render(<StatsEmptyState onStartRound={jest.fn()} />);

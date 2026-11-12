@@ -3,14 +3,6 @@ import { StyleSheet } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
 describe('AcknowledgeOverlay', () => {
     it('rendersNothingWhenNotVisible', () => {
         const { queryByTestId } = render(

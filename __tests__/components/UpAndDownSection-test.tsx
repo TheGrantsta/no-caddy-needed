@@ -4,10 +4,6 @@ import { Animated } from 'react-native';
 import UpAndDownSection from '../../components/UpAndDownSection';
 import { getUpAndDownRateService } from '../../service/DbService';
 
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 jest.mock('../../service/DbService', () => ({
     getUpAndDownRateService: jest.fn(() => ({ rate: '-', upAndDowns: 0, attempts: 0 })),
 }));

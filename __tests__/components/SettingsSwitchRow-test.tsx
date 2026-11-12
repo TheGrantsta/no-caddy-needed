@@ -3,14 +3,6 @@ import { Switch } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import SettingsSwitchRow from '../../components/SettingsSwitchRow';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 describe('SettingsSwitchRow', () => {
     it('shouldShowTheLabelBesideASwitch', () => {
         const { getByText, getByTestId } = render(

@@ -2,14 +2,6 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import EndIncompleteRoundSheet from '../../components/EndIncompleteRoundSheet';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 describe('EndIncompleteRoundSheet', () => {
     it('shouldAskToEndTheRoundAsAnOverlay', () => {
         const { getByTestId, getByText } = render(

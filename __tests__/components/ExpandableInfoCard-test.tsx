@@ -9,14 +9,6 @@ jest.mock('@expo/vector-icons', () => ({
     },
 }));
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const points = ['First point', 'Second point'];
 
 describe('ExpandableInfoCard', () => {

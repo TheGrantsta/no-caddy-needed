@@ -4,14 +4,6 @@ import { render } from '@testing-library/react-native';
 import PuttingProximityChart from '../../components/PuttingProximityChart';
 import { PuttingProximity } from '../../service/DbService';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 describe('PuttingProximityChart', () => {
     it('renders without crashing', () => {
         const data: PuttingProximity[] = [

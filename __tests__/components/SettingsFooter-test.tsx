@@ -7,14 +7,6 @@ jest.mock('expo-constants', () => ({
     default: { expoConfig: { version: '1.2.3' } },
 }));
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 jest.mock('@expo/vector-icons', () => {
     const { Text } = require('react-native');
     return { MaterialIcons: ({ name }: { name: string }) => <Text>{name}</Text> };

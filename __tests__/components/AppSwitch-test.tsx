@@ -3,10 +3,6 @@ import { Switch } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import AppSwitch from '../../components/AppSwitch';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
 describe('AppSwitch', () => {
     it('shouldShowAnOffTrackInTheTertiaryColourAndAnOnTrackInPrimary', () => {
         const colours = require('../../assets/colours').default;

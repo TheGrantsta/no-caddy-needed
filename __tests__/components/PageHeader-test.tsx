@@ -3,14 +3,6 @@ import { Text } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import PageHeader from '../../components/PageHeader';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 jest.mock('@expo/vector-icons', () => {
     const { Text: IconText } = require('react-native');
     return {

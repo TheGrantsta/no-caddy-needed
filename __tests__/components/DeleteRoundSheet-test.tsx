@@ -2,14 +2,6 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import DeleteRoundSheet from '../../components/DeleteRoundSheet';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 describe('DeleteRoundSheet', () => {
     it('shouldAskToDeleteThisRoundAndExplainItsEffect', () => {
         const { getByText } = render(<DeleteRoundSheet visible onConfirm={jest.fn()} onCancel={jest.fn()} />);

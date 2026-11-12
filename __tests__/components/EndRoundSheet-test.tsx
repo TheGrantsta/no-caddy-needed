@@ -2,14 +2,6 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import EndRoundSheet from '../../components/EndRoundSheet';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const renderSheet = (overrides: Partial<React.ComponentProps<typeof EndRoundSheet>> = {}) => {
     const props = {
         visible: true,

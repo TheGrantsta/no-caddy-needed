@@ -3,14 +3,6 @@ import { Text } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import EditHoleSheet from '../../components/EditHoleSheet';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const sins = { troubleOffTee: false, penalties: false, threePutts: true, bogeysInside9Iron: false, doubleChips: false, doubleBogeys: false, bogeysPar5: false };
 
 const renderSheet = (overrides: object = {}) => {

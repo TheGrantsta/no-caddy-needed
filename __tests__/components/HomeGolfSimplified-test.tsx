@@ -2,14 +2,6 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import HomeGolfSimplified from '../../components/HomeGolfSimplified';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 jest.mock('@expo/vector-icons', () => {
     const { Text } = require('react-native');
     return { MaterialIcons: ({ name }: { name: string }) => <Text>{name}</Text> };

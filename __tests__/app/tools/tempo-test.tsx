@@ -31,10 +31,6 @@ jest.mock('../../../context/ThemeContext', () => ({
     }),
 }));
 
-jest.mock('../../../hooks/useStyles', () => ({
-    useStyles: () => require('../../../assets/styles').default,
-}));
-
 jest.mock('react-native-gesture-handler', () => {
     const GestureHandler = jest.requireActual('react-native-gesture-handler');
     return {

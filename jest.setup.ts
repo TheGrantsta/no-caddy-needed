@@ -12,6 +12,17 @@ console.error = (...args: any[]) => {
     originalError(...args);
 };
 
+// The theme and styles are the same in every test, so they are mocked once here
+jest.mock('./context/ThemeContext', () => ({
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    useThemeColours: () => require('./assets/colours').default,
+}));
+
+jest.mock('./hooks/useStyles', () => ({
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    useStyles: () => require('./assets/styles').default,
+}));
+
 jest.mock('firebase/app', () => ({
     initializeApp: jest.fn(() => 'MOCK_APP'),
     getApps: jest.fn(() => []),

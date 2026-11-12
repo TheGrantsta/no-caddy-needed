@@ -2,10 +2,6 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import OnboardingOverlay from '../../components/OnboardingOverlay';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
 describe('OnboardingOverlay', () => {
     const mockOnDismiss = jest.fn();
     const defaultProps = {

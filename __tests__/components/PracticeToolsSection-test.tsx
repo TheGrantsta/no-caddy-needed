@@ -10,14 +10,6 @@ jest.mock('expo-router', () => ({
     },
 }));
 
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
 jest.mock('@expo/vector-icons', () => {
     const { Text } = require('react-native');
     return {

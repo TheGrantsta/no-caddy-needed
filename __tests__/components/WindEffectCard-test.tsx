@@ -3,14 +3,6 @@ import { render } from '@testing-library/react-native';
 import WindEffectCard from '../../components/WindEffectCard';
 import type { WindEffect } from '../../service/WeatherService';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 jest.mock('@expo/vector-icons', () => {
     const { Text } = require('react-native');
     return {

@@ -3,14 +3,6 @@ import { Text } from 'react-native';
 import { render } from '@testing-library/react-native';
 import SettingsSection from '../../components/SettingsSection';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 describe('SettingsSection', () => {
     it('shouldShowTheUppercaseTitleAboveItsCard', () => {
         const { getByText } = render(<SettingsSection title="GOLF"><Text>Row</Text></SettingsSection>);

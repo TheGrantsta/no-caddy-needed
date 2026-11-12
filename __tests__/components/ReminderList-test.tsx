@@ -2,14 +2,6 @@ import React from 'react';
 import { render, within } from '@testing-library/react-native';
 import ReminderList from '../../components/ReminderList';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 jest.mock('react-native-gesture-handler/ReanimatedSwipeable', () => {
     const { View } = require('react-native');
     const MockSwipeable = ({ children }: any) => <View>{children}</View>;

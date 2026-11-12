@@ -3,10 +3,6 @@ import { render } from '@testing-library/react-native';
 import { Animated } from 'react-native';
 import PuttingStatsSection from '../../components/PuttingStatsSection';
 
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 jest.mock('../../service/DbService', () => ({
     getPuttingMakeRatesService: jest.fn(() => [
         { distance: 4, makeRate: '75%', putts: 4 },

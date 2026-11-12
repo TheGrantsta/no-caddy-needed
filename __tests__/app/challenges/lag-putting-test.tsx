@@ -15,14 +15,6 @@ jest.mock('react-native-gesture-handler', () => ({
     GestureHandlerRootView: ({ children }: any) => children,
 }));
 
-jest.mock('../../../hooks/useStyles', () => ({
-    useStyles: () => require('../../../assets/styles').default,
-}));
-
-jest.mock('../../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../../assets/colours').default,
-}));
-
 jest.mock('../../../hooks/useAppToast', () => ({
     useAppToast: () => ({
         showResult: jest.fn(),

@@ -2,14 +2,6 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import ClubDistanceReadList from '../../components/ClubDistanceReadList';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const distances = [
     { Id: 1, Club: 'Driver', CarryDistance: 230, TotalDistance: 250, SortOrder: 1 },
     { Id: 2, Club: '5 Iron', CarryDistance: 175, TotalDistance: 182, SortOrder: 2 },

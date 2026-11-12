@@ -11,14 +11,6 @@ jest.mock('expo-router', () => ({
     useRouter: () => ({ push: mockRouterPush }),
 }));
 
-jest.mock('../../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../../assets/colours').default,
-}));
-
-jest.mock('../../../hooks/useStyles', () => ({
-    useStyles: () => require('../../../assets/styles').default,
-}));
-
 jest.mock('../../../hooks/useOrientation', () => ({
     useOrientation: () => ({ landscapePadding: {} }),
 }));

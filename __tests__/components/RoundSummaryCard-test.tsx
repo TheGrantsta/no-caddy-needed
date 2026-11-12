@@ -2,14 +2,6 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import RoundSummaryCard from '../../components/RoundSummaryCard';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const base = { holesPlayed: 5, totalScore: 20, totalPar: 20, putts: 7, threePutts: 1, penalties: 1 };
 
 describe('RoundSummaryCard', () => {

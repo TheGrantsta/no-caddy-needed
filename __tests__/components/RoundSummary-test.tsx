@@ -3,14 +3,6 @@ import { fireEvent, render } from '@testing-library/react-native';
 import RoundSummary from '../../components/RoundSummary';
 import { buildRoundSummary } from '../../utils/roundSummary';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const summaryFor = (isScoreOnly: boolean) => buildRoundSummary({
     courseName: 'Stats Flow Test Course',
     players: [{ Id: 1, PlayerName: 'You' }, { Id: 2, PlayerName: 'James M' }],

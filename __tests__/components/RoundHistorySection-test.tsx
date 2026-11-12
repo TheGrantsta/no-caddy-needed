@@ -10,14 +10,6 @@ jest.mock('expo-router', () => ({
     useRouter: () => ({ push: mockPush }),
 }));
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const makeRound = (overrides: Partial<Round> = {}): Round => ({
     Id: 1,
     TotalScore: 0,

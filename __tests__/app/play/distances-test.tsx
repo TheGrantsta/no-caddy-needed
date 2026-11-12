@@ -15,10 +15,6 @@ jest.mock('../../../context/ThemeContext', () => ({
     }),
 }));
 
-jest.mock('../../../hooks/useStyles', () => ({
-    useStyles: () => require('../../../assets/styles').default,
-}));
-
 jest.mock('../../../service/DbService', () => ({
     getClubDistancesService: jest.fn(),
     saveClubDistancesService: jest.fn(),

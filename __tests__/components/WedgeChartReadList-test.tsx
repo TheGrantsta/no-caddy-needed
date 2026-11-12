@@ -2,14 +2,6 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import WedgeChartReadList from '../../components/WedgeChartReadList';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const data = {
     distanceNames: ['½', '¾', 'Full'],
     clubs: [

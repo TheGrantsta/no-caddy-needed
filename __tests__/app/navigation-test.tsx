@@ -18,10 +18,6 @@ const mockPush = jest.fn();
 const mockNavigate = jest.fn();
 
 
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 jest.mock('../../hooks/useOrientation', () => ({
     useOrientation: () => ({
         isLandscape: false,

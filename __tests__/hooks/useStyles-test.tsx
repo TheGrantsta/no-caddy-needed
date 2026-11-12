@@ -5,10 +5,6 @@ import { createStyles } from '../../assets/styles';
 import { darkGreen } from '../../assets/colours';
 import { useStyles } from '../../hooks/useStyles';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
 describe('createStyles', () => {
     it('creates styles with dark colours', () => {
         const styles = createStyles(darkGreen);

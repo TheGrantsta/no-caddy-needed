@@ -2,14 +2,6 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import HoleNavigationControls from '../../components/HoleNavigationControls';
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 const baseProps = {
     currentHole: 5,
     isLastHole: false,

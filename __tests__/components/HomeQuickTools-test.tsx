@@ -12,14 +12,6 @@ jest.mock('../../service/DbService', () => ({
     getSettingsService: jest.fn(),
 }));
 
-jest.mock('../../context/ThemeContext', () => ({
-    useThemeColours: () => require('../../assets/colours').default,
-}));
-
-jest.mock('../../hooks/useStyles', () => ({
-    useStyles: () => require('../../assets/styles').default,
-}));
-
 jest.mock('@expo/vector-icons', () => {
     const { Text } = require('react-native');
     return { MaterialIcons: ({ name }: { name: string }) => <Text>{name}</Text> };

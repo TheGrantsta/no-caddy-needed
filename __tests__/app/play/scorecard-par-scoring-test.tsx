@@ -26,10 +26,6 @@ jest.mock('../../../context/ThemeContext', () => ({
     }),
 }));
 
-jest.mock('../../../hooks/useStyles', () => ({
-    useStyles: () => require('../../../assets/styles').default,
-}));
-
 jest.mock('../../../service/DbService', () => ({
     getRoundScorecardService: jest.fn(),
     getMultiplayerScorecardService: jest.fn(),

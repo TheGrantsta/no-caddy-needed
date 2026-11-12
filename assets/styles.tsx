@@ -949,6 +949,41 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
+    // Previous and Next controls shared by the hole entry bar and the challenge bar
+    stepButton: StyleSheet.create({
+        previous: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: 'transparent',
+            minHeight: 40,
+            paddingHorizontal: 8,
+            flexShrink: 1,
+        },
+        previousText: {
+            color: c.primary,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+        },
+        next: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: c.primary,
+            borderRadius: 999,
+            minHeight: 40,
+            paddingVertical: 6,
+            paddingHorizontal: 14,
+            flex: 0,
+            flexGrow: 0,
+            flexShrink: 0,
+            flexBasis: 'auto',
+        },
+        nextText: {
+            color: c.white,
+            fontSize: fontSizes.smallText,
+            fontWeight: 'bold',
+        },
+    }),
+
     simulation: StyleSheet.create({
         header: {
             backgroundColor: c.primary,
@@ -1092,32 +1127,6 @@ export const createStyles = (c: ThemeColours) => ({
             shadowRadius: 12,
             shadowOffset: { width: 0, height: 4 },
             elevation: 6,
-        },
-        prevButton: {
-            flexDirection: 'row',
-                        alignItems: 'center',
-                        backgroundColor: 'transparent',
-                        minHeight: 40,
-                        paddingHorizontal: 8,
-                        flexShrink: 1,
-        },
-        prevText: {
-            color: c.primary,
-                        fontSize: fontSizes.smallText,
-                        fontWeight: 'bold',
-        },
-        nextButton: {
-            flexDirection: 'row',
-                        alignItems: 'center',
-                        backgroundColor: c.primary,
-                        borderRadius: 999,
-                        minHeight: 40,
-                        paddingVertical: 6,
-                        paddingHorizontal: 14,
-        },
-        nextText: {
-            color: c.white,
-                        fontSize: fontSizes.smallText,
         },
         submitBar: {
             position: 'absolute',
@@ -3092,25 +3101,6 @@ export const createStyles = (c: ThemeColours) => ({
             gap: 10,
             marginHorizontal: 8,
         },
-        nextHoleButton: {
-            backgroundColor: c.primary,
-            borderWidth: 2,
-            borderColor: c.primary,
-            minHeight: 48,
-            paddingVertical: 8,
-            paddingHorizontal: 12,
-            borderRadius: 6,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            flex: 1,
-        },
-        nextHoleButtonText: {
-            color: c.background,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-        },
         previousHoleButton: {
             backgroundColor: 'transparent',
             borderWidth: 2,
@@ -3153,39 +3143,11 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             justifyContent: 'flex-end',
         },
-        holeBarPrevious: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: 'transparent',
-            minHeight: 40,
-            paddingHorizontal: 8,
-            flexShrink: 1,
-        },
-        holeBarPreviousText: {
-            color: c.primary,
-            fontSize: fontSizes.smallText,
-            fontWeight: 'bold',
-        },
         holeBarWindButton: {
             minHeight: 40,
             paddingHorizontal: 8,
             justifyContent: 'center',
             alignItems: 'center',
-        },
-        holeBarNextButton: {
-            flex: 0,
-            backgroundColor: c.primary,
-            borderRadius: 999,
-            minHeight: 40,
-            paddingVertical: 6,
-            paddingHorizontal: 14,
-            flexGrow: 0,
-            flexShrink: 0,
-            flexBasis: 'auto',
-        },
-        holeBarNextText: {
-            color: c.white,
-            fontSize: fontSizes.smallText,
         },
         endRoundLink: {
             color: c.red,

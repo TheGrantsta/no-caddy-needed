@@ -1,9 +1,10 @@
 import { ReactNode, useCallback, useEffect, useState } from 'react';
-import { Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import { DeadlySinsValues } from '../service/DbService';
 import CtaButton from './CtaButton';
+import AppSwitch from './AppSwitch';
 
 type Props = {
     onEndRound: (values: DeadlySinsValues) => void;
@@ -142,7 +143,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                                     <Text style={s.autoCaption}>Auto: 6 or more on a par 5</Text>
                                 </View>
                                 <View style={s.controls} pointerEvents="none">
-                                    <Switch testID="7deadly-sins-auto-bogeys-par5" value disabled trackColor={{ false: colours.tertiary, true: colours.red }} />
+                                    <AppSwitch testID="7deadly-sins-auto-bogeys-par5" value disabled trackColor={{ false: colours.tertiary, true: colours.red }} />
                                 </View>
                             </View>
                         );
@@ -155,7 +156,7 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                                     <Text style={s.autoCaption}>Auto: 2 or more over par</Text>
                                 </View>
                                 <View style={s.controls} pointerEvents="none">
-                                    <Switch testID="7deadly-sins-auto-double-bogeys" value disabled trackColor={{ false: colours.tertiary, true: colours.red }} />
+                                    <AppSwitch testID="7deadly-sins-auto-double-bogeys" value disabled trackColor={{ false: colours.tertiary, true: colours.red }} />
                                 </View>
                             </View>
                         );
@@ -172,10 +173,9 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                                 <Text style={[s.label, values[field.key] && s.labelMarked]}>{field.label}</Text>
                                 <View style={s.controls}>
                                     <View style={s.controls} pointerEvents="none">
-                                        <Switch
+                                        <AppSwitch
                                             testID={`7deadly-sins-indicator-${field.slug}`}
                                             value={values[field.key]}
-                                            trackColor={{ false: colours.tertiary, true: colours.primary }}
                                         />
                                     </View>
                                 </View>

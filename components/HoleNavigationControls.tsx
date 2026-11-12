@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import WindPopover from './WindPopover';
 import { isFirstHoleOfRound, nextHoleInRound, previousHoleInRound } from '@/utils/holeOrder';
+import { NextStepButton, PreviousStepButton } from './StepButtons';
 
 interface Props {
     currentHole: number;
@@ -40,10 +41,11 @@ export default function HoleNavigationControls({
             <View style={localStyles.holeBarRow}>
                 <View testID="hole-nav-left" style={localStyles.holeBarLeft}>
                     {!isFirstHoleOfRound(currentHole, startHole) ? (
-                        <TouchableOpacity testID="previous-hole-button" onPress={onPreviousHole} style={localStyles.holeBarPrevious}>
-                            <MaterialIcons name="chevron-left" size={18} color={colours.primary} />
-                            <Text numberOfLines={1} style={localStyles.holeBarPreviousText}>{`Hole ${previousHoleInRound(currentHole, startHole)}`}</Text>
-                        </TouchableOpacity>
+                        <PreviousStepButton
+                            testID="previous-hole-button"
+                            label={`Hole ${previousHoleInRound(currentHole, startHole)}`}
+                            onPress={onPreviousHole}
+                        />
                     ) : null}
                 </View>
                 <View testID="hole-nav-centre" style={localStyles.holeBarCentre}>
@@ -60,21 +62,12 @@ export default function HoleNavigationControls({
                     ) : null}
                 </View>
                 <View testID="hole-nav-right" style={localStyles.holeBarRight}>
-                    <TouchableOpacity
+                    <NextStepButton
                         testID="next-hole-button"
+                        label={isLastHole ? 'Finish' : `Hole ${nextHoleInRound(currentHole, startHole)}`}
+                        icon={isLastHole ? 'sports-score' : 'chevron-right'}
                         onPress={onNextHole}
-                        hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
-                        style={[localStyles.nextHoleButton, localStyles.holeBarNextButton]}
-                    >
-                        <Text numberOfLines={1} style={[localStyles.nextHoleButtonText, localStyles.holeBarNextText]}>
-                            {isLastHole ? 'Finish' : `Hole ${nextHoleInRound(currentHole, startHole)}`}
-                        </Text>
-                        <MaterialIcons
-                            name={isLastHole ? 'sports-score' : 'chevron-right'}
-                            size={16}
-                            color={colours.white}
-                        />
-                    </TouchableOpacity>
+                    />
                 </View>
             </View>
         </View>

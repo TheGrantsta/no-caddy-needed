@@ -1,9 +1,10 @@
 import React, { ReactNode } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import PuttDistancePicker from './PuttDistancePicker';
+import AppSwitch from './AppSwitch';
 
 type Sins = {
     troubleOffTee: boolean;
@@ -136,11 +137,10 @@ export default function EditHoleSheet({
                     <View style={s.divider} />
                     <View style={s.row}>
                         <Text style={s.rowLabel}>Green in regulation</Text>
-                        <Switch
+                        <AppSwitch
                             testID="edit-hole-gir-switch"
                             value={greenInRegulation}
                             onValueChange={onGreenInRegulationChange}
-                            trackColor={{ false: colours.tertiary, true: colours.primary }}
                             thumbColor={colours.white}
                         />
                     </View>
@@ -153,11 +153,10 @@ export default function EditHoleSheet({
                             {index > 0 && <View style={s.divider} />}
                             <View style={s.row}>
                                 <Text style={s.rowLabel}>{row.label}</Text>
-                                <Switch
+                                <AppSwitch
                                     testID={`edit-hole-sin-${row.key}`}
                                     value={sins[row.key]}
                                     onValueChange={value => onSinChange(row.key, value)}
-                                    trackColor={{ false: colours.tertiary, true: colours.primary }}
                                     thumbColor={colours.white}
                                 />
                             </View>

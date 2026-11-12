@@ -305,7 +305,7 @@ describe('Play screen', () => {
         it('renders Previous hole as a plain label with a chevron-left icon after hole 1', async () => {
             const utils = await resumeAtHole(1); // resumes on hole 2
 
-            const button = utils.UNSAFE_getByProps({ testID: 'previous-hole-button' });
+            const button = utils.getByTestId('previous-hole-button');
             const style = StyleSheet.flatten(button.props.style);
             expect(style.borderWidth ?? 0).toBe(0);
             expect(button.findByProps({ name: 'chevron-left' })).toBeTruthy();

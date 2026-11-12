@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Switch, Text } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import DeadlySinsTally from '../../components/DeadlySinsTally';
 import { DeadlySinsValues } from '../../service/DbService';
@@ -207,12 +207,12 @@ describe('DeadlySinsTally component', () => {
         });
 
         it('toggle indicator is on with a primary green track when value is true', () => {
-            const { getByTestId, UNSAFE_getByProps } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
+            const { getByTestId, UNSAFE_getAllByType } = render(<DeadlySinsTally onEndRound={mockOnEndRound} roundControlled />);
 
             fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
 
             expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(true);
-            const switchElement = UNSAFE_getByProps({ testID: '7deadly-sins-indicator-three-putts' });
+            const switchElement = UNSAFE_getAllByType(Switch).find(sw => sw.props.testID === '7deadly-sins-indicator-three-putts')!;
             expect(switchElement.props.trackColor.true).toBe('#2D5A3D'); // c.primary
         });
 

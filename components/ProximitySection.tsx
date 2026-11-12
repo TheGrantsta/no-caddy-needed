@@ -1,11 +1,12 @@
 import React from 'react';
-import { Animated, Switch, Text, View } from 'react-native';
+import { Animated, Text, View } from 'react-native';
 import PuttingProximityChart from './PuttingProximityChart';
 import StatsEmptyState from './StatsEmptyState';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import { getPuttingProximityService } from '../service/DbService';
 import fontSizes from '../assets/font-sizes';
+import AppSwitch from './AppSwitch';
 
 interface Props {
     fadeAnim: Animated.Value;
@@ -41,11 +42,10 @@ export default function ProximitySection({
                     <Text testID="proximity-filter-label" style={{ color: colours.black, fontSize: fontSizes.normal }}>
                         Show 3-putts only
                     </Text>
-                    <Switch
+                    <AppSwitch
                         testID="proximity-filter-toggle"
                         value={proximityThreePuttOnly}
                         onValueChange={onProximityFilterChange}
-                        trackColor={{ false: colours.tertiary, true: colours.primary }}
                     />
                 </View>
 

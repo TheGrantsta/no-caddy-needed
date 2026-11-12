@@ -1,7 +1,8 @@
 import React from 'react';
-import { Switch, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
+import AppSwitch from './AppSwitch';
 
 type Props = {
     label: string;
@@ -19,11 +20,10 @@ const SettingsSwitchRow = ({ label, value, onValueChange, testID }: Props) => {
     return (
         <View style={s.row}>
             <Text style={s.rowLabel}>{label}</Text>
-            <Switch
+            <AppSwitch
                 testID={testID}
                 value={value}
                 onValueChange={onValueChange}
-                trackColor={{ false: colours.tertiary, true: colours.primary }}
                 thumbColor={colours.white}
             />
         </View>

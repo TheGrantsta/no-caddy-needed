@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
 import PuttDistancePicker from './PuttDistancePicker';
+import AppSwitch from './AppSwitch';
 
 const MAX_FIRST_PUTT_DISTANCE = 100;
 const MAX_SECOND_PUTT_DISTANCE = 100;
@@ -215,11 +216,10 @@ const PuttingStatsInput = ({
             {/* Green in regulation */}
             <View style={styles.holeScreen.puttRow}>
                 <Text testID="gir-label" style={styles.holeScreen.puttLabel}>Green in regulation</Text>
-                <Switch
+                <AppSwitch
                     testID="gir-switch"
                     value={greenInRegulation}
                     onValueChange={handleGreenInRegulationChange}
-                    trackColor={{ false: colours.tertiary, true: colours.primary }}
                 />
             </View>
         </View>

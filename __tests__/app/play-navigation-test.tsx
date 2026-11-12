@@ -16,7 +16,6 @@ import {
     getRoundPlayersService,
     getMultiplayerScorecardService,
     getRecentCourseNamesService,
-    getRecentPlayerNamesService,
     getSettingsService,
     getHolesPlayedForRoundService,
     loadCourseNotesService,
@@ -54,7 +53,6 @@ jest.mock('../../service/DbService', () => ({
     getRoundPlayersService: jest.fn(),
     getMultiplayerScorecardService: jest.fn(),
     getRecentCourseNamesService: jest.fn(),
-    getRecentPlayerNamesService: jest.fn(),
     getHolesPlayedForRoundService: jest.fn().mockReturnValue(0),
     getCourseHoleParsService: jest.fn().mockReturnValue({}),
     loadCourseNotesService: jest.fn().mockReturnValue({}),
@@ -161,7 +159,6 @@ const mockAddRoundPlayers = addRoundPlayersService as jest.Mock;
 const mockGetRoundPlayers = getRoundPlayersService as jest.Mock;
 const mockGetMultiplayerScorecard = getMultiplayerScorecardService as jest.Mock;
 const mockGetRecentCourseNames = getRecentCourseNamesService as jest.Mock;
-const mockGetRecentPlayerNames = getRecentPlayerNamesService as jest.Mock;
 const mockGetSettingsService = getSettingsService as jest.Mock;
 const mockGetHolesPlayedForRound = getHolesPlayedForRoundService as jest.Mock;
 const mockLoadCourseNotes = loadCourseNotesService as jest.Mock;
@@ -178,7 +175,6 @@ describe('Play screen', () => {
         mockGetRoundPlayers.mockReturnValue([]);
         mockGetMultiplayerScorecard.mockReturnValue(null);
         mockGetRecentCourseNames.mockReturnValue([]);
-        mockGetRecentPlayerNames.mockReturnValue([]);
         mockGetHolesPlayedForRound.mockReturnValue(0);
         mockLoadCourseNotes.mockReturnValue({});
         mockGetHolesWithSinsForRound.mockReturnValue(new Set());

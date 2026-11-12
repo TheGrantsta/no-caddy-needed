@@ -607,10 +607,6 @@ export const deleteHoleNote = async (courseName: string, holeNumber: number): Pr
     return success;
 };
 
-export const getDistinctPlayerNames = () => {
-    return getSyncDb().getAllSync("SELECT DISTINCT PlayerName FROM RoundPlayers WHERE IsUser = 0 AND PlayerName IS NOT NULL AND PlayerName != '' AND PlayerName NOT IN (SELECT Name FROM HiddenRecents WHERE Type = 'player') ORDER BY Id DESC;");
-};
-
 export const addHiddenRecent = async (type: 'course' | 'player', name: string): Promise<boolean> => {
     let success = true;
     const db = await SQLite.openDatabaseAsync(dbName);

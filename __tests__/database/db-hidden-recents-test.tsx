@@ -1,4 +1,4 @@
-import { addHiddenRecent, getDistinctCourseNames, getDistinctPlayerNames, initialize } from '../../database/db';
+import { addHiddenRecent, getDistinctCourseNames, initialize } from '../../database/db';
 import { logError } from '../../service/ErrorLoggingService';
 import * as _SQLite from 'expo-sqlite'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
@@ -97,19 +97,6 @@ describe('getDistinctCourseNames', () => {
     it('excludesHiddenCoursesFromResults', () => {
         mockGetAllSync.mockReturnValue([]);
         getDistinctCourseNames();
-        const [sql] = mockGetAllSync.mock.calls[0];
-        expect(sql).toContain('HiddenRecents');
-    });
-});
-
-describe('getDistinctPlayerNames', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-
-    it('excludesHiddenPlayersFromResults', () => {
-        mockGetAllSync.mockReturnValue([]);
-        getDistinctPlayerNames();
         const [sql] = mockGetAllSync.mock.calls[0];
         expect(sql).toContain('HiddenRecents');
     });

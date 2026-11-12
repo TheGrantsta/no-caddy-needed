@@ -1,4 +1,4 @@
-import { getPuttingMakeRatesService, bucketPuttingDistance, PUTTING_DISTANCE_BUCKETS, formatPuttCount } from '../../service/DbService';
+import { getPuttingMakeRatesService, bucketPuttingDistance, PUTTING_DISTANCE_BUCKETS } from '../../service/DbService';
 import { getAllPuttingStatsWithThreePutts } from '../../database/db';
 
 jest.mock('../../database/db', () => ({
@@ -257,27 +257,5 @@ describe('getPuttingMakeRatesService', () => {
         expect(bucket20!.putts).toBe(1);
         expect(bucket10!.makeRate).toBe('-');
         expect(bucket10!.putts).toBe(0);
-    });
-});
-
-describe('formatPuttCount', () => {
-    it('returns the count as a string when 0', () => {
-        expect(formatPuttCount(0)).toBe('0');
-    });
-
-    it('returns the count as a string when 1', () => {
-        expect(formatPuttCount(1)).toBe('1');
-    });
-
-    it('returns the count as a string when 99', () => {
-        expect(formatPuttCount(99)).toBe('99');
-    });
-
-    it('returns "99+" when count is 100', () => {
-        expect(formatPuttCount(100)).toBe('99+');
-    });
-
-    it('returns "99+" when count is greater than 100', () => {
-        expect(formatPuttCount(250)).toBe('99+');
     });
 });

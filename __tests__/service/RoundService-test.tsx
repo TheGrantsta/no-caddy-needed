@@ -9,7 +9,6 @@ import {
     getRoundPlayersService,
     getMultiplayerScorecardService,
     getRecentCourseNamesService,
-    getRecentPlayerNamesService,
     getHolesPlayedForRoundService,
     updateRoundStartTimeService,
 } from '../../service/DbService';
@@ -24,7 +23,6 @@ import {
     insertRoundHoleScore,
     getRoundHoleScores,
     getDistinctCourseNames,
-    getDistinctPlayerNames,
     getHolesPlayedForRound,
     deleteRoundHoleScoresByHole,
     updateRoundStartTime,
@@ -41,7 +39,6 @@ jest.mock('../../database/db', () => ({
     insertRoundHoleScore: jest.fn(),
     getRoundHoleScores: jest.fn(),
     getDistinctCourseNames: jest.fn(),
-    getDistinctPlayerNames: jest.fn(),
     getHolesPlayedForRound: jest.fn(),
     deleteRoundHoleScoresByHole: jest.fn(),
     updateRoundStartTime: jest.fn(),
@@ -57,7 +54,6 @@ const mockGetRoundPlayers = getRoundPlayers as jest.Mock;
 const mockInsertRoundHoleScore = insertRoundHoleScore as jest.Mock;
 const mockGetRoundHoleScores = getRoundHoleScores as jest.Mock;
 const mockGetDistinctCourseNames = getDistinctCourseNames as jest.Mock;
-const mockGetDistinctPlayerNames = getDistinctPlayerNames as jest.Mock;
 const mockGetHolesPlayedForRound = getHolesPlayedForRound as jest.Mock;
 const mockDeleteRoundHoleScoresByHole = deleteRoundHoleScoresByHole as jest.Mock;
 const mockUpdateRoundStartTime = updateRoundStartTime as jest.Mock;
@@ -132,7 +128,6 @@ describe('endRoundService', () => {
         expect(result).toBe(false);
     });
 });
-
 
 describe('getRoundScorecardService', () => {
     beforeEach(() => {
@@ -649,31 +644,6 @@ describe('getRecentCourseNamesService', () => {
         mockGetDistinctCourseNames.mockReturnValue([]);
 
         const result = getRecentCourseNamesService();
-
-        expect(result).toEqual([]);
-    });
-});
-
-describe('getRecentPlayerNamesService', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-
-    it('returns distinct player names', () => {
-        mockGetDistinctPlayerNames.mockReturnValue([
-            { PlayerName: 'Alice' },
-            { PlayerName: 'Bob' },
-        ]);
-
-        const result = getRecentPlayerNamesService();
-
-        expect(result).toEqual(['Alice', 'Bob']);
-    });
-
-    it('returns empty array when no player names exist', () => {
-        mockGetDistinctPlayerNames.mockReturnValue([]);
-
-        const result = getRecentPlayerNamesService();
 
         expect(result).toEqual([]);
     });

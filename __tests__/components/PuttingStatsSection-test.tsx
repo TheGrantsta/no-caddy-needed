@@ -12,7 +12,6 @@ jest.mock('../../service/DbService', () => ({
         { distance: 4, makeRate: '75%', putts: 4 },
         { distance: 10, makeRate: '40%', putts: 10 },
     ]),
-    formatPuttCount: jest.fn((count: number) => `${count}`),
 }));
 
 describe('PuttingStatsSection', () => {

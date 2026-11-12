@@ -31,7 +31,6 @@ import {
     getClubDistances,
     insertClubDistances,
     getDistinctCourseNames,
-    getDistinctPlayerNames,
     addHiddenRecent,
     getHolesPlayedForRound,
     insertRoundPlayer,
@@ -244,9 +243,6 @@ export const bucketPuttingDistance = (distance: number): number | null => {
     }
     return bucket;
 };
-
-export const formatPuttCount = (count: number): string =>
-    count > 99 ? '99+' : String(count);
 
 export type PuttingMakeRate = {
     distance: number;
@@ -585,17 +581,8 @@ export const saveHoleNoteService = async (courseName: string, holeNumber: number
     return upsertHoleNote(courseName, holeNumber, note.trim());
 };
 
-export const getRecentPlayerNamesService = (): string[] => {
-    const rows = getDistinctPlayerNames() as { PlayerName: string }[];
-    return rows.map(r => r.PlayerName);
-};
-
 export const hideCourseFromRecentsService = async (name: string): Promise<boolean> => {
     return addHiddenRecent('course', name);
-};
-
-export const hidePlayerFromRecentsService = async (name: string): Promise<boolean> => {
-    return addHiddenRecent('player', name);
 };
 
 // Multiplayer round services

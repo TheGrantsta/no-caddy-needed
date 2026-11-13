@@ -241,6 +241,19 @@ export default function Play() {
         setShowOnboarding(true);
     };
 
+    // Sets up the screen for a round in progress: which round and course, its notes and par table,
+    // and the hole it starts on (startHole) and the hole being shown (currentHole)
+    const beginRound = (roundId: number, courseName: string, startHole: number, currentHole: number, holePars: Record<number, number>) => {
+        setActiveRoundId(roundId);
+        setActiveCourseName(courseName);
+        setRoundStartHole(startHole);
+        setCurrentHole(currentHole);
+        const notes = loadCourseNotesService(courseName);
+        setCourseNotes(notes);
+        setCurrentNoteText(notes[currentHole] ?? '');
+        setCourseHolePars(holePars);
+    };
+
     const handleContinueRound = async () => {
         if (!incompleteRound) return;
         logEvent('continue_round');
@@ -252,18 +265,11 @@ export default function Play() {
         setSkipStatsFlow(incompleteRound.IsScoreOnly === 1);
         const holesPlayed = getHolesPlayedForRoundService(incompleteRound.Id);
         const startHole = sanitiseStartHole(incompleteRound.StartHole);
-        setRoundStartHole(startHole);
         // Resume on the next hole in play order, which wraps for a shotgun start
         const resumeHole = holeAtPlayPosition(startHole, holesPlayed);
-        setCurrentHole(resumeHole);
-        setActiveRoundId(incompleteRound.Id);
         const courseName = incompleteRound.CourseName ?? '';
-        setActiveCourseName(courseName);
-        const notes = loadCourseNotesService(courseName);
-        setCourseNotes(notes);
-        setCurrentNoteText(notes[resumeHole] ?? '');
         const holePars = getCourseHoleParsService(courseName);
-        setCourseHolePars(holePars);
+        beginRound(incompleteRound.Id, courseName, startHole, resumeHole, holePars);
         const holeData = loadHoleForScore(resumeHole, incompleteRound.Id, holePars);
         setCurrentHoleData(holeData);
         loadHoleEntry(resumeHole, incompleteRound.Id);
@@ -308,17 +314,10 @@ export default function Play() {
                 SortOrder: index,
             }));
 
-            setActiveRoundId(roundId);
             setPlayers(roundPlayers);
-            setRoundStartHole(startHole);
-            setCurrentHole(startHole);
-            loadHoleEntry(startHole, roundId);
             const holePars = getCourseHoleParsService(courseName);
-            setCourseHolePars(holePars);
-            setActiveCourseName(courseName);
-            const notes = loadCourseNotesService(courseName);
-            setCourseNotes(notes);
-            setCurrentNoteText(notes[startHole] ?? '');
+            beginRound(roundId, courseName, startHole, startHole, holePars);
+            loadHoleEntry(startHole, roundId);
             const par = holePars[startHole] ?? 4;
             const holeData = {
                 holeNumber: startHole,

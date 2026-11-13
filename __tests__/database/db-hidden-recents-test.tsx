@@ -69,6 +69,15 @@ describe('addHiddenRecent', () => {
         expect(result).toBe(false);
     });
 
+    it('returnsFalseAndLogsWhenThePreparedStatementCannotBeCreated', async () => {
+        mockPrepareAsync.mockRejectedValueOnce(new Error('prepare failed'));
+
+        const result = await addHiddenRecent('course', 'St Andrews');
+
+        expect(result).toBe(false);
+        expect(logError).toHaveBeenCalledWith('db.addHiddenRecent', expect.any(Error));
+    });
+
     it('finalizesStatementOnSuccess', async () => {
         await addHiddenRecent('course', 'St Andrews');
         expect(mockStatementFinalizeAsync).toHaveBeenCalledTimes(1);

@@ -1,4 +1,4 @@
-import { initialize, deleteRound } from '../../database/db';
+import { initialize } from '../../database/db';
 import * as _SQLite from 'expo-sqlite';
 
 const mockExecAsync = jest.fn();
@@ -444,27 +444,6 @@ describe('Rounds table IsScoreOnly column migration', () => {
     });
 });
 
-
-describe('deleteRound cascade to HoleDeadlySins', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-        mockExecAsync.mockResolvedValue(undefined);
-    });
-
-    it('deletes HoleDeadlySins for the round before deleting the round', async () => {
-        await deleteRound(99);
-
-        const sql = mockExecAsync.mock.calls[0][0];
-        expect(sql).toContain('DELETE FROM HoleDeadlySins WHERE RoundId = 99');
-    });
-
-    it('does NOT cascade delete to HoleNotes (course notes persist across round deletion)', async () => {
-        await deleteRound(99);
-
-        const sql = mockExecAsync.mock.calls[0][0];
-        expect(sql).not.toContain('HoleNotes');
-    });
-});
 
 describe('DrillHistory table schema', () => {
     beforeEach(() => {

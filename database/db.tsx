@@ -608,21 +608,21 @@ export const deleteHoleNote = async (courseName: string, holeNumber: number): Pr
 };
 
 export const addHiddenRecent = async (type: 'course' | 'player', name: string): Promise<boolean> => {
-    let success = true;
-    const db = await SQLite.openDatabaseAsync(dbName);
-    const statement = await db.prepareAsync(
-        'INSERT OR IGNORE INTO HiddenRecents (Type, Name) VALUES ($Type, $Name);'
-    );
     try {
-        await statement.executeAsync({ $Type: type, $Name: name });
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync(
+            'INSERT OR IGNORE INTO HiddenRecents (Type, Name) VALUES ($Type, $Name);'
+        );
+        try {
+            await statement.executeAsync({ $Type: type, $Name: name });
+        } finally {
+            await statement.finalizeAsync();
+        }
+        return true;
     } catch (e) {
         void logError('db.addHiddenRecent', e);
-        success = false;
-        success = false;
-    } finally {
-        await statement.finalizeAsync();
+        return false;
     }
-    return success;
 };
 
 // Single-row table for UI preferences that are not part of Settings (Settings is rewritten whole on every save)
@@ -816,23 +816,32 @@ export const updateRoundTotalScore = async (roundId: number, totalScore: number)
     return success;
 };
 
+// Child rows first, then the round itself. They run in one transaction, so a failure leaves nothing half deleted.
+const DELETE_ROUND_STATEMENTS = [
+    'DELETE FROM HoleDeadlySins WHERE RoundId = $RoundId;',
+    'DELETE FROM RoundHoleScores WHERE RoundId = $RoundId;',
+    'DELETE FROM RoundPlayers WHERE RoundId = $RoundId;',
+    'DELETE FROM Rounds WHERE Id = $RoundId;',
+];
+
 export const deleteRound = async (roundId: number): Promise<boolean> => {
-    let success = true;
     try {
         const db = await SQLite.openDatabaseAsync(dbName);
-
-        await db.execAsync(`
-            DELETE FROM HoleDeadlySins WHERE RoundId = ${roundId};
-            DELETE FROM RoundHoleScores WHERE RoundId = ${roundId};
-            DELETE FROM RoundPlayers WHERE RoundId = ${roundId};
-            DELETE FROM Rounds WHERE Id = ${roundId};
-        `);
+        await db.withTransactionAsync(async () => {
+            for (const sql of DELETE_ROUND_STATEMENTS) {
+                const statement = await db.prepareAsync(sql);
+                try {
+                    await statement.executeAsync({ $RoundId: roundId });
+                } finally {
+                    await statement.finalizeAsync();
+                }
+            }
+        });
+        return true;
     } catch (e) {
         void logError('db.deleteRound', e);
-        success = false;
+        return false;
     }
-
-    return success;
 };
 
 export const getSettings = () => {

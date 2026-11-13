@@ -201,6 +201,8 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
 
     const handleSave = async () => {
         if (edit.sinsHoleNumber !== null && edit.editedSins !== null) {
+            // Details are required only when the sin is logged. A club is only required if the user has clubs listed,
+            // because without a bag there is nothing to choose from.
             const needsClub = edit.editedSins.troubleOffTee && clubDistances.length > 0;
             const needsPenalty = edit.editedSins.penalties;
             const needsBogeysClub = edit.editedSins.bogeysInside9Iron && clubDistances.length > 0;

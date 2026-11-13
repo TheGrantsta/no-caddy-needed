@@ -1,3 +1,4 @@
+import { hasSinDetails } from '../utils/deadlySins';
 import {
     updateScorecardService,
     replaceHoleDeadlySinsService,
@@ -72,9 +73,8 @@ export const saveScorecardEditsService = async (input: {
 
     if (holeNumber !== null && hole.sins !== null) {
         await replaceHoleDeadlySinsService(roundId, holeNumber, hole.sins);
-        const sins = hole.sins;
-        const needsSinDetails = sins.troubleOffTee || sins.penalties || sins.bogeysInside9Iron || sins.doubleChips;
-        if (needsSinDetails) {
+        // Details are stored whenever a sin has them, even if the user has no clubs listed
+        if (hasSinDetails(hole.sins)) {
             await replaceHoleSinDetailsService(roundId, holeNumber, {
                 troubleOffTeeClub: hole.sinDetails.troubleOffTeeClub,
                 penaltyType: hole.sinDetails.penaltyType,

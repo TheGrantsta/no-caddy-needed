@@ -64,6 +64,7 @@ import HoleNavigationControls from '../../components/HoleNavigationControls';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 import { isTripleBogeyOrWorse } from '../../utils/scoring';
+import { hasSinDetails } from '../../utils/deadlySins';
 
 const BAD_HOLE_MESSAGES = [
     'A triple bogey isn\'t the end of the round — plenty of golf left.',
@@ -373,8 +374,7 @@ export default function Play() {
         return saved ?? INITIAL_SINS;
     };
 
-    const shouldShowSinDetails = (sins: DeadlySinsValues) =>
-        sins.troubleOffTee || sins.penalties || sins.bogeysInside9Iron || sins.doubleChips;
+    const shouldShowSinDetails = hasSinDetails;
 
     // Loads everything entered for a hole (sins, sin details, putting) onto the single hole screen.
     // Moving forward starts the next hole's Deadly Sins clean; moving back restores what was saved.

@@ -23,7 +23,6 @@ const SHEET_TITLES = [
     'windEffect.title',
     'windPopover.title',
     'deadlySinsChart.title',
-    'drillStatsChart.title',
     'simulation.title',
 ];
 

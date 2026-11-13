@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import colours, { ThemeColours } from './colours';
 import fontSizes, { displaySizes } from './font-sizes';
 
@@ -36,13 +36,6 @@ export const createStyles = (c: ThemeColours) => ({
             paddingBottom: 4,
             alignItems: 'center',
         },
-        titleRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            alignSelf: 'flex-start',
-            gap: 10,
-            marginBottom: 8,
-        },
         titleText: {
             color: c.primary,
             fontSize: fontSizes.header,
@@ -75,14 +68,6 @@ export const createStyles = (c: ThemeColours) => ({
         },
         scrollContentContainer: {
             paddingBottom: 100,
-        },
-        principlesContainer: {
-            flexDirection: 'row',
-            marginTop: 10,
-            paddingBottom: 5,
-            paddingLeft: 30,
-            paddingRight: 5,
-            width: '95%',
         },
         container: {
             flex: 1,
@@ -128,26 +113,6 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             padding: 5,
         },
-        contentSection: {
-            marginHorizontal: 8,
-            marginTop: 20,
-            borderRadius: 14,
-            padding: 16,
-            borderWidth: 1,
-        },
-        // Segmented section switcher: full-width track with two equal segments, each an
-        // icon above its label; the selected segment is a filled green pill.
-        segmentedControlWrapper: {
-            paddingHorizontal: 16,
-            marginTop: 8,
-            marginBottom: 8,
-        },
-        segmentedControl: {
-            flexDirection: 'row',
-            backgroundColor: c.tertiary + '33',
-            borderRadius: 12,
-            padding: 4,
-        },
         segment: {
             flex: 1,
             alignItems: 'center',
@@ -172,34 +137,6 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             alignContent: 'center',
             flexDirection: 'row',
-        },
-        largeButtonSecondary: {
-            backgroundColor: 'transparent',
-            borderWidth: 2,
-            borderColor: c.primary,
-            padding: 8,
-            borderRadius: 8,
-            width: '90%',
-            alignItems: 'center',
-            margin: 5,
-        },
-        buttonTextSecondary: {
-            color: c.primary,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
-        tertiaryLink: {
-            paddingVertical: 12,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            columnGap: 8,
-            margin: 5,
-        },
-        tertiaryLinkText: {
-            color: c.red,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
         },
         ctaButton: {
             backgroundColor: c.primary,
@@ -243,27 +180,10 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.tableHeader,
             fontWeight: 'bold',
         },
-        primaryText: {
-            color: c.primary,
-        },
         errorText: {
             color: c.errorText,
             fontSize: fontSizes.smallText,
             marginTop: 5,
-        },
-        textLabel: {
-            fontSize: fontSizes.smallText,
-            color: c.primary,
-            margin: 5,
-        },
-        textInput: {
-            height: 40,
-            borderColor: c.tertiary,
-            borderWidth: 1,
-            borderRadius: 5,
-            paddingHorizontal: 10,
-            fontSize: fontSizes.smallText,
-            color: c.primary,
         },
         textInputError: {
             borderColor: c.borderError,
@@ -281,40 +201,6 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.primary,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
-        },
-        updateOverlay: {
-            width: '100%',
-            backgroundColor: c.background,
-        },
-        updateText: {
-            color: c.primary,
-            marginTop: 5,
-            fontSize: fontSizes.normal,
-            textAlign: 'center',
-        },
-        scrollWrapper: {
-            margin: 5,
-            borderRadius: 5,
-            borderColor: c.primary,
-            borderWidth: 2,
-            borderLeftColor: c.primary,
-            borderLeftWidth: 10,
-        },
-        horizontalScrollContainer: {
-            flex: 1,
-            justifyContent: 'center',
-            marginTop: 10,
-        },
-        scrollItemContainer: {
-            width: Dimensions.get('window').width,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        scrollIndicatorContainer: {
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginTop: 20,
-            marginBottom: 10,
         },
         scrollIndicatorDot: {
             width: 10,
@@ -351,18 +237,6 @@ export const createStyles = (c: ThemeColours) => ({
             borderColor: c.primary,
             borderWidth: 1,
         },
-        navGrid: {
-            paddingHorizontal: 8,
-            paddingTop: 16,
-            gap: 12,
-        },
-        navRow: {
-            flexDirection: 'row',
-            gap: 12,
-        },
-        navCardLink: {
-            flex: 1,
-        },
         navCard: {
             backgroundColor: c.primary,
             borderRadius: 16,
@@ -379,12 +253,6 @@ export const createStyles = (c: ThemeColours) => ({
             backgroundColor: c.secondary,
             alignItems: 'center',
             justifyContent: 'center',
-        },
-        navCardLabel: {
-            color: c.white,
-            fontSize: fontSizes.subHeader,
-            fontWeight: '700',
-            letterSpacing: 0.3,
         },
     }),
 
@@ -517,13 +385,6 @@ export const createStyles = (c: ThemeColours) => ({
     }),
 
     practiceHeader: StyleSheet.create({
-        titleRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingHorizontal: 20,
-            paddingTop: 8,
-        },
         circleButton: circleButtonStyle(c),
         title: {
             color: c.primary,
@@ -1281,14 +1142,6 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.black,
             fontSize: fontSizes.normal,
         },
-        puttBox: {
-            width: 84,
-            backgroundColor: c.tertiary + '26',
-            borderRadius: 10,
-            paddingVertical: 10,
-            fontSize: fontSizes.normal,
-            textAlign: 'center',
-        },
         puttUnit: {
             color: c.tertiary,
             fontSize: fontSizes.normal,
@@ -1617,32 +1470,6 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.subHeader,
             paddingEnd: 16,
         },
-        parRow: {
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: 20,
-            marginTop: 8,
-        },
-        parButton: {
-            paddingVertical: 6,
-            paddingHorizontal: 10,
-            borderWidth: 1,
-            borderColor: c.primary,
-            marginHorizontal: 3,
-            borderRadius: 4,
-        },
-        parButtonActive: {
-            backgroundColor: c.primary,
-        },
-        parButtonText: {
-            color: c.primary,
-            fontSize: fontSizes.smallText,
-            fontWeight: 'bold',
-        },
-        parButtonTextActive: {
-            color: c.background,
-        },
         playerRow: {
             flexDirection: 'row',
             justifyContent: 'space-between',
@@ -1660,19 +1487,6 @@ export const createStyles = (c: ThemeColours) => ({
             flexDirection: 'row',
             alignItems: 'center',
         },
-        stepperButton: {
-            width: 48,
-            height: 48,
-            borderRadius: 24,
-            backgroundColor: c.primary,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        stepperButtonText: {
-            color: c.background,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-        },
         scoreText: {
             color: c.black,
             fontSize: fontSizes.subHeader,
@@ -1680,54 +1494,6 @@ export const createStyles = (c: ThemeColours) => ({
             marginHorizontal: 12,
             minWidth: 28,
             textAlign: 'center',
-        },
-    }),
-
-    holeNoteInput: StyleSheet.create({
-        container: {
-            marginBottom: 4,
-            marginTop: 8,
-            marginHorizontal: 8,
-            paddingHorizontal: 12,
-            paddingVertical: 12,
-            borderWidth: 1,
-            borderColor: c.primary,
-            borderRadius: 8,
-        },
-        label: {
-            color: c.primary,
-            fontSize: fontSizes.smallText,
-            marginBottom: 10,
-        },
-        input: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-            borderWidth: 0,
-            padding: 0,
-            minHeight: 52,
-        },
-        placeholder: {
-            color: c.tertiary,
-        },
-        noteRow: {
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            gap: 8,
-        },
-        noteText: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-            flex: 1,
-        },
-        addButton: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 12,
-        },
-        addButtonText: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-            fontWeight: '500',
         },
     }),
 
@@ -2074,24 +1840,8 @@ export const createStyles = (c: ThemeColours) => ({
         titleSpacer: {
             width: 44,
         },
-        distanceNameCell: {
-            flexDirection: 'row',
-            alignItems: 'center',
-        },
-        distanceNameInput: {
-            flex: 1,
-        },
         clubHeaderCell: {
             alignItems: 'center',
-        },
-        removeClubButton: {
-            paddingBottom: 4,
-        },
-        cornerLabel: {
-            color: c.tertiary,
-            fontSize: fontSizes.smallText,
-            textTransform: 'uppercase',
-            letterSpacing: 0.5,
         },
         headerRow: {
             flexDirection: 'row',
@@ -2099,26 +1849,6 @@ export const createStyles = (c: ThemeColours) => ({
         row: {
             flexDirection: 'row',
             borderBottomColor: c.primary + '33',
-        },
-        headerCell: {
-            paddingVertical: 6,
-            paddingHorizontal: 4,
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: c.primary,
-            fontSize: fontSizes.smallText,
-            borderTopWidth: 0.5,
-            borderBottomWidth: 0.5,
-            borderColor: c.primary + '33',
-        },
-        headerInput: {
-            paddingVertical: 10,
-            paddingHorizontal: 4,
-            color: c.black,
-            fontSize: fontSizes.normal,
-            fontWeight: '600',
-            textAlign: 'center',
-            width: '100%',
         },
         labelCell: {
             width: '30%',
@@ -2132,16 +1862,6 @@ export const createStyles = (c: ThemeColours) => ({
             borderLeftWidth: 0.5,
             borderRightWidth: 0.5,
             borderColor: c.primary + '33',
-        },
-        columnCell: {
-            width: '17.5%',
-            paddingVertical: 4,
-            paddingHorizontal: 4,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRightWidth: 0.5,
-            borderColor: c.primary + '33',
-            textAlign: 'center',
         },
         input: {
             color: c.black,
@@ -2177,66 +1897,6 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
-    scoreEditor: StyleSheet.create({
-        container: {
-            padding: 15,
-            alignItems: 'center',
-        },
-        headerText: {
-            color: c.primary,
-            fontSize: fontSizes.subHeader,
-            fontWeight: 'bold',
-            marginBottom: 15,
-        },
-        stepperRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-        },
-        stepperButton: {
-            width: 48,
-            height: 48,
-            borderRadius: 24,
-            backgroundColor: c.primary,
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        stepperButtonText: {
-            color: c.background,
-            fontSize: fontSizes.subHeader,
-            fontWeight: 'bold',
-        },
-        scoreText: {
-            color: c.black,
-            fontSize: fontSizes.header,
-            fontWeight: 'bold',
-            marginHorizontal: 15,
-            minWidth: 30,
-            textAlign: 'center',
-        },
-        parRow: {
-            flexDirection: 'row',
-            marginBottom: 12,
-            gap: 8,
-        },
-        parButton: {
-            paddingHorizontal: 12,
-            paddingVertical: 6,
-            borderRadius: 6,
-            borderWidth: 1,
-            borderColor: c.primary,
-        },
-        parButtonActive: {
-            backgroundColor: c.primary,
-        },
-        parButtonText: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-        },
-        parButtonTextActive: {
-            color: c.background,
-        },
-    }),
-
     playerSetup: StyleSheet.create({
         container: {
             padding: 15,
@@ -2259,14 +1919,6 @@ export const createStyles = (c: ThemeColours) => ({
             borderBottomWidth: 1,
             borderBottomColor: c.primary,
             paddingVertical: 5,
-        },
-        courseNameInput: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-            borderBottomWidth: 1,
-            borderBottomColor: c.primary,
-            paddingVertical: 5,
-            marginBottom: 15,
         },
         removeButton: {
             marginLeft: 10,
@@ -2388,22 +2040,6 @@ export const createStyles = (c: ThemeColours) => ({
         startButtonFooter: {
             marginTop: 24,
         },
-        recentLabel: {
-            color: c.black,
-            fontSize: fontSizes.smallText,
-            marginBottom: 5,
-        },
-        recentItem: {
-            paddingVertical: 6,
-            paddingHorizontal: 10,
-        },
-        recentItemText: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-        },
-        recentContainer: {
-            marginBottom: 10,
-        },
         errorText: {
             color: c.red,
             fontSize: fontSizes.smallText,
@@ -2452,12 +2088,6 @@ export const createStyles = (c: ThemeColours) => ({
             height: 10,
             borderRadius: 5,
             marginHorizontal: 4,
-        },
-        indicatorActive: {
-            backgroundColor: c.primary,
-        },
-        indicatorInactive: {
-            backgroundColor: c.backgroundAlternate,
         },
         buttonContainer: {
             flexDirection: 'row',
@@ -2528,22 +2158,8 @@ export const createStyles = (c: ThemeColours) => ({
             justifyContent: 'center',
             alignItems: 'center',
         },
-        buttonInactive: {
-            backgroundColor: 'transparent',
-            borderColor: c.tertiary,
-        },
-        buttonActive: {
-            backgroundColor: c.red,
-            borderColor: c.red,
-        },
         buttonText: {
             color: c.white,
-            fontSize: fontSizes.smallText,
-            fontWeight: 'bold',
-            textAlign: 'center',
-        },
-        buttonTextInactive: {
-            color: c.black,
             fontSize: fontSizes.smallText,
             fontWeight: 'bold',
             textAlign: 'center',
@@ -2588,13 +2204,6 @@ export const createStyles = (c: ThemeColours) => ({
             paddingHorizontal: 0,
             paddingBottom: 0,
         },
-        markedCount: {
-            color: c.tertiary,
-            fontSize: fontSizes.smallText,
-            paddingHorizontal: 4,
-            paddingTop: 8,
-            paddingBottom: 4,
-        },
         hint: {
             color: c.primary,
             fontSize: fontSizes.smallText,
@@ -2618,11 +2227,6 @@ export const createStyles = (c: ThemeColours) => ({
             paddingVertical: 8,
             borderBottomWidth: 0.5,
             borderColor: c.primary,
-        },
-        toggleLabel: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
         },
         chevron: {
             color: c.primary,
@@ -2947,87 +2551,6 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
-    drillStatsChart: StyleSheet.create({
-        container: {
-            padding: 10,
-            marginBottom: 10,
-        },
-        title: {
-            color: c.primary,
-            fontSize: fontSizes.subHeader,
-            marginBottom: 15,
-            fontWeight: 'bold',
-        },
-        barContainer: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: 8,
-        },
-        labelContainer: {
-            width: 125,
-            paddingRight: 5,
-        },
-        label: {
-            color: c.primary,
-            fontSize: fontSizes.smallText,
-        },
-        barWrapper: {
-            flex: 1,
-            flexDirection: 'row',
-            height: 20,
-            borderRadius: 4,
-            overflow: 'hidden',
-        },
-        bar: {
-            height: '100%',
-            borderTopLeftRadius: 4,
-            borderBottomLeftRadius: 4,
-        },
-        barBackground: {
-            height: '100%',
-            backgroundColor: c.backgroundLight,
-        },
-        statsContainer: {
-            width: 90,
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-        },
-        statsText: {
-            color: c.primary,
-            fontSize: fontSizes.smallText,
-            fontWeight: 'bold',
-            marginRight: 2,
-        },
-        countText: {
-            color: c.white,
-            fontSize: fontSizes.smallText,
-        },
-        legend: {
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginTop: 15,
-            paddingTop: 10,
-            borderTopWidth: 1,
-            borderTopColor: c.border,
-        },
-        legendItem: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginHorizontal: 10,
-        },
-        legendDot: {
-            width: 10,
-            height: 10,
-            borderRadius: 5,
-            marginRight: 5,
-        },
-        legendText: {
-            color: c.white,
-            fontSize: fontSizes.smallText,
-        },
-    }),
-
     networkStatus: StyleSheet.create({
         container: {
             position: 'absolute',
@@ -3047,13 +2570,6 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.smallText,
             marginLeft: 8,
             fontWeight: '500',
-        },
-    }),
-
-    instructions: StyleSheet.create({
-        contentText: {
-            padding: 5,
-            margin: 5,
         },
     }),
 
@@ -3091,34 +2607,11 @@ export const createStyles = (c: ThemeColours) => ({
     }),
 
     playScreen: StyleSheet.create({
-        startRoundContainer: {
-            padding: 15,
-            alignItems: 'center',
-        },
         navigationButtonsContainer: {
             flexDirection: 'row',
             justifyContent: 'center',
             gap: 10,
             marginHorizontal: 8,
-        },
-        previousHoleButton: {
-            backgroundColor: 'transparent',
-            borderWidth: 2,
-            borderColor: c.primary,
-            minHeight: 48,
-            paddingVertical: 8,
-            paddingHorizontal: 12,
-            borderRadius: 6,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            flex: 1,
-        },
-        previousHoleButtonText: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
         },
         holeBarRow: {
             flexDirection: 'row',
@@ -3153,55 +2646,6 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.red,
             fontSize: fontSizes.normal,
         },
-        confirmContainer: {
-            marginTop: 20,
-            marginHorizontal: 15,
-        },
-        endRoundButton: {
-            backgroundColor: c.red,
-            padding: 12,
-            borderRadius: 8,
-            alignItems: 'center',
-            marginTop: 20,
-            marginHorizontal: 15,
-        },
-        endRoundButtonText: {
-            color: c.white,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
-        filterContainer: {
-            flexDirection: 'row',
-            justifyContent: 'center',
-            paddingHorizontal: 15,
-            paddingTop: 8,
-            gap: 8,
-        },
-        filterLabel: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-            alignSelf: 'center',
-            marginRight: 4,
-        },
-        filterButton: {
-            paddingVertical: 4,
-            paddingHorizontal: 10,
-            minWidth: 68,
-            alignItems: 'center',
-            borderRadius: 6,
-            borderWidth: 1,
-            borderColor: c.primary,
-        },
-        filterButtonSelected: {
-            backgroundColor: c.primary,
-        },
-        filterButtonText: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-        },
-        filterButtonTextSelected: {
-            color: c.background,
-        },
         historyDateColumn: {
             width: 70,
         },
@@ -3211,18 +2655,6 @@ export const createStyles = (c: ThemeColours) => ({
         historyTotalColumn: {
             width: 56,
             textAlign: 'center',
-        },
-        historyNarrowColumn: {
-            width: '15%',
-            textAlign: 'center',
-        },
-        scorecardHeader: {
-            color: c.black,
-            fontSize: fontSizes.subHeader,
-            fontWeight: 'bold',
-            textAlign: 'center',
-            marginTop: 10,
-            marginBottom: 5,
         },
     }),
 
@@ -3235,54 +2667,7 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
-    randomTool: StyleSheet.create({
-        container: {
-            padding: 20,
-        },
-        actionButtonText: {
-            color: c.background,
-            fontSize: fontSizes.tableHeader,
-            fontWeight: 'bold',
-        },
-        randomNumberContainer: {
-            backgroundColor: c.background,
-            borderColor: c.primary,
-            borderWidth: 2,
-            borderRadius: 12,
-            margin: 15,
-            padding: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'row',
-        },
-        randomNumberText: {
-            color: c.primary,
-            fontSize: fontSizes.massive,
-            fontWeight: 'bold',
-            textAlign: 'center',
-        },
-        micButton: {
-            marginTop: 12,
-            padding: 10,
-            borderRadius: 8,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            backgroundColor: c.tertiary,
-        },
-        micButtonActive: {
-            backgroundColor: c.primary,
-        },
-    }),
-
     homeCards: StyleSheet.create({
-        topActions: {
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            columnGap: 10,
-            marginBottom: 20,
-        },
         circleButton: {
             width: 48,
             height: 48,
@@ -3885,9 +3270,6 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.header,
             fontWeight: 'bold',
             textAlign: 'center',
-        },
-        headerSpacer: {
-            width: 44,
         },
         sectionLabel: {
             color: c.tertiary,
@@ -4688,11 +4070,6 @@ export const createStyles = (c: ThemeColours) => ({
             alignItems: 'center',
             flex: 1,
         },
-        parLabel: {
-            color: c.black,
-            fontSize: fontSizes.smallestText,
-            opacity: 0.7,
-        },
         value: {
             color: c.black,
             fontSize: fontSizes.smallText,
@@ -4768,23 +4145,6 @@ export const createStyles = (c: ThemeColours) => ({
             fontWeight: 'bold',
             textAlign: 'center',
         },
-        distanceNameCell: {
-            flex: 1,
-            paddingVertical: 8,
-            paddingHorizontal: 6,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: c.primary + '11',
-            borderRightWidth: 1,
-            borderRightColor: c.primary + '33',
-            minWidth: 38,
-        },
-        distanceNameText: {
-            color: c.primary,
-            fontSize: fontSizes.smallestText,
-            fontWeight: 'bold',
-            textAlign: 'center',
-        },
         dataCell: {
             flex: 1,
             paddingVertical: 8,
@@ -4807,160 +4167,6 @@ export const createStyles = (c: ThemeColours) => ({
         highlightedText: {
             color: c.primary,
             fontWeight: 'bold',
-        },
-    }),
-
-    windDisplay: StyleSheet.create({
-        card: {
-            alignItems: 'center',
-        },
-        cardFull: {
-            borderWidth: 1,
-        },
-        cardCompact: {
-            borderWidth: 0,
-        },
-        windControlRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-            paddingHorizontal: 12,
-            borderBottomWidth: 1,
-        },
-        observationSection: {
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        windReadingColumn: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 12,
-        },
-        implicationsSection: {
-            width: '100%',
-            alignItems: 'center',
-            paddingHorizontal: 12,
-            paddingVertical: 12,
-        },
-        arrowWrapper: {
-            marginTop: 0,
-            marginBottom: 0,
-        },
-        speedText: {
-            color: c.primary,
-            fontSize: fontSizes.header,
-            fontWeight: 'bold',
-            marginTop: 0,
-            minWidth: 60,
-            textAlign: 'center',
-        },
-        bottomSection: {
-            width: '100%',
-            alignItems: 'center',
-        },
-        voiceButton: {
-            width: 50,
-            height: 40,
-            borderRadius: 8,
-            borderWidth: 1,
-            borderColor: c.primary,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        voiceButtonActive: {
-            backgroundColor: c.primary,
-            opacity: 0.9,
-        },
-        voiceButtonInactive: {
-            backgroundColor: 'transparent',
-        },
-        voiceButtonText: {
-            fontSize: fontSizes.smallText,
-            fontWeight: 'bold',
-        },
-        voiceButtonTextActive: {
-            color: c.background,
-        },
-        voiceButtonTextInactive: {
-            color: c.primary,
-        },
-        voiceRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 12,
-            marginTop: 8,
-        },
-        manualEntryToggle: {
-            width: 50,
-            height: 40,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderWidth: 1,
-            borderColor: c.primary,
-            borderRadius: 8,
-            backgroundColor: 'transparent',
-        },
-        manualEntryPanel: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            marginTop: 8,
-        },
-        manualEntryInput: {
-            borderWidth: 1,
-            borderColor: c.primary,
-            borderRadius: 8,
-            paddingVertical: 6,
-            paddingHorizontal: 10,
-            color: c.primary,
-            fontSize: fontSizes.normal,
-            minWidth: 90,
-            textAlign: 'center',
-        },
-        manualEntrySubmit: {
-            backgroundColor: c.primary,
-            borderRadius: 8,
-            paddingVertical: 8,
-            paddingHorizontal: 14,
-        },
-        manualEntrySubmitText: {
-            color: c.background,
-            fontWeight: 'bold',
-            fontSize: fontSizes.smallText,
-        },
-        manualEntryCancelText: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-        },
-        effectText: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-            marginTop: 8,
-        },
-        adjustedYardsText: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-            fontWeight: 'bold',
-            marginTop: 4,
-        },
-        fallbackSuggestionText: {
-            color: c.tertiary,
-            fontSize: fontSizes.smallText,
-            fontStyle: 'italic',
-            textAlign: 'center',
-        },
-        aimHint: {
-            color: c.primary,
-            fontSize: fontSizes.smallestText,
-            opacity: 0.6,
-            marginTop: 6,
         },
     }),
 });

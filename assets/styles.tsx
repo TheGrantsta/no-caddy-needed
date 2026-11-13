@@ -16,6 +16,23 @@ const cancelTextStyle = (c: ThemeColours) => ({
     fontSize: fontSizes.normal,
 });
 
+// The white Edit pill with green text, shared by every screen that has an Edit button
+const editPillStyle = (c: ThemeColours) => ({
+    minWidth: 72,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: c.backgroundLight,
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
+    paddingHorizontal: 16,
+});
+
+const editPillTextStyle = (c: ThemeColours) => ({
+    color: c.primary,
+    fontSize: fontSizes.normal,
+    fontWeight: '600' as const,
+});
+
 const circleButtonStyle = (c: ThemeColours) => ({
     width: 44,
     height: 44,
@@ -324,15 +341,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.header,
             fontWeight: 'bold',
         },
-        editButton: {
-            minWidth: 72,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.backgroundLight,
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingHorizontal: 16,
-        },
+        editButton: editPillStyle(c),
         // Same Cancel pill as the Edit round sheet
         cancelPill: cancelPillStyle(c),
         cancelText: cancelTextStyle(c),
@@ -350,11 +359,7 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             fontWeight: 'bold',
         },
-        editText: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-            fontWeight: '600',
-        },
+        editText: editPillTextStyle(c),
         segment: {
             flexDirection: 'row',
             backgroundColor: c.tertiary + '26',
@@ -1792,20 +1797,8 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'center',
             marginTop: 12,
         },
-        editButton: {
-            minWidth: 72,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.backgroundLight,
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingHorizontal: 16,
-        },
-        editText: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-            fontWeight: '600',
-        },
+        editButton: editPillStyle(c),
+        editText: editPillTextStyle(c),
         sectionLabel: {
             color: c.tertiary,
             fontSize: fontSizes.smallText,
@@ -3837,19 +3830,8 @@ export const createStyles = (c: ThemeColours) => ({
             columnGap: 12,
         },
         circleButton: circleButtonStyle(c),
-        // The white Edit pill with green text used in the scorecard's title row
-        editPill: {
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: c.backgroundLight,
-            justifyContent: 'center',
-            paddingHorizontal: 18,
-        },
-        editPillText: {
-            color: c.primary,
-            fontSize: fontSizes.normal,
-            fontWeight: '600',
-        },
+        editPill: editPillStyle(c),
+        editPillText: editPillTextStyle(c),
         titleBlock: {
             flex: 1,
         },

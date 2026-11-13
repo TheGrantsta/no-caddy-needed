@@ -4,6 +4,7 @@ import { AppSettings } from '@/service/DbService';
 import { useStyles } from '@/hooks/useStyles';
 import Dropdown from './Dropdown';
 import SettingsSection from './SettingsSection';
+import SettingsRow from './SettingsRow';
 import SettingsSegmentedControl from './SettingsSegmentedControl';
 import SettingsSwitchRow from './SettingsSwitchRow';
 
@@ -55,8 +56,7 @@ export default function SystemSettings({
                     testID="sounds-switch"
                 />
                 <View style={s.rowDivider} />
-                <View style={s.row}>
-                    <Text style={s.rowLabel}>Voice</Text>
+                <SettingsRow label="Voice">
                     <Dropdown
                         options={VOICES.map(voice => voice.label)}
                         selectedOption={voiceLabel}
@@ -66,7 +66,7 @@ export default function SystemSettings({
                         }}
                         testIDPrefix="voice"
                     />
-                </View>
+                </SettingsRow>
             </SettingsSection>
 
             <SettingsSection

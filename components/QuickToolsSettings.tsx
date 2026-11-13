@@ -1,9 +1,10 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { QUICK_TOOL_COUNT, QUICK_TOOL_OPTIONS, optionsForQuickToolSlot } from '@/utils/quickTools';
 import Dropdown from './Dropdown';
 import SettingsSection from './SettingsSection';
+import SettingsRow from './SettingsRow';
 
 type Props = {
     // The three saved Quick tool slugs, in display order
@@ -30,15 +31,14 @@ export default function QuickToolsSettings({ quickTools, onQuickToolsChange }: P
             {Array.from({ length: QUICK_TOOL_COUNT }, (_, slot) => (
                 <View key={slot}>
                     {slot > 0 && <View style={s.rowDivider} />}
-                    <View style={s.row}>
-                        <Text style={s.rowLabel}>{`Shortcut ${slot + 1}`}</Text>
+                    <SettingsRow label={`Shortcut ${slot + 1}`}>
                         <Dropdown
                             options={optionsForQuickToolSlot(quickTools, slot).map(option => option.label)}
                             selectedOption={labelOf(quickTools[slot])}
                             onSelectOption={label => chooseForSlot(slot, label)}
                             testIDPrefix={`quick-tool-${slot}`}
                         />
-                    </View>
+                    </SettingsRow>
                 </View>
             ))}
         </SettingsSection>

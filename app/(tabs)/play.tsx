@@ -106,6 +106,7 @@ export default function Play() {
     const validatePuttingStats = lifecycle.validatePuttingStats;
     const validateSinDetails = lifecycle.validateSinDetails;
     const resetForNewHole = lifecycle.resetForNewHole;
+    const resetAllHoleState = lifecycle.resetAll;
 
     // Read from the database on each render, so the club picker always shows the saved clubs
     const clubDistances: ClubDistance[] = getClubDistancesService();
@@ -538,19 +539,9 @@ export default function Play() {
     };
 
     const resetToIdle = () => {
+        resetAllHoleState();
         setActiveRoundId(null);
         setRoundStartHole(1);
-        setCurrentHole(1);
-        setDeadlySinsValues(INITIAL_SINS);
-        setPuttingStats(null);
-        setPuttingFirstPuttError(false);
-        setPuttingSecondPuttError(false);
-        setSelectedOffTeeClub(undefined);
-        setSinDetailsClubError(false);
-        setSelectedPenaltyType(undefined);
-        setSinDetailsPenaltyError(false);
-        setSelectedBogeysClub(undefined);
-        setSinDetailsBogeysClubError(false);
         setPlayers([]);
         setCurrentHoleData(null);
         setShowEndRoundConfirm(false);

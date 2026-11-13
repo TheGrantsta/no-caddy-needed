@@ -233,6 +233,38 @@ describe('useHoleLifecycle', () => {
             expect(result.current.currentHole).toBe(1);
             expect(result.current.deadlySinsValues.threePutts).toBe(false);
         });
+
+        it('shouldClearTheDoubleChipReasonSoItDoesNotCarryIntoTheNextRound', () => {
+            const { result } = renderHook(() => useHoleLifecycle());
+
+            act(() => {
+                result.current.setSelectedDoubleChipReason('thin');
+                result.current.setSinDetailsDoubleChipReasonError(true);
+            });
+            act(() => {
+                result.current.resetAll();
+            });
+
+            expect(result.current.selectedDoubleChipReason).toBeUndefined();
+            expect(result.current.sinDetailsDoubleChipReasonError).toBe(false);
+        });
+
+        it('shouldClearTheBadHoleReassuranceAndSkipStatsFlow', () => {
+            const { result } = renderHook(() => useHoleLifecycle());
+
+            act(() => {
+                result.current.setSkipStatsFlow(true);
+                result.current.setShowBadHoleReassurance(true);
+                result.current.setReassuranceMessage('Tough hole');
+            });
+            act(() => {
+                result.current.resetAll();
+            });
+
+            expect(result.current.skipStatsFlow).toBe(false);
+            expect(result.current.showBadHoleReassurance).toBe(false);
+            expect(result.current.reassuranceMessage).toBe('');
+        });
     });
 
     describe('resetForNewHole', () => {

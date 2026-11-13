@@ -653,7 +653,28 @@ export const getSettings = () => {
     return rows.length > 0 ? rows[0] : null;
 };
 
-export const saveSettings = async (notificationsEnabled: number, voice: string, soundsEnabled: number, wedgeChartOnboardingSeen: number, distancesOnboardingSeen: number, playOnboardingSeen: number, homeOnboardingSeen: number, practiceOnboardingSeen: number, reviewPromptShown: number, whatsNewVersionSeen: string, settingsOnboardingSeen: number, performOnboardingSeen: number, tempoBpm: number, units: string, skipStatsFlowEnabled: number, badHoleReassuranceEnabled: number, quickTools: string): Promise<boolean> => {
+// One row of the Settings table, as written by saveSettings
+export type SettingsRow = {
+    notificationsEnabled: number;
+    voice: string;
+    soundsEnabled: number;
+    wedgeChartOnboardingSeen: number;
+    distancesOnboardingSeen: number;
+    playOnboardingSeen: number;
+    homeOnboardingSeen: number;
+    practiceOnboardingSeen: number;
+    reviewPromptShown: number;
+    whatsNewVersionSeen: string;
+    settingsOnboardingSeen: number;
+    performOnboardingSeen: number;
+    tempoBpm: number;
+    units: string;
+    skipStatsFlowEnabled: number;
+    badHoleReassuranceEnabled: number;
+    quickTools: string;
+};
+
+export const saveSettings = async (settings: SettingsRow): Promise<boolean> => {
     let success = true;
     try {
         getSyncDb().execSync('DELETE FROM Settings');
@@ -663,7 +684,25 @@ export const saveSettings = async (notificationsEnabled: number, voice: string, 
         );
 
         try {
-            await statement.executeAsync({ $NotificationsEnabled: notificationsEnabled, $Voice: voice, $SoundsEnabled: soundsEnabled, $WedgeChartOnboardingSeen: wedgeChartOnboardingSeen, $DistancesOnboardingSeen: distancesOnboardingSeen, $PlayOnboardingSeen: playOnboardingSeen, $HomeOnboardingSeen: homeOnboardingSeen, $PracticeOnboardingSeen: practiceOnboardingSeen, $ReviewPromptShown: reviewPromptShown, $WhatsNewVersionSeen: whatsNewVersionSeen, $SettingsOnboardingSeen: settingsOnboardingSeen, $PerformOnboardingSeen: performOnboardingSeen, $TempoBpm: tempoBpm, $Units: units, $SkipStatsFlowEnabled: skipStatsFlowEnabled, $BadHoleReassuranceEnabled: badHoleReassuranceEnabled, $QuickTools: quickTools });
+            await statement.executeAsync({
+                $NotificationsEnabled: settings.notificationsEnabled,
+                $Voice: settings.voice,
+                $SoundsEnabled: settings.soundsEnabled,
+                $WedgeChartOnboardingSeen: settings.wedgeChartOnboardingSeen,
+                $DistancesOnboardingSeen: settings.distancesOnboardingSeen,
+                $PlayOnboardingSeen: settings.playOnboardingSeen,
+                $HomeOnboardingSeen: settings.homeOnboardingSeen,
+                $PracticeOnboardingSeen: settings.practiceOnboardingSeen,
+                $ReviewPromptShown: settings.reviewPromptShown,
+                $WhatsNewVersionSeen: settings.whatsNewVersionSeen,
+                $SettingsOnboardingSeen: settings.settingsOnboardingSeen,
+                $PerformOnboardingSeen: settings.performOnboardingSeen,
+                $TempoBpm: settings.tempoBpm,
+                $Units: settings.units,
+                $SkipStatsFlowEnabled: settings.skipStatsFlowEnabled,
+                $BadHoleReassuranceEnabled: settings.badHoleReassuranceEnabled,
+                $QuickTools: settings.quickTools,
+            });
         } finally {
             await statement.finalizeAsync();
         }

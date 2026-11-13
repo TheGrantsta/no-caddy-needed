@@ -220,7 +220,7 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
+        expect(mockSaveSettings).toHaveBeenCalledWith({ notificationsEnabled: 1, voice: 'female', soundsEnabled: 1, wedgeChartOnboardingSeen: 0, distancesOnboardingSeen: 0, playOnboardingSeen: 0, homeOnboardingSeen: 0, practiceOnboardingSeen: 0, reviewPromptShown: 0, whatsNewVersionSeen: '', settingsOnboardingSeen: 0, performOnboardingSeen: 0, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: 0, badHoleReassuranceEnabled: 1, quickTools: 'wind,tempo,random' });
     });
 
     it('saves settings with wedgeChartOnboardingSeen true', async () => {
@@ -249,7 +249,7 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 1, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
+        expect(mockSaveSettings).toHaveBeenCalledWith({ notificationsEnabled: 0, voice: 'female', soundsEnabled: 1, wedgeChartOnboardingSeen: 1, distancesOnboardingSeen: 0, playOnboardingSeen: 0, homeOnboardingSeen: 0, practiceOnboardingSeen: 0, reviewPromptShown: 0, whatsNewVersionSeen: '', settingsOnboardingSeen: 0, performOnboardingSeen: 0, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: 0, badHoleReassuranceEnabled: 1, quickTools: 'wind,tempo,random' });
     });
 
     it('saves settings with distancesOnboardingSeen true', async () => {
@@ -278,6 +278,6 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService(settings);
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 1, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
+        expect(mockSaveSettings).toHaveBeenCalledWith({ notificationsEnabled: 1, voice: 'female', soundsEnabled: 1, wedgeChartOnboardingSeen: 0, distancesOnboardingSeen: 1, playOnboardingSeen: 0, homeOnboardingSeen: 0, practiceOnboardingSeen: 0, reviewPromptShown: 0, whatsNewVersionSeen: '', settingsOnboardingSeen: 0, performOnboardingSeen: 0, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: 0, badHoleReassuranceEnabled: 1, quickTools: 'wind,tempo,random' });
     });
 });

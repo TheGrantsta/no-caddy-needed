@@ -187,7 +187,7 @@ describe('saveSettingsService', () => {
         const result = await saveSettingsService({ ...baseSettings, notificationsEnabled: false });
 
         expect(result).toBe(true);
-        expect(mockSaveSettings).toHaveBeenCalledWith(0, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
+        expect(mockSaveSettings).toHaveBeenCalledWith({ notificationsEnabled: 0, voice: 'female', soundsEnabled: 1, wedgeChartOnboardingSeen: 0, distancesOnboardingSeen: 0, playOnboardingSeen: 0, homeOnboardingSeen: 0, practiceOnboardingSeen: 0, reviewPromptShown: 0, whatsNewVersionSeen: '', settingsOnboardingSeen: 0, performOnboardingSeen: 0, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: 0, badHoleReassuranceEnabled: 1, quickTools: 'wind,tempo,random' });
     });
 
     it('saves the quick tools as a comma-separated list', async () => {
@@ -195,7 +195,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, quickTools: ['lag-putting', 'reminders', 'wind'] });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'lag-putting,reminders,wind');
+        expect(mockSaveSettings).toHaveBeenCalledWith({ notificationsEnabled: 1, voice: 'female', soundsEnabled: 1, wedgeChartOnboardingSeen: 0, distancesOnboardingSeen: 0, playOnboardingSeen: 0, homeOnboardingSeen: 0, practiceOnboardingSeen: 0, reviewPromptShown: 0, whatsNewVersionSeen: '', settingsOnboardingSeen: 0, performOnboardingSeen: 0, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: 0, badHoleReassuranceEnabled: 1, quickTools: 'lag-putting,reminders,wind' });
     });
 
     it('maps notificationsEnabled true to 1', async () => {
@@ -203,7 +203,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService(baseSettings);
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
+        expect(mockSaveSettings).toHaveBeenCalledWith({ notificationsEnabled: 1, voice: 'female', soundsEnabled: 1, wedgeChartOnboardingSeen: 0, distancesOnboardingSeen: 0, playOnboardingSeen: 0, homeOnboardingSeen: 0, practiceOnboardingSeen: 0, reviewPromptShown: 0, whatsNewVersionSeen: '', settingsOnboardingSeen: 0, performOnboardingSeen: 0, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: 0, badHoleReassuranceEnabled: 1, quickTools: 'wind,tempo,random' });
     });
 
     it('maps reviewPromptShown true to 1', async () => {
@@ -211,7 +211,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, reviewPromptShown: true });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 1, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
+        expect(mockSaveSettings).toHaveBeenCalledWith({ notificationsEnabled: 1, voice: 'female', soundsEnabled: 1, wedgeChartOnboardingSeen: 0, distancesOnboardingSeen: 0, playOnboardingSeen: 0, homeOnboardingSeen: 0, practiceOnboardingSeen: 0, reviewPromptShown: 1, whatsNewVersionSeen: '', settingsOnboardingSeen: 0, performOnboardingSeen: 0, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: 0, badHoleReassuranceEnabled: 1, quickTools: 'wind,tempo,random' });
     });
 
     it('passes voice neutral to saveSettings', async () => {
@@ -219,7 +219,7 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, voice: 'neutral' });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'neutral', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 60, 'yards', 0, 1, 'wind,tempo,random');
+        expect(mockSaveSettings).toHaveBeenCalledWith({ notificationsEnabled: 1, voice: 'neutral', soundsEnabled: 1, wedgeChartOnboardingSeen: 0, distancesOnboardingSeen: 0, playOnboardingSeen: 0, homeOnboardingSeen: 0, practiceOnboardingSeen: 0, reviewPromptShown: 0, whatsNewVersionSeen: '', settingsOnboardingSeen: 0, performOnboardingSeen: 0, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: 0, badHoleReassuranceEnabled: 1, quickTools: 'wind,tempo,random' });
     });
 
     it('returns false when save fails', async () => {
@@ -233,6 +233,6 @@ describe('saveSettingsService', () => {
 
         await saveSettingsService({ ...baseSettings, tempoBpm: 108 });
 
-        expect(mockSaveSettings).toHaveBeenCalledWith(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, 108, 'yards', 0, 1, 'wind,tempo,random');
+        expect(mockSaveSettings).toHaveBeenCalledWith({ notificationsEnabled: 1, voice: 'female', soundsEnabled: 1, wedgeChartOnboardingSeen: 0, distancesOnboardingSeen: 0, playOnboardingSeen: 0, homeOnboardingSeen: 0, practiceOnboardingSeen: 0, reviewPromptShown: 0, whatsNewVersionSeen: '', settingsOnboardingSeen: 0, performOnboardingSeen: 0, tempoBpm: 108, units: 'yards', skipStatsFlowEnabled: 0, badHoleReassuranceEnabled: 1, quickTools: 'wind,tempo,random' });
     });
 });

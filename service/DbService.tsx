@@ -737,7 +737,25 @@ export const getSettingsService = (): AppSettings => {
 };
 
 export const saveSettingsService = async (settings: AppSettings): Promise<boolean> => {
-    return saveSettings(settings.notificationsEnabled ? 1 : 0, settings.voice, settings.soundsEnabled ? 1 : 0, settings.wedgeChartOnboardingSeen ? 1 : 0, settings.distancesOnboardingSeen ? 1 : 0, settings.playOnboardingSeen ? 1 : 0, settings.homeOnboardingSeen ? 1 : 0, settings.practiceOnboardingSeen ? 1 : 0, settings.reviewPromptShown ? 1 : 0, settings.whatsNewVersionSeen, settings.settingsOnboardingSeen ? 1 : 0, settings.performOnboardingSeen ? 1 : 0, settings.tempoBpm, settings.units, settings.skipStatsFlowEnabled ? 1 : 0, settings.badHoleReassuranceEnabled ? 1 : 0, serializeQuickTools(settings.quickTools));
+    return saveSettings({
+        notificationsEnabled: settings.notificationsEnabled ? 1 : 0,
+        voice: settings.voice,
+        soundsEnabled: settings.soundsEnabled ? 1 : 0,
+        wedgeChartOnboardingSeen: settings.wedgeChartOnboardingSeen ? 1 : 0,
+        distancesOnboardingSeen: settings.distancesOnboardingSeen ? 1 : 0,
+        playOnboardingSeen: settings.playOnboardingSeen ? 1 : 0,
+        homeOnboardingSeen: settings.homeOnboardingSeen ? 1 : 0,
+        practiceOnboardingSeen: settings.practiceOnboardingSeen ? 1 : 0,
+        reviewPromptShown: settings.reviewPromptShown ? 1 : 0,
+        whatsNewVersionSeen: settings.whatsNewVersionSeen,
+        settingsOnboardingSeen: settings.settingsOnboardingSeen ? 1 : 0,
+        performOnboardingSeen: settings.performOnboardingSeen ? 1 : 0,
+        tempoBpm: settings.tempoBpm,
+        units: settings.units,
+        skipStatsFlowEnabled: settings.skipStatsFlowEnabled ? 1 : 0,
+        badHoleReassuranceEnabled: settings.badHoleReassuranceEnabled ? 1 : 0,
+        quickTools: serializeQuickTools(settings.quickTools),
+    });
 };
 
 export type PracticeReminder = {

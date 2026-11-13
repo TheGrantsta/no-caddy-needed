@@ -34,7 +34,25 @@ beforeAll(async () => {
 // whatsNewVersionSeen, settingsOnboardingSeen, performOnboardingSeen, tempoBpm, units,
 // skipStatsFlowEnabled, badHoleReassuranceEnabled, quickTools
 const saveDefault = (tempoBpm = 60, quickTools = 'wind,tempo,random') =>
-    saveSettings(1, 'female', 1, 0, 0, 0, 0, 0, 0, '', 0, 0, tempoBpm, 'yards', 0, 1, quickTools);
+    saveSettings({
+        notificationsEnabled: 1,
+        voice: 'female',
+        soundsEnabled: 1,
+        wedgeChartOnboardingSeen: 0,
+        distancesOnboardingSeen: 0,
+        playOnboardingSeen: 0,
+        homeOnboardingSeen: 0,
+        practiceOnboardingSeen: 0,
+        reviewPromptShown: 0,
+        whatsNewVersionSeen: '',
+        settingsOnboardingSeen: 0,
+        performOnboardingSeen: 0,
+        tempoBpm,
+        units: 'yards',
+        skipStatsFlowEnabled: 0,
+        badHoleReassuranceEnabled: 1,
+        quickTools,
+    });
 
 describe('saveSettings', () => {
     beforeEach(() => {

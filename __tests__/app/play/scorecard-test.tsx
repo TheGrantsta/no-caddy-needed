@@ -1035,6 +1035,21 @@ describe('Scorecard screen', () => {
             }
         });
 
+        it('shouldReadTheRoundHistoryOnceAndNotAgainWhenSwiping', () => {
+            mockParams = { roundId: '1' };
+            mockGetAllRoundHistory.mockReturnValue([makeHistoryRound(3), makeHistoryRound(2), makeHistoryRound(1)]);
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            const readsAfterRender = mockGetAllRoundHistory.mock.calls.length;
+
+            fireEvent(getByTestId('scorecard-pager'), 'momentumScrollEnd', { nativeEvent: { contentOffset: { x: 0 } } });
+
+            // The swipe moved the active dot, so the screen did re-render
+            expect(StyleSheet.flatten(getByTestId('scorecard-indicator-0').props.style).backgroundColor).toBeDefined();
+            expect(mockGetAllRoundHistory.mock.calls.length).toBe(readsAfterRender);
+        });
+
         it('locks horizontal swiping while editing and unlocks on cancel', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 

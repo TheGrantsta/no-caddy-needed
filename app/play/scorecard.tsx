@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -499,11 +499,14 @@ export default function ScorecardScreen() {
 
     // Page across only the most recent rounds (history is newest-first). Older rounds
     // are rarely revisited, so tapping one from the history list opens it on its own.
-    const history = (getAllRoundHistoryService() ?? []).slice(0, MAX_PAGER_ROUNDS);
-    const foundIndex = history.findIndex(r => String(r.Id) === roundId);
-    // The pager only needs each round's Id; a round opened from outside the recent list gets a placeholder
-    const rounds: { Id: number }[] = foundIndex >= 0 ? history : [{ Id: Number(roundId) }];
-    const initialIndex = foundIndex >= 0 ? foundIndex : 0;
+    // Read once per round opened, not on every swipe (each swipe re-renders this screen).
+    // The pager only needs each round's Id; a round opened from outside the recent list gets a placeholder.
+    const { rounds, initialIndex } = useMemo(() => {
+        const history = (getAllRoundHistoryService() ?? []).slice(0, MAX_PAGER_ROUNDS);
+        const foundIndex = history.findIndex(r => String(r.Id) === roundId);
+        const pagerRounds: { Id: number }[] = foundIndex >= 0 ? history : [{ Id: Number(roundId) }];
+        return { rounds: pagerRounds, initialIndex: foundIndex >= 0 ? foundIndex : 0 };
+    }, [roundId]);
     const [activeIndex, setActiveIndex] = useState(initialIndex);
     const [editingIds, setEditingIds] = useState<Set<string>>(() => new Set());
 

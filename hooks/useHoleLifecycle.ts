@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { DeadlySinsValues } from '../service/DbService';
+import { HOLES_PER_ROUND } from '../utils/holeOrder';
 
 export interface PuttingStats {
     firstPutt?: number;
@@ -38,11 +39,11 @@ export function useHoleLifecycle() {
     const [reassuranceMessage, setReassuranceMessage] = useState('');
 
     const setCurrentHoleValue = useCallback((hole: number) => {
-        setCurrentHole(Math.max(1, Math.min(18, hole)));
+        setCurrentHole(Math.max(1, Math.min(HOLES_PER_ROUND, hole)));
     }, []);
 
     const advanceHole = useCallback(() => {
-        setCurrentHole(prev => (prev < 18 ? prev + 1 : 18));
+        setCurrentHole(prev => (prev < HOLES_PER_ROUND ? prev + 1 : HOLES_PER_ROUND));
     }, []);
 
     const goBackHole = useCallback(() => {

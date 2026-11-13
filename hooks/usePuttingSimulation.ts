@@ -2,8 +2,10 @@ import { useReducer, useCallback } from 'react';
 import { SimulationPhase, clampValue, writeAtIndex } from '../utils/simulationState';
 import { getExpectedMakes } from '../assets/pgaPuttingBenchmarks';
 import { shuffleWithoutAdjacentCategories } from '../utils/puttDistribution';
+import { HOLES_PER_ROUND } from '../utils/holeOrder';
 
-const TOTAL_HOLES = 18;
+// A putting round is played over a full round of holes
+const TOTAL_HOLES = HOLES_PER_ROUND;
 const BASE_DISTANCES = [3, 8, 40, 14, 2, 5, 33, 16, 24, 9, 18, 52, 2, 28, 6, 4, 11, 21];
 
 function shuffleDistances(rng?: () => number): number[] {

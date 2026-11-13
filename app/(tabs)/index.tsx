@@ -20,8 +20,8 @@ import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 const WHATS_NEW = [
   'Start a round on any hole, so a shotgun start can begin on hole 10 without changing the scorecard',
   'Put the tools you use most one tap away on Home',
-  'Challenges help you focus on the short-game skills that lower your scores',
-  'Tracking GIRs to track your up-and-down success rate',
+  'Challenges help you focus on skill development to lower your scores',
+  'Entering GIRs to track your up-and-down success rate',
 ];
 
 const APP_VERSION = Constants.expoConfig?.version ?? '';

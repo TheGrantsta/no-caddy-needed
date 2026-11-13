@@ -5,7 +5,7 @@ export type DeadlySinCategory = {
     label: string;
 };
 
-export type DeadlySinCategoryTotal = DeadlySinCategory & {
+type DeadlySinCategoryTotal = DeadlySinCategory & {
     count: number;
 };
 

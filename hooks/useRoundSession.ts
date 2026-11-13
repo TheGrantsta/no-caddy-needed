@@ -15,7 +15,7 @@ import { RoundSummary as RoundSummaryData } from '../utils/roundSummary';
 import { useToggle } from './useToggle';
 
 type ScoreEntry = { playerId: number; playerName: string; score: number };
-export type CurrentHoleData = { holeNumber: number; holePar: number; scores: ScoreEntry[] } | null;
+type CurrentHoleData = { holeNumber: number; holePar: number; scores: ScoreEntry[] } | null;
 
 type Options = {
     currentHole: number;

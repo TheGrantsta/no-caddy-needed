@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-export interface FormField<T> {
+interface FormField<T> {
     value: T;
     error: string;
     onChange: (newValue: T) => void;
@@ -8,7 +8,7 @@ export interface FormField<T> {
     clear: () => void;
 }
 
-export type FormState<T extends Record<string, any>> = {
+type FormState<T extends Record<string, any>> = {
     [K in keyof T]: FormField<T[K]>;
 };
 

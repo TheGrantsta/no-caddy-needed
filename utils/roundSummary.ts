@@ -1,8 +1,8 @@
 // Builds the "Round saved" summary from a finished round's stored data.
 
-export type SummaryPlayer = { Id: number; PlayerName: string };
-export type SummaryHoleScore = { RoundPlayerId: number; HoleNumber: number; Score: number };
-export type SummaryPutting = { hole: number; firstPutt?: number; secondPutt?: number; greenInRegulation: boolean };
+type SummaryPlayer = { Id: number; PlayerName: string };
+type SummaryHoleScore = { RoundPlayerId: number; HoleNumber: number; Score: number };
+type SummaryPutting = { hole: number; firstPutt?: number; secondPutt?: number; greenInRegulation: boolean };
 export type SummarySins = Record<string, number>;
 
 type Input = {

@@ -1,4 +1,4 @@
-export interface PgaBenchmark {
+interface PgaBenchmark {
     rate: number; // make % as integer 0-100
     estimated: boolean; // true if extrapolated from PGA tour data
 }

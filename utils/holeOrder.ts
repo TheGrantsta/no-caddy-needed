@@ -26,12 +26,10 @@ export const sanitiseStartHole = (value: number | null | undefined): number =>
     typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= HOLES_PER_ROUND ? value : 1;
 
 // The front nine is holes 1 to 9; the back nine is holes 10 to 18
-export const FRONT_NINE_LAST_HOLE = 9;
-
-export const isFrontNineHole = (hole: number): boolean => hole <= FRONT_NINE_LAST_HOLE;
+const FRONT_NINE_LAST_HOLE = 9;
 
 // Splits a round's holes into the front nine and the back nine, keeping their order
 export const splitFrontAndBackNine = <T>(items: T[], holeOf: (item: T) => number): { front: T[]; back: T[] } => ({
-    front: items.filter(item => isFrontNineHole(holeOf(item))),
-    back: items.filter(item => !isFrontNineHole(holeOf(item))),
+    front: items.filter(item => holeOf(item) <= FRONT_NINE_LAST_HOLE),
+    back: items.filter(item => holeOf(item) > FRONT_NINE_LAST_HOLE),
 });

@@ -1,4 +1,4 @@
-export type BandComparator = 'gte' | 'lte';
+type BandComparator = 'gte' | 'lte';
 
 export interface BandDefinition<K extends string> {
     key: K;

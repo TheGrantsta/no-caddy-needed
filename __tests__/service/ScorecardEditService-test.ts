@@ -1,8 +1,4 @@
-import {
-    saveScorecardEditsService,
-    scorecardChangesFor,
-    HoleEditInput,
-} from '../../service/ScorecardEditService';
+import { saveScorecardEditsService } from '../../service/ScorecardEditService';
 import {
     updateScorecardService,
     replaceHoleDeadlySinsService,
@@ -11,6 +7,9 @@ import {
     insertPuttingStatsService,
     updateRoundStartTimeService,
 } from '../../service/DbService';
+
+// The hole edit as the screen passes it to the service
+type HoleEditInput = Parameters<typeof saveScorecardEditsService>[0]['hole'];
 
 jest.mock('../../service/DbService', () => ({
     updateScorecardService: jest.fn(),
@@ -69,25 +68,27 @@ describe('ScorecardEditService', () => {
         mockUpdateStartTime.mockResolvedValue(true);
     });
 
-    describe('scorecardChangesFor', () => {
-        it('shouldReturnOnlyTheScoresThatChanged', () => {
-            const original = [score(1, 1, 4), score(2, 2, 5)];
-            const edited = [score(1, 1, 4), score(2, 2, 6)];
+    describe('the score and par changes sent to the scorecard', () => {
+        it('shouldSendOnlyTheScoresThatChanged', async () => {
+            await save({ original: [score(1, 1, 4), score(2, 2, 5)], edited: [score(1, 1, 4), score(2, 2, 6)] });
 
-            expect(scorecardChangesFor(original, edited).changes).toEqual([{ id: 2, score: 6 }]);
+            expect(mockUpdateScorecard).toHaveBeenCalledWith(7, [{ id: 2, score: 6 }], []);
         });
 
-        it('shouldReturnOneParChangePerHoleEvenWhenTwoPlayersShareTheHole', () => {
-            const original = [score(1, 1, 4, 4), score(2, 1, 4, 4)];
-            const edited = [score(1, 1, 4, 5), score(2, 1, 4, 5)];
+        it('shouldSendOneParChangePerHoleEvenWhenTwoPlayersShareTheHole', async () => {
+            await save({
+                original: [score(1, 1, 4, 4), score(2, 1, 4, 4)],
+                edited: [score(1, 1, 4, 5), score(2, 1, 4, 5)],
+            });
 
-            expect(scorecardChangesFor(original, edited).parChanges).toEqual([{ holeNumber: 1, holePar: 5 }]);
+            expect(mockUpdateScorecard).toHaveBeenCalledWith(7, [], [{ holeNumber: 1, holePar: 5 }]);
         });
 
-        it('shouldReturnNothingWhenNothingChanged', () => {
+        it('shouldSendNoChangesWhenNothingChanged', async () => {
             const scores = [score(1, 1, 4)];
+            await save({ original: scores, edited: scores });
 
-            expect(scorecardChangesFor(scores, scores)).toEqual({ changes: [], parChanges: [] });
+            expect(mockUpdateScorecard).toHaveBeenCalledWith(7, [], []);
         });
     });
 

@@ -18,7 +18,7 @@ export type SinDetailsInput = {
 };
 
 // The hole the user opened in the edit sheet, if any
-export type HoleEditInput = {
+type HoleEditInput = {
     holeNumber: number | null;
     sins: DeadlySinsValues | null;
     sinDetails: SinDetailsInput;
@@ -26,10 +26,10 @@ export type HoleEditInput = {
     puttingStats: { firstPutt?: number; secondPutt?: number; secondIsLong: boolean; greenInRegulation: boolean } | null;
 };
 
-export type ScorecardSaveResult = 'saved' | 'missing-first-putt' | 'failed';
+type ScorecardSaveResult = 'saved' | 'missing-first-putt' | 'failed';
 
 // Scores and pars that differ from the saved scorecard. A par is reported once per hole.
-export const scorecardChangesFor = (original: RoundHoleScore[], edited: RoundHoleScore[]) => {
+const scorecardChangesFor = (original: RoundHoleScore[], edited: RoundHoleScore[]) => {
     const changes: { id: number; score: number }[] = [];
     edited.forEach(e => {
         const o = original.find(x => x.Id === e.Id);

@@ -23,7 +23,7 @@ import {
     PuttingStatDetail,
 } from './DbService';
 
-export type StatsExportPayload = {
+type StatsExportPayload = {
     generatedAt: string;
     roundHistory: Round[];
     deadlySinsRounds: DeadlySinsRound[];

@@ -1,4 +1,4 @@
-export type PuttCategory = 'short' | 'medium' | 'long';
+type PuttCategory = 'short' | 'medium' | 'long';
 
 /**
  * Classify a distance into a putt category.

@@ -39,7 +39,7 @@ const runStatement = async (context: string, sql: string, params: Record<string,
 };
 
 // Row shapes for the reads that the service layer uses
-export type DeadlySinRoundTotalsRow = {
+type DeadlySinRoundTotalsRow = {
     RoundId: number;
     ThreePutts: number;
     DoubleBogeys: number;
@@ -51,7 +51,7 @@ export type DeadlySinRoundTotalsRow = {
     Total: number;
 };
 
-export type PuttingStatsRow = {
+type PuttingStatsRow = {
     Id: number;
     RoundId: number;
     HoleNumber: number;
@@ -63,7 +63,7 @@ export type PuttingStatsRow = {
     GreenInRegulation: number;
 };
 
-export type PuttingStatsWithThreePuttsRow = {
+type PuttingStatsWithThreePuttsRow = {
     RoundId: number;
     FirstPuttDistance: number;
     SecondPuttDistance: number;
@@ -72,7 +72,7 @@ export type PuttingStatsWithThreePuttsRow = {
     ThreePutts: number;
 };
 
-export type HoleSinDetailsRow = {
+type HoleSinDetailsRow = {
     Id: number;
     RoundId: number;
     HoleNumber: number;
@@ -94,13 +94,13 @@ export type RoundRow = {
     StartHole: number;
 };
 
-export type RoundWithPlayersRow = Omit<RoundRow, 'StartHole'> & {
+type RoundWithPlayersRow = Omit<RoundRow, 'StartHole'> & {
     UserPlayerId: number | null;
     StrokeTotal: number | null;
     HolesPlayed: number;
 };
 
-export type RoundHoleScoreContextRow = {
+type RoundHoleScoreContextRow = {
     RoundId: number;
     CourseName: string | null;
     Created_At: string;
@@ -109,7 +109,7 @@ export type RoundHoleScoreContextRow = {
     Score: number;
 };
 
-export type HoleDeadlySinsContextRow = {
+type HoleDeadlySinsContextRow = {
     RoundId: number;
     CourseName: string | null;
     Created_At: string;
@@ -123,7 +123,7 @@ export type HoleDeadlySinsContextRow = {
     Penalties: number;
 };
 
-export type PuttingStatsContextRow = {
+type PuttingStatsContextRow = {
     RoundId: number;
     CourseName: string | null;
     Created_At: string;
@@ -137,7 +137,7 @@ export type PuttingStatsContextRow = {
 };
 
 // One player in a round, as stored in RoundPlayers
-export type RoundPlayerRow = {
+type RoundPlayerRow = {
     Id: number;
     RoundId: number;
     PlayerName: string;
@@ -146,7 +146,7 @@ export type RoundPlayerRow = {
 };
 
 // One club's distances, as stored in ClubDistances
-export type ClubDistanceRow = {
+type ClubDistanceRow = {
     Id: number;
     Club: string;
     CarryDistance: number;
@@ -155,7 +155,7 @@ export type ClubDistanceRow = {
 };
 
 // One round's or one hole's deadly sin counts, as read back from HoleDeadlySins
-export type DeadlySinCountsRow = {
+type DeadlySinCountsRow = {
     ThreePutts: number;
     DoubleBogeys: number;
     BogeysPar5: number;
@@ -165,7 +165,7 @@ export type DeadlySinCountsRow = {
     Penalties: number;
 };
 
-export type TableAmendment = {
+type TableAmendment = {
     table: string;
     columnsToAdd: string[];
     columnsToRemove: string[];
@@ -519,7 +519,7 @@ export const deleteHoleDeadlySinsByHole = async (roundId: number, holeNumber: nu
 };
 
 // One row of DrillHistory as stored
-export type DrillHistoryRow = {
+type DrillHistoryRow = {
     Id: number;
     Name: string;
     Result: number;

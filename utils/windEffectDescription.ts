@@ -1,8 +1,8 @@
 import type { WindEffect } from '../service/WeatherService';
 
-export type WindEffectRow = { label: string; value: string };
+type WindEffectRow = { label: string; value: string };
 
-export type WindEffectDescription = {
+type WindEffectDescription = {
     title: string;
     subtitle: string;
     rows: WindEffectRow[];

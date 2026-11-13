@@ -51,7 +51,7 @@ import {
     getAllPuttingStatsWithContext,
 } from '../database/db';
 
-export type WedgeChartClub = {
+type WedgeChartClub = {
     club: string;
     distances: { name: string; distance: number }[];
 };
@@ -278,7 +278,7 @@ export const getPuttingMakeRatesService = (roundIds?: Set<number>): PuttingMakeR
     });
 };
 
-export type UpAndDownRate = {
+type UpAndDownRate = {
     rate: string;
     upAndDowns: number;
     attempts: number;
@@ -356,7 +356,7 @@ export const getPuttingProximityService = (threePuttOnly: boolean = false, round
     });
 };
 
-export type HoleSinDetailsInput = {
+type HoleSinDetailsInput = {
     troubleOffTeeClub?: string;
     penaltyType?: string;
     bogeysInside9IronClub?: string;

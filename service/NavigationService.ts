@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 
-export type Router = ReturnType<typeof useRouter>;
+type Router = ReturnType<typeof useRouter>;
 
 /**
  * Navigate to the Practice > Tools > Reminders screen.

@@ -10,7 +10,7 @@ import DeadlySinBarChart from './DeadlySinBarChart';
 
 const mean = (xs: number[]) => xs.reduce((sum, v) => sum + v, 0) / xs.length;
 
-export type TrendDirection = 'single' | 'clean' | 'down' | 'up' | 'steady';
+type TrendDirection = 'single' | 'clean' | 'down' | 'up' | 'steady';
 
 // How the sin is moving: clean when it never happened, otherwise comparing the earlier and later halves
 function trendDirection(values: number[]): TrendDirection {

@@ -21,6 +21,23 @@ function getSyncDb(): SQLite.SQLiteDatabase {
     return _syncDb;
 }
 
+// Runs one write statement. Any failure is logged under `context` and reported as false.
+const runStatement = async (context: string, sql: string, params: Record<string, string | number | null>): Promise<boolean> => {
+    try {
+        const db = await SQLite.openDatabaseAsync(dbName);
+        const statement = await db.prepareAsync(sql);
+        try {
+            await statement.executeAsync(params);
+        } finally {
+            await statement.finalizeAsync();
+        }
+        return true;
+    } catch (e) {
+        void logError(context, e);
+        return false;
+    }
+};
+
 export type TableAmendment = {
     table: string;
     columnsToAdd: string[];
@@ -319,14 +336,7 @@ export const getRoundHoleScoresByHole = (roundId: number, holeNumber: number) =>
 };
 
 export const insertPuttingStats = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean, greenInRegulation: boolean = false): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-        const statement = await db.prepareAsync(
-            'INSERT INTO PuttingStats (RoundId, HoleNumber, FirstPuttDistance, SecondPuttDistance, SecondPuttIsLong, ThirdPuttDistance, ThirdPuttIsLong, GreenInRegulation) VALUES ($RoundId, $HoleNumber, $FirstPuttDistance, $SecondPuttDistance, $SecondPuttIsLong, $ThirdPuttDistance, $ThirdPuttIsLong, $GreenInRegulation);'
-        );
-        try {
-            await statement.executeAsync({
+    return runStatement('db.insertPuttingStats', 'INSERT INTO PuttingStats (RoundId, HoleNumber, FirstPuttDistance, SecondPuttDistance, SecondPuttIsLong, ThirdPuttDistance, ThirdPuttIsLong, GreenInRegulation) VALUES ($RoundId, $HoleNumber, $FirstPuttDistance, $SecondPuttDistance, $SecondPuttIsLong, $ThirdPuttDistance, $ThirdPuttIsLong, $GreenInRegulation);', {
                 $RoundId: roundId,
                 $HoleNumber: holeNumber,
                 $FirstPuttDistance: firstPuttDistance,
@@ -336,14 +346,6 @@ export const insertPuttingStats = async (roundId: number, holeNumber: number, fi
                 $ThirdPuttIsLong: thirdPuttIsLong ? 1 : 0,
                 $GreenInRegulation: greenInRegulation ? 1 : 0,
             });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.insertPuttingStats', e);
-        success = false;
-    }
-    return success;
 };
 
 export const getPuttingStats = (roundId: number, holeNumber: number) => {
@@ -362,41 +364,11 @@ export const getAllPuttingStatsWithThreePutts = () => {
 };
 
 export const deletePuttingStatsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-        const statement = await db.prepareAsync(
-            'DELETE FROM PuttingStats WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
-        );
-        try {
-            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.deletePuttingStatsByHole', e);
-        success = false;
-    }
-    return success;
+    return runStatement('db.deletePuttingStatsByHole', 'DELETE FROM PuttingStats WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;', { $RoundId: roundId, $HoleNumber: holeNumber });
 };
 
 export const insertHoleSinDetails = async (roundId: number, holeNumber: number, troubleOffTeeClub?: string, penaltyType?: string, bogeysInside9IronClub?: string, doubleChipsReason?: string): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-        const statement = await db.prepareAsync(
-            'INSERT INTO HoleSinDetails (RoundId, HoleNumber, TroubleOffTeeClub, PenaltyType, BogeysInside9IronClub, DoubleChipsReason) VALUES ($RoundId, $HoleNumber, $TroubleOffTeeClub, $PenaltyType, $BogeysInside9IronClub, $DoubleChipsReason);'
-        );
-        try {
-            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber, $TroubleOffTeeClub: troubleOffTeeClub ?? null, $PenaltyType: penaltyType ?? null, $BogeysInside9IronClub: bogeysInside9IronClub ?? null, $DoubleChipsReason: doubleChipsReason ?? null });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.insertHoleSinDetails', e);
-        success = false;
-    }
-    return success;
+    return runStatement('db.insertHoleSinDetails', 'INSERT INTO HoleSinDetails (RoundId, HoleNumber, TroubleOffTeeClub, PenaltyType, BogeysInside9IronClub, DoubleChipsReason) VALUES ($RoundId, $HoleNumber, $TroubleOffTeeClub, $PenaltyType, $BogeysInside9IronClub, $DoubleChipsReason);', { $RoundId: roundId, $HoleNumber: holeNumber, $TroubleOffTeeClub: troubleOffTeeClub ?? null, $PenaltyType: penaltyType ?? null, $BogeysInside9IronClub: bogeysInside9IronClub ?? null, $DoubleChipsReason: doubleChipsReason ?? null });
 };
 
 export const getHoleSinDetails = (roundId: number, holeNumber: number) => {
@@ -411,41 +383,11 @@ export const getAllHoleSinDetails = () => {
 };
 
 export const deleteHoleSinDetailsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-        const statement = await db.prepareAsync(
-            'DELETE FROM HoleSinDetails WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
-        );
-        try {
-            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.deleteHoleSinDetailsByHole', e);
-        success = false;
-    }
-    return success;
+    return runStatement('db.deleteHoleSinDetailsByHole', 'DELETE FROM HoleSinDetails WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;', { $RoundId: roundId, $HoleNumber: holeNumber });
 };
 
 export const deleteHoleDeadlySinsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-        const statement = await db.prepareAsync(
-            'DELETE FROM HoleDeadlySins WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
-        );
-        try {
-            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.deleteHoleDeadlySinsByHole', e);
-        success = false;
-    }
-    return success;
+    return runStatement('db.deleteHoleDeadlySinsByHole', 'DELETE FROM HoleDeadlySins WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;', { $RoundId: roundId, $HoleNumber: holeNumber });
 };
 
 export const getAllDrillHistory = () => {
@@ -477,45 +419,12 @@ export const insertRound = async (courseName: string, isScoreOnly: boolean, star
 };
 
 export const updateRoundStartTime = async (roundId: number, startTime: string): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-        const statement = await db.prepareAsync('UPDATE Rounds SET StartTime = $StartTime WHERE Id = $Id;');
-
-        try {
-            await statement.executeAsync({ $StartTime: startTime, $Id: roundId });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.updateRoundStartTime', e);
-        success = false;
-    }
-
-    return success;
+    return runStatement('db.updateRoundStartTime', 'UPDATE Rounds SET StartTime = $StartTime WHERE Id = $Id;', { $StartTime: startTime, $Id: roundId });
 };
 
 export const updateRound = async (roundId: number, totalScore: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-        const now = new Date().toISOString();
-
-        const statement = await db.prepareAsync(
-            'UPDATE Rounds SET TotalScore = $TotalScore, EndTime = $EndTime, IsCompleted = 1 WHERE Id = $Id;'
-        );
-
-        try {
-            await statement.executeAsync({ $TotalScore: totalScore, $EndTime: now, $Id: roundId });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.updateRound', e);
-        success = false;
-    }
-
-    return success;
+    const now = new Date().toISOString();
+    return runStatement('db.updateRound', 'UPDATE Rounds SET TotalScore = $TotalScore, EndTime = $EndTime, IsCompleted = 1 WHERE Id = $Id;', { $TotalScore: totalScore, $EndTime: now, $Id: roundId });
 };
 
 export const getRoundById = (roundId: number) => {
@@ -591,38 +500,11 @@ export const upsertHoleNote = async (courseName: string, holeNumber: number, not
 };
 
 export const deleteHoleNote = async (courseName: string, holeNumber: number): Promise<boolean> => {
-    let success = true;
-    const db = await SQLite.openDatabaseAsync(dbName);
-    const statement = await db.prepareAsync(
-        'DELETE FROM HoleNotes WHERE LOWER(TRIM(CourseName)) = LOWER(TRIM($CourseName)) AND HoleNumber = $HoleNumber;'
-    );
-    try {
-        await statement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber });
-    } catch (e) {
-        void logError('db.deleteHoleNote', e);
-        success = false;
-    } finally {
-        await statement.finalizeAsync();
-    }
-    return success;
+    return runStatement('db.deleteHoleNote', 'DELETE FROM HoleNotes WHERE LOWER(TRIM(CourseName)) = LOWER(TRIM($CourseName)) AND HoleNumber = $HoleNumber;', { $CourseName: courseName, $HoleNumber: holeNumber });
 };
 
 export const addHiddenRecent = async (type: 'course' | 'player', name: string): Promise<boolean> => {
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-        const statement = await db.prepareAsync(
-            'INSERT OR IGNORE INTO HiddenRecents (Type, Name) VALUES ($Type, $Name);'
-        );
-        try {
-            await statement.executeAsync({ $Type: type, $Name: name });
-        } finally {
-            await statement.finalizeAsync();
-        }
-        return true;
-    } catch (e) {
-        void logError('db.addHiddenRecent', e);
-        return false;
-    }
+    return runStatement('db.addHiddenRecent', 'INSERT OR IGNORE INTO HiddenRecents (Type, Name) VALUES ($Type, $Name);', { $Type: type, $Name: name });
 };
 
 // Single-row table for UI preferences that are not part of Settings (Settings is rewritten whole on every save)
@@ -632,20 +514,7 @@ export const getRoundFilterPreference = (): string | null => {
 };
 
 export const saveRoundFilterPreference = async (value: string): Promise<boolean> => {
-    let success = true;
-    const db = await SQLite.openDatabaseAsync(dbName);
-    const statement = await db.prepareAsync(
-        'INSERT OR REPLACE INTO UiPreferences (Id, RoundFilter) VALUES (1, $RoundFilter);'
-    );
-    try {
-        await statement.executeAsync({ $RoundFilter: value });
-    } catch (e) {
-        void logError('db.saveRoundFilterPreference', e);
-        success = false;
-    } finally {
-        await statement.finalizeAsync();
-    }
-    return success;
+    return runStatement('db.saveRoundFilterPreference', 'INSERT OR REPLACE INTO UiPreferences (Id, RoundFilter) VALUES (1, $RoundFilter);', { $RoundFilter: value });
 };
 
 export const getHolesPlayedForRound = (roundId: number): number => {
@@ -706,44 +575,11 @@ export const getRoundPlayers = (roundId: number) => {
 };
 
 export const insertRoundHoleScore = async (roundId: number, roundPlayerId: number, holeNumber: number, holePar: number, score: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-
-        const statement = await db.prepareAsync(
-            'INSERT INTO RoundHoleScores (RoundId, RoundPlayerId, HoleNumber, HolePar, Score) VALUES ($RoundId, $RoundPlayerId, $HoleNumber, $HolePar, $Score);'
-        );
-
-        try {
-            await statement.executeAsync({ $RoundId: roundId, $RoundPlayerId: roundPlayerId, $HoleNumber: holeNumber, $HolePar: holePar, $Score: score });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.insertRoundHoleScore', e);
-        success = false;
-    }
-
-    return success;
+    return runStatement('db.insertRoundHoleScore', 'INSERT INTO RoundHoleScores (RoundId, RoundPlayerId, HoleNumber, HolePar, Score) VALUES ($RoundId, $RoundPlayerId, $HoleNumber, $HolePar, $Score);', { $RoundId: roundId, $RoundPlayerId: roundPlayerId, $HoleNumber: holeNumber, $HolePar: holePar, $Score: score });
 };
 
 export const deleteRoundHoleScoresByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-        const statement = await db.prepareAsync(
-            'DELETE FROM RoundHoleScores WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
-        );
-        try {
-            await statement.executeAsync({ $RoundId: roundId, $HoleNumber: holeNumber });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.deleteRoundHoleScoresByHole', e);
-        success = false;
-    }
-    return success;
+    return runStatement('db.deleteRoundHoleScoresByHole', 'DELETE FROM RoundHoleScores WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;', { $RoundId: roundId, $HoleNumber: holeNumber });
 };
 
 export const getRoundHoleScores = (roundId: number) => {
@@ -751,69 +587,15 @@ export const getRoundHoleScores = (roundId: number) => {
 };
 
 export const updateRoundHoleScore = async (id: number, score: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-
-        const statement = await db.prepareAsync(
-            'UPDATE RoundHoleScores SET Score = $Score WHERE Id = $Id;'
-        );
-
-        try {
-            await statement.executeAsync({ $Score: score, $Id: id });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.updateRoundHoleScore', e);
-        success = false;
-    }
-
-    return success;
+    return runStatement('db.updateRoundHoleScore', 'UPDATE RoundHoleScores SET Score = $Score WHERE Id = $Id;', { $Score: score, $Id: id });
 };
 
 export const updateRoundHoleParForHole = async (roundId: number, holeNumber: number, holePar: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-
-        const statement = await db.prepareAsync(
-            'UPDATE RoundHoleScores SET HolePar = $HolePar WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;'
-        );
-
-        try {
-            await statement.executeAsync({ $HolePar: holePar, $RoundId: roundId, $HoleNumber: holeNumber });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.updateRoundHoleParForHole', e);
-        success = false;
-    }
-
-    return success;
+    return runStatement('db.updateRoundHoleParForHole', 'UPDATE RoundHoleScores SET HolePar = $HolePar WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;', { $HolePar: holePar, $RoundId: roundId, $HoleNumber: holeNumber });
 };
 
 export const updateRoundTotalScore = async (roundId: number, totalScore: number): Promise<boolean> => {
-    let success = true;
-    try {
-        const db = await SQLite.openDatabaseAsync(dbName);
-
-        const statement = await db.prepareAsync(
-            'UPDATE Rounds SET TotalScore = $TotalScore WHERE Id = $Id;'
-        );
-
-        try {
-            await statement.executeAsync({ $TotalScore: totalScore, $Id: roundId });
-        } finally {
-            await statement.finalizeAsync();
-        }
-    } catch (e) {
-        void logError('db.updateRoundTotalScore', e);
-        success = false;
-    }
-
-    return success;
+    return runStatement('db.updateRoundTotalScore', 'UPDATE Rounds SET TotalScore = $TotalScore WHERE Id = $Id;', { $TotalScore: totalScore, $Id: roundId });
 };
 
 // Child rows first, then the round itself. They run in one transaction, so a failure leaves nothing half deleted.
@@ -873,23 +655,7 @@ export const saveSettings = async (notificationsEnabled: number, voice: string, 
 
 
 export const insertPracticeReminder = async (label: string, scheduledFor: string, notificationId: string | null): Promise<boolean> => {
-    let success = true;
-    const db = await SQLite.openDatabaseAsync(dbName);
-
-    const statement = await db.prepareAsync(
-        'INSERT INTO PracticeReminders (Label, ScheduledFor, NotificationId, Created_At) VALUES ($Label, $ScheduledFor, $NotificationId, $Created_At);'
-    );
-
-    try {
-        await statement.executeAsync({ $Label: label, $ScheduledFor: scheduledFor, $NotificationId: notificationId, $Created_At: new Date().toISOString() });
-    } catch (e) {
-        void logError('db.insertPracticeReminder', e);
-        success = false;
-    } finally {
-        await statement.finalizeAsync();
-    }
-
-    return success;
+    return runStatement('db.insertPracticeReminder', 'INSERT INTO PracticeReminders (Label, ScheduledFor, NotificationId, Created_At) VALUES ($Label, $ScheduledFor, $NotificationId, $Created_At);', { $Label: label, $ScheduledFor: scheduledFor, $NotificationId: notificationId, $Created_At: new Date().toISOString() });
 };
 
 export const getAllPracticeReminders = () => {
@@ -897,23 +663,7 @@ export const getAllPracticeReminders = () => {
 };
 
 export const deletePracticeReminder = async (id: number): Promise<boolean> => {
-    let success = true;
-    const db = await SQLite.openDatabaseAsync(dbName);
-
-    const statement = await db.prepareAsync(
-        'DELETE FROM PracticeReminders WHERE Id = $Id;'
-    );
-
-    try {
-        await statement.executeAsync({ $Id: id });
-    } catch (e) {
-        void logError('db.deletePracticeReminder', e);
-        success = false;
-    } finally {
-        await statement.finalizeAsync();
-    }
-
-    return success;
+    return runStatement('db.deletePracticeReminder', 'DELETE FROM PracticeReminders WHERE Id = $Id;', { $Id: id });
 };
 
 export const updatePracticeReminderNotificationId = async (id: number, notificationId: string | null): Promise<void> => {

@@ -156,19 +156,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             } : null);
             edit.setHadPriorPuttingStats(!!existingPuttingStats);
         } else {
-            edit.setEditedSins(null);
-            edit.setSinsHoleNumber(null);
-            edit.setSelectedOffTeeClub(undefined);
-            edit.setSelectedPenaltyType(undefined);
-            edit.setSelectedBogeysClub(undefined);
-            edit.setSelectedDoubleChipReason(undefined);
-            edit.setHadPriorSinDetails(false);
-            edit.setSinDetailsClubError(false);
-            edit.setSinDetailsPenaltyError(false);
-            edit.setSinDetailsBogeysClubError(false);
-            edit.setSinDetailsDoubleChipReasonError(false);
-            edit.setPuttingStats(null);
-            edit.setHadPriorPuttingStats(false);
+            edit.clearHoleEdits();
         }
     };
 
@@ -280,7 +268,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             }
             setEditedDate(null);
             loadData();
-            edit.resetScorecardAfterSave();
+            edit.resetEditState();
             setEditing(false);
         } else {
             showResult(success, 'Scorecard updated', 'Failed to update scorecard');

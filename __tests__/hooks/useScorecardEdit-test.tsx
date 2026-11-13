@@ -112,6 +112,52 @@ describe('useScorecardEdit', () => {
         expect(result.current.sinsHoleNumber).toBeNull();
     });
 
+    it('clearHoleEditsKeepsTheEditingSessionAndTheChosenScore', () => {
+        const { result } = renderHook(() => useScorecardEdit());
+
+        act(() => {
+            result.current.setIsEditing(true);
+            result.current.setEditedScores([{ Id: 1 } as any]);
+            result.current.setSelectedScore({ holeNumber: 2, playerId: 1 });
+            result.current.setEditedSins({ threePutts: true, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false });
+            result.current.setSinsHoleNumber(2);
+            result.current.setPuttingStats({ firstPutt: 10, secondIsLong: false, greenInRegulation: true });
+            result.current.setHadPriorPuttingStats(true);
+        });
+
+        act(() => {
+            result.current.clearHoleEdits();
+        });
+
+        expect(result.current.isEditing).toBe(true);
+        expect(result.current.editedScores).toHaveLength(1);
+        expect(result.current.selectedScore).toEqual({ holeNumber: 2, playerId: 1 });
+        expect(result.current.editedSins).toBeNull();
+        expect(result.current.sinsHoleNumber).toBeNull();
+        expect(result.current.puttingStats).toBeNull();
+        expect(result.current.hadPriorPuttingStats).toBe(false);
+    });
+
+    it('clearHoleEditsResetsTheSinDetailsAndTheirErrors', () => {
+        const { result } = renderHook(() => useScorecardEdit());
+
+        act(() => {
+            result.current.setSelectedOffTeeClub('9-iron');
+            result.current.setSelectedPenaltyType('stroke');
+            result.current.setSinDetailsClubError(true);
+            result.current.setHadPriorSinDetails(true);
+        });
+
+        act(() => {
+            result.current.clearHoleEdits();
+        });
+
+        expect(result.current.selectedOffTeeClub).toBeUndefined();
+        expect(result.current.selectedPenaltyType).toBeUndefined();
+        expect(result.current.sinDetailsClubError).toBe(false);
+        expect(result.current.hadPriorSinDetails).toBe(false);
+    });
+
     it('resets scorecard state after save', () => {
         const { result } = renderHook(() => useScorecardEdit());
 
@@ -122,7 +168,7 @@ describe('useScorecardEdit', () => {
         });
 
         act(() => {
-            result.current.resetScorecardAfterSave();
+            result.current.resetEditState();
         });
 
         expect(result.current.isEditing).toBe(false);

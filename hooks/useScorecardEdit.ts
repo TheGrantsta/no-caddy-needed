@@ -20,10 +20,9 @@ export function useScorecardEdit() {
     const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt?: number; secondIsLong: boolean; greenInRegulation: boolean } | null>(null);
     const [hadPriorPuttingStats, setHadPriorPuttingStats] = useState(false);
 
-    const resetEditState = useCallback(() => {
-        setIsEditing(false);
-        setEditedScores([]);
-        setSelectedScore(null);
+    // Clears the sin, sin-detail and putting values for the hole being edited. The editing session,
+    // the edited scores and the chosen score are left alone.
+    const clearHoleEdits = useCallback(() => {
         setEditedSins(null);
         setSinsHoleNumber(null);
         setSelectedOffTeeClub(undefined);
@@ -39,24 +38,13 @@ export function useScorecardEdit() {
         setHadPriorPuttingStats(false);
     }, []);
 
-    const resetScorecardAfterSave = useCallback(() => {
+    // Leaves the editing session, used on cancel and after a successful save
+    const resetEditState = useCallback(() => {
+        clearHoleEdits();
+        setIsEditing(false);
         setEditedScores([]);
         setSelectedScore(null);
-        setEditedSins(null);
-        setSinsHoleNumber(null);
-        setSelectedOffTeeClub(undefined);
-        setSelectedPenaltyType(undefined);
-        setSelectedBogeysClub(undefined);
-        setSelectedDoubleChipReason(undefined);
-        setHadPriorSinDetails(false);
-        setSinDetailsClubError(false);
-        setSinDetailsPenaltyError(false);
-        setSinDetailsBogeysClubError(false);
-        setSinDetailsDoubleChipReasonError(false);
-        setPuttingStats(null);
-        setHadPriorPuttingStats(false);
-        setIsEditing(false);
-    }, []);
+    }, [clearHoleEdits]);
 
     const validateSinDetails = useCallback((clubDistances: any[], needsClub: boolean, needsPenalty: boolean, needsBogeysClub: boolean, needsDoubleChipReason: boolean) => {
         let blocked = false;
@@ -128,7 +116,7 @@ export function useScorecardEdit() {
         hadPriorPuttingStats,
         setHadPriorPuttingStats,
         resetEditState,
-        resetScorecardAfterSave,
+        clearHoleEdits,
         validateSinDetails,
     };
 }

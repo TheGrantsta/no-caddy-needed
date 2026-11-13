@@ -12,7 +12,6 @@ import OnboardingOverlay from '../../components/OnboardingOverlay';
 import {
     startRoundService,
     endRoundService,
-    deleteRoundService,
     getWedgeChartService,
     addMultiplayerHoleScoresService,
     getActiveRoundService,
@@ -37,13 +36,11 @@ import {
     getHoleSinDetailsService,
     deleteHoleSinDetailsService,
     RoundRow,
-    RoundPlayer,
     DeadlySinsValues,
     ClubDistance,
 } from '../../service/DbService';
 import { scheduleRoundReminder, cancelRoundReminder, cancelAllRoundReminders } from '../../service/NotificationService';
 import { logEvent } from '../../service/FirebaseService';
-import { maybeRequestRoundReviewService } from '../../service/ReviewService';
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { useOrientation } from '../../hooks/useOrientation';
@@ -53,9 +50,9 @@ import { useFakeRefresh } from '../../hooks/useFakeRefresh';
 import { useSectionTransition } from '../../hooks/useSectionTransition';
 import { useToggle } from '../../hooks/useToggle';
 import { useHoleLifecycle } from '../../hooks/useHoleLifecycle';
+import { useRoundSession } from '../../hooks/useRoundSession';
 import PhaseStats from '../../components/PhaseStats';
 import RoundSummary from '../../components/RoundSummary';
-import { RoundSummary as RoundSummaryData } from '../../utils/roundSummary';
 import { HOLES_PER_ROUND, holeAtPlayPosition, isFirstHoleOfRound, isLastHoleOfRound, nextHoleInRound, previousHoleInRound, sanitiseStartHole } from '../../utils/holeOrder';
 import EndRoundSheet from '../../components/EndRoundSheet';
 import EndIncompleteRoundSheet from '../../components/EndIncompleteRoundSheet';
@@ -66,7 +63,6 @@ import RoundEntry from '../../components/RoundEntry';
 import HoleNavigationControls from '../../components/HoleNavigationControls';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
-import { buildSummaryForRoundService } from '../../service/RoundSummaryService';
 import { isTripleBogeyOrWorse } from '../../utils/scoring';
 
 const BAD_HOLE_MESSAGES = [
@@ -81,7 +77,6 @@ export default function Play() {
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
 
     // Use lifecycle hook for hole state management
     const lifecycle = useHoleLifecycle();
@@ -106,7 +101,22 @@ export default function Play() {
     const validatePuttingStats = lifecycle.validatePuttingStats;
     const validateSinDetails = lifecycle.validateSinDetails;
     const resetForNewHole = lifecycle.resetForNewHole;
-    const resetAllHoleState = lifecycle.resetAll;
+    const { showError, showResult } = useAppToast();
+
+    // Round-level state and the end-of-round flow
+    const {
+        activeRoundId, setActiveRoundId, notificationId, setNotificationId, players, setPlayers,
+        currentHoleData, setCurrentHoleData, showEndRoundConfirm, setShowEndRoundConfirm,
+        roundSummary, recentCourseNames, setRecentCourseNames, roundStartHole,
+        setRoundStartHole, courseHolePars, setCourseHolePars, activeCourseName, setActiveCourseName,
+        courseNotes, setCourseNotes, currentNoteText, setCurrentNoteText,
+        discardRound, confirmEndRound, finishSummary, viewPerformance,
+    } = useRoundSession({
+        currentHole: lifecycle.currentHole,
+        skipStatsFlow: lifecycle.skipStatsFlow,
+        resetHoleState: lifecycle.resetAll,
+        showResult,
+    });
 
     // Read from the database on each render, so the club picker always shows the saved clubs
     const clubDistances: ClubDistance[] = getClubDistancesService();
@@ -128,16 +138,9 @@ export default function Play() {
     const setSinDetailsDoubleChipReasonError = lifecycle.setSinDetailsDoubleChipReasonError;
 
     const [showPuttingInfo, , setShowPuttingInfo] = useToggle(false);
-    const [notificationId, setNotificationId] = useState<string | null>(null);
-    const [players, setPlayers] = useState<RoundPlayer[]>([]);
-    const [currentHoleData, setCurrentHoleData] = useState<{ holeNumber: number; holePar: number; scores: { playerId: number; playerName: string; score: number }[] } | null>(null);
-    const [showEndRoundConfirm, , setShowEndRoundConfirm] = useToggle(false);
-    const [roundSummary, setRoundSummary] = useState<RoundSummaryData | null>(null);
     const [showBagSheet, setShowBagSheet] = useState(false);
     const [bagClubs, setBagClubs] = useState<ClubDistance[]>([]);
     const [bagWedges, setBagWedges] = useState<WedgeChartData>({ distanceNames: [], clubs: [] });
-    const [recentCourseNames, setRecentCourseNames] = useState<string[]>([]);
-    const { showError, showResult } = useAppToast();
     const { wind, heading, refreshWind } = useWind();
 
     const SECTION_ORDER = ['play-score'];
@@ -157,12 +160,7 @@ export default function Play() {
     // Shared with Performance; a stored year with no rounds falls back to All
     const [incompleteRound, setIncompleteRound] = useState<RoundRow | null>(null);
     // The hole this round started on: 1 for a normal round, or any hole for a shotgun start
-    const [roundStartHole, setRoundStartHole] = useState(1);
     const [showEndIncompleteRoundConfirm, setShowEndIncompleteRoundConfirm] = useState(false);
-    const [courseHolePars, setCourseHolePars] = useState<Record<number, number>>({});
-    const [activeCourseName, setActiveCourseName] = useState<string | null>(null);
-    const [courseNotes, setCourseNotes] = useState<Record<number, string>>({});
-    const [currentNoteText, setCurrentNoteText] = useState('');
     const showBadHoleReassurance = lifecycle.showBadHoleReassurance;
     const setShowBadHoleReassurance = lifecycle.setShowBadHoleReassurance;
     const reassuranceMessage = lifecycle.reassuranceMessage;
@@ -193,7 +191,7 @@ export default function Play() {
         if (!currentSettings.playOnboardingSeen && history.length === 0 && !activeRound) {
             setShowOnboarding(true);
         }
-    }, [setShowOnboarding]);
+    }, [setShowOnboarding, setPlayers, setRecentCourseNames]);
 
 
     // Re-read the history list whenever the screen regains focus (e.g. after a
@@ -527,69 +525,12 @@ export default function Play() {
         setShowEndRoundConfirm(false);
     };
 
-    const handleDiscardRound = async () => {
-        if (!activeRoundId) return;
-        const success = await deleteRoundService(activeRoundId);
-        if (notificationId) {
-            await cancelRoundReminder(notificationId);
-            setNotificationId(null);
-        }
-        resetToIdle();
-        showResult(success, 'Round discarded', 'Failed to discard round');
-    };
-
-    const resetToIdle = () => {
-        resetAllHoleState();
-        setActiveRoundId(null);
-        setRoundStartHole(1);
-        setPlayers([]);
-        setCurrentHoleData(null);
-        setShowEndRoundConfirm(false);
-        setCourseHolePars({});
-        setActiveCourseName(null);
-        setCourseNotes({});
-        setCurrentNoteText('');
-        setRecentCourseNames(getRecentCourseNamesService());
-    };
-
-    const handleConfirmEndRound = async () => {
-        if (!activeRoundId) return;
-
-        logEvent('end_round');
-        await cancelRoundReminder(notificationId);
-        setNotificationId(null);
-
-        if (activeCourseName !== null) {
-            await saveHoleNoteService(activeCourseName, currentHole, currentNoteText);
-        }
-
-        const success = await endRoundService(activeRoundId);
-
-        showResult(success, 'Round saved', 'Failed to save round');
-
-        const summary = buildSummaryForRoundService(activeRoundId, skipStatsFlow);
-        if (summary) {
-            setShowEndRoundConfirm(false);
-            setRoundSummary(summary);
-        } else {
-            resetToIdle();
-        }
-    };
-
-    const handleSummaryDone = async () => {
-        setRoundSummary(null);
-        resetToIdle();
-        // Ask for a review from the 7th completed round, then every 6th (7, 13, 19, …).
-        const roundCount = getAllRoundHistoryService().length;
-        const prompted = await maybeRequestRoundReviewService(roundCount);
-        if (prompted) {
-            logEvent('review_requested', { roundNumber: roundCount });
-        }
-    };
+    const handleDiscardRound = discardRound;
+    const handleConfirmEndRound = confirmEndRound;
+    const handleSummaryDone = finishSummary;
 
     const handleViewPerformance = () => {
-        setRoundSummary(null);
-        resetToIdle();
+        viewPerformance();
         router.push('/perform');
     };
 

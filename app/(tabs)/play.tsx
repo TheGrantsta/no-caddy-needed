@@ -38,7 +38,7 @@ import {
     insertHoleSinDetailsService,
     getHoleSinDetailsService,
     deleteHoleSinDetailsService,
-    Round,
+    RoundRow,
     RoundPlayer,
     DeadlySinsValues,
     ClubDistance,
@@ -154,7 +154,7 @@ export default function Play() {
     const [settings, setSettings] = useState(getSettingsService());
     const [showOnboarding, , setShowOnboarding] = useToggle(false);
     // Shared with Performance; a stored year with no rounds falls back to All
-    const [incompleteRound, setIncompleteRound] = useState<Round | null>(null);
+    const [incompleteRound, setIncompleteRound] = useState<RoundRow | null>(null);
     // The hole this round started on: 1 for a normal round, or any hole for a shotgun start
     const [roundStartHole, setRoundStartHole] = useState(1);
     const [showEndIncompleteRoundConfirm, setShowEndIncompleteRoundConfirm] = useState(false);

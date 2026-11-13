@@ -136,6 +136,24 @@ export type PuttingStatsContextRow = {
     GreenInRegulation: number;
 };
 
+// One player in a round, as stored in RoundPlayers
+export type RoundPlayerRow = {
+    Id: number;
+    RoundId: number;
+    PlayerName: string;
+    IsUser: number;
+    SortOrder: number;
+};
+
+// One club's distances, as stored in ClubDistances
+export type ClubDistanceRow = {
+    Id: number;
+    Club: string;
+    CarryDistance: number;
+    TotalDistance: number;
+    SortOrder: number;
+};
+
 // One round's or one hole's deadly sin counts, as read back from HoleDeadlySins
 export type DeadlySinCountsRow = {
     ThreePutts: number;
@@ -553,7 +571,7 @@ export const getRoundById = (roundId: number) => {
 };
 
 export const getActiveRound = () => {
-    const rows = getSyncDb().getAllSync('SELECT * FROM Rounds WHERE IsCompleted = 0 ORDER BY Id DESC LIMIT 1;');
+    const rows = getSyncDb().getAllSync<RoundRow>('SELECT * FROM Rounds WHERE IsCompleted = 0 ORDER BY Id DESC LIMIT 1;');
     return rows.length > 0 ? rows[0] : null;
 };
 
@@ -643,7 +661,7 @@ export const getHolesPlayedForRound = (roundId: number): number => {
 };
 
 export const getClubDistances = () => {
-    return getSyncDb().getAllSync('SELECT * FROM ClubDistances ORDER BY CarryDistance DESC;');
+    return getSyncDb().getAllSync<ClubDistanceRow>('SELECT * FROM ClubDistances ORDER BY CarryDistance DESC;');
 };
 
 export const insertClubDistances = async (distances: { Club: string; CarryDistance: number; TotalDistance: number; }[]): Promise<boolean> => {
@@ -691,7 +709,7 @@ export const insertRoundPlayer = async (roundId: number, playerName: string, isU
 };
 
 export const getRoundPlayers = (roundId: number) => {
-    return getSyncDb().getAllSync('SELECT * FROM RoundPlayers WHERE RoundId = ? ORDER BY SortOrder ASC;', [roundId]);
+    return getSyncDb().getAllSync<RoundPlayerRow>('SELECT * FROM RoundPlayers WHERE RoundId = ? ORDER BY SortOrder ASC;', [roundId]);
 };
 
 export const insertRoundHoleScore = async (roundId: number, roundPlayerId: number, holeNumber: number, holePar: number, score: number): Promise<boolean> => {

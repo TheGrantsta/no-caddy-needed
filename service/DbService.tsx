@@ -24,9 +24,7 @@ import {
     updateRound,
     updateRoundStartTime,
     getRoundById,
-    getActiveRound,
     getAllRounds,
-    getClubDistances,
     getDistinctCourseNames,
     addHiddenRecent,
     insertRoundPlayer,
@@ -103,6 +101,7 @@ export const saveWedgeChartService = async (data: WedgeChartData): Promise<boole
     return insertWedgeChart(distanceNames, entries);
 };
 
+export type { RoundRow } from '../database/db';
 export { insertDrillResult as insertDrillResultService } from '../database/db';
 
 export const getAllDrillHistoryService = () => {
@@ -521,9 +520,7 @@ export const getRoundScorecardService = (roundId: number): RoundScorecard | null
     return { round: { ...round, Created_At: getTwoDigitDayAndMonth(round.Created_At) }, holes: [] };
 };
 
-export const getActiveRoundService = (): Round | null => {
-    return getActiveRound() as Round | null;
-};
+export { getActiveRound as getActiveRoundService } from '../database/db';
 
 export const getAllRoundHistoryService = (): Round[] => {
     return getAllRoundsWithPlayersAndScores().map((row) => ({
@@ -606,9 +603,7 @@ export const addMultiplayerHoleScoresService = async (
     return true;
 };
 
-export const getRoundPlayersService = (roundId: number): RoundPlayer[] => {
-    return getRoundPlayers(roundId) as RoundPlayer[];
-};
+export { getRoundPlayers as getRoundPlayersService } from '../database/db';
 
 export { getHolesPlayedForRound as getHolesPlayedForRoundService } from '../database/db';
 
@@ -624,9 +619,7 @@ export const getMultiplayerScorecardService = (roundId: number): MultiplayerRoun
 };
 
 // Club distance services
-export const getClubDistancesService = (): ClubDistance[] => {
-    return getClubDistances() as ClubDistance[];
-};
+export { getClubDistances as getClubDistancesService } from '../database/db';
 
 export { insertClubDistances as saveClubDistancesService } from '../database/db';
 

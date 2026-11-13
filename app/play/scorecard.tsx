@@ -23,7 +23,6 @@ import {
     getHoleDeadlySinsService,
     replaceHoleDeadlySinsService,
     getHolesWithSinsForRoundService,
-    loadCourseNotesService,
     getAllRoundHistoryService,
     getRoundScoreBreakdownService,
     getClubDistancesService,
@@ -79,12 +78,11 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const styles = useStyles();
     const colours = useThemeColours();
     const { landscapePadding } = useOrientation();
-    const { showResult, showInfo } = useAppToast();
+    const { showError, showResult, showInfo } = useAppToast();
     const router = useRouter();
 
     const [multiplayerScorecard, setMultiplayerScorecard] = useState<MultiplayerRoundScorecard | null>(null);
     const [scorecard, setScorecard] = useState<RoundScorecardType | null>(null);
-    const [, setCourseNotes] = useState<Record<number, string>>({});
     const [sinHoles, setSinHoles] = useState<Set<number>>(new Set());
     const [scoreBreakdown, setScoreBreakdown] = useState<RoundScoreBreakdown | null>(null);
     const [clubDistances, setClubDistances] = useState<ClubDistance[]>([]);
@@ -101,10 +99,6 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         setSinHoles(getHolesWithSinsForRoundService(Number(roundId)));
         setScoreBreakdown(getRoundScoreBreakdownService(Number(roundId)));
         setClubDistances(getClubDistancesService());
-        const courseName = mp?.round?.CourseName ?? sc?.round?.CourseName ?? null;
-        if (courseName) {
-            setCourseNotes(loadCourseNotesService(courseName));
-        }
     }, [roundId]);
 
     // Loads the round from SQLite; runs on mount and whenever the round changes.
@@ -231,6 +225,13 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
 
             const isValid = edit.validateSinDetails(clubDistances, needsClub, needsPenalty, needsBogeysClub, needsDoubleChipReason);
             if (!isValid) return;
+        }
+
+        // A first putt is required whenever putting is recorded, as it is when a round is entered.
+        // Saving a cleared field would store it as a 0 ft putt, so the save is blocked instead.
+        if (edit.sinsHoleNumber !== null && edit.puttingStats && edit.puttingStats.firstPutt === undefined) {
+            showError('Enter the first putt distance');
+            return;
         }
 
         if (!multiplayerScorecard) return;

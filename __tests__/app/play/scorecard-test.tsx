@@ -1417,6 +1417,35 @@ describe('Scorecard screen', () => {
             expect(queryByTestId('first-putt-input')).toBeNull();
         });
 
+        describe('first putt is required on scorecard edit', () => {
+            it('shouldBlockSaveAndNotStoreAZeroFirstPuttWhenTheFirstPuttIsCleared', async () => {
+                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+                mockGetPuttingStats.mockReturnValue({
+                    Id: 1,
+                    RoundId: 1,
+                    HoleNumber: 1,
+                    FirstPuttDistance: 20,
+                    SecondPuttDistance: 5,
+                    SecondPuttIsLong: 0,
+                });
+                mockUpdateScorecard.mockResolvedValue(true);
+
+                const { getByTestId } = render(<ScorecardScreen />);
+                fireEvent.press(getByTestId('edit-scorecard-button'));
+                fireEvent.press(getByTestId('edit-round-hole-1'));
+                fireEvent.press(getByTestId('first-putt-input'));
+                fireEvent.press(getByTestId('first-putt-input-option-clear'));
+                fireEvent.press(getByTestId('edit-hole-back-button'));
+                fireEvent.press(getByTestId('edit-round-save-button'));
+
+                await waitFor(() => {
+                    expect(mockShow).toHaveBeenCalledWith('Enter the first putt distance', expect.objectContaining({ type: 'danger' }));
+                });
+                expect(mockUpdateScorecard).not.toHaveBeenCalled();
+                expect(insertPuttingStatsService).not.toHaveBeenCalled();
+            });
+        });
+
         describe('green in regulation on scorecard edit', () => {
             const savedPuttingRow = {
                 Id: 1,

@@ -38,6 +38,17 @@ const runStatement = async (context: string, sql: string, params: Record<string,
     }
 };
 
+// One round's or one hole's deadly sin counts, as read back from HoleDeadlySins
+export type DeadlySinCountsRow = {
+    ThreePutts: number;
+    DoubleBogeys: number;
+    BogeysPar5: number;
+    BogeysInside9Iron: number;
+    DoubleChips: number;
+    TroubleOffTee: number;
+    Penalties: number;
+};
+
 export type TableAmendment = {
     table: string;
     columnsToAdd: string[];
@@ -293,10 +304,11 @@ export const getDeadlySinsForRound = (roundId: number) => {
                SUM(DoubleChips) as DoubleChips, SUM(TroubleOffTee) as TroubleOffTee,
                SUM(Penalties) as Penalties
         FROM HoleDeadlySins WHERE RoundId = ?
-    `, [roundId]) as any[];
+    `, [roundId]) as DeadlySinCountsRow[];
 
     if (rows.length === 0) return null;
-    const row = rows[0] as any;
+    // SUM() over no rows is NULL, so the totals are typed as nullable
+    const row = rows[0] as { [K in keyof DeadlySinCountsRow]: DeadlySinCountsRow[K] | null };
     if (row.ThreePutts === null && row.DoubleBogeys === null) return null;
     return row;
 };
@@ -324,7 +336,7 @@ export const getHoleDeadlySins = (roundId: number, holeNumber: number) => {
     const rows = getSyncDb().getAllSync(
         'SELECT ThreePutts, DoubleBogeys, BogeysPar5, BogeysInside9Iron, DoubleChips, TroubleOffTee, Penalties FROM HoleDeadlySins WHERE RoundId = ? AND HoleNumber = ? LIMIT 1',
         [roundId, holeNumber]
-    ) as any[];
+    ) as DeadlySinCountsRow[];
     return rows.length > 0 ? rows[0] : null;
 };
 
@@ -390,10 +402,20 @@ export const deleteHoleDeadlySinsByHole = async (roundId: number, holeNumber: nu
     return runStatement('db.deleteHoleDeadlySinsByHole', 'DELETE FROM HoleDeadlySins WHERE RoundId = $RoundId AND HoleNumber = $HoleNumber;', { $RoundId: roundId, $HoleNumber: holeNumber });
 };
 
+// One row of DrillHistory as stored
+export type DrillHistoryRow = {
+    Id: number;
+    Name: string;
+    Result: number;
+    DrillId: number | null;
+    Score: number | null;
+    Created_At: string;
+};
+
 export const getAllDrillHistory = () => {
     const sqlStatement = `SELECT * FROM DrillHistory ORDER BY Id DESC;`
 
-    return get(sqlStatement);
+    return get<DrillHistoryRow>(sqlStatement);
 }
 
 
@@ -695,16 +717,8 @@ export const getAllRoundsWithPlayersAndScores = () => {
     return getSyncDb().getAllSync(sql);
 };
 
-function get(sql: string) {
-    const rows: any[] = [];
-
-    const allRows = getSyncDb().getAllSync(sql);
-
-    allRows.forEach((item) => {
-        rows.push(item);
-    });
-
-    return rows;
+function get<T>(sql: string): T[] {
+    return getSyncDb().getAllSync(sql) as T[];
 };
 
 export const getAllRoundHoleScoresWithContext = () => {

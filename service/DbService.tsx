@@ -5,7 +5,6 @@ import {
     getWedgeChartDistanceNames,
     getWedgeChartEntries,
     insertWedgeChart,
-    insertDrillResult,
     getAllDrillHistory,
     insertHoleDeadlySins,
     getDeadlySinsForRound,
@@ -22,17 +21,14 @@ import {
     getHoleSinDetails,
     getAllHoleSinDetails,
     deleteHoleSinDetailsByHole,
-    insertRound,
     updateRound,
     updateRoundStartTime,
     getRoundById,
     getActiveRound,
     getAllRounds,
     getClubDistances,
-    insertClubDistances,
     getDistinctCourseNames,
     addHiddenRecent,
-    getHolesPlayedForRound,
     insertRoundPlayer,
     getRoundPlayers,
     insertRoundHoleScore,
@@ -41,7 +37,6 @@ import {
     updateRoundHoleParForHole,
     deleteRoundHoleScoresByHole,
     updateRoundTotalScore,
-    deleteRound,
     getAllRoundsWithPlayersAndScores,
     getSettings,
     saveSettings,
@@ -108,9 +103,7 @@ export const saveWedgeChartService = async (data: WedgeChartData): Promise<boole
     return insertWedgeChart(distanceNames, entries);
 };
 
-export const insertDrillResultService = (name: string, result: boolean, drillId: number | null = null, score: number | null = null) => {
-    return insertDrillResult(name, result, drillId, score);
-}
+export { insertDrillResult as insertDrillResultService } from '../database/db';
 
 export const getAllDrillHistoryService = () => {
     let history: { Id: number; Name: string; Result: number; Score: number | null; Created_At: string; Timestamp: string }[] = [];
@@ -505,9 +498,7 @@ export type RoundScoreBreakdown = {
 
 // Round services
 // startHole is the hole the round starts on; a shotgun start can begin anywhere from 1 to 18
-export const startRoundService = async (courseName: string, isScoreOnly: boolean, startHole: number = 1): Promise<number | null> => {
-    return insertRound(courseName, isScoreOnly, startHole);
-};
+export { insertRound as startRoundService } from '../database/db';
 
 // Changes the date a round was played on; the time of day is kept as the caller supplies it
 export const updateRoundStartTimeService = async (roundId: number, startTime: Date): Promise<boolean> => {
@@ -555,9 +546,7 @@ const getYearOrUndefined = (dateAsString: string): number | undefined => {
     return Number.isNaN(year) ? undefined : year;
 };
 
-export const deleteRoundService = async (roundId: number): Promise<boolean> => {
-    return deleteRound(roundId);
-};
+export { deleteRound as deleteRoundService } from '../database/db';
 
 export const getRecentCourseNamesService = (): string[] => {
     const rows = getDistinctCourseNames() as { CourseName: string }[];
@@ -621,9 +610,7 @@ export const getRoundPlayersService = (roundId: number): RoundPlayer[] => {
     return getRoundPlayers(roundId) as RoundPlayer[];
 };
 
-export const getHolesPlayedForRoundService = (roundId: number): number => {
-    return getHolesPlayedForRound(roundId);
-};
+export { getHolesPlayedForRound as getHolesPlayedForRoundService } from '../database/db';
 
 export const getMultiplayerScorecardService = (roundId: number): MultiplayerRoundScorecard | null => {
     const round = getRoundById(roundId) as Round | null;
@@ -641,9 +628,7 @@ export const getClubDistancesService = (): ClubDistance[] => {
     return getClubDistances() as ClubDistance[];
 };
 
-export const saveClubDistancesService = async (distances: { Club: string; CarryDistance: number; TotalDistance: number; SortOrder: number }[]): Promise<boolean> => {
-    return insertClubDistances(distances);
-};
+export { insertClubDistances as saveClubDistancesService } from '../database/db';
 
 export const getDeadlySinsForRoundService = (roundId: number): DeadlySinsRound | null => {
     const r = getDeadlySinsForRound(roundId);

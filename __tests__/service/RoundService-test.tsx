@@ -68,7 +68,7 @@ describe('startRoundService', () => {
 
         const result = await startRoundService('St Andrews', false);
 
-        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', false, 1);
+        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', false);
         expect(result).toBe(42);
     });
 
@@ -93,7 +93,7 @@ describe('startRoundService', () => {
 
         const result = await startRoundService('', false);
 
-        expect(mockInsertRound).toHaveBeenCalledWith('', false, 1);
+        expect(mockInsertRound).toHaveBeenCalledWith('', false);
         expect(result).toBe(1);
     });
 
@@ -102,7 +102,7 @@ describe('startRoundService', () => {
 
         await startRoundService('St Andrews', true);
 
-        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', true, 1);
+        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', true);
     });
 
     it('passes false for isScoreOnly when not in score-only mode', async () => {
@@ -110,7 +110,7 @@ describe('startRoundService', () => {
 
         await startRoundService('St Andrews', false);
 
-        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', false, 1);
+        expect(mockInsertRound).toHaveBeenCalledWith('St Andrews', false);
     });
 });
 

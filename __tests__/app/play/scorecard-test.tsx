@@ -849,6 +849,8 @@ describe('Scorecard screen', () => {
             const style = StyleSheet.flatten(getByTestId('edit-scorecard-button').props.style);
 
             expect(style.backgroundColor).toBe(colours.backgroundLight);
+            expect(style.height).toBe(44);
+            expect(style.borderRadius).toBe(22);
             expect(getByText('Edit')).toHaveStyle({ color: colours.primary });
         });
 

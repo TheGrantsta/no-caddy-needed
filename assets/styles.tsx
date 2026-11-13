@@ -4455,6 +4455,19 @@ export const createStyles = (c: ThemeColours) => ({
             columnGap: 12,
         },
         circleButton: circleButtonStyle(c),
+        // The white Edit pill with green text used in the scorecard's title row
+        editPill: {
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.backgroundLight,
+            justifyContent: 'center',
+            paddingHorizontal: 18,
+        },
+        editPillText: {
+            color: c.primary,
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
+        },
         titleBlock: {
             flex: 1,
         },

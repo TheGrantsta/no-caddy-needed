@@ -35,7 +35,6 @@ import {
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { formatLongDate } from '../../utils/drillHistory';
-import fontSizes from '../../assets/font-sizes';
 import { useOrientation } from '../../hooks/useOrientation';
 
 const INITIAL_SINS: DeadlySinsValues = {
@@ -376,9 +375,9 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                 testID="edit-scorecard-button"
                                 accessibilityRole="button"
                                 onPress={handleEdit}
-                                style={{ height: 44, borderRadius: 22, backgroundColor: colours.backgroundLight, justifyContent: 'center', paddingHorizontal: 18 }}
+                                style={styles.pageHeader.editPill}
                             >
-                                <Text style={{ color: colours.primary, fontSize: fontSizes.normal, fontWeight: '600' }}>Edit</Text>
+                                <Text style={styles.pageHeader.editPillText}>Edit</Text>
                             </TouchableOpacity>
                         ) : null}
                     </View>

@@ -235,12 +235,10 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             showError('Enter the first putt distance');
             return;
         }
-        if (result === 'failed') {
-            showResult(false, 'Scorecard updated', 'Failed to update scorecard');
-            return;
-        }
 
-        showResult(true, 'Scorecard updated', 'Failed to update scorecard');
+        showResult(result === 'saved', 'Scorecard updated', 'Failed to update scorecard');
+        if (result === 'failed') return;
+
         setEditedDate(null);
         loadData();
         edit.resetEditState();

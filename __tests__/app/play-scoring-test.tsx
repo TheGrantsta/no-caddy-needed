@@ -385,6 +385,34 @@ describe('Play screen', () => {
             expect(queryByTestId('previous-hole-button')).toBeNull();
         });
 
+        it('shouldSaveTheFirstHoleOfAShotgunRoundAgainstTheStartingHole', async () => {
+            const mockGetSettings = getSettingsService as jest.Mock;
+            const original = mockGetSettings.getMockImplementation();
+            mockGetSettings.mockReturnValue({ ...original?.(), skipStatsFlowEnabled: true });
+            mockGetCourseHolePars.mockReturnValue({ 1: 4, 10: 5 });
+            mockStartRound.mockResolvedValue(1);
+            mockAddRoundPlayers.mockResolvedValue([1]);
+            mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+            const { getByTestId, getByText } = render(<Play />);
+
+            fireEvent.press(getByTestId('starting-hole-dropdown-toggle'));
+            fireEvent.press(getByTestId('starting-hole-option-Hole 10'));
+            fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
+            fireEvent.press(getByTestId('start-button'));
+            await waitFor(() => expect(getByText('Hole 10')).toBeTruthy());
+
+            fireEvent.press(getByTestId('next-hole-button'));
+
+            try {
+                await waitFor(() => {
+                    expect(mockAddMultiplayerHoleScores).toHaveBeenCalledWith(1, 10, 5, expect.any(Array));
+                });
+            } finally {
+                mockGetSettings.mockReturnValue(original?.());
+            }
+        });
+
         it('starts round after player setup is completed', async () => {
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);

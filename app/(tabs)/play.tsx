@@ -318,10 +318,10 @@ export default function Play() {
             setActiveCourseName(courseName);
             const notes = loadCourseNotesService(courseName);
             setCourseNotes(notes);
-            setCurrentNoteText(notes[1] ?? '');
-            const par = holePars[1] ?? 4;
+            setCurrentNoteText(notes[startHole] ?? '');
+            const par = holePars[startHole] ?? 4;
             const holeData = {
-                holeNumber: 1,
+                holeNumber: startHole,
                 holePar: par,
                 scores: roundPlayers.map(p => ({ playerId: p.Id, playerName: p.PlayerName, score: par })),
             };

@@ -13,7 +13,6 @@ import {
     startRoundService,
     endRoundService,
     deleteRoundService,
-    getDeadlySinsForRoundService,
     getWedgeChartService,
     addMultiplayerHoleScoresService,
     getActiveRoundService,
@@ -25,7 +24,6 @@ import {
     getPuttingStatsService,
     addRoundPlayersService,
     getRoundPlayersService,
-    getMultiplayerScorecardService,
     getRecentCourseNamesService,
     hideCourseFromRecentsService,
     getHolesPlayedForRoundService,
@@ -57,7 +55,7 @@ import { useToggle } from '../../hooks/useToggle';
 import { useHoleLifecycle } from '../../hooks/useHoleLifecycle';
 import PhaseStats from '../../components/PhaseStats';
 import RoundSummary from '../../components/RoundSummary';
-import { buildRoundSummary, RoundSummary as RoundSummaryData, SummarySins } from '../../utils/roundSummary';
+import { RoundSummary as RoundSummaryData } from '../../utils/roundSummary';
 import { HOLES_PER_ROUND, holeAtPlayPosition, isFirstHoleOfRound, isLastHoleOfRound, nextHoleInRound, previousHoleInRound, sanitiseStartHole } from '../../utils/holeOrder';
 import EndRoundSheet from '../../components/EndRoundSheet';
 import EndIncompleteRoundSheet from '../../components/EndIncompleteRoundSheet';
@@ -68,6 +66,7 @@ import RoundEntry from '../../components/RoundEntry';
 import HoleNavigationControls from '../../components/HoleNavigationControls';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
+import { buildSummaryForRoundService } from '../../service/RoundSummaryService';
 
 const BAD_HOLE_MESSAGES = [
     'A triple bogey isn\'t the end of the round — plenty of golf left.',
@@ -506,7 +505,7 @@ export default function Play() {
     };
 
 
-    const handledeadlySinsValuesChange = (values: DeadlySinsValues) => {
+    const handleDeadlySinsValuesChange = (values: DeadlySinsValues) => {
         setDeadlySinsValues(values);
     };
 
@@ -560,41 +559,6 @@ export default function Play() {
         setRecentCourseNames(getRecentCourseNamesService());
     };
 
-    // Totals for the "Round saved" summary, read back from what was stored for the round
-    const buildSummaryForRound = (roundId: number, isScoreOnly: boolean) => {
-        const scorecard = getMultiplayerScorecardService(roundId);
-        if (!scorecard) return null;
-        const holeNumbers = [...new Set(scorecard.holeScores.map(h => h.HoleNumber))];
-        const putting = isScoreOnly ? [] : holeNumbers.flatMap(hole => {
-            const saved = getPuttingStatsService(roundId, hole);
-            if (!saved) return [];
-            return [{
-                hole,
-                firstPutt: saved.FirstPuttDistance ?? undefined,
-                secondPutt: saved.SecondPuttDistance ?? undefined,
-                greenInRegulation: Boolean(saved.GreenInRegulation),
-            }];
-        });
-        const totals = isScoreOnly ? null : getDeadlySinsForRoundService(roundId);
-        const sins: SummarySins = totals ? {
-            TroubleOffTee: totals.TroubleOffTee,
-            Penalties: totals.Penalties,
-            ThreePutts: totals.ThreePutts,
-            BogeysInside9Iron: totals.BogeysInside9Iron,
-            DoubleChips: totals.DoubleChips,
-            DoubleBogeys: totals.DoubleBogeys,
-            BogeysPar5: totals.BogeysPar5,
-        } : {};
-        return buildRoundSummary({
-            courseName: scorecard.round.CourseName ?? 'Round',
-            players: scorecard.players,
-            holeScores: scorecard.holeScores,
-            putting,
-            sins,
-            isScoreOnly,
-        });
-    };
-
     const handleConfirmEndRound = async () => {
         if (!activeRoundId) return;
 
@@ -610,7 +574,7 @@ export default function Play() {
 
         showResult(success, 'Round saved', 'Failed to save round');
 
-        const summary = buildSummaryForRound(activeRoundId, skipStatsFlow);
+        const summary = buildSummaryForRoundService(activeRoundId, skipStatsFlow);
         if (summary) {
             setShowEndRoundConfirm(false);
             setRoundSummary(summary);
@@ -756,7 +720,7 @@ export default function Play() {
                                             holeNumber={currentHole}
                                             holePar={currentHoleData?.holePar ?? 4}
                                             sins={deadlySinsValues}
-                                            onSinsChange={handledeadlySinsValuesChange}
+                                            onSinsChange={handleDeadlySinsValuesChange}
                                             players={players}
                                             userScore={currentHoleData?.scores.find(s => {
                                                 const player = players.find(p => p.Id === s.playerId);

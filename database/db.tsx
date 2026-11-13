@@ -38,6 +38,104 @@ const runStatement = async (context: string, sql: string, params: Record<string,
     }
 };
 
+// Row shapes for the reads that the service layer uses
+export type DeadlySinRoundTotalsRow = {
+    RoundId: number;
+    ThreePutts: number;
+    DoubleBogeys: number;
+    BogeysPar5: number;
+    BogeysInside9Iron: number;
+    DoubleChips: number;
+    TroubleOffTee: number;
+    Penalties: number;
+    Total: number;
+};
+
+export type PuttingStatsRow = {
+    Id: number;
+    RoundId: number;
+    HoleNumber: number;
+    FirstPuttDistance: number;
+    SecondPuttDistance: number;
+    SecondPuttIsLong: number;
+    ThirdPuttDistance: number | null;
+    ThirdPuttIsLong: number | null;
+    GreenInRegulation: number;
+};
+
+export type PuttingStatsWithThreePuttsRow = {
+    RoundId: number;
+    FirstPuttDistance: number;
+    SecondPuttDistance: number;
+    SecondPuttIsLong: number;
+    GreenInRegulation: number;
+    ThreePutts: number;
+};
+
+export type HoleSinDetailsRow = {
+    Id: number;
+    RoundId: number;
+    HoleNumber: number;
+    TroubleOffTeeClub: string | null;
+    PenaltyType: string | null;
+    BogeysInside9IronClub: string | null;
+    DoubleChipsReason: string | null;
+};
+
+export type RoundRow = {
+    Id: number;
+    TotalScore: number;
+    StartTime: string;
+    EndTime: string | null;
+    IsCompleted: number;
+    CourseName: string | null;
+    Created_At: string;
+    IsScoreOnly: number;
+    StartHole: number;
+};
+
+export type RoundWithPlayersRow = Omit<RoundRow, 'StartHole'> & {
+    UserPlayerId: number | null;
+    StrokeTotal: number | null;
+    HolesPlayed: number;
+};
+
+export type RoundHoleScoreContextRow = {
+    RoundId: number;
+    CourseName: string | null;
+    Created_At: string;
+    HoleNumber: number;
+    HolePar: number;
+    Score: number;
+};
+
+export type HoleDeadlySinsContextRow = {
+    RoundId: number;
+    CourseName: string | null;
+    Created_At: string;
+    HoleNumber: number;
+    ThreePutts: number;
+    DoubleBogeys: number;
+    BogeysPar5: number;
+    BogeysInside9Iron: number;
+    DoubleChips: number;
+    TroubleOffTee: number;
+    Penalties: number;
+};
+
+export type PuttingStatsContextRow = {
+    RoundId: number;
+    CourseName: string | null;
+    Created_At: string;
+    HoleNumber: number;
+    FirstPuttDistance: number;
+    SecondPuttDistance: number;
+    SecondPuttIsLong: number;
+    ThirdPuttDistance: number | null;
+    ThirdPuttIsLong: number | null;
+    GreenInRegulation: number;
+};
+
 // One round's or one hole's deadly sin counts, as read back from HoleDeadlySins
 export type DeadlySinCountsRow = {
     ThreePutts: number;
@@ -314,7 +412,7 @@ export const getDeadlySinsForRound = (roundId: number) => {
 };
 
 export const getAllDeadlySinsRoundTotals = () => {
-    return getSyncDb().getAllSync(`
+    return getSyncDb().getAllSync<DeadlySinRoundTotalsRow>(`
         SELECT RoundId,
                SUM(ThreePutts) as ThreePutts, SUM(DoubleBogeys) as DoubleBogeys,
                SUM(BogeysPar5) as BogeysPar5, SUM(BogeysInside9Iron) as BogeysInside9Iron,
@@ -333,7 +431,7 @@ export const getHolesWithSinsForRound = (roundId: number) => {
 };
 
 export const getHoleDeadlySins = (roundId: number, holeNumber: number) => {
-    const rows = getSyncDb().getAllSync(
+    const rows = getSyncDb().getAllSync<DeadlySinCountsRow>(
         'SELECT ThreePutts, DoubleBogeys, BogeysPar5, BogeysInside9Iron, DoubleChips, TroubleOffTee, Penalties FROM HoleDeadlySins WHERE RoundId = ? AND HoleNumber = ? LIMIT 1',
         [roundId, holeNumber]
     ) as DeadlySinCountsRow[];
@@ -361,14 +459,14 @@ export const insertPuttingStats = async (roundId: number, holeNumber: number, fi
 };
 
 export const getPuttingStats = (roundId: number, holeNumber: number) => {
-    return getSyncDb().getAllSync(
+    return getSyncDb().getAllSync<PuttingStatsRow>(
         'SELECT * FROM PuttingStats WHERE RoundId = ? AND HoleNumber = ? LIMIT 1;',
         [roundId, holeNumber]
     );
 };
 
 export const getAllPuttingStatsWithThreePutts = () => {
-    return getSyncDb().getAllSync(
+    return getSyncDb().getAllSync<PuttingStatsWithThreePuttsRow>(
         `SELECT ps.RoundId, ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.GreenInRegulation, COALESCE(hds.ThreePutts, 0) AS ThreePutts
          FROM PuttingStats ps
          LEFT JOIN HoleDeadlySins hds ON hds.RoundId = ps.RoundId AND hds.HoleNumber = ps.HoleNumber;`
@@ -384,14 +482,14 @@ export const insertHoleSinDetails = async (roundId: number, holeNumber: number, 
 };
 
 export const getHoleSinDetails = (roundId: number, holeNumber: number) => {
-    return getSyncDb().getAllSync(
+    return getSyncDb().getAllSync<HoleSinDetailsRow>(
         'SELECT * FROM HoleSinDetails WHERE RoundId = ? AND HoleNumber = ? LIMIT 1;',
         [roundId, holeNumber]
     );
 };
 
 export const getAllHoleSinDetails = () => {
-    return getSyncDb().getAllSync('SELECT * FROM HoleSinDetails;');
+    return getSyncDb().getAllSync<HoleSinDetailsRow>('SELECT * FROM HoleSinDetails;');
 };
 
 export const deleteHoleSinDetailsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
@@ -450,7 +548,7 @@ export const updateRound = async (roundId: number, totalScore: number): Promise<
 };
 
 export const getRoundById = (roundId: number) => {
-    const rows = getSyncDb().getAllSync('SELECT * FROM Rounds WHERE Id = ?;', [roundId]);
+    const rows = getSyncDb().getAllSync<RoundRow>('SELECT * FROM Rounds WHERE Id = ?;', [roundId]);
     return rows.length > 0 ? rows[0] : null;
 };
 
@@ -753,7 +851,7 @@ export const getAllRoundsWithPlayersAndScores = () => {
         GROUP BY r.Id
         ORDER BY r.Id DESC;
     `;
-    return getSyncDb().getAllSync(sql);
+    return getSyncDb().getAllSync<RoundWithPlayersRow>(sql);
 };
 
 function get<T>(sql: string): T[] {
@@ -769,7 +867,7 @@ export const getAllRoundHoleScoresWithContext = () => {
         WHERE r.IsCompleted = 1
         ORDER BY r.Id DESC, rhs.HoleNumber ASC
     `;
-    return getSyncDb().getAllSync(sql);
+    return getSyncDb().getAllSync<RoundHoleScoreContextRow>(sql);
 };
 
 export const getAllHoleDeadlySinsWithContext = () => {
@@ -781,7 +879,7 @@ export const getAllHoleDeadlySinsWithContext = () => {
         WHERE r.IsCompleted = 1
         ORDER BY r.Id DESC, hds.HoleNumber ASC
     `;
-    return getSyncDb().getAllSync(sql);
+    return getSyncDb().getAllSync<HoleDeadlySinsContextRow>(sql);
 };
 
 export const getAllPuttingStatsWithContext = () => {
@@ -793,6 +891,6 @@ export const getAllPuttingStatsWithContext = () => {
         WHERE r.IsCompleted = 1
         ORDER BY r.Id DESC, ps.HoleNumber ASC
     `;
-    return getSyncDb().getAllSync(sql);
+    return getSyncDb().getAllSync<PuttingStatsContextRow>(sql);
 };
 

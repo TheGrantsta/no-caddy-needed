@@ -113,7 +113,7 @@ export const insertDrillResultService = (name: string, result: boolean, drillId:
 }
 
 export const getAllDrillHistoryService = () => {
-    let history: any[] = [];
+    let history: { Id: number; Name: string; Result: number; Score: number | null; Created_At: string; Timestamp: string }[] = [];
 
     getAllDrillHistory().forEach((drill) => {
         history.push({
@@ -160,7 +160,7 @@ export const insertHoleDeadlySinsService = async (roundId: number, holeNumber: n
 };
 
 export const getHoleDeadlySinsService = (roundId: number, holeNumber: number): DeadlySinsValues | null => {
-    const row = getHoleDeadlySins(roundId, holeNumber) as any;
+    const row = getHoleDeadlySins(roundId, holeNumber);
     if (!row) return null;
     return {
         threePutts: row.ThreePutts === 1,
@@ -192,7 +192,7 @@ export const replaceHoleDeadlySinsService = (roundId: number, holeNumber: number
 };
 
 export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {
-    const totals = getAllDeadlySinsRoundTotals() as any[];
+    const totals = getAllDeadlySinsRoundTotals();
     const rounds = getAllRounds() as { Id: number; Created_At: string }[];
     const roundMap = new Map(rounds.map(r => [r.Id, r.Created_At]));
 
@@ -217,7 +217,7 @@ export const insertPuttingStatsService = async (roundId: number, holeNumber: num
 };
 
 export const getPuttingStatsService = (roundId: number, holeNumber: number): PuttingStats | null => {
-    const rows = getPuttingStats(roundId, holeNumber) as any[];
+    const rows = getPuttingStats(roundId, holeNumber);
     if (rows.length === 0) return null;
     const row = rows[0];
     return {
@@ -251,7 +251,7 @@ export type PuttingMakeRate = {
 };
 
 export const getPuttingMakeRatesService = (roundIds?: Set<number>): PuttingMakeRate[] => {
-    const rows = getAllPuttingStatsWithThreePutts() as any[];
+    const rows = getAllPuttingStatsWithThreePutts();
     const stats = new Map<number, { total: number; made: number }>();
 
     rows.forEach((row) => {
@@ -294,7 +294,7 @@ export type UpAndDownRate = {
 
 // Up and down = missed the green, then holed out in one putt. Attempts are missed-green holes.
 export const getUpAndDownRateService = (roundIds?: Set<number>): UpAndDownRate => {
-    const rows = getAllPuttingStatsWithThreePutts() as any[];
+    const rows = getAllPuttingStatsWithThreePutts();
     let attempts = 0;
     let upAndDowns = 0;
 
@@ -330,7 +330,7 @@ export type PuttingProximity = {
 };
 
 export const getPuttingProximityService = (threePuttOnly: boolean = false, roundIds?: Set<number>): PuttingProximity[] => {
-    const rows = getAllPuttingStatsWithThreePutts() as any[];
+    const rows = getAllPuttingStatsWithThreePutts();
     const stats = new Map<number, { short: number; long: number }>();
 
     rows.forEach((row) => {
@@ -384,7 +384,7 @@ export const replaceHoleSinDetailsService = (roundId: number, holeNumber: number
     insertHoleSinDetailsService(roundId, holeNumber, details);
 
 export const getHoleSinDetailsService = (roundId: number, holeNumber: number): HoleSinDetails | null => {
-    const rows = getHoleSinDetails(roundId, holeNumber) as any[];
+    const rows = getHoleSinDetails(roundId, holeNumber);
     if (rows.length === 0) return null;
     const row = rows[0];
     return {
@@ -399,7 +399,7 @@ export const getHoleSinDetailsService = (roundId: number, holeNumber: number): H
 };
 
 export const getAllHoleSinDetailsService = (): HoleSinDetails[] => {
-    const rows = getAllHoleSinDetails() as any[];
+    const rows = getAllHoleSinDetails();
     return rows.map(row => ({
         Id: row.Id,
         RoundId: row.RoundId,
@@ -535,7 +535,7 @@ export const getActiveRoundService = (): Round | null => {
 };
 
 export const getAllRoundHistoryService = (): Round[] => {
-    return getAllRoundsWithPlayersAndScores().map((row: any) => ({
+    return getAllRoundsWithPlayersAndScores().map((row) => ({
         Id: row.Id,
         TotalScore: row.TotalScore,
         StrokeTotal: row.UserPlayerId ? (row.StrokeTotal ?? null) : null,
@@ -646,9 +646,9 @@ export const saveClubDistancesService = async (distances: { Club: string; CarryD
 };
 
 export const getDeadlySinsForRoundService = (roundId: number): DeadlySinsRound | null => {
-    const r = getDeadlySinsForRound(roundId) as any;
+    const r = getDeadlySinsForRound(roundId);
     if (!r) return null;
-    const round = getRoundById(roundId) as any;
+    const round = getRoundById(roundId);
     const total = (r.ThreePutts ?? 0) + (r.DoubleBogeys ?? 0) + (r.BogeysPar5 ?? 0) +
         (r.BogeysInside9Iron ?? 0) + (r.DoubleChips ?? 0) + (r.TroubleOffTee ?? 0) + (r.Penalties ?? 0);
     return {
@@ -671,7 +671,7 @@ export const getRoundScoreBreakdownService = (roundId: number): RoundScoreBreakd
     const threePutts = sins?.ThreePutts ?? 0;
     const penalties = sins?.Penalties ?? 0;
 
-    const puttingStats = getAllPuttingStatsWithThreePutts() as any[];
+    const puttingStats = getAllPuttingStatsWithThreePutts();
     const roundStats = puttingStats.filter((row) => row.RoundId === roundId);
     let putts = 0;
     roundStats.forEach((stat) => {
@@ -833,7 +833,7 @@ export const updateScorecardService = async (
 
 export type RoundHoleScoreDetail = {
     RoundId: number;
-    CourseName: string;
+    CourseName: string | null;
     Created_At: string;
     HoleNumber: number;
     HolePar: number;
@@ -841,7 +841,7 @@ export type RoundHoleScoreDetail = {
 };
 
 export const getAllRoundHoleScoresDetailService = (): RoundHoleScoreDetail[] => {
-    const rows = getAllRoundHoleScoresWithContext() as any[];
+    const rows = getAllRoundHoleScoresWithContext();
     return rows.map(row => ({
         RoundId: row.RoundId,
         CourseName: row.CourseName,
@@ -854,7 +854,7 @@ export const getAllRoundHoleScoresDetailService = (): RoundHoleScoreDetail[] => 
 
 export type HoleDeadlySinsDetail = {
     RoundId: number;
-    CourseName: string;
+    CourseName: string | null;
     Created_At: string;
     HoleNumber: number;
     ThreePutts: number;
@@ -867,7 +867,7 @@ export type HoleDeadlySinsDetail = {
 };
 
 export const getAllHoleDeadlySinsDetailService = (): HoleDeadlySinsDetail[] => {
-    const rows = getAllHoleDeadlySinsWithContext() as any[];
+    const rows = getAllHoleDeadlySinsWithContext();
     return rows.map(row => ({
         RoundId: row.RoundId,
         CourseName: row.CourseName,
@@ -885,7 +885,7 @@ export const getAllHoleDeadlySinsDetailService = (): HoleDeadlySinsDetail[] => {
 
 export type PuttingStatDetail = {
     RoundId: number;
-    CourseName: string;
+    CourseName: string | null;
     Created_At: string;
     HoleNumber: number;
     FirstPuttDistance: number;
@@ -897,7 +897,7 @@ export type PuttingStatDetail = {
 };
 
 export const getAllPuttingStatsDetailService = (): PuttingStatDetail[] => {
-    const rows = getAllPuttingStatsWithContext() as any[];
+    const rows = getAllPuttingStatsWithContext();
     return rows.map(row => ({
         RoundId: row.RoundId,
         CourseName: row.CourseName,

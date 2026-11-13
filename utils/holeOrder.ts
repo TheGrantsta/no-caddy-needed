@@ -24,3 +24,8 @@ export const holeAtPlayPosition = (startHole: number, position: number): number 
 // Any saved or passed starting hole that isn't 1 to 18 starts on hole 1
 export const sanitiseStartHole = (value: number | null | undefined): number =>
     typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= HOLES_PER_ROUND ? value : 1;
+
+// The front nine is holes 1 to 9; the back nine is holes 10 to 18
+export const FRONT_NINE_LAST_HOLE = 9;
+
+export const isFrontNineHole = (hole: number): boolean => hole <= FRONT_NINE_LAST_HOLE;

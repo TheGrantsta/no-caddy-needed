@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
 import { Round, ParAverages } from '../service/DbService';
+import { HOLES_PER_ROUND } from '@/utils/holeOrder';
 
 // Each round row is at least this tall, so the list shows exactly this many rounds before it scrolls
 const ROW_HEIGHT = 48;
@@ -66,7 +67,7 @@ export default function RoundHistorySection({ rounds, parAverages, fadeAnim, sli
                                     {round.Created_At}
                                 </Text>
                                 <Text style={[styles.smallTextNoPadding, localStyles.historyCourseColumn]}>
-                                    {[round.CourseName, round.HolesPlayed < 18 ? `(${round.HolesPlayed})` : null].filter(Boolean).join(' ')}
+                                    {[round.CourseName, round.HolesPlayed < HOLES_PER_ROUND ? `(${round.HolesPlayed})` : null].filter(Boolean).join(' ')}
                                 </Text>
                                 <View style={[styles.row, localStyles.historyTotalColumn]}>
                                     <Text testID={`round-history-strokes-${round.Id}`} style={[styles.smallTextNoPadding, { flex: 1, textAlign: 'center', fontWeight: 'bold' }]}>

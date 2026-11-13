@@ -2,6 +2,7 @@ import colours from '@/assets/colours';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
+import { isFrontNineHole } from '@/utils/holeOrder';
 
 type Hole = { holeNumber: number; par: number; score: number };
 
@@ -67,8 +68,8 @@ const NineTable = ({ label, holes, sinHoles, onSinPress }: Props & { label: 'OUT
 // The round as tables: an Out table for holes 1 to 9 and an In table for holes 10 to 18
 export default function RoundScoreTable({ holes, sinHoles, onSinPress }: Props) {
     const styles = useStyles();
-    const out = holes.filter(h => h.holeNumber <= 9);
-    const inward = holes.filter(h => h.holeNumber >= 10);
+    const out = holes.filter(h => isFrontNineHole(h.holeNumber));
+    const inward = holes.filter(h => !isFrontNineHole(h.holeNumber));
     const anySin = holes.some(h => sinHoles.has(h.holeNumber));
 
     return (

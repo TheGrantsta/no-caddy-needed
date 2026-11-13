@@ -58,7 +58,7 @@ import { useHoleLifecycle } from '../../hooks/useHoleLifecycle';
 import PhaseStats from '../../components/PhaseStats';
 import RoundSummary from '../../components/RoundSummary';
 import { buildRoundSummary, RoundSummary as RoundSummaryData, SummarySins } from '../../utils/roundSummary';
-import { holeAtPlayPosition, isFirstHoleOfRound, isLastHoleOfRound, nextHoleInRound, previousHoleInRound, sanitiseStartHole } from '../../utils/holeOrder';
+import { HOLES_PER_ROUND, holeAtPlayPosition, isFirstHoleOfRound, isLastHoleOfRound, nextHoleInRound, previousHoleInRound, sanitiseStartHole } from '../../utils/holeOrder';
 import EndRoundSheet from '../../components/EndRoundSheet';
 import EndIncompleteRoundSheet from '../../components/EndIncompleteRoundSheet';
 import BagSheet from '../../components/BagSheet';
@@ -816,7 +816,7 @@ export default function Play() {
                             <EndRoundSheet
                                 visible={showEndRoundConfirm}
                                 holeNumber={currentHole}
-                                holesTotal={18}
+                                holesTotal={HOLES_PER_ROUND}
                                 onSave={handleConfirmEndRound}
                                 onDiscard={handleDiscardRound}
                                 onKeepPlaying={handleCancelEndRound}

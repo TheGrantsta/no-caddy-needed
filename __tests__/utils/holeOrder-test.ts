@@ -1,5 +1,7 @@
 import {
+    FRONT_NINE_LAST_HOLE,
     HOLES_PER_ROUND,
+    isFrontNineHole,
     holeAtPlayPosition,
     isFirstHoleOfRound,
     isLastHoleOfRound,
@@ -55,6 +57,22 @@ describe('hole order', () => {
             expect(holeAtPlayPosition(10, 17)).toBe(9);
         });
 
+    });
+
+    describe('front and back nine', () => {
+        it('shouldEndTheFrontNineOnHoleNine', () => {
+            expect(FRONT_NINE_LAST_HOLE).toBe(9);
+        });
+
+        it('shouldCountHolesOneToNineAsTheFrontNine', () => {
+            expect(isFrontNineHole(1)).toBe(true);
+            expect(isFrontNineHole(9)).toBe(true);
+        });
+
+        it('shouldCountHoleTenOnwardsAsTheBackNine', () => {
+            expect(isFrontNineHole(10)).toBe(false);
+            expect(isFrontNineHole(18)).toBe(false);
+        });
     });
 
     describe('sanitiseStartHole', () => {

@@ -67,6 +67,7 @@ import HoleNavigationControls from '../../components/HoleNavigationControls';
 import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 import { buildSummaryForRoundService } from '../../service/RoundSummaryService';
+import { isTripleBogeyOrWorse } from '../../utils/scoring';
 
 const BAD_HOLE_MESSAGES = [
     'A triple bogey isn\'t the end of the round — plenty of golf left.',
@@ -428,13 +429,14 @@ export default function Play() {
         return true;
     };
 
-    const isTripleBogeyOrWorse = (holeData: typeof currentHoleData): boolean => {
+    // The user's own score on the hole, checked against the bad-hole rule
+    const isUserTripleBogeyOrWorse = (holeData: typeof currentHoleData): boolean => {
         if (!holeData) return false;
         const userScore = holeData.scores.find(s => {
             const player = players.find(p => p.Id === s.playerId);
             return player && player.IsUser === 1;
         })?.score;
-        return userScore !== undefined && userScore >= holeData.holePar + 3;
+        return isTripleBogeyOrWorse(userScore, holeData.holePar);
     };
 
     const advanceHoleOrEndRound = () => {
@@ -496,7 +498,7 @@ export default function Play() {
         }
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         scrollRef.current?.scrollTo({ y: 0, animated: true });
-        if (isTripleBogeyOrWorse(currentHoleData) && settings.badHoleReassuranceEnabled) {
+        if (isUserTripleBogeyOrWorse(currentHoleData) && settings.badHoleReassuranceEnabled) {
             setReassuranceMessage(BAD_HOLE_MESSAGES[Math.floor(Math.random() * BAD_HOLE_MESSAGES.length)]);
             setShowBadHoleReassurance(true);
         } else {

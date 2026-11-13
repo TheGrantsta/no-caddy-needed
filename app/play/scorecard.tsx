@@ -13,24 +13,19 @@ import SinDetailsInput from '../../components/SinDetailsInput';
 import RoundSummaryCard from '../../components/RoundSummaryCard';
 import RoundScoreTable from '../../components/RoundScoreTable';
 import { useAppToast } from '../../hooks/useAppToast';
+import { saveScorecardEditsService } from '../../service/ScorecardEditService';
 import { useScorecardEdit } from '../../hooks/useScorecardEdit';
 import {
     getRoundScorecardService,
     getMultiplayerScorecardService,
-    updateScorecardService,
-    updateRoundStartTimeService,
     deleteRoundService,
     getHoleDeadlySinsService,
-    replaceHoleDeadlySinsService,
     getHolesWithSinsForRoundService,
     getAllRoundHistoryService,
     getRoundScoreBreakdownService,
     getClubDistancesService,
     getHoleSinDetailsService,
-    replaceHoleSinDetailsService,
-    deleteHoleSinDetailsService,
     getPuttingStatsService,
-    insertPuttingStatsService,
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
     DeadlySinsValues,
@@ -215,64 +210,41 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             if (!isValid) return;
         }
 
-        // A first putt is required whenever putting is recorded, as it is when a round is entered.
-        // Saving a cleared field would store it as a 0 ft putt, so the save is blocked instead.
-        if (edit.sinsHoleNumber !== null && edit.puttingStats && edit.puttingStats.firstPutt === undefined) {
+        if (!multiplayerScorecard) return;
+
+        const result = await saveScorecardEditsService({
+            roundId: Number(roundId),
+            original: multiplayerScorecard.holeScores,
+            edited: edit.editedScores,
+            hole: {
+                holeNumber: edit.sinsHoleNumber,
+                sins: edit.editedSins,
+                sinDetails: {
+                    troubleOffTeeClub: edit.selectedOffTeeClub,
+                    penaltyType: edit.selectedPenaltyType,
+                    bogeysInside9IronClub: edit.selectedBogeysClub,
+                    doubleChipsReason: edit.selectedDoubleChipReason,
+                },
+                hadPriorSinDetails: edit.hadPriorSinDetails,
+                puttingStats: edit.puttingStats,
+            },
+            newStartTime: editedDate,
+        });
+
+        if (result === 'missing-first-putt') {
             showError('Enter the first putt distance');
             return;
         }
-
-        if (!multiplayerScorecard) return;
-
-        const changes: { id: number; score: number }[] = [];
-        edit.editedScores.forEach(edited => {
-            const original = multiplayerScorecard.holeScores.find(o => o.Id === edited.Id);
-            if (original && original.Score !== edited.Score) {
-                changes.push({ id: edited.Id, score: edited.Score });
-            }
-        });
-
-        const parChanges: { holeNumber: number; holePar: number }[] = [];
-        const processedHoles = new Set<number>();
-        edit.editedScores.forEach(edited => {
-            const original = multiplayerScorecard.holeScores.find(o => o.Id === edited.Id);
-            if (original && original.HolePar !== edited.HolePar && !processedHoles.has(edited.HoleNumber)) {
-                parChanges.push({ holeNumber: edited.HoleNumber, holePar: edited.HolePar });
-                processedHoles.add(edited.HoleNumber);
-            }
-        });
-
-        const success = await updateScorecardService(Number(roundId), changes, parChanges);
-
-        if (success) {
-            if (edit.sinsHoleNumber !== null && edit.editedSins !== null) {
-                await replaceHoleDeadlySinsService(Number(roundId), edit.sinsHoleNumber, edit.editedSins);
-                const needsSinDetails = edit.editedSins.troubleOffTee || edit.editedSins.penalties || edit.editedSins.bogeysInside9Iron || edit.editedSins.doubleChips;
-                if (needsSinDetails) {
-                    await replaceHoleSinDetailsService(Number(roundId), edit.sinsHoleNumber, {
-                        troubleOffTeeClub: edit.selectedOffTeeClub,
-                        penaltyType: edit.selectedPenaltyType,
-                        bogeysInside9IronClub: edit.selectedBogeysClub,
-                        doubleChipsReason: edit.selectedDoubleChipReason,
-                    });
-                } else if (edit.hadPriorSinDetails) {
-                    await deleteHoleSinDetailsService(Number(roundId), edit.sinsHoleNumber);
-                }
-            }
-            if (edit.sinsHoleNumber !== null && edit.puttingStats) {
-                await insertPuttingStatsService(Number(roundId), edit.sinsHoleNumber, edit.puttingStats.firstPutt ?? 0, edit.puttingStats.secondPutt ?? 0, edit.puttingStats.secondIsLong, undefined, undefined, edit.puttingStats.greenInRegulation);
-            }
-            showResult(success, 'Scorecard updated', 'Failed to update scorecard');
-            if (editedDate) {
-                await updateRoundStartTimeService(Number(roundId), editedDate);
-            }
-            setEditedDate(null);
-            loadData();
-            edit.resetEditState();
-            setEditing(false);
-        } else {
-            showResult(success, 'Scorecard updated', 'Failed to update scorecard');
+        if (result === 'failed') {
+            showResult(false, 'Scorecard updated', 'Failed to update scorecard');
+            return;
         }
+
+        showResult(true, 'Scorecard updated', 'Failed to update scorecard');
+        setEditedDate(null);
+        loadData();
+        edit.resetEditState();
+        setEditing(false);
     };
 
     const handleDelete = () => {

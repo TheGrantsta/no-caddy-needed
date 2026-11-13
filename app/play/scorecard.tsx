@@ -29,7 +29,6 @@ import {
     MultiplayerRoundScorecard,
     RoundScorecard as RoundScorecardType,
     DeadlySinsValues,
-    Round,
     RoundScoreBreakdown,
     ClubDistance,
 } from '../../service/DbService';
@@ -502,7 +501,8 @@ export default function ScorecardScreen() {
     // are rarely revisited, so tapping one from the history list opens it on its own.
     const history = (getAllRoundHistoryService() ?? []).slice(0, MAX_PAGER_ROUNDS);
     const foundIndex = history.findIndex(r => String(r.Id) === roundId);
-    const rounds: Round[] = foundIndex >= 0 ? history : [{ Id: Number(roundId) } as Round];
+    // The pager only needs each round's Id; a round opened from outside the recent list gets a placeholder
+    const rounds: { Id: number }[] = foundIndex >= 0 ? history : [{ Id: Number(roundId) }];
     const initialIndex = foundIndex >= 0 ? foundIndex : 0;
     const [activeIndex, setActiveIndex] = useState(initialIndex);
     const [editingIds, setEditingIds] = useState<Set<string>>(() => new Set());
@@ -523,7 +523,7 @@ export default function ScorecardScreen() {
 
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>
-            <FlatList<Round>
+            <FlatList<{ Id: number }>
                 testID="scorecard-pager"
                 style={styles.flexOne}
                 data={rounds}

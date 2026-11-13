@@ -42,8 +42,11 @@ const PuttingStatsInput = ({
     const [secondPutt, setSecondPutt] = useState(initialSecondPutt !== undefined ? String(initialSecondPutt) : '');
     const [secondIsLong, setSecondIsLong] = useState(initialSecondIsLong);
     const [greenInRegulation, setGreenInRegulation] = useState(initialGreenInRegulation);
-    // Once the user taps Yes/No, their choice for this hole wins over the automatic default
-    const [greenInRegulationManuallySet, setGreenInRegulationManuallySet] = useState(false);
+    // Once the user taps Yes/No, their choice for this hole wins over the automatic default.
+    // A hole that already has saved putts was recorded with its saved GIR value, so that value stands too.
+    const [greenInRegulationManuallySet, setGreenInRegulationManuallySet] = useState(
+        initialFirstPutt !== undefined || initialSecondPutt !== undefined
+    );
 
     // Two putts (both distances entered) with a score equal to par implies the green was hit in regulation.
     // Only applies when the score is known; otherwise the current value is left untouched.

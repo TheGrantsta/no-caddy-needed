@@ -941,6 +941,18 @@ describe('PuttingStatsInput', () => {
 
                 expect(onStatsChange).toHaveBeenLastCalledWith(20, 2, false, true);
             });
+
+            it('shouldKeepSavedGreenInRegulationWhenEditingAHoleWhoseScoreIsPar', () => {
+                const onStatsChange = jest.fn();
+                const { getByTestId } = render(
+                    <PuttingStatsInput holePar={4} userScore={4} threePuttSelected={false} onStatsChange={onStatsChange} initialFirstPutt={20} initialSecondPutt={3} initialGreenInRegulation={false} />
+                );
+
+                choosePuttDistance(getByTestId, 'second-putt-input', '2');
+
+                expect(onStatsChange).toHaveBeenLastCalledWith(20, 2, false, false);
+                expect(getByTestId('gir-switch').props.value).toBe(false);
+            });
         });
     });
 

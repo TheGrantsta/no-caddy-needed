@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
-import { isFrontNineHole } from '@/utils/holeOrder';
+import { splitFrontAndBackNine } from '@/utils/holeOrder';
 
 type RoundHole = {
     Id: number;
@@ -30,8 +30,7 @@ const RoundScorecard = ({ totalScore, holes }: Props) => {
     const styles = useStyles();
     const s = styles.roundScorecard;
 
-    const front9 = holes.filter(h => isFrontNineHole(h.HoleNumber));
-    const back9 = holes.filter(h => !isFrontNineHole(h.HoleNumber));
+    const { front: front9, back: back9 } = splitFrontAndBackNine(holes, h => h.HoleNumber);
     const front9Total = front9.reduce((sum, h) => sum + h.ScoreRelativeToPar, 0);
     const back9Total = back9.reduce((sum, h) => sum + h.ScoreRelativeToPar, 0);
 

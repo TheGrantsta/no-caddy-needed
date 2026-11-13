@@ -2,6 +2,7 @@ import {
     FRONT_NINE_LAST_HOLE,
     HOLES_PER_ROUND,
     isFrontNineHole,
+    splitFrontAndBackNine,
     holeAtPlayPosition,
     isFirstHoleOfRound,
     isLastHoleOfRound,
@@ -72,6 +73,30 @@ describe('hole order', () => {
         it('shouldCountHoleTenOnwardsAsTheBackNine', () => {
             expect(isFrontNineHole(10)).toBe(false);
             expect(isFrontNineHole(18)).toBe(false);
+        });
+    });
+
+    describe('splitFrontAndBackNine', () => {
+        it('shouldSplitHolesIntoTheFrontAndBackNine', () => {
+            const holes = Array.from({ length: 18 }, (_, i) => i + 1);
+
+            const { front, back } = splitFrontAndBackNine(holes, hole => hole);
+
+            expect(front).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            expect(back).toEqual([10, 11, 12, 13, 14, 15, 16, 17, 18]);
+        });
+
+        it('shouldReadTheHoleNumberWithTheGivenAccessor', () => {
+            const rows = [{ HoleNumber: 4 }, { HoleNumber: 12 }];
+
+            const { front, back } = splitFrontAndBackNine(rows, row => row.HoleNumber);
+
+            expect(front).toEqual([{ HoleNumber: 4 }]);
+            expect(back).toEqual([{ HoleNumber: 12 }]);
+        });
+
+        it('shouldReturnEmptyNinesForAnEmptyRound', () => {
+            expect(splitFrontAndBackNine([], hole => hole)).toEqual({ front: [], back: [] });
         });
     });
 

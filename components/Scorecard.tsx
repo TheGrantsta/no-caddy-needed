@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { RoundPlayer, RoundHoleScore } from '../service/DbService';
 import { useStyles } from '@/hooks/useStyles';
-import { isFrontNineHole } from '@/utils/holeOrder';
+import { splitFrontAndBackNine } from '@/utils/holeOrder';
 
 const SIN_HINT = 'Deadly sin logged on this hole';
 
@@ -31,8 +31,7 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
         () => [...new Set(holeScores.map(sc => sc.HoleNumber))].sort((a, b) => a - b),
         [holeScores]
     );
-    const front9Holes = useMemo(() => holeNumbers.filter(isFrontNineHole), [holeNumbers]);
-    const back9Holes = useMemo(() => holeNumbers.filter(h => !isFrontNineHole(h)), [holeNumbers]);
+    const { front: front9Holes, back: back9Holes } = useMemo(() => splitFrontAndBackNine(holeNumbers, h => h), [holeNumbers]);
 
     const getPlayerTotal = (playerId: number): number => {
         return holeScores

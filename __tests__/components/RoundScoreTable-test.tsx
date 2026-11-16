@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import RoundScoreTable from '../../components/RoundScoreTable';
 
@@ -93,6 +94,16 @@ describe('RoundScoreTable', () => {
 
             expect(getByTestId('round-table-player-2-score-10')).toHaveTextContent('3');
             expect(getByTestId('round-table-player-2-total-in')).toHaveTextContent('9');
+        });
+
+        it('shouldGiveTheNameColumnRoomForANameLikePlayer1', () => {
+            const player1 = { id: 2, name: 'Player 1', scores: { 1: 5 } };
+            const { getByText } = render(<RoundScoreTable holes={holes} sinHoles={new Set()} otherPlayers={[player1]} />);
+            const nameWidth = StyleSheet.flatten(getByText('Player 1').props.style).width as number;
+            const headerWidth = StyleSheet.flatten(getByText('Hole').props.style).width;
+
+            expect(nameWidth).toBeGreaterThanOrEqual(80);
+            expect(nameWidth).toBe(headerWidth);
         });
 
         it('shouldShowNoExtraRowsWhenThereAreNoOtherPlayers', () => {

@@ -3178,8 +3178,9 @@ export const createStyles = (c: ThemeColours) => ({
             borderTopWidth: StyleSheet.hairlineWidth,
             borderTopColor: c.divider,
         },
+        // Wide enough for a player's name such as "Player 1" without cutting it off
         rowLabel: {
-            width: 44,
+            width: 84,
             fontSize: fontSizes.smallText,
         },
         cell: {

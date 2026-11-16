@@ -3201,9 +3201,22 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'center',
             fontSize: fontSizes.smallText,
         },
+        // Fixed-height slot so every score cell is the same height, with or without a sin dot or marker
         cellStack: {
             flex: 1,
+            height: 22,
             alignItems: 'center',
+            justifyContent: 'center',
+        },
+        // Hangs below the slot; absolute so it never changes the row's height
+        slotSinDot: {
+            position: 'absolute',
+            top: 22,
+            alignSelf: 'center',
+            width: 6,
+            height: 6,
+            borderRadius: 3,
+            backgroundColor: c.wedgeTile,
         },
         totalCell: {
             width: 36,
@@ -3225,6 +3238,29 @@ export const createStyles = (c: ThemeColours) => ({
         youScore: {
             color: c.black,
             fontWeight: 'bold',
+        },
+        // Under par: circle around the score. Over par: square. Mirrors the scorecard grid.
+        scoreMarker: {
+            width: 22,
+            height: 22,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        birdieMarker: {
+            borderWidth: 1.5,
+            borderColor: c.green,
+            borderRadius: 11,
+        },
+        bogeyMarker: {
+            borderWidth: 1.5,
+            borderColor: c.errorText,
+            borderRadius: 3,
+        },
+        underParText: {
+            color: c.green,
+        },
+        overParText: {
+            color: c.errorText,
         },
         sinDot: {
             width: 6,

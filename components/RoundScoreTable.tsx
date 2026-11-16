@@ -19,7 +19,43 @@ type Props = {
     onSinPress?: (holeNumber: number) => void;
 };
 
+type RoundDetailStyles = ReturnType<typeof useStyles>['roundDetail'];
+
 const SIN_DOT_COLOUR = colours.wedgeTile;
+const PAR_LEGEND = 'Circle = under par, square = over par';
+
+// Which side of par a score sits on, or null when it is exactly par
+const parState = (score: number, par: number): 'under' | 'over' | null => {
+    if (score < par) return 'under';
+    if (score > par) return 'over';
+    return null;
+};
+
+// A score in its own text node; off-par scores also sit inside a circle (under) or square (over)
+const renderParScore = (
+    s: RoundDetailStyles,
+    score: number,
+    par: number,
+    textTestID: string,
+    markerTestID: string,
+    baseTextStyle: object,
+) => {
+    const state = parState(score, par);
+    const text = (
+        <Text
+            testID={textTestID}
+            style={[s.cell, { flex: 0 }, baseTextStyle, state === 'under' ? s.underParText : state === 'over' ? s.overParText : null]}
+        >
+            {String(score)}
+        </Text>
+    );
+    if (state === null) return text;
+    return (
+        <View testID={markerTestID} style={[s.scoreMarker, state === 'under' ? s.birdieMarker : s.bogeyMarker]}>
+            {text}
+        </View>
+    );
+};
 
 // One nine: hole numbers, par and the player's score per hole, with the nine's total
 const NineTable = ({ label, holes, sinHoles, onSinPress, otherPlayers = [] }: Props & { label: 'OUT' | 'IN' }) => {
@@ -27,6 +63,7 @@ const NineTable = ({ label, holes, sinHoles, onSinPress, otherPlayers = [] }: Pr
     const s = styles.roundDetail;
     const totalPar = holes.reduce((sum, h) => sum + h.par, 0);
     const totalScore = holes.reduce((sum, h) => sum + h.score, 0);
+    const totalState = parState(totalScore, totalPar);
 
     return (
         <View>
@@ -49,8 +86,15 @@ const NineTable = ({ label, holes, sinHoles, onSinPress, otherPlayers = [] }: Pr
                 <View style={[s.tableRow, s.youRow]}>
                     <Text style={[s.rowLabel, s.youText]}>You</Text>
                     {holes.map(h => (
-                        <View key={h.holeNumber} style={s.cellStack}>
-                            <Text testID={`round-table-score-${h.holeNumber}`} style={[s.cell, s.youScore]}>{String(h.score)}</Text>
+                        <View key={h.holeNumber} testID={`round-table-slot-${h.holeNumber}`} style={s.cellStack}>
+                            {renderParScore(
+                                s,
+                                h.score,
+                                h.par,
+                                `round-table-score-${h.holeNumber}`,
+                                `round-table-marker-${h.holeNumber}`,
+                                s.youScore,
+                            )}
                             {sinHoles.has(h.holeNumber) ? (
                                 <TouchableOpacity
                                     testID={`round-table-dot-${h.holeNumber}`}
@@ -58,32 +102,60 @@ const NineTable = ({ label, holes, sinHoles, onSinPress, otherPlayers = [] }: Pr
                                     accessibilityLabel={`Deadly sin on hole ${h.holeNumber}`}
                                     onPress={() => onSinPress?.(h.holeNumber)}
                                     hitSlop={8}
-                                    style={s.sinDot}
+                                    style={s.slotSinDot}
                                 />
                             ) : null}
                         </View>
                     ))}
-                    <Text style={[s.totalCell, s.youScore]}>{String(totalScore)}</Text>
+                    <Text
+                        testID={`round-table-total-${label.toLowerCase()}`}
+                        style={[s.totalCell, s.youScore, totalState === 'under' ? s.underParText : totalState === 'over' ? s.overParText : null]}
+                    >
+                        {String(totalScore)}
+                    </Text>
                 </View>
                 {otherPlayers.map(player => {
                     const played = holes.filter(h => player.scores[h.holeNumber] !== undefined);
                     const playerTotal = played.reduce((sum, h) => sum + player.scores[h.holeNumber], 0);
+                    const playedPar = played.reduce((sum, h) => sum + h.par, 0);
+                    const playerState = played.length > 0 ? parState(playerTotal, playedPar) : null;
                     return (
                         <View key={player.id} style={s.tableRow}>
                             <Text numberOfLines={1} style={[s.rowLabel]}>{player.name}</Text>
                             {holes.map(h => {
                                 const score = player.scores[h.holeNumber];
+                                if (score === undefined) {
+                                    return (
+                                        <View key={h.holeNumber} style={s.cellStack}>
+                                            <Text
+                                                testID={`round-table-player-${player.id}-score-${h.holeNumber}`}
+                                                style={[s.cell, { flex: 0 }]}
+                                            >
+                                                -
+                                            </Text>
+                                        </View>
+                                    );
+                                }
                                 return (
-                                    <Text
-                                        key={h.holeNumber}
-                                        testID={`round-table-player-${player.id}-score-${h.holeNumber}`}
-                                        style={s.cell}
-                                    >
-                                        {score !== undefined ? String(score) : '-'}
-                                    </Text>
+                                    <View key={h.holeNumber} style={s.cellStack}>
+                                        {renderParScore(
+                                            s,
+                                            score,
+                                            h.par,
+                                            `round-table-player-${player.id}-score-${h.holeNumber}`,
+                                            `round-table-player-${player.id}-marker-${h.holeNumber}`,
+                                            {},
+                                        )}
+                                    </View>
                                 );
                             })}
-                            <Text testID={`round-table-player-${player.id}-total-${label.toLowerCase()}`} style={s.totalCell}>
+                            <Text
+                                testID={`round-table-player-${player.id}-total-${label.toLowerCase()}`}
+                                style={[
+                                    s.totalCell,
+                                    playerState === 'under' ? s.underParText : playerState === 'over' ? s.overParText : null,
+                                ]}
+                            >
                                 {played.length > 0 ? String(playerTotal) : '-'}
                             </Text>
                         </View>
@@ -99,6 +171,11 @@ export default function RoundScoreTable({ holes, sinHoles, onSinPress, otherPlay
     const styles = useStyles();
     const { front: out, back: inward } = splitFrontAndBackNine(holes, h => h.holeNumber);
     const anySin = holes.some(h => sinHoles.has(h.holeNumber));
+    const anyOffPar =
+        holes.some(h => parState(h.score, h.par) !== null) ||
+        (otherPlayers ?? []).some(player =>
+            holes.some(h => player.scores[h.holeNumber] !== undefined && parState(player.scores[h.holeNumber], h.par) !== null)
+        );
 
     return (
         <View>
@@ -108,6 +185,11 @@ export default function RoundScoreTable({ holes, sinHoles, onSinPress, otherPlay
                 <View style={styles.roundDetail.legendRow}>
                     <View style={[styles.roundDetail.sinDot, { backgroundColor: SIN_DOT_COLOUR }]} />
                     <Text style={styles.roundDetail.legendText}>Dot marks a hole with a deadly sin</Text>
+                </View>
+            ) : null}
+            {anyOffPar ? (
+                <View style={styles.roundDetail.legendRow}>
+                    <Text style={styles.roundDetail.legendText}>{PAR_LEGEND}</Text>
                 </View>
             ) : null}
         </View>

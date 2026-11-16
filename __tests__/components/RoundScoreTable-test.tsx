@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
+import colours from '../../assets/colours';
 import RoundScoreTable from '../../components/RoundScoreTable';
 
 const holes = [
@@ -32,6 +33,16 @@ describe('RoundScoreTable', () => {
 
         expect(getByTestId('round-table-dot-2')).toBeTruthy();
         expect(queryByTestId('round-table-dot-1')).toBeNull();
+    });
+
+    it('shouldKeepEveryScoreSlotTheSameHeightSoASinDotDoesNotMisalignTheRow', () => {
+        const { getByTestId } = render(<RoundScoreTable holes={holes} sinHoles={new Set([2])} />);
+
+        const plain = StyleSheet.flatten(getByTestId('round-table-slot-1').props.style);
+        const withDot = StyleSheet.flatten(getByTestId('round-table-slot-2').props.style);
+        expect(plain.height).toBeGreaterThan(0);
+        expect(withDot.height).toBe(plain.height);
+        expect(StyleSheet.flatten(getByTestId('round-table-dot-2').props.style).position).toBe('absolute');
     });
 
     it('shouldReportTheHoleWhenItsDotIsTapped', () => {
@@ -111,6 +122,102 @@ describe('RoundScoreTable', () => {
 
             expect(queryByTestId('round-table-player-2-score-1')).toBeNull();
             expect(queryByText('Sam')).toBeNull();
+        });
+    });
+
+    describe('under and over par styling', () => {
+        // Hole 1 is a birdie (under par), hole 2 a bogey (over par), hole 3 par
+        const mixed = [
+            { holeNumber: 1, par: 4, score: 3 },
+            { holeNumber: 2, par: 3, score: 4 },
+            { holeNumber: 3, par: 5, score: 5 },
+        ];
+        const circleRadius = 11; // half of the 22px marker, so the border forms a circle
+        const borderOf = (testId: string, getByTestId: (id: string) => any) =>
+            StyleSheet.flatten(getByTestId(testId).props.style);
+
+        it('shouldColourAnUnderParScoreGreenAndCircleIt', () => {
+            const { getByTestId } = render(<RoundScoreTable holes={mixed} sinHoles={new Set()} />);
+
+            expect(StyleSheet.flatten(getByTestId('round-table-score-1').props.style).color).toBe(colours.green);
+            const marker = borderOf('round-table-marker-1', getByTestId);
+            expect(marker.borderColor).toBe(colours.green);
+            expect(marker.borderRadius).toBe(circleRadius);
+        });
+
+        it('shouldColourAnOverParScoreRedAndSquareIt', () => {
+            const { getByTestId } = render(<RoundScoreTable holes={mixed} sinHoles={new Set()} />);
+
+            expect(StyleSheet.flatten(getByTestId('round-table-score-2').props.style).color).toBe(colours.errorText);
+            const marker = borderOf('round-table-marker-2', getByTestId);
+            expect(marker.borderColor).toBe(colours.errorText);
+            expect(marker.borderRadius).toBeLessThan(circleRadius);
+        });
+
+        it('shouldLeaveAnAtParScoreWithoutMarkerOrColour', () => {
+            const { getByTestId, queryByTestId } = render(<RoundScoreTable holes={mixed} sinHoles={new Set()} />);
+
+            expect(queryByTestId('round-table-marker-3')).toBeNull();
+            const color = StyleSheet.flatten(getByTestId('round-table-score-3').props.style).color;
+            expect(color).not.toBe(colours.green);
+            expect(color).not.toBe(colours.errorText);
+        });
+
+        it('shouldStyleAnOtherPlayersScoreAgainstThatHolesPar', () => {
+            const sam = { id: 2, name: 'Sam', scores: { 1: 3, 2: 3, 3: 5 } };
+            const { getByTestId, queryByTestId } = render(
+                <RoundScoreTable holes={mixed} sinHoles={new Set()} otherPlayers={[sam]} />
+            );
+
+            expect(StyleSheet.flatten(getByTestId('round-table-player-2-score-1').props.style).color).toBe(colours.green);
+            expect(getByTestId('round-table-player-2-marker-1')).toBeTruthy();
+            expect(queryByTestId('round-table-player-2-marker-2')).toBeNull();
+            expect(queryByTestId('round-table-player-2-marker-3')).toBeNull();
+        });
+
+        it('shouldNotStyleAHoleAnOtherPlayerHasNoScoreFor', () => {
+            const sam = { id: 2, name: 'Sam', scores: { 1: 5 } };
+            const { getByTestId, queryByTestId } = render(
+                <RoundScoreTable holes={mixed} sinHoles={new Set()} otherPlayers={[sam]} />
+            );
+
+            expect(queryByTestId('round-table-player-2-marker-2')).toBeNull();
+            expect(getByTestId('round-table-player-2-score-2')).toHaveTextContent('-');
+        });
+
+        it('shouldColourTheTotalsByWhetherTheyAreUnderOrOverParForTheHolesPlayed', () => {
+            // You: 3 + 4 + 5 = 12 vs par 12 -> at par, so no colour
+            // Sam: 3 + 3 = 6 vs par 4 + 3 = 7 -> under par
+            const sam = { id: 2, name: 'Sam', scores: { 1: 3, 2: 3 } };
+            const { getByTestId } = render(
+                <RoundScoreTable holes={mixed} sinHoles={new Set()} otherPlayers={[sam]} />
+            );
+
+            expect(StyleSheet.flatten(getByTestId('round-table-total-out').props.style).color).not.toBe(colours.errorText);
+            expect(StyleSheet.flatten(getByTestId('round-table-player-2-total-out').props.style).color).toBe(colours.green);
+        });
+
+        it('shouldColourTheUsersTotalOverParWhenItIsOverPar', () => {
+            const { getByTestId } = render(<RoundScoreTable holes={holes} sinHoles={new Set()} />);
+
+            // holes: 4+5+4 = 13 vs par 4+3+5 = 12 -> over par
+            expect(StyleSheet.flatten(getByTestId('round-table-total-out').props.style).color).toBe(colours.errorText);
+        });
+
+        it('shouldExplainTheUnderAndOverParMarkersWhenAnyHoleIsOffPar', () => {
+            const { getByText } = render(<RoundScoreTable holes={mixed} sinHoles={new Set()} />);
+
+            expect(getByText('Circle = under par, square = over par')).toBeTruthy();
+        });
+
+        it('shouldNotShowTheParExplanationWhenEveryHoleIsAtPar', () => {
+            const atPar = [
+                { holeNumber: 1, par: 4, score: 4 },
+                { holeNumber: 2, par: 3, score: 3 },
+            ];
+            const { queryByText } = render(<RoundScoreTable holes={atPar} sinHoles={new Set()} />);
+
+            expect(queryByText('Circle = under par, square = over par')).toBeNull();
         });
     });
 

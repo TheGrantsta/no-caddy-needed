@@ -403,6 +403,15 @@ export const getAllHoleSinDetailsService = (): HoleSinDetails[] => {
     }));
 };
 
+export const deleteRoundHoleScoresService = (roundId: number, holeNumber: number): Promise<boolean> =>
+    deleteRoundHoleScoresByHole(roundId, holeNumber);
+
+export const deletePuttingStatsService = (roundId: number, holeNumber: number): Promise<boolean> =>
+    deletePuttingStatsByHole(roundId, holeNumber);
+
+export const deleteHoleDeadlySinsService = (roundId: number, holeNumber: number): Promise<boolean> =>
+    deleteHoleDeadlySinsByHole(roundId, holeNumber);
+
 export const deleteHoleSinDetailsService = (roundId: number, holeNumber: number): Promise<boolean> =>
     deleteHoleSinDetailsByHole(roundId, holeNumber);
 
@@ -800,6 +809,11 @@ export const updateScorecardService = async (
         if (!success) return false;
     }
 
+    return recalculateRoundTotalService(roundId);
+};
+
+// Stores the user's total (strokes relative to par) on the round, from the scores that are saved now
+export const recalculateRoundTotalService = async (roundId: number): Promise<boolean> => {
     const players = getRoundPlayers(roundId) as RoundPlayer[];
     const holeScores = getRoundHoleScores(roundId) as RoundHoleScore[];
     const userPlayer = players.find(p => p.IsUser === 1);

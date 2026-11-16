@@ -7,6 +7,9 @@ import RoundScorecard from '../../components/RoundScorecard';
 import Scorecard from '../../components/Scorecard';
 import ScorecardActionButtons from '../../components/ScorecardActionButtons';
 import DeleteRoundSheet from '../../components/DeleteRoundSheet';
+import DeleteHoleSheet from '../../components/DeleteHoleSheet';
+import { deleteLastHoleService } from '../../service/IncompleteRoundService';
+import { HOLES_PER_ROUND, lastPlayedHole, sanitiseStartHole } from '../../utils/holeOrder';
 import EditRoundSheet from '../../components/EditRoundSheet';
 import EditHoleSheet from '../../components/EditHoleSheet';
 import SinDetailsInput from '../../components/SinDetailsInput';
@@ -81,6 +84,8 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     const [clubDistances, setClubDistances] = useState<ClubDistance[]>([]);
     // The date picked in the edit round sheet; null until the user picks one, so an untouched date is never saved
     const [editedDate, setEditedDate] = useState<Date | null>(null);
+    // The last hole of an unfinished round, waiting for confirmation before it is deleted
+    const [deleteHoleTarget, setDeleteHoleTarget] = useState<{ holeNumber: number; deletesRound: boolean } | null>(null);
 
     const edit = useScorecardEdit();
 
@@ -243,6 +248,37 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         loadData();
         edit.resetEditState();
         setEditing(false);
+    };
+
+    // Any round short of a full eighteen holes can lose its last hole, whether or not it was ended early
+    const holesInRound = new Set(multiplayerScorecard?.holeScores.map(h => h.HoleNumber) ?? []).size;
+    const canDeleteLastHole = holesInRound > 0 && holesInRound < HOLES_PER_ROUND;
+
+    // Only the last hole in play order can be deleted, so the round keeps a continuous run of holes
+    const handleDeleteLastHolePress = () => {
+        if (!multiplayerScorecard) return;
+        const holesPlayed = new Set(multiplayerScorecard.holeScores.map(h => h.HoleNumber)).size;
+        const holeNumber = lastPlayedHole(sanitiseStartHole(multiplayerScorecard.round.StartHole), holesPlayed);
+        if (holeNumber === null) return;
+        setDeleteHoleTarget({ holeNumber, deletesRound: holesPlayed === 1 });
+    };
+
+    const handleConfirmDeleteLastHole = async () => {
+        if (!deleteHoleTarget) return;
+        const { holeNumber } = deleteHoleTarget;
+        const result = await deleteLastHoleService(Number(roundId), holeNumber);
+        setDeleteHoleTarget(null);
+        if (result === 'failed') {
+            showError('Could not delete hole');
+        } else if (result === 'round-deleted') {
+            showResult(true, 'Round deleted', '');
+            router.back();
+        } else {
+            showResult(true, `Hole ${holeNumber} deleted`, '');
+            edit.resetEditState();
+            setEditing(false);
+            loadData();
+        }
     };
 
     const handleDelete = () => {
@@ -472,6 +508,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                         onHolePress={handleSelectEditHole}
                                         onCancel={handleCancelEdit}
                                         onSave={handleSave}
+                                        onDeleteLastHole={canDeleteLastHole ? handleDeleteLastHolePress : undefined}
                                     />
                                 )}
                             </>
@@ -501,6 +538,13 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                             />
                         )}
 
+                        <DeleteHoleSheet
+                            visible={deleteHoleTarget !== null}
+                            holeNumber={deleteHoleTarget?.holeNumber ?? 0}
+                            deletesRound={deleteHoleTarget?.deletesRound ?? false}
+                            onConfirm={handleConfirmDeleteLastHole}
+                            onCancel={() => setDeleteHoleTarget(null)}
+                        />
                         <DeleteRoundSheet
                             visible={edit.showDeleteConfirm}
                             onConfirm={handleConfirmDelete}

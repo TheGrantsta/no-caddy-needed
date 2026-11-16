@@ -1,5 +1,6 @@
 import {
     HOLES_PER_ROUND,
+    lastPlayedHole,
     splitFrontAndBackNine,
     holeAtPlayPosition,
     isFirstHoleOfRound,
@@ -92,6 +93,24 @@ describe('hole order', () => {
             expect(sanitiseStartHole(19)).toBe(1);
             expect(sanitiseStartHole(Number.NaN)).toBe(1);
             expect(sanitiseStartHole(null)).toBe(1);
+        });
+    });
+
+    describe('lastPlayedHole', () => {
+        it('shouldBeTheLastHoleInPlayOrderFromTheStart', () => {
+            expect(lastPlayedHole(1, 3)).toBe(3);
+        });
+
+        it('shouldFollowThePlayOrderForAShotgunStart', () => {
+            expect(lastPlayedHole(10, 3)).toBe(12);
+        });
+
+        it('shouldWrapRoundTheEndOfTheCourse', () => {
+            expect(lastPlayedHole(17, 3)).toBe(1);
+        });
+
+        it('shouldBeNullWhenNoHolesHaveBeenPlayed', () => {
+            expect(lastPlayedHole(1, 0)).toBeNull();
         });
     });
 });

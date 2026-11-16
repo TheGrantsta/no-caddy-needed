@@ -43,6 +43,11 @@ jest.mock('../../../service/DbService', () => ({
 }));
 
 let mockParams: { roundId: string } = { roundId: '1' };
+jest.mock('../../../service/IncompleteRoundService', () => ({
+    deleteLastHoleService: jest.fn().mockResolvedValue('hole-deleted'),
+}));
+const mockDeleteLastHole = require('../../../service/IncompleteRoundService').deleteLastHoleService as jest.Mock;
+
 jest.mock('expo-router', () => ({
     useLocalSearchParams: () => mockParams,
     useRouter: () => ({
@@ -890,6 +895,78 @@ describe('Scorecard screen', () => {
 
             await waitFor(() => {
                 expect(mockUpdateScorecard).toHaveBeenCalledWith(1, [{ id: 11, score: 4 }], []);
+            });
+        });
+
+        describe('deleting the last hole of an unfinished round', () => {
+            const unfinished = { ...multiplayerData, round: { ...multiplayerData.round, IsCompleted: 0 } };
+
+            beforeEach(() => {
+                mockDeleteLastHole.mockResolvedValue('hole-deleted');
+            });
+
+            it('shouldOfferToDeleteTheLastHoleWhileEditingAnUnfinishedRound', () => {
+                mockGetMultiplayerScorecard.mockReturnValue(unfinished);
+
+                const { getByTestId, getByText } = render(<ScorecardScreen />);
+                fireEvent.press(getByTestId('edit-scorecard-button'));
+                fireEvent.press(getByTestId('edit-round-delete-last-hole'));
+
+                expect(getByText('Delete hole 1?')).toBeTruthy();
+                expect(mockDeleteLastHole).not.toHaveBeenCalled();
+            });
+
+            it('shouldOfferToDeleteTheLastHoleOfACompletedRoundWithFewerThanEighteenHoles', () => {
+                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+                const { getByTestId } = render(<ScorecardScreen />);
+                fireEvent.press(getByTestId('edit-scorecard-button'));
+
+                expect(getByTestId('edit-round-delete-last-hole')).toBeTruthy();
+            });
+
+            it('shouldNotOfferToDeleteAHoleForAFullEighteenHoleRound', () => {
+                const fullRound = {
+                    ...multiplayerData,
+                    players: [multiplayerData.players[0]],
+                    holeScores: Array.from({ length: 18 }, (_, i) => ({
+                        Id: 100 + i, RoundId: 1, RoundPlayerId: 1, HoleNumber: i + 1, HolePar: 4, Score: 4,
+                    })),
+                };
+                mockGetMultiplayerScorecard.mockReturnValue(fullRound);
+
+                const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+                fireEvent.press(getByTestId('edit-scorecard-button'));
+
+                expect(queryByTestId('edit-round-delete-last-hole')).toBeNull();
+            });
+
+            it('shouldDeleteTheHoleAfterConfirmingAndKeepEditing', async () => {
+                mockGetMultiplayerScorecard.mockReturnValue(unfinished);
+
+                const { getByTestId } = render(<ScorecardScreen />);
+                fireEvent.press(getByTestId('edit-scorecard-button'));
+                fireEvent.press(getByTestId('edit-round-delete-last-hole'));
+                fireEvent.press(getByTestId('confirm-delete-hole-button'));
+
+                await waitFor(() => {
+                    expect(mockDeleteLastHole).toHaveBeenCalledWith(1, 1);
+                });
+                expect(mockBack).not.toHaveBeenCalled();
+            });
+
+            it('shouldGoBackWhenTheRoundIsDeletedWithItsOnlyHole', async () => {
+                mockGetMultiplayerScorecard.mockReturnValue(unfinished);
+                mockDeleteLastHole.mockResolvedValue('round-deleted');
+
+                const { getByTestId } = render(<ScorecardScreen />);
+                fireEvent.press(getByTestId('edit-scorecard-button'));
+                fireEvent.press(getByTestId('edit-round-delete-last-hole'));
+                fireEvent.press(getByTestId('confirm-delete-hole-button'));
+
+                await waitFor(() => {
+                    expect(mockBack).toHaveBeenCalled();
+                });
             });
         });
 

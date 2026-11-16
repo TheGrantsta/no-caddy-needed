@@ -2863,6 +2863,17 @@ export const createStyles = (c: ThemeColours) => ({
     }),
 
     editRound: StyleSheet.create({
+        // Deletes the last hole of an unfinished round; a red text action under the list
+        deleteLastHole: {
+            alignItems: 'center',
+            paddingVertical: 16,
+            marginTop: 8,
+        },
+        deleteLastHoleText: {
+            color: c.red,
+            fontSize: fontSizes.normal,
+            fontWeight: '600',
+        },
         headerRow: {
             flexDirection: 'row',
             alignItems: 'center',

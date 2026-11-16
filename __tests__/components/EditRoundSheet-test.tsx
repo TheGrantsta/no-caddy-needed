@@ -111,4 +111,21 @@ describe('EditRoundSheet', () => {
 
         expect(getByTestId('edit-round-date-picker')).toHaveProp('maximumDate', maximumDate);
     });
+
+    describe('deleting the last hole', () => {
+        it('shouldShowDeleteLastHoleWhenAHandlerIsGiven', () => {
+            const onDeleteLastHole = jest.fn();
+            const { getByTestId } = renderSheet({ onDeleteLastHole });
+
+            fireEvent.press(getByTestId('edit-round-delete-last-hole'));
+
+            expect(onDeleteLastHole).toHaveBeenCalledTimes(1);
+        });
+
+        it('shouldHideDeleteLastHoleWhenNoHandlerIsGiven', () => {
+            const { queryByTestId } = renderSheet();
+
+            expect(queryByTestId('edit-round-delete-last-hole')).toBeNull();
+        });
+    });
 });

@@ -20,10 +20,12 @@ type Props = {
     onHolePress: (holeNumber: number) => void;
     onCancel: () => void;
     onSave: () => void;
+    // Deletes the last hole saved for an unfinished round; omitted for completed rounds
+    onDeleteLastHole?: () => void;
 };
 
 // Step one of editing a round: its details and the list of holes, each opening its own sheet
-export default function EditRoundSheet({ courseName, dateLabel, dateValue, onDateChange, maximumDate, holes, total, onHolePress, onCancel, onSave }: Props) {
+export default function EditRoundSheet({ courseName, dateLabel, dateValue, onDateChange, maximumDate, holes, total, onHolePress, onCancel, onSave, onDeleteLastHole }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.editRound;
@@ -99,6 +101,11 @@ export default function EditRoundSheet({ courseName, dateLabel, dateValue, onDat
                 ))}
             </View>
             <Text style={s.footnote}>Tap a hole to change its score and stats.</Text>
+            {onDeleteLastHole && (
+                <TouchableOpacity testID="edit-round-delete-last-hole" accessibilityRole="button" onPress={onDeleteLastHole} style={s.deleteLastHole}>
+                    <Text style={s.deleteLastHoleText}>Delete last hole</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 }

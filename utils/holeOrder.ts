@@ -17,6 +17,10 @@ export const isFirstHoleOfRound = (hole: number, startHole: number): boolean => 
 export const isLastHoleOfRound = (hole: number, startHole: number): boolean =>
     nextHoleInRound(hole, startHole) === startHole;
 
+// The most recently played hole of a round, or null if no holes have been played yet
+export const lastPlayedHole = (startHole: number, holesPlayed: number): number | null =>
+    holesPlayed > 0 ? holeAtPlayPosition(startHole, holesPlayed - 1) : null;
+
 // The hole at a play position (0 to 17) for a round starting on `startHole`
 export const holeAtPlayPosition = (startHole: number, position: number): number =>
     ((startHole - 1 + position) % HOLES_PER_ROUND) + 1;

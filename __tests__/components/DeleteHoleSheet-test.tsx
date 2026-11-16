@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import DeleteHoleSheet from '../../components/DeleteHoleSheet';
 
@@ -42,5 +43,14 @@ describe('DeleteHoleSheet', () => {
         const { queryByTestId } = renderSheet({ visible: false });
 
         expect(queryByTestId('delete-hole-sheet')).toBeNull();
+    });
+
+    it('shouldCentreTheCancelLabelInItsFullWidthPill', () => {
+        const { getByTestId, getByText } = renderSheet();
+        const pill = StyleSheet.flatten(getByTestId('delete-hole-cancel-button').props.style);
+
+        expect(pill.alignItems).toBe('center');
+        expect(pill.justifyContent).toBe('center');
+        expect(StyleSheet.flatten(getByText('Cancel').props.style).textAlign).toBe('center');
     });
 });

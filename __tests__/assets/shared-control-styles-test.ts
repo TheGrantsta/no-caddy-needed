@@ -3,8 +3,8 @@ import colours from '../../assets/colours';
 
 // The Cancel pill, its label and the circular back button look the same wherever they appear.
 // These tests lock those values so a shared definition can't drift from its copies.
-const CANCEL_PILL = { height: 44, borderRadius: 22, backgroundColor: colours.neutralFill, justifyContent: 'center', paddingHorizontal: 18 };
-const CANCEL_TEXT = { color: colours.black, fontSize: 20 };
+const CANCEL_PILL = { height: 44, borderRadius: 22, backgroundColor: colours.neutralFill, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 18 };
+const CANCEL_TEXT = { color: colours.black, fontSize: 20, textAlign: 'center' };
 const CIRCLE_BUTTON = { width: 44, height: 44, borderRadius: 22, backgroundColor: colours.backgroundLight, justifyContent: 'center', alignItems: 'center' };
 
 type Block = Record<string, Record<string, unknown>>;

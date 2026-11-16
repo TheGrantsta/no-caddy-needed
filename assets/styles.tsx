@@ -8,12 +8,14 @@ const cancelPillStyle = (c: ThemeColours) => ({
     borderRadius: 22,
     backgroundColor: c.neutralFill,
     justifyContent: 'center' as const,
+    alignItems: 'center' as const,
     paddingHorizontal: 18,
 });
 
 const cancelTextStyle = (c: ThemeColours) => ({
     color: c.black,
     fontSize: fontSizes.normal,
+    textAlign: 'center' as const,
 });
 
 // The white Edit pill with green text, shared by every screen that has an Edit button

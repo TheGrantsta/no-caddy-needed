@@ -3,6 +3,7 @@ import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { splitFrontAndBackNine } from '@/utils/holeOrder';
+import { getScoreMarker } from '@/utils/scoreMarker';
 
 type Hole = { holeNumber: number; par: number; score: number };
 
@@ -22,7 +23,6 @@ type Props = {
 type RoundDetailStyles = ReturnType<typeof useStyles>['roundDetail'];
 
 const SIN_DOT_COLOUR = colours.wedgeTile;
-const PAR_LEGEND = 'Circle = under par, square = over par';
 
 // Which side of par a score sits on, or null when it is exactly par
 const parState = (score: number, par: number): 'under' | 'over' | null => {
@@ -31,7 +31,7 @@ const parState = (score: number, par: number): 'under' | 'over' | null => {
     return null;
 };
 
-// A score in its own text node; off-par scores also sit inside a circle (under) or square (over)
+// Every score sits in a coloured circle chosen by its distance from par (see utils/scoreMarker)
 const renderParScore = (
     s: RoundDetailStyles,
     score: number,
@@ -40,19 +40,15 @@ const renderParScore = (
     markerTestID: string,
     baseTextStyle: object,
 ) => {
-    const state = parState(score, par);
-    const text = (
-        <Text
-            testID={textTestID}
-            style={[s.cell, { flex: 0 }, baseTextStyle, state === 'under' ? s.underParText : state === 'over' ? s.overParText : null]}
-        >
-            {String(score)}
-        </Text>
-    );
-    if (state === null) return text;
+    const marker = getScoreMarker(score - par);
     return (
-        <View testID={markerTestID} style={[s.scoreMarker, state === 'under' ? s.birdieMarker : s.bogeyMarker]}>
-            {text}
+        <View testID={markerTestID} style={[s.scoreMarker, { backgroundColor: marker.background }]}>
+            <Text
+                testID={textTestID}
+                style={[s.cell, { flex: 0 }, baseTextStyle, { color: marker.text }]}
+            >
+                {String(score)}
+            </Text>
         </View>
     );
 };
@@ -171,11 +167,6 @@ export default function RoundScoreTable({ holes, sinHoles, onSinPress, otherPlay
     const styles = useStyles();
     const { front: out, back: inward } = splitFrontAndBackNine(holes, h => h.holeNumber);
     const anySin = holes.some(h => sinHoles.has(h.holeNumber));
-    const anyOffPar =
-        holes.some(h => parState(h.score, h.par) !== null) ||
-        (otherPlayers ?? []).some(player =>
-            holes.some(h => player.scores[h.holeNumber] !== undefined && parState(player.scores[h.holeNumber], h.par) !== null)
-        );
 
     return (
         <View>
@@ -185,11 +176,6 @@ export default function RoundScoreTable({ holes, sinHoles, onSinPress, otherPlay
                 <View style={styles.roundDetail.legendRow}>
                     <View style={[styles.roundDetail.sinDot, { backgroundColor: SIN_DOT_COLOUR }]} />
                     <Text style={styles.roundDetail.legendText}>Dot marks a hole with a deadly sin</Text>
-                </View>
-            ) : null}
-            {anyOffPar ? (
-                <View style={styles.roundDetail.legendRow}>
-                    <Text style={styles.roundDetail.legendText}>{PAR_LEGEND}</Text>
                 </View>
             ) : null}
         </View>

@@ -1582,21 +1582,13 @@ export const createStyles = (c: ThemeColours) => ({
             textAlign: 'center',
             width: '100%',
         },
+        // Filled circle behind each score; its colour is set per score by utils/scoreMarker
         scoreMarker: {
             width: 22,
             height: 22,
+            borderRadius: 11,
             alignItems: 'center',
             justifyContent: 'center',
-        },
-        birdieMarker: {
-            borderWidth: 1.5,
-            borderColor: c.green,
-            borderRadius: 13,
-        },
-        bogeyMarker: {
-            borderWidth: 1.5,
-            borderColor: c.errorText,
-            borderRadius: 3,
         },
         underParText: {
             color: c.green,
@@ -3239,22 +3231,13 @@ export const createStyles = (c: ThemeColours) => ({
             color: c.black,
             fontWeight: 'bold',
         },
-        // Under par: circle around the score. Over par: square. Mirrors the scorecard grid.
+        // Filled circle behind each score; its colour is set per score by utils/scoreMarker. Mirrors the scorecard grid.
         scoreMarker: {
             width: 22,
             height: 22,
+            borderRadius: 11,
             alignItems: 'center',
             justifyContent: 'center',
-        },
-        birdieMarker: {
-            borderWidth: 1.5,
-            borderColor: c.green,
-            borderRadius: 11,
-        },
-        bogeyMarker: {
-            borderWidth: 1.5,
-            borderColor: c.errorText,
-            borderRadius: 3,
         },
         underParText: {
             color: c.green,

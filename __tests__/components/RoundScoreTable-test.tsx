@@ -136,31 +136,45 @@ describe('RoundScoreTable', () => {
         const borderOf = (testId: string, getByTestId: (id: string) => any) =>
             StyleSheet.flatten(getByTestId(testId).props.style);
 
-        it('shouldColourAnUnderParScoreGreenAndCircleIt', () => {
+        it('shouldShowABirdieAsARedCircleWithWhiteText', () => {
             const { getByTestId } = render(<RoundScoreTable holes={mixed} sinHoles={new Set()} />);
 
-            expect(StyleSheet.flatten(getByTestId('round-table-score-1').props.style).color).toBe(colours.green);
             const marker = borderOf('round-table-marker-1', getByTestId);
-            expect(marker.borderColor).toBe(colours.green);
+            expect(marker.backgroundColor).toBe(colours.errorText);
+            expect(marker.borderRadius).toBe(circleRadius);
+            expect(StyleSheet.flatten(getByTestId('round-table-score-1').props.style).color).toBe(colours.white);
+        });
+
+        it('shouldShowABogeyAsABlackCircleWithWhiteText', () => {
+            const { getByTestId } = render(<RoundScoreTable holes={mixed} sinHoles={new Set()} />);
+
+            const marker = borderOf('round-table-marker-2', getByTestId);
+            expect(marker.backgroundColor).toBe(colours.black);
+            expect(marker.borderRadius).toBe(circleRadius);
+            expect(StyleSheet.flatten(getByTestId('round-table-score-2').props.style).color).toBe(colours.white);
+        });
+
+        it('shouldShowAParAsAGreyCircle', () => {
+            const { getByTestId } = render(<RoundScoreTable holes={mixed} sinHoles={new Set()} />);
+
+            const marker = borderOf('round-table-marker-3', getByTestId);
+            expect(marker.backgroundColor).toBe('#9E9E9E');
             expect(marker.borderRadius).toBe(circleRadius);
         });
 
-        it('shouldColourAnOverParScoreRedAndSquareIt', () => {
-            const { getByTestId } = render(<RoundScoreTable holes={mixed} sinHoles={new Set()} />);
+        it('shouldShowAnEagleAsAYellowCircleWithWhiteText', () => {
+            const eagle = [{ holeNumber: 1, par: 5, score: 3 }];
+            const { getByTestId } = render(<RoundScoreTable holes={eagle} sinHoles={new Set()} />);
 
-            expect(StyleSheet.flatten(getByTestId('round-table-score-2').props.style).color).toBe(colours.errorText);
-            const marker = borderOf('round-table-marker-2', getByTestId);
-            expect(marker.borderColor).toBe(colours.errorText);
-            expect(marker.borderRadius).toBeLessThan(circleRadius);
+            expect(borderOf('round-table-marker-1', getByTestId).backgroundColor).toBe('#FFD600');
+            expect(StyleSheet.flatten(getByTestId('round-table-score-1').props.style).color).toBe(colours.white);
         });
 
-        it('shouldLeaveAnAtParScoreWithoutMarkerOrColour', () => {
-            const { getByTestId, queryByTestId } = render(<RoundScoreTable holes={mixed} sinHoles={new Set()} />);
+        it('shouldShowADoubleBogeyOrWorseAsABlueCircle', () => {
+            const blowup = [{ holeNumber: 1, par: 4, score: 7 }];
+            const { getByTestId } = render(<RoundScoreTable holes={blowup} sinHoles={new Set()} />);
 
-            expect(queryByTestId('round-table-marker-3')).toBeNull();
-            const color = StyleSheet.flatten(getByTestId('round-table-score-3').props.style).color;
-            expect(color).not.toBe(colours.green);
-            expect(color).not.toBe(colours.errorText);
+            expect(borderOf('round-table-marker-1', getByTestId).backgroundColor).toBe('#1F6FB2');
         });
 
         it('shouldStyleAnOtherPlayersScoreAgainstThatHolesPar', () => {
@@ -169,10 +183,11 @@ describe('RoundScoreTable', () => {
                 <RoundScoreTable holes={mixed} sinHoles={new Set()} otherPlayers={[sam]} />
             );
 
-            expect(StyleSheet.flatten(getByTestId('round-table-player-2-score-1').props.style).color).toBe(colours.green);
-            expect(getByTestId('round-table-player-2-marker-1')).toBeTruthy();
-            expect(queryByTestId('round-table-player-2-marker-2')).toBeNull();
-            expect(queryByTestId('round-table-player-2-marker-3')).toBeNull();
+            expect(StyleSheet.flatten(getByTestId('round-table-player-2-score-1').props.style).color).toBe(colours.white);
+            expect(borderOf('round-table-player-2-marker-1', getByTestId).backgroundColor).toBe(colours.errorText);
+            // Sam's 3 on the par 3 and 5 on the par 5 are at par: grey circles
+            expect(borderOf('round-table-player-2-marker-2', getByTestId).backgroundColor).toBe('#9E9E9E');
+            expect(queryByTestId('round-table-player-2-marker-3')).toBeTruthy();
         });
 
         it('shouldNotStyleAHoleAnOtherPlayerHasNoScoreFor', () => {
@@ -204,20 +219,10 @@ describe('RoundScoreTable', () => {
             expect(StyleSheet.flatten(getByTestId('round-table-total-out').props.style).color).toBe(colours.errorText);
         });
 
-        it('shouldExplainTheUnderAndOverParMarkersWhenAnyHoleIsOffPar', () => {
-            const { getByText } = render(<RoundScoreTable holes={mixed} sinHoles={new Set()} />);
+        it('shouldNotShowAColourLegend', () => {
+            const { queryByText } = render(<RoundScoreTable holes={mixed} sinHoles={new Set()} />);
 
-            expect(getByText('Circle = under par, square = over par')).toBeTruthy();
-        });
-
-        it('shouldNotShowTheParExplanationWhenEveryHoleIsAtPar', () => {
-            const atPar = [
-                { holeNumber: 1, par: 4, score: 4 },
-                { holeNumber: 2, par: 3, score: 3 },
-            ];
-            const { queryByText } = render(<RoundScoreTable holes={atPar} sinHoles={new Set()} />);
-
-            expect(queryByText('Circle = under par, square = over par')).toBeNull();
+            expect(queryByText(/Yellow = eagle/)).toBeNull();
         });
     });
 

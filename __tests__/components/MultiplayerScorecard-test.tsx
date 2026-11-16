@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
+import colours from '../../assets/colours';
 import Scorecard from '../../components/Scorecard';
 import { Round, RoundPlayer, RoundHoleScore } from '../../service/DbService';
 
@@ -282,7 +283,7 @@ describe('Scorecard', () => {
     });
 
     describe('Score colour coding', () => {
-        it('applies primary colour to par scores', () => {
+        it('shouldUseWhiteTextOnTheGreyParCircle', () => {
             const holeScores = makeScores([
                 { holeNumber: 1, holePar: 4, scores: [4, 4] },
             ]);
@@ -291,10 +292,10 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#2D5A3D' });
+            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#fff' });
         });
 
-        it('applies green colour to under par scores', () => {
+        it('shouldUseWhiteTextOnTheRedBirdieCircle', () => {
             const holeScores = makeScores([
                 { holeNumber: 1, holePar: 4, scores: [3, 4] },
             ]);
@@ -303,10 +304,10 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#13b955' });
+            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#fff' });
         });
 
-        it('applies red colour to over par scores', () => {
+        it('shouldUseWhiteTextOnTheBlackBogeyCircle', () => {
             const holeScores = makeScores([
                 { holeNumber: 1, holePar: 4, scores: [5, 4] },
             ]);
@@ -315,7 +316,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#fd0303' });
+            expect(getByTestId('hole-1-player-1-score')).toHaveStyle({ color: '#fff' });
         });
     });
 
@@ -587,40 +588,59 @@ describe('sin indicator dots', () => {
         expect(queryByTestId('sin-indicator-2')).toBeNull();
     });
 
-    describe('score markers (birdie/bogey shapes)', () => {
-        it('draws a circle around an under-par score', () => {
-            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [3, 4] }]);
-
+    describe('score markers (coloured circles by score to par)', () => {
+        const markerFor = (scores: number[], holePar = 4) => {
+            const holeScores = makeScores([{ holeNumber: 1, holePar, scores: [scores[0], 4] }]);
             const { getByTestId } = render(
                 <Scorecard players={mockPlayers} holeScores={holeScores} />
             );
-            const style = StyleSheet.flatten(getByTestId('score-marker-1-1').props.style);
+            return {
+                marker: StyleSheet.flatten(getByTestId('score-marker-1-1').props.style),
+                text: StyleSheet.flatten(getByTestId('hole-1-player-1-score').props.style),
+            };
+        };
 
-            expect(style.borderWidth).toBeGreaterThan(0);
-            expect(style.borderRadius).toBeGreaterThanOrEqual(style.width / 2); // full circle
+        it('shouldDrawAYellowCircleForAnEagle', () => {
+            const { marker, text } = markerFor([2]);
+
+            expect(marker.backgroundColor).toBe('#FFD600');
+            expect(marker.borderRadius).toBe(marker.width / 2);
+            expect(text.color).toBe('#fff');
         });
 
-        it('draws a square around an over-par score', () => {
-            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [5, 4] }]);
+        it('shouldDrawARedCircleForABirdie', () => {
+            const { marker, text } = markerFor([3]);
 
-            const { getByTestId } = render(
-                <Scorecard players={mockPlayers} holeScores={holeScores} />
-            );
-            const style = StyleSheet.flatten(getByTestId('score-marker-1-1').props.style);
-
-            expect(style.borderWidth).toBeGreaterThan(0);
-            expect(style.borderRadius).toBeLessThan(style.width / 2); // square (not a circle)
+            expect(marker.backgroundColor).toBe(colours.errorText);
+            expect(marker.borderRadius).toBe(marker.width / 2);
+            expect(text.color).toBe('#fff');
         });
 
-        it('draws no marker around a par score', () => {
-            const holeScores = makeScores([{ holeNumber: 1, holePar: 4, scores: [4, 4] }]);
+        it('shouldDrawAGreyCircleForAPar', () => {
+            const { marker } = markerFor([4]);
 
-            const { getByTestId } = render(
-                <Scorecard players={mockPlayers} holeScores={holeScores} />
-            );
-            const style = StyleSheet.flatten(getByTestId('score-marker-1-1').props.style);
+            expect(marker.backgroundColor).toBe('#9E9E9E');
+            expect(marker.borderRadius).toBe(marker.width / 2);
+        });
 
-            expect(style.borderWidth).toBeFalsy();
+        it('shouldDrawABlackCircleWithWhiteTextForABogey', () => {
+            const { marker, text } = markerFor([5]);
+
+            expect(marker.backgroundColor).toBe('#000');
+            expect(marker.borderRadius).toBe(marker.width / 2);
+            expect(text.color).toBe('#fff');
+        });
+
+        it('shouldDrawABlueCircleForADoubleBogeyOrWorse', () => {
+            expect(markerFor([6]).marker.backgroundColor).toBe('#1F6FB2');
+            expect(markerFor([9]).marker.backgroundColor).toBe('#1F6FB2');
+        });
+
+        it('shouldNotUseRedOrGreenBoxesOrBordersForAnyScore', () => {
+            const { marker } = markerFor([3]);
+
+            expect(marker.borderWidth).toBeFalsy();
+            expect(marker.borderRadius).not.toBe(3);
         });
     });
 

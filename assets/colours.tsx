@@ -40,6 +40,10 @@ export type ThemeColours = {
     wedgeTile: string;
     // Background of the reassurance acknowledgement overlay
     reassuranceFill: string;
+    // Scorecard circles: eagle or better, par, and double bogey or worse (birdie uses errorText, bogey uses black)
+    scoreEagle: string;
+    scorePar: string;
+    scoreDoubleBogey: string;
 };
 
 export const darkGreen: ThemeColours = {
@@ -74,6 +78,9 @@ export const darkGreen: ThemeColours = {
     trackInactive: '#E3E3E3',
     wedgeTile: '#B5651D',
     reassuranceFill: '#f5f5f5',
+    scoreEagle: '#FFD600',
+    scorePar: '#9E9E9E',
+    scoreDoubleBogey: '#1F6FB2',
 };
 
 // Challenge tiers, from the strongest to the most relaxed handicap

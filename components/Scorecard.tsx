@@ -3,6 +3,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { RoundPlayer, RoundHoleScore } from '../service/DbService';
 import { useStyles } from '@/hooks/useStyles';
 import { splitFrontAndBackNine } from '@/utils/holeOrder';
+import { getScoreMarker } from '@/utils/scoreMarker';
 
 const SIN_HINT = 'Deadly sin logged on this hole';
 
@@ -109,17 +110,16 @@ const Scorecard = ({ players, holeScores, editable, selectedScore, onScoreSelect
                                 const score = getPlayerScoreForHole(player.Id, h);
                                 const par = getHolePar(h);
                                 const isSelected = selectedScore?.holeNumber === h && selectedScore?.playerId === player.Id;
-                                const diff = score !== null ? score - par : null;
-                                // Circle birdies/eagles, square bogeys+ — a standard scorecard convention
-                                // that also encodes the result by shape, not colour alone.
-                                const markerStyle = diff === null || diff === 0
-                                    ? null
-                                    : diff < 0 ? s.birdieMarker : s.bogeyMarker;
+                                // Every score sits in a coloured circle chosen by its distance from par
+                                const marker = score !== null ? getScoreMarker(score - par) : null;
                                 const cellContent = (
-                                    <View testID={`score-marker-${h}-${player.Id}`} style={[s.scoreMarker, markerStyle]}>
+                                    <View
+                                        testID={`score-marker-${h}-${player.Id}`}
+                                        style={[s.scoreMarker, marker && { backgroundColor: marker.background }]}
+                                    >
                                         <Text
                                             testID={`hole-${h}-player-${player.Id}-score`}
-                                            style={[s.scoreText, score !== null ? getScoreColor(score, par) : undefined]}
+                                            style={[s.scoreText, marker && { color: marker.text }]}
                                         >
                                             {score !== null ? score : '-'}
                                         </Text>

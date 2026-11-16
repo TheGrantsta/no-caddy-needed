@@ -14,6 +14,7 @@ const renderSheet = (overrides: object = {}) => {
         onSecondPuttChange: jest.fn(),
         onGreenInRegulationChange: jest.fn(),
         onSinChange: jest.fn(),
+        onSave: jest.fn(),
     };
     const utils = render(
         <EditHoleSheet
@@ -45,6 +46,14 @@ describe('EditHoleSheet', () => {
         expect(getByText('Hole 3')).toBeTruthy();
         expect(getByTestId('edit-hole-back-button')).toBeTruthy();
         expect(getByLabelText('Back')).toBeTruthy();
+    });
+
+    it('shouldShowASaveButtonNextToTheHoleTitleThatCallsOnSave', () => {
+        const { getByTestId, getByText, onSave } = renderSheet();
+
+        expect(getByText('Save')).toBeTruthy();
+        fireEvent.press(getByTestId('edit-hole-save-button'));
+        expect(onSave).toHaveBeenCalledTimes(1);
     });
 
     it('shouldShowTheBackButtonAsACircleChevronWithNoRoundLabel', () => {

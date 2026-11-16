@@ -23,6 +23,8 @@ type Props = {
     greenInRegulation: boolean;
     sins: Sins & Record<string, boolean>;
     onBack: () => void;
+    // Saves this hole only; the round sheet is not involved
+    onSave: () => void;
     onParChange: (par: number) => void;
     onStrokesChange: (delta: number) => void;
     onFirstPuttChange: (value: string) => void;
@@ -58,6 +60,7 @@ export default function EditHoleSheet({
     greenInRegulation,
     sins,
     onBack,
+    onSave,
     onParChange,
     onStrokesChange,
     onFirstPuttChange,
@@ -80,7 +83,9 @@ export default function EditHoleSheet({
                     <MaterialIcons name="chevron-left" size={28} color={colours.black} />
                 </TouchableOpacity>
                 <Text style={s.title} numberOfLines={1}>{`Hole ${holeNumber}`}</Text>
-                <View style={s.spacer} />
+                <TouchableOpacity testID="edit-hole-save-button" accessibilityRole="button" onPress={onSave} style={s.savePill}>
+                    <Text style={s.saveText}>Save</Text>
+                </TouchableOpacity>
             </View>
 
             <Text style={s.sectionLabel}>SCORE</Text>

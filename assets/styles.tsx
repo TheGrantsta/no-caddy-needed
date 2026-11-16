@@ -3002,9 +3002,17 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.subHeader,
             fontWeight: 'bold',
         },
-        // Same width as the back button, so the title stays centred
-        spacer: {
-            width: 44,
+        savePill: {
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: c.primary,
+            justifyContent: 'center',
+            paddingHorizontal: 18,
+        },
+        saveText: {
+            color: c.white,
+            fontSize: fontSizes.normal,
+            fontWeight: 'bold',
         },
         sectionLabel: {
             color: c.tertiary,

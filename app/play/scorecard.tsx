@@ -40,6 +40,8 @@ import { useThemeColours } from '../../context/ThemeContext';
 import { formatLongDate } from '../../utils/drillHistory';
 import { useOrientation } from '../../hooks/useOrientation';
 
+type ScorecardSaveResult = Awaited<ReturnType<typeof saveScorecardEditsService>>;
+
 const INITIAL_SINS: DeadlySinsValues = {
     threePutts: false,
     doubleBogeys: false,
@@ -97,6 +99,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         setSinHoles(getHolesWithSinsForRoundService(Number(roundId)));
         setScoreBreakdown(getRoundScoreBreakdownService(Number(roundId)));
         setClubDistances(getClubDistancesService());
+        return mp;
     }, [roundId]);
 
     // Loads the round from SQLite; runs on mount and whenever the round changes.
@@ -202,22 +205,21 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         );
     };
 
-    const handleSave = async () => {
-        if (edit.sinsHoleNumber !== null && edit.editedSins !== null) {
-            // Details are required only when the sin is logged. A club is only required if the user has clubs listed,
-            // because without a bag there is nothing to choose from.
-            const needsClub = edit.editedSins.troubleOffTee && clubDistances.length > 0;
-            const needsPenalty = edit.editedSins.penalties;
-            const needsBogeysClub = edit.editedSins.bogeysInside9Iron && clubDistances.length > 0;
-            const needsDoubleChipReason = edit.editedSins.doubleChips;
+    // Sin details are required only when the sin is logged. A club is only required if the user has clubs listed,
+    // because without a bag there is nothing to choose from. False blocks the hole save until they are filled in.
+    const holeSinDetailsAreValid = (): boolean => {
+        if (edit.sinsHoleNumber === null || edit.editedSins === null) return true;
+        const needsClub = edit.editedSins.troubleOffTee && clubDistances.length > 0;
+        const needsPenalty = edit.editedSins.penalties;
+        const needsBogeysClub = edit.editedSins.bogeysInside9Iron && clubDistances.length > 0;
+        const needsDoubleChipReason = edit.editedSins.doubleChips;
+        return edit.validateSinDetails(clubDistances, needsClub, needsPenalty, needsBogeysClub, needsDoubleChipReason);
+    };
 
-            const isValid = edit.validateSinDetails(clubDistances, needsClub, needsPenalty, needsBogeysClub, needsDoubleChipReason);
-            if (!isValid) return;
-        }
-
-        if (!multiplayerScorecard) return;
-
-        const result = await saveScorecardEditsService({
+    // Writes the score changes, the hole open in the sheet (sins and putts) and, when given, the round's date
+    const persistEdits = async (newStartTime: Date | null): Promise<ScorecardSaveResult> => {
+        if (!multiplayerScorecard) return 'failed';
+        return saveScorecardEditsService({
             roundId: Number(roundId),
             original: multiplayerScorecard.holeScores,
             edited: edit.editedScores,
@@ -233,16 +235,53 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                 hadPriorSinDetails: edit.hadPriorSinDetails,
                 puttingStats: edit.puttingStats,
             },
-            newStartTime: editedDate,
+            newStartTime,
         });
+    };
 
+    // Shows the outcome of a save; true only when it succeeded
+    const reportSaveResult = (result: ScorecardSaveResult): boolean => {
         if (result === 'missing-first-putt') {
             showError('Enter the first putt distance');
-            return;
+            return false;
         }
-
         showResult(result === 'saved', 'Scorecard updated', 'Failed to update scorecard');
-        if (result === 'failed') return;
+        return result === 'saved';
+    };
+
+    // Save on a hole: writes that hole only, then returns to the hole list. A failed save stays on the hole.
+    const handleSaveHole = async () => {
+        if (!holeSinDetailsAreValid()) return;
+        const result = await persistEdits(null);
+        if (!reportSaveResult(result)) return;
+
+        // The list now shows what was saved, so the edit session is re-based on the database
+        const fresh = loadData();
+        edit.setEditedScores((fresh?.holeScores ?? []).map(s => ({ ...s })));
+        edit.clearHoleEdits();
+        edit.setSelectedScore(null);
+    };
+
+    // Back on a hole discards that hole's unsaved changes and returns to the hole list
+    const handleBackFromHole = () => {
+        const holeNumber = edit.selectedScore?.holeNumber;
+        if (holeNumber !== undefined && multiplayerScorecard) {
+            edit.setEditedScores(prev =>
+                prev.map(row => {
+                    if (row.HoleNumber !== holeNumber) return row;
+                    const saved = multiplayerScorecard.holeScores.find(s => s.Id === row.Id);
+                    return saved ? { ...saved } : row;
+                })
+            );
+        }
+        edit.clearHoleEdits();
+        edit.setSelectedScore(null);
+    };
+
+    // Save on the round sheet: saves the date and exits editing
+    const handleSaveRound = async () => {
+        const result = await persistEdits(editedDate);
+        if (!reportSaveResult(result)) return;
 
         setEditedDate(null);
         loadData();
@@ -464,7 +503,8 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                             sins={edit.editedSins ?? INITIAL_SINS}
                                             otherPlayers={editOtherPlayers}
                                             onOtherStrokesChange={(playerId, delta) => stepStrokes(selectedEditHole.HoleNumber, playerId, delta)}
-                                            onBack={() => edit.setSelectedScore(null)}
+                                            onBack={handleBackFromHole}
+                                            onSave={handleSaveHole}
                                             onParChange={handleParChange}
                                             onStrokesChange={handleStrokesStep}
                                             onFirstPuttChange={(text) => handlePuttText('firstPutt', text)}
@@ -507,7 +547,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                         total={editRoundTotal}
                                         onHolePress={handleSelectEditHole}
                                         onCancel={handleCancelEdit}
-                                        onSave={handleSave}
+                                        onSave={handleSaveRound}
                                         onDeleteLastHole={canDeleteLastHole ? handleDeleteLastHolePress : undefined}
                                     />
                                 )}

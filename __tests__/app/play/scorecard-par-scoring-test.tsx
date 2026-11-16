@@ -89,12 +89,22 @@ const singlePlayerData = {
 };
 
 describe('Scorecard par scoring', () => {
+    // Stand-in for the database: a save writes its score changes back, so a reload shows them
+    let savedHoleScores = holeScores.map(s => ({ ...s }));
+
     beforeEach(() => {
         jest.clearAllMocks();
-        mockGetMultiplayerScorecard.mockReturnValue(singlePlayerData);
+        savedHoleScores = holeScores.map(s => ({ ...s }));
+        mockGetMultiplayerScorecard.mockImplementation(() => ({ ...singlePlayerData, holeScores: savedHoleScores.map(s => ({ ...s })) }));
+        mockUpdateScorecard.mockImplementation(async (_roundId: number, changes: { id: number; score: number }[]) => {
+            changes.forEach(change => {
+                const row = savedHoleScores.find(s => s.Id === change.id);
+                if (row) row.Score = change.score;
+            });
+            return true;
+        });
         mockGetHolesWithSinsForRoundService.mockReturnValue(new Set());
         mockGetHoleDeadlySinsService.mockReturnValue(null);
-        mockUpdateScorecard.mockResolvedValue(true);
     });
 
     const renderScorecard = async () => render(<ScorecardScreen />);
@@ -140,11 +150,13 @@ describe('Scorecard par scoring', () => {
 
     });
 
-    // Edits a hole from the round sheet: open the hole, adjust strokes, return to the round sheet
-    const adjustHole = (getByTestId: ReturnType<typeof render>['getByTestId'], hole: number, control: 'edit-hole-strokes-increment' | 'edit-hole-strokes-decrement') => {
+    // Edits a hole from the round sheet: open the hole, adjust strokes, save the hole to return to the round sheet
+    const adjustHole = async (getByTestId: ReturnType<typeof render>['getByTestId'], hole: number, control: 'edit-hole-strokes-increment' | 'edit-hole-strokes-decrement') => {
         fireEvent.press(getByTestId(`edit-round-hole-${hole}`));
         fireEvent.press(getByTestId(control));
-        fireEvent.press(getByTestId('edit-hole-back-button'));
+        fireEvent.press(getByTestId('edit-hole-save-button'));
+        // The save is async: wait until the hole list is back before the next step
+        await waitFor(() => expect(getByTestId(`edit-round-hole-${hole}`)).toBeTruthy());
     };
 
     describe('Score input on par 3 holes', () => {
@@ -152,7 +164,7 @@ describe('Scorecard par scoring', () => {
             const { getByTestId } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
-            adjustHole(getByTestId, 7, 'edit-hole-strokes-increment');
+            await adjustHole(getByTestId, 7, 'edit-hole-strokes-increment');
             fireEvent.press(getByTestId('edit-round-save-button'));
 
             await waitFor(() => {
@@ -164,7 +176,7 @@ describe('Scorecard par scoring', () => {
             const { getByTestId } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
-            adjustHole(getByTestId, 7, 'edit-hole-strokes-decrement');
+            await adjustHole(getByTestId, 7, 'edit-hole-strokes-decrement');
             fireEvent.press(getByTestId('edit-round-save-button'));
 
             await waitFor(() => {
@@ -176,7 +188,7 @@ describe('Scorecard par scoring', () => {
             const { getByTestId, getByText } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
-            adjustHole(getByTestId, 7, 'edit-hole-strokes-increment');
+            await adjustHole(getByTestId, 7, 'edit-hole-strokes-increment');
 
             expect(getByText('Total 72')).toBeTruthy();
         });
@@ -185,7 +197,7 @@ describe('Scorecard par scoring', () => {
             const { getByTestId, getByText } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
-            adjustHole(getByTestId, 7, 'edit-hole-strokes-decrement');
+            await adjustHole(getByTestId, 7, 'edit-hole-strokes-decrement');
 
             expect(getByText('Total 70')).toBeTruthy();
         });
@@ -196,7 +208,7 @@ describe('Scorecard par scoring', () => {
             const { getByTestId } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
-            adjustHole(getByTestId, 9, 'edit-hole-strokes-increment');
+            await adjustHole(getByTestId, 9, 'edit-hole-strokes-increment');
             fireEvent.press(getByTestId('edit-round-save-button'));
 
             await waitFor(() => {
@@ -208,7 +220,7 @@ describe('Scorecard par scoring', () => {
             const { getByTestId } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
-            adjustHole(getByTestId, 9, 'edit-hole-strokes-decrement');
+            await adjustHole(getByTestId, 9, 'edit-hole-strokes-decrement');
             fireEvent.press(getByTestId('edit-round-save-button'));
 
             await waitFor(() => {
@@ -220,40 +232,39 @@ describe('Scorecard par scoring', () => {
             const { getByTestId, getByText } = await renderScorecard();
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
-            adjustHole(getByTestId, 9, 'edit-hole-strokes-decrement');
+            await adjustHole(getByTestId, 9, 'edit-hole-strokes-decrement');
 
             expect(getByText('Total 70')).toBeTruthy();
         });
     });
 
     describe('Scoring bogeys on all par 3 and par 5 holes', () => {
-        const enterBogeyOnAllSpecialHoles = (getByTestId: ReturnType<typeof render>['getByTestId']) => {
+        const enterBogeyOnAllSpecialHoles = async (getByTestId: ReturnType<typeof render>['getByTestId']) => {
             fireEvent.press(getByTestId('edit-scorecard-button'));
             for (const hole of [7, 9, 10, 13, 14]) {
-                adjustHole(getByTestId, hole, 'edit-hole-strokes-increment');
+                await adjustHole(getByTestId, hole, 'edit-hole-strokes-increment');
             }
         };
 
         it('shouldShowGross76WhenBogeyOnAllPar3AndPar5Holes', async () => {
             const { getByTestId, getByText } = await renderScorecard();
-            enterBogeyOnAllSpecialHoles(getByTestId);
+            await enterBogeyOnAllSpecialHoles(getByTestId);
             expect(getByText('Total 76')).toBeTruthy();
         });
 
         it('shouldSaveAllBogeyChangesWhenBogeyOnAllPar3AndPar5Holes', async () => {
             const { getByTestId } = await renderScorecard();
-            enterBogeyOnAllSpecialHoles(getByTestId);
-            fireEvent.press(getByTestId('edit-round-save-button'));
+            await enterBogeyOnAllSpecialHoles(getByTestId);
 
-            await waitFor(() => {
-                expect(mockUpdateScorecard).toHaveBeenCalledWith(42, [
-                    { id: 106, score: 4 },
-                    { id: 108, score: 6 },
-                    { id: 109, score: 4 },
-                    { id: 112, score: 6 },
-                    { id: 113, score: 4 },
-                ], []);
-            });
+            // Each hole saves its own bogey from its sheet, so the five changes arrive one save at a time
+            const savedChanges = mockUpdateScorecard.mock.calls.flatMap(([, changes]) => changes);
+            expect(savedChanges).toEqual([
+                { id: 106, score: 4 },
+                { id: 108, score: 6 },
+                { id: 109, score: 4 },
+                { id: 112, score: 6 },
+                { id: 113, score: 4 },
+            ]);
         });
     });
 });

@@ -33,6 +33,9 @@ type Props = {
     showStats?: boolean;
     // Follow-up pickers (club, penalty type, chip reason) shown under their sin while it is ticked
     renderFollowUp?: (key: keyof Sins) => ReactNode;
+    // Other players in the round, each with their own stroke row (the same stepper as hole entry)
+    otherPlayers?: { id: number; name: string; strokes: number }[];
+    onOtherStrokesChange?: (playerId: number, delta: number) => void;
 };
 
 const PAR_OPTIONS = [3, 4, 5];
@@ -63,6 +66,8 @@ export default function EditHoleSheet({
     onSinChange,
     showStats = true,
     renderFollowUp,
+    otherPlayers = [],
+    onOtherStrokesChange,
 }: Props) {
     const styles = useStyles();
     const colours = useThemeColours();
@@ -102,7 +107,7 @@ export default function EditHoleSheet({
                 </View>
                 <View style={s.divider} />
                 <View style={s.row}>
-                    <Text style={s.rowLabel}>Strokes</Text>
+                    <Text style={s.rowLabel}>{otherPlayers.length > 0 ? 'You' : 'Strokes'}</Text>
                     <View style={s.stepper}>
                         <TouchableOpacity testID="edit-hole-strokes-decrement" accessibilityRole="button" onPress={() => onStrokesChange(-1)} style={s.stepButtonMuted}>
                             <Text style={s.stepText}>−</Text>
@@ -113,6 +118,23 @@ export default function EditHoleSheet({
                         </TouchableOpacity>
                     </View>
                 </View>
+                {otherPlayers.map(player => (
+                    <View key={player.id}>
+                        <View style={s.divider} />
+                        <View style={s.row}>
+                            <Text numberOfLines={1} style={s.rowLabel}>{player.name}</Text>
+                            <View style={s.stepper}>
+                                <TouchableOpacity testID={`edit-hole-player-${player.id}-strokes-decrement`} accessibilityRole="button" onPress={() => onOtherStrokesChange?.(player.id, -1)} style={s.stepButtonMuted}>
+                                    <Text style={s.stepText}>−</Text>
+                                </TouchableOpacity>
+                                <Text testID={`edit-hole-player-${player.id}-strokes-value`} style={s.strokesValue}>{String(player.strokes)}</Text>
+                                <TouchableOpacity testID={`edit-hole-player-${player.id}-strokes-increment`} accessibilityRole="button" onPress={() => onOtherStrokesChange?.(player.id, 1)} style={s.stepButton}>
+                                    <Text style={[s.stepText, { color: colours.white }]}>+</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                ))}
             </View>
 
             {showStats && (

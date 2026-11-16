@@ -147,4 +147,36 @@ describe('EditHoleSheet', () => {
         expect(queryByText('follow-up for penalties')).toBeNull();
         expect(renderFollowUp).not.toHaveBeenCalledWith('penalties');
     });
+    describe('other players', () => {
+        it('shouldShowAStrokeRowForEachOtherPlayerWithTheirScore', () => {
+            const { getByText, getByTestId } = renderSheet({ otherPlayers: [{ id: 2, name: 'Alice', strokes: 3 }], onOtherStrokesChange: jest.fn() });
+
+            expect(getByText('Alice')).toBeTruthy();
+            expect(getByTestId('edit-hole-player-2-strokes-value')).toHaveTextContent('3');
+        });
+
+        it('shouldLabelYourRowYouWhenOtherPlayersAreShown', () => {
+            const { getByText } = renderSheet({ otherPlayers: [{ id: 2, name: 'Alice', strokes: 3 }], onOtherStrokesChange: jest.fn() });
+
+            expect(getByText('You')).toBeTruthy();
+        });
+
+        it('shouldStepAnOtherPlayersStrokesFromTheirOwnRow', () => {
+            const onOtherStrokesChange = jest.fn();
+            const { getByTestId } = renderSheet({ otherPlayers: [{ id: 2, name: 'Alice', strokes: 3 }], onOtherStrokesChange });
+
+            fireEvent.press(getByTestId('edit-hole-player-2-strokes-increment'));
+            fireEvent.press(getByTestId('edit-hole-player-2-strokes-decrement'));
+
+            expect(onOtherStrokesChange).toHaveBeenNthCalledWith(1, 2, 1);
+            expect(onOtherStrokesChange).toHaveBeenNthCalledWith(2, 2, -1);
+        });
+
+        it('shouldShowNoOtherPlayerRowsWhenThereAreNone', () => {
+            const { queryByTestId, getByText } = renderSheet({ otherPlayers: [] });
+
+            expect(queryByTestId('edit-hole-player-2-strokes-value')).toBeNull();
+            expect(getByText('Strokes')).toBeTruthy();
+        });
+    });
 });

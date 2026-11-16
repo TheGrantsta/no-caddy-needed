@@ -875,6 +875,24 @@ describe('Scorecard screen', () => {
             expect(queryByText('Alice')).toBeNull();
         });
 
+        it('shouldLetYouStepAnotherPlayersScoreOnTheHoleSheetAndSaveIt', async () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockUpdateScorecard.mockResolvedValue(true);
+
+            const { getByTestId } = render(<ScorecardScreen />);
+            fireEvent.press(getByTestId('edit-scorecard-button'));
+            fireEvent.press(getByTestId('edit-round-hole-1'));
+
+            expect(getByTestId('edit-hole-player-2-strokes-value')).toHaveTextContent('3');
+            fireEvent.press(getByTestId('edit-hole-player-2-strokes-increment'));
+            fireEvent.press(getByTestId('edit-hole-back-button'));
+            fireEvent.press(getByTestId('edit-round-save-button'));
+
+            await waitFor(() => {
+                expect(mockUpdateScorecard).toHaveBeenCalledWith(1, [{ id: 11, score: 4 }], []);
+            });
+        });
+
         it('renders Delete as a full-width white card with centred red text', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 

@@ -303,6 +303,26 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     });
     const editRoundTotal = editUserHoles.reduce((sum, h) => sum + h.Score, 0);
     const selectedEditHole = edit.selectedScore ? editUserHoles.find(h => h.HoleNumber === edit.selectedScore?.holeNumber) : undefined;
+    // The other players' strokes on the hole open, in the order of the round's players
+    const editOtherPlayers = selectedEditHole
+        ? (multiplayerScorecard?.players ?? [])
+            .filter(p => p.IsUser !== 1)
+            .flatMap(p => {
+                const row = edit.editedScores.find(h => h.HoleNumber === selectedEditHole.HoleNumber && h.RoundPlayerId === p.Id);
+                return row ? [{ id: p.Id, name: p.PlayerName, strokes: row.Score }] : [];
+            })
+        : [];
+
+    // Steps one player's strokes on a hole; used for the other players' rows on the hole sheet
+    const stepStrokes = (holeNumber: number, playerId: number, delta: number) => {
+        edit.setEditedScores(prev =>
+            prev.map(s =>
+                s.HoleNumber === holeNumber && s.RoundPlayerId === playerId
+                    ? { ...s, Score: Math.max(1, s.Score + delta) }
+                    : s
+            )
+        );
+    };
 
     const handleSelectEditHole = (holeNumber: number) => {
         if (userPlayerId !== undefined) handleScoreSelect(holeNumber, userPlayerId);
@@ -406,6 +426,8 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                             secondPutt={edit.puttingStats?.secondPutt?.toString() ?? ''}
                                             greenInRegulation={edit.puttingStats?.greenInRegulation ?? false}
                                             sins={edit.editedSins ?? INITIAL_SINS}
+                                            otherPlayers={editOtherPlayers}
+                                            onOtherStrokesChange={(playerId, delta) => stepStrokes(selectedEditHole.HoleNumber, playerId, delta)}
                                             onBack={() => edit.setSelectedScore(null)}
                                             onParChange={handleParChange}
                                             onStrokesChange={handleStrokesStep}

@@ -11,7 +11,7 @@ import EditRoundSheet from '../../components/EditRoundSheet';
 import EditHoleSheet from '../../components/EditHoleSheet';
 import SinDetailsInput from '../../components/SinDetailsInput';
 import RoundSummaryCard from '../../components/RoundSummaryCard';
-import RoundScoreTable from '../../components/RoundScoreTable';
+import RoundScoreTable, { OtherPlayer } from '../../components/RoundScoreTable';
 import { useAppToast } from '../../hooks/useAppToast';
 import { saveScorecardEditsService } from '../../service/ScorecardEditService';
 import { useScorecardEdit } from '../../hooks/useScorecardEdit';
@@ -341,6 +341,18 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         .filter(h => h.RoundPlayerId === userPlayerId)
         .sort((a, b) => a.HoleNumber - b.HoleNumber)
         .map(h => ({ holeNumber: h.HoleNumber, par: h.HolePar, score: h.Score }));
+    // Everyone else in the round, with their score per hole, shown under "You" in the tables
+    const otherPlayers: OtherPlayer[] = (multiplayerScorecard?.players ?? [])
+        .filter(p => p.IsUser !== 1)
+        .map(p => ({
+            id: p.Id,
+            name: p.PlayerName,
+            scores: Object.fromEntries(
+                (multiplayerScorecard?.holeScores ?? [])
+                    .filter(h => h.RoundPlayerId === p.Id)
+                    .map(h => [h.HoleNumber, h.Score])
+            ),
+        }));
     const showSummary = !edit.isEditing && userHoles.length > 0;
     const summaryStats = scoreBreakdown ?? { putts: 0, threePutts: 0, penalties: 0 };
 
@@ -452,7 +464,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                     penalties={summaryStats.penalties}
                                     showStats={!round?.IsScoreOnly}
                                 />
-                                <RoundScoreTable holes={userHoles} sinHoles={sinHoles} onSinPress={handleSinPress} />
+                                <RoundScoreTable holes={userHoles} sinHoles={sinHoles} onSinPress={handleSinPress} otherPlayers={otherPlayers} />
                             </>
                         ) : (
                             <Scorecard

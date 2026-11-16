@@ -1628,22 +1628,42 @@ describe('Play screen', () => {
         });
     });
 
-    describe('Autosave hole score', () => {
-        it('shouldSaveScoreAsSoonAsStepperChangesBeforeNextIsPressed', async () => {
+    describe('Saving hole scores', () => {
+        const startScoreOnlyRound = async (getByTestId: (id: string) => any) => {
+            const mockGetSettings = getSettingsService as jest.Mock;
+            const original = mockGetSettings.getMockImplementation();
+            mockGetSettings.mockReturnValue({ ...original?.(), skipStatsFlowEnabled: true });
             mockStartRound.mockResolvedValue(1);
             mockAddRoundPlayers.mockResolvedValue([1]);
             mockAddMultiplayerHoleScores.mockResolvedValue(true);
-
-            const { getByTestId } = render(<Play />);
             fireEvent.changeText(getByTestId('course-name-input'), 'Test Course');
             await act(async () => {
                 fireEvent.press(getByTestId('start-button'));
             });
             await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
             mockAddMultiplayerHoleScores.mockClear();
+            return () => mockGetSettings.mockReturnValue(original?.());
+        };
 
+        it('shouldNotSaveWhenTheStepperChanges', async () => {
+            const { getByTestId } = render(<Play />);
+            const restore = await startScoreOnlyRound(getByTestId);
+
+            fireEvent.press(getByTestId('increment-1'));
+
+            expect(mockAddMultiplayerHoleScores).not.toHaveBeenCalled();
+            restore();
+        });
+
+        it('shouldSaveTheHoleWhenNextIsPressed', async () => {
+            const { getByTestId } = render(<Play />);
+            const restore = await startScoreOnlyRound(getByTestId);
             const shownBefore = Number(getByTestId('player-score-1').props.children);
             fireEvent.press(getByTestId('increment-1'));
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
 
             expect(mockAddMultiplayerHoleScores).toHaveBeenCalledWith(
                 1,
@@ -1651,6 +1671,36 @@ describe('Play screen', () => {
                 expect.any(Number),
                 [expect.objectContaining({ playerId: 1, score: shownBefore + 1 })]
             );
+            restore();
+        });
+
+        it('shouldNotSaveTheNextHoleWhenItIsLoaded', async () => {
+            const { getByTestId } = render(<Play />);
+            const restore = await startScoreOnlyRound(getByTestId);
+
+            await act(async () => {
+                fireEvent.press(getByTestId('next-hole-button'));
+            });
+
+            expect(mockAddMultiplayerHoleScores).toHaveBeenCalledTimes(1);
+            expect(mockAddMultiplayerHoleScores).toHaveBeenCalledWith(1, 1, expect.any(Number), expect.any(Array));
+            expect(mockAddMultiplayerHoleScores).not.toHaveBeenCalledWith(1, 2, expect.anything(), expect.anything());
+            restore();
+        });
+
+        it('shouldDiscardTheHoleOnScreenWhenTheRoundIsEnded', async () => {
+            mockEndRound.mockResolvedValue(true);
+            const { getByTestId } = render(<Play />);
+            const restore = await startScoreOnlyRound(getByTestId);
+            fireEvent.press(getByTestId('increment-1'));
+
+            fireEvent.press(getByTestId('end-round-button'));
+            await act(async () => {
+                fireEvent.press(getByTestId('end-round-save-button'));
+            });
+
+            expect(mockAddMultiplayerHoleScores).not.toHaveBeenCalled();
+            restore();
         });
     });
 

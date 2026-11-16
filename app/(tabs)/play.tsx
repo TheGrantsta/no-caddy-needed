@@ -334,11 +334,8 @@ export default function Play() {
     };
 
     const handleScoresChange = (holeNumber: number, holePar: number, scores: { playerId: number; playerName: string; score: number }[]) => {
+        // Scores are held on screen and saved when Next is pressed (see handleNextHole)
         setCurrentHoleData({ holeNumber, holePar, scores });
-        // Autosave so a score survives the app closing before Next is pressed
-        if (activeRoundId !== null) {
-            void addMultiplayerHoleScoresService(activeRoundId, holeNumber, holePar, scores);
-        }
     };
 
     const buildDefaultHoleData = () => {

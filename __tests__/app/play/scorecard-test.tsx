@@ -854,6 +854,27 @@ describe('Scorecard screen', () => {
             expect(getByText('Edit')).toHaveStyle({ color: colours.primary });
         });
 
+        it('shouldShowEachOtherPlayersNameAndScoresInTheRoundTables', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+
+            const { getByText, getByTestId } = render(<ScorecardScreen />);
+
+            expect(getByText('Alice')).toBeTruthy();
+            expect(getByTestId('round-table-player-2-score-1')).toHaveTextContent('3');
+        });
+
+        it('shouldNotShowOtherPlayersForASinglePlayerRound', () => {
+            mockGetMultiplayerScorecard.mockReturnValue({
+                ...multiplayerData,
+                players: [multiplayerData.players[0]],
+                holeScores: [multiplayerData.holeScores[0]],
+            });
+
+            const { queryByText } = render(<ScorecardScreen />);
+
+            expect(queryByText('Alice')).toBeNull();
+        });
+
         it('renders Delete as a full-width white card with centred red text', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 

@@ -54,6 +54,55 @@ describe('RoundScoreTable', () => {
         expect(queryByText('Dot marks a hole with a deadly sin')).toBeNull();
     });
 
+    describe('other players', () => {
+        const sam = { id: 2, name: 'Sam', scores: { 1: 5, 2: 3, 3: 4 } };
+
+        it('shouldShowEachOtherPlayersNameInTheirOwnRow', () => {
+            const { getByText } = render(<RoundScoreTable holes={holes} sinHoles={new Set()} otherPlayers={[sam]} />);
+
+            expect(getByText('Sam')).toBeTruthy();
+        });
+
+        it('shouldShowEachOtherPlayersScoreForEachHole', () => {
+            const { getByTestId } = render(<RoundScoreTable holes={holes} sinHoles={new Set()} otherPlayers={[sam]} />);
+
+            expect(getByTestId('round-table-player-2-score-1')).toHaveTextContent('5');
+            expect(getByTestId('round-table-player-2-score-2')).toHaveTextContent('3');
+            expect(getByTestId('round-table-player-2-score-3')).toHaveTextContent('4');
+        });
+
+        it('shouldShowADashForAHoleTheOtherPlayerHasNoScoreFor', () => {
+            const partial = { ...sam, scores: { 1: 5 } };
+            const { getByTestId } = render(<RoundScoreTable holes={holes} sinHoles={new Set()} otherPlayers={[partial]} />);
+
+            expect(getByTestId('round-table-player-2-score-2')).toHaveTextContent('-');
+        });
+
+        it('shouldTotalTheOtherPlayersScoresForTheNineOnlyFromHolesTheyPlayed', () => {
+            const partial = { ...sam, scores: { 1: 5, 3: 4 } };
+            const { getByTestId } = render(<RoundScoreTable holes={holes} sinHoles={new Set()} otherPlayers={[partial]} />);
+
+            expect(getByTestId('round-table-player-2-total-out')).toHaveTextContent('9');
+        });
+
+        it('shouldShowAnOtherPlayersScoresInTheInTableForHolesTenOnwards', () => {
+            const holesFrom = (from: number, to: number) =>
+                Array.from({ length: to - from + 1 }, (_, i) => ({ holeNumber: from + i, par: 4, score: 4 }));
+            const back = { id: 2, name: 'Sam', scores: { 10: 3, 11: 6 } };
+            const { getByTestId } = render(<RoundScoreTable holes={holesFrom(1, 18)} sinHoles={new Set()} otherPlayers={[back]} />);
+
+            expect(getByTestId('round-table-player-2-score-10')).toHaveTextContent('3');
+            expect(getByTestId('round-table-player-2-total-in')).toHaveTextContent('9');
+        });
+
+        it('shouldShowNoExtraRowsWhenThereAreNoOtherPlayers', () => {
+            const { queryByTestId, queryByText } = render(<RoundScoreTable holes={holes} sinHoles={new Set()} otherPlayers={[]} />);
+
+            expect(queryByTestId('round-table-player-2-score-1')).toBeNull();
+            expect(queryByText('Sam')).toBeNull();
+        });
+    });
+
     describe('Out and In tables', () => {
         const holesFrom = (from: number, to: number) =>
             Array.from({ length: to - from + 1 }, (_, i) => ({ holeNumber: from + i, par: 4, score: 4 }));

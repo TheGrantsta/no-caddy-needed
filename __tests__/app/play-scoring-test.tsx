@@ -175,10 +175,14 @@ const mockGetHolesWithSinsForRound = getHolesWithSinsForRoundService as jest.Moc
 const mockHapticsImpact = Haptics.impactAsync as jest.Mock;
 const mockDeleteHoleSinDetailsService = deleteHoleSinDetailsService as jest.Mock;
 
-// Opens a putt distance picker and chooses a value ('' clears it)
-const choosePuttDistance = (getByTestId: (id: string) => any, id: string, value: string) => {
-    fireEvent.press(getByTestId(id));
-    fireEvent.press(getByTestId(value === '' ? `${id}-option-clear` : `${id}-option-${value}`));
+// Opens a putting distance wheel, spins it to the feet given, then closes it again
+const choosePuttDistance = (getByTestId: (id: string) => any, id: string, feet: string) => {
+    const isFirst = id.startsWith('first-putt');
+    const valueId = isFirst ? 'first-putt-value' : 'second-putt-value';
+    const wheelId = isFirst ? 'first-putt-wheel' : 'second-putt-wheel';
+    fireEvent.press(getByTestId(valueId));
+    fireEvent(getByTestId(wheelId), 'change', { nativeEvent: { newValue: Number(feet), newIndex: Number(feet) - 1 } });
+    fireEvent.press(getByTestId(valueId));
 };
 
 describe('Play screen', () => {
@@ -514,7 +518,8 @@ describe('Play screen', () => {
             await waitFor(() => expect(getByTestId('hole-note-input')).toBeTruthy());
 
             fireEvent.changeText(getByTestId('hole-note-input'), 'aim left');
-            choosePuttDistance(getByTestId, 'first-putt-input', '20');
+            fireEvent.press(getByTestId('putts-option-1'));
+            choosePuttDistance(getByTestId, 'first-putt-value', '20');
 
             // Next saves the hole, including its note, in one step
             await act(async () => {
@@ -534,7 +539,7 @@ describe('Play screen', () => {
                 const { getByTestId, getByText } = render(<Play />);
                 fireEvent.changeText(getByTestId('course-name-input'), 'Augusta');
                 fireEvent.press(getByTestId('start-button'));
-                await waitFor(() => expect(getByTestId('first-putt-input')).toBeTruthy());
+                await waitFor(() => expect(getByTestId('putts-option-0')).toBeTruthy());
 
                 expect(StyleSheet.flatten(getByText('Putting').props.style).marginTop ?? 0).toBe(0);
             });
@@ -576,7 +581,7 @@ describe('Play screen', () => {
                 await startFullRound(getByTestId);
 
                 expect(getByTestId('player-score-1')).toBeTruthy();
-                expect(getByTestId('first-putt-input')).toBeTruthy();
+                expect(getByTestId('putts-option-0')).toBeTruthy();
                 expect(getByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeTruthy();
             });
 
@@ -591,12 +596,11 @@ describe('Play screen', () => {
                     mockGetHoleDeadlySinsForTest.mockImplementation((_round: number, hole: number) => saved[hole] ?? null);
                 };
 
+                // Three or more putts turns the 3-putt deadly sin on
                 const enterFirstPuttAndSin = async (getByTestId: (id: string) => any) => {
-                    fireEvent.press(getByTestId('first-putt-input'));
-                    fireEvent.press(getByTestId('first-putt-input-option-5'));
-                    fireEvent.press(getByTestId('second-putt-input'));
-                    fireEvent.press(getByTestId('second-putt-input-option-2'));
-                    fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+                    fireEvent.press(getByTestId('putts-option-3'));
+                    choosePuttDistance(getByTestId, 'first-putt-input', '5');
+                    choosePuttDistance(getByTestId, 'second-putt-input', '2');
                 };
 
                 beforeEach(() => {
@@ -613,10 +617,10 @@ describe('Play screen', () => {
                 });
 
                 it('shouldResetDeadlySinsWhenNavigatingForwardToTheNextHole', async () => {
-                    const { getByTestId } = render(<Play />);
+                    const { getByTestId, queryByTestId } = render(<Play />);
                     await startFullRound(getByTestId);
                     await enterFirstPuttAndSin(getByTestId);
-                    expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(true);
+                    expect(getByTestId('7deadly-sins-auto-three-putts').props.value).toBe(true);
 
                     await act(async () => {
                         fireEvent.press(getByTestId('next-hole-button'));
@@ -624,7 +628,7 @@ describe('Play screen', () => {
 
                     // The Previous button only appears once the round is past hole 1
                     await waitFor(() => expect(getByTestId('previous-hole-button')).toBeTruthy());
-                    expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(false);
+                    expect(queryByTestId('7deadly-sins-auto-row-three-putts')).toBeNull();
                 });
 
                 it('shouldKeepTheSavedDeadlySinsWhenNavigatingBackToAHole', async () => {
@@ -641,7 +645,7 @@ describe('Play screen', () => {
                         fireEvent.press(getByTestId('previous-hole-button'));
                     });
                     await waitFor(() => expect(queryByTestId('previous-hole-button')).toBeNull());
-                    expect(getByTestId('7deadly-sins-indicator-three-putts').props.value).toBe(true);
+                    expect(getByTestId('7deadly-sins-auto-three-putts').props.value).toBe(true);
                 });
             });
 
@@ -668,7 +672,8 @@ describe('Play screen', () => {
 
                 const { getByTestId } = render(<Play />);
                 await startFullRound(getByTestId);
-                choosePuttDistance(getByTestId, 'first-putt-input', '20');
+                fireEvent.press(getByTestId('putts-option-1'));
+                choosePuttDistance(getByTestId, 'first-putt-value', '20');
 
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));
@@ -692,7 +697,7 @@ describe('Play screen', () => {
                     const { getByTestId, queryByTestId } = render(<Play />);
                     await startFullRound(getByTestId);
 
-                    expect(queryByTestId('first-putt-input')).toBeNull();
+                    expect(queryByTestId('first-putt-value')).toBeNull();
                     expect(queryByTestId('7deadly-sins-toggle-trouble-off-tee')).toBeNull();
                     expect(getByTestId('player-score-1')).toBeTruthy();
                 } finally {
@@ -704,7 +709,7 @@ describe('Play screen', () => {
         describe('green in regulation on the putting screen', () => {
             // Putting is on the same screen as the score, so there is nothing to advance to
             const advanceToPuttingPhase = async (getByTestId: (id: string) => any) => {
-                await waitFor(() => expect(getByTestId('first-putt-input')).toBeTruthy());
+                await waitFor(() => expect(getByTestId('putts-option-0')).toBeTruthy());
             };
 
             const startRoundOnHoleOne = async (getByTestId: (id: string) => any) => {
@@ -713,27 +718,7 @@ describe('Play screen', () => {
                 await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
             };
 
-            it('shouldSaveGreenInRegulationTrueWhenYesSelectedOnPuttingScreen', async () => {
-                mockStartRound.mockResolvedValue(1);
-                mockAddRoundPlayers.mockResolvedValue([1]);
-                mockAddMultiplayerHoleScores.mockResolvedValue(true);
-
-                const { getByTestId } = render(<Play />);
-                await startRoundOnHoleOne(getByTestId);
-                await advanceToPuttingPhase(getByTestId);
-
-                fireEvent(getByTestId('gir-switch'), 'valueChange', true);
-                choosePuttDistance(getByTestId, 'first-putt-input', '20');
-                await act(async () => {
-                    fireEvent.press(getByTestId('next-hole-button'));
-                });
-
-                await waitFor(() => {
-                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, true);
-                });
-            });
-
-            it('shouldShowSavedGreenInRegulationWhenPuttingScreenReopened', async () => {
+            it('shouldShowASavedOnePuttWhenThePuttingScreenIsReopened', async () => {
                 mockStartRound.mockResolvedValue(1);
                 mockAddRoundPlayers.mockResolvedValue([1]);
                 mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -742,11 +727,13 @@ describe('Play screen', () => {
                     SecondPuttIsLong: 0, ThirdPuttDistance: undefined, ThirdPuttIsLong: undefined, GreenInRegulation: true,
                 });
 
-                const { getByTestId } = render(<Play />);
+                const { getByTestId, getByText, queryByTestId } = render(<Play />);
                 await startRoundOnHoleOne(getByTestId);
                 await advanceToPuttingPhase(getByTestId);
 
-                expect(getByTestId('gir-switch').props.value).toBe(true);
+                expect(getByText('Holed from')).toBeTruthy();
+                expect(getByTestId('first-putt-value')).toHaveTextContent('20 ft');
+                expect(queryByTestId('second-putt-value')).toBeNull();
                 (getPuttingStatsService as jest.Mock).mockReturnValue(null);
             });
 
@@ -759,13 +746,13 @@ describe('Play screen', () => {
                     SecondPuttIsLong: 0, ThirdPuttDistance: undefined, ThirdPuttIsLong: undefined, GreenInRegulation: false,
                 });
 
-                const { getByTestId, queryByTestId, getByText } = render(<Play />);
+                const { getByTestId, queryByTestId } = render(<Play />);
                 await startRoundOnHoleOne(getByTestId);
                 await advanceToPuttingPhase(getByTestId);
 
-                expect(getByTestId('first-putt-input')).toHaveTextContent('No putt');
-                expect(queryByTestId('second-putt-input')).toBeNull();
-                expect(getByText('Not possible after a chip-in')).toBeTruthy();
+                expect(getByTestId('chip-in-text')).toHaveTextContent('Holed from off the green');
+                expect(queryByTestId('second-putt-value')).toBeNull();
+                expect(queryByTestId('7deadly-sins-auto-row-three-putts')).toBeNull();
                 (getPuttingStatsService as jest.Mock).mockReturnValue(null);
             });
 
@@ -778,8 +765,7 @@ describe('Play screen', () => {
                 await startRoundOnHoleOne(getByTestId);
                 await advanceToPuttingPhase(getByTestId);
 
-                fireEvent.press(getByTestId('first-putt-input'));
-                fireEvent.press(getByTestId('first-putt-input-option-chip-in'));
+                fireEvent.press(getByTestId('putts-option-0'));
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));
                 });
@@ -789,7 +775,7 @@ describe('Play screen', () => {
                 });
             });
 
-            it('shouldSaveGreenInRegulationFalseByDefaultOnPuttingScreen', async () => {
+            it('shouldSaveGreenInRegulationFalseForOnePutt', async () => {
                 mockStartRound.mockResolvedValue(1);
                 mockAddRoundPlayers.mockResolvedValue([1]);
                 mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -798,7 +784,8 @@ describe('Play screen', () => {
                 await startRoundOnHoleOne(getByTestId);
                 await advanceToPuttingPhase(getByTestId);
 
-                choosePuttDistance(getByTestId, 'first-putt-input', '20');
+                fireEvent.press(getByTestId('putts-option-1'));
+                choosePuttDistance(getByTestId, 'first-putt-value', '20');
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));
                 });
@@ -808,7 +795,7 @@ describe('Play screen', () => {
                 });
             });
 
-            it('shouldSaveGreenInRegulationTrueWhenTwoPuttsAndScoreEqualsParWithoutManualToggle', async () => {
+            it('shouldSaveGreenInRegulationTrueWhenTwoPuttsAndScoreEqualsPar', async () => {
                 mockStartRound.mockResolvedValue(1);
                 mockAddRoundPlayers.mockResolvedValue([1]);
                 mockAddMultiplayerHoleScores.mockResolvedValue(true);
@@ -817,9 +804,9 @@ describe('Play screen', () => {
                 await startRoundOnHoleOne(getByTestId);
                 await advanceToPuttingPhase(getByTestId);
 
-                choosePuttDistance(getByTestId, 'first-putt-input', '20');
-                choosePuttDistance(getByTestId, 'second-putt-input', '3');
-                expect(getByTestId('gir-switch').props.value).toBe(true);
+                fireEvent.press(getByTestId('putts-option-2'));
+                choosePuttDistance(getByTestId, 'first-putt-value', '20');
+                choosePuttDistance(getByTestId, 'second-putt-value', '3');
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));
                 });
@@ -839,9 +826,9 @@ describe('Play screen', () => {
                 fireEvent.press(getByTestId('increment-1'));
                 await advanceToPuttingPhase(getByTestId);
 
-                choosePuttDistance(getByTestId, 'first-putt-input', '20');
-                choosePuttDistance(getByTestId, 'second-putt-input', '3');
-                expect(getByTestId('gir-switch').props.value).toBe(false);
+                fireEvent.press(getByTestId('putts-option-2'));
+                choosePuttDistance(getByTestId, 'first-putt-value', '20');
+                choosePuttDistance(getByTestId, 'second-putt-value', '3');
                 await act(async () => {
                     fireEvent.press(getByTestId('next-hole-button'));
                 });

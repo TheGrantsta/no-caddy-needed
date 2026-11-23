@@ -18,8 +18,8 @@ type Props = {
     resetKey?: number;
     // Content shown directly under a sin's row while that sin is marked (e.g. the club used off the tee)
     renderFollowUp?: (slug: string) => ReactNode;
-    // True after a chip-in: a 3-putt is impossible, so the row is locked and any mark is cleared
-    threePuttsDisabled?: boolean;
+    // The 3-putt sin follows the putt count (3+ putts): shown as an automatic row only when it applies, like double bogeys
+    threePuttsFromPuttCount?: boolean;
 };
 
 const INITIAL_SINS: DeadlySinsValues = {
@@ -42,7 +42,7 @@ const sinFields: { slug: string; label: string; key: keyof DeadlySinsValues }[] 
     { slug: 'bogeys-par5', label: 'Bogeys on par 5s', key: 'bogeysPar5' },
 ];
 
-const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues, renderFollowUp, resetKey, threePuttsDisabled = false }: Props) => {
+const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues, renderFollowUp, resetKey, threePuttsFromPuttCount = false }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.deadlySinsTally;
@@ -91,38 +91,29 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAutoDoubleBogey, isAutoBogeyPar5]);
 
+    // Follows the parent's 3-putt value when it changes, for example when the putt count sets it
+    const parentThreePutts = initialValues?.threePutts ?? false;
+    const isAutoThreePutts = threePuttsFromPuttCount && parentThreePutts;
+
     // Rows shown on this hole: bogeys on par 5s only on a par 5, double bogeys only when auto-selected
     const visibleSinFields = sinFields.filter(field => {
         if (field.slug === 'bogeys-par5') return holePar === 5;
         if (field.slug === 'double-bogeys') return isAutoDoubleBogey;
+        if (field.slug === 'three-putts' && threePuttsFromPuttCount) return isAutoThreePutts;
         return true;
     });
 
-    // A 3-putt cannot follow a chip-in, so its mark is forced off while locked
     useEffect(() => {
-        if (!threePuttsDisabled) return;
-        // Clearing the mark is a sync from the putting input, not a user action
+        // The switches mirror the parent's value, which the putt count can change
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setValues(prev => {
-            if (!prev.threePutts) return prev;
-            const next = { ...prev, threePutts: false };
-            onValuesChange?.(next);
-            return next;
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [threePuttsDisabled]);
-
-    const isMarked = (key: keyof DeadlySinsValues) => {
-        if (key === 'threePutts' && threePuttsDisabled) return false;
-        return values[key];
-    };
+        setValues(prev => (prev.threePutts === parentThreePutts ? prev : { ...prev, threePutts: parentThreePutts }));
+    }, [parentThreePutts]);
 
     const handleToggle = useCallback((key: keyof DeadlySinsValues) => {
-        if (key === 'threePutts' && threePuttsDisabled) return;
         const next = { ...values, [key]: !values[key] };
         setValues(next);
         onValuesChange?.(next);
-    }, [values, onValuesChange, threePuttsDisabled]);
+    }, [values, onValuesChange]);
 
     const handleStartRound = () => {
         setRoundActive(true);
@@ -170,6 +161,19 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                             </View>
                         );
                     }
+                    if (field.slug === 'three-putts' && threePuttsFromPuttCount) {
+                        return (
+                            <View key={field.slug} testID="7deadly-sins-auto-row-three-putts" style={[s.row, divider]}>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={s.label}>{field.label}</Text>
+                                    <Text style={s.autoCaption}>Auto: 3 or more putts</Text>
+                                </View>
+                                <View style={s.controls} pointerEvents="none">
+                                    <AppSwitch testID="7deadly-sins-auto-three-putts" value disabled trackColor={{ false: colours.tertiary, true: colours.red }} />
+                                </View>
+                            </View>
+                        );
+                    }
                     if (field.slug === 'double-bogeys') {
                         return (
                             <View key={field.slug} testID="7deadly-sins-auto-row-double-bogeys" style={[s.row, divider]}>
@@ -183,20 +187,18 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                             </View>
                         );
                     }
-                    const marked = isMarked(field.key);
-                    const locked = field.key === 'threePutts' && threePuttsDisabled;
+                    const marked = values[field.key];
                     const followUp = marked ? renderFollowUp?.(field.slug) : null;
                     return (
                         <View key={field.slug}>
                             <TouchableOpacity
                                 testID={`7deadly-sins-toggle-${field.slug}`}
                                 onPress={() => handleToggle(field.key)}
-                                activeOpacity={locked ? 1 : 0.6}
+                                activeOpacity={0.6}
                                 style={[s.tappableRow, divider]}
                             >
                                 <View style={{ flex: 1 }}>
                                     <Text style={[s.label, marked && s.labelMarked]}>{field.label}</Text>
-                                    {locked && <Text style={s.autoCaption}>Not possible after a chip-in</Text>}
                                 </View>
                                 <View style={s.controls}>
                                     <View style={s.controls} pointerEvents="none">

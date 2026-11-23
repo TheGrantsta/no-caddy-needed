@@ -24,66 +24,64 @@ const allFalse: DeadlySinsValues = {
 };
 
 const THREE_PUTTS_TOGGLE = '7deadly-sins-toggle-three-putts';
-const THREE_PUTTS_INDICATOR = '7deadly-sins-indicator-three-putts';
+const AUTO_ROW = '7deadly-sins-auto-row-three-putts';
 
-describe('DeadlySinsTally 3-putt lockout after a chip-in', () => {
-    it('shouldLetThePlayerMark3PuttsWhenNotDisabled', () => {
-        const onValuesChange = jest.fn();
-        const { getByTestId } = render(
-            <DeadlySinsTally roundControlled initialValues={allFalse} onValuesChange={onValuesChange} />
-        );
+describe('DeadlySinsTally 3-putts set by the putt count', () => {
+    it('shouldShowAStandardThreePuttsToggleWhenNotSetByThePuttCount', () => {
+        const { getByTestId } = render(<DeadlySinsTally roundControlled initialValues={allFalse} />);
 
-        fireEvent.press(getByTestId(THREE_PUTTS_TOGGLE));
-
-        expect(onValuesChange).toHaveBeenLastCalledWith(expect.objectContaining({ threePutts: true }));
+        expect(getByTestId(THREE_PUTTS_TOGGLE)).toBeTruthy();
     });
 
-    it('shouldIgnoreTapsOn3PuttsWhenDisabled', () => {
-        const onValuesChange = jest.fn();
-        const { getByTestId } = render(
-            <DeadlySinsTally roundControlled initialValues={allFalse} onValuesChange={onValuesChange} threePuttsDisabled />
+    it('shouldHideThreePuttsBelowThreeSetByThePuttCount', () => {
+        const { queryByTestId } = render(
+            <DeadlySinsTally roundControlled initialValues={allFalse} threePuttsFromPuttCount />
         );
 
-        fireEvent.press(getByTestId(THREE_PUTTS_TOGGLE));
+        expect(queryByTestId(THREE_PUTTS_TOGGLE)).toBeNull();
+        expect(queryByTestId(AUTO_ROW)).toBeNull();
+    });
+
+    it('shouldShowAnAutoThreePuttsRowWhenThePuttCountIsThree', () => {
+        const { getByTestId, getByText } = render(
+            <DeadlySinsTally roundControlled initialValues={{ ...allFalse, threePutts: true }} threePuttsFromPuttCount />
+        );
+
+        expect(getByTestId(AUTO_ROW)).toBeTruthy();
+        expect(getByText('Auto: 3 or more putts')).toBeTruthy();
+        expect(getByTestId('7deadly-sins-auto-three-putts').props.value).toBe(true);
+    });
+
+    it('shouldNotLetThePlayerChangeTheAutoThreePuttsRow', () => {
+        const onValuesChange = jest.fn();
+        const { getByTestId, queryByTestId } = render(
+            <DeadlySinsTally roundControlled initialValues={{ ...allFalse, threePutts: true }} threePuttsFromPuttCount onValuesChange={onValuesChange} />
+        );
+
+        fireEvent.press(getByTestId(AUTO_ROW));
 
         expect(onValuesChange).not.toHaveBeenCalled();
+        expect(queryByTestId(THREE_PUTTS_TOGGLE)).toBeNull();
     });
 
-    it('shouldShow3PuttsAsUnmarkedWhenDisabled', () => {
-        const { getByTestId } = render(
-            <DeadlySinsTally roundControlled initialValues={allFalse} threePuttsDisabled />
+    it('shouldAppearWhenThePuttCountBecomesThree', () => {
+        const { queryByTestId, getByTestId, rerender } = render(
+            <DeadlySinsTally roundControlled initialValues={allFalse} threePuttsFromPuttCount />
         );
+        expect(queryByTestId(AUTO_ROW)).toBeNull();
 
-        expect(getByTestId(THREE_PUTTS_INDICATOR).props.value).toBe(false);
+        rerender(<DeadlySinsTally roundControlled initialValues={{ ...allFalse, threePutts: true }} threePuttsFromPuttCount />);
+
+        expect(getByTestId(AUTO_ROW)).toBeTruthy();
     });
 
-    it('shouldClearAnAlreadyMarked3PuttWhenItBecomesDisabled', () => {
-        const onValuesChange = jest.fn();
-        render(
-            <DeadlySinsTally
-                roundControlled
-                initialValues={{ ...allFalse, threePutts: true }}
-                onValuesChange={onValuesChange}
-                threePuttsDisabled
-            />
+    it('shouldDisappearWhenThePuttCountGoesBelowThree', () => {
+        const { queryByTestId, rerender } = render(
+            <DeadlySinsTally roundControlled initialValues={{ ...allFalse, threePutts: true }} threePuttsFromPuttCount />
         );
 
-        expect(onValuesChange).toHaveBeenLastCalledWith(expect.objectContaining({ threePutts: false }));
-    });
+        rerender(<DeadlySinsTally roundControlled initialValues={allFalse} threePuttsFromPuttCount />);
 
-    it('shouldExplainWhyThe3PuttRowIsLockedWhenDisabled', () => {
-        const { getByText } = render(
-            <DeadlySinsTally roundControlled initialValues={allFalse} threePuttsDisabled />
-        );
-
-        expect(getByText('Not possible after a chip-in')).toBeTruthy();
-    });
-
-    it('shouldNotShowTheChipInExplanationWhen3PuttsEnabled', () => {
-        const { queryByText } = render(
-            <DeadlySinsTally roundControlled initialValues={allFalse} />
-        );
-
-        expect(queryByText('Not possible after a chip-in')).toBeNull();
+        expect(queryByTestId(AUTO_ROW)).toBeNull();
     });
 });

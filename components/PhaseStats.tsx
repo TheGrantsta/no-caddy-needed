@@ -23,12 +23,10 @@ interface Props {
     selectedDoubleChipReason?: string;
     sinDetailsDoubleChipReasonError: boolean;
     onDoubleChipReasonChange: (reason: string) => void;
-    threePuttsDisabled?: boolean;
 }
 
 // The deadly sins card, with each marked sin's follow-up (club, penalty, reason) shown directly under its row
 export default function PhaseStats({
-    threePuttsDisabled = false,
     holeNumber,
     holePar,
     sins,
@@ -86,7 +84,7 @@ export default function PhaseStats({
             initialValues={sins}
             userScore={userScore}
             renderFollowUp={renderFollowUp}
-            threePuttsDisabled={threePuttsDisabled}
+            threePuttsFromPuttCount
         />
     );
 }

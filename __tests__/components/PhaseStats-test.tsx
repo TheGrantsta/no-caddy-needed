@@ -39,24 +39,22 @@ const baseProps = {
     onDoubleChipReasonChange: jest.fn(),
 };
 
-describe('PhaseStats 3-putt lockout', () => {
-    it('shouldPassThreePuttsLockThroughToTheSinsCard', () => {
-        const onSinsChange = jest.fn();
-        const { getByTestId } = render(
-            <PhaseStats {...baseProps} onSinsChange={onSinsChange} threePuttsDisabled />
-        );
+describe('PhaseStats 3-putts', () => {
+    it('shouldShowThreePuttsAsAnAutoRowOnlyWhenThePuttCountIsThree', () => {
+        const { queryByTestId, rerender } = render(<PhaseStats {...baseProps} />);
+        expect(queryByTestId('7deadly-sins-auto-row-three-putts')).toBeNull();
 
-        fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+        rerender(<PhaseStats {...baseProps} sins={{ ...allFalse, threePutts: true }} />);
 
-        expect(onSinsChange).not.toHaveBeenCalledWith(expect.objectContaining({ threePutts: true }));
+        expect(queryByTestId('7deadly-sins-auto-row-three-putts')).toBeTruthy();
     });
 
-    it('shouldLeaveThreePuttsAvailableWhenNotLocked', () => {
+    it('shouldNotLetThePlayerChangeThreePuttsOnTheHoleScreen', () => {
         const onSinsChange = jest.fn();
-        const { getByTestId } = render(<PhaseStats {...baseProps} onSinsChange={onSinsChange} />);
+        const { getByTestId } = render(<PhaseStats {...baseProps} onSinsChange={onSinsChange} sins={{ ...allFalse, threePutts: true }} />);
 
-        fireEvent.press(getByTestId('7deadly-sins-toggle-three-putts'));
+        fireEvent.press(getByTestId('7deadly-sins-auto-row-three-putts'));
 
-        expect(onSinsChange).toHaveBeenLastCalledWith(expect.objectContaining({ threePutts: true }));
+        expect(onSinsChange).not.toHaveBeenCalled();
     });
 });

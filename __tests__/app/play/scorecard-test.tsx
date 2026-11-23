@@ -514,7 +514,7 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('edit-round-hole-1'));
 
-            expect(getByTestId('edit-hole-sin-threePutts')).toBeTruthy();
+            expect(getByTestId('edit-hole-sin-troubleOffTee')).toBeTruthy();
         });
 
         it('calls getHoleDeadlySinsService with correct roundId and holeNumber when hole selected', () => {
@@ -536,7 +536,7 @@ describe('Scorecard screen', () => {
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('edit-round-hole-1'));
-            fireEvent(getByTestId('edit-hole-sin-threePutts'), 'valueChange', true);
+            fireEvent.press(getByTestId('putts-option-3'));
             fireEvent.press(getByTestId('edit-hole-save-button'));
 
             await waitFor(() => {
@@ -579,17 +579,17 @@ describe('Scorecard screen', () => {
                     : null
             );
 
-            const { getByTestId } = render(<ScorecardScreen />);
+            const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('edit-round-hole-1'));
 
-            expect(getByTestId('edit-hole-sin-threePutts').props.value).toBe(true);
+            expect(getByTestId('edit-hole-auto-three-putts').props.value).toBe(true);
 
             fireEvent.press(getByTestId('edit-hole-back-button'));
             fireEvent.press(getByTestId('edit-round-hole-2'));
 
-            expect(getByTestId('edit-hole-sin-threePutts').props.value).toBe(false);
+            expect(queryByTestId('edit-hole-auto-row-three-putts')).toBeNull();
         });
 
         it('clears the hole sheet when cancel edit pressed', () => {
@@ -599,7 +599,7 @@ describe('Scorecard screen', () => {
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('edit-round-hole-1'));
-            fireEvent(getByTestId('edit-hole-sin-threePutts'), 'valueChange', true);
+            fireEvent.press(getByTestId('putts-option-3'));
             fireEvent.press(getByTestId('edit-hole-back-button'));
             fireEvent.press(getByTestId('edit-round-cancel-button'));
             fireEvent.press(getByTestId('edit-scorecard-button'));
@@ -669,7 +669,7 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('edit-scorecard-button'));
 
             fireEvent.press(getByTestId('edit-round-hole-1'));
-            fireEvent(getByTestId('edit-hole-sin-threePutts'), 'valueChange', true);
+            fireEvent.press(getByTestId('putts-option-3'));
             fireEvent.press(getByTestId('edit-hole-save-button'));
             await waitFor(() => {
                 expect(mockReplaceHoleDeadlySinsService).toHaveBeenCalledWith(1, 1, expect.objectContaining(threePuttsSins));
@@ -714,25 +714,6 @@ describe('Scorecard screen', () => {
             await waitFor(() => {
                 expect(mockShow).toHaveBeenCalledWith('Failed to update scorecard', expect.objectContaining({ type: 'danger' }));
             });
-            expect(getByTestId('edit-hole-save-button')).toBeTruthy();
-        });
-
-        it('shouldBlockTheHoleSaveWhenTheFirstPuttIsCleared', async () => {
-            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-            mockGetPuttingStats.mockReturnValue({ Id: 1, RoundId: 1, HoleNumber: 1, FirstPuttDistance: 20, SecondPuttDistance: 5, SecondPuttIsLong: 0 });
-            mockUpdateScorecard.mockResolvedValue(true);
-
-            const { getByTestId } = render(<ScorecardScreen />);
-            fireEvent.press(getByTestId('edit-scorecard-button'));
-            fireEvent.press(getByTestId('edit-round-hole-1'));
-            fireEvent.press(getByTestId('first-putt-input'));
-            fireEvent.press(getByTestId('first-putt-input-option-clear'));
-            fireEvent.press(getByTestId('edit-hole-save-button'));
-
-            await waitFor(() => {
-                expect(mockShow).toHaveBeenCalledWith('Enter the first putt distance', expect.objectContaining({ type: 'danger' }));
-            });
-            expect(mockUpdateScorecard).not.toHaveBeenCalled();
             expect(getByTestId('edit-hole-save-button')).toBeTruthy();
         });
 
@@ -1582,7 +1563,7 @@ describe('Scorecard screen', () => {
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('edit-round-hole-1'));
-            fireEvent(getByTestId('edit-hole-sin-threePutts'), 'valueChange', true); // Not a detail-needing sin
+            fireEvent.press(getByTestId('putts-option-3')); // Not a detail-needing sin
             fireEvent.press(getByTestId('edit-hole-save-button'));
 
             await waitFor(() => {
@@ -1618,7 +1599,7 @@ describe('Scorecard screen', () => {
 
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('edit-round-hole-1'));
-            fireEvent(getByTestId('edit-hole-sin-threePutts'), 'valueChange', true);
+            fireEvent.press(getByTestId('putts-option-3'));
 
             // No detail pickers should show for three-putts
             expect(queryByTestId('club-picker-dropdown-toggle')).toBeNull();
@@ -1635,8 +1616,7 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('edit-round-hole-1'));
 
-            expect(getByTestId('first-putt-input')).toBeTruthy();
-            expect(getByTestId('second-putt-input')).toBeTruthy();
+            expect(getByTestId('putts-option-0')).toBeTruthy();
         });
 
         it('pre-fills existing putting stats when hole is selected', () => {
@@ -1670,7 +1650,7 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('edit-round-hole-1'));
 
-            expect(queryByTestId('first-putt-input')).toBeNull();
+            expect(queryByTestId('first-putt-value')).toBeNull();
         });
 
         it('saves putting stats on confirm save', async () => {
@@ -1704,40 +1684,12 @@ describe('Scorecard screen', () => {
             fireEvent.press(getByTestId('edit-scorecard-button'));
             fireEvent.press(getByTestId('edit-round-hole-1'));
 
-            expect(getByTestId('first-putt-input')).toBeTruthy();
+            expect(getByTestId('first-putt-value')).toBeTruthy();
 
             fireEvent.press(getByTestId('edit-hole-back-button'));
             fireEvent.press(getByTestId('edit-round-cancel-button'));
 
-            expect(queryByTestId('first-putt-input')).toBeNull();
-        });
-
-        describe('first putt is required on scorecard edit', () => {
-            it('shouldBlockSaveAndNotStoreAZeroFirstPuttWhenTheFirstPuttIsCleared', async () => {
-                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
-                mockGetPuttingStats.mockReturnValue({
-                    Id: 1,
-                    RoundId: 1,
-                    HoleNumber: 1,
-                    FirstPuttDistance: 20,
-                    SecondPuttDistance: 5,
-                    SecondPuttIsLong: 0,
-                });
-                mockUpdateScorecard.mockResolvedValue(true);
-
-                const { getByTestId } = render(<ScorecardScreen />);
-                fireEvent.press(getByTestId('edit-scorecard-button'));
-                fireEvent.press(getByTestId('edit-round-hole-1'));
-                fireEvent.press(getByTestId('first-putt-input'));
-                fireEvent.press(getByTestId('first-putt-input-option-clear'));
-                fireEvent.press(getByTestId('edit-hole-save-button'));
-
-                await waitFor(() => {
-                    expect(mockShow).toHaveBeenCalledWith('Enter the first putt distance', expect.objectContaining({ type: 'danger' }));
-                });
-                expect(mockUpdateScorecard).not.toHaveBeenCalled();
-                expect(insertPuttingStatsService).not.toHaveBeenCalled();
-            });
+            expect(queryByTestId('first-putt-value')).toBeNull();
         });
 
         describe('green in regulation on scorecard edit', () => {
@@ -1761,32 +1713,46 @@ describe('Scorecard screen', () => {
                 mockGetPuttingStats.mockReturnValue(null);
             });
 
-            it('shouldShowSavedGreenInRegulationWhenEditingHole', async () => {
+            it('shouldShowTheSavedOnePuttWhenEditingHole', async () => {
                 mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
 
-                const { getByTestId } = render(<ScorecardScreen />);
+                const { getByTestId, getByText } = render(<ScorecardScreen />);
                 fireEvent.press(getByTestId('edit-scorecard-button'));
                 fireEvent.press(getByTestId('edit-round-hole-1'));
 
                 await waitFor(() => {
-                    expect(getByTestId('edit-hole-gir-switch').props.value).toBe(true);
+                    expect(getByText('Holed from')).toBeTruthy();
                 });
+                expect(getByTestId('first-putt-value')).toHaveTextContent('20 ft');
             });
 
-            it('shouldSaveGreenInRegulationWhenToggledOnScorecardEdit', async () => {
+            it('shouldSaveGreenInRegulationFalseWhenTheScoreIsOverPar', async () => {
                 mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
                 mockUpdateScorecard.mockResolvedValue(true);
 
                 const { getByTestId } = render(<ScorecardScreen />);
                 fireEvent.press(getByTestId('edit-scorecard-button'));
                 fireEvent.press(getByTestId('edit-round-hole-1'));
-                await waitFor(() => expect(getByTestId('edit-hole-gir-switch').props.value).toBe(true));
-
-                fireEvent(getByTestId('edit-hole-gir-switch'), 'valueChange', false);
                 fireEvent.press(getByTestId('edit-hole-save-button'));
 
                 await waitFor(() => {
                     expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, false);
+                });
+            });
+
+            it('shouldSaveGreenInRegulationTrueWhenTwoPuttsAndTheScoreIsPar', async () => {
+                mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+                mockGetPuttingStats.mockReturnValue({ ...savedPuttingRow, SecondPuttDistance: 5 });
+                mockUpdateScorecard.mockResolvedValue(true);
+
+                const { getByTestId } = render(<ScorecardScreen />);
+                fireEvent.press(getByTestId('edit-scorecard-button'));
+                fireEvent.press(getByTestId('edit-round-hole-1'));
+                fireEvent.press(getByTestId('edit-hole-strokes-decrement'));
+                fireEvent.press(getByTestId('edit-hole-save-button'));
+
+                await waitFor(() => {
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 5, false, undefined, undefined, true);
                 });
             });
         });
@@ -1900,8 +1866,7 @@ describe('Scorecard edit: chip-in', () => {
         const { getByTestId } = render(<ScorecardScreen />);
         fireEvent.press(getByTestId('edit-scorecard-button'));
         fireEvent.press(getByTestId('edit-round-hole-1'));
-        fireEvent.press(getByTestId('first-putt-input'));
-        fireEvent.press(getByTestId('first-putt-input-option-chip-in'));
+        fireEvent.press(getByTestId('putts-option-0'));
         fireEvent.press(getByTestId('edit-hole-save-button'));
 
         await waitFor(() => {
@@ -1917,8 +1882,7 @@ describe('Scorecard edit: chip-in', () => {
         const { getByTestId } = render(<ScorecardScreen />);
         fireEvent.press(getByTestId('edit-scorecard-button'));
         fireEvent.press(getByTestId('edit-round-hole-1'));
-        fireEvent.press(getByTestId('first-putt-input'));
-        fireEvent.press(getByTestId('first-putt-input-option-chip-in'));
+        fireEvent.press(getByTestId('putts-option-0'));
         fireEvent.press(getByTestId('edit-hole-save-button'));
 
         await waitFor(() => {
@@ -1934,7 +1898,7 @@ describe('Scorecard edit: chip-in', () => {
         fireEvent.press(getByTestId('edit-scorecard-button'));
         fireEvent.press(getByTestId('edit-round-hole-1'));
 
-        expect(getByTestId('first-putt-input')).toHaveTextContent('No putt');
-        expect(queryByTestId('second-putt-input')).toBeNull();
+        expect(getByTestId('chip-in-text')).toHaveTextContent('Holed from off the green');
+        expect(queryByTestId('second-putt-value')).toBeNull();
     });
 });

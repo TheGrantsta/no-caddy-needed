@@ -168,15 +168,11 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 10000
 - tapOn:
     id: "par-4-button"
-# Enter first putt
+# One putt (the score defaults to par, so this is a missed green)
 - runFlow:
     file: subflows/tap-in-page.yaml
     env:
-      ID: "first-putt-input"
-- extendedWaitUntil:
-    visible: "1 ft"
-    timeout: 5000
-- tapOn: "1 ft"
+      ID: "putts-option-1"
 # Select the deadly sin
 - runFlow:
     file: subflows/tap-in-page.yaml
@@ -205,20 +201,11 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 10000
 - tapOn:
     id: "par-4-button"
-# Enter first putt
+# Two putts at par, so the green was hit in regulation (worked out from the score)
 - runFlow:
     file: subflows/tap-in-page-from-below.yaml
     env:
-      ID: "first-putt-input"
-- extendedWaitUntil:
-    visible: "2 ft"
-    timeout: 5000
-- tapOn: "2 ft"
-# Hole hit in regulation
-- runFlow:
-    file: subflows/tap-in-page.yaml
-    env:
-      ID: "gir-switch"
+      ID: "putts-option-2"
 # Select the deadly sin
 - runFlow:
     file: subflows/tap-in-page.yaml
@@ -247,29 +234,20 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 10000
 - tapOn:
     id: "par-4-button"
-# Enter first putt
+# Two strokes over par, so this is a missed green
 - runFlow:
     file: subflows/tap-in-page-from-below.yaml
     env:
-      ID: "first-putt-input"
-- extendedWaitUntil:
-    visible: "3 ft"
-    timeout: 5000
-- tapOn: "3 ft"
-# Enter second putt
+      ID: "increment-1"
 - runFlow:
-    file: subflows/tap-in-page.yaml
+    file: subflows/tap-in-page-from-below.yaml
     env:
-      ID: "second-putt-input"
-- extendedWaitUntil:
-    visible: "1 ft"
-    timeout: 5000
-- tapOn: "1 ft"
-# Select the deadly sin
+      ID: "increment-1"
+# Three putts (turns the 3-putt deadly sin on)
 - runFlow:
-    file: subflows/tap-in-page.yaml
+    file: subflows/tap-in-page-from-below.yaml
     env:
-      ID: "7deadly-sins-toggle-three-putts"
+      ID: "putts-option-3"
 # Complete the hole
 - runFlow:
     file: subflows/tap-in-page.yaml
@@ -284,15 +262,11 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 10000
 - tapOn:
     id: "par-4-button"
-# Enter first putt
+# One putt
 - runFlow:
     file: subflows/tap-in-page-from-below.yaml
     env:
-      ID: "first-putt-input"
-- extendedWaitUntil:
-    visible: "2 ft"
-    timeout: 5000
-- tapOn: "2 ft"
+      ID: "putts-option-1"
 # Select the deadly sin
 - runFlow:
     file: subflows/tap-in-page.yaml
@@ -321,15 +295,11 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 10000
 - tapOn:
     id: "par-4-button"
-# Enter first putt
+# One putt
 - runFlow:
     file: subflows/tap-in-page-from-below.yaml
     env:
-      ID: "first-putt-input"
-- extendedWaitUntil:
-    visible: "3 ft"
-    timeout: 5000
-- tapOn: "3 ft"
+      ID: "putts-option-1"
 # Select the deadly sin
 - runFlow:
     file: subflows/tap-in-page.yaml
@@ -399,7 +369,7 @@ appId: com.grantsta.golf.nocaddyneeded
     timeout: 5000
 - assertVisible:
     id: "up-and-down-rate"
-    text: "100%"
+    text: "75%"
 - assertVisible:
     id: "up-and-down-detail"
-    text: "3 of 3 missed greens"
+    text: "3 of 4 missed greens"

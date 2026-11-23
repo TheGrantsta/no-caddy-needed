@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import PuttingStatsInput from './PuttingStatsInput';
 import { DeadlySinsValues } from '../service/DbService';
+import { PuttCount } from '../utils/puttingEntry';
 
 interface Props {
     holePar: number;
@@ -13,6 +14,7 @@ interface Props {
     puttingSecondPuttRequiredError: boolean;
     showPuttingInfo: boolean;
     onStatsChange: (firstPutt: number | undefined, secondPutt: number | undefined, secondIsLong: boolean, greenInRegulation: boolean) => void;
+    onPuttCountChange: (count: PuttCount) => void;
     onErrorChange: (hasError: boolean) => void;
     onShowInfo: (show: boolean) => void;
 }
@@ -23,8 +25,8 @@ export default function PhasePutting({
     deadlySinsValues,
     puttingStats,
     puttingFirstPuttError,
-    puttingSecondPuttRequiredError,
     onStatsChange,
+    onPuttCountChange,
     onErrorChange,
 }: Props) {
     return (
@@ -34,12 +36,11 @@ export default function PhasePutting({
                 userScore={userScore}
                 threePuttSelected={deadlySinsValues.threePutts}
                 onStatsChange={onStatsChange}
+                onPuttCountChange={onPuttCountChange}
                 initialFirstPutt={puttingStats?.firstPutt}
                 initialSecondPutt={puttingStats?.secondPutt}
                 initialSecondIsLong={puttingStats?.secondIsLong ?? false}
-                initialGreenInRegulation={puttingStats?.greenInRegulation ?? false}
                 showFirstPuttError={puttingFirstPuttError}
-                showSecondPuttRequiredError={puttingSecondPuttRequiredError}
                 onSecondPuttErrorChange={onErrorChange}
             />
         </View>

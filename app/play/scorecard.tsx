@@ -39,7 +39,8 @@ import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { formatLongDate } from '../../utils/drillHistory';
 import { countHolePutts } from '../../utils/puttCount';
-import { CHIP_IN_VALUE } from '../../components/PuttDistancePicker';
+import type { PuttingEntryValue } from '../../components/PuttingEntry';
+import { greenInRegulation, puttCountFor, statsForPutts } from '../../utils/puttingEntry';
 import { useOrientation } from '../../hooks/useOrientation';
 
 type ScorecardSaveResult = Awaited<ReturnType<typeof saveScorecardEditsService>>;
@@ -219,6 +220,17 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     };
 
     // Writes the score changes, the hole open in the sheet (sins and putts) and, when given, the round's date
+    // The stored green in regulation follows the score as it is at save time
+    const puttingStatsForSave = () => {
+        const stats = edit.puttingStats;
+        if (!stats || !multiplayerScorecard) return stats ?? null;
+        const userId = multiplayerScorecard.players.find(p => p.IsUser === 1)?.Id;
+        const userHole = edit.editedScores.find(h => h.RoundPlayerId === userId && h.HoleNumber === edit.sinsHoleNumber);
+        if (!userHole) return stats;
+        const putts = puttCountFor({ firstPutt: stats.firstPutt, secondPutt: stats.secondPutt, threePutts: edit.editedSins?.threePutts ?? false });
+        return { ...stats, greenInRegulation: greenInRegulation({ putts, score: userHole.Score, par: userHole.HolePar }) };
+    };
+
     const persistEdits = async (newStartTime: Date | null): Promise<ScorecardSaveResult> => {
         if (!multiplayerScorecard) return 'failed';
         return saveScorecardEditsService({
@@ -235,7 +247,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                     doubleChipsReason: edit.selectedDoubleChipReason,
                 },
                 hadPriorSinDetails: edit.hadPriorSinDetails,
-                puttingStats: edit.puttingStats,
+                puttingStats: puttingStatsForSave(),
             },
             newStartTime,
         });
@@ -409,30 +421,16 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         if (delta > 0) handleIncrement(); else handleDecrement();
     };
 
-    const handlePuttText = (field: 'firstPutt' | 'secondPutt', text: string) => {
-        // A chip-in: no second putt, never green in regulation, and no 3-putt
-        if (field === 'firstPutt' && text === CHIP_IN_VALUE) {
-            edit.setPuttingStats({ firstPutt: 0, secondPutt: 0, secondIsLong: false, greenInRegulation: false });
-            edit.setEditedSins({ ...(edit.editedSins ?? INITIAL_SINS), threePutts: false });
-            return;
-        }
-        const value = text === '' ? undefined : Number(text);
-        edit.setPuttingStats(prev => ({
-            firstPutt: prev?.firstPutt,
-            secondPutt: prev?.secondPutt,
-            secondIsLong: prev?.secondIsLong ?? false,
-            greenInRegulation: prev?.greenInRegulation ?? false,
-            [field]: value,
-        }));
-    };
-
-    const handleGreenInRegulationEdit = (value: boolean) => {
-        edit.setPuttingStats(prev => ({
-            firstPutt: prev?.firstPutt,
-            secondPutt: prev?.secondPutt,
-            secondIsLong: prev?.secondIsLong ?? false,
-            greenInRegulation: value,
-        }));
+    // The putting section: the count and distances are stored, and 3+ putts turns the 3-putt sin on (below 3, off)
+    const handlePuttingEntryChange = (value: PuttingEntryValue) => {
+        const stats = statsForPutts(value);
+        edit.setPuttingStats({
+            firstPutt: stats.firstPutt,
+            secondPutt: stats.secondPutt,
+            secondIsLong: stats.secondIsLong,
+            greenInRegulation: edit.puttingStats?.greenInRegulation ?? false,
+        });
+        edit.setEditedSins({ ...(edit.editedSins ?? INITIAL_SINS), threePutts: value.putts >= 3 });
     };
 
     const handleSinToggle = (key: keyof DeadlySinsValues, value: boolean) => {
@@ -505,9 +503,12 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                             holeNumber={selectedEditHole.HoleNumber}
                                             par={selectedEditHole.HolePar}
                                             strokes={selectedEditHole.Score}
-                                            firstPutt={edit.puttingStats?.firstPutt?.toString() ?? ''}
-                                            secondPutt={edit.puttingStats?.secondPutt?.toString() ?? ''}
-                                            greenInRegulation={edit.puttingStats?.greenInRegulation ?? false}
+                                            putting={{
+                                                putts: puttCountFor({ firstPutt: edit.puttingStats?.firstPutt, secondPutt: edit.puttingStats?.secondPutt, threePutts: edit.editedSins?.threePutts ?? false }),
+                                                firstPutt: edit.puttingStats?.firstPutt,
+                                                secondPutt: edit.puttingStats?.secondPutt,
+                                                secondIsLong: edit.puttingStats?.secondIsLong ?? false,
+                                            }}
                                             sins={edit.editedSins ?? INITIAL_SINS}
                                             otherPlayers={editOtherPlayers}
                                             onOtherStrokesChange={(playerId, delta) => stepStrokes(selectedEditHole.HoleNumber, playerId, delta)}
@@ -515,9 +516,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                             onSave={handleSaveHole}
                                             onParChange={handleParChange}
                                             onStrokesChange={handleStrokesStep}
-                                            onFirstPuttChange={(text) => handlePuttText('firstPutt', text)}
-                                            onSecondPuttChange={(text) => handlePuttText('secondPutt', text)}
-                                            onGreenInRegulationChange={handleGreenInRegulationEdit}
+                                            onPuttingChange={handlePuttingEntryChange}
                                             onSinChange={handleSinToggle}
                                             showStats={showStats}
                                              renderFollowUp={(key) => {

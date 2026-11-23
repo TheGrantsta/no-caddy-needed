@@ -65,6 +65,7 @@ import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 import { isTripleBogeyOrWorse } from '../../utils/scoring';
 import { hasSinDetails } from '../../utils/deadlySins';
+import type { PuttCount } from '../../utils/puttingEntry';
 
 const BAD_HOLE_MESSAGES = [
     'A triple bogey isn\'t the end of the round — plenty of golf left.',
@@ -507,6 +508,11 @@ export default function Play() {
         setDeadlySinsValues(values);
     };
 
+    // Three or more putts turns the 3-putt deadly sin on; going back below three turns it off
+    const handlePuttCountChange = (count: PuttCount) => {
+        handleDeadlySinsValuesChange({ ...deadlySinsValues, threePutts: count >= 3 });
+    };
+
     // Reads the current distances and wedge chart each time the yardages open, so edits show straight away
     const handleOpenBag = () => {
         setBagClubs(getClubDistancesService());
@@ -642,6 +648,7 @@ export default function Play() {
                                                 if (firstPutt !== undefined) setPuttingFirstPuttError(false);
                                                 if (secondPutt !== undefined) setPuttingSecondPuttRequiredError(false);
                                             }}
+                                            onPuttCountChange={handlePuttCountChange}
                                             onErrorChange={setPuttingSecondPuttError}
                                             onShowInfo={setShowPuttingInfo}
                                         />
@@ -652,7 +659,6 @@ export default function Play() {
                                             holePar={currentHoleData?.holePar ?? 4}
                                             sins={deadlySinsValues}
                                             onSinsChange={handleDeadlySinsValuesChange}
-                                            threePuttsDisabled={puttingStats?.firstPutt === 0}
                                             players={players}
                                             userScore={currentHoleData?.scores.find(s => {
                                                 const player = players.find(p => p.Id === s.playerId);

@@ -103,18 +103,14 @@ appId: com.grantsta.golf.nocaddyneeded
 # Complete one hole with stats so the round has data for Stats.
 # The putting card and the deadly sins sit on the same scrolling page, so fill them in before one scroll to Next.
 
-# Enter the first putt
+# One putt (the first putt distance defaults to 10 ft)
 - scrollUntilVisible:
     element:
-      id: "first-putt-input"
+      id: "putts-option-1"
     direction: DOWN
     timeout: 20000
 - tapOn:
-    id: "first-putt-input"
-- extendedWaitUntil:
-    visible: "1 ft"
-    timeout: 5000
-- tapOn: "1 ft"
+    id: "putts-option-1"
 
 # Select the deadly sin "Trouble off tee"
 - scrollUntilVisible:

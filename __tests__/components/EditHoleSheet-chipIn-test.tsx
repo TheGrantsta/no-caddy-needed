@@ -4,14 +4,20 @@ import EditHoleSheet from '../../components/EditHoleSheet';
 
 const noSins = { troubleOffTee: false, penalties: false, threePutts: false, bogeysInside9Iron: false, doubleChips: false, doubleBogeys: false, bogeysPar5: false };
 
+jest.mock('@/hooks/useStyles', () => ({
+    useStyles: () => require('../../assets/styles').default,
+}));
+
+jest.mock('@/context/ThemeContext', () => ({
+    useThemeColours: () => require('../../assets/colours').default,
+}));
+
 const renderSheet = (overrides: object = {}) => {
     const handlers = {
         onBack: jest.fn(),
         onParChange: jest.fn(),
         onStrokesChange: jest.fn(),
-        onFirstPuttChange: jest.fn(),
-        onSecondPuttChange: jest.fn(),
-        onGreenInRegulationChange: jest.fn(),
+        onPuttingChange: jest.fn(),
         onSinChange: jest.fn(),
         onSave: jest.fn(),
     };
@@ -20,9 +26,7 @@ const renderSheet = (overrides: object = {}) => {
             holeNumber={3}
             par={4}
             strokes={4}
-            firstPutt="18"
-            secondPutt="2"
-            greenInRegulation={false}
+            putting={{ putts: 2, firstPutt: 18, secondPutt: 2, secondIsLong: false }}
             sins={noSins as any}
             {...handlers}
             {...overrides}
@@ -32,52 +36,37 @@ const renderSheet = (overrides: object = {}) => {
 };
 
 describe('EditHoleSheet chip-in', () => {
-    it('shouldOfferChipInInTheFirstPuttPicker', () => {
-        const { getByTestId } = renderSheet();
+    it('shouldShowTheChipInTextForZeroPutts', () => {
+        const { getByTestId } = renderSheet({ putting: { putts: 0, firstPutt: 0, secondPutt: 0, secondIsLong: false } });
 
-        fireEvent.press(getByTestId('first-putt-input'));
-
-        expect(getByTestId('first-putt-input-option-chip-in')).toHaveTextContent('No putt');
+        expect(getByTestId('chip-in-text')).toHaveTextContent('Holed from off the green');
     });
 
-    it('shouldShowChipInLabelWhenFirstPuttIsZero', () => {
-        const { getByTestId } = renderSheet({ firstPutt: '0', secondPutt: '' });
+    it('shouldReportTheChipInWhenZeroPuttsIsPressed', () => {
+        const { getByTestId, onPuttingChange } = renderSheet();
 
-        expect(getByTestId('first-putt-input')).toHaveTextContent('No putt');
+        fireEvent.press(getByTestId('putts-option-0'));
+
+        expect(onPuttingChange).toHaveBeenCalledWith(expect.objectContaining({ putts: 0 }));
     });
 
-    it('shouldHideSecondPuttWhenFirstPuttIsChipIn', () => {
-        const { queryByTestId } = renderSheet({ firstPutt: '0', secondPutt: '' });
-
-        expect(queryByTestId('second-putt-input')).toBeNull();
-    });
-
-    it('shouldKeepSecondPuttVisibleForARegularFirstPutt', () => {
-        const { getByTestId } = renderSheet({ firstPutt: '18', secondPutt: '2' });
-
-        expect(getByTestId('second-putt-input')).toBeTruthy();
-    });
-
-    it('shouldShowThreePuttsAsUnmarkedAndLockedWhenFirstPuttIsChipIn', () => {
-        const { getByTestId, getByText } = renderSheet({
-            firstPutt: '0',
-            secondPutt: '',
-            sins: { ...noSins, threePutts: true } as any,
+    it('shouldHideThreePuttsForAChipIn', () => {
+        const { queryByTestId, getByTestId } = renderSheet({
+            putting: { putts: 0, firstPutt: 0, secondPutt: 0, secondIsLong: false },
+            sins: { ...noSins, threePutts: false } as any,
         });
 
-        expect(getByTestId('edit-hole-sin-threePutts').props.value).toBe(false);
-        expect(getByTestId('edit-hole-sin-threePutts').props.disabled).toBe(true);
-        expect(getByText('Not possible after a chip-in')).toBeTruthy();
+        expect(queryByTestId('edit-hole-sin-threePutts')).toBeNull();
+        expect(queryByTestId('edit-hole-auto-row-three-putts')).toBeNull();
+        expect(getByTestId('chip-in-text')).toBeTruthy();
     });
 
-    it('shouldShowThreePuttsAsMarkedAndUnlockedForARegularFirstPutt', () => {
-        const { getByTestId } = renderSheet({
-            firstPutt: '18',
-            secondPutt: '2',
-            sins: { ...noSins, threePutts: true } as any,
-        });
+    it('shouldShowAnAutoThreePuttsRowWhenThePuttCountIsThree', () => {
+        const { getByTestId, getByText } = renderSheet({ sins: { ...noSins, threePutts: true } as any });
 
-        expect(getByTestId('edit-hole-sin-threePutts').props.value).toBe(true);
-        expect(getByTestId('edit-hole-sin-threePutts').props.disabled).toBeFalsy();
+        expect(getByTestId('edit-hole-auto-row-three-putts')).toBeTruthy();
+        expect(getByText('Auto: 3 or more putts')).toBeTruthy();
+        expect(getByTestId('edit-hole-auto-three-putts').props.value).toBe(true);
+        expect(getByTestId('edit-hole-auto-three-putts').props.disabled).toBe(true);
     });
 });

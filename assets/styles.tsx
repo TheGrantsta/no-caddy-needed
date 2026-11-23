@@ -600,56 +600,6 @@ export const createStyles = (c: ThemeColours) => ({
         },
     }),
 
-    puttPicker: StyleSheet.create({
-        box: {
-            width: 84,
-            backgroundColor: c.tertiary + '26',
-            borderRadius: 10,
-            paddingVertical: 10,
-            alignItems: 'center',
-        },
-        boxError: {
-            borderWidth: 1,
-            borderColor: c.red,
-        },
-        column: {
-            width: 84,
-        },
-        boxText: {
-            fontSize: fontSizes.normal,
-        },
-        inlineList: {
-            width: 84,
-            maxHeight: 220,
-            marginTop: 6,
-            backgroundColor: c.backgroundLight,
-            borderRadius: 10,
-            overflow: 'hidden',
-        },
-        option: {
-            paddingVertical: 14,
-            paddingHorizontal: 16,
-            borderBottomWidth: StyleSheet.hairlineWidth,
-            borderBottomColor: c.tertiary + '66',
-        },
-        optionSelected: {
-            backgroundColor: c.primary + '1F',
-        },
-        optionText: {
-            color: c.black,
-            fontSize: fontSizes.normal,
-            textAlign: 'center',
-        },
-        // "No putt" is wider than the list's text area at the normal size, so it is set smaller
-        chipInText: {
-            fontSize: fontSizes.smallestText,
-        },
-        clearText: {
-            color: c.red,
-            fontSize: fontSizes.normal,
-            textAlign: 'center',
-        },
-    }),
 
     roundSummary: StyleSheet.create({
         screen: {

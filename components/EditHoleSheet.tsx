@@ -3,8 +3,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
-import PuttDistancePicker, { CHIP_IN_VALUE } from './PuttDistancePicker';
+import PuttingEntry, { PuttingEntryValue } from './PuttingEntry';
 import AppSwitch from './AppSwitch';
+import { PuttCount } from '../utils/puttingEntry';
 
 type Sins = {
     troubleOffTee: boolean;
@@ -18,18 +19,14 @@ type Props = {
     holeNumber: number;
     par: number;
     strokes: number;
-    firstPutt: string;
-    secondPutt: string;
-    greenInRegulation: boolean;
+    putting: { putts?: PuttCount; firstPutt?: number; secondPutt?: number; secondIsLong: boolean };
     sins: Sins & Record<string, boolean>;
     onBack: () => void;
     // Saves this hole only; the round sheet is not involved
     onSave: () => void;
     onParChange: (par: number) => void;
     onStrokesChange: (delta: number) => void;
-    onFirstPuttChange: (value: string) => void;
-    onSecondPuttChange: (value: string) => void;
-    onGreenInRegulationChange: (value: boolean) => void;
+    onPuttingChange: (value: PuttingEntryValue) => void;
     onSinChange: (key: keyof Sins, value: boolean) => void;
     // Score-only rounds record just the strokes, so putting and sins are hidden
     showStats?: boolean;
@@ -55,17 +52,13 @@ export default function EditHoleSheet({
     holeNumber,
     par,
     strokes,
-    firstPutt,
-    secondPutt,
-    greenInRegulation,
+    putting,
     sins,
     onBack,
     onSave,
     onParChange,
     onStrokesChange,
-    onFirstPuttChange,
-    onSecondPuttChange,
-    onGreenInRegulationChange,
+    onPuttingChange,
     onSinChange,
     showStats = true,
     renderFollowUp,
@@ -75,8 +68,6 @@ export default function EditHoleSheet({
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.editHole;
-    // A chip-in (first putt = 0) has no second putt and no 3-putt
-    const isChipIn = firstPutt === CHIP_IN_VALUE;
 
     return (
         <View>
@@ -148,55 +139,42 @@ export default function EditHoleSheet({
                 <>
                 <Text style={s.sectionLabel}>PUTTING</Text>
                 <View style={s.card}>
-                    <View style={s.row}>
-                        <Text style={s.rowLabel}>1st putt</Text>
-                        <View style={s.puttValue}>
-                            <PuttDistancePicker testID="first-putt-input" value={firstPutt} maxDistance={100} onChange={onFirstPuttChange} allowChipIn />
-                            <Text style={s.unit}>ft</Text>
-                        </View>
-                    </View>
-                    <View style={s.divider} />
-                    {!isChipIn && (
-                        <>
-                        <View style={s.row}>
-                            <Text style={s.rowLabel}>2nd putt</Text>
-                            <View style={s.puttValue}>
-                                <PuttDistancePicker testID="second-putt-input" value={secondPutt} maxDistance={100} onChange={onSecondPuttChange} />
-                                <Text style={s.unit}>ft</Text>
-                            </View>
-                        </View>
-                        <View style={s.divider} />
-                        </>
-                    )}
-                    <View style={s.row}>
-                        <Text style={s.rowLabel}>Green in regulation</Text>
-                        <AppSwitch
-                            testID="edit-hole-gir-switch"
-                            value={greenInRegulation}
-                            onValueChange={onGreenInRegulationChange}
-                            thumbColor={colours.white}
-                        />
-                    </View>
+                    <PuttingEntry
+                        putts={putting.putts}
+                        firstPutt={putting.firstPutt}
+                        secondPutt={putting.secondPutt}
+                        secondIsLong={putting.secondIsLong}
+                        onChange={onPuttingChange}
+                    />
                 </View>
 
                 <Text style={s.sectionLabel}>DEADLY SINS</Text>
                 <View style={s.card}>
-                    {SIN_ROWS.map((row, index) => {
-                        // A 3-putt cannot follow a chip-in, so its switch is locked off
-                        const locked = isChipIn && row.key === 'threePutts';
-                        const marked = !locked && sins[row.key];
+                    {/* The 3-putt sin follows the putt count: it shows as an automatic row only at 3+ putts, like double bogeys on the hole screen */}
+                    {SIN_ROWS.filter(row => row.key !== 'threePutts' || sins.threePutts).map((row, index) => {
+                        if (row.key === 'threePutts') {
+                            return (
+                                <View key={row.key} testID="edit-hole-auto-row-three-putts">
+                                    {index > 0 && <View style={s.divider} />}
+                                    <View style={s.row}>
+                                        <View style={{ flex: 1 }}>
+                                            <Text style={s.rowLabel}>{row.label}</Text>
+                                            <Text style={styles.deadlySinsTally.autoCaption}>Auto: 3 or more putts</Text>
+                                        </View>
+                                        <AppSwitch testID="edit-hole-auto-three-putts" value disabled thumbColor={colours.white} />
+                                    </View>
+                                </View>
+                            );
+                        }
+                        const marked = sins[row.key];
                         return (
                         <View key={row.key}>
                             {index > 0 && <View style={s.divider} />}
                             <View style={s.row}>
-                                <View style={{ flex: 1 }}>
-                                    <Text style={s.rowLabel}>{row.label}</Text>
-                                    {locked && <Text style={styles.deadlySinsTally.autoCaption}>Not possible after a chip-in</Text>}
-                                </View>
+                                <Text style={s.rowLabel}>{row.label}</Text>
                                 <AppSwitch
                                     testID={`edit-hole-sin-${row.key}`}
                                     value={marked}
-                                    disabled={locked}
                                     onValueChange={value => onSinChange(row.key, value)}
                                     thumbColor={colours.white}
                                 />

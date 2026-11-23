@@ -10,9 +10,7 @@ const renderSheet = (overrides: object = {}) => {
         onBack: jest.fn(),
         onParChange: jest.fn(),
         onStrokesChange: jest.fn(),
-        onFirstPuttChange: jest.fn(),
-        onSecondPuttChange: jest.fn(),
-        onGreenInRegulationChange: jest.fn(),
+        onPuttingChange: jest.fn(),
         onSinChange: jest.fn(),
         onSave: jest.fn(),
     };
@@ -21,9 +19,7 @@ const renderSheet = (overrides: object = {}) => {
             holeNumber={3}
             par={4}
             strokes={4}
-            firstPutt="18"
-            secondPutt="2"
-            greenInRegulation={false}
+            putting={{ putts: 2, firstPutt: 18, secondPutt: 2, secondIsLong: false }}
             sins={sins as any}
             {...handlers}
             {...overrides}
@@ -97,20 +93,25 @@ describe('EditHoleSheet', () => {
         expect(onStrokesChange).toHaveBeenNthCalledWith(2, -1);
     });
 
-    it('shouldShowTheFirstAndSecondPuttDistances', () => {
+    it('shouldShowThePuttingEntryForTheHole', () => {
         const { getByTestId } = renderSheet();
 
-        expect(getByTestId('first-putt-input')).toHaveTextContent('18');
-        expect(getByTestId('second-putt-input')).toHaveTextContent('2');
+        expect(getByTestId('putts-option-2')).toBeTruthy();
+        expect(getByTestId('second-putt-value')).toHaveTextContent('2 ft');
     });
 
-    it('shouldShowGreenInRegulationAsASwitchAndReportItsChange', () => {
-        const { getByTestId, onGreenInRegulationChange } = renderSheet({ greenInRegulation: false });
+    it('shouldReportAChangeToThePuttingEntry', () => {
+        const { getByTestId, onPuttingChange } = renderSheet();
 
-        expect(getByTestId('edit-hole-gir-switch').props.value).toBe(false);
-        fireEvent(getByTestId('edit-hole-gir-switch'), 'valueChange', true);
+        fireEvent.press(getByTestId('putts-option-1'));
 
-        expect(onGreenInRegulationChange).toHaveBeenCalledWith(true);
+        expect(onPuttingChange).toHaveBeenCalledWith({ putts: 1, firstPutt: 18, secondPutt: 2, secondIsLong: false });
+    });
+
+    it('shouldHaveNoGreenInRegulationSwitch', () => {
+        const { queryByTestId } = renderSheet();
+
+        expect(queryByTestId('edit-hole-gir-switch')).toBeNull();
     });
 
     it('shouldShowTheFiveDeadlySinSwitchesAndReportChanges', () => {
@@ -118,7 +119,7 @@ describe('EditHoleSheet', () => {
 
         expect(getByText('Trouble off tee')).toBeTruthy();
         expect(getByText('3-putts')).toBeTruthy();
-        expect(getByTestId('edit-hole-sin-threePutts').props.value).toBe(true);
+        expect(getByTestId('edit-hole-auto-three-putts').props.value).toBe(true);
 
         fireEvent(getByTestId('edit-hole-sin-troubleOffTee'), 'valueChange', true);
 
@@ -131,8 +132,7 @@ describe('EditHoleSheet', () => {
         expect(getByTestId('edit-hole-strokes-value')).toBeTruthy();
         expect(queryByText('PUTTING')).toBeNull();
         expect(queryByText('DEADLY SINS')).toBeNull();
-        expect(queryByTestId('first-putt-input')).toBeNull();
-        expect(queryByTestId('edit-hole-gir-switch')).toBeNull();
+        expect(queryByTestId('putts-option-2')).toBeNull();
         expect(queryByTestId('edit-hole-sin-threePutts')).toBeNull();
     });
 
@@ -141,7 +141,7 @@ describe('EditHoleSheet', () => {
 
         expect(getByText('PUTTING')).toBeTruthy();
         expect(getByText('DEADLY SINS')).toBeTruthy();
-        expect(getByTestId('edit-hole-gir-switch')).toBeTruthy();
+        expect(getByTestId('putts-option-2')).toBeTruthy();
     });
 
     it('shouldShowTheFollowUpUnderASinOnlyWhileItIsTicked', () => {

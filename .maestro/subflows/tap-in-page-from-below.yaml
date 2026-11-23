@@ -1,0 +1,12 @@
+appId: com.grantsta.golf.nocaddyneeded
+---
+# Like tap-in-page.yaml, but for an element that sits ABOVE the current scroll position
+# (for example the first putt box after the previous hole's Next button left the page scrolled down).
+# Pass the element's test ID as the ID env value, e.g. env: { ID: "first-putt-input" }
+- scrollUntilVisible:
+    element:
+      id: "${ID}"
+    direction: UP
+    timeout: 20000
+- tapOn:
+    id: "${ID}"

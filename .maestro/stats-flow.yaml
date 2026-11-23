@@ -207,7 +207,7 @@ appId: com.grantsta.golf.nocaddyneeded
     id: "par-4-button"
 # Enter first putt
 - runFlow:
-    file: subflows/tap-in-page.yaml
+    file: subflows/tap-in-page-from-below.yaml
     env:
       ID: "first-putt-input"
 - extendedWaitUntil:
@@ -249,7 +249,7 @@ appId: com.grantsta.golf.nocaddyneeded
     id: "par-4-button"
 # Enter first putt
 - runFlow:
-    file: subflows/tap-in-page.yaml
+    file: subflows/tap-in-page-from-below.yaml
     env:
       ID: "first-putt-input"
 - extendedWaitUntil:
@@ -286,7 +286,7 @@ appId: com.grantsta.golf.nocaddyneeded
     id: "par-4-button"
 # Enter first putt
 - runFlow:
-    file: subflows/tap-in-page.yaml
+    file: subflows/tap-in-page-from-below.yaml
     env:
       ID: "first-putt-input"
 - extendedWaitUntil:
@@ -323,7 +323,7 @@ appId: com.grantsta.golf.nocaddyneeded
     id: "par-4-button"
 # Enter first putt
 - runFlow:
-    file: subflows/tap-in-page.yaml
+    file: subflows/tap-in-page-from-below.yaml
     env:
       ID: "first-putt-input"
 - extendedWaitUntil:

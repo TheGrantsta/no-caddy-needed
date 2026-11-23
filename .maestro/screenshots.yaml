@@ -205,8 +205,15 @@ appId: com.grantsta.golf.nocaddyneeded
       id: "distances-back-button"
     timeout: 5000
 - waitForAnimationToEnd
-- tapOn:
-    id: "distances-back-button"
+# A back tap can be lost while the screen is still settling, so retry it until My Bag is showing
+- repeat:
+    while:
+      notVisible:
+        id: "bag-row-wedge-chart"
+    commands:
+      - tapOn:
+          id: "distances-back-button"
+      - waitForAnimationToEnd
 # Confirm the back tap really returned to My Bag before moving on
 - extendedWaitUntil:
     visible:
@@ -231,8 +238,16 @@ appId: com.grantsta.golf.nocaddyneeded
     visible: "Carry distance, not total"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/02C-play-wedge-chart
-- tapOn:
-    id: "wedge-back-button"
+- waitForAnimationToEnd
+# Retry the back tap if it was lost, until My Bag is showing
+- repeat:
+    while:
+      notVisible:
+        id: "bag-row-wedge-chart"
+    commands:
+      - tapOn:
+          id: "wedge-back-button"
+      - waitForAnimationToEnd
 # Confirm the back tap really returned to My Bag before moving on
 - extendedWaitUntil:
     visible:
@@ -270,10 +285,10 @@ appId: com.grantsta.golf.nocaddyneeded
 # Screenshot 6: Tools
 - tapOn:
     id: "practice-sub-menu-tools"
-- extendedWaitUntil:
-    visible:
-      id: "tool-link-tempo"
-    timeout: 5000
+# The tool cards are links whose contents Maestro cannot match on iOS (neither ID nor text),
+# so wait for the Tools section's animation to finish instead
+- waitForAnimationToEnd:
+    timeout: 3000
 - takeScreenshot: .maestro/screenshots/03B-practice-tools
 
 # Screenshot 7: History

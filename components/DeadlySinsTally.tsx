@@ -18,6 +18,8 @@ type Props = {
     resetKey?: number;
     // Content shown directly under a sin's row while that sin is marked (e.g. the club used off the tee)
     renderFollowUp?: (slug: string) => ReactNode;
+    // True after a chip-in: a 3-putt is impossible, so the row is locked and any mark is cleared
+    threePuttsDisabled?: boolean;
 };
 
 const INITIAL_SINS: DeadlySinsValues = {
@@ -40,7 +42,7 @@ const sinFields: { slug: string; label: string; key: keyof DeadlySinsValues }[] 
     { slug: 'bogeys-par5', label: 'Bogeys on par 5s', key: 'bogeysPar5' },
 ];
 
-const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues, renderFollowUp, resetKey }: Props) => {
+const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onValuesChange, holePar, userScore, initialValues, renderFollowUp, resetKey, threePuttsDisabled = false }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.deadlySinsTally;
@@ -96,11 +98,31 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
         return true;
     });
 
+    // A 3-putt cannot follow a chip-in, so its mark is forced off while locked
+    useEffect(() => {
+        if (!threePuttsDisabled) return;
+        // Clearing the mark is a sync from the putting input, not a user action
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setValues(prev => {
+            if (!prev.threePutts) return prev;
+            const next = { ...prev, threePutts: false };
+            onValuesChange?.(next);
+            return next;
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [threePuttsDisabled]);
+
+    const isMarked = (key: keyof DeadlySinsValues) => {
+        if (key === 'threePutts' && threePuttsDisabled) return false;
+        return values[key];
+    };
+
     const handleToggle = useCallback((key: keyof DeadlySinsValues) => {
+        if (key === 'threePutts' && threePuttsDisabled) return;
         const next = { ...values, [key]: !values[key] };
         setValues(next);
         onValuesChange?.(next);
-    }, [values, onValuesChange]);
+    }, [values, onValuesChange, threePuttsDisabled]);
 
     const handleStartRound = () => {
         setRoundActive(true);
@@ -161,21 +183,26 @@ const DeadlySinsTally = ({ onEndRound, onRoundStateChange, roundControlled, onVa
                             </View>
                         );
                     }
-                    const followUp = values[field.key] ? renderFollowUp?.(field.slug) : null;
+                    const marked = isMarked(field.key);
+                    const locked = field.key === 'threePutts' && threePuttsDisabled;
+                    const followUp = marked ? renderFollowUp?.(field.slug) : null;
                     return (
                         <View key={field.slug}>
                             <TouchableOpacity
                                 testID={`7deadly-sins-toggle-${field.slug}`}
                                 onPress={() => handleToggle(field.key)}
-                                activeOpacity={0.6}
+                                activeOpacity={locked ? 1 : 0.6}
                                 style={[s.tappableRow, divider]}
                             >
-                                <Text style={[s.label, values[field.key] && s.labelMarked]}>{field.label}</Text>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={[s.label, marked && s.labelMarked]}>{field.label}</Text>
+                                    {locked && <Text style={s.autoCaption}>Not possible after a chip-in</Text>}
+                                </View>
                                 <View style={s.controls}>
                                     <View style={s.controls} pointerEvents="none">
                                         <AppSwitch
                                             testID={`7deadly-sins-indicator-${field.slug}`}
-                                            value={values[field.key]}
+                                            value={marked}
                                         />
                                     </View>
                                 </View>

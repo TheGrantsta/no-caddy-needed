@@ -640,6 +640,10 @@ export const createStyles = (c: ThemeColours) => ({
             fontSize: fontSizes.normal,
             textAlign: 'center',
         },
+        // "No putt" is wider than the list's text area at the normal size, so it is set smaller
+        chipInText: {
+            fontSize: fontSizes.smallestText,
+        },
         clearText: {
             color: c.red,
             fontSize: fontSizes.normal,

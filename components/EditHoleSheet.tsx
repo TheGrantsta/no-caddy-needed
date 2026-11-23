@@ -3,7 +3,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
-import PuttDistancePicker from './PuttDistancePicker';
+import PuttDistancePicker, { CHIP_IN_VALUE } from './PuttDistancePicker';
 import AppSwitch from './AppSwitch';
 
 type Sins = {
@@ -75,6 +75,8 @@ export default function EditHoleSheet({
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.editHole;
+    // A chip-in (first putt = 0) has no second putt and no 3-putt
+    const isChipIn = firstPutt === CHIP_IN_VALUE;
 
     return (
         <View>
@@ -149,19 +151,23 @@ export default function EditHoleSheet({
                     <View style={s.row}>
                         <Text style={s.rowLabel}>1st putt</Text>
                         <View style={s.puttValue}>
-                            <PuttDistancePicker testID="first-putt-input" value={firstPutt} maxDistance={100} onChange={onFirstPuttChange} />
+                            <PuttDistancePicker testID="first-putt-input" value={firstPutt} maxDistance={100} onChange={onFirstPuttChange} allowChipIn />
                             <Text style={s.unit}>ft</Text>
                         </View>
                     </View>
                     <View style={s.divider} />
-                    <View style={s.row}>
-                        <Text style={s.rowLabel}>2nd putt</Text>
-                        <View style={s.puttValue}>
-                            <PuttDistancePicker testID="second-putt-input" value={secondPutt} maxDistance={100} onChange={onSecondPuttChange} />
-                            <Text style={s.unit}>ft</Text>
+                    {!isChipIn && (
+                        <>
+                        <View style={s.row}>
+                            <Text style={s.rowLabel}>2nd putt</Text>
+                            <View style={s.puttValue}>
+                                <PuttDistancePicker testID="second-putt-input" value={secondPutt} maxDistance={100} onChange={onSecondPuttChange} />
+                                <Text style={s.unit}>ft</Text>
+                            </View>
                         </View>
-                    </View>
-                    <View style={s.divider} />
+                        <View style={s.divider} />
+                        </>
+                    )}
                     <View style={s.row}>
                         <Text style={s.rowLabel}>Green in regulation</Text>
                         <AppSwitch
@@ -175,25 +181,34 @@ export default function EditHoleSheet({
 
                 <Text style={s.sectionLabel}>DEADLY SINS</Text>
                 <View style={s.card}>
-                    {SIN_ROWS.map((row, index) => (
+                    {SIN_ROWS.map((row, index) => {
+                        // A 3-putt cannot follow a chip-in, so its switch is locked off
+                        const locked = isChipIn && row.key === 'threePutts';
+                        const marked = !locked && sins[row.key];
+                        return (
                         <View key={row.key}>
                             {index > 0 && <View style={s.divider} />}
                             <View style={s.row}>
-                                <Text style={s.rowLabel}>{row.label}</Text>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={s.rowLabel}>{row.label}</Text>
+                                    {locked && <Text style={styles.deadlySinsTally.autoCaption}>Not possible after a chip-in</Text>}
+                                </View>
                                 <AppSwitch
                                     testID={`edit-hole-sin-${row.key}`}
-                                    value={sins[row.key]}
+                                    value={marked}
+                                    disabled={locked}
                                     onValueChange={value => onSinChange(row.key, value)}
                                     thumbColor={colours.white}
                                 />
                             </View>
-                            {sins[row.key] && renderFollowUp ? (
+                            {marked && renderFollowUp ? (
                                 <View testID={`edit-hole-follow-up-${row.key}`} style={styles.deadlySinsTally.followUp}>
                                     {renderFollowUp(row.key)}
                                 </View>
                             ) : null}
                         </View>
-                    ))}
+                        );
+                    })}
                 </View>
                 </>
             )}

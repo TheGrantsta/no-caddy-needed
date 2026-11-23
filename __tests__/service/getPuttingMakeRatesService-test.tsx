@@ -228,3 +228,20 @@ describe('getPuttingMakeRatesService', () => {
         expect(bucket10!.putts).toBe(0);
     });
 });
+
+describe('getPuttingMakeRatesService chip-ins', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('shouldNotCountAChipInAsAFirstPuttAttempt', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 0, SecondPuttDistance: 0, ThreePutts: 0 },
+        ]);
+
+        const result = getPuttingMakeRatesService();
+
+        expect(result.reduce((sum, r) => sum + r.putts, 0)).toBe(0);
+        result.forEach((row) => expect(row.makeRate).toBe('-'));
+    });
+});

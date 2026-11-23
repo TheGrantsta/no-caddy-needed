@@ -74,3 +74,34 @@ describe('buildRoundSummary', () => {
         expect(summary.strokes.length).toBe(2);
     });
 });
+
+describe('buildRoundSummary chip-ins', () => {
+    const sinsNone = { TroubleOffTee: 0, Penalties: 0, ThreePutts: 0, BogeysInside9Iron: 0, DoubleChips: 0, DoubleBogeys: 0, BogeysPar5: 0 };
+
+    it('shouldNotCountAChipInAsAnyPutts', () => {
+        const withChipIn = buildRoundSummary({
+            courseName: 'Augusta',
+            players,
+            holeScores,
+            putting: [...putting, { hole: 3, firstPutt: 0, secondPutt: 0, greenInRegulation: false }],
+            sins: sinsNone,
+            isScoreOnly: false,
+        });
+        const withoutChipIn = buildRoundSummary({ courseName: 'Augusta', players, holeScores, putting, sins: sinsNone, isScoreOnly: false });
+
+        expect(withChipIn.putting?.putts).toBe(withoutChipIn.putting?.putts);
+    });
+
+    it('shouldCountAHoleWithOnlyAChipInAsZeroPutts', () => {
+        const summary = buildRoundSummary({
+            courseName: 'Augusta',
+            players,
+            holeScores,
+            putting: [{ hole: 1, firstPutt: 0, secondPutt: 0, greenInRegulation: false }],
+            sins: sinsNone,
+            isScoreOnly: false,
+        });
+
+        expect(summary.putting?.putts).toBe(0);
+    });
+});

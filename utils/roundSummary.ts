@@ -36,9 +36,12 @@ export const buildRoundSummary = ({ courseName, players, holeScores, putting, si
 
     const holesPlayed = new Set(holeScores.map(h => h.HoleNumber)).size;
 
-    // Putts: one for each first putt, plus one for each second putt entered
+    // Putts: one for each first putt, plus one for each second putt entered. A chip-in (first putt = 0) has none.
     const putts = putting.reduce(
-        (sum, p) => sum + (p.firstPutt !== undefined ? 1 : 0) + (p.secondPutt !== undefined ? 1 : 0),
+        (sum, p) => {
+            if (p.firstPutt === 0) return sum;
+            return sum + (p.firstPutt !== undefined ? 1 : 0) + (p.secondPutt !== undefined ? 1 : 0);
+        },
         0,
     );
 

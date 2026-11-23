@@ -197,24 +197,18 @@ describe('PuttingStatsInput', () => {
             expect(onStatsChange).not.toHaveBeenCalled();
         });
 
-        it('does not update stats if second putt > 0 but first putt is 0', () => {
-            const onStatsChange = jest.fn();
-            const { getByTestId } = render(
+        it('shouldNotOfferSecondPuttEntryWhenFirstPuttIsChipIn', () => {
+            const { queryByTestId } = render(
                 <PuttingStatsInput
                     holePar={4}
                     threePuttSelected={false}
-                    onStatsChange={onStatsChange}
+                    onStatsChange={jest.fn()}
                     initialFirstPutt={0}
                 />
             );
 
-            onStatsChange.mockClear();
-
-            // Try to enter second putt > 0 when first putt is 0
-            choosePuttDistance(getByTestId, 'second-putt-input', '5');
-
-            // onStatsChange should not be called because first putt is 0
-            expect(onStatsChange).not.toHaveBeenCalled();
+            expect(queryByTestId('second-putt-input')).toBeNull();
+            expect(queryByTestId('second-putt-toggle-short')).toBeNull();
         });
 
         it('allows blank second putt even with empty first putt', () => {
@@ -1003,6 +997,97 @@ describe('PuttingStatsInput', () => {
         });
     });
 
+    describe('chip in (no putt)', () => {
+        const chooseChipIn = (getByTestId: (id: string) => any) => {
+            fireEvent.press(getByTestId('first-putt-input'));
+            fireEvent.press(getByTestId('first-putt-input-option-chip-in'));
+        };
+
+        it('shouldOfferChipInAsFirstPuttOption', () => {
+            const { getByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />
+            );
+            fireEvent.press(getByTestId('first-putt-input'));
+
+            expect(getByTestId('first-putt-input-option-chip-in')).toHaveTextContent('No putt');
+        });
+
+        it('shouldEmitZeroFirstAndSecondPuttWhenChipInChosen', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} />
+            );
+
+            chooseChipIn(getByTestId);
+
+            expect(onStatsChange).toHaveBeenLastCalledWith(0, 0, false, false);
+            expect(getByTestId('first-putt-input')).toHaveTextContent('No putt');
+        });
+
+        it('shouldHideSecondPuttRowWhenChipInChosen', () => {
+            const { getByTestId, queryByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} />
+            );
+
+            chooseChipIn(getByTestId);
+
+            expect(queryByTestId('second-putt-input')).toBeNull();
+            expect(queryByTestId('second-putt-toggle-short')).toBeNull();
+            expect(queryByTestId('second-putt-label')).toBeNull();
+        });
+
+        it('shouldClearPreviouslyEnteredSecondPuttWhenChipInChosen', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput
+                    holePar={4}
+                    threePuttSelected={false}
+                    onStatsChange={onStatsChange}
+                    initialFirstPutt={20}
+                    initialSecondPutt={3}
+                />
+            );
+
+            chooseChipIn(getByTestId);
+
+            expect(onStatsChange).toHaveBeenLastCalledWith(0, 0, false, false);
+        });
+
+        it('shouldNeverAutoSetGreenInRegulationForChipInEvenWhenScoreEqualsPar', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput holePar={4} userScore={4} threePuttSelected={false} onStatsChange={onStatsChange} />
+            );
+
+            chooseChipIn(getByTestId);
+
+            expect(onStatsChange).toHaveBeenLastCalledWith(0, 0, false, false);
+            expect(getByTestId('gir-switch').props.value).toBe(false);
+        });
+
+        it('shouldRestoreSecondPuttEntryWhenFirstPuttChangedBackToDistance', () => {
+            const onStatsChange = jest.fn();
+            const { getByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} />
+            );
+
+            chooseChipIn(getByTestId);
+            choosePuttDistance(getByTestId, 'first-putt-input', '20');
+
+            expect(getByTestId('second-putt-input')).toBeTruthy();
+            expect(onStatsChange).toHaveBeenLastCalledWith(20, undefined, false, false);
+        });
+
+        it('shouldShowChipInStateWhenLoadedWithZeroFirstPutt', () => {
+            const { getByTestId, queryByTestId } = render(
+                <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={jest.fn()} initialFirstPutt={0} initialSecondPutt={0} />
+            );
+
+            expect(getByTestId('first-putt-input')).toHaveTextContent('No putt');
+            expect(queryByTestId('second-putt-input')).toBeNull();
+        });
+    });
+
     describe('green in regulation label', () => {
         it('shouldLabelGreenInRegulationWithoutQuestionMark', () => {
             const { getByTestId } = render(
@@ -1017,5 +1102,20 @@ describe('PuttingStatsInput', () => {
     });
 
     describe('toggle text size', () => {
+    });
+});
+
+describe('chip in turns green in regulation off', () => {
+    it('shouldTurnGreenInRegulationOffWhenChipInChosenAfterAManualYes', () => {
+        const onStatsChange = jest.fn();
+        const { getByTestId } = render(
+            <PuttingStatsInput holePar={4} threePuttSelected={false} onStatsChange={onStatsChange} initialGreenInRegulation={true} />
+        );
+
+        fireEvent.press(getByTestId('first-putt-input'));
+        fireEvent.press(getByTestId('first-putt-input-option-chip-in'));
+
+        expect(onStatsChange).toHaveBeenLastCalledWith(0, 0, false, false);
+        expect(getByTestId('gir-switch').props.value).toBe(false);
     });
 });

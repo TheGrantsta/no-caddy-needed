@@ -202,3 +202,22 @@ describe('getPuttingProximityService', () => {
         expect(bucket5!.longPercent).toBe('100%');
     });
 });
+
+describe('getPuttingProximityService chip-ins', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('shouldNotCountAChipInAsAFirstPuttMissInProximity', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 0, SecondPuttDistance: 0, SecondPuttIsLong: 0, ThreePutts: 0 },
+        ]);
+
+        const result = getPuttingProximityService();
+
+        result.forEach((row) => {
+            expect(row.shortPercent).toBe('-');
+            expect(row.longPercent).toBe('-');
+        });
+    });
+});

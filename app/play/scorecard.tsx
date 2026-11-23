@@ -38,6 +38,8 @@ import {
 import { useStyles } from '../../hooks/useStyles';
 import { useThemeColours } from '../../context/ThemeContext';
 import { formatLongDate } from '../../utils/drillHistory';
+import { countHolePutts } from '../../utils/puttCount';
+import { CHIP_IN_VALUE } from '../../components/PuttDistancePicker';
 import { useOrientation } from '../../hooks/useOrientation';
 
 type ScorecardSaveResult = Awaited<ReturnType<typeof saveScorecardEditsService>>;
@@ -373,7 +375,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
         const sinsForHole = getHoleDeadlySinsService(Number(roundId), h.HoleNumber);
         const puttingForHole = getPuttingStatsService(Number(roundId), h.HoleNumber);
         const sinCount = sinsForHole ? SIN_LABELS.filter(({ key }) => sinsForHole[key]).length : 0;
-        const puttCount = puttingForHole ? (puttingForHole.SecondPuttDistance != null ? 2 : 1) + (sinsForHole?.threePutts ? 1 : 0) : 0;
+        const puttCount = countHolePutts(puttingForHole, Boolean(sinsForHole?.threePutts));
         return { holeNumber: h.HoleNumber, par: h.HolePar, score: h.Score, putts: puttCount, sins: sinCount };
     });
     const editRoundTotal = editUserHoles.reduce((sum, h) => sum + h.Score, 0);
@@ -408,6 +410,12 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
     };
 
     const handlePuttText = (field: 'firstPutt' | 'secondPutt', text: string) => {
+        // A chip-in: no second putt, never green in regulation, and no 3-putt
+        if (field === 'firstPutt' && text === CHIP_IN_VALUE) {
+            edit.setPuttingStats({ firstPutt: 0, secondPutt: 0, secondIsLong: false, greenInRegulation: false });
+            edit.setEditedSins({ ...(edit.editedSins ?? INITIAL_SINS), threePutts: false });
+            return;
+        }
         const value = text === '' ? undefined : Number(text);
         edit.setPuttingStats(prev => ({
             firstPutt: prev?.firstPutt,

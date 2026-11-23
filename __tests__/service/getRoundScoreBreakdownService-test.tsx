@@ -162,3 +162,28 @@ describe('getRoundScoreBreakdownService', () => {
         expect(result.penalties).toBe(0);
     });
 });
+
+describe('getRoundScoreBreakdownService chip-ins', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockGetRoundById.mockReturnValue({ Created_At: '01/06' });
+        mockGetDeadlySinsForRound.mockReturnValue({ ThreePutts: 0, Penalties: 0 });
+    });
+
+    it('shouldCountAChipInAsZeroPutts', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 0, SecondPuttDistance: 0, ThreePutts: 0 },
+        ]);
+
+        expect(getRoundScoreBreakdownService(1).putts).toBe(0);
+    });
+
+    it('shouldCountOnlyTheOtherHolesWhenAChipInIsOnTheRound', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 0, SecondPuttDistance: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 10, SecondPuttDistance: 3, ThreePutts: 0 },
+        ]);
+
+        expect(getRoundScoreBreakdownService(1).putts).toBe(2);
+    });
+});

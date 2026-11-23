@@ -90,3 +90,17 @@ describe('getUpAndDownRateService', () => {
         expect(getUpAndDownRateService(new Set([1]))).toEqual({ rate: '100%', upAndDowns: 1, attempts: 1 });
     });
 });
+
+describe('getUpAndDownRateService chip-ins', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('shouldCountAChipInOffTheGreenAsAnUpAndDown', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            row({ FirstPuttDistance: 0, SecondPuttDistance: 0, GreenInRegulation: 0 }),
+        ]);
+
+        expect(getUpAndDownRateService()).toMatchObject({ upAndDowns: 1, attempts: 1 });
+    });
+});

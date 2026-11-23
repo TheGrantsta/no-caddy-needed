@@ -3,11 +3,14 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
 import fontSizes from '@/assets/font-sizes';
-import PuttDistancePicker from './PuttDistancePicker';
+import PuttDistancePicker, { CHIP_IN_VALUE } from './PuttDistancePicker';
 import AppSwitch from './AppSwitch';
 
 const MAX_FIRST_PUTT_DISTANCE = 100;
 const MAX_SECOND_PUTT_DISTANCE = 100;
+
+// A chip-in (holed without a putt) is stored as first = 0 and second = 0
+const CHIP_IN_SECOND_PUTT = 0;
 
 type Props = {
     holePar: number;
@@ -50,14 +53,17 @@ const PuttingStatsInput = ({
 
     // Two putts (both distances entered) with a score equal to par implies the green was hit in regulation.
     // Only applies when the score is known; otherwise the current value is left untouched.
+    // A chip-in (first = 0) never reached the green in regulation, so GIR is never auto-set for it.
     const emitStats = (first: number | undefined, second: number | undefined, secondIsLong: boolean) => {
         let gir = greenInRegulation;
         if (userScore !== undefined && !greenInRegulationManuallySet) {
-            gir = first !== undefined && second !== undefined && userScore === holePar;
+            gir = first !== undefined && first !== 0 && second !== undefined && userScore === holePar;
             setGreenInRegulation(gir);
         }
         onStatsChange(first, second, secondIsLong, gir);
     };
+
+    const isChipIn = firstPutt === CHIP_IN_VALUE;
 
     // Initialize error state: if short second putt >= first putt
     const initializeError = () => {
@@ -75,6 +81,16 @@ const PuttingStatsInput = ({
 
     const handleFirstPuttChange = (value: string) => {
         setFirstPutt(value);
+        if (value === CHIP_IN_VALUE) {
+            // Chip-in: no second putt can exist, so clear any entered second putt and direction
+            setSecondPutt('');
+            setSecondIsLong(false);
+            setSecondPuttError(false);
+            // A chip-in never reached the green in regulation
+            setGreenInRegulation(false);
+            onStatsChange(0, CHIP_IN_SECOND_PUTT, false, false);
+            return;
+        }
         if (!value || value.trim() === '') {
             const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(secondPutt))) : undefined;
             setSecondPuttError(false);
@@ -145,7 +161,9 @@ const PuttingStatsInput = ({
         setGreenInRegulationManuallySet(true);
         setGreenInRegulation(value);
         const first = firstPutt && !isNaN(parseInt(firstPutt)) ? Math.max(0, Math.min(MAX_FIRST_PUTT_DISTANCE, parseInt(firstPutt))) : undefined;
-        const second = secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(secondPutt))) : undefined;
+        const second = isChipIn
+            ? CHIP_IN_SECOND_PUTT
+            : secondPutt && !isNaN(parseInt(secondPutt)) ? Math.max(0, Math.min(MAX_SECOND_PUTT_DISTANCE, parseInt(secondPutt))) : undefined;
         onStatsChange(first, second, secondIsLong, value);
     };
 
@@ -176,6 +194,7 @@ const PuttingStatsInput = ({
                     maxDistance={MAX_FIRST_PUTT_DISTANCE}
                     onChange={handleFirstPuttChange}
                     hasError={showFirstPuttError}
+                    allowChipIn
                 />
                 <Text style={styles.holeScreen.puttUnit}>ft</Text>
             </View>
@@ -183,7 +202,9 @@ const PuttingStatsInput = ({
 
             <View style={styles.holeScreen.rowDivider} />
 
-            {/* 2nd putt */}
+            {/* 2nd putt: not applicable after a chip-in */}
+            {!isChipIn && (
+            <>
             <View style={styles.holeScreen.puttRow}>
                 <Text testID="second-putt-label" style={styles.holeScreen.puttLabel}>2nd putt</Text>
                 <View style={styles.holeScreen.segment}>
@@ -215,6 +236,8 @@ const PuttingStatsInput = ({
             {showSecondPuttRequiredError && errorText('2nd putt distance is required for a 3-putt', 'second-putt-required-error')}
 
             <View style={styles.holeScreen.rowDivider} />
+            </>
+            )}
 
             {/* Green in regulation */}
             <View style={styles.holeScreen.puttRow}>

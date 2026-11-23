@@ -77,7 +77,9 @@ export function useHoleLifecycle() {
             setPuttingFirstPuttError(false);
         }
 
-        if (deadlySinsValues.threePutts && (!stats || stats.secondPutt === undefined)) {
+        // A chip-in (first putt = 0) has no second putt, so a 3-putt cannot apply to it
+        const isChipIn = stats?.firstPutt === 0;
+        if (deadlySinsValues.threePutts && !isChipIn && (!stats || stats.secondPutt === undefined)) {
             setPuttingSecondPuttRequiredError(true);
             hasError = true;
         } else {

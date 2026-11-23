@@ -9,11 +9,16 @@ type Props = {
     maxDistance: number;
     onChange: (value: string) => void;
     hasError?: boolean;
+    // When true, offers a "No putt - chip in" option (stored as '0') above 1 ft
+    allowChipIn?: boolean;
 };
+
+export const CHIP_IN_VALUE = '0';
+const CHIP_IN_LABEL = 'No putt';
 
 // Choose a putt distance (in feet) from a list shown inline under the box instead of typing it.
 // To go back to a modal sheet, restore the Modal wrapper that this replaced.
-const PuttDistancePicker = ({ testID, value, maxDistance, onChange, hasError = false }: Props) => {
+const PuttDistancePicker = ({ testID, value, maxDistance, onChange, hasError = false, allowChipIn = false }: Props) => {
     const styles = useStyles();
     const colours = useThemeColours();
     const s = styles.puttPicker;
@@ -28,6 +33,8 @@ const PuttDistancePicker = ({ testID, value, maxDistance, onChange, hasError = f
     // Distances start at 1 ft: 0 ft is not offered in the list
     const distances = Array.from({ length: maxDistance }, (_, i) => i + 1);
 
+    const boxLabel = allowChipIn && value === CHIP_IN_VALUE ? CHIP_IN_LABEL : value || '0';
+
     return (
         <View style={s.column}>
             <TouchableOpacity
@@ -36,7 +43,7 @@ const PuttDistancePicker = ({ testID, value, maxDistance, onChange, hasError = f
                 onPress={() => setOpen(true)}
                 style={[s.box, hasError && s.boxError]}
             >
-                <Text style={[s.boxText, { color: textColour }]}>{value || '0'}</Text>
+                <Text style={[s.boxText, { color: textColour }]}>{boxLabel}</Text>
             </TouchableOpacity>
 
             {open && (
@@ -45,6 +52,15 @@ const PuttDistancePicker = ({ testID, value, maxDistance, onChange, hasError = f
                         <TouchableOpacity testID={`${testID}-option-clear`} onPress={() => choose('')} style={s.option}>
                             <Text style={s.clearText}>Clear</Text>
                         </TouchableOpacity>
+                        {allowChipIn && (
+                            <TouchableOpacity
+                                testID={`${testID}-option-chip-in`}
+                                onPress={() => choose(CHIP_IN_VALUE)}
+                                style={[s.option, value === CHIP_IN_VALUE && s.optionSelected]}
+                            >
+                                <Text numberOfLines={1} style={[s.optionText, s.chipInText]}>{CHIP_IN_LABEL}</Text>
+                            </TouchableOpacity>
+                        )}
                         {distances.map(n => (
                             <TouchableOpacity
                                 key={n}

@@ -652,6 +652,7 @@ export default function Play() {
                                             holePar={currentHoleData?.holePar ?? 4}
                                             sins={deadlySinsValues}
                                             onSinsChange={handleDeadlySinsValuesChange}
+                                            threePuttsDisabled={puttingStats?.firstPutt === 0}
                                             players={players}
                                             userScore={currentHoleData?.scores.find(s => {
                                                 const player = players.find(p => p.Id === s.playerId);

@@ -662,6 +662,8 @@ export const getRoundScoreBreakdownService = (roundId: number): RoundScoreBreakd
     const roundStats = puttingStats.filter((row) => row.RoundId === roundId);
     let putts = 0;
     roundStats.forEach((stat) => {
+        // A chip-in (first putt = 0) is holed without a putt
+        if (stat.FirstPuttDistance === 0) return;
         if (stat.ThreePutts === 1) {
             putts += 3;
         } else {

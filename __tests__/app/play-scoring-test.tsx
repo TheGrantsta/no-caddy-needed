@@ -750,6 +750,45 @@ describe('Play screen', () => {
                 (getPuttingStatsService as jest.Mock).mockReturnValue(null);
             });
 
+            it('shouldShowAChipInWhenThePuttingScreenIsReopenedForASavedChipIn', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+                (getPuttingStatsService as jest.Mock).mockReturnValue({
+                    Id: 1, RoundId: 1, HoleNumber: 1, FirstPuttDistance: 0, SecondPuttDistance: 0,
+                    SecondPuttIsLong: 0, ThirdPuttDistance: undefined, ThirdPuttIsLong: undefined, GreenInRegulation: false,
+                });
+
+                const { getByTestId, queryByTestId, getByText } = render(<Play />);
+                await startRoundOnHoleOne(getByTestId);
+                await advanceToPuttingPhase(getByTestId);
+
+                expect(getByTestId('first-putt-input')).toHaveTextContent('No putt');
+                expect(queryByTestId('second-putt-input')).toBeNull();
+                expect(getByText('Not possible after a chip-in')).toBeTruthy();
+                (getPuttingStatsService as jest.Mock).mockReturnValue(null);
+            });
+
+            it('shouldSaveAChipInWithZeroFirstAndSecondPuttAndNoThreePutt', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+                mockAddMultiplayerHoleScores.mockResolvedValue(true);
+
+                const { getByTestId } = render(<Play />);
+                await startRoundOnHoleOne(getByTestId);
+                await advanceToPuttingPhase(getByTestId);
+
+                fireEvent.press(getByTestId('first-putt-input'));
+                fireEvent.press(getByTestId('first-putt-input-option-chip-in'));
+                await act(async () => {
+                    fireEvent.press(getByTestId('next-hole-button'));
+                });
+
+                await waitFor(() => {
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 0, 0, false, undefined, undefined, false);
+                });
+            });
+
             it('shouldSaveGreenInRegulationFalseByDefaultOnPuttingScreen', async () => {
                 mockStartRound.mockResolvedValue(1);
                 mockAddRoundPlayers.mockResolvedValue([1]);

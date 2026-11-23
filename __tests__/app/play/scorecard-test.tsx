@@ -1876,3 +1876,55 @@ describe('Scorecard screen', () => {
         });
     });
 });
+
+describe('Scorecard edit: chip-in', () => {
+    afterEach(() => {
+        mockGetHoleDeadlySinsService.mockReturnValue(undefined);
+        mockGetPuttingStats.mockReturnValue(null);
+    });
+
+    it('shouldSaveAChipInAsZeroFirstAndSecondPuttWithNoGreenInRegulation', async () => {
+        mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+        mockUpdateScorecard.mockResolvedValue(true);
+
+        const { getByTestId } = render(<ScorecardScreen />);
+        fireEvent.press(getByTestId('edit-scorecard-button'));
+        fireEvent.press(getByTestId('edit-round-hole-1'));
+        fireEvent.press(getByTestId('first-putt-input'));
+        fireEvent.press(getByTestId('first-putt-input-option-chip-in'));
+        fireEvent.press(getByTestId('edit-hole-save-button'));
+
+        await waitFor(() => {
+            expect(_mockInsertPuttingStats).toHaveBeenCalledWith(1, 1, 0, 0, false, undefined, undefined, false);
+        });
+    });
+
+    it('shouldClearAThreePuttSinWhenAChipInIsChosenOnTheHole', async () => {
+        mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+        mockUpdateScorecard.mockResolvedValue(true);
+        mockGetHoleDeadlySinsService.mockReturnValue({ threePutts: true, doubleBogeys: false, bogeysPar5: false, bogeysInside9Iron: false, doubleChips: false, troubleOffTee: false, penalties: false });
+
+        const { getByTestId } = render(<ScorecardScreen />);
+        fireEvent.press(getByTestId('edit-scorecard-button'));
+        fireEvent.press(getByTestId('edit-round-hole-1'));
+        fireEvent.press(getByTestId('first-putt-input'));
+        fireEvent.press(getByTestId('first-putt-input-option-chip-in'));
+        fireEvent.press(getByTestId('edit-hole-save-button'));
+
+        await waitFor(() => {
+            expect(mockReplaceHoleDeadlySinsService).toHaveBeenCalledWith(1, 1, expect.objectContaining({ threePutts: false }));
+        });
+    });
+
+    it('shouldOpenASavedChipInAsChipInWithNoSecondPutt', () => {
+        mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+        mockGetPuttingStats.mockReturnValue({ Id: 1, RoundId: 1, HoleNumber: 1, FirstPuttDistance: 0, SecondPuttDistance: 0, SecondPuttIsLong: 0, GreenInRegulation: 0 });
+
+        const { getByTestId, queryByTestId } = render(<ScorecardScreen />);
+        fireEvent.press(getByTestId('edit-scorecard-button'));
+        fireEvent.press(getByTestId('edit-round-hole-1'));
+
+        expect(getByTestId('first-putt-input')).toHaveTextContent('No putt');
+        expect(queryByTestId('second-putt-input')).toBeNull();
+    });
+});

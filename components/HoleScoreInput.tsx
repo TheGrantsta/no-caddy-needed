@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { RoundPlayer } from '../service/DbService';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
+import { HOLES_PER_ROUND } from '../utils/holeOrder';
 
 type ScoreChange = { playerId: number; playerName: string; score: number }[];
 
@@ -81,12 +82,17 @@ type HeaderProps = {
     onParChange: (par: number) => void;
     onEndRound?: () => void;
     onOpenBag?: () => void;
+    // Where this hole falls in the round's play order, out of the holes in the round
+    holePosition?: number;
+    totalHoles?: number;
 };
 
-// The green band at the top of the hole: End, course, yardages, hole number and par
-export const HoleScoreHeader = ({ holeNumber, courseName, par, onParChange, onEndRound, onOpenBag }: HeaderProps) => {
+// The green band at the top of the hole: End, course, yardages, hole number, par and the round's progress bar
+export const HoleScoreHeader = ({ holeNumber, courseName, par, onParChange, onEndRound, onOpenBag, holePosition, totalHoles }: HeaderProps) => {
     const styles = useStyles();
     const colours = useThemeColours();
+    const position = holePosition ?? holeNumber;
+    const total = totalHoles ?? HOLES_PER_ROUND;
 
     return (
         <View testID="hole-header-pinned" style={styles.holeScreen.container}>
@@ -131,6 +137,9 @@ export const HoleScoreHeader = ({ holeNumber, courseName, par, onParChange, onEn
                             </TouchableOpacity>
                         ))}
                     </View>
+                </View>
+                <View style={[styles.simulation.progressTrack, { marginTop: 16 }]}>
+                    <View testID="hole-status-fill" style={[styles.simulation.progressFill, { width: `${(position / total) * 100}%` }]} />
                 </View>
             </View>
         </View>

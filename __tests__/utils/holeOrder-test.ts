@@ -8,6 +8,7 @@ import {
     nextHoleInRound,
     previousHoleInRound,
     sanitiseStartHole,
+    playPositionOfHole,
 } from '../../utils/holeOrder';
 
 describe('hole order', () => {
@@ -112,5 +113,18 @@ describe('hole order', () => {
         it('shouldBeNullWhenNoHolesHaveBeenPlayed', () => {
             expect(lastPlayedHole(1, 0)).toBeNull();
         });
+    });
+});
+
+describe('playPositionOfHole', () => {
+    it('shouldBeHoleNumberWhenTheRoundStartsOnHoleOne', () => {
+        expect(playPositionOfHole(1, 1)).toBe(1);
+        expect(playPositionOfHole(1, 18)).toBe(18);
+    });
+
+    it('shouldCountFromTheStartingHoleWhenTheRoundStartsElsewhere', () => {
+        expect(playPositionOfHole(10, 10)).toBe(1);
+        expect(playPositionOfHole(10, 18)).toBe(9);
+        expect(playPositionOfHole(10, 9)).toBe(18);
     });
 });

@@ -25,6 +25,10 @@ export const lastPlayedHole = (startHole: number, holesPlayed: number): number |
 export const holeAtPlayPosition = (startHole: number, position: number): number =>
     ((startHole - 1 + position) % HOLES_PER_ROUND) + 1;
 
+// Where a hole falls in the round's play order, 1 to 18, counting from the starting hole
+export const playPositionOfHole = (startHole: number, hole: number): number =>
+    ((hole - startHole + HOLES_PER_ROUND) % HOLES_PER_ROUND) + 1;
+
 // Any saved or passed starting hole that isn't 1 to 18 starts on hole 1
 export const sanitiseStartHole = (value: number | null | undefined): number =>
     typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= HOLES_PER_ROUND ? value : 1;

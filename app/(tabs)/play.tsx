@@ -53,7 +53,7 @@ import { useHoleLifecycle } from '../../hooks/useHoleLifecycle';
 import { useRoundSession } from '../../hooks/useRoundSession';
 import PhaseStats from '../../components/PhaseStats';
 import RoundSummary from '../../components/RoundSummary';
-import { HOLES_PER_ROUND, holeAtPlayPosition, isFirstHoleOfRound, isLastHoleOfRound, nextHoleInRound, previousHoleInRound, sanitiseStartHole } from '../../utils/holeOrder';
+import { HOLES_PER_ROUND, holeAtPlayPosition, playPositionOfHole, isFirstHoleOfRound, isLastHoleOfRound, nextHoleInRound, previousHoleInRound, sanitiseStartHole } from '../../utils/holeOrder';
 import EndRoundSheet from '../../components/EndRoundSheet';
 import EndIncompleteRoundSheet from '../../components/EndIncompleteRoundSheet';
 import BagSheet from '../../components/BagSheet';
@@ -570,6 +570,8 @@ export default function Play() {
                         onParChange={holeScores.handleParChange}
                         onEndRound={handleEndRoundPress}
                         onOpenBag={handleOpenBag}
+                        holePosition={playPositionOfHole(roundStartHole, currentHole)}
+                        totalHoles={HOLES_PER_ROUND}
                     />
                 </Animated.View>
             )}

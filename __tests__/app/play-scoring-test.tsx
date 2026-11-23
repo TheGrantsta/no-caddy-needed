@@ -1,5 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import Play from '../../app/(tabs)/play';
 import * as Haptics from 'expo-haptics';
 
@@ -572,6 +573,18 @@ describe('Play screen', () => {
                 fireEvent.press(getByTestId('start-button'));
                 await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
             };
+
+            it('shouldShowTheRoundProgressBarOnTheHoleScreen', async () => {
+                mockStartRound.mockResolvedValue(1);
+                mockAddRoundPlayers.mockResolvedValue([1]);
+
+                const { getByTestId, queryByText } = render(<Play />);
+                await startFullRound(getByTestId);
+
+                // Hole 1 of 18 is 1/18 of the bar
+                expect(StyleSheet.flatten(getByTestId('hole-status-fill').props.style).width).toMatch(/^5\.5/);
+                expect(queryByText('Hole 1 of 18')).toBeNull();
+            });
 
             it('shouldShowScoreputtingAndDeadlySinsTogetherWithoutPressingNext', async () => {
                 mockStartRound.mockResolvedValue(1);

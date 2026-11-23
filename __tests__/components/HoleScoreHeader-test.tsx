@@ -10,6 +10,35 @@ const renderHeader = (overrides: object = {}) => {
     return { ...utils, ...handlers };
 };
 
+describe('HoleScoreHeader progress bar', () => {
+    it('shouldFillTheProgressBarByThePlayPosition', () => {
+        const { StyleSheet } = require('react-native');
+        const { getByTestId } = renderHeader({ holePosition: 9, totalHoles: 18 });
+
+        expect(StyleSheet.flatten(getByTestId('hole-status-fill').props.style).width).toBe('50%');
+    });
+
+    it('shouldShowNoTextInTheStatusLine', () => {
+        const { queryByText, queryByTestId } = renderHeader({ holePosition: 2, totalHoles: 18 });
+
+        expect(queryByTestId('hole-status-text')).toBeNull();
+        expect(queryByText('Hole 2 of 18')).toBeNull();
+    });
+
+    it('shouldShowTheProgressBarBelowTheParOptions', () => {
+        const collectTestIds = (node: any): string[] => {
+            if (!node || typeof node !== 'object') return [];
+            const own = node.props?.testID ? [node.props.testID] : [];
+            const children = Array.isArray(node.children) ? node.children : [];
+            return [...own, ...children.flatMap(collectTestIds)];
+        };
+        const { toJSON } = renderHeader({ holePosition: 2, totalHoles: 18 });
+
+        const ids = collectTestIds(toJSON());
+        expect(ids.indexOf('hole-status-fill')).toBeGreaterThan(ids.indexOf('par-5-button'));
+    });
+});
+
 describe('HoleScoreHeader', () => {
     it('shouldShowTheHoleNumberCourseAndParOptions', () => {
         const { getByText, getByTestId } = renderHeader();

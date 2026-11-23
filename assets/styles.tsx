@@ -3149,11 +3149,13 @@ export const createStyles = (c: ThemeColours) => ({
         },
         tileRow: {
             flexDirection: 'row',
-            columnGap: 10,
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            rowGap: 10,
             marginTop: 16,
         },
         tile: {
-            flex: 1,
+            width: '48%',
             backgroundColor: c.tileFill,
             borderRadius: 16,
             padding: 12,

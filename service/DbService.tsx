@@ -502,6 +502,8 @@ export type RoundScoreBreakdown = {
     putts: number;
     threePutts: number;
     penalties: number;
+    // Up-and-down rate for the round, e.g. '50%', or '-' when it had no attempts
+    upAndDown: string;
 };
 
 // Round services
@@ -672,7 +674,9 @@ export const getRoundScoreBreakdownService = (roundId: number): RoundScoreBreakd
         }
     });
 
-    return { putts, threePutts, penalties };
+    const upAndDown = getUpAndDownRateService(new Set([roundId])).rate;
+
+    return { putts, threePutts, penalties, upAndDown };
 };
 
 // Settings services

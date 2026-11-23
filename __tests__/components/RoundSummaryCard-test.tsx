@@ -53,6 +53,20 @@ describe('RoundSummaryCard', () => {
         expect(StyleSheet.flatten(getByText('Even par').props.style).color).toBe(colours.primary);
     });
 
+    it('shouldLayoutTheStatTilesAsATwoByTwoGridSoTheirTextDoesNotWrap', () => {
+        const { getByTestId } = render(<RoundSummaryCard {...base} upAndDown="50%" />);
+
+        expect(StyleSheet.flatten(getByTestId('round-summary-tile-row').props.style).flexWrap).toBe('wrap');
+        expect(StyleSheet.flatten(getByTestId('round-summary-tile-up-down').props.style).width).toBe('48%');
+    });
+
+    it('shouldShowTheUpAndDownRateAsAStatTile', () => {
+        const { getByText } = render(<RoundSummaryCard {...base} upAndDown="50%" />);
+
+        expect(getByText('Up & down')).toBeTruthy();
+        expect(getByText('50%')).toBeTruthy();
+    });
+
     it('shouldShowPuttsThreePuttsAndPenaltiesAsStatTiles', () => {
         const { getByText } = render(<RoundSummaryCard {...base} />);
 

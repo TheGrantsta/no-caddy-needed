@@ -187,3 +187,30 @@ describe('getRoundScoreBreakdownService chip-ins', () => {
         expect(getRoundScoreBreakdownService(1).putts).toBe(2);
     });
 });
+
+describe('getRoundScoreBreakdownService up-and-down', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockGetRoundById.mockReturnValue({ Created_At: '01/06' });
+        mockGetDeadlySinsForRound.mockReturnValue({ ThreePutts: 0, Penalties: 0 });
+    });
+
+    it('shouldReportTheRoundsUpAndDownRateFromItsOwnMissedGreens', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 10, SecondPuttDistance: 0, GreenInRegulation: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 10, SecondPuttDistance: 3, GreenInRegulation: 0, ThreePutts: 0 },
+            { RoundId: 1, FirstPuttDistance: 12, SecondPuttDistance: 0, GreenInRegulation: 1, ThreePutts: 0 },
+            { RoundId: 2, FirstPuttDistance: 9, SecondPuttDistance: 0, GreenInRegulation: 0, ThreePutts: 0 },
+        ]);
+
+        expect(getRoundScoreBreakdownService(1).upAndDown).toBe('50%');
+    });
+
+    it('shouldReportADashWhenTheRoundHasNoUpAndDownAttempts', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 12, SecondPuttDistance: 0, GreenInRegulation: 1, ThreePutts: 0 },
+        ]);
+
+        expect(getRoundScoreBreakdownService(1).upAndDown).toBe('-');
+    });
+});

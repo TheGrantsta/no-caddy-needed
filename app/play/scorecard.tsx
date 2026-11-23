@@ -457,7 +457,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             ),
         }));
     const showSummary = !edit.isEditing && userHoles.length > 0;
-    const summaryStats = scoreBreakdown ?? { putts: 0, threePutts: 0, penalties: 0 };
+    const summaryStats = scoreBreakdown ?? { putts: 0, threePutts: 0, penalties: 0, upAndDown: '-' };
 
     return (
         <View testID={`scorecard-page-${roundId}`} style={{ width }}>
@@ -569,6 +569,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                     putts={summaryStats.putts}
                                     threePutts={summaryStats.threePutts}
                                     penalties={summaryStats.penalties}
+                                    upAndDown={summaryStats.upAndDown}
                                     showStats={!round?.IsScoreOnly}
                                 />
                                 <RoundScoreTable holes={userHoles} sinHoles={sinHoles} onSinPress={handleSinPress} otherPlayers={otherPlayers} />

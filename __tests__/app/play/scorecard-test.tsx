@@ -1353,6 +1353,16 @@ describe('Scorecard screen', () => {
             expect(getByText('Penalties')).toBeTruthy();
         });
 
+        it('shows the up-and-down rate in the round summary', () => {
+            mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
+            mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, threePutts: 0, penalties: 0, upAndDown: '50%' });
+
+            const { getByTestId } = render(<ScorecardScreen />);
+
+            expect(within(getByTestId('round-summary-card')).getByText('Up & down')).toBeTruthy();
+            expect(within(getByTestId('round-summary-card')).getByText('50%')).toBeTruthy();
+        });
+
         it('shows score breakdown with zeros when no deadly sins recorded', () => {
             mockGetMultiplayerScorecard.mockReturnValue(multiplayerData);
             mockGetRoundScoreBreakdown.mockReturnValue({ putts: 36, threePutts: 0, penalties: 0 });

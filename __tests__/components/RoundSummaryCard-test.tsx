@@ -1,6 +1,8 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { render } from '@testing-library/react-native';
 import RoundSummaryCard from '../../components/RoundSummaryCard';
+import colours from '../../assets/colours';
 
 const base = { holesPlayed: 5, totalScore: 20, totalPar: 20, putts: 7, threePutts: 1, penalties: 1 };
 
@@ -21,13 +23,34 @@ describe('RoundSummaryCard', () => {
     it('shouldShowHowManyOverParTheRoundWas', () => {
         const { getByText } = render(<RoundSummaryCard {...base} totalScore={23} />);
 
-        expect(getByText('3 over par')).toBeTruthy();
+        expect(getByText('+3')).toBeTruthy();
     });
 
     it('shouldShowHowManyUnderParTheRoundWas', () => {
         const { getByText } = render(<RoundSummaryCard {...base} totalScore={18} />);
 
-        expect(getByText('2 under par')).toBeTruthy();
+        expect(getByText('-2')).toBeTruthy();
+    });
+
+    it('shouldShowUnderParInRed', () => {
+        const { getByText } = render(<RoundSummaryCard {...base} totalScore={18} />);
+
+        expect(StyleSheet.flatten(getByText('-2').props.style).color).toBe(colours.red);
+    });
+
+    it('shouldNotShowOverParOrEvenParInRed', () => {
+        const { getByText, rerender } = render(<RoundSummaryCard {...base} totalScore={23} />);
+
+        expect(StyleSheet.flatten(getByText('+3').props.style).color).not.toBe(colours.red);
+
+        rerender(<RoundSummaryCard {...base} />);
+        expect(StyleSheet.flatten(getByText('Even par').props.style).color).not.toBe(colours.red);
+    });
+
+    it('shouldShowEvenParInPrimary', () => {
+        const { getByText } = render(<RoundSummaryCard {...base} />);
+
+        expect(StyleSheet.flatten(getByText('Even par').props.style).color).toBe(colours.primary);
     });
 
     it('shouldShowPuttsThreePuttsAndPenaltiesAsStatTiles', () => {

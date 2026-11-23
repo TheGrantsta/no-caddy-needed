@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
+import { useThemeColours } from '@/context/ThemeContext';
 
 type Props = {
     holesPlayed: number;
@@ -17,9 +18,10 @@ type Props = {
 // Saved round headline: the score against par, then putts, three-putts and penalties as tiles
 export default function RoundSummaryCard({ holesPlayed, totalScore, totalPar, putts, threePutts, penalties, showStats = true }: Props) {
     const styles = useStyles();
+    const colours = useThemeColours();
     const s = styles.roundDetail;
     const difference = totalScore - totalPar;
-    const toPar = difference === 0 ? 'Even par' : difference > 0 ? `${difference} over par` : `${Math.abs(difference)} under par`;
+    const toPar = difference === 0 ? 'Even par' : difference > 0 ? `+${difference}` : `-${Math.abs(difference)}`;
 
     const tiles = [
         { label: 'Putts', value: putts ?? '–' },
@@ -32,7 +34,7 @@ export default function RoundSummaryCard({ holesPlayed, totalScore, totalPar, pu
             <Text style={s.summaryMeta}>{`You · ${holesPlayed} holes`}</Text>
             <View style={s.scoreRow}>
                 <Text testID="round-summary-score" style={s.scoreText}>{String(totalScore)}</Text>
-                <Text style={s.toParText}>{toPar}</Text>
+                <Text style={[s.toParText, difference < 0 && { color: colours.red }]}>{toPar}</Text>
             </View>
             {showStats && (
                 <View style={s.tileRow}>

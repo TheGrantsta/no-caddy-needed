@@ -151,6 +151,10 @@ git commit -m "Update UI baselines: <reason>"
 ```bash
 git push
 ```
+or
+```
+SKIP_UI_CHECK=1 git push
+```
 
 This runs the unit tests and nothing else. Run `npm run ui:verify` first when the change affects the UI.
 

@@ -200,23 +200,31 @@ describe('RoundScoreTable', () => {
             expect(getByTestId('round-table-player-2-score-2')).toHaveTextContent('-');
         });
 
-        it('shouldColourTheTotalsByWhetherTheyAreUnderOrOverParForTheHolesPlayed', () => {
-            // You: 3 + 4 + 5 = 12 vs par 12 -> at par, so no colour
-            // Sam: 3 + 3 = 6 vs par 4 + 3 = 7 -> under par
+        it('shouldKeepTheUsersTotalBlackWhenUnderPar', () => {
+            // Sam: 3 + 3 = 6 vs par 4 + 3 = 7 -> under par; the user's total stays as it is at even par
             const sam = { id: 2, name: 'Sam', scores: { 1: 3, 2: 3 } };
             const { getByTestId } = render(
                 <RoundScoreTable holes={mixed} sinHoles={new Set()} otherPlayers={[sam]} />
             );
 
-            expect(StyleSheet.flatten(getByTestId('round-table-total-out').props.style).color).not.toBe(colours.errorText);
-            expect(StyleSheet.flatten(getByTestId('round-table-player-2-total-out').props.style).color).toBe(colours.green);
+            expect(StyleSheet.flatten(getByTestId('round-table-total-out').props.style).color).toBe(colours.black);
         });
 
-        it('shouldColourTheUsersTotalOverParWhenItIsOverPar', () => {
+        it('shouldNotColourAnotherPlayersTotalWhenUnderPar', () => {
+            // Sam: 3 + 3 = 6 vs par 4 + 3 = 7 -> under par, so the total gets no colour (same as even par)
+            const sam = { id: 2, name: 'Sam', scores: { 1: 3, 2: 3 } };
+            const { getByTestId } = render(
+                <RoundScoreTable holes={mixed} sinHoles={new Set()} otherPlayers={[sam]} />
+            );
+
+            expect(StyleSheet.flatten(getByTestId('round-table-player-2-total-out').props.style).color).toBeUndefined();
+        });
+
+        it('shouldKeepTheUsersTotalBlackWhenOverPar', () => {
             const { getByTestId } = render(<RoundScoreTable holes={holes} sinHoles={new Set()} />);
 
-            // holes: 4+5+4 = 13 vs par 4+3+5 = 12 -> over par
-            expect(StyleSheet.flatten(getByTestId('round-table-total-out').props.style).color).toBe(colours.errorText);
+            // holes: 4+5+4 = 13 vs par 4+3+5 = 12 -> over par, but the total stays black
+            expect(StyleSheet.flatten(getByTestId('round-table-total-out').props.style).color).toBe(colours.black);
         });
 
         it('shouldNotShowAColourLegend', () => {

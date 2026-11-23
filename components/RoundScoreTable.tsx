@@ -24,13 +24,6 @@ type RoundDetailStyles = ReturnType<typeof useStyles>['roundDetail'];
 
 const SIN_DOT_COLOUR = colours.wedgeTile;
 
-// Which side of par a score sits on, or null when it is exactly par
-const parState = (score: number, par: number): 'under' | 'over' | null => {
-    if (score < par) return 'under';
-    if (score > par) return 'over';
-    return null;
-};
-
 // Every score sits in a coloured circle chosen by its distance from par (see utils/scoreMarker)
 const renderParScore = (
     s: RoundDetailStyles,
@@ -59,7 +52,6 @@ const NineTable = ({ label, holes, sinHoles, onSinPress, otherPlayers = [] }: Pr
     const s = styles.roundDetail;
     const totalPar = holes.reduce((sum, h) => sum + h.par, 0);
     const totalScore = holes.reduce((sum, h) => sum + h.score, 0);
-    const totalState = parState(totalScore, totalPar);
 
     return (
         <View>
@@ -105,7 +97,7 @@ const NineTable = ({ label, holes, sinHoles, onSinPress, otherPlayers = [] }: Pr
                     ))}
                     <Text
                         testID={`round-table-total-${label.toLowerCase()}`}
-                        style={[s.totalCell, s.youScore, totalState === 'under' ? s.underParText : totalState === 'over' ? s.overParText : null]}
+                        style={[s.totalCell, s.youScore]}
                     >
                         {String(totalScore)}
                     </Text>
@@ -113,8 +105,6 @@ const NineTable = ({ label, holes, sinHoles, onSinPress, otherPlayers = [] }: Pr
                 {otherPlayers.map(player => {
                     const played = holes.filter(h => player.scores[h.holeNumber] !== undefined);
                     const playerTotal = played.reduce((sum, h) => sum + player.scores[h.holeNumber], 0);
-                    const playedPar = played.reduce((sum, h) => sum + h.par, 0);
-                    const playerState = played.length > 0 ? parState(playerTotal, playedPar) : null;
                     return (
                         <View key={player.id} style={s.tableRow}>
                             <Text numberOfLines={1} style={[s.rowLabel]}>{player.name}</Text>
@@ -147,10 +137,7 @@ const NineTable = ({ label, holes, sinHoles, onSinPress, otherPlayers = [] }: Pr
                             })}
                             <Text
                                 testID={`round-table-player-${player.id}-total-${label.toLowerCase()}`}
-                                style={[
-                                    s.totalCell,
-                                    playerState === 'under' ? s.underParText : playerState === 'over' ? s.overParText : null,
-                                ]}
+                                style={s.totalCell}
                             >
                                 {played.length > 0 ? String(playerTotal) : '-'}
                             </Text>

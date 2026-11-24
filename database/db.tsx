@@ -472,17 +472,17 @@ export const getRoundHoleScoresByHole = (roundId: number, holeNumber: number) =>
 };
 
 export const insertPuttingStats = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean, greenInRegulation: boolean = false, puttCount?: number): Promise<boolean> => {
-    return runStatement('db.insertPuttingStats', 'INSERT INTO PuttingStats (RoundId, HoleNumber, FirstPuttDistance, SecondPuttDistance, SecondPuttIsLong, ThirdPuttDistance, ThirdPuttIsLong, GreenInRegulation, PuttCount) VALUES ($RoundId, $HoleNumber, $FirstPuttDistance, $SecondPuttDistance, $SecondPuttIsLong, $ThirdPuttDistance, $ThirdPuttIsLong, $GreenInRegulation);', {
-                $RoundId: roundId,
-                $HoleNumber: holeNumber,
-                $FirstPuttDistance: firstPuttDistance,
-                $SecondPuttDistance: secondPuttDistance,
-                $SecondPuttIsLong: secondPuttIsLong ? 1 : 0,
-                $ThirdPuttDistance: thirdPuttDistance ?? null,
-                $ThirdPuttIsLong: thirdPuttIsLong ? 1 : 0,
-                $GreenInRegulation: greenInRegulation ? 1 : 0,
-                $PuttCount: puttCount ?? null,
-            });
+    return runStatement('db.insertPuttingStats', 'INSERT INTO PuttingStats (RoundId, HoleNumber, FirstPuttDistance, SecondPuttDistance, SecondPuttIsLong, ThirdPuttDistance, ThirdPuttIsLong, GreenInRegulation, PuttCount) VALUES ($RoundId, $HoleNumber, $FirstPuttDistance, $SecondPuttDistance, $SecondPuttIsLong, $ThirdPuttDistance, $ThirdPuttIsLong, $GreenInRegulation, $PuttCount);', {
+        $RoundId: roundId,
+        $HoleNumber: holeNumber,
+        $FirstPuttDistance: firstPuttDistance,
+        $SecondPuttDistance: secondPuttDistance,
+        $SecondPuttIsLong: secondPuttIsLong ? 1 : 0,
+        $ThirdPuttDistance: thirdPuttDistance ?? null,
+        $ThirdPuttIsLong: thirdPuttIsLong ? 1 : 0,
+        $GreenInRegulation: greenInRegulation ? 1 : 0,
+        $PuttCount: puttCount ?? null,
+    });
 };
 
 export const getPuttingStats = (roundId: number, holeNumber: number) => {

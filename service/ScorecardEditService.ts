@@ -1,4 +1,5 @@
 import { hasSinDetails } from '../utils/deadlySins';
+import { PuttCount, puttCountFor } from '../utils/puttingEntry';
 import {
     updateScorecardService,
     replaceHoleDeadlySinsService,
@@ -23,7 +24,7 @@ type HoleEditInput = {
     sins: DeadlySinsValues | null;
     sinDetails: SinDetailsInput;
     hadPriorSinDetails: boolean;
-    puttingStats: { firstPutt?: number; secondPutt?: number; secondIsLong: boolean; greenInRegulation: boolean } | null;
+    puttingStats: { firstPutt?: number; secondPutt?: number; secondIsLong: boolean; greenInRegulation: boolean; putts?: PuttCount } | null;
 };
 
 type ScorecardSaveResult = 'saved' | 'missing-first-putt' | 'failed';
@@ -88,7 +89,9 @@ export const saveScorecardEditsService = async (input: {
 
     if (holeNumber !== null && hole.puttingStats) {
         const stats = hole.puttingStats;
-        await insertPuttingStatsService(roundId, holeNumber, stats.firstPutt ?? 0, stats.secondPutt ?? 0, stats.secondIsLong, undefined, undefined, stats.greenInRegulation);
+        // The count chosen on the hole is stored; without one, it is worked out from the distances and the sin
+        const putts = stats.putts ?? puttCountFor({ firstPutt: stats.firstPutt, secondPutt: stats.secondPutt, threePutts: hole.sins?.threePutts ?? false });
+        await insertPuttingStatsService(roundId, holeNumber, stats.firstPutt ?? 0, stats.secondPutt ?? 0, stats.secondIsLong, undefined, undefined, stats.greenInRegulation, putts);
     }
 
     if (input.newStartTime) {

@@ -164,7 +164,7 @@ describe('ScorecardEditService', () => {
                 }),
             });
 
-            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 3, true, undefined, undefined, true);
+            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 3, true, undefined, undefined, true, 2);
         });
 
         it('shouldStoreAMissingSecondPuttAsZeroMeaningNoSecondPutt', async () => {
@@ -175,8 +175,31 @@ describe('ScorecardEditService', () => {
                 }),
             });
 
-            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 0, false, undefined, undefined, false);
+            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 0, false, undefined, undefined, false, 1);
         });
+
+        it('shouldStoreTheChosenPuttCountWithTheHole', async () => {
+            await save({
+                hole: holeEdit({
+                    holeNumber: 3,
+                    puttingStats: { firstPutt: 20, secondPutt: 0, secondIsLong: false, greenInRegulation: false, putts: 1 },
+                }),
+            });
+
+            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 0, false, undefined, undefined, false, 1);
+        });
+
+        it('shouldStoreThreePuttsAsTheChosenCountEvenWhenTheSecondPuttIsZero', async () => {
+            await save({
+                hole: holeEdit({
+                    holeNumber: 3,
+                    puttingStats: { firstPutt: 20, secondPutt: 0, secondIsLong: false, greenInRegulation: false, putts: 3 },
+                }),
+            });
+
+            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 0, false, undefined, undefined, false, 3);
+        });
+
 
         it('shouldBlockTheSaveWithMissingFirstPuttAndWriteNothing', async () => {
             const result = await save({

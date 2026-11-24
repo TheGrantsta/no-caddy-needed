@@ -65,7 +65,7 @@ import AcknowledgeOverlay from '../../components/AcknowledgeOverlay';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 import { isTripleBogeyOrWorse } from '../../utils/scoring';
 import { hasSinDetails } from '../../utils/deadlySins';
-import type { PuttCount } from '../../utils/puttingEntry';
+import { puttCountFor, type PuttCount } from '../../utils/puttingEntry';
 
 const BAD_HOLE_MESSAGES = [
     'A triple bogey isn\'t the end of the round — plenty of golf left.',
@@ -387,6 +387,7 @@ export default function Play() {
             secondPutt: saved.SecondPuttDistance,
             secondIsLong: saved.SecondPuttIsLong === 1,
             greenInRegulation: saved.GreenInRegulation,
+            putts: (saved.PuttCount ?? undefined) as PuttCount | undefined,
         } : null);
         const details = roundId ? getHoleSinDetailsService(roundId, holeNumber) : null;
         setSelectedOffTeeClub(details?.TroubleOffTeeClub ?? undefined);
@@ -420,7 +421,9 @@ export default function Play() {
                 await deleteHoleSinDetailsService(activeRoundId!, holeNumber);
             }
             if (puttingStats && puttingStats.firstPutt !== undefined) {
-                await insertPuttingStatsService(activeRoundId!, holeNumber, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong, undefined, undefined, puttingStats.greenInRegulation);
+                // The count chosen on the hole is stored; without one, it is worked out from the distances and the sin
+                const putts = puttingStats.putts ?? puttCountFor({ firstPutt: puttingStats.firstPutt, secondPutt: puttingStats.secondPutt, threePutts: deadlySinsValues.threePutts });
+                await insertPuttingStatsService(activeRoundId!, holeNumber, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong, undefined, undefined, puttingStats.greenInRegulation, putts);
             }
         }
         return true;
@@ -511,6 +514,14 @@ export default function Play() {
     // Three or more putts turns the 3-putt deadly sin on; going back below three turns it off
     const handlePuttCountChange = (count: PuttCount) => {
         handleDeadlySinsValuesChange({ ...deadlySinsValues, threePutts: count >= 3 });
+        // The chosen count is kept with the hole, so it is stored as chosen
+        setPuttingStats(prev => ({
+            firstPutt: prev?.firstPutt,
+            secondPutt: prev?.secondPutt,
+            secondIsLong: prev?.secondIsLong ?? false,
+            greenInRegulation: prev?.greenInRegulation ?? false,
+            putts: count,
+        }));
     };
 
     // Reads the current distances and wedge chart each time the yardages open, so edits show straight away
@@ -646,7 +657,7 @@ export default function Play() {
                                             puttingSecondPuttRequiredError={puttingSecondPuttRequiredError}
                                             showPuttingInfo={showPuttingInfo}
                                             onStatsChange={(firstPutt, secondPutt, secondIsLong, greenInRegulation) => {
-                                                setPuttingStats({ firstPutt, secondPutt, secondIsLong, greenInRegulation });
+                                                setPuttingStats(prev => ({ ...prev, firstPutt, secondPutt, secondIsLong, greenInRegulation }));
                                                 if (firstPutt !== undefined) setPuttingFirstPuttError(false);
                                                 if (secondPutt !== undefined) setPuttingSecondPuttRequiredError(false);
                                             }}

@@ -54,6 +54,15 @@ describe('PuttingStats database', () => {
             expect(result[0]).toHaveProperty('RoundId');
         });
 
+        it('includes the stored PuttCount in SELECT so putt counts follow the count, not the sin', () => {
+            mockGetAllSync.mockReturnValue([]);
+
+            getAllPuttingStatsWithThreePutts();
+
+            const sqlArg = mockGetAllSync.mock.calls[0][0];
+            expect(sqlArg.toUpperCase()).toMatch(/PS\.PUTTCOUNT/);
+        });
+
         it('includes GreenInRegulation in SELECT so up-and-down can be calculated', () => {
             mockGetAllSync.mockReturnValue([]);
 
@@ -84,6 +93,27 @@ describe('PuttingStats database', () => {
 
             const bindings = mockExecuteAsync.mock.calls[0][0];
             expect(bindings.$GreenInRegulation).toBe(0);
+        });
+
+        it('shouldPersistTheChosenPuttCount', async () => {
+            await insertPuttingStats(1, 3, 20, 3, false, undefined, undefined, false, 3);
+
+            const bindings = mockExecuteAsync.mock.calls[0][0];
+            expect(bindings.$PuttCount).toBe(3);
+        });
+
+        it('shouldLeaveThePuttCountNullWhenOmitted', async () => {
+            await insertPuttingStats(1, 3, 20, 0, false);
+
+            const bindings = mockExecuteAsync.mock.calls[0][0];
+            expect(bindings.$PuttCount).toBeNull();
+        });
+
+        it('shouldIncludePuttCountColumnInInsertStatement', async () => {
+            await insertPuttingStats(1, 3, 20, 0, false, undefined, undefined, false, 1);
+
+            const sql = mockPrepareAsync.mock.calls[0][0];
+            expect(sql).toMatch(/INSERT INTO PuttingStats \(.*PuttCount.*\)/);
         });
 
         it('shouldIncludeGreenInRegulationColumnInInsertStatement', async () => {

@@ -214,3 +214,20 @@ describe('getRoundScoreBreakdownService up-and-down', () => {
         expect(getRoundScoreBreakdownService(1).upAndDown).toBe('-');
     });
 });
+
+describe('getRoundScoreBreakdownService stored putt count', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockGetRoundById.mockReturnValue({ Created_At: '01/06' });
+        mockGetDeadlySinsForRound.mockReturnValue({ ThreePutts: 0, Penalties: 0 });
+    });
+
+    it('shouldCountTheStoredPuttCountNotTheThreePuttSin', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([
+            { RoundId: 1, FirstPuttDistance: 12, SecondPuttDistance: 3, GreenInRegulation: 0, PuttCount: 1, ThreePutts: 1 },
+        ]);
+
+        expect(getRoundScoreBreakdownService(1).putts).toBe(1);
+    });
+});
+

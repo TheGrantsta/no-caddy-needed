@@ -1,4 +1,5 @@
 import { getTwoDigitDayAndMonth } from '@/utils/DateFormatter';
+import { countHolePutts } from '@/utils/puttCount';
 import { DEFAULT_QUICK_TOOLS, parseQuickTools, serializeQuickTools } from '@/utils/quickTools';
 import type { DistanceUnit } from './UnitsService';
 import {
@@ -203,9 +204,9 @@ export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {
     }));
 };
 
-export const insertPuttingStatsService = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean, greenInRegulation: boolean = false): Promise<boolean> => {
+export const insertPuttingStatsService = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean, greenInRegulation: boolean = false, puttCount?: number): Promise<boolean> => {
     await deletePuttingStatsByHole(roundId, holeNumber);
-    return insertPuttingStats(roundId, holeNumber, firstPuttDistance, secondPuttDistance, secondPuttIsLong, thirdPuttDistance, thirdPuttIsLong, greenInRegulation);
+    return insertPuttingStats(roundId, holeNumber, firstPuttDistance, secondPuttDistance, secondPuttIsLong, thirdPuttDistance, thirdPuttIsLong, greenInRegulation, puttCount);
 };
 
 export const getPuttingStatsService = (roundId: number, holeNumber: number): PuttingStats | null => {
@@ -221,6 +222,7 @@ export const getPuttingStatsService = (roundId: number, holeNumber: number): Put
         SecondPuttIsLong: row.SecondPuttIsLong,
         ThirdPuttDistance: row.ThirdPuttDistance ?? undefined,
         ThirdPuttIsLong: row.ThirdPuttIsLong ?? undefined,
+        PuttCount: row.PuttCount ?? null,
         GreenInRegulation: row.GreenInRegulation === 1,
     };
 };
@@ -486,6 +488,8 @@ export type PuttingStats = {
     ThirdPuttDistance?: number;
     ThirdPuttIsLong?: number;
     GreenInRegulation: boolean;
+    // The putt count stored on the hole; null on holes saved before it was stored
+    PuttCount: number | null;
 };
 
 export type HoleSinDetails = {
@@ -663,15 +667,9 @@ export const getRoundScoreBreakdownService = (roundId: number): RoundScoreBreakd
     const puttingStats = getAllPuttingStatsWithThreePutts();
     const roundStats = puttingStats.filter((row) => row.RoundId === roundId);
     let putts = 0;
+    // Each hole's putts are read the same way as on the hole list: the count stored on the hole
     roundStats.forEach((stat) => {
-        // A chip-in (first putt = 0) is holed without a putt
-        if (stat.FirstPuttDistance === 0) return;
-        if (stat.ThreePutts === 1) {
-            putts += 3;
-        } else {
-            putts += 1;
-            if (stat.SecondPuttDistance > 0) putts += 1;
-        }
+        putts += countHolePutts(stat, stat.ThreePutts === 1);
     });
 
     const upAndDown = getUpAndDownRateService(new Set([roundId])).rate;

@@ -694,7 +694,7 @@ describe('Play screen', () => {
 
                 await waitFor(() => {
                     expect(mockAddMultiplayerHoleScores).toHaveBeenCalled();
-                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, false);
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, false, 1);
                     expect(mockInsertHoleDeadlySins).toHaveBeenCalled();
                 });
             });
@@ -784,7 +784,7 @@ describe('Play screen', () => {
                 });
 
                 await waitFor(() => {
-                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 0, 0, false, undefined, undefined, false);
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 0, 0, false, undefined, undefined, false, 0);
                 });
             });
 
@@ -804,7 +804,7 @@ describe('Play screen', () => {
                 });
 
                 await waitFor(() => {
-                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, false);
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, false, 1);
                 });
             });
 
@@ -825,7 +825,7 @@ describe('Play screen', () => {
                 });
 
                 await waitFor(() => {
-                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 3, false, undefined, undefined, true);
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 3, false, undefined, undefined, true, 2);
                 });
             });
 
@@ -847,7 +847,7 @@ describe('Play screen', () => {
                 });
 
                 await waitFor(() => {
-                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 3, false, undefined, undefined, false);
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 3, false, undefined, undefined, false, 2);
                 });
             });
         });

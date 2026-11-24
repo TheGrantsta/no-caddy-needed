@@ -56,7 +56,7 @@ describe('buildSummaryForRoundService', () => {
 
         const summary = buildSummaryForRoundService(7, false);
 
-        expect(summary?.putting).toEqual({ putts: 4, greensInRegulation: 1, holes: 2 });
+        expect(summary?.putting).toEqual({ putts: 3, greensInRegulation: 1, holes: 2 });
         expect(summary?.sins?.total).toBe(1);
     });
 });

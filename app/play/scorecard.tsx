@@ -40,6 +40,7 @@ import { useThemeColours } from '../../context/ThemeContext';
 import { formatLongDate } from '../../utils/drillHistory';
 import { countHolePutts } from '../../utils/puttCount';
 import type { PuttingEntryValue } from '../../components/PuttingEntry';
+import type { PuttCount } from '../../utils/puttingEntry';
 import { greenInRegulation, puttCountFor, statsForPutts } from '../../utils/puttingEntry';
 import { useOrientation } from '../../hooks/useOrientation';
 
@@ -157,6 +158,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                 secondPutt: existingPuttingStats.SecondPuttDistance || undefined,
                 secondIsLong: !!existingPuttingStats.SecondPuttIsLong,
                 greenInRegulation: !!existingPuttingStats.GreenInRegulation,
+                putts: (existingPuttingStats.PuttCount ?? undefined) as PuttCount | undefined,
             } : null);
             edit.setHadPriorPuttingStats(!!existingPuttingStats);
         } else {
@@ -429,6 +431,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
             secondPutt: stats.secondPutt,
             secondIsLong: stats.secondIsLong,
             greenInRegulation: edit.puttingStats?.greenInRegulation ?? false,
+            putts: value.putts,
         });
         edit.setEditedSins({ ...(edit.editedSins ?? INITIAL_SINS), threePutts: value.putts >= 3 });
     };
@@ -504,7 +507,7 @@ function ScorecardPage({ roundId, width, onEditingChange }: ScorecardPageProps) 
                                             par={selectedEditHole.HolePar}
                                             strokes={selectedEditHole.Score}
                                             putting={{
-                                                putts: puttCountFor({ firstPutt: edit.puttingStats?.firstPutt, secondPutt: edit.puttingStats?.secondPutt, threePutts: edit.editedSins?.threePutts ?? false }),
+                                                putts: edit.puttingStats?.putts ?? puttCountFor({ firstPutt: edit.puttingStats?.firstPutt, secondPutt: edit.puttingStats?.secondPutt, threePutts: edit.editedSins?.threePutts ?? false }),
                                                 firstPutt: edit.puttingStats?.firstPutt,
                                                 secondPutt: edit.puttingStats?.secondPutt,
                                                 secondIsLong: edit.puttingStats?.secondIsLong ?? false,

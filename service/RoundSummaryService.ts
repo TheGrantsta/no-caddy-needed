@@ -1,5 +1,6 @@
 import { buildRoundSummary, SummarySins } from '../utils/roundSummary';
 import { getDeadlySinsForRoundService, getMultiplayerScorecardService, getPuttingStatsService } from './DbService';
+import { countHolePutts } from '../utils/puttCount';
 
 // The "Round saved" summary, read back from what was stored for the round. Null if the round has no scorecard.
 export const buildSummaryForRoundService = (roundId: number, isScoreOnly: boolean) => {
@@ -14,6 +15,7 @@ export const buildSummaryForRoundService = (roundId: number, isScoreOnly: boolea
             firstPutt: saved.FirstPuttDistance ?? undefined,
             secondPutt: saved.SecondPuttDistance ?? undefined,
             greenInRegulation: Boolean(saved.GreenInRegulation),
+            putts: countHolePutts(saved, false),
         }];
     });
     const totals = isScoreOnly ? null : getDeadlySinsForRoundService(roundId);

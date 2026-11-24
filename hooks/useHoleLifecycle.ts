@@ -1,12 +1,15 @@
 import { useState, useCallback } from 'react';
 import { DeadlySinsValues } from '../service/DbService';
 import { HOLES_PER_ROUND } from '../utils/holeOrder';
+import type { PuttCount } from '../utils/puttingEntry';
 
 export interface PuttingStats {
     firstPutt?: number;
     secondPutt?: number;
     secondIsLong: boolean;
     greenInRegulation: boolean;
+    // The putt count chosen on the hole (0, 1, 2 or 3 for 3+)
+    putts?: PuttCount;
 }
 
 const INITIAL_SINS: DeadlySinsValues = {

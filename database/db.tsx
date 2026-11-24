@@ -61,6 +61,7 @@ type PuttingStatsRow = {
     ThirdPuttDistance: number | null;
     ThirdPuttIsLong: number | null;
     GreenInRegulation: number;
+    PuttCount: number | null;
 };
 
 type PuttingStatsWithThreePuttsRow = {
@@ -69,6 +70,7 @@ type PuttingStatsWithThreePuttsRow = {
     SecondPuttDistance: number;
     SecondPuttIsLong: number;
     GreenInRegulation: number;
+    PuttCount: number | null;
     ThreePutts: number;
 };
 
@@ -284,6 +286,12 @@ export const initialize = async () => {
             columnsToAdd: ['GreenInRegulation INTEGER NOT NULL DEFAULT 0'],
             columnsToRemove: [],
         },
+        {
+            // The putt count chosen on the hole (0, 1, 2 or 3 for 3+). Null on holes saved before it was stored.
+            table: 'PuttingStats',
+            columnsToAdd: ['PuttCount INTEGER'],
+            columnsToRemove: [],
+        },
     ];
 
     for (const migration of migrations) {
@@ -463,8 +471,8 @@ export const getRoundHoleScoresByHole = (roundId: number, holeNumber: number) =>
     );
 };
 
-export const insertPuttingStats = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean, greenInRegulation: boolean = false): Promise<boolean> => {
-    return runStatement('db.insertPuttingStats', 'INSERT INTO PuttingStats (RoundId, HoleNumber, FirstPuttDistance, SecondPuttDistance, SecondPuttIsLong, ThirdPuttDistance, ThirdPuttIsLong, GreenInRegulation) VALUES ($RoundId, $HoleNumber, $FirstPuttDistance, $SecondPuttDistance, $SecondPuttIsLong, $ThirdPuttDistance, $ThirdPuttIsLong, $GreenInRegulation);', {
+export const insertPuttingStats = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean, greenInRegulation: boolean = false, puttCount?: number): Promise<boolean> => {
+    return runStatement('db.insertPuttingStats', 'INSERT INTO PuttingStats (RoundId, HoleNumber, FirstPuttDistance, SecondPuttDistance, SecondPuttIsLong, ThirdPuttDistance, ThirdPuttIsLong, GreenInRegulation, PuttCount) VALUES ($RoundId, $HoleNumber, $FirstPuttDistance, $SecondPuttDistance, $SecondPuttIsLong, $ThirdPuttDistance, $ThirdPuttIsLong, $GreenInRegulation);', {
                 $RoundId: roundId,
                 $HoleNumber: holeNumber,
                 $FirstPuttDistance: firstPuttDistance,
@@ -473,6 +481,7 @@ export const insertPuttingStats = async (roundId: number, holeNumber: number, fi
                 $ThirdPuttDistance: thirdPuttDistance ?? null,
                 $ThirdPuttIsLong: thirdPuttIsLong ? 1 : 0,
                 $GreenInRegulation: greenInRegulation ? 1 : 0,
+                $PuttCount: puttCount ?? null,
             });
 };
 
@@ -485,7 +494,7 @@ export const getPuttingStats = (roundId: number, holeNumber: number) => {
 
 export const getAllPuttingStatsWithThreePutts = () => {
     return getSyncDb().getAllSync<PuttingStatsWithThreePuttsRow>(
-        `SELECT ps.RoundId, ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.GreenInRegulation, COALESCE(hds.ThreePutts, 0) AS ThreePutts
+        `SELECT ps.RoundId, ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.GreenInRegulation, ps.PuttCount, COALESCE(hds.ThreePutts, 0) AS ThreePutts
          FROM PuttingStats ps
          LEFT JOIN HoleDeadlySins hds ON hds.RoundId = ps.RoundId AND hds.HoleNumber = ps.HoleNumber;`
     );

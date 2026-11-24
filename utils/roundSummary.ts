@@ -2,7 +2,7 @@
 
 type SummaryPlayer = { Id: number; PlayerName: string };
 type SummaryHoleScore = { RoundPlayerId: number; HoleNumber: number; Score: number };
-type SummaryPutting = { hole: number; firstPutt?: number; secondPutt?: number; greenInRegulation: boolean };
+type SummaryPutting = { hole: number; firstPutt?: number; secondPutt?: number; greenInRegulation: boolean; putts?: number };
 export type SummarySins = Record<string, number>;
 
 type Input = {
@@ -37,10 +37,12 @@ export const buildRoundSummary = ({ courseName, players, holeScores, putting, si
     const holesPlayed = new Set(holeScores.map(h => h.HoleNumber)).size;
 
     // Putts: one for each first putt, plus one for each second putt entered. A chip-in (first putt = 0) has none.
+    // Putts: the count stored on each hole, or for older holes one for the first putt and one for a second putt
     const putts = putting.reduce(
         (sum, p) => {
-            if (p.firstPutt === 0) return sum;
-            return sum + (p.firstPutt !== undefined ? 1 : 0) + (p.secondPutt !== undefined ? 1 : 0);
+            if (p.putts !== undefined) return sum + p.putts;
+            if (p.firstPutt === undefined || p.firstPutt === 0) return sum;
+            return sum + 1 + (p.secondPutt !== undefined && p.secondPutt > 0 ? 1 : 0);
         },
         0,
     );

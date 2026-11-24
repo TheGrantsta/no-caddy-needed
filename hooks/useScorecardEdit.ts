@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { DeadlySinsValues, RoundHoleScore } from '../service/DbService';
+import type { PuttCount } from '../utils/puttingEntry';
 
 export function useScorecardEdit() {
     const [isEditing, setIsEditing] = useState(false);
@@ -17,7 +18,7 @@ export function useScorecardEdit() {
     const [sinDetailsBogeysClubError, setSinDetailsBogeysClubError] = useState(false);
     const [sinDetailsDoubleChipReasonError, setSinDetailsDoubleChipReasonError] = useState(false);
     const [hadPriorSinDetails, setHadPriorSinDetails] = useState(false);
-    const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt?: number; secondIsLong: boolean; greenInRegulation: boolean } | null>(null);
+    const [puttingStats, setPuttingStats] = useState<{ firstPutt?: number; secondPutt?: number; secondIsLong: boolean; greenInRegulation: boolean; putts?: PuttCount } | null>(null);
     const [hadPriorPuttingStats, setHadPriorPuttingStats] = useState(false);
 
     // Clears the sin, sin-detail and putting values for the hole being edited. The editing session,

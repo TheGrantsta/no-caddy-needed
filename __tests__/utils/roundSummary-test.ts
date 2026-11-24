@@ -105,3 +105,33 @@ describe('buildRoundSummary chip-ins', () => {
         expect(summary.putting?.putts).toBe(0);
     });
 });
+
+describe('buildRoundSummary one-putts', () => {
+    const sinsNone = { TroubleOffTee: 0, Penalties: 0, ThreePutts: 0, BogeysInside9Iron: 0, DoubleChips: 0, DoubleBogeys: 0, BogeysPar5: 0 };
+
+    it('shouldCountAOnePuttAsOnePutt', () => {
+        const summary = buildRoundSummary({
+            courseName: 'Augusta',
+            players,
+            holeScores,
+            putting: [{ hole: 1, firstPutt: 18, secondPutt: 0, greenInRegulation: false }],
+            sins: sinsNone,
+            isScoreOnly: false,
+        });
+
+        expect(summary.putting?.putts).toBe(1);
+    });
+
+    it('shouldUseTheStoredPuttCountWhenItIsKnown', () => {
+        const summary = buildRoundSummary({
+            courseName: 'Augusta',
+            players,
+            holeScores,
+            putting: [{ hole: 1, firstPutt: 12, secondPutt: 3, greenInRegulation: false, putts: 3 }],
+            sins: sinsNone,
+            isScoreOnly: false,
+        });
+
+        expect(summary.putting?.putts).toBe(3);
+    });
+});

@@ -91,7 +91,7 @@ export const saveScorecardEditsService = async (input: {
         const stats = hole.puttingStats;
         // The count chosen on the hole is stored; without one, it is worked out from the distances and the sin
         const putts = stats.putts ?? puttCountFor({ firstPutt: stats.firstPutt, secondPutt: stats.secondPutt, threePutts: hole.sins?.threePutts ?? false });
-        await insertPuttingStatsService(roundId, holeNumber, stats.firstPutt ?? 0, stats.secondPutt ?? 0, stats.secondIsLong, undefined, undefined, stats.greenInRegulation, putts);
+        await insertPuttingStatsService(roundId, holeNumber, stats.firstPutt ?? 0, stats.secondPutt ?? 0, stats.secondIsLong, stats.greenInRegulation, putts);
     }
 
     if (input.newStartTime) {

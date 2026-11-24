@@ -283,14 +283,8 @@ export const initialize = async () => {
         },
         {
             table: 'PuttingStats',
-            columnsToAdd: ['GreenInRegulation INTEGER NOT NULL DEFAULT 0'],
-            columnsToRemove: [],
-        },
-        {
-            // The putt count chosen on the hole (0, 1, 2 or 3 for 3+). Null on holes saved before it was stored.
-            table: 'PuttingStats',
-            columnsToAdd: ['PuttCount INTEGER'],
-            columnsToRemove: [],
+            columnsToAdd: ['GreenInRegulation INTEGER NOT NULL DEFAULT 0', 'PuttCount INTEGER'],
+            columnsToRemove: ['ThirdPuttDistance', 'ThirdPuttIsLong'],
         },
     ];
 
@@ -471,15 +465,13 @@ export const getRoundHoleScoresByHole = (roundId: number, holeNumber: number) =>
     );
 };
 
-export const insertPuttingStats = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean, greenInRegulation: boolean = false, puttCount?: number): Promise<boolean> => {
-    return runStatement('db.insertPuttingStats', 'INSERT INTO PuttingStats (RoundId, HoleNumber, FirstPuttDistance, SecondPuttDistance, SecondPuttIsLong, ThirdPuttDistance, ThirdPuttIsLong, GreenInRegulation, PuttCount) VALUES ($RoundId, $HoleNumber, $FirstPuttDistance, $SecondPuttDistance, $SecondPuttIsLong, $ThirdPuttDistance, $ThirdPuttIsLong, $GreenInRegulation, $PuttCount);', {
+export const insertPuttingStats = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, greenInRegulation: boolean = false, puttCount?: number): Promise<boolean> => {
+    return runStatement('db.insertPuttingStats', 'INSERT INTO PuttingStats (RoundId, HoleNumber, FirstPuttDistance, SecondPuttDistance, SecondPuttIsLong, GreenInRegulation, PuttCount) VALUES ($RoundId, $HoleNumber, $FirstPuttDistance, $SecondPuttDistance, $SecondPuttIsLong, $GreenInRegulation, $PuttCount);', {
         $RoundId: roundId,
         $HoleNumber: holeNumber,
         $FirstPuttDistance: firstPuttDistance,
         $SecondPuttDistance: secondPuttDistance,
         $SecondPuttIsLong: secondPuttIsLong ? 1 : 0,
-        $ThirdPuttDistance: thirdPuttDistance ?? null,
-        $ThirdPuttIsLong: thirdPuttIsLong ? 1 : 0,
         $GreenInRegulation: greenInRegulation ? 1 : 0,
         $PuttCount: puttCount ?? null,
     });

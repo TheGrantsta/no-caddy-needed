@@ -124,19 +124,19 @@ describe('insertPuttingStatsService', () => {
         mockDeletePuttingStatsByHole.mockResolvedValue(true);
         mockInsertPuttingStats.mockResolvedValue(true);
 
-        await insertPuttingStatsService(1, 5, 25, 8, false);
+        await insertPuttingStatsService(1, 5, 25, 8, false, true, 2);
 
         expect(mockDeletePuttingStatsByHole).toHaveBeenCalledWith(1, 5);
-        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 5, 25, 8, false, undefined, undefined, false, undefined);
+        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 5, 25, 8, false, true, 2);
     });
 
     it('inserts putting stats with third putt data', async () => {
         mockDeletePuttingStatsByHole.mockResolvedValue(true);
         mockInsertPuttingStats.mockResolvedValue(true);
 
-        await insertPuttingStatsService(1, 6, 35, 12, true, 4, false);
+        await insertPuttingStatsService(1, 6, 35, 12, true, false, 2);
 
-        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 6, 35, 12, true, 4, false, false, undefined);
+        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 6, 35, 12, true, false, 2);
     });
 
     it('returns false if insert fails', async () => {
@@ -158,14 +158,14 @@ describe('insertPuttingStatsService green in regulation', () => {
     });
 
     it('shouldForwardGreenInRegulationTrueToInsert', async () => {
-        await insertPuttingStatsService(1, 9, 15, 0, false, undefined, undefined, true);
+        await insertPuttingStatsService(1, 9, 15, 0, false, true, 2);
 
-        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 9, 15, 0, false, undefined, undefined, true, undefined);
+        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 9, 15, 0, false, true, 2);
     });
 
     it('shouldDefaultGreenInRegulationToFalseWhenOmitted', async () => {
-        await insertPuttingStatsService(1, 9, 15, 0, false);
+        await insertPuttingStatsService(1, 9, 15, 0, false, true, 2);
 
-        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 9, 15, 0, false, undefined, undefined, false, undefined);
+        expect(mockInsertPuttingStats).toHaveBeenCalledWith(1, 9, 15, 0, false, true, 2);
     });
 });

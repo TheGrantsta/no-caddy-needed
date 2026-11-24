@@ -1736,7 +1736,7 @@ describe('Scorecard screen', () => {
                 fireEvent.press(getByTestId('edit-hole-save-button'));
 
                 await waitFor(() => {
-                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, undefined, undefined, false, 1);
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 0, false, false, 1);
                 });
             });
 
@@ -1752,7 +1752,7 @@ describe('Scorecard screen', () => {
                 fireEvent.press(getByTestId('edit-hole-save-button'));
 
                 await waitFor(() => {
-                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 5, false, undefined, undefined, true, 2);
+                    expect(insertPuttingStatsService).toHaveBeenCalledWith(1, 1, 20, 5, false, true, 2);
                 });
             });
         });
@@ -1870,7 +1870,7 @@ describe('Scorecard edit: chip-in', () => {
         fireEvent.press(getByTestId('edit-hole-save-button'));
 
         await waitFor(() => {
-            expect(_mockInsertPuttingStats).toHaveBeenCalledWith(1, 1, 0, 0, false, undefined, undefined, false, 0);
+            expect(_mockInsertPuttingStats).toHaveBeenCalledWith(1, 1, 0, 0, false, false, 0);
         });
     });
 

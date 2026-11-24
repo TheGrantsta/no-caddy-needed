@@ -204,9 +204,9 @@ export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {
     }));
 };
 
-export const insertPuttingStatsService = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, thirdPuttDistance?: number, thirdPuttIsLong?: boolean, greenInRegulation: boolean = false, puttCount?: number): Promise<boolean> => {
+export const insertPuttingStatsService = async (roundId: number, holeNumber: number, firstPuttDistance: number, secondPuttDistance: number, secondPuttIsLong: boolean, greenInRegulation: boolean = false, puttCount?: number): Promise<boolean> => {
     await deletePuttingStatsByHole(roundId, holeNumber);
-    return insertPuttingStats(roundId, holeNumber, firstPuttDistance, secondPuttDistance, secondPuttIsLong, thirdPuttDistance, thirdPuttIsLong, greenInRegulation, puttCount);
+    return insertPuttingStats(roundId, holeNumber, firstPuttDistance, secondPuttDistance, secondPuttIsLong, greenInRegulation, puttCount);
 };
 
 export const getPuttingStatsService = (roundId: number, holeNumber: number): PuttingStats | null => {

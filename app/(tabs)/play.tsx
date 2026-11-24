@@ -423,7 +423,7 @@ export default function Play() {
             if (puttingStats && puttingStats.firstPutt !== undefined) {
                 // The count chosen on the hole is stored; without one, it is worked out from the distances and the sin
                 const putts = puttingStats.putts ?? puttCountFor({ firstPutt: puttingStats.firstPutt, secondPutt: puttingStats.secondPutt, threePutts: deadlySinsValues.threePutts });
-                await insertPuttingStatsService(activeRoundId!, holeNumber, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong, undefined, undefined, puttingStats.greenInRegulation, putts);
+                await insertPuttingStatsService(activeRoundId!, holeNumber, puttingStats.firstPutt, puttingStats.secondPutt ?? 0, puttingStats.secondIsLong, puttingStats.greenInRegulation, putts);
             }
         }
         return true;
@@ -643,28 +643,28 @@ export default function Play() {
                                             </TouchableOpacity>
                                         </View>
                                         <View style={styles.holeScreen.card}>
-                                        <PhasePutting
-                                            key={`putting-${currentHole}`}
-                                            holePar={currentHoleData?.holePar ?? 4}
-                                            userScore={currentHoleData?.scores.find(s => {
-                                                const player = players.find(p => p.Id === s.playerId);
-                                                return player && player.IsUser === 1;
-                                            })?.score}
-                                            deadlySinsValues={deadlySinsValues}
-                                            puttingStats={puttingStats}
-                                            puttingFirstPuttError={puttingFirstPuttError}
-                                            puttingSecondPuttError={puttingSecondPuttError}
-                                            puttingSecondPuttRequiredError={puttingSecondPuttRequiredError}
-                                            showPuttingInfo={showPuttingInfo}
-                                            onStatsChange={(firstPutt, secondPutt, secondIsLong, greenInRegulation) => {
-                                                setPuttingStats(prev => ({ ...prev, firstPutt, secondPutt, secondIsLong, greenInRegulation }));
-                                                if (firstPutt !== undefined) setPuttingFirstPuttError(false);
-                                                if (secondPutt !== undefined) setPuttingSecondPuttRequiredError(false);
-                                            }}
-                                            onPuttCountChange={handlePuttCountChange}
-                                            onErrorChange={setPuttingSecondPuttError}
-                                            onShowInfo={setShowPuttingInfo}
-                                        />
+                                            <PhasePutting
+                                                key={`putting-${currentHole}`}
+                                                holePar={currentHoleData?.holePar ?? 4}
+                                                userScore={currentHoleData?.scores.find(s => {
+                                                    const player = players.find(p => p.Id === s.playerId);
+                                                    return player && player.IsUser === 1;
+                                                })?.score}
+                                                deadlySinsValues={deadlySinsValues}
+                                                puttingStats={puttingStats}
+                                                puttingFirstPuttError={puttingFirstPuttError}
+                                                puttingSecondPuttError={puttingSecondPuttError}
+                                                puttingSecondPuttRequiredError={puttingSecondPuttRequiredError}
+                                                showPuttingInfo={showPuttingInfo}
+                                                onStatsChange={(firstPutt, secondPutt, secondIsLong, greenInRegulation) => {
+                                                    setPuttingStats(prev => ({ ...prev, firstPutt, secondPutt, secondIsLong, greenInRegulation }));
+                                                    if (firstPutt !== undefined) setPuttingFirstPuttError(false);
+                                                    if (secondPutt !== undefined) setPuttingSecondPuttRequiredError(false);
+                                                }}
+                                                onPuttCountChange={handlePuttCountChange}
+                                                onErrorChange={setPuttingSecondPuttError}
+                                                onShowInfo={setShowPuttingInfo}
+                                            />
                                         </View>
 
                                         <PhaseStats

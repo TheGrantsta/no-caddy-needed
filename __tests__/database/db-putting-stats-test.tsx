@@ -75,14 +75,14 @@ describe('PuttingStats database', () => {
 
     describe('insertPuttingStats', () => {
         it('shouldPersistGreenInRegulationAsOneWhenTrue', async () => {
-            await insertPuttingStats(1, 3, 20, 0, false, undefined, undefined, true);
+            await insertPuttingStats(1, 3, 20, 0, false, true);
 
             const bindings = mockExecuteAsync.mock.calls[0][0];
             expect(bindings.$GreenInRegulation).toBe(1);
         });
 
         it('shouldPersistGreenInRegulationAsZeroWhenFalse', async () => {
-            await insertPuttingStats(1, 3, 20, 0, false, undefined, undefined, false);
+            await insertPuttingStats(1, 3, 20, 0, false, false);
 
             const bindings = mockExecuteAsync.mock.calls[0][0];
             expect(bindings.$GreenInRegulation).toBe(0);
@@ -96,7 +96,7 @@ describe('PuttingStats database', () => {
         });
 
         it('shouldPersistTheChosenPuttCount', async () => {
-            await insertPuttingStats(1, 3, 20, 3, false, undefined, undefined, false, 3);
+            await insertPuttingStats(1, 3, 20, 3, false, false, 3);
 
             const bindings = mockExecuteAsync.mock.calls[0][0];
             expect(bindings.$PuttCount).toBe(3);

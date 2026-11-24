@@ -164,7 +164,7 @@ describe('ScorecardEditService', () => {
                 }),
             });
 
-            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 3, true, undefined, undefined, true, 2);
+            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 3, true, true, 2);
         });
 
         it('shouldStoreAMissingSecondPuttAsZeroMeaningNoSecondPutt', async () => {
@@ -175,7 +175,7 @@ describe('ScorecardEditService', () => {
                 }),
             });
 
-            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 0, false, undefined, undefined, false, 1);
+            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 0, false, false, 1);
         });
 
         it('shouldStoreTheChosenPuttCountWithTheHole', async () => {
@@ -186,7 +186,7 @@ describe('ScorecardEditService', () => {
                 }),
             });
 
-            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 0, false, undefined, undefined, false, 1);
+            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 0, false, false, 1);
         });
 
         it('shouldStoreThreePuttsAsTheChosenCountEvenWhenTheSecondPuttIsZero', async () => {
@@ -197,7 +197,7 @@ describe('ScorecardEditService', () => {
                 }),
             });
 
-            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 0, false, undefined, undefined, false, 3);
+            expect(mockInsertPutting).toHaveBeenCalledWith(7, 3, 20, 0, false, false, 3);
         });
 
 

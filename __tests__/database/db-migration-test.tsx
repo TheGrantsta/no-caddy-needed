@@ -78,7 +78,6 @@ describe('Settings table column migration', () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
@@ -116,7 +115,6 @@ describe('Settings table column migration', () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
@@ -137,7 +135,6 @@ describe('Settings table column migration', () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
@@ -158,7 +155,6 @@ describe('Settings table column migration', () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
@@ -179,7 +175,6 @@ describe('Settings table column migration', () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
@@ -200,7 +195,6 @@ describe('Settings table column migration', () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
             ];
             if (sql === 'PRAGMA table_info(Rounds)') return [
@@ -221,7 +215,6 @@ describe('Settings table column migration', () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
                 { name: 'Voice' },
                 { name: 'WedgeChartOnboardingSeen' },
@@ -248,7 +241,6 @@ describe('Settings table column migration', () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
                 { name: 'Voice' },
                 { name: 'SoundsEnabled' },
@@ -257,8 +249,6 @@ describe('Settings table column migration', () => {
                 { name: 'PlayOnboardingSeen' },
                 { name: 'HomeOnboardingSeen' },
                 { name: 'PracticeOnboardingSeen' },
-                
-                { name: 'ReviewPromptShown' },
                 { name: 'WhatsNewVersionSeen' },
                 { name: 'SettingsOnboardingSeen' },
                 { name: 'PerformOnboardingSeen' },
@@ -280,7 +270,6 @@ describe('Settings table column migration', () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
                 { name: 'Voice' },
                 { name: 'SoundsEnabled' },
@@ -289,7 +278,6 @@ describe('Settings table column migration', () => {
                 { name: 'PlayOnboardingSeen' },
                 { name: 'HomeOnboardingSeen' },
                 { name: 'PracticeOnboardingSeen' },
-                { name: 'ReviewPromptShown' },
                 { name: 'WhatsNewVersionSeen' },
                 { name: 'SettingsOnboardingSeen' },
                 { name: 'PerformOnboardingSeen' },
@@ -312,7 +300,6 @@ describe('Settings table column migration', () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
                 { name: 'Voice' },
                 { name: 'SoundsEnabled' },
@@ -321,8 +308,6 @@ describe('Settings table column migration', () => {
                 { name: 'PlayOnboardingSeen' },
                 { name: 'HomeOnboardingSeen' },
                 { name: 'PracticeOnboardingSeen' },
-
-                { name: 'ReviewPromptShown' },
                 { name: 'WhatsNewVersionSeen' },
                 { name: 'SettingsOnboardingSeen' },
                 { name: 'PerformOnboardingSeen' },
@@ -342,11 +327,65 @@ describe('Settings table column migration', () => {
         expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE Settings DROP COLUMN PreShotRoutineText');
     });
 
+    it('should drop the write-only Updated_At column from an existing HoleNotes table', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(HoleNotes)') return [{ name: 'Id' }, { name: 'Updated_At' }];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE HoleNotes DROP COLUMN Updated_At');
+    });
+
+    it('should drop the write-only Created_At column from an existing PracticeReminders table', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(PracticeReminders)') return [{ name: 'Id' }, { name: 'Created_At' }];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE PracticeReminders DROP COLUMN Created_At');
+    });
+
+    it('should drop the unused DrillId column from an existing DrillHistory table', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(DrillHistory)') return [{ name: 'Id' }, { name: 'DrillId' }, { name: 'Score' }];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE DrillHistory DROP COLUMN DrillId');
+    });
+
+    it('should drop the unused ReviewPromptShown column from an existing Settings table', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Settings)') return [{ name: 'Id' }, { name: 'ReviewPromptShown' }];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE Settings DROP COLUMN ReviewPromptShown');
+    });
+
+    it('should drop the unused Theme column from an existing Settings table', async () => {
+        mockGetAllSync.mockImplementation((sql: string) => {
+            if (sql === 'PRAGMA table_info(Settings)') return [{ name: 'Id' }, { name: 'Theme' }];
+            return [];
+        });
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE Settings DROP COLUMN Theme');
+    });
+
     it('should not alter Settings table when all columns already exist', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
                 { name: 'NotificationsEnabled' },
                 { name: 'Voice' },
                 { name: 'SoundsEnabled' },
@@ -355,8 +394,6 @@ describe('Settings table column migration', () => {
                 { name: 'PlayOnboardingSeen' },
                 { name: 'HomeOnboardingSeen' },
                 { name: 'PracticeOnboardingSeen' },
-
-                { name: 'ReviewPromptShown' },
                 { name: 'WhatsNewVersionSeen' },
                 { name: 'SettingsOnboardingSeen' },
                 { name: 'PerformOnboardingSeen' },
@@ -397,7 +434,6 @@ describe('Rounds table IsScoreOnly column migration', () => {
             ];
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
             ];
             return [];
         });
@@ -420,7 +456,6 @@ describe('Rounds table IsScoreOnly column migration', () => {
             ];
             if (sql === 'PRAGMA table_info(Settings)') return [
                 { name: 'Id' },
-                { name: 'Theme' },
             ];
             return [];
         });
@@ -459,12 +494,11 @@ describe('DrillHistory table schema', () => {
         expect(sql).toContain('CREATE TABLE IF NOT EXISTS DrillHistory');
     });
 
-    it('DrillHistory DDL includes DrillId column', async () => {
+    it('DrillHistory DDL does not include DrillId column', async () => {
         await initialize();
 
         const sql = mockExecAsync.mock.calls[0][0];
-        const drillHistoryBlock = sql.substring(sql.indexOf('DrillHistory'));
-        expect(drillHistoryBlock).toContain('DrillId');
+        expect(sql).not.toMatch(/DrillHistory \(Id[^;]*DrillId/);
     });
 });
 
@@ -619,7 +653,7 @@ describe('old Drills to DrillHistory rename migration', () => {
     });
 });
 
-describe('DrillHistory DrillId column migration', () => {
+describe('DrillHistory DrillId column removal', () => {
     const allSettingsCols = [
         { name: 'Id' }, { name: 'Theme' }, { name: 'NotificationsEnabled' },
         { name: 'Voice' }, { name: 'SoundsEnabled' },
@@ -643,7 +677,7 @@ describe('DrillHistory DrillId column migration', () => {
         mockExecAsync.mockResolvedValue(undefined);
     });
 
-    it('adds DrillId column to DrillHistory when missing', async () => {
+    it('does not re-add DrillId column to DrillHistory', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
             if (sql === 'PRAGMA table_info(Drills)') return newDrillsCols;
@@ -658,12 +692,12 @@ describe('DrillHistory DrillId column migration', () => {
 
         await initialize();
 
-        expect(mockExecSync).toHaveBeenCalledWith(
+        expect(mockExecSync).not.toHaveBeenCalledWith(
             'ALTER TABLE DrillHistory ADD COLUMN DrillId INTEGER'
         );
     });
 
-    it('does not add DrillId when already present in DrillHistory', async () => {
+    it('drops DrillId from an existing DrillHistory table', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(Tiger5Rounds)') return [];
             if (sql === 'PRAGMA table_info(Drills)') return newDrillsCols;
@@ -681,7 +715,7 @@ describe('DrillHistory DrillId column migration', () => {
         const drillHistoryAlterCalls = mockExecSync.mock.calls.filter(
             (call: string[]) => call[0].includes('DrillHistory')
         );
-        expect(drillHistoryAlterCalls).toHaveLength(0);
+        expect(drillHistoryAlterCalls).toEqual([['ALTER TABLE DrillHistory DROP COLUMN DrillId']]);
     });
 
     it('adds Score column to DrillHistory when missing', async () => {

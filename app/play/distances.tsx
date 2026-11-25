@@ -37,7 +37,7 @@ export default function DistancesScreen() {
         await saveSettingsService({ ...currentSettings, distancesOnboardingSeen: true });
     };
 
-    const handleSave = async (distances: { Club: string; CarryDistance: number; TotalDistance: number; SortOrder: number }[]) => {
+    const handleSave = async (distances: { Club: string; CarryDistance: number; TotalDistance: number }[]) => {
         const saved = await saveClubDistancesService(distances);
         if (saved) {
             setDistances(distances.map((d, i) => ({ ...d, Id: i + 1 })));

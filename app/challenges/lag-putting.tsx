@@ -75,7 +75,7 @@ export default function LagPutting() {
     // Save records the score chosen so far, then leaves
     const handleSaveScore = () => {
         setShowEndSheet(false);
-        insertDrillResultService('Lag Putting', sim.score >= 6, null, sim.score);
+        insertDrillResultService('Lag Putting', sim.score >= 6, sim.score);
         showResult(true, 'Result saved', '');
         leave();
     };
@@ -99,7 +99,7 @@ export default function LagPutting() {
     useEffect(() => {
         if (sim.phase === 'complete' && !hasSaved.current) {
             hasSaved.current = true;
-            insertDrillResultService('Lag Putting', sim.score >= 6, null, sim.score);
+            insertDrillResultService('Lag Putting', sim.score >= 6, sim.score);
             showResult(true, 'Result saved', '');
         }
     }, [sim.phase, sim.score, showResult]);

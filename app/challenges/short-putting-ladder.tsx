@@ -78,7 +78,7 @@ export default function ShortPuttingLadder() {
     // Save records the attempts so far, then leaves
     const handleSaveProgress = () => {
         setShowEndSheet(false);
-        insertDrillResultService('Short-Putting Ladder', false, null, attemptsEntered);
+        insertDrillResultService('Short-Putting Ladder', false, attemptsEntered);
         showResult(true, 'Result saved', '');
         leave();
     };
@@ -103,7 +103,7 @@ export default function ShortPuttingLadder() {
     useEffect(() => {
         if (sim.phase === 'complete' && !hasSaved.current) {
             hasSaved.current = true;
-            insertDrillResultService('Short-Putting Ladder', sim.totalAttempts <= 11, null, sim.totalAttempts);
+            insertDrillResultService('Short-Putting Ladder', sim.totalAttempts <= 11, sim.totalAttempts);
             showResult(true, 'Result saved', '');
         }
     }, [sim.phase, sim.totalAttempts, showResult]);

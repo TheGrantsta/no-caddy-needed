@@ -252,7 +252,7 @@ describe('PuttingSimulation screen', () => {
             fireEvent.press(getByTestId('simulation-end-button'));
             fireEvent.press(getByTestId('end-round-save-button'));
 
-            expect(insertDrillResultService).toHaveBeenCalledWith('Putting Simulation', false, null, 2);
+            expect(insertDrillResultService).toHaveBeenCalledWith('Putting Simulation', false, 2);
             expect(mockBack).toHaveBeenCalled();
         });
 

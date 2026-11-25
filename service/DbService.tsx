@@ -220,8 +220,6 @@ export const getPuttingStatsService = (roundId: number, holeNumber: number): Put
         FirstPuttDistance: row.FirstPuttDistance,
         SecondPuttDistance: row.SecondPuttDistance,
         SecondPuttIsLong: row.SecondPuttIsLong,
-        ThirdPuttDistance: row.ThirdPuttDistance ?? undefined,
-        ThirdPuttIsLong: row.ThirdPuttIsLong ?? undefined,
         PuttCount: row.PuttCount ?? null,
         GreenInRegulation: row.GreenInRegulation === 1,
     };
@@ -475,7 +473,6 @@ export type ClubDistance = {
     Club: string;
     CarryDistance: number;
     TotalDistance: number;
-    SortOrder: number;
 };
 
 export type PuttingStats = {
@@ -485,8 +482,6 @@ export type PuttingStats = {
     FirstPuttDistance: number;
     SecondPuttDistance: number;
     SecondPuttIsLong: number;
-    ThirdPuttDistance?: number;
-    ThirdPuttIsLong?: number;
     GreenInRegulation: boolean;
     // The putt count stored on the hole; null on holes saved before it was stored
     PuttCount: number | null;
@@ -687,7 +682,6 @@ export type AppSettings = {
     playOnboardingSeen: boolean;
     homeOnboardingSeen: boolean;
     practiceOnboardingSeen: boolean;
-    reviewPromptShown: boolean;
     whatsNewVersionSeen: string;
     settingsOnboardingSeen: boolean;
     performOnboardingSeen: boolean;
@@ -700,10 +694,10 @@ export type AppSettings = {
 };
 
 export const getSettingsService = (): AppSettings => {
-    const row = getSettings() as { Id: number; Theme: string; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; ReviewPromptShown: number; WhatsNewVersionSeen: string; SettingsOnboardingSeen: number; PerformOnboardingSeen: number; TempoBpm: number; Units: string; SkipStatsFlowEnabled: number; BadHoleReassuranceEnabled: number; QuickTools?: string } | null;
+    const row = getSettings() as { Id: number; NotificationsEnabled: number; Voice: string; SoundsEnabled: number; WedgeChartOnboardingSeen: number; DistancesOnboardingSeen: number; PlayOnboardingSeen: number; HomeOnboardingSeen: number; PracticeOnboardingSeen: number; WhatsNewVersionSeen: string; SettingsOnboardingSeen: number; PerformOnboardingSeen: number; TempoBpm: number; Units: string; SkipStatsFlowEnabled: number; BadHoleReassuranceEnabled: number; QuickTools?: string } | null;
 
     if (!row) {
-        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, reviewPromptShown: false, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false, badHoleReassuranceEnabled: true, quickTools: [...DEFAULT_QUICK_TOOLS] };
+        return { notificationsEnabled: true, voice: 'female', soundsEnabled: true, wedgeChartOnboardingSeen: false, distancesOnboardingSeen: false, playOnboardingSeen: false, homeOnboardingSeen: false, practiceOnboardingSeen: false, whatsNewVersionSeen: '', settingsOnboardingSeen: false, performOnboardingSeen: false, tempoBpm: 60, units: 'yards', skipStatsFlowEnabled: false, badHoleReassuranceEnabled: true, quickTools: [...DEFAULT_QUICK_TOOLS] };
     }
 
     return {
@@ -715,7 +709,6 @@ export const getSettingsService = (): AppSettings => {
         playOnboardingSeen: row.PlayOnboardingSeen === 1,
         homeOnboardingSeen: row.HomeOnboardingSeen === 1,
         practiceOnboardingSeen: row.PracticeOnboardingSeen === 1,
-        reviewPromptShown: row.ReviewPromptShown === 1,
         whatsNewVersionSeen: row.WhatsNewVersionSeen ?? '',
         settingsOnboardingSeen: row.SettingsOnboardingSeen === 1,
         performOnboardingSeen: row.PerformOnboardingSeen === 1,
@@ -737,7 +730,6 @@ export const saveSettingsService = async (settings: AppSettings): Promise<boolea
         playOnboardingSeen: settings.playOnboardingSeen ? 1 : 0,
         homeOnboardingSeen: settings.homeOnboardingSeen ? 1 : 0,
         practiceOnboardingSeen: settings.practiceOnboardingSeen ? 1 : 0,
-        reviewPromptShown: settings.reviewPromptShown ? 1 : 0,
         whatsNewVersionSeen: settings.whatsNewVersionSeen,
         settingsOnboardingSeen: settings.settingsOnboardingSeen ? 1 : 0,
         performOnboardingSeen: settings.performOnboardingSeen ? 1 : 0,
@@ -754,7 +746,6 @@ export type PracticeReminder = {
     Label: string;
     ScheduledFor: string;
     NotificationId: string | null;
-    Created_At: string;
 };
 
 export const getPracticeRemindersService = (): PracticeReminder[] => getAllPracticeReminders() as PracticeReminder[];
@@ -887,8 +878,6 @@ export type PuttingStatDetail = {
     FirstPuttDistance: number;
     SecondPuttDistance: number;
     SecondPuttIsLong: boolean;
-    ThirdPuttDistance: number | null;
-    ThirdPuttIsLong: boolean | null;
     GreenInRegulation: boolean;
 };
 
@@ -902,8 +891,6 @@ export const getAllPuttingStatsDetailService = (): PuttingStatDetail[] => {
         FirstPuttDistance: row.FirstPuttDistance,
         SecondPuttDistance: row.SecondPuttDistance,
         SecondPuttIsLong: row.SecondPuttIsLong === 1,
-        ThirdPuttDistance: row.ThirdPuttDistance,
-        ThirdPuttIsLong: row.ThirdPuttIsLong === null ? null : row.ThirdPuttIsLong === 1,
         GreenInRegulation: row.GreenInRegulation === 1,
     }));
 };

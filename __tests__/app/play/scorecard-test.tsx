@@ -1700,8 +1700,6 @@ describe('Scorecard screen', () => {
                 FirstPuttDistance: 20,
                 SecondPuttDistance: 0,
                 SecondPuttIsLong: 0,
-                ThirdPuttDistance: undefined,
-                ThirdPuttIsLong: undefined,
                 GreenInRegulation: true,
             };
 

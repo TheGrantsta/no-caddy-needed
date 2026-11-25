@@ -7,7 +7,6 @@ type ClubDistance = {
     Club: string;
     CarryDistance: number;
     TotalDistance: number;
-    SortOrder: number;
 };
 
 type Props = {

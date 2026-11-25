@@ -17,39 +17,31 @@ describe('insertDrillResultService', () => {
     it('callsInsertDrillResultWithNameAndTrueResult', () => {
         mockInsertDrillResult.mockReturnValue(true);
 
-        insertDrillResultService('Putting - Gate', true, null, 5);
+        insertDrillResultService('Putting - Gate', true, 5);
 
-        expect(mockInsertDrillResult).toHaveBeenCalledWith('Putting - Gate', true, null, 5);
+        expect(mockInsertDrillResult).toHaveBeenCalledWith('Putting - Gate', true, 5);
     });
 
     it('callsInsertDrillResultWithFalseResult', () => {
         mockInsertDrillResult.mockReturnValue(false);
 
-        insertDrillResultService('Chipping - Hoop', false, null, 2);
+        insertDrillResultService('Chipping - Hoop', false, 2);
 
-        expect(mockInsertDrillResult).toHaveBeenCalledWith('Chipping - Hoop', false, null, 2);
+        expect(mockInsertDrillResult).toHaveBeenCalledWith('Chipping - Hoop', false, 2);
     });
 
-    it('forwardsDrillIdToInsertDrillResult', () => {
+    it('forwardsTheScoreToInsertDrillResult', () => {
         mockInsertDrillResult.mockReturnValue(true);
 
-        insertDrillResultService('Putting - Gate', true, 5, 8);
+        insertDrillResultService('Putting - Gate', true, 8);
 
-        expect(mockInsertDrillResult).toHaveBeenCalledWith('Putting - Gate', true, 5, 8);
-    });
-
-    it('defaultsToNullDrillIdWhenNotProvided', () => {
-        mockInsertDrillResult.mockReturnValue(true);
-
-        insertDrillResultService('Putting - Gate', true, null, 7);
-
-        expect(mockInsertDrillResult).toHaveBeenCalledWith('Putting - Gate', true, null, 7);
+        expect(mockInsertDrillResult).toHaveBeenCalledWith('Putting - Gate', true, 8);
     });
 
     it('returnsValueFromDatabase', () => {
         mockInsertDrillResult.mockReturnValue(true);
 
-        const result = insertDrillResultService('Putting - Gate', true, null, 6);
+        const result = insertDrillResultService('Putting - Gate', true, 6);
 
         expect(result).toBe(true);
     });

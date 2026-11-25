@@ -125,9 +125,9 @@ describe('ClubDistanceList component', () => {
         act(() => { listRef.current?.save(); });
 
         expect(mockOnSave).toHaveBeenCalledWith([
-            { Club: 'Driver', CarryDistance: 250, TotalDistance: 270, SortOrder: 1 },
-            { Club: '3 Wood', CarryDistance: 230, TotalDistance: 245, SortOrder: 2 },
-            { Club: '5 Iron', CarryDistance: 180, TotalDistance: 190, SortOrder: 3 },
+            { Club: 'Driver', CarryDistance: 250, TotalDistance: 270 },
+            { Club: '3 Wood', CarryDistance: 230, TotalDistance: 245 },
+            { Club: '5 Iron', CarryDistance: 180, TotalDistance: 190 },
         ]);
     });
 
@@ -188,7 +188,7 @@ describe('ClubDistanceList component', () => {
         expect(saved[0].CarryDistance).toBe(0);
     });
 
-    it('assignsCorrectSortOrderOnSave', () => {
+    it('shouldNotSendASortOrderForEachClub', () => {
         const mockOnSave = jest.fn();
         render(
             <ClubDistanceList ref={listRef} distances={mockDistances} onSave={mockOnSave} />
@@ -197,9 +197,8 @@ describe('ClubDistanceList component', () => {
         act(() => { listRef.current?.save(); });
 
         const saved = mockOnSave.mock.calls[0][0];
-        expect(saved[0].SortOrder).toBe(1);
-        expect(saved[1].SortOrder).toBe(2);
-        expect(saved[2].SortOrder).toBe(3);
+        expect(saved[0]).not.toHaveProperty('SortOrder');
+        expect(saved[1]).not.toHaveProperty('SortOrder');
     });
 
     it('hidesAddClubLabelWhenFourteenDistancesExist', () => {

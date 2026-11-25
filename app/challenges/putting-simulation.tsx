@@ -70,7 +70,7 @@ export default function PuttingSimulation() {
     const handleSaveProgress = useCallback(() => {
         setShowEndSheet(false);
         if (puttsEntered > 0) {
-            insertDrillResultService('Putting Simulation', false, null, puttsEntered);
+            insertDrillResultService('Putting Simulation', false, puttsEntered);
             showResult(true, 'Result saved', '');
         }
         leave();
@@ -107,7 +107,7 @@ export default function PuttingSimulation() {
         if (sim.phase === 'complete' && !hasSaved.current) {
             hasSaved.current = true;
             const passed = sim.makesCount >= sim.expectedTourMakes;
-            insertDrillResultService('Putting Simulation', passed, null, totalPutts);
+            insertDrillResultService('Putting Simulation', passed, totalPutts);
             showResult(true, 'Result saved', '');
         }
     }, [sim.phase, sim.makesCount, sim.expectedTourMakes, totalPutts, showResult]);

@@ -85,7 +85,7 @@ export default function UpAndDownChallenge() {
     // Save records the holes entered so far as the up-and-down rate, then leaves
     const handleSaveProgress = () => {
         setShowEndSheet(false);
-        insertDrillResultService('Up-and-down Challenge', false, null, rateEntered);
+        insertDrillResultService('Up-and-down Challenge', false, rateEntered);
         showResult(true, 'Result saved', '');
         leave();
     };
@@ -110,7 +110,7 @@ export default function UpAndDownChallenge() {
     useEffect(() => {
         if (sim.phase === 'complete' && !hasSaved.current) {
             hasSaved.current = true;
-            insertDrillResultService('Up-and-down Challenge', sim.upAndDownCount >= 5, null, sim.successPercentage);
+            insertDrillResultService('Up-and-down Challenge', sim.upAndDownCount >= 5, sim.successPercentage);
             showResult(true, 'Result saved', '');
         }
     }, [sim.phase, sim.upAndDownCount, sim.successPercentage, showResult]);

@@ -165,7 +165,7 @@ describe('UpAndDownChallenge screen', () => {
         fireEvent.press(getByTestId('end-round-save-button'));
 
         // Hole 1 took 3 shots (missed), hole 2 took the default 2 (made): 1 of 2 = 50%
-        expect(insertDrillResultService).toHaveBeenCalledWith('Up-and-down Challenge', false, null, 50);
+        expect(insertDrillResultService).toHaveBeenCalledWith('Up-and-down Challenge', false, 50);
         expect(mockBack).toHaveBeenCalled();
     });
 

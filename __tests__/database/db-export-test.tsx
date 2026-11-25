@@ -74,8 +74,8 @@ describe('Export database queries', () => {
     describe('getAllPuttingStatsWithContext', () => {
         it('returns full putting stats with round context and all columns', () => {
             mockGetAllSync.mockReturnValue([
-                { RoundId: 1, CourseName: 'Pine Valley', Created_At: '2026-07-20', HoleNumber: 1, FirstPuttDistance: 8, SecondPuttDistance: 2, SecondPuttIsLong: 0, ThirdPuttDistance: null, ThirdPuttIsLong: null },
-                { RoundId: 1, CourseName: 'Pine Valley', Created_At: '2026-07-20', HoleNumber: 2, FirstPuttDistance: 3, SecondPuttDistance: 0, SecondPuttIsLong: 0, ThirdPuttDistance: null, ThirdPuttIsLong: null },
+                { RoundId: 1, CourseName: 'Pine Valley', Created_At: '2026-07-20', HoleNumber: 1, FirstPuttDistance: 8, SecondPuttDistance: 2, SecondPuttIsLong: 0 },
+                { RoundId: 1, CourseName: 'Pine Valley', Created_At: '2026-07-20', HoleNumber: 2, FirstPuttDistance: 3, SecondPuttDistance: 0, SecondPuttIsLong: 0 },
             ]);
 
             const result = getAllPuttingStatsWithContext();
@@ -88,13 +88,13 @@ describe('Export database queries', () => {
             expect(sqlArg.toUpperCase()).toContain('GREENINREGULATION');
             expect(sqlArg.toUpperCase()).toContain('FIRSTPUTTDISTANCE');
             expect(sqlArg.toUpperCase()).toContain('SECONDPUTTDISTANCE');
-            expect(sqlArg.toUpperCase()).toContain('THIRDPUTTDISTANCE');
+            // The third-putt columns were removed from PuttingStats, so the query must not select them
+            expect(sqlArg.toUpperCase()).not.toContain('THIRDPUTT');
             expect(sqlArg.toUpperCase()).toContain('ISCOMPLETED = 1');
             expect(result).toHaveLength(2);
             expect(result[0]).toHaveProperty('RoundId', 1);
             expect(result[0]).toHaveProperty('HoleNumber', 1);
             expect(result[0]).toHaveProperty('FirstPuttDistance', 8);
-            expect(result[0]).toHaveProperty('ThirdPuttDistance');
         });
     });
 });

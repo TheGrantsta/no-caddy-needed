@@ -34,8 +34,6 @@ describe('getPuttingStatsService', () => {
                 FirstPuttDistance: 25,
                 SecondPuttDistance: 8,
                 SecondPuttIsLong: 0,
-                ThirdPuttDistance: null,
-                ThirdPuttIsLong: null,
             },
         ]);
 
@@ -48,31 +46,9 @@ describe('getPuttingStatsService', () => {
             FirstPuttDistance: 25,
             SecondPuttDistance: 8,
             SecondPuttIsLong: 0,
-            ThirdPuttDistance: undefined,
-            ThirdPuttIsLong: undefined,
             GreenInRegulation: false,
             PuttCount: null,
         });
-    });
-
-    it('includes third putt data when present', () => {
-        mockGetPuttingStats.mockReturnValue([
-            {
-                Id: 2,
-                RoundId: 1,
-                HoleNumber: 6,
-                FirstPuttDistance: 35,
-                SecondPuttDistance: 12,
-                SecondPuttIsLong: 1,
-                ThirdPuttDistance: 4,
-                ThirdPuttIsLong: 0,
-            },
-        ]);
-
-        const result = getPuttingStatsService(1, 6);
-
-        expect(result?.ThirdPuttDistance).toBe(4);
-        expect(result?.ThirdPuttIsLong).toBe(0);
     });
 
     it('shouldMapGreenInRegulationTrueWhenStoredAsOne', () => {
@@ -84,8 +60,6 @@ describe('getPuttingStatsService', () => {
                 FirstPuttDistance: 12,
                 SecondPuttDistance: 0,
                 SecondPuttIsLong: 0,
-                ThirdPuttDistance: null,
-                ThirdPuttIsLong: null,
                 GreenInRegulation: 1,
             },
         ]);
@@ -104,8 +78,6 @@ describe('getPuttingStatsService', () => {
                 FirstPuttDistance: 12,
                 SecondPuttDistance: 0,
                 SecondPuttIsLong: 0,
-                ThirdPuttDistance: null,
-                ThirdPuttIsLong: null,
             },
         ]);
 

@@ -175,7 +175,7 @@ describe('ShortPuttingLadder screen', () => {
         fireEvent.press(getByTestId('simulation-end-button'));
         fireEvent.press(getByTestId('end-round-save-button'));
 
-        expect(insertDrillResultService).toHaveBeenCalledWith('Short-Putting Ladder', false, null, 5);
+        expect(insertDrillResultService).toHaveBeenCalledWith('Short-Putting Ladder', false, 5);
         expect(mockBack).toHaveBeenCalled();
     });
 

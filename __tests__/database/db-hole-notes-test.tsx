@@ -98,6 +98,14 @@ describe('upsertHoleNote', () => {
         expect(secondSql.toUpperCase()).toContain('INSERT');
     });
 
+    it('writesNoUpdatedAtColumn', async () => {
+        mockStatementExecuteAsync.mockResolvedValue({ changes: 0 });
+        await upsertHoleNote('St Andrews', 7, 'aim left');
+        for (const [sql] of mockPrepareAsync.mock.calls) {
+            expect(sql).not.toMatch(/Updated_At/i);
+        }
+    });
+
     it('returnsTrueOnSuccess', async () => {
         const result = await upsertHoleNote('St Andrews', 7, 'aim left');
         expect(result).toBe(true);

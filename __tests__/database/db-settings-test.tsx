@@ -71,6 +71,13 @@ describe('saveSettings', () => {
         expect(sql).not.toMatch(/PreShot/i);
     });
 
+    it('writesNoReviewPromptColumn', async () => {
+        await saveDefault();
+
+        const [sql] = mockPrepareSync.mock.calls[0];
+        expect(sql).not.toMatch(/ReviewPromptShown/i);
+    });
+
     it('returnsTrueOnSuccess', async () => {
         const result = await saveDefault();
 

@@ -58,8 +58,6 @@ type PuttingStatsRow = {
     FirstPuttDistance: number;
     SecondPuttDistance: number;
     SecondPuttIsLong: number;
-    ThirdPuttDistance: number | null;
-    ThirdPuttIsLong: number | null;
     GreenInRegulation: number;
     PuttCount: number | null;
 };
@@ -133,8 +131,6 @@ type PuttingStatsContextRow = {
     FirstPuttDistance: number;
     SecondPuttDistance: number;
     SecondPuttIsLong: number;
-    ThirdPuttDistance: number | null;
-    ThirdPuttIsLong: number | null;
     GreenInRegulation: number;
 };
 
@@ -153,7 +149,6 @@ type ClubDistanceRow = {
     Club: string;
     CarryDistance: number;
     TotalDistance: number;
-    SortOrder: number;
 };
 
 // One round's or one hole's deadly sin counts, as read back from HoleDeadlySins
@@ -221,18 +216,18 @@ export const initialize = async () => {
         PRAGMA journal_mode = WAL;
         CREATE TABLE IF NOT EXISTS WedgeChartDistanceNames (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, SortOrder INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS WedgeChartEntries (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL, DistanceName TEXT NOT NULL, Distance INTEGER NOT NULL, ClubSortOrder INTEGER NOT NULL, DistanceSortOrder INTEGER NOT NULL);
-        CREATE TABLE IF NOT EXISTS DrillHistory (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, Result BOOLEAN NOT NULL, DrillId INTEGER, Created_At TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS DrillHistory (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, Result BOOLEAN NOT NULL, Created_At TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS HoleDeadlySins (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, ThreePutts INTEGER NOT NULL DEFAULT 0, DoubleBogeys INTEGER NOT NULL DEFAULT 0, BogeysPar5 INTEGER NOT NULL DEFAULT 0, BogeysInside9Iron INTEGER NOT NULL DEFAULT 0, DoubleChips INTEGER NOT NULL DEFAULT 0, TroubleOffTee INTEGER NOT NULL DEFAULT 0, Penalties INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS Rounds (Id INTEGER PRIMARY KEY AUTOINCREMENT, TotalScore INTEGER NOT NULL DEFAULT 0, StartTime TEXT NOT NULL, EndTime TEXT, IsCompleted INTEGER NOT NULL DEFAULT 0, CourseName TEXT, Created_At TEXT NOT NULL, IsScoreOnly INTEGER NOT NULL DEFAULT 0);
         CREATE TABLE IF NOT EXISTS ClubDistances (Id INTEGER PRIMARY KEY AUTOINCREMENT, Club TEXT NOT NULL UNIQUE, CarryDistance INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS RoundPlayers (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, PlayerName TEXT NOT NULL, IsUser INTEGER NOT NULL DEFAULT 0, SortOrder INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS RoundHoleScores (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, RoundPlayerId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, HolePar INTEGER NOT NULL, Score INTEGER NOT NULL, FOREIGN KEY (RoundId) REFERENCES Rounds(Id), FOREIGN KEY (RoundPlayerId) REFERENCES RoundPlayers(Id));
-        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, Theme TEXT NOT NULL DEFAULT 'dark', NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0, ReviewPromptShown INTEGER NOT NULL DEFAULT 0, WhatsNewVersionSeen TEXT NOT NULL DEFAULT '', SettingsOnboardingSeen INTEGER NOT NULL DEFAULT 0, PerformOnboardingSeen INTEGER NOT NULL DEFAULT 0, TempoBpm INTEGER NOT NULL DEFAULT 60, Units TEXT NOT NULL DEFAULT 'yards', SkipStatsFlowEnabled INTEGER NOT NULL DEFAULT 0, BadHoleReassuranceEnabled INTEGER NOT NULL DEFAULT 1, QuickTools TEXT NOT NULL DEFAULT 'wind,tempo,random');
-        CREATE TABLE IF NOT EXISTS PracticeReminders (Id INTEGER PRIMARY KEY AUTOINCREMENT, Label TEXT NOT NULL, ScheduledFor TEXT NOT NULL, NotificationId TEXT, Created_At TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS Settings (Id INTEGER PRIMARY KEY AUTOINCREMENT, NotificationsEnabled INTEGER NOT NULL DEFAULT 1, Voice TEXT NOT NULL DEFAULT 'female', SoundsEnabled INTEGER NOT NULL DEFAULT 1, WedgeChartOnboardingSeen INTEGER NOT NULL DEFAULT 0, DistancesOnboardingSeen INTEGER NOT NULL DEFAULT 0, PlayOnboardingSeen INTEGER NOT NULL DEFAULT 0, HomeOnboardingSeen INTEGER NOT NULL DEFAULT 0, PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0, WhatsNewVersionSeen TEXT NOT NULL DEFAULT '', SettingsOnboardingSeen INTEGER NOT NULL DEFAULT 0, PerformOnboardingSeen INTEGER NOT NULL DEFAULT 0, TempoBpm INTEGER NOT NULL DEFAULT 60, Units TEXT NOT NULL DEFAULT 'yards', SkipStatsFlowEnabled INTEGER NOT NULL DEFAULT 0, BadHoleReassuranceEnabled INTEGER NOT NULL DEFAULT 1, QuickTools TEXT NOT NULL DEFAULT 'wind,tempo,random');
+        CREATE TABLE IF NOT EXISTS PracticeReminders (Id INTEGER PRIMARY KEY AUTOINCREMENT, Label TEXT NOT NULL, ScheduledFor TEXT NOT NULL, NotificationId TEXT);
         CREATE TABLE IF NOT EXISTS HiddenRecents (Id INTEGER PRIMARY KEY AUTOINCREMENT, Type TEXT NOT NULL, Name TEXT NOT NULL, UNIQUE(Type, Name));
         CREATE TABLE IF NOT EXISTS UiPreferences (Id INTEGER PRIMARY KEY, RoundFilter TEXT NOT NULL DEFAULT 'all');
-        CREATE TABLE IF NOT EXISTS HoleNotes (Id INTEGER PRIMARY KEY AUTOINCREMENT, CourseName TEXT NOT NULL, HoleNumber INTEGER NOT NULL, Note TEXT NOT NULL, Updated_At TEXT NOT NULL, UNIQUE(CourseName, HoleNumber));
-        CREATE TABLE IF NOT EXISTS PuttingStats (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, FirstPuttDistance INTEGER NOT NULL, SecondPuttDistance INTEGER NOT NULL, SecondPuttIsLong INTEGER NOT NULL DEFAULT 0, ThirdPuttDistance INTEGER, ThirdPuttIsLong INTEGER, GreenInRegulation INTEGER NOT NULL DEFAULT 0, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
+        CREATE TABLE IF NOT EXISTS HoleNotes (Id INTEGER PRIMARY KEY AUTOINCREMENT, CourseName TEXT NOT NULL, HoleNumber INTEGER NOT NULL, Note TEXT NOT NULL, UNIQUE(CourseName, HoleNumber));
+        CREATE TABLE IF NOT EXISTS PuttingStats (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, FirstPuttDistance INTEGER NOT NULL, SecondPuttDistance INTEGER NOT NULL, SecondPuttIsLong INTEGER NOT NULL DEFAULT 0, GreenInRegulation INTEGER NOT NULL DEFAULT 0, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
         CREATE TABLE IF NOT EXISTS HoleSinDetails (Id INTEGER PRIMARY KEY AUTOINCREMENT, RoundId INTEGER NOT NULL, HoleNumber INTEGER NOT NULL, TroubleOffTeeClub TEXT, PenaltyType TEXT, BogeysInside9IronClub TEXT, DoubleChipsReason TEXT, FOREIGN KEY (RoundId) REFERENCES Rounds(Id));
     `);
 
@@ -257,7 +252,6 @@ export const initialize = async () => {
                 'PracticeOnboardingSeen INTEGER NOT NULL DEFAULT 0',
                 "Voice TEXT NOT NULL DEFAULT 'female'",
                 'SoundsEnabled INTEGER NOT NULL DEFAULT 1',
-                'ReviewPromptShown INTEGER NOT NULL DEFAULT 0',
                 "WhatsNewVersionSeen TEXT NOT NULL DEFAULT ''",
                 'SettingsOnboardingSeen INTEGER NOT NULL DEFAULT 0',
                 'PerformOnboardingSeen INTEGER NOT NULL DEFAULT 0',
@@ -267,7 +261,7 @@ export const initialize = async () => {
                 'BadHoleReassuranceEnabled INTEGER NOT NULL DEFAULT 1',
                 "QuickTools TEXT NOT NULL DEFAULT 'wind,tempo,random'",
             ],
-            columnsToRemove: ['PracticeFrequencyDays', 'PreShotReminderEnabled', 'PreShotRoutineText'],
+            columnsToRemove: ['PracticeFrequencyDays', 'PreShotReminderEnabled', 'PreShotRoutineText', 'Theme', 'ReviewPromptShown'],
         },
         {
             table: 'Rounds',
@@ -278,13 +272,23 @@ export const initialize = async () => {
         },
         {
             table: 'DrillHistory',
-            columnsToAdd: ['DrillId INTEGER', 'Score INTEGER'],
-            columnsToRemove: [],
+            columnsToAdd: ['Score INTEGER'],
+            columnsToRemove: ['DrillId'],
         },
         {
             table: 'PuttingStats',
             columnsToAdd: ['GreenInRegulation INTEGER NOT NULL DEFAULT 0', 'PuttCount INTEGER'],
             columnsToRemove: ['ThirdPuttDistance', 'ThirdPuttIsLong'],
+        },
+        {
+            table: 'HoleNotes',
+            columnsToAdd: [],
+            columnsToRemove: ['Updated_At'],
+        },
+        {
+            table: 'PracticeReminders',
+            columnsToAdd: [],
+            columnsToRemove: ['Created_At'],
         },
     ];
 
@@ -310,16 +314,16 @@ export const initialize = async () => {
 
 };
 
-export const insertDrillResult = async (name: string, result: boolean, drillId: number | null = null, score: number | null = null) => {
+export const insertDrillResult = async (name: string, result: boolean, score: number | null = null) => {
     let success = true;
     const db = await SQLite.openDatabaseAsync(dbName);
 
     const statement = await db.prepareAsync(
-        'INSERT INTO DrillHistory (Name, Result, DrillId, Score, Created_At) VALUES ($Name, $Result, $DrillId, $Score, $Created_At);'
+        'INSERT INTO DrillHistory (Name, Result, Score, Created_At) VALUES ($Name, $Result, $Score, $Created_At);'
     );
 
     try {
-        await statement.executeAsync({ $Name: name, $Result: result, $DrillId: drillId, $Score: score, $Created_At: new Date().toISOString() });
+        await statement.executeAsync({ $Name: name, $Result: result, $Score: score, $Created_At: new Date().toISOString() });
     } catch (e) {
         void logError('db.insertDrillResult', e);
         success = false;
@@ -524,7 +528,6 @@ type DrillHistoryRow = {
     Id: number;
     Name: string;
     Result: number;
-    DrillId: number | null;
     Score: number | null;
     Created_At: string;
 };
@@ -605,13 +608,12 @@ export const getAllHoleNotesForCourse = (courseName: string): { HoleNumber: numb
 export const upsertHoleNote = async (courseName: string, holeNumber: number, note: string): Promise<boolean> => {
     let success = true;
     const db = await SQLite.openDatabaseAsync(dbName);
-    const now = new Date().toISOString();
 
     const updateStatement = await db.prepareAsync(
-        'UPDATE HoleNotes SET Note = $Note, Updated_At = $Updated_At WHERE LOWER(TRIM(CourseName)) = LOWER(TRIM($CourseName)) AND HoleNumber = $HoleNumber;'
+        'UPDATE HoleNotes SET Note = $Note WHERE LOWER(TRIM(CourseName)) = LOWER(TRIM($CourseName)) AND HoleNumber = $HoleNumber;'
     );
     try {
-        const result = await updateStatement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber, $Note: note, $Updated_At: now });
+        const result = await updateStatement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber, $Note: note });
         if (result.changes > 0) {
             return true;
         }
@@ -625,10 +627,10 @@ export const upsertHoleNote = async (courseName: string, holeNumber: number, not
     if (!success) return false;
 
     const insertStatement = await db.prepareAsync(
-        'INSERT INTO HoleNotes (CourseName, HoleNumber, Note, Updated_At) VALUES ($CourseName, $HoleNumber, $Note, $Updated_At);'
+        'INSERT INTO HoleNotes (CourseName, HoleNumber, Note) VALUES ($CourseName, $HoleNumber, $Note);'
     );
     try {
-        await insertStatement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber, $Note: note, $Updated_At: now });
+        await insertStatement.executeAsync({ $CourseName: courseName, $HoleNumber: holeNumber, $Note: note });
     } catch (e) {
         void logError('db.upsertHoleNote', e);
         success = false;
@@ -780,7 +782,6 @@ export type SettingsRow = {
     playOnboardingSeen: number;
     homeOnboardingSeen: number;
     practiceOnboardingSeen: number;
-    reviewPromptShown: number;
     whatsNewVersionSeen: string;
     settingsOnboardingSeen: number;
     performOnboardingSeen: number;
@@ -797,7 +798,7 @@ export const saveSettings = async (settings: SettingsRow): Promise<boolean> => {
         getSyncDb().execSync('DELETE FROM Settings');
 
         const statement = getSyncDb().prepareSync(
-            'INSERT INTO Settings (NotificationsEnabled, Voice, SoundsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen, HomeOnboardingSeen, PracticeOnboardingSeen, ReviewPromptShown, WhatsNewVersionSeen, SettingsOnboardingSeen, PerformOnboardingSeen, TempoBpm, Units, SkipStatsFlowEnabled, BadHoleReassuranceEnabled, QuickTools) VALUES ($NotificationsEnabled, $Voice, $SoundsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen, $HomeOnboardingSeen, $PracticeOnboardingSeen, $ReviewPromptShown, $WhatsNewVersionSeen, $SettingsOnboardingSeen, $PerformOnboardingSeen, $TempoBpm, $Units, $SkipStatsFlowEnabled, $BadHoleReassuranceEnabled, $QuickTools)'
+            'INSERT INTO Settings (NotificationsEnabled, Voice, SoundsEnabled, WedgeChartOnboardingSeen, DistancesOnboardingSeen, PlayOnboardingSeen, HomeOnboardingSeen, PracticeOnboardingSeen, WhatsNewVersionSeen, SettingsOnboardingSeen, PerformOnboardingSeen, TempoBpm, Units, SkipStatsFlowEnabled, BadHoleReassuranceEnabled, QuickTools) VALUES ($NotificationsEnabled, $Voice, $SoundsEnabled, $WedgeChartOnboardingSeen, $DistancesOnboardingSeen, $PlayOnboardingSeen, $HomeOnboardingSeen, $PracticeOnboardingSeen, $WhatsNewVersionSeen, $SettingsOnboardingSeen, $PerformOnboardingSeen, $TempoBpm, $Units, $SkipStatsFlowEnabled, $BadHoleReassuranceEnabled, $QuickTools)'
         );
 
         try {
@@ -810,7 +811,6 @@ export const saveSettings = async (settings: SettingsRow): Promise<boolean> => {
                 $PlayOnboardingSeen: settings.playOnboardingSeen,
                 $HomeOnboardingSeen: settings.homeOnboardingSeen,
                 $PracticeOnboardingSeen: settings.practiceOnboardingSeen,
-                $ReviewPromptShown: settings.reviewPromptShown,
                 $WhatsNewVersionSeen: settings.whatsNewVersionSeen,
                 $SettingsOnboardingSeen: settings.settingsOnboardingSeen,
                 $PerformOnboardingSeen: settings.performOnboardingSeen,
@@ -833,7 +833,7 @@ export const saveSettings = async (settings: SettingsRow): Promise<boolean> => {
 
 
 export const insertPracticeReminder = async (label: string, scheduledFor: string, notificationId: string | null): Promise<boolean> => {
-    return runStatement('db.insertPracticeReminder', 'INSERT INTO PracticeReminders (Label, ScheduledFor, NotificationId, Created_At) VALUES ($Label, $ScheduledFor, $NotificationId, $Created_At);', { $Label: label, $ScheduledFor: scheduledFor, $NotificationId: notificationId, $Created_At: new Date().toISOString() });
+    return runStatement('db.insertPracticeReminder', 'INSERT INTO PracticeReminders (Label, ScheduledFor, NotificationId) VALUES ($Label, $ScheduledFor, $NotificationId);', { $Label: label, $ScheduledFor: scheduledFor, $NotificationId: notificationId });
 };
 
 export const getAllPracticeReminders = () => {
@@ -904,7 +904,7 @@ export const getAllHoleDeadlySinsWithContext = () => {
 export const getAllPuttingStatsWithContext = () => {
     const sql = `
         SELECT ps.RoundId, r.CourseName, r.Created_At, ps.HoleNumber, ps.FirstPuttDistance,
-               ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.ThirdPuttDistance, ps.ThirdPuttIsLong, ps.GreenInRegulation
+               ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.GreenInRegulation
         FROM PuttingStats ps
         JOIN Rounds r ON ps.RoundId = r.Id
         WHERE r.IsCompleted = 1

@@ -201,7 +201,7 @@ describe('LagPutting screen', () => {
         fireEvent.press(getByTestId('simulation-end-button'));
         fireEvent.press(getByTestId('end-round-save-button'));
 
-        expect(insertDrillResultService).toHaveBeenCalledWith('Lag Putting', false, null, 4);
+        expect(insertDrillResultService).toHaveBeenCalledWith('Lag Putting', false, 4);
         expect(mockBack).toHaveBeenCalled();
     });
 

@@ -737,7 +737,7 @@ describe('Play screen', () => {
                 mockAddMultiplayerHoleScores.mockResolvedValue(true);
                 (getPuttingStatsService as jest.Mock).mockReturnValue({
                     Id: 1, RoundId: 1, HoleNumber: 1, FirstPuttDistance: 20, SecondPuttDistance: 0,
-                    SecondPuttIsLong: 0, ThirdPuttDistance: undefined, ThirdPuttIsLong: undefined, GreenInRegulation: true,
+                    SecondPuttIsLong: 0, GreenInRegulation: true,
                 });
 
                 const { getByTestId, getByText, queryByTestId } = render(<Play />);
@@ -756,7 +756,7 @@ describe('Play screen', () => {
                 mockAddMultiplayerHoleScores.mockResolvedValue(true);
                 (getPuttingStatsService as jest.Mock).mockReturnValue({
                     Id: 1, RoundId: 1, HoleNumber: 1, FirstPuttDistance: 0, SecondPuttDistance: 0,
-                    SecondPuttIsLong: 0, ThirdPuttDistance: undefined, ThirdPuttIsLong: undefined, GreenInRegulation: false,
+                    SecondPuttIsLong: 0, GreenInRegulation: false,
                 });
 
                 const { getByTestId, queryByTestId } = render(<Play />);

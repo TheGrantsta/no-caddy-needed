@@ -10,7 +10,6 @@ type ClubDistance = {
     Club: string;
     CarryDistance: number;
     TotalDistance: number;
-    SortOrder: number;
 };
 
 type EditableRow = {
@@ -21,7 +20,7 @@ type EditableRow = {
 
 type Props = {
     distances: ClubDistance[];
-    onSave?: (distances: { Club: string; CarryDistance: number; TotalDistance: number; SortOrder: number }[]) => void;
+    onSave?: (distances: { Club: string; CarryDistance: number; TotalDistance: number }[]) => void;
     units?: 'yards' | 'metres';
 };
 
@@ -60,11 +59,10 @@ const ClubDistanceList = forwardRef<ClubDistanceListHandle, Props>(({ distances,
 
         const data = rows
             .filter(r => r.club.trim() && r.distance.trim())
-            .map((r, i) => ({
+            .map((r) => ({
                 Club: r.club.trim(),
                 CarryDistance: displayUnitToYards(parseInt(r.distance) || 0, units),
                 TotalDistance: displayUnitToYards(parseInt(r.total) || 0, units),
-                SortOrder: i + 1,
             }));
 
         onSave(data);

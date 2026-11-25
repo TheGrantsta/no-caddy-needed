@@ -4,7 +4,7 @@ import { useStyles } from '@/hooks/useStyles';
 import type { WedgeChartData } from '../service/DbService';
 import { yardsToDisplayUnit, DistanceUnit } from '../service/UnitsService';
 
-type ClubDistance = { Id: number; Club: string; CarryDistance: number; TotalDistance: number; SortOrder: number };
+type ClubDistance = { Id: number; Club: string; CarryDistance: number; TotalDistance: number };
 
 type Props = {
     visible: boolean;

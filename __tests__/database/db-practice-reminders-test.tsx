@@ -38,6 +38,13 @@ describe('insertPracticeReminder', () => {
         mockStatementExecuteAsync.mockResolvedValue(undefined);
     });
 
+    it('shouldNotWriteACreatedAtColumn', async () => {
+        await insertPracticeReminder('Morning putting', '2026-03-15T08:00:00.000Z', 'notif-id-1');
+
+        const sql = mockPrepareAsync.mock.calls[0][0];
+        expect(sql).not.toMatch(/Created_At/i);
+    });
+
     it('shouldInsertPracticeReminder', async () => {
         await insertPracticeReminder('Morning putting', '2026-03-15T08:00:00.000Z', 'notif-id-1');
 

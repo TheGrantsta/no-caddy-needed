@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { act, fireEvent, render } from '@testing-library/react-native';
 import PuttingEntry from '../../components/PuttingEntry';
 
 jest.mock('@/hooks/useStyles', () => ({
@@ -139,22 +139,53 @@ describe('PuttingEntry', () => {
             expect(onChange).toHaveBeenLastCalledWith({ putts: 1, firstPutt: 25, secondPutt: 0, secondIsLong: false });
         });
 
-        it('shouldCloseTheFirstPuttWheelWhenADistanceIsChosen', () => {
-            const { getByTestId, queryByTestId } = render(<PuttingEntry {...baseProps} putts={1} firstPutt={18} secondPutt={0} />);
+        describe('closing after the spin settles', () => {
+            beforeEach(() => jest.useFakeTimers());
+            afterEach(() => jest.useRealTimers());
 
-            fireEvent.press(getByTestId('first-putt-value'));
-            fireEvent(getByTestId('first-putt-wheel'), 'change', { nativeEvent: { newValue: 25, newIndex: 24 } });
+            it('shouldKeepTheFirstPuttWheelOpenWhileSpinning', () => {
+                const { getByTestId } = render(<PuttingEntry {...baseProps} putts={1} firstPutt={18} secondPutt={0} />);
 
-            expect(queryByTestId('first-putt-wheel')).toBeNull();
-        });
+                fireEvent.press(getByTestId('first-putt-value'));
+                fireEvent(getByTestId('first-putt-wheel'), 'change', { nativeEvent: { newValue: 25, newIndex: 24 } });
 
-        it('shouldCloseTheSecondPuttWheelWhenADistanceIsChosen', () => {
-            const { getByTestId, queryByTestId } = render(<PuttingEntry {...baseProps} putts={2} firstPutt={18} secondPutt={3} />);
+                expect(getByTestId('first-putt-wheel')).toBeTruthy();
+            });
 
-            fireEvent.press(getByTestId('second-putt-value'));
-            fireEvent(getByTestId('second-putt-wheel'), 'change', { nativeEvent: { newValue: 7, newIndex: 6 } });
+            it('shouldCloseTheFirstPuttWheelOnceTheSpinSettles', () => {
+                const { getByTestId, queryByTestId } = render(<PuttingEntry {...baseProps} putts={1} firstPutt={18} secondPutt={0} />);
 
-            expect(queryByTestId('second-putt-wheel')).toBeNull();
+                fireEvent.press(getByTestId('first-putt-value'));
+                fireEvent(getByTestId('first-putt-wheel'), 'change', { nativeEvent: { newValue: 25, newIndex: 24 } });
+                act(() => { jest.advanceTimersByTime(500); });
+
+                expect(queryByTestId('first-putt-wheel')).toBeNull();
+            });
+
+            it('shouldRestartTheSettleWhileStillSpinning', () => {
+                const { getByTestId, queryByTestId } = render(<PuttingEntry {...baseProps} putts={1} firstPutt={18} secondPutt={0} />);
+
+                fireEvent.press(getByTestId('first-putt-value'));
+                fireEvent(getByTestId('first-putt-wheel'), 'change', { nativeEvent: { newValue: 25, newIndex: 24 } });
+                act(() => { jest.advanceTimersByTime(300); });
+                fireEvent(getByTestId('first-putt-wheel'), 'change', { nativeEvent: { newValue: 26, newIndex: 25 } });
+                act(() => { jest.advanceTimersByTime(300); });
+
+                expect(queryByTestId('first-putt-wheel')).toBeTruthy();
+
+                act(() => { jest.advanceTimersByTime(200); });
+                expect(queryByTestId('first-putt-wheel')).toBeNull();
+            });
+
+            it('shouldCloseTheSecondPuttWheelOnceTheSpinSettles', () => {
+                const { getByTestId, queryByTestId } = render(<PuttingEntry {...baseProps} putts={2} firstPutt={18} secondPutt={3} />);
+
+                fireEvent.press(getByTestId('second-putt-value'));
+                fireEvent(getByTestId('second-putt-wheel'), 'change', { nativeEvent: { newValue: 7, newIndex: 6 } });
+                act(() => { jest.advanceTimersByTime(500); });
+
+                expect(queryByTestId('second-putt-wheel')).toBeNull();
+            });
         });
 
         it('shouldCloseTheWheelsWhenChipInIsChosen', () => {

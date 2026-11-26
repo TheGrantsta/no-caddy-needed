@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
 import { useThemeColours } from '@/context/ThemeContext';
@@ -41,6 +41,16 @@ export default function PuttingEntry({ putts, firstPutt, secondPutt, secondIsLon
     const colours = useThemeColours();
     const s = styles.holeScreen;
     const [openWheel, setOpenWheel] = useState<'first' | 'second' | null>(null);
+    // A spinning wheel reports each value it passes. It closes once the value has stopped changing for this long.
+    const SETTLE_MS = 500;
+    const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const cancelSettle = () => {
+        if (settleTimer.current) clearTimeout(settleTimer.current);
+        settleTimer.current = null;
+    };
+
+    useEffect(() => cancelSettle, []);
 
     const first = firstPutt ?? DEFAULT_FIRST_PUTT_FEET;
     const second = secondPutt ?? DEFAULT_SECOND_PUTT_FEET;
@@ -52,17 +62,25 @@ export default function PuttingEntry({ putts, firstPutt, secondPutt, secondIsLon
     };
 
     const choosePutts = (count: PuttCount) => {
-        if (count === 0) setOpenWheel(null);
+        if (count === 0) {
+            cancelSettle();
+            setOpenWheel(null);
+        }
         emit({ putts: count });
     };
 
-    // Choosing a distance selects it and closes its wheel
+    // Choosing a distance selects it straight away; its wheel closes once the spin has settled
     const chooseDistance = (wheel: 'first' | 'second', feet: number) => {
         emit(wheel === 'first' ? { firstPutt: feet } : { secondPutt: feet });
-        setOpenWheel(null);
+        cancelSettle();
+        settleTimer.current = setTimeout(() => {
+            settleTimer.current = null;
+            setOpenWheel(null);
+        }, SETTLE_MS);
     };
 
     const toggleWheel = (wheel: 'first' | 'second') => {
+        cancelSettle();
         setOpenWheel(current => (current === wheel ? null : wheel));
     };
 

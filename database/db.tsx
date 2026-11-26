@@ -466,7 +466,10 @@ export const getDeadlySinsForRound = (roundId: number) => {
     return row;
 };
 
-export const getAllDeadlySinsRoundTotals = () => {
+// Sin totals per round, for every round or only the given rounds (filtered in SQL)
+export const getAllDeadlySinsRoundTotals = (roundIds?: number[]) => {
+    if (roundIds && roundIds.length === 0) return [];
+    const filter = roundIds ? `WHERE RoundId IN (${roundIds.map(() => '?').join(', ')})` : '';
     return getSyncDb().getAllSync<DeadlySinRoundTotalsRow>(`
         SELECT RoundId,
                SUM(ThreePutts) as ThreePutts, SUM(DoubleBogeys) as DoubleBogeys,
@@ -474,8 +477,8 @@ export const getAllDeadlySinsRoundTotals = () => {
                SUM(DoubleChips) as DoubleChips, SUM(TroubleOffTee) as TroubleOffTee,
                SUM(Penalties) as Penalties,
                SUM(ThreePutts + DoubleBogeys + BogeysPar5 + BogeysInside9Iron + DoubleChips + TroubleOffTee + Penalties) as Total
-        FROM HoleDeadlySins GROUP BY RoundId ORDER BY RoundId DESC
-    `);
+        FROM HoleDeadlySins ${filter} GROUP BY RoundId ORDER BY RoundId DESC
+    `, roundIds ?? []);
 };
 
 export const getHolesWithSinsForRound = (roundId: number) => {
@@ -547,8 +550,11 @@ export const getHoleSinDetails = (roundId: number, holeNumber: number) => {
     );
 };
 
-export const getAllHoleSinDetails = () => {
-    return getSyncDb().getAllSync<HoleSinDetailsRow>('SELECT * FROM HoleSinDetails;');
+// Sin details for every hole, or only for the given rounds (filtered in SQL)
+export const getAllHoleSinDetails = (roundIds?: number[]) => {
+    if (roundIds && roundIds.length === 0) return [];
+    const filter = roundIds ? `WHERE RoundId IN (${roundIds.map(() => '?').join(', ')})` : '';
+    return getSyncDb().getAllSync<HoleSinDetailsRow>(`SELECT * FROM HoleSinDetails ${filter};`, roundIds ?? []);
 };
 
 export const deleteHoleSinDetailsByHole = async (roundId: number, holeNumber: number): Promise<boolean> => {
@@ -615,8 +621,10 @@ export const getActiveRound = () => {
     return rows.length > 0 ? rows[0] : null;
 };
 
-export const getAllRounds = () => {
-    return getSyncDb().getAllSync('SELECT * FROM Rounds WHERE IsCompleted = 1 ORDER BY Id DESC;');
+export const getAllRounds = (roundIds?: number[]) => {
+    if (roundIds && roundIds.length === 0) return [];
+    const filter = roundIds ? `AND Id IN (${roundIds.map(() => '?').join(', ')})` : '';
+    return getSyncDb().getAllSync(`SELECT * FROM Rounds WHERE IsCompleted = 1 ${filter} ORDER BY Id DESC;`, roundIds ?? []);
 };
 
 export const getDistinctCourseNames = () => {

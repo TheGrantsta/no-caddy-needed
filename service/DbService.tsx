@@ -184,9 +184,11 @@ export const replaceHoleDeadlySinsService = (roundId: number, holeNumber: number
     return insertHoleDeadlySinsService(roundId, holeNumber, sins);
 };
 
-export const getAllDeadlySinsRoundsService = (): DeadlySinsRound[] => {
-    const totals = getAllDeadlySinsRoundTotals();
-    const rounds = getAllRounds() as { Id: number; Created_At: string }[];
+// Sin totals for every round, or only the given rounds (read filtered from the database)
+export const getAllDeadlySinsRoundsService = (roundIds?: Set<number>): DeadlySinsRound[] => {
+    const ids = roundIds ? Array.from(roundIds) : undefined;
+    const totals = getAllDeadlySinsRoundTotals(ids);
+    const rounds = getAllRounds(ids) as { Id: number; Created_At: string }[];
     const roundMap = new Map(rounds.map(r => [r.Id, r.Created_At]));
 
     return totals.map(t => ({
@@ -390,8 +392,8 @@ export const getHoleSinDetailsService = (roundId: number, holeNumber: number): H
     };
 };
 
-export const getAllHoleSinDetailsService = (): HoleSinDetails[] => {
-    const rows = getAllHoleSinDetails();
+export const getAllHoleSinDetailsService = (roundIds?: Set<number>): HoleSinDetails[] => {
+    const rows = getAllHoleSinDetails(roundIds ? Array.from(roundIds) : undefined);
     return rows.map(row => ({
         Id: row.Id,
         RoundId: row.RoundId,

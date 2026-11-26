@@ -317,3 +317,13 @@ describe('getAllHoleSinDetailsService', () => {
         expect(result[0].DoubleChipsReason).toBeUndefined();
     });
 });
+
+describe('getAllHoleSinDetailsService round filter', () => {
+    it('asks the database only for the given rounds', () => {
+        (getAllHoleSinDetails as jest.Mock).mockReturnValue([]);
+
+        getAllHoleSinDetailsService(new Set([2]));
+
+        expect(getAllHoleSinDetails).toHaveBeenCalledWith([2]);
+    });
+});

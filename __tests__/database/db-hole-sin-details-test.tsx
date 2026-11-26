@@ -271,9 +271,7 @@ describe('getAllHoleSinDetails', () => {
     it('calls getAllSync with SELECT * FROM HoleSinDetails', () => {
         getAllHoleSinDetails();
 
-        expect(mockGetAllSync).toHaveBeenCalledWith(
-            expect.stringContaining('SELECT * FROM HoleSinDetails')
-        );
+        expect(mockGetAllSync.mock.calls[0][0]).toContain('SELECT * FROM HoleSinDetails');
     });
 
     it('returns rows from getAllSync', () => {
@@ -292,5 +290,17 @@ describe('getAllHoleSinDetails', () => {
 
         const result = getAllHoleSinDetails();
         expect(result).toEqual([]);
+    });
+});
+
+describe('getAllHoleSinDetails round filter', () => {
+    it('filters to the given rounds in SQL and binds their ids', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        getAllHoleSinDetails([3]);
+
+        const [sql, params] = mockGetAllSync.mock.calls[mockGetAllSync.mock.calls.length - 1];
+        expect(sql).toMatch(/WHERE RoundId IN \(\?\)/);
+        expect(params).toEqual([3]);
     });
 });

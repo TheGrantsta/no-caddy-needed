@@ -390,3 +390,15 @@ describe('getHolesWithSinsForRoundService', () => {
         expect(result.size).toBe(0);
     });
 });
+
+describe('getAllDeadlySinsRoundsService round filter', () => {
+    it('asks the database only for the given rounds', () => {
+        (getAllDeadlySinsRoundTotals as jest.Mock).mockReturnValue([]);
+        (getAllRounds as jest.Mock).mockReturnValue([]);
+
+        getAllDeadlySinsRoundsService(new Set([1]));
+
+        expect(getAllDeadlySinsRoundTotals).toHaveBeenCalledWith([1]);
+        expect(getAllRounds).toHaveBeenCalledWith([1]);
+    });
+});

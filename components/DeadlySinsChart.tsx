@@ -22,8 +22,12 @@ export default function DeadlySinsChart({ rounds, filter = 'all' }: Props) {
 
     const maxCount = useMemo(() => Math.max(...categories.map(c => c.count)), [categories]);
 
-    const roundIds = useMemo(() => new Set(rounds.map(r => r.RoundId)), [rounds]);
-    const sinDetails = useMemo(() => getAllHoleSinDetailsService().filter(d => roundIds.has(d.RoundId)), [roundIds]);
+    const roundIds = useMemo(
+        () => new Set(rounds.map(r => r.RoundId).filter((id): id is number => id != null)),
+        [rounds]
+    );
+    // The service reads only these rounds; the filter here keeps the chart correct for any rows it is given
+    const sinDetails = useMemo(() => getAllHoleSinDetailsService(roundIds).filter(d => roundIds.has(d.RoundId)), [roundIds]);
 
     if (rounds.length === 0 || rounds.every(r => r.Total === 0)) {
         return null;

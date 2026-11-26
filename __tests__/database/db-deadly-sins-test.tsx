@@ -428,3 +428,24 @@ describe('initialize — HoleDeadlySins deduplication', () => {
         expect(dedupeCall).toBeDefined();
     });
 });
+
+describe('getAllDeadlySinsRoundTotals round filter', () => {
+    beforeEach(() => jest.clearAllMocks());
+
+    it('filters the totals to the given rounds in SQL and binds their ids', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        getAllDeadlySinsRoundTotals([4, 5]);
+
+        const [sql, params] = mockGetAllSync.mock.calls[0];
+        expect(sql).toMatch(/WHERE RoundId IN \(\?, \?\)/);
+        expect(params).toEqual([4, 5]);
+    });
+
+    it('reads nothing when given an empty list of rounds', () => {
+        mockGetAllSync.mockClear();
+
+        expect(getAllDeadlySinsRoundTotals([])).toEqual([]);
+        expect(mockGetAllSync).not.toHaveBeenCalled();
+    });
+});

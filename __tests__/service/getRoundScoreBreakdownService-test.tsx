@@ -126,7 +126,7 @@ describe('getRoundScoreBreakdownService', () => {
         expect(result.penalties).toBe(1);
     });
 
-    it('counts three-putt as 3 strokes even when SecondPuttDistance is 0', () => {
+    it('counts a one-putt with a stray three-putt sin as one putt', () => {
         mockGetRoundById.mockReturnValue({ Created_At: '01/06' });
         mockGetDeadlySinsForRound.mockReturnValue({
             ThreePutts: 1,
@@ -138,12 +138,12 @@ describe('getRoundScoreBreakdownService', () => {
 
         const result = getRoundScoreBreakdownService(1);
 
-        expect(result.putts).toBe(3);
+        expect(result.putts).toBe(1);
         expect(result.threePutts).toBe(1);
         expect(result.penalties).toBe(0);
     });
 
-    it('counts multiple three-putts correctly', () => {
+    it('counts each hole by its putt count', () => {
         mockGetRoundById.mockReturnValue({ Created_At: '01/06' });
         mockGetDeadlySinsForRound.mockReturnValue({
             ThreePutts: 2,
@@ -157,7 +157,7 @@ describe('getRoundScoreBreakdownService', () => {
 
         const result = getRoundScoreBreakdownService(1);
 
-        expect(result.putts).toBe(8);
+        expect(result.putts).toBe(6);
         expect(result.threePutts).toBe(2);
         expect(result.penalties).toBe(0);
     });

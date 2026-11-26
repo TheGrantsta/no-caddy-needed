@@ -327,6 +327,16 @@ describe('Settings table column migration', () => {
         expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE Settings DROP COLUMN PreShotRoutineText');
     });
 
+    it('backfills the putt count for holes saved before it was stored, and only those', async () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        await initialize();
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+            expect.stringMatching(/UPDATE PuttingStats\s+SET PuttCount = [\s\S]*WHERE PuttCount IS NULL/)
+        );
+    });
+
     it('should drop the write-only Updated_At column from an existing HoleNotes table', async () => {
         mockGetAllSync.mockImplementation((sql: string) => {
             if (sql === 'PRAGMA table_info(HoleNotes)') return [{ name: 'Id' }, { name: 'Updated_At' }];

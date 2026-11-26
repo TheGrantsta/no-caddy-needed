@@ -296,6 +296,23 @@ export const initialize = async () => {
         amendTable(syncDb, migration);
     }
 
+    // Backfill the putt count for holes saved before it was stored, using the same rule as utils/puttCount.ts:
+    // a chip-in is 0, no second putt is 1, a 3-putt sin is 3, otherwise 2. Only rows with no count are changed.
+    syncDb.execSync(`
+        UPDATE PuttingStats SET PuttCount = (
+            CASE
+                WHEN FirstPuttDistance = 0 THEN 0
+                WHEN SecondPuttDistance = 0 THEN 1
+                WHEN COALESCE((
+                    SELECT hds.ThreePutts FROM HoleDeadlySins hds
+                    WHERE hds.RoundId = PuttingStats.RoundId AND hds.HoleNumber = PuttingStats.HoleNumber
+                ), 0) = 1 THEN 3
+                ELSE 2
+            END
+        )
+        WHERE PuttCount IS NULL
+    `);
+
     // Infer IsScoreOnly for existing rounds based on whether putting stats were recorded.
     // If a round has no putting stats (putts = 0), it was played in score-only mode.
     syncDb.execSync(`

@@ -9,7 +9,6 @@ export const countHolePutts = (
 ): number => {
     if (!stats) return 0;
     if (stats.PuttCount != null) return stats.PuttCount;
-    if (threePutts && stats.FirstPuttDistance !== 0) return 3;
     return puttCountFor({
         firstPutt: stats.FirstPuttDistance,
         secondPutt: stats.SecondPuttDistance ?? undefined,

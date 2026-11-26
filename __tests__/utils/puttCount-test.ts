@@ -36,4 +36,8 @@ describe('countHolePutts', () => {
     it('shouldFallBackToTheDistancesAndSinForHolesWithNoStoredCount', () => {
         expect(countHolePutts({ FirstPuttDistance: 12, SecondPuttDistance: 3, PuttCount: null }, true)).toBe(3);
     });
+
+    it('shouldCountAOnePuttAsOnePuttEvenWithAStrayThreePuttSin', () => {
+        expect(countHolePutts({ FirstPuttDistance: 18, SecondPuttDistance: 0, PuttCount: null }, true)).toBe(1);
+    });
 });

@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useLocalSearchParams } from 'expo-router';
 import { DeadlySinsRound, getAllDeadlySinsRoundsService, getAllRoundHistoryService } from '../../service/DbService';
-import { RoundFilter, parseRoundFilter } from '../../utils/roundFilter';
+import { RoundFilter, parseRoundFilter, serializeRoundFilter } from '../../utils/roundFilter';
 import { sortDeadlySinsByFrequency } from '../../service/deadlySinCategories';
 import { useStyles } from '../../hooks/useStyles';
 import DeadlySinTrendPage from '@/components/DeadlySinTrendPage';
@@ -25,9 +25,13 @@ export default function DeadlySinTrendScreen() {
     const styles = useStyles();
     const width = Dimensions.get('window').width;
 
-    const allRounds = getAllDeadlySinsRoundsService();
+    // Read once when the screen opens; the filter only narrows what was read
+    const allRounds = useMemo(() => getAllDeadlySinsRoundsService(), []);
     const roundFilter = parseRoundFilter(filter);
-    const roundsInFilter = restrictToYear(allRounds, roundFilter);
+    // Keyed on the serialised filter, because a year filter is a new object on every render
+    const filterKey = serializeRoundFilter(roundFilter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const roundsInFilter = useMemo(() => restrictToYear(allRounds, roundFilter), [allRounds, filterKey]);
     const limit = roundFilter === 1 ? 1 : roundFilter === 10 ? 10 : MAX_ROUNDS;
     const rounds = roundsInFilter.slice().reverse().slice(-limit);
 

@@ -576,4 +576,14 @@ describe('DeadlySinTrendScreen', () => {
             expect(row.getByTestId('deadly-sin-trend-heading')).toBeTruthy();
         });
     });
+
+    it('shouldNotReadTheRoundsAgainOnEveryRerender', () => {
+        mockGetAllDeadlySinsRoundsService.mockReturnValue([makeRound(1, 1, '01/06')]);
+        const utils = render(<DeadlySinTrendScreen />);
+        mockGetAllDeadlySinsRoundsService.mockClear();
+
+        utils.rerender(<DeadlySinTrendScreen />);
+
+        expect(mockGetAllDeadlySinsRoundsService).not.toHaveBeenCalled();
+    });
 });

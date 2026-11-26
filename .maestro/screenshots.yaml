@@ -346,9 +346,10 @@ appId: com.grantsta.golf.nocaddyneeded
 
 # Screenshot 10: Proximity menu
 - tapOn: "Proximity"
+# The heading sits on the card, which only shows once there is proximity data; wait for the 3-putts switch instead
 - extendedWaitUntil:
     visible:
-      id: "proximity-heading"
+      id: "proximity-filter-label"
     timeout: 5000
 - takeScreenshot: .maestro/screenshots/04A-perform-proximity
 

@@ -1,4 +1,4 @@
-import { insertHoleDeadlySins, getDeadlySinsForRound, getAllDeadlySinsRoundTotals, getHoleDeadlySins, deleteHoleDeadlySinsByHole, getHolesWithSinsForRound, initialize } from '../../database/db';
+import { getRoundDates, insertHoleDeadlySins, getDeadlySinsForRound, getAllDeadlySinsRoundTotals, getHoleDeadlySins, deleteHoleDeadlySinsByHole, getHolesWithSinsForRound, initialize } from '../../database/db';
 import { logError } from '../../service/ErrorLoggingService';
 import * as _SQLite from 'expo-sqlite'; // eslint-disable-line @typescript-eslint/no-unused-vars
 
@@ -449,3 +449,28 @@ describe('getAllDeadlySinsRoundTotals round filter', () => {
         expect(mockGetAllSync).not.toHaveBeenCalled();
     });
 });
+
+describe('getRoundDates', () => {
+    beforeEach(() => jest.clearAllMocks());
+
+    it('selects only the id and date of completed rounds', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        getRoundDates();
+
+        const sql = mockGetAllSync.mock.calls[0][0];
+        expect(sql).toContain('SELECT Id, Created_At FROM Rounds');
+        expect(sql).toContain('IsCompleted = 1');
+    });
+
+    it('filters to the given rounds in SQL', () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        getRoundDates([6]);
+
+        const [sql, params] = mockGetAllSync.mock.calls[0];
+        expect(sql).toMatch(/AND Id IN \(\?\)/);
+        expect(params).toEqual([6]);
+    });
+});
+

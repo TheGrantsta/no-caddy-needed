@@ -12,6 +12,7 @@ import {
     getAllDeadlySinsRoundTotals,
     getDeadlySinsForRound,
     getAllRounds,
+    getRoundDates,
     getRoundById,
     getHoleDeadlySins,
     deleteHoleDeadlySinsByHole,
@@ -23,6 +24,7 @@ jest.mock('../../database/db', () => ({
     getAllDeadlySinsRoundTotals: jest.fn(),
     getDeadlySinsForRound: jest.fn(),
     getAllRounds: jest.fn(),
+    getRoundDates: jest.fn(() => []),
     getRoundById: jest.fn(),
     getHoleDeadlySins: jest.fn(),
     deleteHoleDeadlySinsByHole: jest.fn(),
@@ -33,6 +35,7 @@ const mockInsertHoleDeadlySins = insertHoleDeadlySins as jest.Mock;
 const mockGetAllDeadlySinsRoundTotals = getAllDeadlySinsRoundTotals as jest.Mock;
 const mockGetDeadlySinsForRound = getDeadlySinsForRound as jest.Mock;
 const mockGetAllRounds = getAllRounds as jest.Mock;
+const mockGetRoundDates = getRoundDates as jest.Mock;
 const mockGetRoundById = getRoundById as jest.Mock;
 const mockGetHoleDeadlySins = getHoleDeadlySins as jest.Mock;
 const mockDeleteHoleDeadlySinsByHole = deleteHoleDeadlySinsByHole as jest.Mock;
@@ -140,7 +143,7 @@ describe('getAllDeadlySinsRoundsService', () => {
         mockGetAllDeadlySinsRoundTotals.mockReturnValue([
             { RoundId: 1, ThreePutts: 1, DoubleBogeys: 0, BogeysPar5: 0, BogeysInside9Iron: 0, DoubleChips: 0, TroubleOffTee: 0, Penalties: 0, Total: 1 },
         ]);
-        mockGetAllRounds.mockReturnValue([
+        mockGetRoundDates.mockReturnValue([
             { Id: 1, Created_At: '2025-06-15T12:00:00.000Z' },
         ]);
 
@@ -153,7 +156,7 @@ describe('getAllDeadlySinsRoundsService', () => {
         mockGetAllDeadlySinsRoundTotals.mockReturnValue([
             { RoundId: 99, ThreePutts: 1, DoubleBogeys: 2, BogeysPar5: 3, BogeysInside9Iron: 4, DoubleChips: 5, TroubleOffTee: 6, Penalties: 7, Total: 28 },
         ]);
-        mockGetAllRounds.mockReturnValue([
+        mockGetRoundDates.mockReturnValue([
             { Id: 99, Created_At: '2025-01-10T12:00:00.000Z' },
         ]);
 
@@ -399,6 +402,7 @@ describe('getAllDeadlySinsRoundsService round filter', () => {
         getAllDeadlySinsRoundsService(new Set([1]));
 
         expect(getAllDeadlySinsRoundTotals).toHaveBeenCalledWith([1]);
-        expect(getAllRounds).toHaveBeenCalledWith([1]);
+        expect(getRoundDates).toHaveBeenCalledWith([1]);
+        expect(getAllRounds).not.toHaveBeenCalled();
     });
 });

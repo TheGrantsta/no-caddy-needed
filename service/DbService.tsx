@@ -25,7 +25,7 @@ import {
     updateRound,
     updateRoundStartTime,
     getRoundById,
-    getAllRounds,
+    getRoundDates,
     getDistinctCourseNames,
     addHiddenRecent,
     insertRoundPlayer,
@@ -188,7 +188,7 @@ export const replaceHoleDeadlySinsService = (roundId: number, holeNumber: number
 export const getAllDeadlySinsRoundsService = (roundIds?: Set<number>): DeadlySinsRound[] => {
     const ids = roundIds ? Array.from(roundIds) : undefined;
     const totals = getAllDeadlySinsRoundTotals(ids);
-    const rounds = getAllRounds(ids) as { Id: number; Created_At: string }[];
+    const rounds = getRoundDates(ids);
     const roundMap = new Map(rounds.map(r => [r.Id, r.Created_At]));
 
     return totals.map(t => ({

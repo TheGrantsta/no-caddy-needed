@@ -627,6 +627,13 @@ export const getAllRounds = (roundIds?: number[]) => {
     return getSyncDb().getAllSync(`SELECT * FROM Rounds WHERE IsCompleted = 1 ${filter} ORDER BY Id DESC;`, roundIds ?? []);
 };
 
+// Only the id and date of completed rounds, for lists that show a date and nothing else (filtered in SQL when given ids)
+export const getRoundDates = (roundIds?: number[]) => {
+    if (roundIds && roundIds.length === 0) return [];
+    const filter = roundIds ? `AND Id IN (${roundIds.map(() => '?').join(', ')})` : '';
+    return getSyncDb().getAllSync<{ Id: number; Created_At: string }>(`SELECT Id, Created_At FROM Rounds WHERE IsCompleted = 1 ${filter} ORDER BY Id DESC;`, roundIds ?? []);
+};
+
 export const getDistinctCourseNames = () => {
     return getSyncDb().getAllSync("SELECT CourseName, MAX(Id) as Id FROM Rounds WHERE CourseName IS NOT NULL AND CourseName != '' AND LOWER(TRIM(CourseName)) NOT IN (SELECT LOWER(TRIM(Name)) FROM HiddenRecents WHERE Type = 'course') GROUP BY LOWER(TRIM(CourseName)) ORDER BY Id DESC;");
 };

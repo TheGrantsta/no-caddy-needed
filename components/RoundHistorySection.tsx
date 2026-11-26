@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Animated, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useStyles } from '../hooks/useStyles';
@@ -9,6 +9,8 @@ import { HOLES_PER_ROUND } from '@/utils/holeOrder';
 // Each round row is at least this tall, so the list shows exactly this many rounds before it scrolls
 const ROW_HEIGHT = 48;
 const VISIBLE_ROUNDS = 10;
+// Only the most recent rounds are rendered until the user asks for the rest, so long histories stay quick to draw
+const RENDERED_ROUNDS = 20;
 
 interface Props {
     rounds: Round[];
@@ -22,6 +24,8 @@ export default function RoundHistorySection({ rounds, parAverages, fadeAnim, sli
     const styles = useStyles();
     const colours = useThemeColours();
     const localStyles = styles.playScreen;
+    const [showAll, setShowAll] = useState(false);
+    const renderedRounds = showAll ? rounds : rounds.slice(0, RENDERED_ROUNDS);
 
     if (rounds.length === 0) {
         return null;
@@ -55,7 +59,7 @@ export default function RoundHistorySection({ rounds, parAverages, fadeAnim, sli
                     <Text testID="round-history-header-strokes" style={[styles.smallTextNoPadding, localStyles.historyTotalColumn]}>Score</Text>
                 </View>
                 <ScrollView testID="round-history-scroll" style={{ maxHeight: ROW_HEIGHT * VISIBLE_ROUNDS }} nestedScrollEnabled>
-                    {rounds.map((round) => (
+                    {renderedRounds.map((round) => (
                         <TouchableOpacity
                             key={round.Id}
                             testID={`round-history-row-${round.Id}`}
@@ -77,6 +81,16 @@ export default function RoundHistorySection({ rounds, parAverages, fadeAnim, sli
                             </View>
                         </TouchableOpacity>
                     ))}
+                    {!showAll && rounds.length > RENDERED_ROUNDS && (
+                        <TouchableOpacity
+                            testID="round-history-show-more"
+                            accessibilityRole="button"
+                            onPress={() => setShowAll(true)}
+                            style={{ minHeight: ROW_HEIGHT, justifyContent: 'center', alignItems: 'center' }}
+                        >
+                            <Text style={[styles.smallTextNoPadding, { color: colours.primary }]}>{`Show all ${rounds.length} rounds`}</Text>
+                        </TouchableOpacity>
+                    )}
                 </ScrollView>
             </View>
         </Animated.View>

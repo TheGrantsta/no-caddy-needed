@@ -150,4 +150,36 @@ describe('RoundHistorySection', () => {
         expect(getByTestId('round-history-scroll')).toHaveStyle({ maxHeight: 480 });
         expect(getByTestId('round-history-row-1')).toHaveStyle({ minHeight: 48 });
     });
+
+    describe('long history', () => {
+        const manyRounds = Array.from({ length: 25 }, (_, i) => makeRound({ Id: i + 1 }));
+
+        it('shouldRenderOnlyTheFirstTwentyRoundsToStartWith', () => {
+            const { getByTestId, queryByTestId } = renderSection(manyRounds);
+
+            expect(getByTestId('round-history-row-20')).toBeTruthy();
+            expect(queryByTestId('round-history-row-21')).toBeNull();
+        });
+
+        it('shouldOfferToShowTheRemainingRounds', () => {
+            const { getByTestId } = renderSection(manyRounds);
+
+            expect(getByTestId('round-history-show-more')).toHaveTextContent('Show all 25 rounds');
+        });
+
+        it('shouldRenderEveryRoundWhenShowAllIsPressed', () => {
+            const { getByTestId, queryByTestId } = renderSection(manyRounds);
+
+            fireEvent.press(getByTestId('round-history-show-more'));
+
+            expect(getByTestId('round-history-row-25')).toBeTruthy();
+            expect(queryByTestId('round-history-show-more')).toBeNull();
+        });
+
+        it('shouldNotOfferShowAllWhenEveryRoundFitsTheFirstTwenty', () => {
+            const { queryByTestId } = renderSection(manyRounds.slice(0, 5));
+
+            expect(queryByTestId('round-history-show-more')).toBeNull();
+        });
+    });
 });

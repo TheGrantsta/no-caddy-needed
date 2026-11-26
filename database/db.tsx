@@ -297,6 +297,19 @@ export const initialize = async () => {
         amendTable(syncDb, migration);
     }
 
+    // Indexes on the round and hole columns that the stats and history queries join and filter on.
+    // IF NOT EXISTS makes this safe to run on every launch.
+    const LOOKUP_INDEXES = [
+        'CREATE INDEX IF NOT EXISTS idx_PuttingStats_RoundHole ON PuttingStats (RoundId, HoleNumber);',
+        'CREATE INDEX IF NOT EXISTS idx_HoleDeadlySins_RoundHole ON HoleDeadlySins (RoundId, HoleNumber);',
+        'CREATE INDEX IF NOT EXISTS idx_HoleSinDetails_RoundHole ON HoleSinDetails (RoundId, HoleNumber);',
+        'CREATE INDEX IF NOT EXISTS idx_RoundHoleScores_RoundHole ON RoundHoleScores (RoundId, HoleNumber);',
+        'CREATE INDEX IF NOT EXISTS idx_RoundPlayers_Round ON RoundPlayers (RoundId);',
+    ];
+    for (const statement of LOOKUP_INDEXES) {
+        syncDb.execSync(statement);
+    }
+
     // Backfill the putt count for holes saved before it was stored, using the same rule as utils/puttCount.ts:
     // a chip-in is 0, no second putt is 1, a 3-putt sin is 3, otherwise 2. Only rows with no count are changed.
     syncDb.execSync(`

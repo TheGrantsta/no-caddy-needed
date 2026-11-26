@@ -327,6 +327,21 @@ describe('Settings table column migration', () => {
         expect(mockExecSync).toHaveBeenCalledWith('ALTER TABLE Settings DROP COLUMN PreShotRoutineText');
     });
 
+    it('creates lookup indexes on the round and hole columns the stats queries join on', async () => {
+        mockGetAllSync.mockReturnValue([]);
+
+        await initialize();
+
+        const statements = mockExecSync.mock.calls.map((call: string[]) => call[0]);
+        expect(statements).toEqual(expect.arrayContaining([
+            'CREATE INDEX IF NOT EXISTS idx_PuttingStats_RoundHole ON PuttingStats (RoundId, HoleNumber);',
+            'CREATE INDEX IF NOT EXISTS idx_HoleDeadlySins_RoundHole ON HoleDeadlySins (RoundId, HoleNumber);',
+            'CREATE INDEX IF NOT EXISTS idx_HoleSinDetails_RoundHole ON HoleSinDetails (RoundId, HoleNumber);',
+            'CREATE INDEX IF NOT EXISTS idx_RoundHoleScores_RoundHole ON RoundHoleScores (RoundId, HoleNumber);',
+            'CREATE INDEX IF NOT EXISTS idx_RoundPlayers_Round ON RoundPlayers (RoundId);',
+        ]));
+    });
+
     it('backfills the putt count for holes saved before it was stored, and only those', async () => {
         mockGetAllSync.mockReturnValue([]);
 

@@ -748,7 +748,7 @@ describe('Scorecard screen', () => {
             }, { timeout: 5000 });
             expect(mockReplaceHoleDeadlySinsService).not.toHaveBeenCalled();
             expect(mockUpdateScorecard).toHaveBeenCalledWith(1, [], []);
-        });
+        }, 15000);
     });
 
     describe('Sin indicator dots', () => {

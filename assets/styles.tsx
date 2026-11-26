@@ -1480,6 +1480,8 @@ export const createStyles = (c: ThemeColours) => ({
         totalStrokeCol: {
             width: 56,
             textAlign: 'right',
+            // Stroke totals stay black whatever the score against par
+            color: c.black,
         },
         totalRelativeCol: {
             width: 56,

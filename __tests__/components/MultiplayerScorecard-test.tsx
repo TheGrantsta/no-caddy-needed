@@ -413,7 +413,7 @@ describe('Scorecard', () => {
             expect(getByTestId('back9-player-2-total')).toHaveTextContent('9');
         });
 
-        it('colour codes sub-total primary when at par', () => {
+        it('keeps the sub-total black when at par', () => {
             const holeScores = makeScores([
                 { holeNumber: 1, holePar: 4, scores: [4, 4] },
             ]);
@@ -422,10 +422,10 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#2D5A3D' });
+            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#000' });
         });
 
-        it('colour codes sub-total green when under par', () => {
+        it('keeps the sub-total black when under par', () => {
             const holeScores = makeScores([
                 { holeNumber: 1, holePar: 4, scores: [3, 4] },
             ]);
@@ -434,10 +434,10 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#13b955' });
+            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#000' });
         });
 
-        it('colour codes sub-total red when over par', () => {
+        it('keeps the sub-total black when over par', () => {
             const holeScores = makeScores([
                 { holeNumber: 1, holePar: 4, scores: [5, 4] },
             ]);
@@ -446,7 +446,7 @@ describe('Scorecard', () => {
                 <Scorecard round={mockRound} players={mockPlayers} holeScores={holeScores} />
             );
 
-            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#fd0303' });
+            expect(getByTestId('front9-player-1-total')).toHaveStyle({ color: '#000' });
         });
 
         it('shows round total as sum of front and back 9 stroke totals', () => {
@@ -463,7 +463,7 @@ describe('Scorecard', () => {
             expect(getByTestId('round-player-2-total')).toHaveTextContent('8');
         });
 
-        it('colour codes round stroke total based on par', () => {
+        it('keeps the round stroke total black whatever the par', () => {
             const holeScores = makeScores([
                 { holeNumber: 1, holePar: 4, scores: [5, 3] },
                 { holeNumber: 10, holePar: 4, scores: [5, 3] },
@@ -474,9 +474,9 @@ describe('Scorecard', () => {
             );
 
             // You: 10 strokes, par 8 -> over par -> red
-            expect(getByTestId('round-player-1-total')).toHaveStyle({ color: '#fd0303' });
+            expect(getByTestId('round-player-1-total')).toHaveStyle({ color: '#000' });
             // Alice: 6 strokes, par 8 -> under par -> green
-            expect(getByTestId('round-player-2-total')).toHaveStyle({ color: '#13b955' });
+            expect(getByTestId('round-player-2-total')).toHaveStyle({ color: '#000' });
         });
     });
 

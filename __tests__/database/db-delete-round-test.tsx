@@ -45,6 +45,8 @@ describe('deleteRound', () => {
 
         const sqls = mockPrepareAsync.mock.calls.map(call => call[0]);
         expect(sqls).toEqual([
+            'DELETE FROM PuttingStats WHERE RoundId = $RoundId;',
+            'DELETE FROM HoleSinDetails WHERE RoundId = $RoundId;',
             'DELETE FROM HoleDeadlySins WHERE RoundId = $RoundId;',
             'DELETE FROM RoundHoleScores WHERE RoundId = $RoundId;',
             'DELETE FROM RoundPlayers WHERE RoundId = $RoundId;',

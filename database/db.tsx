@@ -758,6 +758,8 @@ export const updateRoundTotalScore = async (roundId: number, totalScore: number)
 
 // Child rows first, then the round itself. They run in one transaction, so a failure leaves nothing half deleted.
 const DELETE_ROUND_STATEMENTS = [
+    'DELETE FROM PuttingStats WHERE RoundId = $RoundId;',
+    'DELETE FROM HoleSinDetails WHERE RoundId = $RoundId;',
     'DELETE FROM HoleDeadlySins WHERE RoundId = $RoundId;',
     'DELETE FROM RoundHoleScores WHERE RoundId = $RoundId;',
     'DELETE FROM RoundPlayers WHERE RoundId = $RoundId;',

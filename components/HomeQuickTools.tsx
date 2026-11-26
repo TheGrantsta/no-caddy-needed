@@ -1,5 +1,5 @@
-import React from 'react';
-import { useRouter } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useStyles } from '@/hooks/useStyles';
@@ -14,8 +14,14 @@ export default function HomeQuickTools() {
     const router = useRouter();
     const s = styles.homeCards;
 
+    // Read on mount and whenever the screen regains focus, so changes made in Settings show here
+    const [savedSlugs, setSavedSlugs] = useState(() => getSettingsService().quickTools);
+    useFocusEffect(useCallback(() => {
+        setSavedSlugs(getSettingsService().quickTools);
+    }, []));
+
     // The saved choice is already validated when it is read, so only the default covers a missing value
-    const tools = (getSettingsService().quickTools ?? DEFAULT_QUICK_TOOLS)
+    const tools = (savedSlugs ?? DEFAULT_QUICK_TOOLS)
         .map(slug => QUICK_TOOL_OPTIONS.find(option => option.slug === slug))
         .filter((option): option is NonNullable<typeof option> => option !== undefined);
 

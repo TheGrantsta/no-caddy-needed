@@ -29,7 +29,8 @@ const APP_VERSION = Constants.expoConfig?.version ?? '';
 export default function HomeScreen() {
   const styles = useStyles();
   const { landscapePadding } = useOrientation();
-  const settings = getSettingsService();
+  // Read once on mount: these choices only set the initial onboarding state
+  const [settings] = useState(() => getSettingsService());
   const [showOnboarding, setShowOnboarding] = useState(!settings.homeOnboardingSeen);
   // Existing users (already past onboarding) see "What's new" once per version.
   const [showWhatsNew, setShowWhatsNew] = useState(

@@ -6,6 +6,8 @@ import { getSettingsService } from '../../service/DbService';
 const mockPush = jest.fn();
 jest.mock('expo-router', () => ({
     useRouter: () => ({ push: mockPush, back: jest.fn() }),
+    // Runs the callback once on mount, as the screen does when it gains focus
+    useFocusEffect: (callback: () => void) => require('react').useEffect(callback, []),
 }));
 
 jest.mock('../../service/DbService', () => ({
@@ -89,5 +91,15 @@ describe('HomeQuickTools', () => {
         for (const tile of getAllByTestId(/^home-tool-/)) {
             expect(tile).toHaveStyle({ flex: 1, height: 110 });
         }
+    });
+
+    it('shouldNotReadSettingsAgainOnEveryRerender', () => {
+        mockGetSettings.mockReturnValue({ quickTools: ['tempo'] });
+        const { rerender } = render(<HomeQuickTools />);
+        mockGetSettings.mockClear();
+
+        rerender(<HomeQuickTools />);
+
+        expect(mockGetSettings).not.toHaveBeenCalled();
     });
 });

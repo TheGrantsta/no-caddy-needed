@@ -177,4 +177,14 @@ describe('HomeScreen', () => {
             expect(queryByText('Release to update')).toBeNull();
         });
     });
+
+    it('shouldNotReadSettingsAgainOnEveryRerender', () => {
+        mockGetSettingsService.mockReturnValue({ homeOnboardingSeen: true, whatsNewVersionSeen: '' });
+        const { rerender } = render(<HomeScreen />);
+        mockGetSettingsService.mockClear();
+
+        rerender(<HomeScreen />);
+
+        expect(mockGetSettingsService).not.toHaveBeenCalled();
+    });
 });

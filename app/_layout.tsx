@@ -17,14 +17,16 @@ import { useTheme } from '@/context/ThemeContext';
 import { useNotificationDeepLink } from '@/hooks/useNotificationDeepLink';
 
 LogBox.ignoreLogs([
-    'SafeAreaView has been deprecated',
-    'Non-serializable values were found in the navigation state',
+  'SafeAreaView has been deprecated',
+  'Non-serializable values were found in the navigation state',
 ]);
 
 const _warn = console.warn;
 console.warn = (...args: Parameters<typeof console.warn>) => {
-    if (typeof args[0] === 'string' && args[0].includes('SafeAreaView has been deprecated')) return;
+  if (typeof args[0] === 'string' && args[0].includes('SafeAreaView has been deprecated')) return;
+  if (args[0].message) {
     _warn(...args);
+  }
 };
 
 let Notifications: typeof import('expo-notifications') | null = null;

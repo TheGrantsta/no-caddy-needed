@@ -231,3 +231,14 @@ describe('getRoundScoreBreakdownService stored putt count', () => {
     });
 });
 
+describe('getRoundScoreBreakdownService round filter', () => {
+    it('asksTheDatabaseOnlyForThatRound', () => {
+        mockGetRoundById.mockReturnValue({ Created_At: '01/06' });
+        mockGetDeadlySinsForRound.mockReturnValue({ ThreePutts: 0, Penalties: 0 });
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([]);
+
+        getRoundScoreBreakdownService(7);
+
+        expect(mockGetAllPuttingStatsWithThreePutts).toHaveBeenCalledWith([7]);
+    });
+});

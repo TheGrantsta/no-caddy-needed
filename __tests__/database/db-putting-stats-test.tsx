@@ -54,6 +54,23 @@ describe('PuttingStats database', () => {
             expect(result[0]).toHaveProperty('RoundId');
         });
 
+        it('filters to the given rounds in SQL and binds their ids', () => {
+            mockGetAllSync.mockReturnValue([]);
+
+            getAllPuttingStatsWithThreePutts([1, 2]);
+
+            const [sql, params] = mockGetAllSync.mock.calls[0];
+            expect(sql).toMatch(/WHERE ps\.RoundId IN \(\?, \?\)/);
+            expect(params).toEqual([1, 2]);
+        });
+
+        it('reads no rows at all when given an empty list of rounds', () => {
+            mockGetAllSync.mockClear();
+
+            expect(getAllPuttingStatsWithThreePutts([])).toEqual([]);
+            expect(mockGetAllSync).not.toHaveBeenCalled();
+        });
+
         it('includes the stored PuttCount in SELECT so putt counts follow the count, not the sin', () => {
             mockGetAllSync.mockReturnValue([]);
 

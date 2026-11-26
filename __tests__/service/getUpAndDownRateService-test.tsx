@@ -104,3 +104,13 @@ describe('getUpAndDownRateService chip-ins', () => {
         expect(getUpAndDownRateService()).toMatchObject({ upAndDowns: 1, attempts: 1 });
     });
 });
+
+describe('getUpAndDownRateService round filter', () => {
+    it('asksTheDatabaseOnlyForTheGivenRounds', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([]);
+
+        getUpAndDownRateService(new Set([1, 3]));
+
+        expect(mockGetAllPuttingStatsWithThreePutts).toHaveBeenCalledWith([1, 3]);
+    });
+});

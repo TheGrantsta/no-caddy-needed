@@ -519,11 +519,16 @@ export const getPuttingStats = (roundId: number, holeNumber: number) => {
     );
 };
 
-export const getAllPuttingStatsWithThreePutts = () => {
+// Putting stats for every hole, or only for the given rounds when a list is passed (filtered in SQL, not in JavaScript)
+export const getAllPuttingStatsWithThreePutts = (roundIds?: number[]) => {
+    if (roundIds && roundIds.length === 0) return [];
+    const filter = roundIds ? `WHERE ps.RoundId IN (${roundIds.map(() => '?').join(', ')})` : '';
     return getSyncDb().getAllSync<PuttingStatsWithThreePuttsRow>(
         `SELECT ps.RoundId, ps.FirstPuttDistance, ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.GreenInRegulation, ps.PuttCount, COALESCE(hds.ThreePutts, 0) AS ThreePutts
          FROM PuttingStats ps
-         LEFT JOIN HoleDeadlySins hds ON hds.RoundId = ps.RoundId AND hds.HoleNumber = ps.HoleNumber;`
+         LEFT JOIN HoleDeadlySins hds ON hds.RoundId = ps.RoundId AND hds.HoleNumber = ps.HoleNumber
+         ${filter};`,
+        roundIds ?? []
     );
 };
 

@@ -221,3 +221,13 @@ describe('getPuttingProximityService chip-ins', () => {
         });
     });
 });
+
+describe('getPuttingProximityService round filter', () => {
+    it('asksTheDatabaseOnlyForTheGivenRounds', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([]);
+
+        getPuttingProximityService(false, new Set([2]));
+
+        expect(mockGetAllPuttingStatsWithThreePutts).toHaveBeenCalledWith([2]);
+    });
+});

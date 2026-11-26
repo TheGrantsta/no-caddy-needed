@@ -245,3 +245,13 @@ describe('getPuttingMakeRatesService chip-ins', () => {
         result.forEach((row) => expect(row.makeRate).toBe('-'));
     });
 });
+
+describe('getPuttingMakeRatesService round filter', () => {
+    it('asksTheDatabaseOnlyForTheGivenRounds', () => {
+        mockGetAllPuttingStatsWithThreePutts.mockReturnValue([]);
+
+        getPuttingMakeRatesService(new Set([4]));
+
+        expect(mockGetAllPuttingStatsWithThreePutts).toHaveBeenCalledWith([4]);
+    });
+});

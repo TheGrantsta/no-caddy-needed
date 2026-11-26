@@ -243,7 +243,7 @@ export type PuttingMakeRate = {
 };
 
 export const getPuttingMakeRatesService = (roundIds?: Set<number>): PuttingMakeRate[] => {
-    const rows = getAllPuttingStatsWithThreePutts();
+    const rows = getAllPuttingStatsWithThreePutts(roundIds ? Array.from(roundIds) : undefined);
     const stats = new Map<number, { total: number; made: number }>();
 
     rows.forEach((row) => {
@@ -286,7 +286,7 @@ type UpAndDownRate = {
 
 // Up and down = missed the green, then holed out in one putt. Attempts are missed-green holes.
 export const getUpAndDownRateService = (roundIds?: Set<number>): UpAndDownRate => {
-    const rows = getAllPuttingStatsWithThreePutts();
+    const rows = getAllPuttingStatsWithThreePutts(roundIds ? Array.from(roundIds) : undefined);
     let attempts = 0;
     let upAndDowns = 0;
 
@@ -322,7 +322,7 @@ export type PuttingProximity = {
 };
 
 export const getPuttingProximityService = (threePuttOnly: boolean = false, roundIds?: Set<number>): PuttingProximity[] => {
-    const rows = getAllPuttingStatsWithThreePutts();
+    const rows = getAllPuttingStatsWithThreePutts(roundIds ? Array.from(roundIds) : undefined);
     const stats = new Map<number, { short: number; long: number }>();
 
     rows.forEach((row) => {
@@ -659,7 +659,7 @@ export const getRoundScoreBreakdownService = (roundId: number): RoundScoreBreakd
     const threePutts = sins?.ThreePutts ?? 0;
     const penalties = sins?.Penalties ?? 0;
 
-    const puttingStats = getAllPuttingStatsWithThreePutts();
+    const puttingStats = getAllPuttingStatsWithThreePutts([roundId]);
     const roundStats = puttingStats.filter((row) => row.RoundId === roundId);
     let putts = 0;
     // Each hole's putts are read the same way as on the hole list: the count stored on the hole

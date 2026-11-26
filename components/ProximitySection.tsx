@@ -37,40 +37,54 @@ export default function ProximitySection({
 
     return (
         <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
-            <View testID="proximity-card" style={styles.deadlySinsChart.card}>
-                <Text testID="proximity-heading" style={[styles.subHeaderText, { padding: 0 }]}>Proximity</Text>
+            {hasProximityData ? (
+                <View testID="proximity-card" style={styles.deadlySinsChart.card}>
+                    <Text testID="proximity-heading" style={[styles.subHeaderText, { padding: 0 }]}>Proximity</Text>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
-                    <Text testID="proximity-filter-label" style={{ color: colours.black, fontSize: fontSizes.normal }}>
-                        Show 3-putts only
-                    </Text>
-                    <AppSwitch
-                        testID="proximity-filter-toggle"
-                        value={proximityThreePuttOnly}
-                        onValueChange={onProximityFilterChange}
-                    />
-                </View>
-
-                {hasProximityData ? (
-                    <>
-                        <View style={{ marginTop: 12 }}>
-                            <PuttingProximityChart data={proximity} />
-                        </View>
-
-                        <Text style={[styles.smallText, { marginTop: 12 }]}>
-                            Where your missed first putts finish. "3-Putts Only" counts just the holes where you three-putted.
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+                        <Text testID="proximity-filter-label" style={{ color: colours.black, fontSize: fontSizes.normal }}>
+                            Show 3-putts only
                         </Text>
-                    </>
-                ) : (
-                    filteredRoundIds && filteredRoundIds.size === 0 ? (
+                        <AppSwitch
+                            testID="proximity-filter-toggle"
+                            value={proximityThreePuttOnly}
+                            onValueChange={onProximityFilterChange}
+                        />
+                    </View>
+
+                    <View style={{ marginTop: 12 }}>
+                        <PuttingProximityChart data={proximity} />
+                    </View>
+
+                    <Text style={[styles.smallText, { marginTop: 12 }]}>
+                        Where your missed first putts finish. "3-Putts Only" counts just the holes where you three-putted.
+                    </Text>
+                </View>
+            ) : (
+                <>
+                    <View style={styles.divider} />
+
+                    {filteredRoundIds && filteredRoundIds.size === 0 ? (
                         <StatsEmptyState onStartRound={onStartRound} />
                     ) : (
-                        <Text style={[styles.normalText, { marginTop: 12 }]}>
-                            {proximityThreePuttOnly ? 'No 3-putts in selected rounds' : 'No putting data for selected rounds'}
-                        </Text>
-                    )
-                )}
-            </View>
+                        <>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 12, paddingHorizontal: 16 }}>
+                                <Text testID="proximity-filter-label" style={{ color: colours.black, fontSize: fontSizes.normal }}>
+                                    Show 3-putts only
+                                </Text>
+                                <AppSwitch
+                                    testID="proximity-filter-toggle"
+                                    value={proximityThreePuttOnly}
+                                    onValueChange={onProximityFilterChange}
+                                />
+                            </View>
+                            <Text style={[styles.normalText, { paddingHorizontal: 16, marginTop: 12 }]}>
+                                {proximityThreePuttOnly ? 'No 3-putts in selected rounds' : 'No putting data for selected rounds'}
+                            </Text>
+                        </>
+                    )}
+                </>
+            )}
         </Animated.View>
     );
 }

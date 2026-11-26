@@ -32,4 +32,12 @@ describe('ProximitySection', () => {
 
         expect(getPuttingProximityService).not.toHaveBeenCalled();
     });
+
+    it('shouldShowTheSharedEmptyStateWithoutACardWhenNoRoundsAreSelected', () => {
+        (getPuttingProximityService as jest.Mock).mockReturnValueOnce([]);
+        const { queryByTestId, getByText } = render(<ProximitySection {...props()} filteredRoundIds={new Set()} />);
+
+        expect(queryByTestId('proximity-card')).toBeNull();
+        expect(getByText('Complete a round to see stats.')).toBeTruthy();
+    });
 });

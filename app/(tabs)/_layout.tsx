@@ -1,6 +1,6 @@
 import fontSizes from '@/assets/font-sizes';
 import { Tabs, useSegments } from 'expo-router';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,8 +17,12 @@ const isOverdue = () => {
 
 export default function TabLayout() {
   const colours = useThemeColours();
-  useSegments(); // Re-render on navigation changes so overdue badge stays current
-  const hasOverdue = isOverdue();
+  const segments = useSegments();
+  // Recheck the overdue reminders when the tab changes (for example on return from the reminders screen),
+  // not on every render, so the database is only read on navigation between tabs
+  const currentTab = segments[1] ?? '';
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const hasOverdue = useMemo(() => isOverdue(), [currentTab]);
   const { bottom: bottomInset } = useSafeAreaInsets();
 
   return (

@@ -77,6 +77,26 @@ describe('Tabs layout — Practice overdue badge', () => {
         expect(queryByTestId('practice-overdue-badge')).toBeNull();
     });
 
+    it('shouldNotReadRemindersAgainWhenTheSameTabStaysFocused', () => {
+        const { rerender } = render(<TabLayout />);
+        mockGetPracticeRemindersService.mockClear();
+
+        rerender(<TabLayout />);
+
+        expect(mockGetPracticeRemindersService).not.toHaveBeenCalled();
+    });
+
+    it('shouldReadRemindersAgainWhenTheTabChanges', () => {
+        const { rerender } = render(<TabLayout />);
+        mockGetPracticeRemindersService.mockClear();
+        mockUseSegments.mockReturnValue(['(tabs)', 'play']);
+
+        rerender(<TabLayout />);
+
+        expect(mockGetPracticeRemindersService).toHaveBeenCalled();
+        mockUseSegments.mockReturnValue(['(tabs)', 'practice']);
+    });
+
     it('shouldNotShowActiveIndicatorWhenFocused', () => {
         render(<TabLayout />);
         const { Tabs } = require('expo-router');
@@ -207,14 +227,19 @@ describe('Tabs layout — Practice overdue badge', () => {
         expect(labelStyle.fontSize).toBe(11);
     });
 
-    it('shouldClearOverdueBadgeWhenOverdueReminderIsDeleted', () => {
+    it('shouldClearOverdueBadgeWhenOverdueReminderIsDeletedAndTheUserReturnsToPractice', () => {
         mockGetPracticeRemindersService.mockReturnValue([
             { Id: 1, Label: 'Morning putting', ScheduledFor: '2020-01-01T08:00:00.000Z', NotificationId: 'n1', Created_At: '2019-12-31T09:00:00.000Z' }
         ]);
         const { getByTestId, queryByTestId, rerender } = render(<TabLayout />);
         expect(getByTestId('practice-overdue-badge')).toBeTruthy();
 
+        // Reminders are deleted on the reminders screen, which is a different route
+        mockUseSegments.mockReturnValue(['tools', 'reminders']);
         mockGetPracticeRemindersService.mockReturnValue([]);
+        rerender(<TabLayout />);
+
+        // Returning to Practice rechecks the reminders
         mockUseSegments.mockReturnValue(['(tabs)', 'practice']);
         rerender(<TabLayout />);
 

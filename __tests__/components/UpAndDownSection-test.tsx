@@ -91,4 +91,16 @@ describe('UpAndDownSection', () => {
 
         expect(getByTestId('up-and-down-card')).toHaveStyle({ marginVertical: 8 });
     });
+
+    it('shouldNotRecalculateTheRateWhenTheRoundsDoNotChange', () => {
+        mockGetUpAndDownRate.mockReturnValue({ rate: '33%', upAndDowns: 1, attempts: 3 });
+        const ids = new Set([1, 2]);
+        const fadeAnim = new Animated.Value(1);
+        const slideAnim = new Animated.Value(0);
+        const { rerender } = render(<UpAndDownSection fadeAnim={fadeAnim} slideAnim={slideAnim} filteredRoundIds={ids} />);
+
+        rerender(<UpAndDownSection fadeAnim={fadeAnim} slideAnim={slideAnim} filteredRoundIds={ids} />);
+
+        expect(mockGetUpAndDownRate).toHaveBeenCalledTimes(1);
+    });
 });

@@ -1,5 +1,5 @@
 import fontSizes from '@/assets/font-sizes';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Animated, Text, View } from 'react-native';
 import { useStyles } from '../hooks/useStyles';
 import { getUpAndDownRateService } from '../service/DbService';
@@ -16,7 +16,7 @@ export default function UpAndDownSection({
     filteredRoundIds,
 }: Props) {
     const styles = useStyles();
-    const { rate, upAndDowns, attempts } = getUpAndDownRateService(filteredRoundIds);
+    const { rate, upAndDowns, attempts } = useMemo(() => getUpAndDownRateService(filteredRoundIds), [filteredRoundIds]);
 
     // Only show once there are missed greens, so the empty putting screen is unchanged
     if (attempts === 0) return null;

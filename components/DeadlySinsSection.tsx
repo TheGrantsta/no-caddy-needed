@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Animated, Text, View } from 'react-native';
 import DeadlySinsChart from './DeadlySinsChart';
 import { useStyles } from '../hooks/useStyles';
@@ -23,9 +23,14 @@ export default function DeadlySinsSection({
 }: Props) {
     const styles = useStyles();
 
-    const deadlySinsRounds = getAllDeadlySinsRoundsService();
-    // Same completed-round set as the putting and proximity sections, so All matches a year that covers every round
-    const filteredDeadlySinsRounds = deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number));
+    // Read once per change of the rounds, then filtered to the same completed-round set as the putting and proximity sections
+    // Refreshes when the set of rounds changes; the read itself takes no inputs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const deadlySinsRounds = useMemo(() => getAllDeadlySinsRoundsService(), [filteredRoundIds]);
+    const filteredDeadlySinsRounds = useMemo(
+        () => deadlySinsRounds.filter(r => r.RoundId != null && filteredRoundIds.has(r.RoundId as number)),
+        [deadlySinsRounds, filteredRoundIds]
+    );
 
     return (
         <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateX: slideAnim }], marginTop: 20 }]}>

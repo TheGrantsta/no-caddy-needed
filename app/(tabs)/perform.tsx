@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -21,7 +21,7 @@ import { getSettingsService, saveSettingsService, AppSettings, getAllRoundHistor
 import RoundHistorySection from '../../components/RoundHistorySection';
 import { ONBOARDING_STEPS } from '@/assets/onboardingSteps';
 import StatsFilter from '../../components/StatsFilter';
-import { applyRoundFilter, getAvailableYears, resolveRoundFilter } from '../../utils/roundFilter';
+import { applyRoundFilter, getAvailableYears, resolveRoundFilter, serializeRoundFilter } from '../../utils/roundFilter';
 import { useRoundFilter } from '../../hooks/useRoundFilter';
 
 export default function Perform() {
@@ -58,10 +58,18 @@ export default function Perform() {
   useFocusEffect(refreshHistoryData);
   // The filter selects from every round (same as Play). Score-only and incomplete rounds
   // are then dropped, because only completed stats rounds have sins, putting and proximity data.
-  const filteredRoundHistory = applyRoundFilter(roundHistory, roundsFilter);
-  const filteredRoundIds = new Set(
-    filteredRoundHistory.filter(r => r.IsScoreOnly === 0 && r.IsCompleted === 1).map(r => r.Id)
+  // Derived values are memoised so the sections below only recalculate when the history or the filter changes
+  const filterKey = serializeRoundFilter(roundsFilter);
+  const filteredRoundHistory = useMemo(
+    () => applyRoundFilter(roundHistory, roundsFilter),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [roundHistory, filterKey]
   );
+  const filteredRoundIds = useMemo(
+    () => new Set(filteredRoundHistory.filter(r => r.IsScoreOnly === 0 && r.IsCompleted === 1).map(r => r.Id)),
+    [filteredRoundHistory]
+  );
+  const parAverages = useMemo(() => getParAveragesService(filteredRoundHistory), [filteredRoundHistory]);
 
   const handleDismissOnboarding = async () => {
     setShowOnboarding(false);
@@ -156,7 +164,7 @@ export default function Perform() {
         {displaySection('rounds') && (
           <RoundHistorySection
             rounds={filteredRoundHistory}
-            parAverages={getParAveragesService(filteredRoundHistory)}
+            parAverages={parAverages}
             fadeAnim={sectionFadeAnim}
             slideAnim={sectionSlideAnim}
           />

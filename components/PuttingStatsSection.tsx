@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Animated, Text, View } from 'react-native';
 import { useStyles } from '../hooks/useStyles';
 import { useThemeColours } from '../context/ThemeContext';
@@ -32,7 +32,7 @@ export default function PuttingStatsSection({
     const colours = useThemeColours();
     const s = styles.deadlySinsChart;
 
-    const rates = getPuttingMakeRatesService(filteredRoundIds);
+    const rates = useMemo(() => getPuttingMakeRatesService(filteredRoundIds), [filteredRoundIds]);
     const hasPersonalPuttingData = rates.some((row) => row.makeRate !== '-');
 
     return (

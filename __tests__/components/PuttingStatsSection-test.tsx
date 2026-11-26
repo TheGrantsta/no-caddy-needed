@@ -94,4 +94,17 @@ describe('PuttingStatsSection', () => {
         expect(getByTestId('putting-pga-marker-4')).toHaveStyle({ left: '91%' });
         expect(getByTestId('putting-pga-marker-10')).toHaveStyle({ left: '41%' });
     });
+
+    it('shouldNotRecalculateTheMakeRatesWhenTheRoundsDoNotChange', () => {
+        const { getPuttingMakeRatesService } = require('../../service/DbService');
+        getPuttingMakeRatesService.mockClear();
+        const ids = new Set([1, 2]);
+        const fadeAnim = new Animated.Value(1);
+        const slideAnim = new Animated.Value(0);
+        const { rerender } = render(<PuttingStatsSection fadeAnim={fadeAnim} slideAnim={slideAnim} filteredRoundIds={ids} onStartRound={jest.fn()} />);
+
+        rerender(<PuttingStatsSection fadeAnim={fadeAnim} slideAnim={slideAnim} filteredRoundIds={ids} onStartRound={jest.fn()} />);
+
+        expect(getPuttingMakeRatesService).toHaveBeenCalledTimes(1);
+    });
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Animated, Text, View } from 'react-native';
 import PuttingProximityChart from './PuttingProximityChart';
 import StatsEmptyState from './StatsEmptyState';
@@ -28,10 +28,12 @@ export default function ProximitySection({
     const styles = useStyles();
     const colours = useThemeColours();
 
-    const hasProximityData = (threePuttOnly: boolean, roundIds?: Set<number>): boolean => {
-        const proximity = getPuttingProximityService(threePuttOnly, roundIds);
-        return proximity.length > 0 && proximity.some((row) => row.shortPercent !== '-' || row.longPercent !== '-');
-    };
+    // Read once per change of filter or rounds, and used for both the empty check and the chart
+    const proximity = useMemo(
+        () => getPuttingProximityService(proximityThreePuttOnly, filteredRoundIds),
+        [proximityThreePuttOnly, filteredRoundIds]
+    );
+    const hasProximityData = proximity.length > 0 && proximity.some((row) => row.shortPercent !== '-' || row.longPercent !== '-');
 
     return (
         <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateX: slideAnim }] }]}>
@@ -49,10 +51,10 @@ export default function ProximitySection({
                     />
                 </View>
 
-                {hasProximityData(proximityThreePuttOnly, filteredRoundIds) ? (
+                {hasProximityData ? (
                     <>
                         <View style={{ marginTop: 12 }}>
-                            <PuttingProximityChart data={getPuttingProximityService(proximityThreePuttOnly, filteredRoundIds)} />
+                            <PuttingProximityChart data={proximity} />
                         </View>
 
                         <Text style={[styles.smallText, { marginTop: 12 }]}>

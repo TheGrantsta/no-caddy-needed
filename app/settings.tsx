@@ -28,7 +28,7 @@ export default function Settings() {
   const { landscapePadding } = useOrientation();
   const { showResult, showError } = useAppToast();
   const [exporting, setExporting] = useState(false);
-  const [settings, setSettings] = useState<AppSettings>(getSettingsService());
+  const [settings, setSettings] = useState<AppSettings>(() => getSettingsService());
   const [showOnboarding, , setShowOnboarding] = useToggle(!settings.settingsOnboardingSeen);
 
 

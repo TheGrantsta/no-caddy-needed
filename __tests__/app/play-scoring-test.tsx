@@ -574,6 +574,15 @@ describe('Play screen', () => {
                 await waitFor(() => expect(getByTestId('next-hole-button')).toBeTruthy());
             };
 
+            it('shouldNotReadTheClubDistancesAgainOnEveryRerender', () => {
+                const { rerender } = render(<Play />);
+                mockGetClubDistances.mockClear();
+
+                rerender(<Play />);
+
+                expect(mockGetClubDistances).not.toHaveBeenCalled();
+            });
+
             it('shouldShowTheRoundProgressBarOnTheHoleScreen', async () => {
                 mockStartRound.mockResolvedValue(1);
                 mockAddRoundPlayers.mockResolvedValue([1]);

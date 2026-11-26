@@ -31,7 +31,7 @@ export default function Perform() {
   // Shared with Play; the effective filter is derived below once round history is loaded
   const [storedRoundsFilter, setRoundsFilter] = useRoundFilter();
   const [proximityThreePuttOnly, , setProximityThreePuttOnly] = useToggle(false);
-  const [settings, setSettings] = useState<AppSettings>(getSettingsService());
+  const [settings, setSettings] = useState<AppSettings>(() => getSettingsService());
   const [showOnboarding, , setShowOnboarding] = useToggle(!settings.performOnboardingSeen);
   const [roundHistory, setRoundHistory] = useState(() => getAllRoundHistoryService());
   const roundsFilter = resolveRoundFilter(storedRoundsFilter, getAvailableYears(roundHistory));

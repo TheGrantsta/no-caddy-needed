@@ -120,8 +120,8 @@ export default function Play() {
         showResult,
     });
 
-    // Read from the database on each render, so the club picker always shows the saved clubs
-    const clubDistances: ClubDistance[] = getClubDistancesService();
+    // Read once on mount and again whenever the screen regains focus, so edits on the distances screen show up here
+    const [clubDistances, setClubDistances] = useState<ClubDistance[]>(() => getClubDistancesService());
     const selectedOffTeeClub = lifecycle.selectedOffTeeClub;
     const setSelectedOffTeeClub = lifecycle.setSelectedOffTeeClub;
     const sinDetailsClubError = lifecycle.sinDetailsClubError;
@@ -157,7 +157,7 @@ export default function Play() {
         () => setRecentCourseNames(getRecentCourseNamesService())
     );
 
-    const [settings, setSettings] = useState(getSettingsService());
+    const [settings, setSettings] = useState(() => getSettingsService());
     const [showOnboarding, , setShowOnboarding] = useToggle(false);
     // Shared with Performance; a stored year with no rounds falls back to All
     const [incompleteRound, setIncompleteRound] = useState<RoundRow | null>(null);
@@ -200,6 +200,7 @@ export default function Play() {
     // round is deleted on the scorecard screen and we navigate back here).
     const refreshHistoryData = useCallback(() => {
         setSettings(getSettingsService());
+        setClubDistances(getClubDistancesService());
     }, []);
 
     useFocusEffect(refreshHistoryData);

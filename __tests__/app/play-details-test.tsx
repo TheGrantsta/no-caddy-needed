@@ -201,17 +201,14 @@ describe('Play screen', () => {
     });
 
     describe('Sin Details phase', () => {
-        it('readsTheClubListAgainWhenTheScreenRerenders', () => {
+        it('keepsTheClubListFromMountInsteadOfReadingItOnEveryRerender', () => {
             mockGetClubDistances.mockReturnValue([]);
             const { rerender } = render(<Play />);
             const callsBefore = mockGetClubDistances.mock.calls.length;
 
-            mockGetClubDistances.mockReturnValue([
-                { Id: 1, Club: 'Driver', CarryDistance: 250, TotalDistance: 270, SortOrder: 0 },
-            ]);
             rerender(<Play />);
 
-            expect(mockGetClubDistances.mock.calls.length).toBeGreaterThan(callsBefore);
+            expect(mockGetClubDistances.mock.calls.length).toBe(callsBefore);
         });
 
         it('loadsClubDistancesOnInitialization', () => {

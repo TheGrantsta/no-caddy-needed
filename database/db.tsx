@@ -132,6 +132,7 @@ type PuttingStatsContextRow = {
     SecondPuttDistance: number;
     SecondPuttIsLong: number;
     GreenInRegulation: number;
+    PuttCount: number | null;
 };
 
 // One player in a round, as stored in RoundPlayers
@@ -923,7 +924,7 @@ export const getAllHoleDeadlySinsWithContext = () => {
 export const getAllPuttingStatsWithContext = () => {
     const sql = `
         SELECT ps.RoundId, r.CourseName, r.Created_At, ps.HoleNumber, ps.FirstPuttDistance,
-               ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.GreenInRegulation
+               ps.SecondPuttDistance, ps.SecondPuttIsLong, ps.GreenInRegulation, ps.PuttCount
         FROM PuttingStats ps
         JOIN Rounds r ON ps.RoundId = r.Id
         WHERE r.IsCompleted = 1

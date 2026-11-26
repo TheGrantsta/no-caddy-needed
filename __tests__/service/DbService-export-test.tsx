@@ -68,6 +68,18 @@ describe('Export service wrappers', () => {
             expect(result[0]).toHaveProperty('SecondPuttIsLong', false);
         });
 
+        it('shouldExportTheStoredPuttCount', () => {
+            mockGetAllPuttingStatsWithContext.mockReturnValue([
+                { RoundId: 1, CourseName: 'Pine Valley', Created_At: '2026-07-20', HoleNumber: 1, FirstPuttDistance: 8, SecondPuttDistance: 0, SecondPuttIsLong: 0, GreenInRegulation: 0, PuttCount: 1 },
+                { RoundId: 1, CourseName: 'Pine Valley', Created_At: '2026-07-20', HoleNumber: 2, FirstPuttDistance: 0, SecondPuttDistance: 0, SecondPuttIsLong: 0, GreenInRegulation: 0, PuttCount: 0 },
+            ]);
+
+            const result = getAllPuttingStatsDetailService();
+
+            expect(result[0]).toHaveProperty('PuttCount', 1);
+            expect(result[1]).toHaveProperty('PuttCount', 0);
+        });
+
         it('shouldExportGreenInRegulationAsBoolean', () => {
             mockGetAllPuttingStatsWithContext.mockReturnValue([
                 { RoundId: 1, CourseName: 'Pine Valley', Created_At: '2026-07-20', HoleNumber: 1, FirstPuttDistance: 8, SecondPuttDistance: 0, SecondPuttIsLong: 0, GreenInRegulation: 1 },

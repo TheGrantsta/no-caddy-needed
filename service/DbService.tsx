@@ -879,6 +879,8 @@ export type PuttingStatDetail = {
     SecondPuttDistance: number;
     SecondPuttIsLong: boolean;
     GreenInRegulation: boolean;
+    // The putt count stored on the hole; null on holes saved before it was stored
+    PuttCount: number | null;
 };
 
 export const getAllPuttingStatsDetailService = (): PuttingStatDetail[] => {
@@ -892,5 +894,6 @@ export const getAllPuttingStatsDetailService = (): PuttingStatDetail[] => {
         SecondPuttDistance: row.SecondPuttDistance,
         SecondPuttIsLong: row.SecondPuttIsLong === 1,
         GreenInRegulation: row.GreenInRegulation === 1,
+        PuttCount: row.PuttCount,
     }));
 };

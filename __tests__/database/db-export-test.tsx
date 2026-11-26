@@ -86,6 +86,7 @@ describe('Export database queries', () => {
             expect(sqlArg.toUpperCase()).toContain('ROUNDS');
             expect(sqlArg.toUpperCase()).toContain('HOLENUMBER');
             expect(sqlArg.toUpperCase()).toContain('GREENINREGULATION');
+            expect(sqlArg.toUpperCase()).toContain('PUTTCOUNT');
             expect(sqlArg.toUpperCase()).toContain('FIRSTPUTTDISTANCE');
             expect(sqlArg.toUpperCase()).toContain('SECONDPUTTDISTANCE');
             // The third-putt columns were removed from PuttingStats, so the query must not select them
